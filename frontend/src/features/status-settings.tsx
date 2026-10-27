@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUp, ArrowDown, Plus } from "lucide-react";
 import { useApi, useList } from "@/api/context";
@@ -14,9 +14,20 @@ export function StatusSettings({ board }: { board: Board }) {
   const q = useList("statuses", board.id, { limit: 100, sortBy: "position" });
   const [name, setName] = useState(""),
     [done, setDone] = useState(false);
+  const intent = useRef<{ body: string; key: string } | null>(null);
   const create = useMutation({
-    mutationFn: () => api.createStatus(board.id, { name, isDone: done }),
+    mutationFn: () => {
+      const body = JSON.stringify({ name, isDone: done });
+      if (intent.current?.body !== body)
+        intent.current = { body, key: crypto.randomUUID() };
+      return api.createStatus(
+        board.id,
+        { name, isDone: done },
+        intent.current.key,
+      );
+    },
     onSuccess: () => {
+      intent.current = null;
       setName("");
       setDone(false);
       return client.invalidateQueries();
@@ -129,7 +140,13 @@ function StatusForm({
     client = useQueryClient();
   const mutation = useMutation({
     mutationFn: () =>
-      api.patch("statuses", status.id, { name, isDone: done }, status.version),
+      api.patch(
+        "statuses",
+        status.id,
+        { name, isDone: done },
+        status.version,
+        status.boardId,
+      ),
     onSuccess: () => client.invalidateQueries(),
   });
   return (

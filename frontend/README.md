@@ -1,6 +1,6 @@
-# Bee Team — frontend demonstrativo
+# Bee Team — frontend
 
-React + Vite + TypeScript + shadcn/ui (Radix) + Zustand. Esta entrega usa **API mockada em memória**, sem autenticação, login, tokens ou conexão com IA/backend. Dados fictícios e alterações reiniciam ao recarregar a página.
+React + Vite + TypeScript + shadcn/ui (Radix) + Zustand. O preview usa a **API HTTP real por padrão**, com persistência no PostgreSQL do backend. Não há autenticação, login ou tokens. O mock em memória permanece disponível somente por opção explícita.
 
 ## Executar
 
@@ -12,12 +12,16 @@ npm ci
 npm run dev -- --host 127.0.0.1
 ```
 
+A API local deve estar ativa em http://127.0.0.1:18081. O Vite encaminha `/api` para esse endereço. Copie `.env.example` para `.env.local` se precisar ajustar `BEE_API_TARGET` (destino do proxy) ou `VITE_API_BASE_URL` (base HTTP do cliente). O servidor não cria nem apaga dados automaticamente. O bootstrap e o startup pertencem ao backend.
+
+Para demonstração isolada, defina `VITE_API_MODE=mock` e reinicie o Vite; nesse modo, alterações são perdidas ao recarregar. Não há fallback automático quando a API falha.
+
 Acesse http://127.0.0.1:5173. Produção estática: `npm run build`; prévia: `npm run preview -- --host 127.0.0.1`.
 
 ## O que está disponível
 
 - Boards com busca, time gestor, ativos/arquivados; Kanban com filtros de título, executor, bloqueio e data de atualização. Todas as colunas são mantidas; continuação usa offset/limit por coluna e conserva os filtros.
-- Task com autor/executor, status, progresso, bloqueio, filhos reais em todos os boards, navegação recursiva por filho/pai, planos e revisões, comentários, arquivos demonstrativos para download, resumos/entregas/pendências e timeline com descendência opcional.
+- Task com autor/executor, status, progresso, bloqueio, filhos reais em todos os boards, navegação recursiva por filho/pai, planos e revisões, comentários, arquivos para download, resumos/entregas/pendências e timeline com descendência opcional.
 - RA com busca, papel, time e arquivamento. Perfil, vínculos, regras/limites, contexto resumido, atividades por autoria/execução/resumo, referências externas de chats e contexto de retomada. Metadados de time, membros e boards geridos.
 - Configuração de nome/descrição/modo do board, modo individual da task, perfis (incluindo imagem por URL HTTPS), metadados dos times e criação/renomeação/conclusão/ordenação de status.
 - Loading, vazio, erro com retry, validação de texto/versão, feedback de gravação, teclado e layout para navegador comum e largura estreita.
@@ -36,13 +40,13 @@ O board de origem da raiz governa a cadeia: manual força manual; automatic for�
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.
 
-O mock implementa as operações consumidas por esta UI, não todo o CRUD operacional OpenAPI nem um servidor HTTP. Um futuro adapter HTTP pode substituir `createMockApi()` em `main.tsx`, preservando a interface. Não foi implementado nesta entrega. Deve mapear versões para ETag/If-Match, idempotência para POST, downloads e paginação exatamente conforme contratos. Não inserir login/tokens. Autoria human/agent declarada não é identidade verificada.
+O mock implementa as operações consumidas por esta UI, não todo o CRUD operacional OpenAPI nem um servidor HTTP. `createHttpApi()` implementa a mesma porta em produção local, com transporte separado, paginação, downloads/imagens binárias, erros HTTP/rede e timeout de 30 segundos. Writes declaram `X-Actor-Kind: human`; versões usam `If-Match` forte. Criação de status mantém a mesma chave de idempotência ao repetir uma intenção após erro e gera outra para uma nova criação. Não há retry automático de writes. Após conflito, Recarregar formulário busca o board atualizado no servidor. Autoria human/agent declarada não é identidade verificada.
 
-TanStack Query mantém apenas cache/estado remoto. A URL comanda navegação, filtros e paginação; Zustand permanece apenas no controlador de tema. Nenhuma entidade é persistida em localStorage. O mock é a fonte de dados desta sessão.
+TanStack Query mantém apenas cache/estado remoto. A URL comanda navegação, filtros e paginação; Zustand permanece apenas no controlador de tema. Nenhuma entidade é persistida em localStorage. A API é a fonte persistente de dados no modo normal.
 
 ### Limites explícitos desta entrega
 
-- Nenhuma integração real com backend, PostgreSQL ou MCP foi executada.
+- Integração HTTP real validada com banco local dedicado. O frontend não usa transporte MCP. Criação/composição operacional de entidades permanece no backend/harness; a UI mantém apenas os editores já existentes e criação de status.
 - Configuração de imagem usa URL HTTPS; o formulário não envia uploads. Imagens já enviadas são lidas pelo adapter e exibidas com URL de objeto revogada ao desmontar. O mock usa um PNG demonstrativo para testar esse caminho.
 - O mock não pretende reproduzir todas as condições de armazenamento/concor­rência do servidor nem implementar operações operacionais ausentes da UI.
 
@@ -55,9 +59,9 @@ npm run lint
 npm run build
 ```
 
-60 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+85 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
-Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
+Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Esses testes da base Rust deste worktree não validam o backend atual executado no worktree separado. A integração HTTP no navegador foi validada independentemente, com gravações confirmadas também no banco pelo Backend.
 
 Consulte `PROGRESS.md` para checklist e evidências finais. Não houve merge, push ou deploy.
 

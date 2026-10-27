@@ -37,8 +37,7 @@ export function BoardSettings({
         <DialogHeader>
           <DialogTitle>Configurações do board</DialogTitle>
           <DialogDescription>
-            Metadados, autonomia e status. Alterações ficam somente no mock
-            desta sessão.
+            Metadados, autonomia e status do board.
           </DialogDescription>
         </DialogHeader>
         <BoardForm key={board.id} board={board} />
@@ -73,6 +72,17 @@ function BoardForm({ board }: { board: Board }) {
     onSuccess: (saved) => {
       setBaseline(saved);
       return client.invalidateQueries();
+    },
+  });
+  const reload = useMutation({
+    mutationFn: () => api.get("boards", board.id),
+    onSuccess: (fresh) => {
+      client.setQueryData(["boards", board.id], fresh);
+      setName(fresh.name);
+      setDescription(fresh.description);
+      setMode(fresh.autonomyMode);
+      setBaseline(fresh);
+      mutation.reset();
     },
   });
   return (
@@ -130,17 +140,13 @@ function BoardForm({ board }: { board: Board }) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => {
-            setName(board.name);
-            setDescription(board.description);
-            setMode(board.autonomyMode);
-            setBaseline(board);
-            mutation.reset();
-          }}
+          disabled={reload.isPending}
+          onClick={() => reload.mutate()}
         >
           Recarregar formulário
         </Button>
       )}
+      {reload.error && <Failure error={reload.error} />}
     </form>
   );
 }
@@ -203,7 +209,7 @@ export function SaveFeedback({
       {mutation.error && <Failure error={mutation.error} />}{" "}
       {mutation.isSuccess && (
         <p role="status" className="small-note">
-          Salvo nesta sessão de demonstração.
+          Alterações salvas.
         </p>
       )}
     </>

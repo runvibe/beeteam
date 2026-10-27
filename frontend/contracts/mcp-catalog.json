@@ -42,37 +42,37 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 25a615a. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"

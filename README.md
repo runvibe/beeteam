@@ -128,3 +128,7 @@ src/
 ```
 
 Adjust the repositories and services to fit your application, then expand the router with new modules as needed.
+
+## Bee Team frontend
+
+The React frontend lives in `frontend/`. Run `npm ci` and `npm run dev` there. The normal preview uses the real API through a Vite `/api` proxy to `http://127.0.0.1:18081`; see `frontend/.env.example` and `frontend/README.md` for configuration. Mock mode is explicit opt-in (`VITE_API_MODE=mock`), with no automatic fallback.

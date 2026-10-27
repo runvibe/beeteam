@@ -104,6 +104,7 @@ export interface BeeApi {
     id: string,
     body: Patches[K],
     version: number,
+    scope?: string,
   ): Promise<PatchResults[K]>;
   revisions(
     taskId: string,
@@ -114,6 +115,7 @@ export interface BeeApi {
   createStatus(
     boardId: string,
     input: import("./generated/kanban/StatusInput").StatusInput,
+    idempotencyKey?: string,
   ): Promise<Status>;
   reorderStatuses(
     boardId: string,

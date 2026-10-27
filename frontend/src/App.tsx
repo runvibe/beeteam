@@ -1,3 +1,4 @@
+import {runtimeConfig} from "./runtime";
 import { useRouteEntity } from "./routing/entity-route";
 import { QueryState } from "./components/shared";
 import {
@@ -102,7 +103,7 @@ export function App() {
         <header className="topbar">
           <AppPath />
           <div className="topbar-actions">
-            <span className="environment-label">Demo local</span>
+            <span className="environment-label">{runtimeConfig.mock ? "Demonstração" : "API local"}</span>
             <ThemeControl />
           </div>
         </header>
@@ -130,8 +131,7 @@ export function App() {
           )}
         </main>
         <footer className="app-footer">
-          Dados fictícios reiniciam ao recarregar · Sem conexão com IA ou
-          backend
+          {runtimeConfig.mock ? "Dados fictícios reiniciam ao recarregar · Modo demonstração" : "Dados persistidos na API local"}
         </footer>
       </div>
     </div>

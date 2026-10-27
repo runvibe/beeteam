@@ -122,3 +122,16 @@ Revertida a aplicação indevida do anexo antigo 2347f736 no commit833c24c. Refe
 - 79 testes passam; build/TypeScript e lint sem erros (warnings preexistentes e bundle663kB). Cargo build passou,12unit passaram;3integrações Docker OS2 permanecem impedidas. Revisão independente sem defeito concreto.
 - Browser confirmou UUID agente→/agents/lia preservando atividades/busca, task/subtask por slug, recarga/breadcrumb, time/settings/fechar e Voltar+Forward. Desktop/mobile capturados; viewport433/doc416, tema radius.625rem.
 - Snapshots kanban/RA/catalog JSON comparados por SHA256 com fonte8fbc no fechamento, iguais. Sem API real/push/merge/deploy.
+
+## Integração HTTP real — 27/10/2026
+
+- Preview padrão usa `/api/v1` com proxy Vite para `127.0.0.1:18081`. Mock explícito por `VITE_API_MODE=mock`, sem fallback silencioso. Sem login/tokens/deploy.
+- BeeApi preservada; transporte HTTP separado do mapeamento de endpoints. PATCH de status inclui board, If-Match forte, autoria human; POST mantém Idempotency-Key por intenção ao repetir após erro. Downloads/imagens binários cobertos pelo adapter e testes.
+- Recuperação de conflito do formulário do board consulta novamente o servidor. Teste reproduziu falha anterior, confirma dados concorrentes preservados e novo salvamento com versão atualizada.
+- 85 testes frontend passaram; TypeScript/build/lint sem erros. Avisos preexistentes Fast Refresh e bundle647kB permanecem. Cargo build passou;12 unitários passaram;3 integrações não iniciaram container por socket Docker indisponível (CreateContainer OS2). Não alterado Docker global ou Rust desta base.
+- QA no navegador contra Rust ativo e PostgreSQL dedicado: listagem/board; task e filho por slug; retorno preservando origem/aba; Markdown de especificação/plano; revisão1 e2; resumo atual; comentário/resumo/timeline; vínculos agente/time/board; atividades/retomada/chats vazio; paginação agents.limit=1 e busca reiniciando offset; erro de slug inexistente e rejeição de conclusão em status em uso.
+- Gravados pela UI e conferidos após reload: descrição do board, estilo do colaborador, contexto do time, autonomia individual da task (automatic; efetivo manual pelo board), criação e ordenação de status. Backend confirmou diretamente no PostgreSQL board/status/agent/team, sem alterar dados durante conferência.
+- Fixture criada por bootstrap HTTP do Backend, não por novos editores UI: board01a17f36-2d3f-7e81-a1f5-1c0e9ef232e0; task01a17f36-2d64-7b73-acd7-a473c1953040; status criado UI01a17f39-cfab-7da0-af65-5782d2a7f60a, position4 (quinta posição).
+- Sem fixture binária nesta QA: download e imagem verificados em testes do adapter, não como arquivos reais neste banco. Criação de agentes/times/tasks e composição continuam no backend/harness.
+- Desktop/mobile registrados em api-real-board.png, api-real-board-mobile.png e api-real-task.png no diretório de visualizações da conversa. Mobile viewport433/document433; radius computado .625rem. Tema/ícones preservados.
+- Contratos OpenAPI comparados SHA256 com8fbc: iguais. Catálogo MCP referência sincronizado para snapshot Skills25a615a; não muda transporte do frontend. Revisão independente sem defeitos concretos; recuperação de conflito revisada separadamente.
