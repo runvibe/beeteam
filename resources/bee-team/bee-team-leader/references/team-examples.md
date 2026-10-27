@@ -36,4 +36,6 @@ Proposta: “Reutilizar pesquisador de concorrentes; abrir sessão para análise
 
 ## Uma demanda atravessando boards
 
+Pré-condição em chat novo: se a skill está carregada e o painel abre, mas ferramentas Bee Team faltam, o líder identifica a URL MCP e prepara cadastro autorizado conforme a referência Codex. Depois confirma leitura pela ferramenta da sessão antes de consultar/registrar a demanda. Se o cadastro já existe e apenas este chat não foi atualizado, reutiliza a conexão e orienta atualização/nova sessão suportada; não inicia outra API. Colaborador sem acesso reporta a lacuna, sem repetir configuração global.
+
 Uma análise de mercado pode originar uma subtask financeira em outro board, executada por outro agente. Preserve `rootTaskId`/`originBoardId` da pesquisa e consulte a task financeira: origem `standard` exige a flag individual dela, mesmo se a pesquisa pai for automática. Origem `automatic` cobre a cadeia; origem `manual` exige aprovação. Não altere configurações do board financeiro. O briefing leva objetivo, fontes, decisões e limites da task; não copia histórico interno do pesquisador. Autor/executor são explícitos e a relação entre tasks não exige pertencerem ao mesmo time.

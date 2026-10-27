@@ -12,6 +12,45 @@ Se a ferramenta não existir ou uma política impedir a ação, informe a limita
 
 Bee Team MCP expõe `prepare_execution`, `record_progress`, `close_activity` e tools de domínio; nenhuma é ferramenta Codex de criar/controlar chats. Use resources/list/read nas seis URIs anunciadas e prompts/list/get para `task_briefing`, `agent_resumption`, `delivery_review` quando o cliente as oferecer. Se o harness só expuser tools, não alegue leitura de resource ou obtenção de prompt; use os materiais locais fornecidos e explique a capacidade ausente. Estado consultado por prompt deve ser revalidado antes de escrita concorrente.
 
+## Conectar Bee Team ao Codex
+
+Skill fornece instruções; cadastro MCP fornece ferramentas. Primeiro descubra as ferramentas da sessão por nome/descrição/schema e confirme que pertencem ao Bee Team. Prefixos podem variar. Se já houver conexão funcional, reutilize. Em instalação com CLI, `codex mcp list` mostra cadastros, não comprova acesso neste chat; não exponha configurações ou headers que contenham segredos.
+
+Descubra URL pelo procedimento/configuração real do backend e pelo host onde o cliente Codex executa. No ambiente local observado, o endpoint Streamable HTTP é `http://127.0.0.1:18081/mcp`, distinto do painel 5173. Loopback de outro host/container não alcança necessariamente esse servidor. Não adivinhe URL, não exponha serviço à rede nem crie túnel como correção automática.
+
+Na primeira conexão, apresente ao usuário os endereços locais concretos confirmados. Exemplo desta instalação, a conferir antes de usar:
+
+| Finalidade | Endereço local observado |
+|---|---|
+| Painel para abrir no navegador | http://127.0.0.1:5173 |
+| API de domínio | http://127.0.0.1:18081/api/v1 |
+| Health HTTP | http://127.0.0.1:18081/health |
+| MCP Streamable HTTP para cadastrar | http://127.0.0.1:18081/mcp |
+
+Forneça link clicável do painel, mas use a URL MCP no cadastro. A API roda no computador; localhost pressupõe cliente no mesmo ambiente de rede. Não prometa acesso a partir de chat cloud. Esses valores descrevem esta instalação, não defaults universais.
+
+Antes de cadastrar, confirme nome, URL, escopo e autorização do usuário; uma autorização já dada para conectar dispensa nova pergunta. Confira cadastro existente para evitar duplicação/substituição. Exemplo somente se esse endpoint tiver sido confirmado e o cadastro autorizado, usando a CLI disponível no mesmo host/configuração do Codex:
+
+```powershell
+codex mcp add beeteam --url http://127.0.0.1:18081/mcp
+codex mcp list
+```
+
+Alternativa documentada, não uma segunda instalação: adicionar a tabela abaixo preservando o restante de `~/.codex/config.toml`; configuração de projeto em `.codex/config.toml` exige projeto confiável. Confirme o escopo pretendido antes de editar. Não execute as duas alternativas nem substitua o arquivo inteiro.
+
+```toml
+[mcp_servers.beeteam]
+url = "http://127.0.0.1:18081/mcp"
+```
+
+O Bee Team local atual não exige OAuth/token; não execute login nem invente credenciais. Cadastro HTTP conecta ao servidor existente, não inicia banco/API. Se o endpoint estiver parado, siga readiness/startup abaixo. Se CLI ou edição autorizada não estiverem disponíveis, forneça a configuração para aplicação manual pelo mecanismo suportado; não invente menus do desktop. Outro harness precisa da sua própria documentação, não destes comandos Codex.
+
+Após cadastro, verifique o estado da conexão pelo cliente. Na TUI do Codex, `/mcp` mostra servidores ativos; não suponha esse comando em qualquer interface. Se a sessão continuar com catálogo antigo, use atualização/reconexão oferecida pelo cliente ou abra nova sessão quando necessário, preservando o briefing. A documentação consultada não garante hot reload em todas as superfícies. Não reinicie a API para tentar atualizar ferramentas do chat.
+
+Aceite em duas camadas: servidor responde initialize e anuncia tools/resources/prompts; sessão expõe ferramentas Bee Team e executa leitura real, por exemplo listBoards com schema descoberto. Uma chamada HTTP direta de diagnóstico não comprova exposição nativa. Liste/leia resources e obtenha prompts apenas se o cliente oferecer essas capacidades; informe o que ficou indisponível. Não prometa que todas as seis URIs/três prompts são utilizáveis só porque o servidor as anunciou. Handoff registra endpoint, host/escopo, leitura validada e eventual atualização de sessão pendente, sem segredos.
+
+Fontes oficiais consultadas em 27/10/2026: [OpenAI — MCP e configuração Codex](https://developers.openai.com/codex/mcp) e [comandos codex mcp](https://learn.chatgpt.com/docs/developer-commands#codex-mcp). Sintaxe `add --url` também conferida em `codex mcp add --help` local. Os exemplos acima são instruções; sua presença no pacote não configura a conta.
+
 ## Inicialização local suportada — Windows
 
 Primeiro confirme checkout backend/frontend, README e scripts da instalação. Procedimento observado em 27/10/2026: backend `scripts/start-local-api.ps1` e `docs/local-integration.md`; frontend `frontend/README.md`, package.json e configuração do proxy. Não são paths universais nem prova de que o runtime atual usa os mesmos arquivos.

@@ -138,7 +138,7 @@ Os schemas exatos de todas entradas e saÃ­das constam no catÃ¡logo JSON.
 
 ## Resources â€” leitura por allowlist
 
-Snapshot editorial dos commit 88ad469 da frente Skills, copiado para
+Snapshot editorial dos commit 8d8ed82 da frente Skills, copiado para
 `resources/bee-team`. ConteÃºdo nÃ£o estÃ¡ instalado globalmente. `resources/read`
 aceita somente os URIs anunciados; URI file/path arbitrÃ¡rio Ã© rejeitado. Nenhum acesso
 a segredos ou diretÃ³rios do usuÃ¡rio. Os textos sÃ£o materiais para IA consumir,

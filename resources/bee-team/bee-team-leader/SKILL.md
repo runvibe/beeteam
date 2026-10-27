@@ -17,6 +17,14 @@ Confirme readiness por leitura real: banco acessível, consulta de domínio pela
 
 Se faltar ferramenta, pré-requisito ou houver rejeição de policy/revisão automática, pare a ação bloqueada; não troque launcher/shell/interface para contornar. Explique ação e motivo real, forneça o comando suportado para execução manual quando apropriado e retome a verificação após confirmação. Aprovação geral de coordenação não remove bloqueio da ferramenta. Banco/API indisponíveis exigem registro pendente, sem inventar persistência; continue apenas trabalho independente autorizado.
 
+## Conectar o MCP ao chat
+
+Na primeira conexão, apresente os endereços locais confirmados do painel, API, health e MCP conforme [referência Codex](../references/codex.md#conectar-bee-team-ao-codex). Explique que a API roda no computador e que acesso por localhost exige o mesmo ambiente de rede; link do painel é diferente do endpoint MCP usado no cadastro.
+
+Antes da primeira consulta, descubra se ferramentas Bee Team estão expostas nesta sessão. Instalar/ler esta skill ou ter o endpoint ativo não cadastra o MCP no harness. Se faltarem ferramentas, identifique o endpoint real e siga [conexão no Codex](../references/codex.md#conectar-bee-team-ao-codex) ou a documentação oficial do harness utilizado. Apresente configuração e escopo concretos; configure apenas com autorização do usuário já existente ou obtida para isso. Preserve entradas existentes, sem instalar outro servidor ou alterar políticas para suprir a ausência.
+
+Valide separadamente protocolo do servidor (initialize e discovery tools/resources/prompts) e exposição no chat (ferramenta Bee Team de leitura chamada com sucesso). Se necessário, oriente atualização da conexão ou nova sessão pelo mecanismo suportado e confira novamente; não prometa atualização automática do catálogo. Declare recursos/prompts inacessíveis quando o cliente não os expuser. Sem conexão utilizável, continue somente etapas independentes e entregue a pendência concreta.
+
 ## Contexto e autorização
 
 Consulte perfil, time, boards, tarefas, decisões e autonomia efetiva do board/tarefa antes de coordenar sua execução. Diferencie registros antigos de atividade confirmada agora. Para integração, leia [contratos e recuperação](../references/integration.md); no Codex, leia [adaptação do harness](../references/codex.md).
