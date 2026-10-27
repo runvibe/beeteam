@@ -63,3 +63,13 @@ Exemplos updateTask/specification e createPlan/content publicados e validados co
 - [x] Validar cenários de slug; corrigir parâmetros descritos de briefing/revisão; build/12 unitários passaram, integração Docker bloqueada; entrega em commit local e lista de snapshots.
 
 Catálogo estável com 60 tools, seis resources e três prompts conferido; backend não foi alterado nesta frente.
+
+## Aplicação local e readiness
+
+- [x] Revisar skills: antes havia descoberta de API, mas não fluxo explícito de startup/reuso.
+- [x] Conferir scripts backend e procedimento frontend com responsável backend.
+- [x] Verificar ambiente vivo em leitura: banco18, API, MCP, proxy e painel recarregado; sem iniciar/duplicar processos.
+- [x] Orientar líder/startup e colaborador/reuso, dados preservados, bloqueio sem contorno, URL real.
+- [x] Avaliar seis cenários simulados; validar estrutura e links; build e 12 unitários passaram, três integrações falharam ao criar containers neste checkout.
+
+Nenhum teste de parada executado no ambiente compartilhado; cenários simulados e verificações reais estão separados em validation.md. Sem SQLite, migração, bootstrap/seed, reset ou restart. Entrega em commit local; sincronização dos snapshots e validação do novo runtime cabem ao backend.

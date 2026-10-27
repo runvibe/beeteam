@@ -7,6 +7,12 @@ description: Use when executing or resuming an assigned Bee Team task or subtask
 
 Execute o briefing autorizado e preserve continuidade na tarefa. Seu perfil é uma identidade persistente; chat é uma sessão substituível. A aplicação armazena dados e não controla o harness ou a IA.
 
+## Reutilizar ambiente local
+
+Use os endereços e serviços confirmados pelo líder. Não inicie processos concorrentes, novo banco, seed ou outra instância para resolver indisponibilidade. Confira a operação necessária pela API/MCP real; painel aberto ou informação em cache não prova disponibilidade. Se falhar, informe ao líder componente, endereço, erro sanitizado e efeito no trabalho/persistência, sem expor credenciais. Preserve o registro pendente e avance apenas em etapas independentes autorizadas.
+
+Inicialização/reparo coordenado cabe ao líder pelo procedimento local suportado; permissão de executar uma task não autoriza reiniciar infraestrutura. Não contorne recusa de ferramentas, não altere banco/portas por conta própria. Na retomada, confirme novamente estado, responsabilidade e versão antes de escrever; a reinicialização de serviço não equivale à retomada de agentes.
+
 ## Receber ou retomar
 
 Leia perfil/regras/limites, tarefa, perfil organizacional e board, planejamento aprovado, decisões aceitas/rejeitadas, resumos, entregas e pendências. Confira autoria e responsabilidade atuais antes de escrever: colaborador só atualiza suas próprias tarefas/subtarefas; a tarefa pai não autoriza editar irmãos ou filhos de outro responsável. Confira `authorAgentId` preservado e `executorAgentId` obrigatório: ambos podem ser líder ou colaborador. Sua responsabilidade de execução é indicada por `executorAgentId`, não pelo time gestor do board.

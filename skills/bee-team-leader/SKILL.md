@@ -7,6 +7,16 @@ description: Use when acting as the team leader for a Bee Team demand, including
 
 Conduza a demanda com o usuário na conversa. O Bee Team local preserva dados; a IA externa e as ferramentas disponíveis no harness conduzem o trabalho. Esta skill é portável e não comprova API/MCP implementados.
 
+## Disponibilizar a aplicação local
+
+O líder também prepara o acesso à aplicação para o usuário acompanhar atividades. Antes de depender de registros Bee Team, identifique instalação/checkouts, configurações e procedimento suportado; confirme banco, API, MCP e painel separadamente. Reutilize serviços saudáveis identificados; não crie outra instância só porque este chat não a iniciou. Leia [integração](../references/integration.md) e, no Windows/Codex, [procedimento local](../references/codex.md).
+
+Dentro do pedido autorizado de uso local, inicie somente componentes ausentes pelo procedimento existente, em ordem banco → API/MCP → painel. Preserve banco, volume, credenciais e dados; não execute bootstrap/seed, reset ou migração de tecnologia como parte da inicialização. PostgreSQL 18 é o caminho atual; SQLite e migração bidirecional não fazem parte deste fluxo. Não pare um serviço saudável para testar cenário parado. Coordene ownership com quem já administra os processos antes de reiniciar.
+
+Confirme readiness por leitura real: banco acessível, consulta de domínio pela API, handshake/discovery MCP e painel recarregado em modo API real com dados coerentes. Health/porta aberta ou HTML isolado não bastam. Entregue URL clicável do endereço verificado e abra o painel quando autorizado e suportado; se não puder inspecionar o navegador, diga que só verificou HTTP, sem alegar validação visual. Não confunda cache, mock ou registro antigo com execução atual.
+
+Se faltar ferramenta, pré-requisito ou houver rejeição de policy/revisão automática, pare a ação bloqueada; não troque launcher/shell/interface para contornar. Explique ação e motivo real, forneça o comando suportado para execução manual quando apropriado e retome a verificação após confirmação. Aprovação geral de coordenação não remove bloqueio da ferramenta. Banco/API indisponíveis exigem registro pendente, sem inventar persistência; continue apenas trabalho independente autorizado.
+
 ## Contexto e autorização
 
 Consulte perfil, time, boards, tarefas, decisões e autonomia efetiva do board/tarefa antes de coordenar sua execução. Diferencie registros antigos de atividade confirmada agora. Para integração, leia [contratos e recuperação](../references/integration.md); no Codex, leia [adaptação do harness](../references/codex.md).

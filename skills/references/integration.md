@@ -154,3 +154,13 @@ Exemplos de resolução somente leitura; os slugs são ilustrativos, não gerado
 ```
 
 A resposta simples envolve SlugResolution em `data`: use o `data.id` real da task em `prepare_execution.taskId` ou no argumento taskId de task_briefing/delivery_review; para agent_resumption, resolva também o agente e forneça seu UUID em agentId. Não passe a string do slug ao prompt. Nome/title posterior não altera o mapeamento. Em erro, verifique isError/code e não substitua o resultado ausente por UUID inventado. Se já recebeu UUID confirmado, a resolução adicional é desnecessária.
+
+## Readiness da aplicação local
+
+Inicialização é responsabilidade coordenada do líder. Descubra configuração e procedimento da instalação real; não use paths de worktrees ou portas de exemplo como padrão universal. Antes de iniciar, identifique listeners/processos e instância do banco; reutilize o que está saudável. Não execute bootstrap de dados para demonstrar disponibilidade. Consulte [Codex](codex.md), ou `beeteam://references/codex`, para o procedimento Windows observado; outros harnesses precisam de mecanismo suportado próprio.
+
+Verifique em camadas: (1) banco disponível e consulta de domínio bem-sucedida, sem imprimir segredos; (2) GET /health e leitura como GET /api/v1/boards, sem usar health como prova do banco; (3) MCP initialize e discovery tools/resources/prompts, não GET no navegador; (4) frontend em modo API real, chamada fresca por sua base/proxy, painel recarregado e conteúdo coerente com leitura da API. Lista vazia legítima não justifica criar fixtures. Um frontend mock pode abrir com backend ausente: identifique o modo explicitamente e não anuncie persistência real.
+
+Em ambiente parcial, inicie somente a parte ausente. Porta ocupada por processo desconhecido exige diagnóstico; não mate processo, não escolha outra base silenciosamente, não duplique banco. Se a tentativa suportada falhar, registre componente/erro e interrompa retries cegos. Uma rejeição automática não autoriza alternativa de execução; informe e peça a etapa manual necessária. Não execute testes de parada/restart em ambiente usado por outros chats sem coordenação explícita.
+
+Ao concluir, informe separadamente banco, API, MCP, painel e limitações, com URL clicável realmente verificada. Abra a página pelo recurso disponível quando permitido; verifique a tela em vez de confiar em cache/HTML. Servidor não inicia agentes: preparar aplicação e iniciar trabalho são atos distintos. Snapshots MCP são compilados no binário; atualizar arquivos não atualiza processo já ativo. Build/restart para nova revisão exige coordenação e validação posterior, não reinício oculto durante trabalho alheio.

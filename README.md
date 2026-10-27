@@ -34,6 +34,18 @@ Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It e
 - `/echo` to reflect the incoming request across all HTTP verbs with tracing spans per method when OTEL is enabled.
 - `/mcp` as an optional MCP Streamable HTTP endpoint for `health_check` and `echo_request` tools when the `mcp` Cargo feature is enabled.
 
+## Local readiness managed by the leader
+
+The leader skill now checks and reuses the database, API, MCP and real frontend,
+starts only missing components through the installation's supported procedure,
+and provides a verified clickable panel URL. Collaborators reuse that environment
+and report failures without starting competing processes. See the
+[Windows/Codex procedure](skills/references/codex.md) and
+[readiness checks](skills/references/integration.md). Startup does not run preview
+bootstrap automatically or reset storage. Tool-policy rejection requires a clear
+manual handoff, not an alternative launcher. PostgreSQL 18 remains the supported
+path in this workflow; SQLite/migration work is outside its scope.
+
 ## Template Bootstrap
 
 After creating a new repository from this template, run:
