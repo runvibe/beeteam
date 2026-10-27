@@ -1,3 +1,5 @@
+import { useLocation, navigate } from "@/routing/location";
+import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
 import { useState } from "react";
@@ -42,11 +44,16 @@ import { AgentName } from "@/components/names";
 import { SaveFeedback } from "./settings";
 import { ProfileForm } from "./profile-form";
 export function Agents() {
-  const [name, setName] = useState(""),
-    [role, setRole] = useState(""),
-    [teamId, setTeam] = useState(""),
-    [archived, setArchived] = useState("false"),
-    [offset, setOffset] = useState(0);
+  const [name, setName] = useUrlState<string>("agents.name", ""),
+    [role, setRole] = useUrlState<string>("agents.role", "", {
+      values: ["", "leader", "collaborator"],
+    }),
+    [teamId, setTeam] = useUrlState<string>("agents.teamId", ""),
+    [archived, setArchived] = useUrlState<string>("agents.archived", "false", {
+      values: booleanValues,
+    }),
+    [offset, setOffset] = useUrlState<number>("agents.offset", 0);
+  const limit = usePageSize("agents", 12);
   const open = useUi((s) => s.openAgent);
   const q = useList("agents", "", {
     name: name || undefined,
@@ -54,7 +61,7 @@ export function Agents() {
     role: (role as "leader" | "collaborator") || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
-    limit: 12,
+    limit,
     sortBy: "name",
   });
   return (
@@ -197,6 +204,18 @@ export function AgentDialog() {
 }
 function AgentDetail({ id }: { id: string }) {
   const q = useEntity("agents", id);
+  const [queryTab, setQueryTab] = useUrlState<string>("agent.tab", "profile", {
+    values: ["profile", "activities", "chats", "resume"],
+  });
+  const configuring = useLocation().split("?")[0].endsWith("/settings");
+  const tab = configuring ? "edit" : queryTab;
+  const setTab = (value: string) => {
+    if (value === "edit") navigate(`/agents/${id}/settings${location.search}`);
+    else {
+      if (configuring) navigate(`/agents/${id}${location.search}`);
+      setQueryTab(value);
+    }
+  };
   return (
     <>
       <DialogHeader>
@@ -219,7 +238,7 @@ function AgentDetail({ id }: { id: string }) {
                 </p>
               </div>
             </div>
-            <Tabs defaultValue="profile">
+            <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="detail-tabs">
                 <TabsTrigger value="profile">Perfil</TabsTrigger>
                 <TabsTrigger value="activities">Tasks</TabsTrigger>
@@ -287,14 +306,19 @@ function TeamLink({ id, role }: { id: string; role: string }) {
   );
 }
 function Activities({ agentId }: { agentId: string }) {
-  const [offset, setOffset] = useState(0),
-    [relation, setRelation] = useState("any"),
-    [title, setTitle] = useState("");
+  const [offset, setOffset] = useUrlState<number>("activities.offset", 0),
+    [relation, setRelation] = useUrlState<string>(
+      "activities.relation",
+      "any",
+      { values: ["any", "authored", "executing", "worked"] },
+    ),
+    [title, setTitle] = useUrlState<string>("activities.title", "");
+  const limit = usePageSize("activities", 10);
   const q = useList("activities", agentId, {
     relation: relation as "any" | "authored" | "executing" | "worked",
     title: title || undefined,
     offset,
-    limit: 10,
+    limit,
     sortBy: "taskUpdatedAt",
     sortOrder: "desc",
   });
@@ -370,8 +394,9 @@ function Activities({ agentId }: { agentId: string }) {
   );
 }
 function Chats({ agentId }: { agentId: string }) {
-  const [offset, setOffset] = useState(0);
-  const q = useList("chats", agentId, { offset, limit: 10 });
+  const [offset, setOffset] = useUrlState<number>("chats.offset", 0);
+  const limit = usePageSize("chats", 10);
+  const q = useList("chats", agentId, { offset, limit });
   return (
     <div className="detail-section">
       <p className="muted-copy">
@@ -437,14 +462,17 @@ function Resume({ agentId }: { agentId: string }) {
   );
 }
 export function Teams() {
-  const [name, setName] = useState(""),
-    [offset, setOffset] = useState(0),
-    [archived, setArchived] = useState("false");
+  const [name, setName] = useUrlState<string>("teams.name", ""),
+    [offset, setOffset] = useUrlState<number>("teams.offset", 0),
+    [archived, setArchived] = useUrlState<string>("teams.archived", "false", {
+      values: booleanValues,
+    });
+  const limit = usePageSize("teams", 12);
   const q = useList("teams", "", {
     name: name || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
-    limit: 12,
+    limit,
     sortBy: "name",
   });
   const open = useUi((s) => s.openTeam);
@@ -548,17 +576,26 @@ export function TeamDialog() {
   );
 }
 function TeamDetail({ id }: { id: string }) {
+  const configuring = useLocation().split("?")[0].endsWith("/settings");
   const q = useEntity("teams", id),
-    [offset, setOffset] = useState(0),
-    [boardOffset, setBoardOffset] = useState(0);
-  const members = useList("members", id, { offset, limit: 10, sortBy: "name" }),
+    [offset, setOffset] = useUrlState<number>("members.offset", 0),
+    [boardOffset, setBoardOffset] = useUrlState<number>(
+      "managedBoards.offset",
+      0,
+    );
+  const memberLimit = usePageSize("members", 10),
+    boardLimit = usePageSize("managedBoards", 10);
+  const members = useList("members", id, {
+      offset,
+      limit: memberLimit,
+      sortBy: "name",
+    }),
     boards = useList("boards", "", {
       teamId: id,
       offset: boardOffset,
-      limit: 10,
+      limit: boardLimit,
     });
-  const openBoard = useUi((s) => s.openBoard),
-    close = useUi((s) => s.openTeam);
+  const openBoard = useUi((s) => s.openBoard);
   return (
     <>
       <DialogHeader>
@@ -600,7 +637,6 @@ function TeamDetail({ id }: { id: string }) {
                       key={b.id}
                       variant="outline"
                       onClick={() => {
-                        close(null);
                         openBoard(b.id);
                       }}
                     >
@@ -615,8 +651,19 @@ function TeamDetail({ id }: { id: string }) {
                 </>
               )}
             </QueryState>
-            <details className="metadata-editor">
-              <summary>Editar metadados do time</summary>
+            <details className="metadata-editor" open={configuring}>
+              <summary
+                onClick={(event) => {
+                  event.preventDefault();
+                  navigate(
+                    configuring
+                      ? `/teams/${id}${location.search}`
+                      : `/teams/${id}/settings${location.search}`,
+                  );
+                }}
+              >
+                Editar metadados do time
+              </summary>
               <TeamForm key={q.data.version} team={q.data} />
             </details>
           </>

@@ -40,6 +40,20 @@ export function patchRecord<K extends keyof Patches>(
       "archived",
       "Registro arquivado é somente leitura.",
     );
+  if (resource === "tasks") {
+    const patch = body as Patches["tasks"];
+    if (
+      (patch.progress !== undefined && !patch.currentSummary?.trim()) ||
+      (patch.currentSummary !== undefined &&
+        (!patch.currentSummary.trim() ||
+          new TextEncoder().encode(patch.currentSummary).length > 16384))
+    )
+      throw new ApiError(
+        400,
+        "invalid_request",
+        "Resumo atual obrigatorio, nao vazio e com ate 16384 bytes UTF-8.",
+      );
+  }
   for (const [key, value] of Object.entries(body)) validateText(value, key);
   if ("name" in body && body.name !== undefined) validName(body.name);
   if ("image" in body && body.image && !body.image.url.startsWith("https://"))

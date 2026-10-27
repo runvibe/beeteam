@@ -1,31 +1,32 @@
-import { create } from "zustand";
+import { destination, goBack, navigate, useLocation } from "@/routing/location";
 export type Area = "boards" | "agents" | "teams";
-interface UiState {
-  area: Area;
-  boardId: string | null;
-  taskId: string | null;
-  agentId: string | null;
-  teamId: string | null;
-  search: string;
-  setArea: (area: Area) => void;
-  openBoard: (id: string) => void;
-  openTask: (id: string | null) => void;
-  openAgent: (id: string | null) => void;
-  openTeam: (id: string | null) => void;
-  setSearch: (value: string) => void;
+/** Navigation is derived from URL, never a parallel Zustand state. */
+export function useUi<T = ReturnType<typeof state>>(
+  selector?: (value: ReturnType<typeof state>) => T,
+): T {
+  const value = state(useLocation());
+  return selector ? selector(value) : (value as T);
 }
-/** Navigation/client preferences only; server records belong to the API/query cache. */
-export const useUi = create<UiState>((set) => ({
-  area: "boards",
-  boardId: null,
-  taskId: null,
-  agentId: null,
-  teamId: null,
-  search: "",
-  setArea: (area) => set({ area, search: "", boardId: null }),
-  openBoard: (boardId) => set({ area: "boards", boardId, search: "" }),
-  openTask: (taskId) => set({ taskId }),
-  openAgent: (agentId) => set({ agentId }),
-  openTeam: (teamId) => set({ teamId }),
-  setSearch: (search) => set({ search }),
-}));
+function state(url: string) {
+  const [path] = url.split("?");
+  const [, resource, id] = path.split("/");
+  return {
+    area: (resource === "agents"
+      ? "agents"
+      : resource === "teams"
+        ? "teams"
+        : "boards") as Area,
+    boardId: resource === "boards" ? id || null : null,
+    taskId: resource === "tasks" ? id || null : null,
+    agentId: resource === "agents" ? id || null : null,
+    teamId: resource === "teams" ? id || null : null,
+    setArea: (area: Area) => navigate(`/${area}`),
+    openBoard: (id: string) => navigate(`/boards/${id}`),
+    openTask: (id: string | null) =>
+      id ? navigate(destination(`/tasks/${id}`)) : goBack(),
+    openAgent: (id: string | null) =>
+      id ? navigate(destination(`/agents/${id}`)) : goBack("/agents"),
+    openTeam: (id: string | null) =>
+      id ? navigate(destination(`/teams/${id}`)) : goBack("/teams"),
+  };
+}

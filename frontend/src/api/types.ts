@@ -40,7 +40,7 @@ export interface Entities {
   teams: Team;
 }
 export interface Patches {
-  tasks: Pick<import("./generated/kanban/PatchTask").PatchTask, "autonomyMode">;
+  tasks: import("./generated/kanban/PatchTask").PatchTask;
   boards: PatchBoard;
   agents: PatchAgent;
   teams: PatchTeam;

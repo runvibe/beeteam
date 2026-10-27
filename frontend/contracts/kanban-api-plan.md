@@ -119,3 +119,11 @@ O YAML contém exemplos de criador do board, autor/executor da task, reatribuiç
 ## Implementação futura — não executar nesta revisão
 
 Preservar API Rush routes → dto → services → repositories, SQLx parametrizado/migrations, módulos abaixo de 1000 linhas. Não implementar auth. Quando autorizado, validar FK de agentes, gestão do board, ciclos, recursão, contexto de origem, eventos atômicos, UUID v7 e exclusão lógica. Integração HTTP/MCP usa os mesmos DTOs e regras. Escopo de edição do líder permanece pendente; não criar permissão silenciosa.
+
+## Resumo atual cumulativo (implementado)
+
+Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do colaborador, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
+
+PatchTask aceita currentSummary não vazio e o exige quando progress é enviado. Position (operação moveTask) o exige ao mudar status, não ao reordenar no mesmo status. RecordExecution exige currentSummary; mantém summary como registro histórico de atividade e salva ambos atomicamente. MCP simples segue os mesmos DTOs; record_progress aceita currentSummary no topo e por descendente, obrigatório com progress; close_activity exige execution.currentSummary. Título/descrição/modo podem ser editados sem enviar resumo; preservam o existente.
+
+Persistência reutiliza tasks.data JSONB (migration 202610270004); nenhuma tabela duplicada ou query por card. Backend não calcula síntese nem cliente precisa ler toda história. Erro de versão, conteúdo, contexto ou descendente reverte todas as alterações compostas; idempotência cobre o texto enviado. Sem alterações na política de edição do líder.

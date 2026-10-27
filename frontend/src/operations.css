@@ -640,3 +640,51 @@ textarea,
     gap: 10px;
   }
 }
+
+.task-page {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.task-page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.task-page-heading h1 {
+  outline: none;
+}
+.task-back {
+  align-self: flex-start;
+}
+.task-page .task-facts {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+.task-page .detail-tabs {
+  max-width: 100%;
+}
+.task-card {
+  cursor: pointer;
+}
+.task-card:hover {
+  outline: 1px solid var(--ring);
+}
+.task-card:focus-within {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.task-current-summary {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 10px;
+}

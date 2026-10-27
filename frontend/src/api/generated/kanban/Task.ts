@@ -18,6 +18,7 @@ export type Task = {
   statusId: string;
   /** @description Rank opaco gerado pelo servidor. */
   position: string;
+  currentSummary: import("./CurrentSummary").CurrentSummary;
   progress: import("./Progress").Progress;
   block: import("./Block").Block;
   childSummary: {

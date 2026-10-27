@@ -67,3 +67,18 @@ Evidências: C:/Users/phili/.codex/visualizations/2026/10/27/01a17e2c-4f16-78a0-
 - CSS e98a1056 aplicado sem neutralizar cores nem trocar branco. Radius .625rem (cards 10px), spacing .29rem, sombras e fontes originais. Campo de data agora segue radius-md.
 - Reload e estilos computados confirmados em claro/escuro; capturas theme-final-light.png, theme-final-dark.png, theme-final-mobile.png no diretorio de evidencias anterior. Tokens charts/sidebar-primary preservados; nao ha graficos na UI atual.
 - 53 testes, build e typecheck passaram. Cargo build passou; 12 unitarios passaram, 3 integracoes falharam por Docker indisponivel (CreateContainer OS2). Layout e mock preservados. Sem push/merge/deploy.
+
+
+## Rotas canonicas, task pagina, clique do card e resumo - 27/10/2026
+
+- [x] History API/useSyncExternalStore: paths reais para listas, entidades e settings; filtros/paginacao/abas em query. Nenhum filtro/pagina em Zustand/localStorage. Mapa completo em ROUTES.md.
+- [x] Task ocupa main sem Dialog/overlay; Voltar usa origem interna validada e indices de historico proprios. Deep link tem fallback deterministico ao board. Origem agente, recursao cross-board e filtros restaurados.
+- [x] Corpo nao interativo de card abre task; titulo e link real para teclado/nova aba. Executor conserva acao, selecao de texto nao navega, hover/foco visiveis.
+- [x] CurrentSummary do contrato final em cards (quatro linhas) e pagina (completo), vazio explicito. Sem derivar descricao/progress.note/historico. Mock valida nao vazio/16KiB UTF8 quando atualiza progress e preserva em patch administrativo.
+- [x] Snapshots sincronizados com worktree 8fbc, incluindo MCP catalog. Hash kanban 8F42E6A4AF8B28A93F9C145B8D88DB34D6B67337CA3DC1D2D85DED73AFFEEAB4; MCP JSON 6C278225B3AF3521C7D389156E3AE4A2FF5679C251A1EBF27CD5327EDF7DB49B. 83 schemas regenerados.
+- [x] 59 testes, build/TypeScript e lint sem erros. Revisao independente encontrou/fixou key limit de coluna, retorno apos abas/config e expansao de revisoes; revisao focal final confirmou 4 testes e nenhum achado pendente.
+- [x] Cargo build passou; 12 unitarios Rust passaram; 3 integracoes continuam bloqueadas ao criar PostgreSQL Docker (OS2). Nenhum Rust alterado.
+- [x] Navegador: URL com filtro apos reload, clique no corpo, task sem modal/overlay, Voltar/Forward, desktop claro/escuro e mobile sem overflow horizontal do documento. Capturas atuais: task-page-light.png, task-page-dark.png, task-page-mobile.png, cards-summary-light.png no diretorio de evidencias. Capturas antigas de task drawer nao representam estado final.
+- [x] Fontes/tokens finais preservados (tema e98a1056, radius .625rem, spacing .29rem e cores semanticas originais). Mock apenas; sem auth/API real/push/merge/deploy.
+
+Limite: posicoes de scroll sao restauradas em memoria na sessao quando os elementos estao disponiveis; reload reinicia entidades mock. Hospedagem SPA exige fallback index.html para URLs diretas (Vite ja fornece).

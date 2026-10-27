@@ -9,3 +9,5 @@ class TestResizeObserver {
   disconnect() {}
 }
 if (typeof window !== "undefined") window.ResizeObserver = TestResizeObserver;
+
+if (typeof window !== "undefined") window.scrollTo = () => {};

@@ -42,3 +42,40 @@ describe("configuration writes", () => {
     expect((await api.get("agents", ids.agent)).version).toBe(1);
   });
 });
+
+it("requires a current summary for progress and preserves it for administrative patches", async () => {
+  const api = createMockApi({ delay: 0 });
+  const task = await api.get("tasks", ids.task);
+  await expect(
+    api.patch(
+      "tasks",
+      ids.task,
+      { progress: { percent: 30, note: "working" } },
+      task.version,
+    ),
+  ).rejects.toMatchObject({ status: 400 });
+  await expect(
+    api.patch(
+      "tasks",
+      ids.task,
+      { currentSummary: "é".repeat(8193) },
+      task.version,
+    ),
+  ).rejects.toMatchObject({ status: 400 });
+  const changed = await api.patch(
+    "tasks",
+    ids.task,
+    {
+      progress: { percent: 30, note: "working" },
+      currentSummary: "Done A; doing B; pending C",
+    },
+    task.version,
+  );
+  const admin = await api.patch(
+    "tasks",
+    ids.task,
+    { autonomyMode: "automatic" },
+    changed.version,
+  );
+  expect(admin.currentSummary).toBe("Done A; doing B; pending C");
+});

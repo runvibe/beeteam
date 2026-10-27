@@ -1,5 +1,7 @@
+import { goBack } from "@/routing/location";
+import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { TaskPath } from "@/components/context-path";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowUpLeft,
@@ -11,13 +13,6 @@ import {
 import { useApi, useEntity, useList } from "@/api/context";
 import type { Resources, Task, PlanRevision } from "@/api/types";
 import { useUi } from "@/state/ui";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,26 +29,48 @@ import {
 } from "@/components/shared";
 import { AgentName, BoardName } from "@/components/names";
 import { TaskMode } from "./settings";
-export function TaskDialog() {
+export function TaskPage() {
   const id = useUi((s) => s.taskId);
-  const open = useUi((s) => s.openTask);
-  return (
-    <Dialog open={!!id} onOpenChange={(v) => !v && open(null)}>
-      <DialogContent className="detail-dialog">
-        {id ? <TaskDetail key={id} id={id} /> : <DialogTitle>Task</DialogTitle>}
-      </DialogContent>
-    </Dialog>
-  );
+  return id ? (
+    <section className="task-page" aria-label="Task">
+      <TaskDetail key={id} id={id} />
+    </section>
+  ) : null;
 }
 function TaskDetail({ id }: { id: string }) {
   const q = useEntity("tasks", id),
     open = useUi((s) => s.openTask);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const [tab, setTab] = useUrlState<string>("tab", "overview", {
+    values: [
+      "overview",
+      "children",
+      "plans",
+      "comments",
+      "attachments",
+      "summaries",
+      "timeline",
+    ],
+  });
+  useEffect(() => {
+    heading.current?.focus();
+  }, [id]);
   return (
     <>
-      <DialogHeader>
+      <Button
+        variant="ghost"
+        className="task-back"
+        onClick={() => goBack(q.data ? `/boards/${q.data.boardId}` : "/boards")}
+      >
+        <ArrowUpLeft />
+        Voltar
+      </Button>
+      <header className="task-page-heading">
         {q.data && <TaskPath task={q.data} />}
-        <DialogTitle>{q.data?.title ?? "Detalhes da task"}</DialogTitle>
-        <DialogDescription>
+        <h1 ref={heading} tabIndex={-1}>
+          {q.data?.title ?? "Detalhes da task"}
+        </h1>
+        <div className="muted-copy">
           {q.data ? (
             <>
               Task {q.data.id.slice(-4).toUpperCase()} ·{" "}
@@ -63,8 +80,8 @@ function TaskDetail({ id }: { id: string }) {
           ) : (
             "Carregando registro…"
           )}
-        </DialogDescription>
-      </DialogHeader>
+        </div>
+      </header>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -108,7 +125,7 @@ function TaskDetail({ id }: { id: string }) {
                 <AlertDescription>{q.data.block.reason}</AlertDescription>
               </Alert>
             )}
-            <Tabs defaultValue="overview">
+            <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="detail-tabs">
                 <TabsTrigger value="overview">Visão geral</TabsTrigger>
                 <TabsTrigger value="children">Subtasks</TabsTrigger>
@@ -120,6 +137,10 @@ function TaskDetail({ id }: { id: string }) {
               </TabsList>
               <TabsContent value="overview">
                 <div className="detail-section">
+                  <h3>Resumo atual do trabalho</h3>
+                  <TextBlock>
+                    {q.data.currentSummary || "Sem atualização registrada"}
+                  </TextBlock>
                   <h3>Descrição</h3>
                   <TextBlock>{q.data.description}</TextBlock>
                   <h3>Andamento</h3>
@@ -153,11 +174,12 @@ function TaskDetail({ id }: { id: string }) {
   );
 }
 function Children({ task }: { task: Task }) {
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useUrlState<number>("children.offset", 0);
+  const limit = usePageSize("children", 10);
   const q = useList("tasks", "", {
     parentId: task.id,
     offset,
-    limit: 10,
+    limit,
     sortBy: "position",
   });
   return (
@@ -206,11 +228,16 @@ function ChildRow({ task }: { task: Task }) {
 type RecordKind =
   "plans" | "comments" | "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
-  const [offset, setOffset] = useState(0),
-    [includeChildren, setInclude] = useState("false");
+  const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0),
+    [includeChildren, setInclude] = useUrlState<string>(
+      "timeline.includeChildren",
+      "false",
+      { values: booleanValues },
+    );
+  const limit = usePageSize(resource, 10);
   const q = useList(resource, task.id, {
     offset,
-    limit: 10,
+    limit,
     ...(resource === "timeline"
       ? {
           includeChildren: includeChildren === "true",
@@ -354,13 +381,22 @@ function Author({ id, date }: { id: string | null; date: string }) {
   );
 }
 function Plan({ item }: { item: PlanRevision }) {
-  const [show, setShow] = useState(false),
-    [offset, setOffset] = useState(0);
+  const [expanded, setExpanded] = useUrlState<string>(
+      `revision.${item.planId}.show`,
+      "false",
+      { values: booleanValues },
+    ),
+    show = expanded === "true",
+    setShow = (value: boolean) => setExpanded(String(value)),
+    [offset, setOffset] = useUrlState<number>(
+      `revision.${item.planId}.offset`,
+      0,
+    );
+  const limit = usePageSize(`revision.${item.planId}`, 5);
   const api = useApi();
   const q = useQuery({
-    queryKey: ["revisions", item.planId, offset],
-    queryFn: () =>
-      api.revisions(item.taskId, item.planId, { offset, limit: 5 }),
+    queryKey: ["revisions", item.planId, offset, limit],
+    queryFn: () => api.revisions(item.taskId, item.planId, { offset, limit }),
     enabled: show,
   });
   return (

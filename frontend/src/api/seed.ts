@@ -146,6 +146,12 @@ export function makeSeed(): Database {
       i === 0
         ? "Entender as etapas de entrada e identificar pontos de fricção.\n\nEntregável: mapa da jornada com oportunidades priorizadas."
         : "Registrar a solução, validar os critérios de aceite e documentar as decisões que orientam a entrega.",
+    currentSummary:
+      i === 0
+        ? "Jornada inicial mapeada. Agora validando pontos de fricção. Pendente: priorizar oportunidades com o time."
+        : i === 2
+          ? "Estrutura dos boards pronta. Agora revisando os nomes de navegação. Pendente: confirmar nomenclatura e concluir os testes."
+          : "",
     executorAgentId: i % 2 === 0 ? ids.agent : uuid(32),
     statusId: uuid(50 + (i % 5)),
     position: String(i).padStart(4, "0"),
@@ -174,6 +180,7 @@ export function makeSeed(): Database {
   tasks.push(
     ...[0, 1].map((i) => ({
       ...tasks[0],
+      currentSummary: "",
       id: uuid(120 + i),
       parentId: ids.task,
       executionContext: {
@@ -193,6 +200,7 @@ export function makeSeed(): Database {
   );
   tasks.push({
     ...tasks[0],
+    currentSummary: "",
     id: uuid(130),
     boardId: uuid(11),
     statusId: uuid(57),
@@ -202,6 +210,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    currentSummary: "",
     id: uuid(131),
     parentId: uuid(121),
     boardId: uuid(11),
@@ -218,6 +227,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    currentSummary: "",
     id: uuid(132),
     parentId: uuid(131),
     boardId: uuid(11),
@@ -234,6 +244,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    currentSummary: "",
     id: uuid(140),
     title: "API removida logicamente",
     deletedAt: date,

@@ -91,3 +91,11 @@ As organizações abaixo são referências adaptáveis. Não impõem departament
 | Análise de mercado | Avaliar uma oportunidade | Pesquisa de concorrentes, análise de clientes e segmentos e consolidação das conclusões. | Definir escopo comum de pesquisa; entregar análise com fontes e incertezas. |
 
 Os exemplos completos da skill deverão mostrar quando o contexto existente favorece reutilizar um colaborador e quando uma frente independente justifica propor outro.
+
+## Resumo atual cumulativo (implementado)
+
+Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do colaborador, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
+
+PatchTask aceita currentSummary não vazio e o exige quando progress é enviado. Position (operação moveTask) o exige ao mudar status, não ao reordenar no mesmo status. RecordExecution exige currentSummary; mantém summary como registro histórico de atividade e salva ambos atomicamente. MCP simples segue os mesmos DTOs; record_progress aceita currentSummary no topo e por descendente, obrigatório com progress; close_activity exige execution.currentSummary. Título/descrição/modo podem ser editados sem enviar resumo; preservam o existente.
+
+Persistência reutiliza tasks.data JSONB (migration 202610270004); nenhuma tabela duplicada ou query por card. Backend não calcula síntese nem cliente precisa ler toda história. Erro de versão, conteúdo, contexto ou descendente reverte todas as alterações compostas; idempotência cobre o texto enviado. Sem alterações na política de edição do líder.

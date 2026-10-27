@@ -1,6 +1,18 @@
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { useState } from "react";
+import {
+  useUrlState,
+  usePageSize,
+  booleanValues,
+  validDate,
+} from "@/routing/query";
+import {
+  useLocation,
+  destination,
+  subroute,
+  navigate,
+  goBack,
+} from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
 import { Settings2, CheckCheck, LockKeyhole } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
@@ -36,16 +48,19 @@ export function Boards() {
   );
 }
 function BoardIndex() {
-  const [name, setName] = useState(""),
-    [teamId, setTeam] = useState(""),
-    [archived, setArchived] = useState("false"),
-    [offset, setOffset] = useState(0);
+  const [name, setName] = useUrlState<string>("boards.name", ""),
+    [teamId, setTeam] = useUrlState<string>("boards.teamId", ""),
+    [archived, setArchived] = useUrlState<string>("boards.archived", "false", {
+      values: booleanValues,
+    }),
+    [offset, setOffset] = useUrlState<number>("boards.offset", 0);
+  const limit = usePageSize("boards", 12);
   const q = useList("boards", "", {
     name: name || undefined,
     teamId: teamId || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
-    limit: 12,
+    limit,
     sortBy: "name",
   });
   const teams = useList("teams", "", { limit: 100, sortBy: "name" });
@@ -156,18 +171,29 @@ function BoardIndex() {
 function BoardScreen({ id }: { id: string }) {
   const api = useApi();
   const entity = useEntity("boards", id);
-  const [title, setTitle] = useState(""),
-    [blocked, setBlocked] = useState(""),
-    [executor, setExecutor] = useState(""),
-    [updatedFrom, setUpdatedFrom] = useState(""),
-    [settings, setSettings] = useState(false);
+  const [title, setTitle] = useUrlState<string>("kanban.title", ""),
+    [blocked, setBlocked] = useUrlState<string>("kanban.blocked", "", {
+      values: booleanValues,
+    }),
+    [executor, setExecutor] = useUrlState<string>("kanban.executor", ""),
+    [updatedFrom, setUpdatedFrom] = useUrlState<string>(
+      "kanban.updatedFrom",
+      "",
+      { validate: validDate },
+    ),
+    limit = usePageSize("kanban", 3);
+  const settings = useLocation().split("?")[0].endsWith("/settings");
+  const setSettings = (open: boolean) =>
+    open
+      ? navigate(subroute(`/boards/${id}/settings`))
+      : goBack(`/boards/${id}`);
 
   const filters: Filters = {
     title: title || undefined,
     blocked: blocked === "" ? undefined : blocked === "true",
     executorAgentId: executor || undefined,
     updatedFrom: updatedFrom ? new Date(updatedFrom).toISOString() : undefined,
-    limitPerColumn: 3,
+    limitPerColumn: limit,
   };
   const q = useQuery({
     queryKey: ["board-view", id, filters],
@@ -267,10 +293,20 @@ function Column({
   filters: Filters;
 }) {
   const api = useApi();
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useUrlState<number>(
+    `kanban.${column.status.id}.offset`,
+    0,
+  );
   const { limitPerColumn, ...continuation } = filters;
   const q = useQuery({
-    queryKey: ["column", boardId, column.status.id, continuation, offset],
+    queryKey: [
+      "column",
+      boardId,
+      column.status.id,
+      continuation,
+      offset,
+      limitPerColumn,
+    ],
     queryFn: () =>
       api.list("tasks", boardId, {
         ...continuation,
@@ -326,17 +362,48 @@ function Column({
   );
 }
 export function TaskCard({ task }: { task: Task }) {
-  const open = useUi((s) => s.openTask);
+  const href = destination(`/tasks/${task.id}`);
   return (
-    <Card className="task-card">
+    <Card
+      className="task-card"
+      onClick={(event) => {
+        if (
+          (event.target as Element).closest(
+            "a,button,input,select,textarea,[role=button]",
+          ) ||
+          window.getSelection()?.toString()
+        )
+          return;
+        if (event.ctrlKey || event.metaKey)
+          window.open(href, "_blank", "noopener");
+        else navigate(href);
+      }}
+    >
       <CardHeader>
         <CardTitle>
-          <button className="card-link" onClick={() => open(task.id)}>
+          <a
+            className="card-link"
+            href={href}
+            onClick={(event) => {
+              if (
+                !event.ctrlKey &&
+                !event.metaKey &&
+                !event.shiftKey &&
+                !event.altKey
+              ) {
+                event.preventDefault();
+                navigate(href);
+              }
+            }}
+          >
             {task.title}
-          </button>
+          </a>
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <p className="task-current-summary">
+          {task.currentSummary || "Sem atualização registrada"}
+        </p>
         {task.block.blocked && (
           <Badge variant="destructive">
             <LockKeyhole />

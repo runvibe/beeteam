@@ -32,13 +32,13 @@ O board de origem da raiz governa a cadeia: manual força manual; automatic for�
 
 ## Contratos e adapter
 
-`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 81 schemas em módulos pequenos em `src/api/generated/`.
+`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 83 schemas em módulos pequenos em `src/api/generated/`.
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.
 
 O mock implementa as operações consumidas por esta UI, não todo o CRUD operacional OpenAPI nem um servidor HTTP. Um futuro adapter HTTP pode substituir `createMockApi()` em `main.tsx`, preservando a interface. Não foi implementado nesta entrega. Deve mapear versões para ETag/If-Match, idempotência para POST, downloads e paginação exatamente conforme contratos. Não inserir login/tokens. Autoria human/agent declarada não é identidade verificada.
 
-TanStack Query mantém apenas cache/estado remoto. Zustand guarda navegação/UI; nenhuma entidade é persistida nele ou em localStorage. O mock é a fonte de dados desta sessão.
+TanStack Query mantém apenas cache/estado remoto. A URL comanda navegação, filtros e paginação; Zustand permanece apenas no controlador de tema. Nenhuma entidade é persistida em localStorage. O mock é a fonte de dados desta sessão.
 
 ### Limites explícitos desta entrega
 
@@ -55,7 +55,7 @@ npm run lint
 npm run build
 ```
 
-53 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+59 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
 Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
 
@@ -70,6 +70,13 @@ Um script síncrono no head aplica a classe e color-scheme antes do React; as pa
 
 ### Redesign compacto monocromático
 
-Sidebar reduzida, breadcrumb navegável e caminho de ancestrais entre boards, cards com avatar e metadados essenciais, filtros recolhíveis em telas estreitas e ação de limpar filtros. Detalhes usam painel lateral (tela inteira em largura estreita), mantendo semântica modal, foco e conteúdo; o board permanece visível, mas inerte enquanto o painel está aberto. Times mostram composição antes do editor de metadados. Estados continuam escritos, sem depender de cor.
+Sidebar reduzida, breadcrumb navegável e caminho de ancestrais entre boards, cards com avatar e metadados essenciais, filtros recolhíveis em telas estreitas e ação de limpar filtros. Tasks usam página inteira com Voltar à origem. Perfis, times e configurações mantêm painéis endereçáveis. Times mostram composição antes do editor de metadados. Estados continuam escritos, sem depender de cor.
 
 O novo CSS enviado em 27/10 substitui as adaptacoes monocromaticas anteriores: tokens claros/escuros, branco original, cores destructive/charts/sidebar-primary, spacing .29rem, sombras e radius .625rem preservados. Inter, Playfair Display e JetBrains Mono usam os nomes Variable das fontes locais instaladas. Cards e campos aplicam raios derivados do tema; painel lateral e abas mantem a geometria do layout aprovado. Seletor e persistencia permanecem iguais.
+
+
+## Rotas, retorno e resumo atual
+
+Veja [ROUTES.md](ROUTES.md) para paths, query strings e defaults. Filtros, pagina e abas sao reconstruidos da URL; Voltar conserva origem de board/perfil e navegacao recursiva. Sem origem interna valida, task retorna ao seu board. Cards abrem pela area nao interativa ou link do titulo; controles internos conservam suas acoes.
+
+Task.currentSummary vem do contrato final: sintese cumulativa fornecida pelo colaborador, exibida em ate quatro linhas no card e completa na pagina. Vazio mostra "Sem atualizacao registrada". Nao derivamos texto da descricao, progress.note ou historico. Fixtures sao demonstrativas. O mock valida currentSummary nao vazio/ate 16384 bytes UTF-8 no patch e exige quando progress muda; configuracao administrativa preserva resumo. Nao existe editor operacional de progresso nem API real nesta UI.

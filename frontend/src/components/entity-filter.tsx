@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useUrlState, usePageSize } from "@/routing/query";
 import { useEntity, useList } from "@/api/context";
 import { Choice, Pager, QueryState } from "./shared";
 import { Input } from "./ui/input";
@@ -14,12 +14,14 @@ export function EntityFilter({
   value: string;
   onChange: (id: string) => void;
 }) {
-  const [name, setName] = useState(""),
-    [offset, setOffset] = useState(0);
+  const scope = `selector-${resource}-${label}`;
+  const [name, setName] = useUrlState<string>(`${scope}.name`, ""),
+    [offset, setOffset] = useUrlState<number>(`${scope}.offset`, 0);
+  const limit = usePageSize(scope, 25);
   const q = useList(resource, "", {
     name: name || undefined,
     offset,
-    limit: 25,
+    limit,
     sortBy: "name",
   });
   const selected = useEntity(resource, value);

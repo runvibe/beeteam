@@ -1,3 +1,4 @@
+import { destination, navigate } from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
 import { useApi, useEntity } from "@/api/context";
 import type { Task } from "@/api/types";
@@ -32,7 +33,6 @@ export function AppPath() {
 
 export function TaskPath({ task }: { task: Task }) {
   const api = useApi();
-  const open = useUi((s) => s.openTask);
   const board = useEntity("boards", task.boardId);
   const ancestors = useQuery({
     queryKey: ["task-path", task.id, task.parentId],
@@ -59,9 +59,23 @@ export function TaskPath({ task }: { task: Task }) {
         </li>
         {ancestors.data?.map((parent) => (
           <li key={parent.id}>
-            <button onClick={() => open(parent.id)} title={parent.title}>
+            <a
+              href={destination(`/tasks/${parent.id}`)}
+              onClick={(event) => {
+                if (
+                  !event.ctrlKey &&
+                  !event.metaKey &&
+                  !event.shiftKey &&
+                  !event.altKey
+                ) {
+                  event.preventDefault();
+                  navigate(event.currentTarget.getAttribute("href")!);
+                }
+              }}
+              title={parent.title}
+            >
               {parent.title}
-            </button>
+            </a>
           </li>
         ))}
         <li>

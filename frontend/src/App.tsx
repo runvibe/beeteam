@@ -1,3 +1,8 @@
+import {
+  useRestorePosition,
+  useLocation,
+  isKnownRoute,
+} from "./routing/location";
 import { useState } from "react";
 import {
   Hexagon,
@@ -12,10 +17,13 @@ import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
 import { ThemeControl } from "./components/theme-control";
 import { Boards } from "./features/boards";
-import { TaskDialog } from "./features/tasks";
+import { TaskPage } from "./features/tasks";
 import { Agents, AgentDialog, Teams, TeamDialog } from "./features/agents";
 import "./App.css";
 export function App() {
+  useRestorePosition();
+  const knownRoute = isKnownRoute(useLocation());
+  const taskId = useUi((s) => s.taskId);
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
   const [collapsed, setCollapsed] = useState(false);
@@ -95,7 +103,14 @@ export function App() {
           </div>
         </header>
         <main id="main-content">
-          {area === "boards" ? (
+          {!knownRoute ? (
+            <div>
+              <h1>Página não encontrada</h1>
+              <Button onClick={() => setArea("boards")}>Ir para boards</Button>
+            </div>
+          ) : taskId ? (
+            <TaskPage />
+          ) : area === "boards" ? (
             <Boards />
           ) : area === "agents" ? (
             <Agents />
@@ -108,7 +123,6 @@ export function App() {
           backend
         </footer>
       </div>
-      <TaskDialog />
       <AgentDialog />
       <TeamDialog />
     </div>
