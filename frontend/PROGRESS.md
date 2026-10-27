@@ -99,4 +99,8 @@ Limite: posicoes de scroll sao restauradas em memoria na sessao quando os elemen
 - Plano atual destacado, histórico secundário com metadados e revisão antiga explícita; seleção de plano/revisão independente da página e persistente na URL. Revisão independente encontrou seleção fora da página, corrigida e coberta por teste.
 - 67 testes frontend passaram; build/TypeScript e lint sem erros (warnings preexistentes e aviso de bundle 658 kB). Cargo build passou; 12 testes unitários passaram, 3 integrações não iniciam Postgres por Docker indisponível (CreateContainer OS2).
 - Browser: especificação com listas/tabela/código, recarga da aba, desktop e mobile; viewport433/documento416, código longo com rolagem interna987/389.
-- CSS mais recente 2347f736: radius .125rem; demais tokens preservados. Somente frontend local, sem backend real/push/merge/deploy.
+- Tema final e98a1056: radius .625rem; demais tokens preservados. Somente frontend local, sem backend real/push/merge/deploy.
+
+### Correção da referência final de tema
+
+Revertida a aplicação indevida do anexo antigo 2347f736 no commit833c24c. Referência autorizada e98a1056 restaurada: radius .625rem nos dois temas. Comparação de todos os tokens root/dark sem diferenças semânticas (normalização decimal e nomes Variable das fontes locais). Browser desktop/mobile confirmou radius computado .625rem/cards10px e documento sem overflow (433/433). Build frontend e67 testes passaram; cargo build passou, integrações permanecem bloqueadas por Docker indisponível. Funcionalidades e ícones preservados.
