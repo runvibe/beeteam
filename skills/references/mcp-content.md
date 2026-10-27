@@ -36,3 +36,7 @@ Preserve os arquivos como fonte editorial; não edite snapshots no worktree de o
 ## Síntese cumulativa
 
 Os três prompts consultam currentSummary como estado cumulativo, sem atualizá-lo por leitura. O executor o recompõe ao registrar avanço/status/encerramento; `record_progress` aceita currentSummary por alvo e exige não vazio com progress; `close_activity` exige execution.currentSummary além do resumo histórico. Campo sempre presente em Task não torna seu conteúdo prova de atividade ao vivo. Os exemplos foram validados contra o catálogo regenerado com esses campos; o backend deve sincronizar os snapshots editoriais desta revisão.
+
+## Especificação em Markdown
+
+Os prompts consultam Task.specification junto da task, distinguindo requisitos/aceite de description, plan.content e currentSummary. Preparação retorna specification inclusive nos filhos; ler Markdown não o executa nem autoriza escrita. A edição via createTask/updateTask aceita string opcional, inclusive vazia para limpeza explícita, mas não null. Os exemplos foram validados contra o catálogo regenerado com specification; o backend deve sincronizar os textos editoriais deste commit.

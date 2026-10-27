@@ -47,3 +47,11 @@ Sem edição no worktree backend. Os snapshots resources/bee-team permanecem res
 - [x] Validar cinco cenários e estrutura; build/12 unitários passaram, três integrações Docker indisponível; entrega em commit local com lista de snapshots.
 
 Validação final feita no catálogo regenerado: 57 tools, seis resources e três prompts preservados. Snapshots anteriores sem currentSummary precisam ser atualizados pelo backend.
+
+## Especificação própria e Markdown
+
+- [x] Preparar líder/colaborador, referências e três prompts com distinção description/specification/plan.content/currentSummary.
+- [x] Conferir OpenAPI/catálogo estáveis; seis exemplos válidos, negativos de null/progress sem síntese e limites UTF-8 conferidos.
+- [x] Validar cenários, estrutura e links; build/12 unitários passaram, três integrações bloqueadas por Docker; entrega em commit local com lista de snapshots.
+
+Exemplos updateTask/specification e createPlan/content publicados e validados contra catálogo estável. Nenhum runtime ou snapshot de outro worktree foi alterado.
