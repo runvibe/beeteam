@@ -2,7 +2,7 @@ import { patchRecord, addStatus, orderStatuses } from "./configuration";
 import { projectTask, descendantIds } from "./projections";
 import { ApiError } from "./types";
 import type { BeeApi, Resources, Filters, Page, Entities } from "./types";
-import { makeSeed } from "./seed";
+import { makeSeed, type Database } from "./seed";
 type Row = Record<string, unknown>;
 const clone = <T>(value: T): T => structuredClone(value);
 const matches = (value: unknown, filter?: string) =>
@@ -34,9 +34,19 @@ export function paginate<T>(rows: T[], f: Filters = {}): Page<T> {
   };
 }
 export function createMockApi(
-  options: { delay?: number; fail?: boolean } = {},
+  options: { delay?: number; fail?: boolean; seed?: Database } = {},
 ): BeeApi {
-  const db = makeSeed();
+  const db = clone(options.seed ?? makeSeed());
+  const latestOwnSummary = (taskId: string, agentId: string) =>
+    db.summaries
+      .filter(
+        (s) => s.taskId === taskId && s.actorId === agentId && !s.deletedAt,
+      )
+      .sort(
+        (a, b) =>
+          Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
+          b.id.localeCompare(a.id),
+      )[0];
   const wait = async () => {
     await new Promise((r) => setTimeout(r, options.delay ?? 160));
     if (options.fail)
@@ -80,7 +90,7 @@ export function createMockApi(
           (t) =>
             t.authorAgentId === scope ||
             t.executorAgentId === scope ||
-            db.summaries.some((s) => s.taskId === t.id && s.actorId === scope),
+            !!latestOwnSummary(t.id, scope),
         )
         .map((t) => ({
           taskId: t.id,
@@ -91,13 +101,9 @@ export function createMockApi(
           statusId: t.statusId,
           executorAgentId: t.executorAgentId,
           isCurrentExecutor: t.executorAgentId === scope,
-          lastWorkedAt:
-            db.summaries.find((s) => s.taskId === t.id && s.actorId === scope)
-              ?.createdAt ?? null,
+          lastWorkedAt: latestOwnSummary(t.id, scope)?.createdAt ?? null,
           taskUpdatedAt: t.updatedAt,
-          latestOwnSummaryId:
-            db.summaries.find((s) => s.taskId === t.id && s.actorId === scope)
-              ?.id ?? null,
+          latestOwnSummaryId: latestOwnSummary(t.id, scope)?.id ?? null,
           taskPath: `/api/v1/tasks/${t.id}`,
           summariesPath: `/api/v1/tasks/${t.id}/execution-summaries?actorId=${scope}`,
           archivedAt: t.archivedAt,
@@ -301,9 +307,23 @@ export function createMockApi(
         paginate(
           db.plans
             .filter(
-              (p) => p.taskId === taskId && p.planId === planId && !p.deletedAt,
+              (p) =>
+                p.taskId === taskId &&
+                p.planId === planId &&
+                !p.deletedAt &&
+                (!f.actorId || p.actorId === f.actorId) &&
+                (!f.createdFrom ||
+                  Date.parse(p.createdAt) >= Date.parse(f.createdFrom)) &&
+                (!f.createdBefore ||
+                  Date.parse(p.createdAt) < Date.parse(f.createdBefore)),
             )
-            .sort((a, b) => b.revision - a.revision),
+            .sort(
+              (a, b) =>
+                ((f.sortBy === "createdAt"
+                  ? Date.parse(a.createdAt) - Date.parse(b.createdAt)
+                  : a.revision - b.revision) || a.id.localeCompare(b.id)) *
+                (f.sortOrder === "desc" ? -1 : 1),
+            ),
           f,
         ),
       );
@@ -331,6 +351,20 @@ export function createMockApi(
         notice:
           "Contexto demonstrativo. Não inicia chats nem confirma atividade ao vivo.",
       };
+    },
+    async image(agentId) {
+      await wait();
+      const agent = db.agents.find((a) => a.id === agentId && !a.deletedAt);
+      if (agent?.image?.kind !== "upload" || agent.image.deletedAt)
+        throw new ApiError(404, "not_found", "Imagem não disponível.");
+      // Explicit one-pixel PNG fixture; no real file/network storage in this adapter.
+      const bytes = Uint8Array.from(
+        atob(
+          "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aE1sAAAAASUVORK5CYII=",
+        ),
+        (c) => c.charCodeAt(0),
+      );
+      return new Blob([bytes], { type: "image/png" });
     },
     async download(taskId, attachmentId) {
       await wait();

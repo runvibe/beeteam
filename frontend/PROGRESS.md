@@ -30,8 +30,8 @@ Não implementar política pendente de edição pelo líder. UI não terá reatr
 - Revisor independente (skill requesting-code-review) encontrou perda de draft em BoardForm e divergência do default archived. Ambos reproduzidos em testes RED, corrigidos e GREEN.
 - Ruling: a sugestão de proibir edição da flag individual fora de standard foi rejeitada: a regra do contrato restringe o cálculo efetivo, não a configuração salva. UI mostra ambos; origem continua prevalecendo. Custo: usuário pode salvar flag sem efeito imediato; explicação visível informa a precedência.
 - Correção menor: IDs de busca agora únicos para não associar labels ao campo atrás de um modal.
-- Minors deferred: imagem de upload usa fallback (configuração por URL funciona); revisão mock não aplica todos filtros/ordens; múltiplos resumos por agente precisam escolha explícita do mais recente. Não afetam fixtures atuais; limitações expostas no README.
+- Itens menores reclassificados como aderência ao contrato e corrigidos: imagens de upload pelo adapter, filtros/ordem de revisões e escolha do último resumo não excluído. Três testes RED→GREEN adicionados.
 - Revisão visual: desktop e 390x844; navegação, colunas e modal/abas legíveis. Sem APIs reais.
 
 
-- Tarefa 5 concluída: 32 testes frontend passam; typecheck/build produção passam; lint sem erros, 9 avisos de Fast Refresh. Maior fonte 635 linhas. Referências conferidas novamente por SHA256 e iguais à fonte. Prévia local em http://127.0.0.1:5173. Commit local somente frontend/, sem push/merge/deploy. Os três limites menores permanecem explicitados acima e no README.
+- Tarefa 5 concluída: 35 testes frontend passam; typecheck/build produção passam; lint sem erros, 9 avisos de Fast Refresh. Todos os módulos fonte abaixo de 1000 linhas. Referências conferidas novamente por SHA256 e iguais à fonte. Prévia local em http://127.0.0.1:5173. Commit local somente frontend/, sem push/merge/deploy. Nenhum achado de correção permanece aberto; limitações de escopo mock estão no README.

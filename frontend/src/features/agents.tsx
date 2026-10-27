@@ -1,5 +1,5 @@
 import { EntityFilter } from "@/components/entity-filter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
@@ -166,10 +166,29 @@ function AgentAvatar({ agent }: { agent: Agent }) {
     agent.image?.kind === "external" ? safeUrl(agent.image.url) : undefined;
   return (
     <Avatar className="size-12">
-      <AvatarImage src={image} alt="" />
+      {agent.image?.kind === "upload" ? (
+        <UploadedAvatarImage agent={agent} />
+      ) : (
+        <AvatarImage src={image} alt="" />
+      )}
       <AvatarFallback>{agent.name.slice(0, 2).toUpperCase()}</AvatarFallback>
     </Avatar>
   );
+}
+function UploadedAvatarImage({ agent }: { agent: Agent }) {
+  const api = useApi();
+  const query = useQuery({
+    queryKey: ["agent-image", agent.id, agent.version],
+    queryFn: () => api.image(agent.id),
+  });
+  const [url, setUrl] = useState<string>();
+  useEffect(() => {
+    if (!query.data) return;
+    const objectUrl = URL.createObjectURL(query.data);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [query.data]);
+  return <AvatarImage src={url} alt="" />;
 }
 export function AgentDialog() {
   const id = useUi((s) => s.agentId),

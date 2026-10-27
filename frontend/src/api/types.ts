@@ -117,6 +117,7 @@ export interface BeeApi {
     version: number,
   ): Promise<import("./generated/kanban/StatusOrderResult").StatusOrderResult>;
   download(taskId: string, attachmentId: string): Promise<Blob>;
+  image(agentId: string): Promise<Blob>;
 }
 export class ApiError extends Error {
   status: number;

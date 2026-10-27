@@ -43,9 +43,8 @@ TanStack Query mantém apenas cache/estado remoto. Zustand guarda navegação/UI
 ### Limites explícitos desta entrega
 
 - Nenhuma integração real com backend, PostgreSQL ou MCP foi executada.
-- Configuração de imagem usa URL HTTPS; o formulário não envia uploads. Perfis com imagem de upload não estão nas fixtures e ainda usam fallback visual.
+- Configuração de imagem usa URL HTTPS; o formulário não envia uploads. Imagens já enviadas são lidas pelo adapter e exibidas com URL de objeto revogada ao desmontar. O mock usa um PNG demonstrativo para testar esse caminho.
 - O mock não pretende reproduzir todas as condições de armazenamento/concor­rência do servidor nem implementar operações operacionais ausentes da UI.
-- A revisão apontou melhorias menores fora dos fluxos demonstrados: completar filtros de revisões e seleção do último resumo ao haver múltiplos registros de execução por agente. Registradas no acompanhamento, sem mudar o contrato central.
 
 ## Verificação
 
@@ -56,7 +55,7 @@ npm run lint
 npm run build
 ```
 
-Testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+35 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
 Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
 
