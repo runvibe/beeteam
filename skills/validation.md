@@ -54,3 +54,11 @@ Os quatro exemplos JSON em integration.md passaram no Draft202012Validator com v
 Build --locked passou; test --locked novamente teve 12 unitários aprovados e três integrações falhando no PostgreSQL via Docker/CreateContainer/NotFound. Esta frente não executou nem alterou o servidor do outro worktree. A atualização dos snapshots embarcados e seus testes reais pertencem ao backend; leitura de catálogo e validação de schema não comprovam rollout ou integração automática.
 
 Avaliação independente final: cinco cenários de paginação cross-board, filho de outro executor, timeout de close_activity, contexto já incorporado em prompt e origem standard/filha manual. Nenhuma falha material; nomes, envelopes simples/compostos, seis URIs e três prompts conferidos.
+
+## currentSummary cumulativo — contratos estáveis
+
+Fonte somente leitura: docs/kanban-openapi.yaml e mcp-catalog.json/md no worktree backend 8fbc, após regeneração confirmada pelo coordenador. SHA-256 catálogo: `6c278225b3af3521c7d389156e3ae4a2ff5679c251a1ebf27cd5327edf7db49b`; OpenAPI: `8f42e6a4af8b28a93f9c145b8d88db34d6b67337ca3dc1d2d85ded73affeeab4`.
+
+Quatro exemplos de integration.md aprovados por JSON Schema 2020-12 com formatos. Negativos de currentSummary ausente/vazio/whitespace em record_progress com progress e close_activity foram rejeitados. Atualização apenas de síntese passou; progress por subtask sem síntese falhou e com síntese passou. Conferidos Task.currentSummary obrigatório em leitura, PatchTask dependentRequired e limite 16384 bytes UTF-8; exemplos dentro do limite. A exigência condicional de Position em troca de status é validação de serviço, não comprovada por este teste estático.
+
+Cinco cenários simulados aprovados: acumular terceira entrega preservando anteriores, encerrar etapa sem concluir task, síntese vazia com histórico existente, conflito/timeout e prompt somente leitura. Registro pendente corrigido para transportar currentSummary proposto e resumo histórico separadamente. Ambas skills passaram quick_validate, diff sem whitespace inválido. Build --locked passou; 12 unitários passaram e três integrações deste checkout falharam por Docker/CreateContainer/NotFound. Sem execução do servidor backend, sem escrita em outro worktree; atualização dos snapshots permanece com o backend.

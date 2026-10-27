@@ -1,6 +1,6 @@
 # Materiais Bee Team no MCP
 
-O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, revisão e39c79b: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. Esta referência documenta conteúdo e empacotamento; não mantém um catálogo concorrente. As instruções operacionais e exemplos estão em [integração](integration.md), disponível como `beeteam://references/integration`.
+O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, incluindo a revisão currentSummary validada: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. Esta referência documenta conteúdo e empacotamento; não mantém um catálogo concorrente. As instruções operacionais e exemplos estão em [integração](integration.md), disponível como `beeteam://references/integration`.
 
 ## Recursos empacotados
 
@@ -32,3 +32,7 @@ Resources/prompts não executam IA ou controlam chats. `prepare_execution` consu
 ## Integração e verificação
 
 Preserve os arquivos como fonte editorial; não edite snapshots no worktree de outra frente. O responsável backend atualiza `resources/bee-team` a partir do commit entregue e executa testes reais de discovery, resources, prompts, segurança da allowlist e paridade de conteúdo. Testes de schema/renderização nesta frente não substituem testes de protocolo. Descubra capacidades do servidor conectado; instalação antiga pode não ter a revisão. Paginação MCP de descoberta usa cursor do protocolo; listagens de entidades usam offset/limit.
+
+## Síntese cumulativa
+
+Os três prompts consultam currentSummary como estado cumulativo, sem atualizá-lo por leitura. O executor o recompõe ao registrar avanço/status/encerramento; `record_progress` aceita currentSummary por alvo e exige não vazio com progress; `close_activity` exige execution.currentSummary além do resumo histórico. Campo sempre presente em Task não torna seu conteúdo prova de atividade ao vivo. Os exemplos foram validados contra o catálogo regenerado com esses campos; o backend deve sincronizar os snapshots editoriais desta revisão.

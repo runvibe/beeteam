@@ -39,3 +39,11 @@ Evidências detalhadas e hashes: [validation.md](validation.md).
 - [x] Concluir cinco cenários simulados sem falhas materiais; entrega em commit local e lista de snapshots ao coordenador.
 
 Sem edição no worktree backend. Os snapshots resources/bee-team permanecem responsabilidade daquela frente; este commit editorial não os atualiza automaticamente.
+
+## Síntese atual cumulativa
+
+- [x] Adaptar instruções e prompts ao requisito currentSummary confirmado.
+- [x] Conferir DTO/OpenAPI/catálogo estáveis: quatro exemplos e negativos de síntese ausente/vazia/whitespace passaram.
+- [x] Validar cinco cenários e estrutura; build/12 unitários passaram, três integrações Docker indisponível; entrega em commit local com lista de snapshots.
+
+Validação final feita no catálogo regenerado: 57 tools, seis resources e três prompts preservados. Snapshots anteriores sem currentSummary precisam ser atualizados pelo backend.
