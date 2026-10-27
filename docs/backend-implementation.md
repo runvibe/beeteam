@@ -92,3 +92,11 @@ Task.currentSummary é string sempre presente em item/listagens/view, inicialmen
 PatchTask aceita currentSummary não vazio e o exige quando progress é enviado. Position (operação moveTask) o exige ao mudar status, não ao reordenar no mesmo status. RecordExecution exige currentSummary; mantém summary como registro histórico de atividade e salva ambos atomicamente. MCP simples segue os mesmos DTOs; record_progress aceita currentSummary no topo e por descendente, obrigatório com progress; close_activity exige execution.currentSummary. Título/descrição/modo podem ser editados sem enviar resumo; preservam o existente.
 
 Persistência reutiliza tasks.data JSONB (migration 202610270004); nenhuma tabela duplicada ou query por card. Backend não calcula síntese nem cliente precisa ler toda história. Erro de versão, conteúdo, contexto ou descendente reverte todas as alterações compostas; idempotência cobre o texto enviado. Sem alterações na política de edição do líder.
+
+## Especificação própria e Markdown
+
+`Task.specification` é texto Markdown (máximo 65536 bytes UTF-8), sempre presente em leitura/listagem/quadro/contexto MCP. Criação aceita campo opcional, com padrão `""`; PATCH aceita substituição integral, inclusive `""` para limpar. Null/tipo incorreto/excesso de bytes são rejeitados. Migration005 preenche legadas/tombstones sem inventar conteúdo, preservando as especificações existentes.
+
+Especificação define entrega, requisitos, regras e critérios de aceite. `description` apresenta a tarefa, `PlanRevision.content` descreve execução versionada, `currentSummary` relata estado cumulativo atual. Nenhum substitui o outro. Alteração apenas de specification é administrativa e não exige currentSummary; progress conjunto mantém sua exigência. Timeline mantém antes/depois via task.updated. Replays legados recebem vazio explícito no snapshot, mantendo versão e conteúdo anterior.
+
+Especificações e planos/revisões conservam o texto recebido, incluindo Markdown, Unicode, quebras de linha e trechos de código/HTML literais. O backend não renderiza HTML, executa ou transforma conteúdo. Planos continuam com content Markdown limitado a 65536 bytes, revisões imutáveis e conflitos baseRevision existentes. Sem nova entidade ou versionamento exclusivo de especificação. Clientes devem tratar conteúdo como dados e renderizar com segurança quando necessário.

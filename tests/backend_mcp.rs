@@ -76,7 +76,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("f3cf675"));
+            .contains("8263cea"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]
@@ -111,13 +111,18 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
-    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","parentId":id(&task),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","specification":"# Requirements\r\n- **Acceptance**\r\n","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","specification":"## Child requirements\n- [ ] Acceptance","parentId":id(&task),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
     let task = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     let prepared = success(&app, "prepare_execution", json!({"taskId":id(&task)})).await;
     assert_eq!(prepared["task"]["version"], task["version"]);
     assert_eq!(prepared["executionContext"]["effectiveMode"], "manual");
     assert_eq!(prepared["children"]["total"], 1);
+    assert_eq!(prepared["task"]["specification"], task["specification"]);
+    assert_eq!(
+        prepared["children"]["items"][0]["specification"],
+        child["specification"]
+    );
     let failed=tool(&app,"record_progress",json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":999,"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]})).await;
     assert_eq!(failed["isError"], true);
     assert_eq!(
@@ -180,6 +185,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         }
         let mut old_task = task.clone();
         old_task.as_object_mut().unwrap().remove("currentSummary");
+        old_task.as_object_mut().unwrap().remove("specification");
         let snapshot =
             json!({"task":old_task,"updatedTasks":[old_task],"notice":"Stored atomically."});
         legacy_replay(
@@ -195,6 +201,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let current = get(&app, &path).await;
         let replayed = success(&app, name, legacy.clone()).await;
         assert_eq!(replayed["task"]["currentSummary"], "");
+        assert_eq!(replayed["task"]["specification"], "");
         assert_eq!(replayed["task"]["version"], task["version"]);
         assert_eq!(get(&app, &path).await, current);
         assert_eq!(get(&app, &format!("{path}/timeline")).await, before);
@@ -223,6 +230,13 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         get(&app, &format!("/api/v1/tasks/{}/timeline", id(task))).await,
         before
     );
+    let spec_markdown = "# Delivery\r\n- [ ] **Acceptance**\r\n```text\r\nliteral\r\n```";
+    let spec_task=success(&app,"createTask",json!({"params":{"boardId":id(&board)},"body":{"title":"Specification task","specification":spec_markdown,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await["data"].clone();
+    assert_eq!(spec_task["specification"], spec_markdown);
+    let updated=success(&app,"updateTask",json!({"params":{"taskId":id(&spec_task)},"body":{"specification":"## Revised requirements\n- Rule"},"actor":{"kind":"human"},"expectedVersion":spec_task["version"]})).await["data"].clone();
+    assert_eq!(updated["currentSummary"], "");
+    let context = success(&app, "prepare_execution", json!({"taskId":id(&spec_task)})).await;
+    assert_eq!(context["task"]["specification"], updated["specification"]);
     let prompts = rpc(&app, "prompts/list", json!({})).await;
     assert_eq!(prompts["result"]["prompts"].as_array().unwrap().len(), 3);
     for (name, args) in [
@@ -241,6 +255,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(text.contains("originBoardId"));
         assert!(text.contains("No MCP implementado"));
         assert!(text.contains(name));
+        assert!(text.contains("specification"));
         assert!(!text.contains("{{taskId}}"));
     }
 }

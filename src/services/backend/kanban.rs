@@ -235,7 +235,7 @@ async fn create_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         .filter(|v| !v.is_null())
         .map(value_id)
         .transpose()?;
-    let mut data = defaults(b, &["description"]);
+    let mut data = defaults(b, &["description", "specification"]);
     data.as_object_mut().unwrap().remove("coordinationContext");
     data["boardId"] = json!(board);
     data["statusId"] = json!(status);
@@ -292,6 +292,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 &[
                     "title",
                     "description",
+                    "specification",
                     "progress",
                     "currentSummary",
                     "autonomyMode",

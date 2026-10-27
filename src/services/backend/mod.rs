@@ -69,7 +69,7 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
             )
             .await?
         {
-            fill_legacy_task_summary(&mut replay.data);
+            fill_legacy_task_fields(&mut replay.data);
             return Ok(replay);
         }
     }
@@ -216,9 +216,9 @@ pub(super) fn outcome(records: &Records, table: &str, id: Uuid, created: bool) -
     Ok(result)
 }
 
-// Compatibility for idempotent response snapshots recorded before currentSummary existed.
+// Compatibility for idempotent response snapshots recorded before currentSummary/specification existed.
 // Do not read today's task: a replay must retain the original snapshot/version.
-pub(super) fn fill_legacy_task_summary(value: &mut Value) {
+pub(super) fn fill_legacy_task_fields(value: &mut Value) {
     match value {
         Value::Object(fields) => {
             if [
@@ -232,14 +232,15 @@ pub(super) fn fill_legacy_task_summary(value: &mut Value) {
             .all(|k| fields.contains_key(*k))
             {
                 fields.entry("currentSummary").or_insert(json!(""));
+                fields.entry("specification").or_insert(json!(""));
             }
             for child in fields.values_mut() {
-                fill_legacy_task_summary(child);
+                fill_legacy_task_fields(child);
             }
         }
         Value::Array(items) => {
             for child in items {
-                fill_legacy_task_summary(child);
+                fill_legacy_task_fields(child);
             }
         }
         _ => {}
@@ -253,10 +254,16 @@ mod current_summary_replay_tests {
         let task = json!({"boardId":"board","authorAgentId":"author","executorAgentId":"executor","progress":{"note":"Not a summary"},"latestExecutionSummaryId":null});
         let mut explicit = task.clone();
         explicit["currentSummary"] = json!("Explicit synthesis");
+        explicit["specification"] = json!("# Requirements\r\n");
         let history = json!({"summary":"Historical entry"});
         let mut value = json!({"task":task,"updatedTasks":[explicit],"executionSummary":history});
-        fill_legacy_task_summary(&mut value);
+        fill_legacy_task_fields(&mut value);
         assert_eq!(value["task"]["currentSummary"], "");
+        assert_eq!(value["task"]["specification"], "");
+        assert_eq!(
+            value["updatedTasks"][0]["specification"],
+            "# Requirements\r\n"
+        );
         assert_eq!(
             value["updatedTasks"][0]["currentSummary"],
             "Explicit synthesis"

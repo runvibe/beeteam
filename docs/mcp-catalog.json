@@ -42,37 +42,37 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit 8263cea. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
@@ -2957,6 +2957,11 @@
                       ],
                       "type": "object"
                     },
+                    "specification": {
+                      "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                      "type": "string",
+                      "x-maxBytes": 65536
+                    },
                     "statusId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -2982,6 +2987,7 @@
                     "parentId",
                     "title",
                     "description",
+                    "specification",
                     "executorAgentId",
                     "statusId",
                     "position",
@@ -3166,6 +3172,11 @@
                   "string",
                   "null"
                 ]
+              },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
               },
               "statusId": {
                 "format": "uuid",
@@ -3454,6 +3465,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -3479,6 +3495,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -3952,6 +3969,11 @@
                             ],
                             "type": "object"
                           },
+                          "specification": {
+                            "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                            "type": "string",
+                            "x-maxBytes": 65536
+                          },
                           "statusId": {
                             "format": "uuid",
                             "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -3977,6 +3999,7 @@
                           "parentId",
                           "title",
                           "description",
+                          "specification",
                           "executorAgentId",
                           "statusId",
                           "position",
@@ -4433,6 +4456,11 @@
                       ],
                       "type": "object"
                     },
+                    "specification": {
+                      "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                      "type": "string",
+                      "x-maxBytes": 65536
+                    },
                     "statusId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -4458,6 +4486,7 @@
                     "parentId",
                     "title",
                     "description",
+                    "specification",
                     "executorAgentId",
                     "statusId",
                     "position",
@@ -4837,6 +4866,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -4862,6 +4896,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -4979,6 +5014,11 @@
                   "note"
                 ],
                 "type": "object"
+              },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
               },
               "title": {
                 "maxLength": 200,
@@ -5256,6 +5296,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -5281,6 +5326,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -5627,6 +5673,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -5652,6 +5703,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -6046,6 +6098,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -6071,6 +6128,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -7180,6 +7238,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -7205,6 +7268,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -8714,6 +8778,11 @@
                     ],
                     "type": "object"
                   },
+                  "specification": {
+                    "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                    "type": "string",
+                    "x-maxBytes": 65536
+                  },
                   "statusId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -8739,6 +8808,7 @@
                   "parentId",
                   "title",
                   "description",
+                  "specification",
                   "executorAgentId",
                   "statusId",
                   "position",
@@ -10148,6 +10218,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -10173,6 +10248,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -17579,6 +17655,9 @@
                     "null"
                   ]
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -18122,6 +18201,9 @@
                 },
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
+                },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
                 },
                 "title": {
                   "maxLength": 200,
@@ -18692,6 +18774,9 @@
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -18717,6 +18802,7 @@
                 "parentId",
                 "title",
                 "description",
+                "specification",
                 "executorAgentId",
                 "statusId",
                 "position",
@@ -18828,6 +18914,11 @@
                 "nextOffset"
               ],
               "type": "object"
+            },
+            "TaskSpecification": {
+              "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+              "type": "string",
+              "x-maxBytes": 65536
             },
             "UploadAttachment": {
               "additionalProperties": false,
@@ -19087,6 +19178,11 @@
                       ],
                       "type": "object"
                     },
+                    "specification": {
+                      "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                      "type": "string",
+                      "x-maxBytes": 65536
+                    },
                     "statusId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -19112,6 +19208,7 @@
                     "parentId",
                     "title",
                     "description",
+                    "specification",
                     "executorAgentId",
                     "statusId",
                     "position",
@@ -19923,6 +20020,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -19948,6 +20050,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -21006,6 +21109,9 @@
                     "null"
                   ]
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -21549,6 +21655,9 @@
                 },
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
+                },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
                 },
                 "title": {
                   "maxLength": 200,
@@ -22119,6 +22228,9 @@
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -22144,6 +22256,7 @@
                 "parentId",
                 "title",
                 "description",
+                "specification",
                 "executorAgentId",
                 "statusId",
                 "position",
@@ -22255,6 +22368,11 @@
                 "nextOffset"
               ],
               "type": "object"
+            },
+            "TaskSpecification": {
+              "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+              "type": "string",
+              "x-maxBytes": 65536
             },
             "UploadAttachment": {
               "additionalProperties": false,
@@ -22704,6 +22822,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -22729,6 +22852,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -22950,6 +23074,11 @@
                   ],
                   "type": "object"
                 },
+                "specification": {
+                  "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                  "type": "string",
+                  "x-maxBytes": 65536
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -22975,6 +23104,7 @@
                 "parentId",
                 "title",
                 "description",
+                "specification",
                 "executorAgentId",
                 "statusId",
                 "position",
@@ -24030,6 +24160,9 @@
                     "null"
                   ]
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -24573,6 +24706,9 @@
                 },
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
+                },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
                 },
                 "title": {
                   "maxLength": 200,
@@ -25143,6 +25279,9 @@
                 "progress": {
                   "$ref": "#/components/schemas/Progress"
                 },
+                "specification": {
+                  "$ref": "#/components/schemas/TaskSpecification"
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -25168,6 +25307,7 @@
                 "parentId",
                 "title",
                 "description",
+                "specification",
                 "executorAgentId",
                 "statusId",
                 "position",
@@ -25279,6 +25419,11 @@
                 "nextOffset"
               ],
               "type": "object"
+            },
+            "TaskSpecification": {
+              "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+              "type": "string",
+              "x-maxBytes": 65536
             },
             "UploadAttachment": {
               "additionalProperties": false,
@@ -25749,6 +25894,11 @@
                 ],
                 "type": "object"
               },
+              "specification": {
+                "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
               "statusId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -25774,6 +25924,7 @@
               "parentId",
               "title",
               "description",
+              "specification",
               "executorAgentId",
               "statusId",
               "position",
@@ -25995,6 +26146,11 @@
                   ],
                   "type": "object"
                 },
+                "specification": {
+                  "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                  "type": "string",
+                  "x-maxBytes": 65536
+                },
                 "statusId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -26020,6 +26176,7 @@
                 "parentId",
                 "title",
                 "description",
+                "specification",
                 "executorAgentId",
                 "statusId",
                 "position",
