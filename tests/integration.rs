@@ -10,7 +10,7 @@ use axum::{
     Router,
 };
 use http_body_util::BodyExt;
-use rust_api_template::{
+use beeteam::{
     config::{
         otel_enabled_from_env, AppConfig, CorsConfig, McpConfig, DEFAULT_BODY_LIMIT_BYTES,
         DEFAULT_MCP_PATH,

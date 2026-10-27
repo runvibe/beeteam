@@ -1,5 +1,5 @@
 use anyhow::Result;
-use rust_api_template::{
+use beeteam::{
     config::AppConfig,
     db::{init_pool, run_migrations},
     libs::telemetry,

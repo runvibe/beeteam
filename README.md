@@ -1,4 +1,4 @@
-# rust-api-template
+# beeteam
 
 Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It exposes:
 
@@ -81,7 +81,7 @@ Current limitations:
 
 `Dockerfile.artifact` expects a prebuilt binary in `artifacts/<bin-name>/<arch>/` and accepts `BIN_NAME` as a build argument. Example:
 
-`docker build -f Dockerfile.artifact --build-arg TARGETARCH=amd64 --build-arg BIN_NAME=rust-api-template .`
+`docker build -f Dockerfile.artifact --build-arg TARGETARCH=amd64 --build-arg BIN_NAME=beeteam .`
 
 ### SQLx note
 
