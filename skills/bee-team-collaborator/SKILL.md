@@ -39,3 +39,9 @@ Essa obrigação vale ao concluir, pausar, ficar bloqueado ou encerrar uma etapa
 Confirme persistência pela resposta/consulta da API. Em timeout ou falha, siga a reconciliação limitada de [integração](../references/integration.md) e entregue registro pendente **não confirmado no Bee Team**; não anuncie que salvou, nem prometa sincronização depois de fechar o chat. Resultado pronto e gravação confirmada são fatos diferentes.
 
 Resumos permanecem na tarefa; RA consulta relações, sem duplicar conteúdo no perfil. Não salve transcrições integrais/parciais nem crie opção para isso. Retorne ao líder pelo canal de execução autorizado; sem canal autorizado, registre na tarefa e informe neste chat. Não crie chat supervisor ou exija que o líder registre por você.
+
+## MCP disponível
+
+Leia `beeteam://skills/collaborator` e `beeteam://references/integration` via resources/read quando anunciados. `agent_resumption(agentId,taskId)` consulta retomada; `prepare_execution({taskId})` reúne task, executor, planos, filhos e contexto de origem. Nenhum inicia execução. Confirme executor atual e paginação; complete filhos cross-board com `listAllTasks`, resumos com `listExecutionSummarys` (grafia do catálogo).
+
+Use `record_progress` para comentário/andamento/bloqueio autorizado, com versão e idempotência. Não inclua em `subtaskUpdates` trabalho de outro executor: disponibilidade técnica não amplia sua responsabilidade. Ao encerrar, prefira `close_activity` para gravar resumo, entregas, pendências e estado atomicamente; `outcome=progress` ou `blocked` permite encerrar etapa sem concluir task. O bloco/comentário informado faz parte da mesma transação. Em erro, não declare sucesso parcial; releia versões/contexto antes de reconciliar. Exemplos e envelope constam na referência de integração.

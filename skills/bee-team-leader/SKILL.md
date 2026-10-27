@@ -32,3 +32,9 @@ Em redistribuição, preserve trabalho, decisões, autoria e contexto de origem 
 Revise conforme a orientação do usuário; no autônomo, o líder pode revisar. Status são configuráveis e não exigem todas as etapas. Bloqueio tem motivo separado do status. Concluir filho não conclui pai ou irmãos automaticamente.
 
 Ao encerrar sua própria atividade, registre na tarefa correspondente status resultante, resumo, decisões, entregas/referências, pendências/bloqueios e próximo passo, usando o [formato de encerramento](../references/handoff.md). Resumos ficam nas tarefas; RA consulta os relacionamentos. Não salve transcrição nem duplique histórico no perfil. Apresente ao usuário o resultado consolidado, evidências, o que permanece pendente e qualquer falha de persistência. Não declare sucesso de trabalho ou registro sem confirmação.
+
+## MCP disponível
+
+Leia `beeteam://skills/leader` e `beeteam://references/integration` via resources/read quando anunciados. Para briefing, `task_briefing(taskId)` ou `prepare_execution({taskId})` consulta contexto sem iniciar execução. Complete páginas de planos/filhos com `listPlans`/`listAllTasks`; `listTasks` é restrito ao board. Use `getResumptionContext`/`listAgentActivities` para continuidade e `delivery_review(taskId)` para parecer, sem presumir aprovação.
+
+Após autorização aplicável, as tools simples incluem `createTask`, `assignTask`, `createPlan`, `changeTeamComposition` e `createChatReference`; siga envelope/schema anunciado. Gestão não confere a permissão pendente de editar tasks de executores geridos. Para sua atividade autorizada, `record_progress` registra avanço e `close_activity` encerra com resumo sem necessariamente concluir. Leia detalhes, versões, erros e exemplos na referência de integração; não trate essas operações como controle de chats.

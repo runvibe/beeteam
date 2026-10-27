@@ -44,3 +44,13 @@ Checkout somente leitura: `C:/Users/phili/Documents/ChatGPT/coordenator`. Versã
 Três templates e manifesto editorial validados: conjuntos de argumentos correspondem exatamente aos placeholders, renderização com UUIDv7 não deixa placeholders e links relativos resolvem. Avaliação independente simulou origem standard com filho manual cross-board, divergência agente/executor com resumo ausente, entrega parcial com revisão reservada ao usuário e ausência de ferramentas de consulta. Nenhuma escrita, autorização inventada, troca de origem ou alegação de runtime foi observada. Redação refinada para explicitar exigência de aprovação quando faltar contexto.
 
 SDK conferido via Cargo.lock, cargo metadata e fonte rmcp 2.0.0: handlers de resources/prompts presentes, sem alteração de dependências. Build e testes repetidos: build aprovado, 12 unitários aprovados, três integrações novamente falharam por Docker indisponível. Não foram executados testes de protocolo dos novos resources/prompts: registro, catálogo autoritativo e implementação pertencem à frente backend. Checklist de aceitação em [conteúdo MCP](references/mcp-content.md).
+
+## Alinhamento final ao catálogo implementado
+
+Fonte lida: `C:/Users/phili/.codex/worktrees/8fbc/coordenator/docs/mcp-catalog.md` e `.json`, revisão backend e39c79b, mais seus dois OpenAPIs. SHA-256 do catálogo JSON: `e54827056ccf097c8cbd666633adc8534a5337521f9e449eada9c2b78cf4043d`.
+
+Os quatro exemplos JSON em integration.md passaram no Draft202012Validator com verificação de formatos contra inputSchema real de prepare_execution, listAllTasks, record_progress e close_activity. São exemplos estruturais com IDs ilustrativos, sem chamadas mutantes. Três nomes/argumentos dos prompts conferem com catálogo; placeholders renderizam sem resíduos; todas as URIs citadas pertencem aos seis resources anunciados; links locais e quick_validate de ambas skills passaram.
+
+Build --locked passou; test --locked novamente teve 12 unitários aprovados e três integrações falhando no PostgreSQL via Docker/CreateContainer/NotFound. Esta frente não executou nem alterou o servidor do outro worktree. A atualização dos snapshots embarcados e seus testes reais pertencem ao backend; leitura de catálogo e validação de schema não comprovam rollout ou integração automática.
+
+Avaliação independente final: cinco cenários de paginação cross-board, filho de outro executor, timeout de close_activity, contexto já incorporado em prompt e origem standard/filha manual. Nenhuma falha material; nomes, envelopes simples/compostos, seis URIs e três prompts conferidos.

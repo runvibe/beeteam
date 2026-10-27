@@ -29,3 +29,13 @@ Evidências detalhadas e hashes: [validation.md](validation.md).
 - [x] Documentar allowlist, descoberta, efeito somente leitura e integração com compostas.
 - [x] Validar renderização e quatro cenários simulados; build passou, 12 unitários passaram, três integrações bloqueadas por Docker.
 - [x] Entregar caminhos ao coordenador; incremento em commit local separado, sem push/merge.
+
+## Alinhamento final ao MCP implementado
+
+- [x] Ler catálogo Markdown/JSON e OpenAPIs do backend 8fbc, revisão e39c79b.
+- [x] Alinhar líder/colaborador, referências e prompts às tools, resources e prompts implementados.
+- [x] Validar quatro exemplos contra schemas reais; validar nomes/argumentos de prompts, URIs, links e duas skills.
+- [x] Executar build/test: build e 12 unitários passaram; três integrações bloqueadas por Docker.
+- [x] Concluir cinco cenários simulados sem falhas materiais; entrega em commit local e lista de snapshots ao coordenador.
+
+Sem edição no worktree backend. Os snapshots resources/bee-team permanecem responsabilidade daquela frente; este commit editorial não os atualiza automaticamente.

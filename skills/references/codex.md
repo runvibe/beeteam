@@ -9,3 +9,5 @@ Antes de enviar mensagem a outro chat, confirme autorização do usuário para a
 Ao criar ou reutilizar uma sessão autorizada, forneça o briefing completo e registre no RA a referência real retornada. Referência armazenada não inicia nem reabre execução. Em retomada, recupere perfil e registros das tarefas; se o chat anterior não existir, preserve a identidade. Não anuncie recuperação de conteúdo ausente.
 
 Se a ferramenta não existir ou uma política impedir a ação, informe a limitação concreta e entregue o briefing para abertura manual. Não fabrique IDs, não crie automações ou chats supervisores como substituição implícita.
+
+Bee Team MCP expõe `prepare_execution`, `record_progress`, `close_activity` e tools de domínio; nenhuma é ferramenta Codex de criar/controlar chats. Use resources/list/read nas seis URIs anunciadas e prompts/list/get para `task_briefing`, `agent_resumption`, `delivery_review` quando o cliente as oferecer. Se o harness só expuser tools, não alegue leitura de resource ou obtenção de prompt; use os materiais locais fornecidos e explique a capacidade ausente. Estado consultado por prompt deve ser revalidado antes de escrita concorrente.

@@ -1,24 +1,47 @@
 {
   "formatVersion": 1,
-  "purpose": "Fontes de conteúdo; nomes de arquivos não definem nomes públicos MCP.",
+  "purpose": "Fontes editoriais; mcpName alinhado ao catálogo backend e39c79b, sem definir tools.",
   "templates": [
     {
       "file": "task-briefing.md",
       "description": "Preparar briefing contextual da task sem iniciar execução.",
-      "arguments": [{"name": "taskId", "description": "ID UUIDv7 persistido da task consultada.", "required": true}]
+      "arguments": [
+        {
+          "name": "taskId",
+          "description": "ID UUIDv7 persistido da task consultada.",
+          "required": true
+        }
+      ],
+      "mcpName": "task_briefing"
     },
     {
       "file": "collaborator-resumption.md",
       "description": "Preparar retomada do agente na task com lacunas e responsabilidade explícitas.",
       "arguments": [
-        {"name": "agentId", "description": "ID UUIDv7 persistido do agente a retomar.", "required": true},
-        {"name": "taskId", "description": "ID UUIDv7 persistido da task consultada.", "required": true}
-      ]
+        {
+          "name": "agentId",
+          "description": "ID UUIDv7 persistido do agente a retomar.",
+          "required": true
+        },
+        {
+          "name": "taskId",
+          "description": "ID UUIDv7 persistido da task consultada.",
+          "required": true
+        }
+      ],
+      "mcpName": "agent_resumption"
     },
     {
       "file": "delivery-review.md",
       "description": "Produzir parecer sobre entregas e aceite sem alterar estado.",
-      "arguments": [{"name": "taskId", "description": "ID UUIDv7 persistido da task a revisar.", "required": true}]
+      "arguments": [
+        {
+          "name": "taskId",
+          "description": "ID UUIDv7 persistido da task a revisar.",
+          "required": true
+        }
+      ],
+      "mcpName": "delivery_review"
     }
   ]
 }
