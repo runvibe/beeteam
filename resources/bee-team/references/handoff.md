@@ -50,3 +50,7 @@ No briefing, separe apresentação (`description`), requisitos/regras/entrega/ac
 ## Referências legíveis
 
 Inclua UUID confirmado de agente/time/task e slug retornado quando disponível, distinguindo identidade interna de navegação. Se só houver slug, resolva pelo tipo antes de preparar chamadas com IDs; não derive slug pelo nome. Retomada após rename conserva UUID/slug; exclusão não autoriza reutilização. Archived pode resolver sem estar ativo. Não invente URLs de frontend nem slug de board.
+
+## Ambiente de execução
+
+Inclua endereços confirmados de API/MCP/painel, momento e alcance da última verificação, modo real/mock, responsável pelos processos e bloqueios conhecidos. Não inclua segredos. Colaborador reutiliza; líder coordena startup conforme procedimento suportado. URL e processo existente não comprovam tarefa em execução. Se o ambiente cair, preserve dados da atividade e sinalize persistência não confirmada.

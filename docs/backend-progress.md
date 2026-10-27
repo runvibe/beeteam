@@ -101,3 +101,7 @@ Implementação registrada no commit local `968b601`. Atributos Git preservam os
 - Runtime real preservado: consultas API/proxy iguais; PostgreSQL existente com 1 board, 2 tasks, 2 agents e 1 team; MCP initialize/list/read/listBoards sem erros. Sem novas escritas de negócio ou reinício do processo da API.
 - Build MCP e 39 testes Rust aprovados; 2 testes Python aprovados. A primeira tentativa da suíte encontrou o contêiner isolado de testes parado; após iniciar apenas esse contêiner, a suíte passou. Testes nunca usaram beeteam_local.
 - Snapshot MCP ativo segue25a615a; nova sincronização editorial será registrada separadamente.
+
+## Atualização MCP local — Skills 88ad469
+
+Snapshot editorial do commit `88ad46936bbbb9b0d7e50b9e1847b77d9b73c633` sincronizado em oito arquivos bundled; catálogo e teste de proveniência atualizados. Build MCP e39 testes Rust aprovados em PostgreSQL isolado. Em27/10/2026, somente a API identificada foi reiniciada após backup do binário anterior; frontend e banco permaneceram ativos. Runtime novo PID12032: health aprovado, seis resources/read iguais aos arquivos empacotados, três prompts/get renderizados e60 ferramentas anunciadas. Boards/tasks/agents/teams permaneceram exatamente iguais nas leituras antes/depois e no proxy5173. Nenhum seed/reset ou alteração de negócio. Backup local ignorado `.local/api-runtime/beeteam-before-88ad469.exe` preservado para rollback; rollback não precisou ser executado. Esta verificação de atualização não demonstra instalação fria em outra máquina nem substitui QA visual de todos os fluxos.
