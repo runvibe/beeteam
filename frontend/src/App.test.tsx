@@ -18,7 +18,7 @@ describe("Bee Team interface", () => {
       </ApiProvider>,
     );
     await userEvent.click(
-      await screen.findByRole("button", { name: "Lançamento do produto" }),
+      await screen.findByRole("link", { name: "Lançamento do produto" }),
     );
     const search = screen.getByRole("searchbox", { name: "Buscar tasks" });
     await userEvent.type(search, "Mapear");
@@ -140,7 +140,7 @@ describe("Bee Team interface", () => {
       </ApiProvider>,
     );
     await userEvent.click(
-      await screen.findByRole("button", { name: /Lançamento do produto/ }),
+      await screen.findByRole("link", { name: /Lançamento do produto/ }),
     );
     await userEvent.click(
       await screen.findByRole("link", {

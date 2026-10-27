@@ -82,3 +82,21 @@ Evidências: C:/Users/phili/.codex/visualizations/2026/10/27/01a17e2c-4f16-78a0-
 - [x] Fontes/tokens finais preservados (tema e98a1056, radius .625rem, spacing .29rem e cores semanticas originais). Mock apenas; sem auth/API real/push/merge/deploy.
 
 Limite: posicoes de scroll sao restauradas em memoria na sessao quando os elementos estao disponiveis; reload reinicia entidades mock. Hospedagem SPA exige fallback index.html para URLs diretas (Vite ja fornece).
+
+## Cards de boards - 27/10/2026
+
+- Corpo nao interativo abre board; titulo agora e link acessivel. Helper compartilhado com tasks preserva controles e selecao de texto; hover/focus nos dois tipos.
+- from conserva URL da listagem, e breadcrumb Boards restaura filtros/limit/offset. Teste RED/GREEN de corpo, retorno e Enter no link; teste existente de executor interno continua passando.
+- 60 testes e build/TypeScript passam. Cargo build passa; 12 unitarios passam, 3 integracoes Docker OS2 continuam impedidas. Preview conferido corpo/breadcrumb com filtro e limit; captura board-cards-clickable.png no diretorio de evidencias. Sem API real/push/merge/deploy.
+
+- Correcao adicional autorizada: titulos sem link separado. Board inteiro e link; bloco principal da task e link com executor irmao independente. Teste cobre ausencia de anchor no titulo e selecao de texto.
+- Breadcrumb task reproduzido RED e corrigido: shell Boards > board origem > ancestrais > task; atual aria-current=page, origem executionContext, links preservam from/query. Captura task-breadcrumb-final.png. 60 testes/build passam.
+
+## Entrega final: cards, breadcrumb, especificação e planos
+
+- Cards navegáveis pelo bloco, títulos textuais, seleção de texto e executor independentes; breadcrumb superior com board/ancestrais/task e origem filtrada.
+- Especificação Markdown em aba própria; contratos 8fbc sincronizados, 84 schemas. Mock: vazio permitido, null rejeitado, limite 65536 bytes UTF-8.
+- Plano atual destacado, histórico secundário com metadados e revisão antiga explícita; seleção de plano/revisão independente da página e persistente na URL. Revisão independente encontrou seleção fora da página, corrigida e coberta por teste.
+- 67 testes frontend passaram; build/TypeScript e lint sem erros (warnings preexistentes e aviso de bundle 658 kB). Cargo build passou; 12 testes unitários passaram, 3 integrações não iniciam Postgres por Docker indisponível (CreateContainer OS2).
+- Browser: especificação com listas/tabela/código, recarga da aba, desktop e mobile; viewport433/documento416, código longo com rolagem interna987/389.
+- CSS mais recente 2347f736: radius .125rem; demais tokens preservados. Somente frontend local, sem backend real/push/merge/deploy.

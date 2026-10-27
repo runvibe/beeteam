@@ -30,6 +30,13 @@ it("reconstructs a direct board filter and page size, opens card body, and retur
     within(card as HTMLElement).getByText(/Jornada inicial mapeada/),
   );
   expect(location.pathname).toBe(`/tasks/${ids.task}`);
+  const topPath = screen.getByRole("navigation", { name: "Caminho" });
+  expect(
+    await within(topPath).findByRole("link", { name: "Lançamento do produto" }),
+  ).toBeVisible();
+  expect(
+    within(topPath).getByText("Mapear a jornada de primeiro uso"),
+  ).toHaveAttribute("aria-current", "page");
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("tab", { name: "Subtasks" }));
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
@@ -94,4 +101,40 @@ it("preserves the executor action instead of opening the task and exposes settin
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));
   navigate(`/teams/${ids.team}/settings`);
   expect(await screen.findByText("Editar metadados do time")).toBeVisible();
+});
+
+it("opens a board card body and restores list query through its breadcrumb", async () => {
+  setup("/boards?boards.name=Lan&boards.limit=1&boards.offset=0");
+  const link = await screen.findByRole("link", {
+    name: "Lançamento do produto",
+  });
+  const card = link.querySelector('[data-slot="card"]')!;
+  expect(card.querySelector('[data-slot="card-title"] a')).toBeNull();
+  const selection = vi
+    .spyOn(window, "getSelection")
+    .mockReturnValue({ toString: () => "selected text" } as Selection);
+  await userEvent.click(within(card as HTMLElement).getByText(/Da descoberta/));
+  expect(location.pathname).toBe("/boards");
+  selection.mockRestore();
+  await userEvent.click(within(card as HTMLElement).getByText(/Da descoberta/));
+  expect(location.pathname).toBe(`/boards/${ids.board}`);
+  expect(new URLSearchParams(location.search).get("from")).toBe(
+    "/boards?boards.name=Lan&boards.limit=1&boards.offset=0",
+  );
+  await userEvent.click(
+    within(screen.getByRole("navigation", { name: "Caminho" })).getByRole(
+      "button",
+      { name: "Boards" },
+    ),
+  );
+  expect(
+    await screen.findByRole("searchbox", { name: "Buscar boards" }),
+  ).toHaveValue("Lan");
+  expect(new URLSearchParams(location.search).get("boards.limit")).toBe("1");
+  const restored = await screen.findByRole("link", {
+    name: "Lançamento do produto",
+  });
+  restored.focus();
+  await userEvent.keyboard("{Enter}");
+  expect(location.pathname).toBe(`/boards/${ids.board}`);
 });

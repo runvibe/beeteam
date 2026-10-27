@@ -43,6 +43,15 @@ export function patchRecord<K extends keyof Patches>(
   if (resource === "tasks") {
     const patch = body as Patches["tasks"];
     if (
+      patch.specification !== undefined &&
+      typeof patch.specification !== "string"
+    )
+      throw new ApiError(
+        400,
+        "invalid_request",
+        "Especificação deve ser texto Markdown.",
+      );
+    if (
       (patch.progress !== undefined && !patch.currentSummary?.trim()) ||
       (patch.currentSummary !== undefined &&
         (!patch.currentSummary.trim() ||

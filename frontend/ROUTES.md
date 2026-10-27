@@ -35,6 +35,11 @@ Offset e inteiro entre 0 e 1000000, limit inteiro 1..100. Valores invalidos usam
 
 from guarda URL relativa interna de origem, incluindo filtros, pagina, aba e a origem anterior. Voltar usa indices de entradas criadas pelo app para voltar ate a origem sem percorrer cada ajuste de aba. Em acesso direto ou nova aba, substitui pela origem validada; sem origem valida, task volta ao proprio board (ou /boards se registro indisponivel), perfil a /agents e time a /teams. URLs externas nunca sao destinos de retorno. Back/Forward nativos reconstroem a tela. Posicoes de janela/Kanban/painel sao lembradas apenas em memoria durante a sessao; nao ha garantia de posicao apos reload/processo novo.
 
-Cards de task tem link real no titulo (teclado, copiar endereco, nova aba) e clique nas areas nao interativas. Botoes internos conservam acao propria; selecao de texto nao navega. Task e pagina sem dialog/overlay; perfis/times/configuracoes preservam paineis enderecaveis.
+Cards de boards usam link abrangente; tasks usam link no bloco principal, com executor independente fora. Titulos sao texto sem link separado. Links oferecem teclado, copiar endereco e nova aba; areas nao interativas tambem abrem. Botoes internos conservam acao propria; selecao de texto nao navega. Task e pagina sem dialog/overlay; perfis/times/configuracoes preservam paineis enderecaveis.
 
 Hospedagem estatica deve servir index.html como fallback de rotas SPA; Vite dev/preview ja fazem isso. A entrega continua mock local, sem API real. Recarregar reinicia entidades, mas preserva rota/query/tema.
+
+- `tab=specification` abre diretamente a especificação Markdown.
+- `plans.selected=<planId>` seleciona um plano independentemente de `plans.offset/limit`.
+- `revision.<planId>.selected=<revision>` seleciona uma revisão histórica independentemente da paginação. Ausente/0 significa plano atual; revisão inexistente é indicada explicitamente.
+- `revision.<planId>.show=true` expande Histórico de alterações. Seleções não reiniciam offsets; recarga e histórico do navegador preservam os parâmetros.

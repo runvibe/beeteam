@@ -146,6 +146,10 @@ export function makeSeed(): Database {
       i === 0
         ? "Entender as etapas de entrada e identificar pontos de fricção.\n\nEntregável: mapa da jornada com oportunidades priorizadas."
         : "Registrar a solução, validar os critérios de aceite e documentar as decisões que orientam a entrega.",
+    specification:
+      i === 0
+        ? '## Requisitos\n\n- Mapear a entrada e os pontos de fricção.\n- Preservar evidências das entrevistas.\n\n## Critérios de aceite\n\n| Entrega | Aceite |\n| --- | --- |\n| Mapa da jornada | Revisado pelo time |\n\nConsulte a [referência de Markdown](https://commonmark.org/).\n\n```json\n{ "entrega": "mapa-da-jornada", "aceite": "Etapas e oportunidades revisadas pelo time, com evidências e prioridade registradas." }\n```'
+        : "",
     currentSummary:
       i === 0
         ? "Jornada inicial mapeada. Agora validando pontos de fricção. Pendente: priorizar oportunidades com o time."
@@ -180,6 +184,7 @@ export function makeSeed(): Database {
   tasks.push(
     ...[0, 1].map((i) => ({
       ...tasks[0],
+      specification: "",
       currentSummary: "",
       id: uuid(120 + i),
       parentId: ids.task,
@@ -200,6 +205,7 @@ export function makeSeed(): Database {
   );
   tasks.push({
     ...tasks[0],
+    specification: "",
     currentSummary: "",
     id: uuid(130),
     boardId: uuid(11),
@@ -210,6 +216,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    specification: "",
     currentSummary: "",
     id: uuid(131),
     parentId: uuid(121),
@@ -227,6 +234,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    specification: "",
     currentSummary: "",
     id: uuid(132),
     parentId: uuid(131),
@@ -244,6 +252,7 @@ export function makeSeed(): Database {
   });
   tasks.push({
     ...tasks[0],
+    specification: "",
     currentSummary: "",
     id: uuid(140),
     title: "API removida logicamente",

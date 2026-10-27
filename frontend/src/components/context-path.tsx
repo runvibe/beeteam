@@ -1,12 +1,33 @@
-import { destination, navigate } from "@/routing/location";
+import { openCardLink } from "@/routing/card-navigation";
+import { destination, navigate, safeOrigin } from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
 import { useApi, useEntity } from "@/api/context";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 
 export function AppPath() {
-  const { area, boardId, setArea } = useUi();
+  const { area, boardId, taskId, setArea } = useUi();
   const board = useEntity("boards", boardId ?? "");
+  const task = useEntity("tasks", taskId ?? "");
+  const listOrigin = findOrigin("/boards") ?? "/boards";
+  if (taskId)
+    return task.data ? (
+      <TaskPath task={task.data} shell />
+    ) : (
+      <nav aria-label="Caminho" className="context-path">
+        <ol>
+          <li>
+            <a href={listOrigin} onClick={openCardLink}>
+              Boards
+            </a>
+          </li>
+          <li>
+            <span aria-current="page">Carregando task…</span>
+          </li>
+        </ol>
+      </nav>
+    );
+  /* origin search is shared with task ancestors */
   const label = { boards: "Boards", agents: "Agentes", teams: "Times" }[area];
   return (
     <nav aria-label="Caminho" className="context-path">
@@ -16,7 +37,7 @@ export function AppPath() {
         </li>
         <li>
           {boardId && area === "boards" ? (
-            <button onClick={() => setArea("boards")}>{label}</button>
+            <button onClick={() => navigate(listOrigin)}>{label}</button>
           ) : (
             <span aria-current="page">{label}</span>
           )}
@@ -31,7 +52,30 @@ export function AppPath() {
   );
 }
 
-export function TaskPath({ task }: { task: Task }) {
+function findOrigin(path: string): string | null {
+  let candidate = safeOrigin(new URLSearchParams(location.search).get("from"));
+  const seen = new Set<string>();
+  while (candidate && !seen.has(candidate)) {
+    seen.add(candidate);
+    if (
+      candidate.split("?")[0] === path ||
+      (path === "/boards" && candidate.split("?")[0] === "/")
+    )
+      return candidate;
+    candidate = safeOrigin(
+      new URLSearchParams(candidate.split("?")[1]).get("from"),
+    );
+  }
+  return null;
+}
+const contextHref = (path: string) => findOrigin(path) ?? destination(path);
+export function TaskPath({
+  task,
+  shell = false,
+}: {
+  task: Task;
+  shell?: boolean;
+}) {
   const api = useApi();
   const board = useEntity("boards", task.boardId);
   const ancestors = useQuery({
@@ -49,18 +93,35 @@ export function TaskPath({ task }: { task: Task }) {
       return path;
     },
   });
-  const originBoardId = ancestors.data?.[0]?.boardId ?? task.boardId;
+  const originBoardId = task.executionContext.originBoardId;
   const originBoard = useEntity("boards", originBoardId);
   return (
-    <nav aria-label="Caminho da task" className="context-path task-path">
+    <nav
+      aria-label={shell ? "Caminho" : "Caminho da task"}
+      className={
+        shell ? "context-path task-shell-path" : "context-path task-path"
+      }
+    >
       <ol>
+        {shell && (
+          <li>
+            <a href={findOrigin("/boards") ?? "/boards"} onClick={openCardLink}>
+              Boards
+            </a>
+          </li>
+        )}
         <li>
-          <span>{originBoard.data?.name ?? "Board de origem"}</span>
+          <a
+            href={contextHref(`/boards/${originBoardId}`)}
+            onClick={openCardLink}
+          >
+            {originBoard.data?.name ?? "Board de origem"}
+          </a>
         </li>
         {ancestors.data?.map((parent) => (
           <li key={parent.id}>
             <a
-              href={destination(`/tasks/${parent.id}`)}
+              href={contextHref(`/tasks/${parent.id}`)}
               onClick={(event) => {
                 if (
                   !event.ctrlKey &&

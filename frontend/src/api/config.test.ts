@@ -79,3 +79,39 @@ it("requires a current summary for progress and preserves it for administrative 
   );
   expect(admin.currentSummary).toBe("Done A; doing B; pending C");
 });
+
+it("validates specification bytes, rejects null and allows clearing without summary", async () => {
+  const api = createMockApi({ delay: 0 });
+  const task = await api.get("tasks", ids.task);
+  await expect(
+    api.patch(
+      "tasks",
+      ids.task,
+      { specification: "é".repeat(32769) },
+      task.version,
+    ),
+  ).rejects.toMatchObject({ status: 400 });
+  await expect(
+    api.patch(
+      "tasks",
+      ids.task,
+      { specification: null } as never,
+      task.version,
+    ),
+  ).rejects.toMatchObject({ status: 400 });
+  const updated = await api.patch(
+    "tasks",
+    ids.task,
+    { specification: "é".repeat(32768) },
+    task.version,
+  );
+  expect(updated.specification.length).toBe(32768);
+  const cleared = await api.patch(
+    "tasks",
+    ids.task,
+    { specification: "" },
+    updated.version,
+  );
+  expect(cleared.specification).toBe("");
+  expect(cleared.currentSummary).toBe(task.currentSummary);
+});

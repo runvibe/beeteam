@@ -1,3 +1,4 @@
+import { openCardBody, openCardLink } from "@/routing/card-navigation";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
 import {
@@ -64,7 +65,6 @@ function BoardIndex() {
     sortBy: "name",
   });
   const teams = useList("teams", "", { limit: 100, sortBy: "name" });
-  const open = useUi((s) => s.openBoard);
   return (
     <>
       <header className="page-heading">
@@ -122,33 +122,34 @@ function BoardIndex() {
             {q.data.items.length ? (
               <div className="board-grid">
                 {q.data.items.map((b) => (
-                  <Card key={b.id}>
-                    <CardHeader>
-                      <CardDescription>
-                        {teams.data?.items.find((t) => t.id === b.teamId)
-                          ?.name ?? "Time gestor"}
-                      </CardDescription>
-                      <CardTitle>
-                        <button
-                          className="card-link"
-                          onClick={() => open(b.id)}
-                        >
-                          {b.name}
-                        </button>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="muted-copy">{b.description}</p>
-                    </CardContent>
-                    <CardFooter className="justify-between gap-2">
-                      <Badge variant="secondary">
-                        {modeLabels[b.autonomyMode]}
-                      </Badge>
-                      <span className="small-note">
-                        {formatDate(b.updatedAt)}
-                      </span>
-                    </CardFooter>
-                  </Card>
+                  <a
+                    key={b.id}
+                    className="board-card-link"
+                    aria-label={b.name}
+                    href={destination(`/boards/${b.id}`)}
+                    onClick={openCardLink}
+                  >
+                    <Card className="board-card">
+                      <CardHeader>
+                        <CardDescription>
+                          {teams.data?.items.find((t) => t.id === b.teamId)
+                            ?.name ?? "Time gestor"}
+                        </CardDescription>
+                        <CardTitle>{b.name}</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="muted-copy">{b.description}</p>
+                      </CardContent>
+                      <CardFooter className="justify-between gap-2">
+                        <Badge variant="secondary">
+                          {modeLabels[b.autonomyMode]}
+                        </Badge>
+                        <span className="small-note">
+                          {formatDate(b.updatedAt)}
+                        </span>
+                      </CardFooter>
+                    </Card>
+                  </a>
                 ))}
               </div>
             ) : (
@@ -364,61 +365,36 @@ function Column({
 export function TaskCard({ task }: { task: Task }) {
   const href = destination(`/tasks/${task.id}`);
   return (
-    <Card
-      className="task-card"
-      onClick={(event) => {
-        if (
-          (event.target as Element).closest(
-            "a,button,input,select,textarea,[role=button]",
-          ) ||
-          window.getSelection()?.toString()
-        )
-          return;
-        if (event.ctrlKey || event.metaKey)
-          window.open(href, "_blank", "noopener");
-        else navigate(href);
-      }}
-    >
-      <CardHeader>
-        <CardTitle>
-          <a
-            className="card-link"
-            href={href}
-            onClick={(event) => {
-              if (
-                !event.ctrlKey &&
-                !event.metaKey &&
-                !event.shiftKey &&
-                !event.altKey
-              ) {
-                event.preventDefault();
-                navigate(href);
-              }
-            }}
-          >
-            {task.title}
-          </a>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p className="task-current-summary">
-          {task.currentSummary || "Sem atualização registrada"}
-        </p>
-        {task.block.blocked && (
-          <Badge variant="destructive">
-            <LockKeyhole />
-            Bloqueada
-          </Badge>
-        )}
-        <div className="progress-line">
-          <progress
-            max={100}
-            value={task.progress.percent}
-            aria-label={`Progresso de ${task.title}`}
-          />
-          <span>{task.progress.percent}%</span>
-        </div>
-      </CardContent>
+    <Card className="task-card" onClick={(event) => openCardBody(event, href)}>
+      <a
+        className="task-card-main"
+        aria-label={task.title}
+        href={href}
+        onClick={openCardLink}
+      >
+        <CardHeader>
+          <CardTitle>{task.title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="task-current-summary">
+            {task.currentSummary || "Sem atualização registrada"}
+          </p>
+          {task.block.blocked && (
+            <Badge variant="destructive">
+              <LockKeyhole />
+              Bloqueada
+            </Badge>
+          )}
+          <div className="progress-line">
+            <progress
+              max={100}
+              value={task.progress.percent}
+              aria-label={`Progresso de ${task.title}`}
+            />
+            <span>{task.progress.percent}%</span>
+          </div>
+        </CardContent>
+      </a>
       <CardFooter className="justify-between gap-2">
         <AgentName id={task.executorAgentId} avatar />
         {task.childSummary.total > 0 && (

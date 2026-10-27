@@ -2,7 +2,8 @@ import { goBack } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { TaskPath } from "@/components/context-path";
 import { useEffect, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { Plans } from "./plans";
+import { Markdown } from "@/components/markdown";
 import {
   ArrowUpLeft,
   Download,
@@ -11,7 +12,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
-import type { Resources, Task, PlanRevision } from "@/api/types";
+import type { Resources, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +45,7 @@ function TaskDetail({ id }: { id: string }) {
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
       "overview",
+      "specification",
       "children",
       "plans",
       "comments",
@@ -128,6 +130,7 @@ function TaskDetail({ id }: { id: string }) {
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="detail-tabs">
                 <TabsTrigger value="overview">Visão geral</TabsTrigger>
+                <TabsTrigger value="specification">Especificação</TabsTrigger>
                 <TabsTrigger value="children">Subtasks</TabsTrigger>
                 <TabsTrigger value="plans">Planos</TabsTrigger>
                 <TabsTrigger value="comments">Comentários</TabsTrigger>
@@ -148,11 +151,24 @@ function TaskDetail({ id }: { id: string }) {
                   <TaskMode task={q.data} />
                 </div>
               </TabsContent>
+              <TabsContent value="specification">
+                <div className="detail-section">
+                  <h2>Especificação</h2>
+                  <p className="small-note">
+                    Requisitos, entrega esperada e critérios de aceite.
+                  </p>
+                  {q.data.specification ? (
+                    <Markdown>{q.data.specification}</Markdown>
+                  ) : (
+                    <NoData title="Nenhuma especificação registrada" />
+                  )}
+                </div>
+              </TabsContent>
               <TabsContent value="children">
                 <Children task={q.data} />
               </TabsContent>
               <TabsContent value="plans">
-                <Records resource="plans" task={q.data} />
+                <Plans task={q.data} />
               </TabsContent>
               <TabsContent value="comments">
                 <Records resource="comments" task={q.data} />
@@ -225,8 +241,7 @@ function ChildRow({ task }: { task: Task }) {
     </div>
   );
 }
-type RecordKind =
-  "plans" | "comments" | "attachments" | "summaries" | "timeline";
+type RecordKind = "comments" | "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
   const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0),
     [includeChildren, setInclude] = useUrlState<string>(
@@ -285,7 +300,6 @@ function RecordContent({
   kind: RecordKind;
   row: Resources[RecordKind];
 }) {
-  if (kind === "plans") return <Plan item={row as PlanRevision} />;
   if (kind === "attachments")
     return <Attachment item={row as Resources["attachments"]} />;
   if (kind === "comments") {
@@ -378,54 +392,6 @@ function Author({ id, date }: { id: string | null; date: string }) {
       <AgentName id={id} />
       <time dateTime={date}>{formatDate(date)}</time>
     </div>
-  );
-}
-function Plan({ item }: { item: PlanRevision }) {
-  const [expanded, setExpanded] = useUrlState<string>(
-      `revision.${item.planId}.show`,
-      "false",
-      { values: booleanValues },
-    ),
-    show = expanded === "true",
-    setShow = (value: boolean) => setExpanded(String(value)),
-    [offset, setOffset] = useUrlState<number>(
-      `revision.${item.planId}.offset`,
-      0,
-    );
-  const limit = usePageSize(`revision.${item.planId}`, 5);
-  const api = useApi();
-  const q = useQuery({
-    queryKey: ["revisions", item.planId, offset, limit],
-    queryFn: () => api.revisions(item.taskId, item.planId, { offset, limit }),
-    enabled: show,
-  });
-  return (
-    <article className="record">
-      <Author id={item.actorId} date={item.createdAt} />
-      <h3>
-        {item.title} <Badge variant="outline">v{item.revision}</Badge>
-      </h3>
-      <TextBlock>{item.content}</TextBlock>
-      {item.changeSummary && <p className="small-note">{item.changeSummary}</p>}
-      <Button variant="outline" onClick={() => setShow(!show)}>
-        {show ? "Ocultar" : "Ver"} revisões
-      </Button>
-      {show && (
-        <QueryState query={q}>
-          {q.data && (
-            <>
-              {q.data.items.map((p) => (
-                <div className="record" key={p.id}>
-                  <h4>Revisão {p.revision}</h4>
-                  <TextBlock>{p.content}</TextBlock>
-                </div>
-              ))}
-              <Pager page={q.data} onOffset={setOffset} />
-            </>
-          )}
-        </QueryState>
-      )}
-    </article>
   );
 }
 function Attachment({ item }: { item: Resources["attachments"] }) {

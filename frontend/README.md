@@ -32,7 +32,7 @@ O board de origem da raiz governa a cadeia: manual força manual; automatic for�
 
 ## Contratos e adapter
 
-`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 83 schemas em módulos pequenos em `src/api/generated/`.
+`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 84 schemas em módulos pequenos em `src/api/generated/`.
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.
 
@@ -55,7 +55,7 @@ npm run lint
 npm run build
 ```
 
-59 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+60 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
 Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
 
@@ -80,3 +80,15 @@ O novo CSS enviado em 27/10 substitui as adaptacoes monocromaticas anteriores: t
 Veja [ROUTES.md](ROUTES.md) para paths, query strings e defaults. Filtros, pagina e abas sao reconstruidos da URL; Voltar conserva origem de board/perfil e navegacao recursiva. Sem origem interna valida, task retorna ao seu board. Cards abrem pela area nao interativa ou link do titulo; controles internos conservam suas acoes.
 
 Task.currentSummary vem do contrato final: sintese cumulativa fornecida pelo colaborador, exibida em ate quatro linhas no card e completa na pagina. Vazio mostra "Sem atualizacao registrada". Nao derivamos texto da descricao, progress.note ou historico. Fixtures sao demonstrativas. O mock valida currentSummary nao vazio/ate 16384 bytes UTF-8 no patch e exige quando progress muda; configuracao administrativa preserva resumo. Nao existe editor operacional de progresso nem API real nesta UI.
+
+Cards de boards compartilham a navegacao dos cards de tasks: area nao interativa abre a rota, titulo e texto; card e link real com suporte a teclado/nova aba, selecao de texto nao navega. Breadcrumb Boards recupera filtros e paginacao da listagem de origem pela URL.
+
+Titulos de cards sao texto, sem links separados: boards tem um link abrangendo o card e tasks tem link no bloco principal com executor fora dele. Breadcrumb superior das tasks mostra Boards, board de origem, ancestrais e task atual; indica board atual distinto quando cross-board. Links recuperam contexto disponivel na cadeia from.
+
+## Especificação e planos em Markdown
+
+Task exibe `specification` na aba Especificação: requisitos, entrega e aceite. Descrição continua sendo o objetivo; resumo atual descreve feito/agora/falta; plano descreve a execução. Não há editor operacional. Campo sempre presente, vazio por padrão; mock valida 65536 bytes UTF-8 e rejeita null.
+
+Plano atual aparece primeiro; Histórico de alterações é secundário. Cada plano mantém revisões próprias, autor/data/resumo e seleção por URL, inclusive fora da página atual. Especificação e planos atuais/históricos usam react-markdown + remark-gfm (títulos, listas, tabelas, links e código), ignorando HTML bruto e URLs inseguras. Conteúdo fonte é preservado. Código e tabelas têm rolagem própria no mobile.
+
+Último CSS enviado (2347f736): radius .125rem, demais tokens fornecidos preservados. Cards têm link no bloco principal, título textual e ações de executor independentes. Breadcrumb superior conserva Boards > board > ancestrais > task.

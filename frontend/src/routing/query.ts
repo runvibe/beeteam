@@ -1,5 +1,6 @@
 import { currentUrl, navigate, useLocation } from "./location";
 type Options = {
+  resetOffsets?: boolean;
   values?: readonly string[];
   validate?: (value: string) => boolean;
 };
@@ -41,6 +42,7 @@ export function useUrlState<T extends string | number>(
       if (next === initial) latest.delete(key);
       else latest.set(key, String(next));
       if (
+        options.resetOffsets !== false &&
         !key.endsWith("offset") &&
         !key.endsWith("tab") &&
         !key.endsWith("show")

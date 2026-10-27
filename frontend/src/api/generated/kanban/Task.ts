@@ -7,6 +7,7 @@ export type Task = {
   /** Format: uuid */
   parentId: string | null;
   title: string;
+  specification: import("./TaskSpecification").TaskSpecification;
   /** @description Markdown, máximo 65536 bytes UTF-8. */
   description: string;
   /**
