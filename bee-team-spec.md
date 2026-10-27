@@ -8,9 +8,9 @@ Estado: planejamento consolidado. Esta especificação não constitui a skill im
 
 Organizar, para uso pessoal, equipes de colaboradores de IA que executam demandas em diferentes áreas: desenvolvimento, tesouraria, planejamento financeiro, pesquisa, criação e análise de planilhas, entre outras.
 
-O produto reúne uma skill de coordenação e uma aplicação que preserva perfis, tarefas, decisões e histórico. A primeira plataforma será o Codex, mantendo o modelo independente de plataforma. Particularidades de outros ambientes, como Claude Code e Copilot, poderão ser documentadas separadamente conforme seus recursos disponíveis.
+O produto reúne uma skill de coordenação e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos do trabalho por tarefa. A primeira plataforma será o Codex, mantendo o modelo independente de plataforma. Particularidades de outros ambientes, como Claude Code e Copilot, poderão ser documentadas separadamente conforme seus recursos disponíveis.
 
-O Bee Team será instalado e executado no computador do usuário como um servidor local, oferecendo interface web, API e MCP locais. A IA executada no Codex ou em outro harness consulta as configurações e utiliza a API ou o MCP para registrar colaboradores, organizar demandas e salvar dados, resultados e histórico.
+O Bee Team será instalado e executado no computador do usuário como um servidor local, oferecendo interface web, API e MCP locais. A IA executada no Codex ou em outro harness consulta as configurações e utiliza a API ou o MCP para registrar colaboradores, organizar demandas e salvar dados, resultados e resumos nas tarefas correspondentes.
 
 A aplicação Bee Team não acessa diretamente recursos da IA nem inicia ou controla chats por conta própria. A criação e a condução dos chats cabem à IA e às ferramentas disponíveis no harness, conforme as autorizações do usuário.
 
@@ -19,7 +19,8 @@ A aplicação Bee Team não acessa diretamente recursos da IA nem inicia ou cont
 - Workspace: espaço organizacional da conta, contendo times e seus registros. O uso inicial é pessoal; isso não implica um produto multiusuário.
 - Time: possui propósito, contexto, colaboradores, demandas e um team leader próprio.
 - Team leader: conversa com o usuário, ajuda a definir e organizar o time, preserva o contexto e coordena sua execução.
-- Colaborador: possui nome, perfil, especialidades, responsabilidades e histórico persistentes.
+- Colaborador: possui identidade e perfil persistentes, com nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. Seu trabalho é consultável pelas tarefas vinculadas e respectivos resumos.
+- Tarefa: reúne planejamento, descrição ou resumo, responsável quando atribuído, status, andamento da execução, decisões, entregas, pendências e histórico das atividades, incluindo os resumos do trabalho realizado.
 - Chat: sessão de trabalho vinculada a um colaborador; não é a identidade permanente dele.
 
 Um team leader pode atuar como colaborador em outro time. Assim, o usuário pode organizar um time de líderes usando a mesma estrutura, sem introduzir um tipo especial de gerente. Essa decisão substitui a proposta inicial de um único coordenador responsável diretamente por vários times.
@@ -45,7 +46,7 @@ As solicitações de trabalho e as aprovações de execução acontecem na conve
 
 ## Memória persistente e retomada
 
-A aplicação preserva perfis e registros mesmo quando um chat é fechado ou excluído. Essa preservação se aplica às informações já salvas na aplicação, sem presumir recuperação de conteúdo não importado.
+A aplicação preserva perfis e registros das tarefas mesmo quando um chat é fechado ou excluído. A retomada utiliza o perfil textual do colaborador e suas tarefas, resumos, decisões e entregas já salvos na aplicação, sem depender de transcrições das conversas ou presumir recuperação de informações não registradas.
 
 Para retomar um colaborador em um novo chat, os registros devem permitir recuperar:
 
@@ -57,14 +58,31 @@ Para retomar um colaborador em um novo chat, os registros devem permitir recuper
 
 ## Aplicação e painel
 
-A aplicação guarda colaboradores, times, tarefas, decisões, entregas e histórico. O painel visual mostra:
+A interface tem duas áreas principais: **Tarefas** e **RA — Recursos de Agentes**. A aplicação guarda colaboradores, times, tarefas, decisões, entregas e histórico das atividades por tarefa. O painel permite visualizar times, líderes, colaboradores e chats vinculados ao trabalho, além da última atualização recebida, para não apresentar um registro antigo como confirmação de atividade ao vivo.
 
-- Times, líderes e colaboradores.
-- Tarefas e respectivos responsáveis.
-- Chats vinculados ao trabalho.
-- Andamento, conclusão, pendências e bloqueios.
-- Entregas e histórico de atualizações.
-- Última atualização recebida, para não apresentar um registro antigo como confirmação de atividade ao vivo.
+### Tarefas
+
+Um quadro Kanban, inspirado conceitualmente em Trello e Jira, apresenta o planejamento e o acompanhamento das tarefas. A conversa com o team leader gera o planejamento que os agentes registram no quadro pela API ou pelo MCP.
+
+Ao abrir um card, o usuário consulta:
+
+- Descrição ou resumo da tarefa.
+- Responsável, quando atribuído.
+- Status da tarefa e andamento da execução.
+- Entregas, pendências e bloqueios.
+- Decisões e histórico pertencente à tarefa, incluindo os resumos do trabalho realizado.
+
+Ao encerrar uma atividade, o colaborador atualiza o status e as informações pertinentes e salva o resumo do trabalho na própria tarefa.
+
+### RA — Recursos de Agentes
+
+A área RA apresenta a lista de colaboradores e seus perfis. Cada perfil reúne nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. A imagem pode ser gerada por IA, sem que esta definição implique implementar geração de imagens agora.
+
+O perfil textual pode ser reutilizado como contexto e instruções para retomar o colaborador em um novo chat. Os limites registrados orientam sua atuação; as permissões reais dependem do harness.
+
+A relação entre tarefa e colaborador permite consultar no perfil todas as tarefas realizadas e seus respectivos resumos. Os resumos e o histórico permanecem nas tarefas, sem duplicação no perfil. O perfil não possui campo de skills; também não está previsto um campo de skills por tarefa nesta definição. A skill coordenadora Bee Team permanece parte do produto.
+
+### Limites e configurações do painel
 
 O painel também permite configurar padrões que os agentes consultam e seguem. Não é uma superfície para despachar tarefas, reorganizar operacionalmente os times ou conceder aprovações de execução; essas interações permanecem na conversa com o team leader.
 
@@ -74,25 +92,19 @@ A escolha entre aplicação própria e adaptação de ferramenta existente perma
 
 ## API, MCP e rotina de atualização
 
-A aplicação disponibiliza API e MCP locais para que os próprios colaboradores consultem configurações, registrem colaboradores, organizem demandas e atualizem dados, resultados e histórico. A IA no harness inicia essas interações com o servidor local, utilizando os recursos disponíveis em seu ambiente.
+A aplicação disponibiliza API e MCP locais para que os próprios colaboradores consultem configurações, registrem colaboradores, organizem demandas e atualizem dados, resultados e resumos por tarefa. A IA no harness inicia essas interações com o servidor local, utilizando os recursos disponíveis em seu ambiente.
 
-Ao encerrar uma tarefa, o colaborador registra o que fez, o status resultante, as entregas e referências, as decisões relevantes e eventuais pendências ou próximos passos. Se estiver bloqueado, registra o bloqueio.
+Ao encerrar uma atividade, o colaborador salva na tarefa correspondente um resumo do que fez e atualiza o status resultante, o andamento da execução, as entregas e referências, as decisões relevantes e eventuais pendências ou próximos passos. Se estiver bloqueado, registra o bloqueio. Encerrar uma atividade não implica necessariamente concluir a tarefa.
 
 Essa rotina será descrita na skill e cumprida sem exigir um novo pedido do usuário a cada encerramento.
 
 Não haverá, no escopo inicial, conectores específicos de captura nem integração direta monitorando continuamente os chats. O colaborador utiliza os recursos disponíveis em seu ambiente e envia os dados à aplicação. Capacidades indisponíveis devem ser explicitadas, sem presumir que todos os ambientes oferecem os mesmos recursos.
 
-## Histórico opcional da conversa
+## Resumos por tarefa
 
-O salvamento do histórico será configurável por colaborador.
+A primeira versão guarda resumos do trabalho nas tarefas em substituição ao histórico de conversas. Não inclui salvamento de transcrições integrais ou parciais nem opção por colaborador para habilitar esse salvamento.
 
-Quando habilitado, ao encerrar uma tarefa o colaborador também envia ou atualiza o histórico disponível da conversa, evitando duplicar conteúdo já salvo. Deve distinguir transcrição completa, conteúdo parcial e resumo, e registrar falhas de importação e a última atualização.
-
-Automático significa cumprir essa rotina durante a execução sem um novo comando do usuário. Não significa sincronização contínua por conector nem manter chats fechados executando.
-
-Os registros de tarefas, status e entregas independem da opção de salvar a conversa. O acesso ao histórico integral depende dos recursos do ambiente; uma instrução de importação não garante acesso a conteúdo perdido ou compactado.
-
-O valor padrão da opção de histórico e as regras de retenção ou exclusão ainda não foram confirmados.
+O histórico consultável registra as atividades da tarefa, seus resumos, decisões e entregas. A atualização ao encerrar uma atividade faz parte da rotina do colaborador, sem um novo pedido do usuário; não significa sincronização contínua nem manter chats fechados executando.
 
 ## Supervisão adicional
 
@@ -104,7 +116,6 @@ Um chat dedicado a acompanhar o quadro pode ser considerado futuramente. Ele nã
 - Plataformas de instalação suportadas, stack técnica e funcionalidades detalhadas da primeira versão, mantendo a execução como servidor local no computador do usuário.
 - Contratos técnicos da API e do MCP e modelo de armazenamento.
 - Configuração de autonomia por workspace ou por time.
-- Padrão da opção de histórico e política de retenção ou exclusão.
 
 ## Anexo A — exemplos de organização de equipes
 
