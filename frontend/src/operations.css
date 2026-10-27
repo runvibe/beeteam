@@ -155,7 +155,7 @@ h1 {
   font-size: 12px;
 }
 .date-filter input {
-  border-radius: 2px;
+  border-radius: var(--radius-md);
 }
 .board-grid {
   gap: 14px;
@@ -458,9 +458,6 @@ progress {
 input,
 textarea,
 [data-slot="select-trigger"] {
-  border-color: var(--input);
-}
-[data-slot="alert"][data-variant="destructive"] {
   border-color: var(--input);
 }
 @media (max-width: 1100px) {

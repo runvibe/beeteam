@@ -60,3 +60,10 @@ Redesign monocromático será proposta separada; não aplicado nesta mudança de
 - [x] Sem backend, push, merge ou deploy. Commit local restrito ao frontend.
 
 Evidências: C:/Users/phili/.codex/visualizations/2026/10/27/01a17e2c-4f16-78a0-8f6c-a1309651a0de/auditoria-proposta.md; capturas finais válidas após correção: final-kanban-light.png, final-kanban-dark.png, final-mobile-filters-dark.png, final-mobile-task-dark.png. Outras capturas final-* registram a iteração anterior e não comprovam a paleta definitiva.
+
+
+## Novo tema final solicitado - 27/10/2026
+
+- CSS e98a1056 aplicado sem neutralizar cores nem trocar branco. Radius .625rem (cards 10px), spacing .29rem, sombras e fontes originais. Campo de data agora segue radius-md.
+- Reload e estilos computados confirmados em claro/escuro; capturas theme-final-light.png, theme-final-dark.png, theme-final-mobile.png no diretorio de evidencias anterior. Tokens charts/sidebar-primary preservados; nao ha graficos na UI atual.
+- 53 testes, build e typecheck passaram. Cargo build passou; 12 unitarios passaram, 3 integracoes falharam por Docker indisponivel (CreateContainer OS2). Layout e mock preservados. Sem push/merge/deploy.

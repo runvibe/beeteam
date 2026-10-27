@@ -1,3 +1,5 @@
+> Tema substituido por novo CSS em 27/10: tokens sem neutralizacao, branco original e radius .625rem. Decisoes anteriores abaixo sao historicas; README descreve estado atual.
+
 # Monochrome operations UI — Implementation Plan
 
 > Use superpowers:executing-plans in this session; native implementation and independent final review.
