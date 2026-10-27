@@ -55,8 +55,14 @@ npm run lint
 npm run build
 ```
 
-35 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+52 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
 Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
 
 Consulte `PROGRESS.md` para checklist e evidências finais. Não houve merge, push ou deploy.
+
+## Aparência
+
+O seletor Tema no topo oferece Sistema, Claro e Escuro. Na primeira visita, Sistema segue a preferência do sistema operacional e reage às mudanças. A escolha explícita é salva em localStorage (`beeteam.theme`) e prevalece após recarregar. Voltar a Sistema reativa o acompanhamento. Se o armazenamento estiver bloqueado, a troca funciona apenas na sessão. Entidades continuam somente no mock.
+
+Um script síncrono no head aplica a classe e color-scheme antes do React; as paletas semânticas ficam centralizadas em index.css. Testes exercitam o bootstrap real e o controlador, incluindo armazenamento indisponível. Verificação manual confirmou Claro/Escuro após recarga, controles e conteúdo em desktop e viewport estreito; não foi feito ensaio de rede artificialmente lenta.

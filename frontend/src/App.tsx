@@ -10,6 +10,7 @@ import {
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
+import { ThemeControl } from "./components/theme-control";
 import { Boards } from "./features/boards";
 import { TaskDialog } from "./features/tasks";
 import { Agents, AgentDialog, Teams, TeamDialog } from "./features/agents";
@@ -92,7 +93,10 @@ export function App() {
               }[area]
             }
           </span>
-          <Badge variant="outline">DEMO · API mockada</Badge>
+          <div className="topbar-actions">
+            <Badge variant="outline">DEMO · API mockada</Badge>
+            <ThemeControl />
+          </div>
         </header>
         <main id="main-content">
           {area === "boards" ? (
@@ -104,8 +108,8 @@ export function App() {
           )}
         </main>
         <footer className="app-footer">
-          Dados fictícios · Alterações reiniciam ao recarregar · Sem conexão com
-          IA ou backend
+          Dados fictícios reiniciam ao recarregar · Sem conexão com IA ou
+          backend
         </footer>
       </div>
       <TaskDialog />
