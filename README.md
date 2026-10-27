@@ -1,5 +1,27 @@
 # beeteam
 
+## Bee Team skills
+
+Versioned guidance is available in [team leader](skills/bee-team-leader/SKILL.md)
+and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared references
+under `skills/references/` and [multidisciplinary examples](skills/bee-team-leader/references/team-examples.md).
+These are portable instructions, not an implemented Bee Team API or MCP server.
+
+To use from this checkout, ask the harness to read the selected `SKILL.md` by its
+full local path and follow it for the authorized demand. If installed in a harness
+that supports skill discovery, invoke `$bee-team-leader` or `$bee-team-collaborator`.
+Keep the entire `skills/` layout together so relative references resolve; no global
+installation is performed by this repository. Integration references link to this
+repository's specification and draft contracts; keep those available when packaging.
+The destination branch must also include the current contracts identified in
+[validation evidence](skills/validation.md); the skills commit does not include them.
+
+Coordination defaults to manual approval. Execution follows the root task's origin
+board: `manual` forces manual, `standard` uses each current task's individual mode,
+and `automatic` covers the recursive chain across boards. Tasks have an author and
+executor, with no team ownership; each board has one managing team. See
+[validation and progress](skills/PROGRESS.md) for checks and dependencies.
+
 Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It exposes:
 
 - `/health` as a liveness endpoint that returns `200 OK` with a JSON status payload.
