@@ -54,7 +54,7 @@ cargo test --locked --features mcp
 
 Os novos testes HTTP/MCP criam bancos isolados de nomes aleatórios na instância de teste (usuário precisa de CREATEDB). O teste de persistência e testes originais usam o banco indicado. Sem `BEE_TEST_DATABASE_URL`, testes originais/persistência tentam Testcontainers; no Windows, uma CLI Docker que chama WSL não fornece automaticamente um socket compatível ao SDK nativo. A URL explícita evita essa dependência. Nenhum teste faz trabalho de produto real.
 
-[Implementação e integração](docs/backend-implementation.md), [acompanhamento](docs/backend-progress.md). O frontend permanece em sua frente mockada; não foi integrado/servido por este backend. O contrato de conexão futura está documentado, sem alegar validação da UI integrada.
+[Implementação e integração](docs/backend-implementation.md), [acompanhamento](docs/backend-progress.md). A integração local com o frontend usa API18081, PostgreSQL dedicado55482 e proxy Vite5173. Veja [iniciar e validar o preview real](docs/local-integration.md); o QA visual da frente frontend e a confirmação PostgreSQL/proxy estão registrados no runbook.
 
 ### Resumo atual nos cards
 
