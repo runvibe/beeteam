@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
-import { Badge } from "./components/ui/badge";
+import { AppPath } from "./components/context-path";
 import { ThemeControl } from "./components/theme-control";
 import { Boards } from "./features/boards";
 import { TaskDialog } from "./features/tasks";
@@ -24,6 +24,7 @@ export function App() {
       <aside className="sidebar">
         <a
           className="brand"
+          aria-label="Bee Team — ir para boards"
           href="#"
           onClick={(e) => {
             e.preventDefault();
@@ -33,9 +34,7 @@ export function App() {
           <span className="brand-mark">
             <Hexagon size={24} />
           </span>
-          <span>
-            bee team<span className="brand-sub">Um lugar para o trabalho.</span>
-          </span>
+          <span>bee team</span>
         </a>
         <Button
           variant="ghost"
@@ -46,9 +45,11 @@ export function App() {
         >
           {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
         </Button>
-        <p className="nav-label">ACOMPANHAR</p>
+
         <nav aria-label="Navegação principal">
           <Button
+            aria-label="Tarefas"
+            title="Boards"
             variant={area === "boards" ? "secondary" : "ghost"}
             onClick={() => setArea("boards")}
             aria-current={area === "boards" ? "page" : undefined}
@@ -57,14 +58,18 @@ export function App() {
             <span>Tarefas</span>
           </Button>
           <Button
+            aria-label="Recursos de Agentes"
+            title="Agentes"
             variant={area === "agents" ? "secondary" : "ghost"}
             onClick={() => setArea("agents")}
             aria-current={area === "agents" ? "page" : undefined}
           >
             <Users data-icon="inline-start" />
-            <span>Recursos de Agentes</span>
+            <span>Agentes</span>
           </Button>
           <Button
+            aria-label="Times"
+            title="Times"
             variant={area === "teams" ? "secondary" : "ghost"}
             onClick={() => setArea("teams")}
             aria-current={area === "teams" ? "page" : undefined}
@@ -83,18 +88,9 @@ export function App() {
       </aside>
       <div className="main-shell">
         <header className="topbar">
-          <span>
-            Bee Team <span className="breadcrumb-slash">/</span>{" "}
-            {
-              {
-                boards: "Tarefas",
-                agents: "Recursos de Agentes",
-                teams: "Times",
-              }[area]
-            }
-          </span>
+          <AppPath />
           <div className="topbar-actions">
-            <Badge variant="outline">DEMO · API mockada</Badge>
+            <span className="environment-label">Demo local</span>
             <ThemeControl />
           </div>
         </header>
@@ -119,3 +115,4 @@ export function App() {
   );
 }
 export default App;
+import "./operations.css";

@@ -50,13 +50,14 @@ export function ProfileForm({ agent }: { agent: Agent }) {
   });
   return (
     <form
-      className="detail-section"
+      className="detail-section profile-form"
       onSubmit={(e) => {
         e.preventDefault();
         mutation.mutate();
       }}
     >
       <FieldGroup>
+        <h3>Identidade</h3>
         <Field>
           <FieldLabel htmlFor="agent-name">Nome</FieldLabel>
           <Input
@@ -75,6 +76,7 @@ export function ProfileForm({ agent }: { agent: Agent }) {
             onChange={(e) => setRole(e.target.value)}
           />
         </Field>
+        <h3>Orientações de trabalho</h3>
         <Field>
           <FieldLabel htmlFor="agent-style">Estilo de trabalho</FieldLabel>
           <Textarea
@@ -113,6 +115,7 @@ export function ProfileForm({ agent }: { agent: Agent }) {
             harness.
           </FieldDescription>
         </Field>
+        <h3>Contexto e imagem</h3>
         <Field>
           <FieldLabel htmlFor="agent-context">
             Contexto resumido explícito

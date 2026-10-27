@@ -55,7 +55,7 @@ npm run lint
 npm run build
 ```
 
-52 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
+53 testes cobrem schemas JSON Schema 2020-12 dos registros/projeções, filtros/paginação, versões, exclusão lógica, autonomia de origem, filhos cross-board, status e navegação/erros. Revisão visual realizada via navegador em desktop e viewport de 390×844.
 
 Na raiz, `cargo build --locked` passou. `cargo test --locked`: 12 unitários passaram; 3 integrações falharam ao criar container PostgreSQL por Docker indisponível (`CreateContainer`, erro de sistema 2). Nenhum arquivo Rust foi alterado. Isso não confirma execução integrada.
 
@@ -66,3 +66,10 @@ Consulte `PROGRESS.md` para checklist e evidências finais. Não houve merge, pu
 O seletor Tema no topo oferece Sistema, Claro e Escuro. Na primeira visita, Sistema segue a preferência do sistema operacional e reage às mudanças. A escolha explícita é salva em localStorage (`beeteam.theme`) e prevalece após recarregar. Voltar a Sistema reativa o acompanhamento. Se o armazenamento estiver bloqueado, a troca funciona apenas na sessão. Entidades continuam somente no mock.
 
 Um script síncrono no head aplica a classe e color-scheme antes do React; as paletas semânticas ficam centralizadas em index.css. Testes exercitam o bootstrap real e o controlador, incluindo armazenamento indisponível. Verificação manual confirmou Claro/Escuro após recarga, controles e conteúdo em desktop e viewport estreito; não foi feito ensaio de rede artificialmente lenta.
+
+
+### Redesign compacto monocromático
+
+Sidebar reduzida, breadcrumb navegável e caminho de ancestrais entre boards, cards com avatar e metadados essenciais, filtros recolhíveis em telas estreitas e ação de limpar filtros. Detalhes usam painel lateral (tela inteira em largura estreita), mantendo semântica modal, foco e conteúdo; o board permanece visível, mas inerte enquanto o painel está aberto. Times mostram composição antes do editor de metadados. Estados continuam escritos, sem depender de cor.
+
+O CSS fornecido é a base: Inter, Playfair Display e JetBrains Mono instaladas localmente; espaçamento 0,29rem, sombras e escala neutra preservados. Exceções: branco puro vira oklch(0.985 0 0), cores cromáticas ficam cinza, sidebar-primary escuro usa primary neutro e raios negativos são limitados a zero. O layout compacto tem medidas próprias; não altera a escala de utilitários do tema. Cards usam raio de 2px e shadow-sm. A versão inicial divergente usava Geist, cinzas substitutos, spacing de 0,25rem e removia sombras; isso foi corrigido e conferido nos estilos computados após recarga completa.

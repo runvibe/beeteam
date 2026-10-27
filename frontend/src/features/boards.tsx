@@ -1,7 +1,8 @@
+import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Settings2, CheckCheck, LockKeyhole } from "lucide-react";
+import { Settings2, CheckCheck, LockKeyhole } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
 import type { BoardView, Filters, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -53,21 +54,31 @@ function BoardIndex() {
     <>
       <header className="page-heading">
         <div>
-          <p className="eyebrow">TRABALHO ORGANIZADO</p>
-          <h1>Seus boards</h1>
+          <h1>Boards</h1>
           <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
         </div>
-        <Badge variant="outline">Leitura & configuração</Badge>
       </header>
-      <div className="filters">
-        <Search
-          value={name}
-          onChange={(v) => {
-            setName(v);
-            setOffset(0);
-          }}
-          label="Buscar boards"
-        />
+      <FilterBar
+        search={
+          <>
+            <Search
+              value={name}
+              onChange={(v) => {
+                setName(v);
+                setOffset(0);
+              }}
+              label="Buscar boards"
+            />
+          </>
+        }
+        active={!!(name || teamId || archived !== "false")}
+        onClear={() => {
+          setName("");
+          setTeam("");
+          setArchived("false");
+          setOffset(0);
+        }}
+      >
         <EntityFilter
           resource="teams"
           label="Time gestor"
@@ -89,7 +100,7 @@ function BoardIndex() {
             { value: "true", label: "Arquivados" },
           ]}
         />
-      </div>
+      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -126,7 +137,14 @@ function BoardIndex() {
                 ))}
               </div>
             ) : (
-              <NoData />
+              <NoData
+                title={
+                  name || teamId
+                    ? "Nenhum board corresponde aos filtros"
+                    : "Nenhum board neste cadastro"
+                }
+                description="Ajuste os filtros para consultar outros boards."
+              />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
@@ -138,7 +156,6 @@ function BoardIndex() {
 function BoardScreen({ id }: { id: string }) {
   const api = useApi();
   const entity = useEntity("boards", id);
-  const back = useUi((s) => s.setArea);
   const [title, setTitle] = useState(""),
     [blocked, setBlocked] = useState(""),
     [executor, setExecutor] = useState(""),
@@ -158,15 +175,10 @@ function BoardScreen({ id }: { id: string }) {
   });
   return (
     <>
-      <Button variant="ghost" onClick={() => back("boards")}>
-        <ArrowLeft data-icon="inline-start" />
-        Todos os boards
-      </Button>
       <QueryState query={entity}>
         {entity.data && (
           <header className="page-heading">
             <div>
-              <p className="eyebrow">BOARD</p>
               <h1>{entity.data.name}</h1>
               <p>{entity.data.description}</p>
             </div>
@@ -177,8 +189,20 @@ function BoardScreen({ id }: { id: string }) {
           </header>
         )}
       </QueryState>
-      <div className="filters">
-        <Search value={title} onChange={setTitle} label="Buscar tasks" />
+      <FilterBar
+        search={
+          <>
+            <Search value={title} onChange={setTitle} label="Buscar tasks" />
+          </>
+        }
+        active={!!(title || executor || blocked || updatedFrom)}
+        onClear={() => {
+          setTitle("");
+          setExecutor("");
+          setBlocked("");
+          setUpdatedFrom("");
+        }}
+      >
         <EntityFilter
           resource="agents"
           label="Executor"
@@ -204,7 +228,7 @@ function BoardScreen({ id }: { id: string }) {
             onChange={(e) => setUpdatedFrom(e.target.value)}
           />
         </label>
-      </div>
+      </FilterBar>
       <div className="board-meta">
         <span>Tasks principais · subtasks no detalhe de cada task</span>
         <span>Atualizações registradas, sem indicação de execução ao vivo</span>
@@ -306,9 +330,6 @@ export function TaskCard({ task }: { task: Task }) {
   return (
     <Card className="task-card">
       <CardHeader>
-        <div className="task-code">
-          TASK · {task.id.slice(-4).toUpperCase()}
-        </div>
         <CardTitle>
           <button className="card-link" onClick={() => open(task.id)}>
             {task.title}
@@ -316,7 +337,6 @@ export function TaskCard({ task }: { task: Task }) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="task-excerpt">{task.description}</p>
         {task.block.blocked && (
           <Badge variant="destructive">
             <LockKeyhole />
@@ -333,7 +353,7 @@ export function TaskCard({ task }: { task: Task }) {
         </div>
       </CardContent>
       <CardFooter className="justify-between gap-2">
-        <AgentName id={task.executorAgentId} />
+        <AgentName id={task.executorAgentId} avatar />
         {task.childSummary.total > 0 && (
           <span className="check-count">
             <CheckCheck size={14} />

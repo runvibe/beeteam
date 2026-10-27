@@ -1,3 +1,4 @@
+import { TaskPath } from "@/components/context-path";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -50,10 +51,12 @@ function TaskDetail({ id }: { id: string }) {
   return (
     <>
       <DialogHeader>
+        {q.data && <TaskPath task={q.data} />}
         <DialogTitle>{q.data?.title ?? "Detalhes da task"}</DialogTitle>
         <DialogDescription>
           {q.data ? (
             <>
+              Task {q.data.id.slice(-4).toUpperCase()} ·{" "}
               <BoardName id={q.data.boardId} /> · Atualizada em{" "}
               {formatDate(q.data.updatedAt)}
             </>

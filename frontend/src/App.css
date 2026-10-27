@@ -39,7 +39,7 @@ a {
   padding: 30px 18px;
   display: flex;
   flex-direction: column;
-  background: var(--card);
+  background: var(--sidebar);
   gap: 20px;
 }
 .brand {

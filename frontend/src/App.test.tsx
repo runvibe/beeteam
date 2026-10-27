@@ -16,6 +16,66 @@ describe("Bee Team interface", () => {
       teamId: null,
     }),
   );
+  it("keeps filtered board context while the task breadcrumb follows cross-board ancestry", async () => {
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Lançamento do produto" }),
+    );
+    const search = screen.getByRole("searchbox", { name: "Buscar tasks" });
+    await userEvent.type(search, "Mapear");
+    await userEvent.click(
+      await screen.findByRole("button", {
+        name: "Mapear a jornada de primeiro uso",
+      }),
+    );
+    let dialog = await screen.findByRole("dialog");
+    await userEvent.click(
+      within(dialog).getByRole("tab", { name: "Subtasks" }),
+    );
+    await userEvent.click(
+      await within(dialog).findByRole("button", {
+        name: "Descrever hipóteses da jornada",
+      }),
+    );
+    await userEvent.click(
+      within(dialog).getByRole("tab", { name: "Subtasks" }),
+    );
+    await userEvent.click(
+      await within(dialog).findByRole("button", {
+        name: "Validar hipóteses com pesquisa",
+      }),
+    );
+    const path = within(dialog).getByRole("navigation", {
+      name: "Caminho da task",
+    });
+    expect(
+      await within(path).findByText("Pesquisa & estratégia"),
+    ).toBeInTheDocument();
+    expect(
+      await within(path).findByText("Lançamento do produto"),
+    ).toBeInTheDocument();
+    expect(
+      await within(path).findByRole("button", {
+        name: "Mapear a jornada de primeiro uso",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      within(path).getByRole("button", {
+        name: "Descrever hipóteses da jornada",
+      }),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      within(dialog).getByRole("button", { name: "Fechar" }),
+    );
+    expect(search).toHaveValue("Mapear");
+    expect(
+      screen.getByRole("heading", { name: "Lançamento do produto" }),
+    ).toBeInTheDocument();
+  });
   it("saves a profile through the adapter without changing organizational bindings", async () => {
     const api = createMockApi({ delay: 0 });
     const original = await api.get("agents", ids.agent);
@@ -27,9 +87,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(
       screen.getByRole("button", { name: "Recursos de Agentes" }),
     );
-    await userEvent.click(
-      await screen.findByRole("button", { name: "Lia" }),
-    );
+    await userEvent.click(await screen.findByRole("button", { name: "Lia" }));
     const dialog = await screen.findByRole("dialog");
     await userEvent.click(
       within(dialog).getByRole("tab", { name: "Configurar" }),

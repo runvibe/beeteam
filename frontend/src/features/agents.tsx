@@ -1,5 +1,6 @@
+import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
@@ -22,7 +23,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AgentAvatar } from "@/components/agent-avatar";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -60,20 +61,32 @@ export function Agents() {
     <>
       <header className="page-heading">
         <div>
-          <p className="eyebrow">RA · RECURSOS DE AGENTES</p>
-          <h1>Agentes e seus contextos</h1>
+          <h1>Agentes</h1>
           <p>Perfis, instruções e contexto para continuar de onde parou.</p>
         </div>
       </header>
-      <div className="filters">
-        <Search
-          label="Buscar agentes"
-          value={name}
-          onChange={(v) => {
-            setName(v);
-            setOffset(0);
-          }}
-        />
+      <FilterBar
+        search={
+          <>
+            <Search
+              label="Buscar agentes"
+              value={name}
+              onChange={(v) => {
+                setName(v);
+                setOffset(0);
+              }}
+            />
+          </>
+        }
+        active={!!(name || teamId || role || archived !== "false")}
+        onClear={() => {
+          setName("");
+          setTeam("");
+          setRole("");
+          setArchived("false");
+          setOffset(0);
+        }}
+      >
         <EntityFilter
           resource="teams"
           label="Time"
@@ -108,14 +121,14 @@ export function Agents() {
             { value: "true", label: "Arquivados" },
           ]}
         />
-      </div>
+      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>
             {q.data.items.length ? (
               <div className="agent-grid">
                 {q.data.items.map((a) => (
-                  <Card key={a.id}>
+                  <Card key={a.id} className="agent-card">
                     <CardHeader>
                       <AgentAvatar agent={a} />
                       <CardTitle>
@@ -141,7 +154,6 @@ export function Agents() {
                             <Badge variant="outline">Sem vínculo</Badge>
                           )}
                       </div>
-                      <p className="muted-copy mt-4">{a.workStyle}</p>
                     </CardContent>
                     <CardFooter>
                       <span className="small-note">
@@ -152,7 +164,14 @@ export function Agents() {
                 ))}
               </div>
             ) : (
-              <NoData />
+              <NoData
+                title={
+                  name || teamId || role
+                    ? "Nenhum agente corresponde aos filtros"
+                    : "Nenhum agente neste cadastro"
+                }
+                description="Ajuste os filtros para consultar outros agentes."
+              />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
@@ -160,35 +179,6 @@ export function Agents() {
       </QueryState>
     </>
   );
-}
-function AgentAvatar({ agent }: { agent: Agent }) {
-  const image =
-    agent.image?.kind === "external" ? safeUrl(agent.image.url) : undefined;
-  return (
-    <Avatar className="size-12">
-      {agent.image?.kind === "upload" ? (
-        <UploadedAvatarImage agent={agent} />
-      ) : (
-        <AvatarImage src={image} alt="" />
-      )}
-      <AvatarFallback>{agent.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-    </Avatar>
-  );
-}
-function UploadedAvatarImage({ agent }: { agent: Agent }) {
-  const api = useApi();
-  const query = useQuery({
-    queryKey: ["agent-image", agent.id, agent.version],
-    queryFn: () => api.image(agent.id),
-  });
-  const [url, setUrl] = useState<string>();
-  useEffect(() => {
-    if (!query.data) return;
-    const objectUrl = URL.createObjectURL(query.data);
-    setUrl(objectUrl);
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [query.data]);
-  return <AvatarImage src={url} alt="" />;
 }
 export function AgentDialog() {
   const id = useUi((s) => s.agentId),
@@ -311,15 +301,26 @@ function Activities({ agentId }: { agentId: string }) {
   const open = useUi((s) => s.openTask);
   return (
     <div className="detail-section">
-      <div className="filters">
-        <Search
-          value={title}
-          onChange={(v) => {
-            setTitle(v);
-            setOffset(0);
-          }}
-          label="Buscar tasks do agente"
-        />
+      <FilterBar
+        search={
+          <>
+            <Search
+              value={title}
+              onChange={(v) => {
+                setTitle(v);
+                setOffset(0);
+              }}
+              label="Buscar tasks do agente"
+            />
+          </>
+        }
+        active={!!(title || relation !== "any")}
+        onClear={() => {
+          setTitle("");
+          setRelation("any");
+          setOffset(0);
+        }}
+      >
         <Choice
           label="Relação"
           value={relation}
@@ -334,7 +335,7 @@ function Activities({ agentId }: { agentId: string }) {
             { value: "worked", label: "Com resumo próprio" },
           ]}
         />
-      </div>
+      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -355,7 +356,12 @@ function Activities({ agentId }: { agentId: string }) {
                 </div>
               </article>
             ))}
-            {!q.data.items.length && <NoData />}
+            {!q.data.items.length && (
+              <NoData
+                title="Nenhuma task corresponde aos filtros"
+                description="Ajuste a busca ou a relação com este agente."
+              />
+            )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
@@ -411,6 +417,7 @@ function Resume({ agentId }: { agentId: string }) {
             <p className="muted-copy">{q.data.notice}</p>
             <h3>Instruções para retomada</h3>
             <TextBlock>{q.data.agent.workInstructions}</TextBlock>
+            <h3>Contexto resumido</h3>
             <TextBlock>{q.data.agent.contextSummary}</TextBlock>
             {q.data.teamContexts.map((t) => (
               <article className="record" key={t.teamId}>
@@ -445,20 +452,30 @@ export function Teams() {
     <>
       <header className="page-heading">
         <div>
-          <p className="eyebrow">ORGANIZAÇÃO</p>
           <h1>Times</h1>
           <p>Um líder por time. Uma identidade por agente.</p>
         </div>
       </header>
-      <div className="filters">
-        <Search
-          label="Buscar times"
-          value={name}
-          onChange={(v) => {
-            setName(v);
-            setOffset(0);
-          }}
-        />
+      <FilterBar
+        search={
+          <>
+            <Search
+              label="Buscar times"
+              value={name}
+              onChange={(v) => {
+                setName(v);
+                setOffset(0);
+              }}
+            />
+          </>
+        }
+        active={!!(name || archived !== "false")}
+        onClear={() => {
+          setName("");
+          setArchived("false");
+          setOffset(0);
+        }}
+      >
         <Choice
           label="Cadastro"
           value={archived}
@@ -471,7 +488,7 @@ export function Teams() {
             { value: "true", label: "Arquivados" },
           ]}
         />
-      </div>
+      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -503,7 +520,14 @@ export function Teams() {
                 ))}
               </div>
             ) : (
-              <NoData />
+              <NoData
+                title={
+                  name
+                    ? "Nenhum time corresponde aos filtros"
+                    : "Nenhum time neste cadastro"
+                }
+                description="Ajuste os filtros para consultar outros times."
+              />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
@@ -547,7 +571,10 @@ function TeamDetail({ id }: { id: string }) {
       <QueryState query={q}>
         {q.data && (
           <>
-            <TeamForm key={q.data.version} team={q.data} />
+            <div className="team-intro">
+              <TextBlock>{q.data.purpose}</TextBlock>
+              <TextBlock>{q.data.context}</TextBlock>
+            </div>
             <h3>Agentes</h3>
             <QueryState query={members}>
               {members.data && (
@@ -588,6 +615,10 @@ function TeamDetail({ id }: { id: string }) {
                 </>
               )}
             </QueryState>
+            <details className="metadata-editor">
+              <summary>Editar metadados do time</summary>
+              <TeamForm key={q.data.version} team={q.data} />
+            </details>
           </>
         )}
       </QueryState>
