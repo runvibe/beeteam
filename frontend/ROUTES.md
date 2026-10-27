@@ -9,11 +9,11 @@ History API + useSyncExternalStore, em routing/location.ts/query.ts. Sem estado 
 | /boards/:id/settings | Configuracao do board em painel |
 | /tasks/:id | Task em pagina inteira; filhos usam a mesma rota por ID |
 | /agents | Lista de agentes |
-| /agents/:id | Perfil em painel, com abas |
-| /agents/:id/settings | Configuracao do perfil |
+| /agents/:id | Perfil em página completa, com abas |
+| /agents/:id/settings | Configuração do perfil em modal; página permanece ao fundo |
 | /teams | Lista de times |
-| /teams/:id | Composicao e boards geridos em painel |
-| /teams/:id/settings | Metadados do time abertos |
+| /teams/:id | Composição e boards geridos em página completa |
+| /teams/:id/settings | Configuração dos metadados em modal |
 
 ## Query string
 
@@ -43,3 +43,5 @@ Hospedagem estatica deve servir index.html como fallback de rotas SPA; Vite dev/
 - `plans.selected=<planId>` seleciona um plano independentemente de `plans.offset/limit`.
 - `revision.<planId>.selected=<revision>` seleciona uma revisão histórica independentemente da paginação. Ausente/0 significa plano atual; revisão inexistente é indicada explicitamente.
 - `revision.<planId>.show=true` expande Histórico de alterações. Seleções não reiniciam offsets; recarga e histórico do navegador preservam os parâmetros.
+
+Agentes e times usam cards com link no bloco principal e títulos textuais. O líder no card de time é uma ação independente. `Voltar` restaura a origem validada e seus parâmetros; links de membros, vínculo de time, tasks e boards registram `from`. Configurações usam a mesma query da página e fechar remove apenas `/settings`, mantendo aba/filtros/paginação. Sem origem, a página volta à listagem correspondente.

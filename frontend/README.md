@@ -92,3 +92,7 @@ Task exibe `specification` na aba Especificação: requisitos, entrega e aceite.
 Plano atual aparece primeiro; Histórico de alterações é secundário. Cada plano mantém revisões próprias, autor/data/resumo e seleção por URL, inclusive fora da página atual. Especificação e planos atuais/históricos usam react-markdown + remark-gfm (títulos, listas, tabelas, links e código), ignorando HTML bruto e URLs inseguras. Conteúdo fonte é preservado. Código e tabelas têm rolagem própria no mobile.
 
 Referência final e98a1056: radius .625rem e demais tokens fornecidos preservados. Cards têm link no bloco principal, título textual e ações de executor independentes. Breadcrumb superior conserva Boards > board > ancestrais > task.
+
+## Páginas de agentes e times
+
+`/agents/:id` e `/teams/:id` abrem conteúdo na área principal, com breadcrumb e Voltar. Perfil, atividades, chats, retomada, membros e boards permanecem disponíveis. Somente `/settings` abre um modal de configuração, cujo fechamento conserva o estado da página. Cards navegam pelo corpo e pelo teclado; títulos são texto, e o líder do time mantém uma ação independente. Seleção de texto não dispara navegação. Query strings preservam abas, buscas e paginação em links diretos, recarga e retorno entre entidades. Tema e98a1056 (.625rem) e ícones existentes preservados.

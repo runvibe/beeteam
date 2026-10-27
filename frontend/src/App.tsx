@@ -18,12 +18,13 @@ import { AppPath } from "./components/context-path";
 import { ThemeControl } from "./components/theme-control";
 import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
-import { Agents, AgentDialog, Teams, TeamDialog } from "./features/agents";
+import { Agents, AgentPage } from "./features/agents";
+import { Teams, TeamPage } from "./features/teams";
 import "./App.css";
 export function App() {
   useRestorePosition();
   const knownRoute = isKnownRoute(useLocation());
-  const taskId = useUi((s) => s.taskId);
+  const { taskId, agentId, teamId } = useUi();
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
   const [collapsed, setCollapsed] = useState(false);
@@ -110,6 +111,10 @@ export function App() {
             </div>
           ) : taskId ? (
             <TaskPage />
+          ) : agentId ? (
+            <AgentPage />
+          ) : teamId ? (
+            <TeamPage />
           ) : area === "boards" ? (
             <Boards />
           ) : area === "agents" ? (
@@ -123,8 +128,6 @@ export function App() {
           backend
         </footer>
       </div>
-      <AgentDialog />
-      <TeamDialog />
     </div>
   );
 }

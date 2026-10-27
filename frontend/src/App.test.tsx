@@ -85,8 +85,8 @@ describe("Bee Team interface", () => {
     await userEvent.click(
       screen.getByRole("button", { name: "Recursos de Agentes" }),
     );
-    await userEvent.click(await screen.findByRole("button", { name: "Lia" }));
-    const agent = await screen.findByRole("dialog");
+    await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
+    const agent = await screen.findByRole("region", { name: "Agente" });
     await userEvent.click(within(agent).getByRole("tab", { name: "Tasks" }));
     const filter = within(agent).getByRole("searchbox");
     await userEvent.type(filter, "Mapear");
@@ -98,7 +98,7 @@ describe("Bee Team interface", () => {
     expect(await screen.findByRole("region", { name: "Task" })).toBeVisible();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-    const restored = await screen.findByRole("dialog");
+    const restored = await screen.findByRole("region", { name: "Agente" });
     expect(
       within(restored).getByRole("tab", { name: "Tasks" }),
     ).toHaveAttribute("data-state", "active");
@@ -115,11 +115,9 @@ describe("Bee Team interface", () => {
     await userEvent.click(
       screen.getByRole("button", { name: "Recursos de Agentes" }),
     );
-    await userEvent.click(await screen.findByRole("button", { name: "Lia" }));
+    await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
+    await userEvent.click(screen.getByRole("button", { name: "Configurar" }));
     const dialog = await screen.findByRole("dialog");
-    await userEvent.click(
-      within(dialog).getByRole("tab", { name: "Configurar" }),
-    );
     const input = within(dialog).getByLabelText("Nome", { exact: true });
     await userEvent.clear(input);
     await userEvent.type(input, "Lia revisada");

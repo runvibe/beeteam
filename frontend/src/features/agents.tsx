@@ -1,12 +1,13 @@
-import { useLocation, navigate } from "@/routing/location";
+import { DetailPage } from "@/components/detail-page";
+import { openCardLink } from "@/routing/card-navigation";
+import { useLocation, navigate, destination } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
-import type { Agent, Team } from "@/api/types";
+import type { Agent } from "@/api/types";
 import { useUi } from "@/state/ui";
 import {
   Dialog,
@@ -27,9 +28,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { AgentAvatar } from "@/components/agent-avatar";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Choice,
   Search,
@@ -40,8 +38,6 @@ import {
   formatDate,
   safeUrl,
 } from "@/components/shared";
-import { AgentName } from "@/components/names";
-import { SaveFeedback } from "./settings";
 import { ProfileForm } from "./profile-form";
 export function Agents() {
   const [name, setName] = useUrlState<string>("agents.name", ""),
@@ -54,7 +50,6 @@ export function Agents() {
     }),
     [offset, setOffset] = useUrlState<number>("agents.offset", 0);
   const limit = usePageSize("agents", 12);
-  const open = useUi((s) => s.openAgent);
   const q = useList("agents", "", {
     name: name || undefined,
     teamId: teamId || undefined,
@@ -135,39 +130,40 @@ export function Agents() {
             {q.data.items.length ? (
               <div className="agent-grid">
                 {q.data.items.map((a) => (
-                  <Card key={a.id} className="agent-card">
-                    <CardHeader>
-                      <AgentAvatar agent={a} />
-                      <CardTitle>
-                        <button
-                          className="card-link"
-                          onClick={() => open(a.id)}
-                        >
-                          {a.name}
-                        </button>
-                      </CardTitle>
-                      <CardDescription>{a.roleDescription}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {a.bindings.leaderTeamId && (
-                          <Badge variant="secondary">Líder</Badge>
-                        )}
-                        {a.bindings.collaboratorTeamId && (
-                          <Badge variant="outline">Colaborador</Badge>
-                        )}
-                        {!a.bindings.leaderTeamId &&
-                          !a.bindings.collaboratorTeamId && (
-                            <Badge variant="outline">Sem vínculo</Badge>
+                  <a
+                    key={a.id}
+                    className="board-card-link"
+                    aria-label={a.name}
+                    href={destination(`/agents/${a.id}`)}
+                    onClick={openCardLink}
+                  >
+                    <Card className="agent-card board-card">
+                      <CardHeader>
+                        <AgentAvatar agent={a} />
+                        <CardTitle>{a.name}</CardTitle>
+                        <CardDescription>{a.roleDescription}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {a.bindings.leaderTeamId && (
+                            <Badge variant="secondary">Líder</Badge>
                           )}
-                      </div>
-                    </CardContent>
-                    <CardFooter>
-                      <span className="small-note">
-                        Atualizado em {formatDate(a.updatedAt)}
-                      </span>
-                    </CardFooter>
-                  </Card>
+                          {a.bindings.collaboratorTeamId && (
+                            <Badge variant="outline">Colaborador</Badge>
+                          )}
+                          {!a.bindings.leaderTeamId &&
+                            !a.bindings.collaboratorTeamId && (
+                              <Badge variant="outline">Sem vínculo</Badge>
+                            )}
+                        </div>
+                      </CardContent>
+                      <CardFooter>
+                        <span className="small-note">
+                          Atualizado em {formatDate(a.updatedAt)}
+                        </span>
+                      </CardFooter>
+                    </Card>
+                  </a>
                 ))}
               </div>
             ) : (
@@ -187,47 +183,27 @@ export function Agents() {
     </>
   );
 }
-export function AgentDialog() {
-  const id = useUi((s) => s.agentId),
-    open = useUi((s) => s.openAgent);
-  return (
-    <Dialog open={!!id} onOpenChange={(v) => !v && open(null)}>
-      <DialogContent className="detail-dialog">
-        {id ? (
-          <AgentDetail key={id} id={id} />
-        ) : (
-          <DialogTitle>Perfil</DialogTitle>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+export function AgentPage() {
+  const id = useUi((s) => s.agentId);
+  return id ? <AgentDetail key={id} id={id} /> : null;
 }
 function AgentDetail({ id }: { id: string }) {
   const q = useEntity("agents", id);
-  const [queryTab, setQueryTab] = useUrlState<string>("agent.tab", "profile", {
+  const [tab, setTab] = useUrlState<string>("agent.tab", "profile", {
     values: ["profile", "activities", "chats", "resume"],
   });
   const configuring = useLocation().split("?")[0].endsWith("/settings");
-  const tab = configuring ? "edit" : queryTab;
-  const setTab = (value: string) => {
-    if (value === "edit") navigate(`/agents/${id}/settings${location.search}`);
-    else {
-      if (configuring) navigate(`/agents/${id}${location.search}`);
-      setQueryTab(value);
-    }
-  };
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle>{q.data?.name ?? "Perfil do agente"}</DialogTitle>
-        <DialogDescription>
-          {q.data?.roleDescription ?? "Perfil e contexto registrados."}
-        </DialogDescription>
-      </DialogHeader>
+    <DetailPage
+      label="Agente"
+      title={q.data?.name ?? "Perfil do agente"}
+      description={q.data?.roleDescription ?? "Perfil e contexto registrados."}
+      fallback="/agents"
+    >
       <QueryState query={q}>
         {q.data && (
           <>
-            <div className="flex items-center gap-3">
+            <div className="entity-page-meta">
               <AgentAvatar agent={q.data} />
               <div>
                 <Badge variant="secondary">
@@ -237,6 +213,14 @@ function AgentDetail({ id }: { id: string }) {
                   Última atualização: {formatDate(q.data.updatedAt)}
                 </p>
               </div>
+              <Button
+                variant="outline"
+                onClick={() =>
+                  navigate(`/agents/${id}/settings${location.search}`)
+                }
+              >
+                Configurar
+              </Button>
             </div>
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="detail-tabs">
@@ -244,7 +228,6 @@ function AgentDetail({ id }: { id: string }) {
                 <TabsTrigger value="activities">Tasks</TabsTrigger>
                 <TabsTrigger value="chats">Chats</TabsTrigger>
                 <TabsTrigger value="resume">Retomada</TabsTrigger>
-                <TabsTrigger value="edit">Configurar</TabsTrigger>
               </TabsList>
               <TabsContent value="profile">
                 <Profile agent={q.data} />
@@ -258,14 +241,27 @@ function AgentDetail({ id }: { id: string }) {
               <TabsContent value="resume">
                 <Resume agentId={id} />
               </TabsContent>
-              <TabsContent value="edit">
-                <ProfileForm key={q.data.version} agent={q.data} />
-              </TabsContent>
             </Tabs>
+            <Dialog
+              open={configuring}
+              onOpenChange={(v) =>
+                !v && navigate(`/agents/${id}${location.search}`, true)
+              }
+            >
+              <DialogContent className="detail-dialog">
+                <DialogHeader>
+                  <DialogTitle>{q.data.name}</DialogTitle>
+                  <DialogDescription>
+                    Configurações do perfil do agente.
+                  </DialogDescription>
+                </DialogHeader>
+                <ProfileForm key={q.data.version} agent={q.data} />
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </QueryState>
-    </>
+    </DetailPage>
   );
 }
 function Profile({ agent }: { agent: Agent }) {
@@ -459,270 +455,5 @@ function Resume({ agentId }: { agentId: string }) {
         )}
       </QueryState>
     </div>
-  );
-}
-export function Teams() {
-  const [name, setName] = useUrlState<string>("teams.name", ""),
-    [offset, setOffset] = useUrlState<number>("teams.offset", 0),
-    [archived, setArchived] = useUrlState<string>("teams.archived", "false", {
-      values: booleanValues,
-    });
-  const limit = usePageSize("teams", 12);
-  const q = useList("teams", "", {
-    name: name || undefined,
-    archived: archived === "" ? undefined : archived === "true",
-    offset,
-    limit,
-    sortBy: "name",
-  });
-  const open = useUi((s) => s.openTeam);
-  return (
-    <>
-      <header className="page-heading">
-        <div>
-          <h1>Times</h1>
-          <p>Um líder por time. Uma identidade por agente.</p>
-        </div>
-      </header>
-      <FilterBar
-        search={
-          <>
-            <Search
-              label="Buscar times"
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-            />
-          </>
-        }
-        active={!!(name || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.length ? (
-              <div className="board-grid">
-                {q.data.items.map((t) => (
-                  <Card key={t.id}>
-                    <CardHeader>
-                      <CardTitle>
-                        <button
-                          className="card-link"
-                          onClick={() => open(t.id)}
-                        >
-                          {t.name}
-                        </button>
-                      </CardTitle>
-                      <CardDescription>{t.purpose}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <TextBlock>{t.context}</TextBlock>
-                    </CardContent>
-                    <CardFooter className="justify-between">
-                      <AgentName id={t.leaderId} />
-                      <Badge variant="outline">
-                        {t.collaboratorCount} colaboradores
-                      </Badge>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <NoData
-                title={
-                  name
-                    ? "Nenhum time corresponde aos filtros"
-                    : "Nenhum time neste cadastro"
-                }
-                description="Ajuste os filtros para consultar outros times."
-              />
-            )}
-            <Pager page={q.data} onOffset={setOffset} />
-          </>
-        )}
-      </QueryState>
-    </>
-  );
-}
-export function TeamDialog() {
-  const id = useUi((s) => s.teamId),
-    open = useUi((s) => s.openTeam);
-  return (
-    <Dialog open={!!id} onOpenChange={(v) => !v && open(null)}>
-      <DialogContent className="detail-dialog">
-        {id ? <TeamDetail key={id} id={id} /> : <DialogTitle>Time</DialogTitle>}
-      </DialogContent>
-    </Dialog>
-  );
-}
-function TeamDetail({ id }: { id: string }) {
-  const configuring = useLocation().split("?")[0].endsWith("/settings");
-  const q = useEntity("teams", id),
-    [offset, setOffset] = useUrlState<number>("members.offset", 0),
-    [boardOffset, setBoardOffset] = useUrlState<number>(
-      "managedBoards.offset",
-      0,
-    );
-  const memberLimit = usePageSize("members", 10),
-    boardLimit = usePageSize("managedBoards", 10);
-  const members = useList("members", id, {
-      offset,
-      limit: memberLimit,
-      sortBy: "name",
-    }),
-    boards = useList("boards", "", {
-      teamId: id,
-      offset: boardOffset,
-      limit: boardLimit,
-    });
-  const openBoard = useUi((s) => s.openBoard);
-  return (
-    <>
-      <DialogHeader>
-        <DialogTitle>{q.data?.name ?? "Time"}</DialogTitle>
-        <DialogDescription>
-          Composição e boards geridos. Tasks mantêm autor e executor
-          independentemente do time.
-        </DialogDescription>
-      </DialogHeader>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            <div className="team-intro">
-              <TextBlock>{q.data.purpose}</TextBlock>
-              <TextBlock>{q.data.context}</TextBlock>
-            </div>
-            <h3>Agentes</h3>
-            <QueryState query={members}>
-              {members.data && (
-                <>
-                  {members.data.items.map((m) => (
-                    <div key={m.agentId} className="record-row">
-                      <AgentName id={m.agentId} />
-                      <Badge variant="outline">
-                        {m.role === "leader" ? "Líder" : "Colaborador"}
-                      </Badge>
-                    </div>
-                  ))}
-                  <Pager page={members.data} onOffset={setOffset} />
-                </>
-              )}
-            </QueryState>
-            <h3>Boards geridos</h3>
-            <QueryState query={boards}>
-              {boards.data && (
-                <>
-                  {boards.data.items.map((b) => (
-                    <Button
-                      key={b.id}
-                      variant="outline"
-                      onClick={() => {
-                        openBoard(b.id);
-                      }}
-                    >
-                      {b.name}
-                      <ArrowUpRight data-icon="inline-end" />
-                    </Button>
-                  ))}
-                  {!boards.data.items.length && (
-                    <NoData title="Nenhum board vinculado" />
-                  )}
-                  <Pager page={boards.data} onOffset={setBoardOffset} />
-                </>
-              )}
-            </QueryState>
-            <details className="metadata-editor" open={configuring}>
-              <summary
-                onClick={(event) => {
-                  event.preventDefault();
-                  navigate(
-                    configuring
-                      ? `/teams/${id}${location.search}`
-                      : `/teams/${id}/settings${location.search}`,
-                  );
-                }}
-              >
-                Editar metadados do time
-              </summary>
-              <TeamForm key={q.data.version} team={q.data} />
-            </details>
-          </>
-        )}
-      </QueryState>
-    </>
-  );
-}
-function TeamForm({ team }: { team: Team }) {
-  const [name, setName] = useState(team.name),
-    [purpose, setPurpose] = useState(team.purpose),
-    [context, setContext] = useState(team.context);
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: () =>
-      api.patch("teams", team.id, { name, purpose, context }, team.version),
-    onSuccess: () => client.invalidateQueries(),
-  });
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-      className="detail-section"
-    >
-      <FieldGroup>
-        <Field>
-          <FieldLabel htmlFor="team-name">Nome</FieldLabel>
-          <Input
-            id="team-name"
-            required
-            maxLength={200}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="team-purpose">Propósito</FieldLabel>
-          <Textarea
-            id="team-purpose"
-            value={purpose}
-            onChange={(e) => setPurpose(e.target.value)}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="team-context">Contexto</FieldLabel>
-          <Textarea
-            id="team-context"
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-          />
-        </Field>
-      </FieldGroup>
-      <Button disabled={mutation.isPending || !!team.archivedAt} type="submit">
-        Salvar metadados
-      </Button>
-      <SaveFeedback mutation={mutation} />
-    </form>
   );
 }

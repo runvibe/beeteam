@@ -66,7 +66,7 @@ it("reads invalid query defaults and resets offsets without dropping page size",
     "/agents?agents.name=Lia&agents.offset=invalid&agents.limit=1&agents.archived=bad",
   );
   const spy = vi.spyOn(api, "list");
-  expect(await screen.findByRole("button", { name: "Lia" })).toBeVisible();
+  expect(await screen.findByRole("link", { name: "Lia" })).toBeVisible();
   const search = screen.getByRole("searchbox");
   await userEvent.clear(search);
   await waitFor(() =>
@@ -91,16 +91,18 @@ it("preserves the executor action instead of opening the task and exposes settin
     await within(card as HTMLElement).findByRole("button", { name: /Lia/ }),
   );
   expect(location.pathname).toBe(`/agents/${ids.agent}`);
-  const dialog = await screen.findByRole("dialog");
+  expect(screen.queryByRole("dialog")).toBeNull();
   await userEvent.click(
-    within(dialog).getByRole("tab", { name: "Configurar" }),
+    await screen.findByRole("button", { name: "Configurar" }),
   );
+  const dialog = await screen.findByRole("dialog");
   expect(location.pathname).toBe(`/agents/${ids.agent}/settings`);
-  await userEvent.click(within(dialog).getByRole("tab", { name: "Perfil" }));
   await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));
   navigate(`/teams/${ids.team}/settings`);
-  expect(await screen.findByText("Editar metadados do time")).toBeVisible();
+  expect(await screen.findByRole("dialog")).toBeVisible();
 });
 
 it("opens a board card body and restores list query through its breadcrumb", async () => {

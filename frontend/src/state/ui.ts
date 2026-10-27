@@ -21,7 +21,7 @@ function state(url: string) {
     agentId: resource === "agents" ? id || null : null,
     teamId: resource === "teams" ? id || null : null,
     setArea: (area: Area) => navigate(`/${area}`),
-    openBoard: (id: string) => navigate(`/boards/${id}`),
+    openBoard: (id: string) => navigate(destination(`/boards/${id}`)),
     openTask: (id: string | null) =>
       id ? navigate(destination(`/tasks/${id}`)) : goBack(),
     openAgent: (id: string | null) =>

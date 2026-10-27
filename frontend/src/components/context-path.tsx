@@ -1,14 +1,58 @@
 import { openCardLink } from "@/routing/card-navigation";
-import { destination, navigate, safeOrigin } from "@/routing/location";
+import {
+  destination,
+  navigate,
+  safeOrigin,
+  useLocation,
+} from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
 import { useApi, useEntity } from "@/api/context";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 
 export function AppPath() {
-  const { area, boardId, taskId, setArea } = useUi();
+  const { area, boardId, taskId, agentId, teamId, setArea } = useUi();
   const board = useEntity("boards", boardId ?? "");
   const task = useEntity("tasks", taskId ?? "");
+  const agent = useEntity("agents", agentId ?? "");
+  const team = useEntity("teams", teamId ?? "");
+  const configuring = useLocation().split("?")[0].endsWith("/settings");
+  if (agentId || teamId) {
+    const resource = agentId ? "agents" : "teams";
+    const id = agentId ?? teamId;
+    const name = (agentId ? agent.data : team.data)?.name ?? "Carregando…";
+    return (
+      <nav aria-label="Caminho" className="context-path">
+        <ol>
+          <li>
+            <a
+              href={findOrigin(`/${resource}`) ?? `/${resource}`}
+              onClick={openCardLink}
+            >
+              {agentId ? "Agentes" : "Times"}
+            </a>
+          </li>
+          <li>
+            {configuring ? (
+              <a
+                href={`/${resource}/${id}${location.search}`}
+                onClick={openCardLink}
+              >
+                {name}
+              </a>
+            ) : (
+              <span aria-current="page">{name}</span>
+            )}
+          </li>
+          {configuring && (
+            <li>
+              <span aria-current="page">Configuração</span>
+            </li>
+          )}
+        </ol>
+      </nav>
+    );
+  }
   const listOrigin = findOrigin("/boards") ?? "/boards";
   if (taskId)
     return task.data ? (

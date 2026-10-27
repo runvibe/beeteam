@@ -741,3 +741,8 @@ textarea,
 .markdown-content table { border-collapse: collapse; min-width: 100%; }
 .markdown-content th, .markdown-content td { border: 1px solid var(--border); padding: .5rem; text-align: left; }
 .markdown-content img { max-width: 100%; height: auto; }
+
+.entity-page-meta { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+.entity-page-meta > button:last-child { margin-left:auto; }
+.entity-page h1, .agent-card [data-slot=card-title], .team-card [data-slot=card-title] { overflow-wrap:anywhere; min-width:0; }
+.entity-page > h3 { font-weight:600; margin-top:1rem; }

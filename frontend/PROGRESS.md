@@ -104,3 +104,12 @@ Limite: posicoes de scroll sao restauradas em memoria na sessao quando os elemen
 ### Correção da referência final de tema
 
 Revertida a aplicação indevida do anexo antigo 2347f736 no commit833c24c. Referência autorizada e98a1056 restaurada: radius .625rem nos dois temas. Comparação de todos os tokens root/dark sem diferenças semânticas (normalização decimal e nomes Variable das fontes locais). Browser desktop/mobile confirmou radius computado .625rem/cards10px e documento sem overflow (433/433). Build frontend e67 testes passaram; cargo build passou, integrações permanecem bloqueadas por Docker indisponível. Funcionalidades e ícones preservados.
+
+## Agentes e times como páginas completas
+
+- Cards navegam pelo bloco, com título textual, teclado e seleção de texto; ação do líder do time independente.
+- AgentPage/TeamPage na área principal, com DetailPage compartilhado, breadcrumb e Voltar; módulo de times separado. Perfil/atividades/chats/retomada/membros/boards preservados. Somente configurações permanecem em modal; fechar conserva query.
+- Retorno agente→task→agente conserva aba e busca; time→board→time conserva origem. Links diretos, recarga, query, back/forward e configurações cobertos.
+- 70 testes frontend passaram; build/TypeScript e lint sem erros (avisos preexistentes). Cargo build passou, 12 unitários passam e3integrações continuam bloqueadas por Docker CreateContainer OS2. Revisão independente sem achados.
+- Browser desktop/mobile: corpo do card, perfil sem overlay, modal configuração, recarga, retorno task/board. Mobile agente viewport433/doc433; time433/416; zero dialogs em leitura. Capturas agent-page-final/mobile e team-page-final/mobile em diretório de visualizações desta conversa.
+- Tema final e98a1056 radius .625rem confirmado computado; ícones preservados. Commit local, sem push/merge/deploy/API real.

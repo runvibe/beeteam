@@ -15,7 +15,7 @@ import {
   goBack,
 } from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
-import { Settings2, CheckCheck, LockKeyhole } from "lucide-react";
+import { Settings2, CheckCheck, LockKeyhole, ArrowUpLeft } from "lucide-react";
 import { useApi, useEntity, useList } from "@/api/context";
 import type { BoardView, Filters, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -202,6 +202,14 @@ function BoardScreen({ id }: { id: string }) {
   });
   return (
     <>
+      <Button
+        variant="ghost"
+        className="task-back"
+        onClick={() => goBack("/boards")}
+      >
+        <ArrowUpLeft />
+        Voltar
+      </Button>
       <QueryState query={entity}>
         {entity.data && (
           <header className="page-heading">
