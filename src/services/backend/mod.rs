@@ -15,7 +15,11 @@ use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 pub async fn execute(repository: &ResourceRepository, mut command: Command) -> Result<Outcome> {
-    contracts::validate(&command)?;
+    contracts::validate_envelope(&command)?;
+    let validation = contracts::validate(&command);
+    if contracts::operation(&command.operation)?.method != "POST" {
+        validation.clone()?;
+    }
     for value in command.params.values_mut() {
         *value = parse_id(value)?.to_string();
     }
@@ -56,7 +60,7 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
         .map(|b| format!("{b:02x}"))
         .collect::<String>();
     if op.method == "POST" {
-        if let Some(replay) = unit
+        if let Some(mut replay) = unit
             .replay(
                 &actor_key,
                 &operation_key,
@@ -65,9 +69,13 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
             )
             .await?
         {
+            fill_legacy_task_summary(&mut replay.data);
             return Ok(replay);
         }
     }
+    // Exact saved replays remain valid across additive contract upgrades.
+    // New mutations must always satisfy the current full request schema.
+    validation?;
     let mut result = if matches!(
         command.operation.as_str(),
         "uploadAgentImage"
@@ -206,4 +214,53 @@ pub(super) fn outcome(records: &Records, table: &str, id: Uuid, created: bool) -
         result.created_id = Some(id)
     }
     Ok(result)
+}
+
+// Compatibility for idempotent response snapshots recorded before currentSummary existed.
+// Do not read today's task: a replay must retain the original snapshot/version.
+pub(super) fn fill_legacy_task_summary(value: &mut Value) {
+    match value {
+        Value::Object(fields) => {
+            if [
+                "boardId",
+                "authorAgentId",
+                "executorAgentId",
+                "progress",
+                "latestExecutionSummaryId",
+            ]
+            .iter()
+            .all(|k| fields.contains_key(*k))
+            {
+                fields.entry("currentSummary").or_insert(json!(""));
+            }
+            for child in fields.values_mut() {
+                fill_legacy_task_summary(child);
+            }
+        }
+        Value::Array(items) => {
+            for child in items {
+                fill_legacy_task_summary(child);
+            }
+        }
+        _ => {}
+    }
+}
+#[cfg(test)]
+mod current_summary_replay_tests {
+    use super::*;
+    #[test]
+    fn legacy_replays_get_empty_summary_without_rewriting_existing_or_history() {
+        let task = json!({"boardId":"board","authorAgentId":"author","executorAgentId":"executor","progress":{"note":"Not a summary"},"latestExecutionSummaryId":null});
+        let mut explicit = task.clone();
+        explicit["currentSummary"] = json!("Explicit synthesis");
+        let history = json!({"summary":"Historical entry"});
+        let mut value = json!({"task":task,"updatedTasks":[explicit],"executionSummary":history});
+        fill_legacy_task_summary(&mut value);
+        assert_eq!(value["task"]["currentSummary"], "");
+        assert_eq!(
+            value["updatedTasks"][0]["currentSummary"],
+            "Explicit synthesis"
+        );
+        assert_eq!(value["executionSummary"], history);
+    }
 }

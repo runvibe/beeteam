@@ -34,7 +34,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":"text/markdown","description":"Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server."})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":"text/markdown","description":"Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server."})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS

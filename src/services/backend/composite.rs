@@ -14,10 +14,11 @@ pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) 
         .find(|t| t["name"] == name)
         .ok_or_else(Failure::missing)?;
     let schema = &definition["inputSchema"];
-    contracts::validate_schema(schema, schema, &input)?;
+    let validation = contracts::validate_schema(schema, schema, &input);
     let id = body_id(&input, "taskId")?;
     let mut unit = repository.begin().await?;
     if name == "prepare_execution" {
+        validation?;
         return prepare(
             &unit,
             id,
@@ -31,16 +32,22 @@ pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) 
     if let Some(id) = actor.id {
         active(&unit.records, "agents", id)?;
     }
-    let key = Uuid::parse_str(input["idempotencyKey"].as_str().unwrap())
-        .map_err(|_| Failure::invalid("Invalid idempotency key"))?;
+    let key = Uuid::parse_str(
+        input["idempotencyKey"]
+            .as_str()
+            .ok_or_else(|| Failure::invalid("Idempotency key required"))?,
+    )
+    .map_err(|_| Failure::invalid("Invalid idempotency key"))?;
     let hash = Sha256::digest(serde_json::to_vec(&input).unwrap())
         .iter()
         .map(|b| format!("{b:02x}"))
         .collect::<String>();
     let operation = format!("{name}:{id}");
-    if let Some(result) = unit.replay(&actor.key(), &operation, key, &hash).await? {
+    if let Some(mut result) = unit.replay(&actor.key(), &operation, key, &hash).await? {
+        fill_legacy_task_summary(&mut result.data);
         return Ok(result.data);
     }
+    validation?;
     check_version(
         unit.records.get("tasks", id)?,
         input["expectedVersion"].as_i64(),
@@ -71,7 +78,7 @@ pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) 
         }
         if !changed {
             return Err(Failure::invalid(
-                "At least one progress, comment or block update is required",
+                "At least one currentSummary, progress, comment or block update is required",
             ));
         }
     } else if name == "close_activity" {
@@ -175,14 +182,19 @@ async fn update_parts(
     input: &Value,
 ) -> Result<bool> {
     let mut changed = false;
-    for (field, operation) in [
-        ("progress", "updateTask"),
-        ("block", "blockTask"),
-        ("comment", "createComment"),
-    ] {
+    let mut patch = serde_json::Map::new();
+    for field in ["progress", "currentSummary"] {
+        if let Some(value) = input.get(field) {
+            patch.insert(field.into(), value.clone());
+        }
+    }
+    if !patch.is_empty() {
+        apply(unit, actor, key, id, "updateTask", Value::Object(patch)).await?;
+        changed = true;
+    }
+    for (field, operation) in [("block", "blockTask"), ("comment", "createComment")] {
         if let Some(value) = input.get(field) {
             let body = match field {
-                "progress" => json!({"progress":value}),
                 "comment" => json!({"body":value}),
                 _ => value.clone(),
             };

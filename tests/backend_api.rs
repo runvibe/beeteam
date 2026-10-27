@@ -150,7 +150,7 @@ async fn full_http_domain_cross_board_recursion_transfer_and_history() {
     )
     .await;
     let status = root["statusId"].clone();
-    let execution = json!({"summary":"Blocked on dependency","outcome":"blocked","statusId":status,"deliverables":[],"pending":["Resolve dependency"],"executionContext":{"rootTaskId":root["id"],"originBoardId":board["id"]}});
+    let execution = json!({"currentSummary":"Investigation complete; blocked on dependency; next resolve it.","summary":"Blocked on dependency","outcome":"blocked","statusId":status,"deliverables":[],"pending":["Resolve dependency"],"executionContext":{"rootTaskId":root["id"],"originBoardId":board["id"]}});
     let result = ok(
         &app,
         "POST",
@@ -179,14 +179,14 @@ async fn full_http_domain_cross_board_recursion_transfer_and_history() {
             &app,
             "PUT",
             &format!("/api/v1/tasks/{}/position", id(&root)),
-            json!({"statusId":id(done),"beforeTaskId":null}),
+            json!({"statusId":id(done),"beforeTaskId":null,"currentSummary":"Ready for completion"}),
             ver(&root)
         )
         .await
         .0,
         409
     );
-    let result=ok(&app,"POST",&format!("/api/v1/tasks/{}/execution-summaries",id(&root)),json!({"summary":"Completed","outcome":"completed","statusId":id(done),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":root["id"],"originBoardId":board["id"]}}),ver(&root)).await;
+    let result=ok(&app,"POST",&format!("/api/v1/tasks/{}/execution-summaries",id(&root)),json!({"currentSummary":"Work and verification complete; no remaining work.","summary":"Completed","outcome":"completed","statusId":id(done),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":root["id"],"originBoardId":board["id"]}}),ver(&root)).await;
     assert_eq!(result["task"]["progress"]["percent"], 100);
     let child_now = get(&app, &format!("/api/v1/tasks/{}", id(&child))).await;
     assert_eq!(child_now["progress"]["percent"], 0);

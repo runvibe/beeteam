@@ -53,7 +53,7 @@ async fn success(app: &Router, name: &str, args: Value) -> Value {
 }
 #[tokio::test]
 async fn sdk_tools_resources_prompts_and_atomic_compounds() {
-    let app = app().await;
+    let (app, pool) = app_with_pool().await;
     let init=rpc(&app,"initialize",json!({"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}})).await;
     assert!(init["result"]["capabilities"].get("resources").is_some());
     assert!(init["result"]["capabilities"].get("prompts").is_some());
@@ -76,7 +76,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("e96f759"));
+            .contains("f3cf675"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]
@@ -118,25 +118,46 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert_eq!(prepared["task"]["version"], task["version"]);
     assert_eq!(prepared["executionContext"]["effectiveMode"], "manual");
     assert_eq!(prepared["children"]["total"], 1);
-    let failed=tool(&app,"record_progress",json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":999,"progress":{"percent":50,"note":"Half"}}]})).await;
+    let failed=tool(&app,"record_progress",json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":999,"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]})).await;
     assert_eq!(failed["isError"], true);
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}/comments", id(&task))).await["total"],
         0
     );
-    let input = json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Progress","progress":{"percent":20,"note":"Started"},"subtaskUpdates":[{"taskId":id(&child),"expectedVersion":child["version"],"progress":{"percent":50,"note":"Half"}}]});
+    let input = json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Progress","currentSummary":"Root: planning done; implementation underway; tests next.","progress":{"percent":20,"note":"Started"},"subtaskUpdates":[{"taskId":id(&child),"expectedVersion":child["version"],"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]});
     let result = success(&app, "record_progress", input.clone()).await;
     assert_eq!(result["task"]["progress"]["percent"], 20);
+    assert_eq!(result["task"]["currentSummary"], input["currentSummary"]);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(&child))).await["currentSummary"],
+        input["subtaskUpdates"][0]["currentSummary"]
+    );
+    let mut conflict = input.clone();
+    conflict["currentSummary"] = json!("Different synthesis with same idempotency key");
+    assert_eq!(
+        tool(&app, "record_progress", conflict).await["isError"],
+        true
+    );
     assert_eq!(success(&app, "record_progress", input).await, result);
     let task = &result["task"];
-    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
+    let missing=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"progress":{"percent":25,"note":"missing synthesis"}})).await;
+    assert_eq!(missing["isError"], true);
+    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
     assert_eq!(failed["isError"], true);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(task))).await["currentSummary"],
+        task["currentSummary"]
+    );
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}/comments", id(task))).await["total"],
         1
     );
-    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
+    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
     assert_eq!(result["task"]["statusId"], task["statusId"]);
+    assert_eq!(
+        result["task"]["currentSummary"],
+        "Root: implementation done; validation underway; review next."
+    );
     let summaries = get(
         &app,
         &format!("/api/v1/tasks/{}/execution-summaries", id(task)),
@@ -147,6 +168,60 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert_eq!(
         malformed["isError"], true,
         "MCP must enforce the same multipart metadata schema as HTTP"
+    );
+    for name in ["record_progress", "close_activity"] {
+        let key = uuid::Uuid::new_v4();
+        let mut legacy = json!({"taskId":id(task),"expectedVersion":1,"actor":{"kind":"human"},"idempotencyKey":key});
+        if name == "record_progress" {
+            legacy["progress"] = json!({"percent":10,"note":"Old update"});
+            legacy["subtaskUpdates"] = json!([{"taskId":id(&child),"expectedVersion":1,"progress":{"percent":10,"note":"Old child update"}}]);
+        } else {
+            legacy["execution"] = json!({"summary":"Old historical summary","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
+        }
+        let mut old_task = task.clone();
+        old_task.as_object_mut().unwrap().remove("currentSummary");
+        let snapshot =
+            json!({"task":old_task,"updatedTasks":[old_task],"notice":"Stored atomically."});
+        legacy_replay(
+            &pool,
+            &format!("{name}:{}", id(task)),
+            key,
+            legacy.clone(),
+            snapshot,
+        )
+        .await;
+        let path = format!("/api/v1/tasks/{}", id(task));
+        let before = get(&app, &format!("{path}/timeline")).await;
+        let current = get(&app, &path).await;
+        let replayed = success(&app, name, legacy.clone()).await;
+        assert_eq!(replayed["task"]["currentSummary"], "");
+        assert_eq!(replayed["task"]["version"], task["version"]);
+        assert_eq!(get(&app, &path).await, current);
+        assert_eq!(get(&app, &format!("{path}/timeline")).await, before);
+        legacy["idempotencyKey"] = json!(uuid::Uuid::new_v4());
+        assert_eq!(tool(&app, name, legacy).await["isError"], true);
+    }
+    // A late descendant failure must roll back the root synthesis already staged.
+    let live_root = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
+    let live_child = get(&app, &format!("/api/v1/tasks/{}", id(&child))).await;
+    let archived = ok(
+        &app,
+        "PUT",
+        &format!("/api/v1/tasks/{}/archive", id(&child)),
+        json!({"archived":true}),
+        ver(&live_child),
+    )
+    .await;
+    let before = get(&app, &format!("/api/v1/tasks/{}/timeline", id(task))).await;
+    let failed=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":live_root["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"currentSummary":"Must not persist root synthesis","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":archived["version"],"currentSummary":"Cannot update archived child"}]})).await;
+    assert_eq!(failed["isError"], true);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(task))).await,
+        live_root
+    );
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/timeline", id(task))).await,
+        before
     );
     let prompts = rpc(&app, "prompts/list", json!({})).await;
     assert_eq!(prompts["result"]["prompts"].as_array().unwrap().len(), 3);

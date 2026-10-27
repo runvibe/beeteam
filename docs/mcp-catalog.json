@@ -42,37 +42,37 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Bundled Bee Team content, snapshot of Skills commit e96f759. Not installed globally; never executed by this server.",
+      "description": "Bundled Bee Team content, snapshot of Skills commit f3cf675. Not installed globally; never executed by this server.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
@@ -2847,6 +2847,11 @@
                       "format": "date-time",
                       "type": "string"
                     },
+                    "currentSummary": {
+                      "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                      "type": "string",
+                      "x-maxBytes": 16384
+                    },
                     "deletedAt": {
                       "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                       "format": "date-time",
@@ -2980,6 +2985,7 @@
                     "executorAgentId",
                     "statusId",
                     "position",
+                    "currentSummary",
                     "progress",
                     "block",
                     "childSummary",
@@ -3338,6 +3344,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -3471,6 +3482,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -3830,6 +3842,11 @@
                             "format": "date-time",
                             "type": "string"
                           },
+                          "currentSummary": {
+                            "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                            "type": "string",
+                            "x-maxBytes": 16384
+                          },
                           "deletedAt": {
                             "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                             "format": "date-time",
@@ -3963,6 +3980,7 @@
                           "executorAgentId",
                           "statusId",
                           "position",
+                          "currentSummary",
                           "progress",
                           "block",
                           "childSummary",
@@ -4305,6 +4323,11 @@
                       "format": "date-time",
                       "type": "string"
                     },
+                    "currentSummary": {
+                      "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                      "type": "string",
+                      "x-maxBytes": 16384
+                    },
                     "deletedAt": {
                       "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                       "format": "date-time",
@@ -4438,6 +4461,7 @@
                     "executorAgentId",
                     "statusId",
                     "position",
+                    "currentSummary",
                     "progress",
                     "block",
                     "childSummary",
@@ -4703,6 +4727,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -4836,6 +4865,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -4901,7 +4931,12 @@
           },
           "body": {
             "additionalProperties": false,
-            "description": "Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
+            "dependentRequired": {
+              "progress": [
+                "currentSummary"
+              ]
+            },
+            "description": "Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
             "minProperties": 1,
             "properties": {
               "autonomyMode": {
@@ -4912,6 +4947,13 @@
                   "automatic"
                 ],
                 "type": "string"
+              },
+              "currentSummary": {
+                "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string",
+                "x-maxBytes": 16384
               },
               "description": {
                 "description": "Markdown, máximo 65536 bytes UTF-8.",
@@ -5104,6 +5146,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -5237,6 +5284,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -5469,6 +5517,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -5602,6 +5655,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -5882,6 +5936,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -6015,6 +6074,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -7010,6 +7070,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -7143,6 +7208,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -8057,8 +8123,15 @@
           },
           "body": {
             "additionalProperties": false,
-            "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.",
+            "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.",
             "properties": {
+              "currentSummary": {
+                "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deliverables": {
                 "items": {
                   "additionalProperties": false,
@@ -8188,6 +8261,7 @@
               }
             },
             "required": [
+              "currentSummary",
               "summary",
               "outcome",
               "statusId",
@@ -8530,6 +8604,11 @@
                     "format": "date-time",
                     "type": "string"
                   },
+                  "currentSummary": {
+                    "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                    "type": "string",
+                    "x-maxBytes": 16384
+                  },
                   "deletedAt": {
                     "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                     "format": "date-time",
@@ -8663,6 +8742,7 @@
                   "executorAgentId",
                   "statusId",
                   "position",
+                  "currentSummary",
                   "progress",
                   "block",
                   "childSummary",
@@ -9772,7 +9852,7 @@
           },
           "body": {
             "additionalProperties": false,
-            "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido.",
+            "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.",
             "properties": {
               "beforeTaskId": {
                 "format": "uuid",
@@ -9781,6 +9861,13 @@
                   "string",
                   "null"
                 ]
+              },
+              "currentSummary": {
+                "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string",
+                "x-maxBytes": 16384
               },
               "statusId": {
                 "format": "uuid",
@@ -9951,6 +10038,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -10084,6 +10176,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -17505,6 +17598,18 @@
               ],
               "type": "object"
             },
+            "CurrentSummary": {
+              "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
+            "CurrentSummaryInput": {
+              "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
             "DeclaredActor": {
               "description": "Criador declarado na requisição. human identifica o usuário local; agent usa ID persistido. Não verifica identidade.",
               "oneOf": [
@@ -17996,11 +18101,19 @@
             },
             "PatchTask": {
               "additionalProperties": false,
-              "description": "Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
+              "dependentRequired": {
+                "progress": [
+                  "currentSummary"
+                ]
+              },
+              "description": "Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
               "minProperties": 1,
               "properties": {
                 "autonomyMode": {
                   "$ref": "#/components/schemas/TaskAutonomyMode"
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "description": {
                   "description": "Markdown, máximo 65536 bytes UTF-8.",
@@ -18152,7 +18265,7 @@
             },
             "Position": {
               "additionalProperties": false,
-              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido.",
+              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.",
               "properties": {
                 "beforeTaskId": {
                   "format": "uuid",
@@ -18161,6 +18274,9 @@
                     "string",
                     "null"
                   ]
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "statusId": {
                   "format": "uuid",
@@ -18196,8 +18312,11 @@
             },
             "RecordExecution": {
               "additionalProperties": false,
-              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.",
+              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.",
               "properties": {
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
+                },
                 "deliverables": {
                   "items": {
                     "$ref": "#/components/schemas/Deliverable"
@@ -18241,6 +18360,7 @@
                 }
               },
               "required": [
+                "currentSummary",
                 "summary",
                 "outcome",
                 "statusId",
@@ -18519,6 +18639,9 @@
                   "format": "date-time",
                   "type": "string"
                 },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummary"
+                },
                 "deletedAt": {
                   "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                   "format": "date-time",
@@ -18597,6 +18720,7 @@
                 "executorAgentId",
                 "statusId",
                 "position",
+                "currentSummary",
                 "progress",
                 "block",
                 "childSummary",
@@ -18853,6 +18977,11 @@
                       "format": "date-time",
                       "type": "string"
                     },
+                    "currentSummary": {
+                      "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                      "type": "string",
+                      "x-maxBytes": 16384
+                    },
                     "deletedAt": {
                       "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                       "format": "date-time",
@@ -18986,6 +19115,7 @@
                     "executorAgentId",
                     "statusId",
                     "position",
+                    "currentSummary",
                     "progress",
                     "block",
                     "childSummary",
@@ -19683,6 +19813,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -19816,6 +19951,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -19852,7 +19988,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "Atomically record comment/progress/block for task and explicitly named descendants; checklist is derived from real subtasks. All supplied versions must match. No implicit completion.",
+      "description": "Atomically record cumulative currentSummary/comment/progress/block for task and explicitly named descendants; checklist is derived from real subtasks. All supplied versions must match. No implicit completion.",
       "inputSchema": {
         "additionalProperties": false,
         "components": {
@@ -20889,6 +21025,18 @@
               ],
               "type": "object"
             },
+            "CurrentSummary": {
+              "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
+            "CurrentSummaryInput": {
+              "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
             "DeclaredActor": {
               "description": "Criador declarado na requisição. human identifica o usuário local; agent usa ID persistido. Não verifica identidade.",
               "oneOf": [
@@ -21380,11 +21528,19 @@
             },
             "PatchTask": {
               "additionalProperties": false,
-              "description": "Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
+              "dependentRequired": {
+                "progress": [
+                  "currentSummary"
+                ]
+              },
+              "description": "Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
               "minProperties": 1,
               "properties": {
                 "autonomyMode": {
                   "$ref": "#/components/schemas/TaskAutonomyMode"
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "description": {
                   "description": "Markdown, máximo 65536 bytes UTF-8.",
@@ -21536,7 +21692,7 @@
             },
             "Position": {
               "additionalProperties": false,
-              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido.",
+              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.",
               "properties": {
                 "beforeTaskId": {
                   "format": "uuid",
@@ -21545,6 +21701,9 @@
                     "string",
                     "null"
                   ]
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "statusId": {
                   "format": "uuid",
@@ -21580,8 +21739,11 @@
             },
             "RecordExecution": {
               "additionalProperties": false,
-              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.",
+              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.",
               "properties": {
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
+                },
                 "deliverables": {
                   "items": {
                     "$ref": "#/components/schemas/Deliverable"
@@ -21625,6 +21787,7 @@
                 }
               },
               "required": [
+                "currentSummary",
                 "summary",
                 "outcome",
                 "statusId",
@@ -21903,6 +22066,9 @@
                   "format": "date-time",
                   "type": "string"
                 },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummary"
+                },
                 "deletedAt": {
                   "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                   "format": "date-time",
@@ -21981,6 +22147,7 @@
                 "executorAgentId",
                 "statusId",
                 "position",
+                "currentSummary",
                 "progress",
                 "block",
                 "childSummary",
@@ -22111,6 +22278,11 @@
             }
           }
         },
+        "dependentRequired": {
+          "progress": [
+            "currentSummary"
+          ]
+        },
         "properties": {
           "actor": {
             "additionalProperties": false,
@@ -22177,6 +22349,13 @@
             "type": "string",
             "x-maxBytes": 16384
           },
+          "currentSummary": {
+            "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string",
+            "x-maxBytes": 16384
+          },
           "expectedVersion": {
             "minimum": 1,
             "type": "integer"
@@ -22208,6 +22387,11 @@
           "subtaskUpdates": {
             "items": {
               "additionalProperties": false,
+              "dependentRequired": {
+                "progress": [
+                  "currentSummary"
+                ]
+              },
               "properties": {
                 "block": {
                   "oneOf": [
@@ -22249,6 +22433,13 @@
                 },
                 "comment": {
                   "minLength": 1,
+                  "type": "string",
+                  "x-maxBytes": 16384
+                },
+                "currentSummary": {
+                  "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+                  "minLength": 1,
+                  "pattern": "\\S",
                   "type": "string",
                   "x-maxBytes": 16384
                 },
@@ -22403,6 +22594,11 @@
                 "format": "date-time",
                 "type": "string"
               },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                 "format": "date-time",
@@ -22536,6 +22732,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -22642,6 +22839,11 @@
                 "createdAt": {
                   "format": "date-time",
                   "type": "string"
+                },
+                "currentSummary": {
+                  "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                  "type": "string",
+                  "x-maxBytes": 16384
                 },
                 "deletedAt": {
                   "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
@@ -22776,6 +22978,7 @@
                 "executorAgentId",
                 "statusId",
                 "position",
+                "currentSummary",
                 "progress",
                 "block",
                 "childSummary",
@@ -22809,7 +23012,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "Atomically record optional block/comment and execution summary, deliverables, pending work, status and optional review. Does not require task completion.",
+      "description": "Atomically record optional block/comment and cumulative execution.currentSummary and historical execution summary, deliverables, pending work, status and optional review. Does not require task completion.",
       "inputSchema": {
         "additionalProperties": false,
         "components": {
@@ -23846,6 +24049,18 @@
               ],
               "type": "object"
             },
+            "CurrentSummary": {
+              "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
+            "CurrentSummaryInput": {
+              "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string",
+              "x-maxBytes": 16384
+            },
             "DeclaredActor": {
               "description": "Criador declarado na requisição. human identifica o usuário local; agent usa ID persistido. Não verifica identidade.",
               "oneOf": [
@@ -24337,11 +24552,19 @@
             },
             "PatchTask": {
               "additionalProperties": false,
-              "description": "Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
+              "dependentRequired": {
+                "progress": [
+                  "currentSummary"
+                ]
+              },
+              "description": "Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida. Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo efetivo usa o board da origem da cadeia.",
               "minProperties": 1,
               "properties": {
                 "autonomyMode": {
                   "$ref": "#/components/schemas/TaskAutonomyMode"
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "description": {
                   "description": "Markdown, máximo 65536 bytes UTF-8.",
@@ -24493,7 +24716,7 @@
             },
             "Position": {
               "additionalProperties": false,
-              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido.",
+              "description": "Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.",
               "properties": {
                 "beforeTaskId": {
                   "format": "uuid",
@@ -24502,6 +24725,9 @@
                     "string",
                     "null"
                   ]
+                },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
                 },
                 "statusId": {
                   "format": "uuid",
@@ -24537,8 +24763,11 @@
             },
             "RecordExecution": {
               "additionalProperties": false,
-              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.",
+              "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.",
               "properties": {
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummaryInput"
+                },
                 "deliverables": {
                   "items": {
                     "$ref": "#/components/schemas/Deliverable"
@@ -24582,6 +24811,7 @@
                 }
               },
               "required": [
+                "currentSummary",
                 "summary",
                 "outcome",
                 "statusId",
@@ -24860,6 +25090,9 @@
                   "format": "date-time",
                   "type": "string"
                 },
+                "currentSummary": {
+                  "$ref": "#/components/schemas/CurrentSummary"
+                },
                 "deletedAt": {
                   "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
                   "format": "date-time",
@@ -24938,6 +25171,7 @@
                 "executorAgentId",
                 "statusId",
                 "position",
+                "currentSummary",
                 "progress",
                 "block",
                 "childSummary",
@@ -25136,8 +25370,15 @@
           },
           "execution": {
             "additionalProperties": false,
-            "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.",
+            "description": "Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.",
             "properties": {
+              "currentSummary": {
+                "description": "Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.",
+                "minLength": 1,
+                "pattern": "\\S",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
               "deliverables": {
                 "items": {
                   "additionalProperties": false,
@@ -25267,6 +25508,7 @@
               }
             },
             "required": [
+              "currentSummary",
               "summary",
               "outcome",
               "statusId",
@@ -25396,6 +25638,11 @@
               "createdAt": {
                 "format": "date-time",
                 "type": "string"
+              },
+              "currentSummary": {
+                "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                "type": "string",
+                "x-maxBytes": 16384
               },
               "deletedAt": {
                 "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
@@ -25530,6 +25777,7 @@
               "executorAgentId",
               "statusId",
               "position",
+              "currentSummary",
               "progress",
               "block",
               "childSummary",
@@ -25636,6 +25884,11 @@
                 "createdAt": {
                   "format": "date-time",
                   "type": "string"
+                },
+                "currentSummary": {
+                  "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                  "type": "string",
+                  "x-maxBytes": 16384
                 },
                 "deletedAt": {
                   "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
@@ -25770,6 +26023,7 @@
                 "executorAgentId",
                 "statusId",
                 "position",
+                "currentSummary",
                 "progress",
                 "block",
                 "childSummary",

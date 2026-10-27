@@ -98,9 +98,9 @@ pelas tools simples quando necessÃ¡rio. NÃ£o presume que o executor esteja a
 
 ### record_progress â€” write atÃ´mico
 
-Entrada `{taskId,expectedVersion,actor,idempotencyKey,progress?,block?,comment?,
+Entrada `{taskId,expectedVersion,actor,idempotencyKey,currentSummary?,progress?,block?,comment?,
 subtaskUpdates?}`. Cada item de subtaskUpdates exige taskId e expectedVersion e pode
-conter progress/block/comment. AtÃ©100 descendentes Ãºnicos reais; nÃ£o pode nomear a
+conter currentSummary/progress/block/comment. Enviar progress exige currentSummary não vazio no mesmo item; a síntese também pode ser atualizada sozinha. AtÃ©100 descendentes Ãºnicos reais; nÃ£o pode nomear a
 prÃ³pria raiz nem outra cadeia. Todas versÃµes sÃ£o verificadas antes de aplicar o
 conjunto. Exige ao menos uma alteraÃ§Ã£o. ComentÃ¡rio, andamento e bloqueio usam os
 mesmos casos de uso de `createComment`, `updateTask`, `blockTask`, sem commits
@@ -111,7 +111,7 @@ rollback integral; replay nÃ£o duplica comentÃ¡rios/eventos.
 ### close_activity â€” write atÃ´mico
 
 Entrada `{taskId,expectedVersion,actor,idempotencyKey,execution,block?,comment?}`.
-execution usa RecordExecution: summary, outcome, statusId, deliverables, pending,
+execution usa RecordExecution: currentSummary, summary, outcome, statusId, deliverables, pending,
 executionContext rootTaskId/originBoardId; progress/reviewContext opcionais.
 Aplica bloco/comentÃ¡rio informados e registra execuÃ§Ã£o na mesma transaÃ§Ã£o.
 NÃ£o obriga concluir: progress/blocked sÃ£o vÃ¡lidos em status nÃ£o final; completed
@@ -130,7 +130,7 @@ Os schemas exatos de todas entradas e saÃ­das constam no catÃ¡logo JSON.
 
 ## Resources â€” leitura por allowlist
 
-Snapshot editorial dos commit e96f759 da frente Skills, copiado para
+Snapshot editorial dos commit f3cf675 da frente Skills, copiado para
 `resources/bee-team`. ConteÃºdo nÃ£o estÃ¡ instalado globalmente. `resources/read`
 aceita somente os URIs anunciados; URI file/path arbitrÃ¡rio Ã© rejeitado. Nenhum acesso
 a segredos ou diretÃ³rios do usuÃ¡rio. Os textos sÃ£o materiais para IA consumir,
@@ -175,3 +175,9 @@ cargo test --locked --features mcp --test backend_mcp
 Teste real cobre discovery, schema validation, tools simples/compostas,
 rollback/idempotÃªncia, resources seguros e os trÃªs prompts. CatÃ¡logo tem 57 tools
 (52 de domÃ­nio +3 compostas +2 sistema),6 resources e3 prompts.
+
+## Síntese cumulativa para cards
+
+`Task.currentSummary` é sempre string, vazia se ainda não informada, com máximo de 16384 bytes UTF-8. Conteúdo escrito pelo colaborador: trabalho feito/concluído, em andamento, pendências/próximo passo. É retornado em getTask, listTasks, listAllTasks, getBoardView e nas tasks de prepare_execution/compostas; o cliente não consulta histórico por card. Não é gerado pelo servidor nem derivado de description/progress.note/ExecutionSummary.summary.
+
+`updateTask.body.currentSummary` substitui a síntese; `progress` exige seu envio conjunto. `moveTask.body.currentSummary` é obrigatório ao mudar status, opcional para reordenar no mesmo status. `createExecutionSummary.body.currentSummary` e `close_activity.execution.currentSummary` são obrigatórios. `record_progress.currentSummary` e `subtaskUpdates[].currentSummary` seguem a regra de progress por task. Escritas não aceitam vazio, null ou só espaços; omissão administrativa preserva o valor. O histórico anterior permanece na timeline. RecordExecution.summary continua descrevendo aquela atividade, não a síntese atual.

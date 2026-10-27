@@ -216,7 +216,7 @@ pub fn query(op: &Operation, raw: Vec<(String, String)>) -> Result<BTreeMap<Stri
     }
     Ok(result)
 }
-pub fn validate(command: &Command) -> Result<()> {
+pub fn validate_envelope(command: &Command) -> Result<()> {
     let op = operation(&command.operation)?;
     for value in command.params.values() {
         super::backend::parse_id(value)?;
@@ -227,6 +227,11 @@ pub fn validate(command: &Command) -> Result<()> {
     if op.method == "POST" && command.idempotency_key.is_none() {
         return Err(Failure::invalid("Idempotency-Key required"));
     }
+    Ok(())
+}
+pub fn validate(command: &Command) -> Result<()> {
+    validate_envelope(command)?;
+    let op = operation(&command.operation)?;
     if let Some(schema) = op
         .definition
         .pointer("/requestBody/content/application~1json/schema")

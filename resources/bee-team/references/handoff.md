@@ -36,3 +36,9 @@ Na transferência, leve contexto e histórico da task, sem copiar histórico int
 ## Via MCP
 
 `task_briefing(taskId)` e `agent_resumption(agentId,taskId)` retornam contexto consultado em mensagem user, sem despacho. Preserve origem e lacunas ao repassá-lo; materialize briefing fiel, sem repetir a descoberta já feita pelo líder. `prepare_execution` não é início de execução. Durante a atividade, use `record_progress` somente nos alvos autorizados. No encerramento, `close_activity` registra o conjunto atomicamente; siga schema/versões e verifique isError/resultado. Obter `delivery_review(taskId)` produz parecer, não aprovação nem alteração de status. Consulte `beeteam://references/integration` para argumentos e paginação.
+
+## Síntese atual e histórico
+
+No briefing/retomada, leia `Task.currentSummary` como síntese atual e consulte os registros de atividade para evidência. Ao registrar avanço ou encerrar, recomponha feito, agora e pendências/próximo passo em texto cumulativo coerente para card/detalhe. Uma entrega válida pode ser: “Feito: contas conciliadas e divergências corrigidas. Agora: projeção de caixa em elaboração. Falta: conferir cenários; próximo passo é validar premissas.” Use somente fatos confirmados da task; não reutilize esse exemplo como resultado real.
+
+No encerramento, `execution.summary` descreve a atividade específica; `execution.currentSummary` mantém o estado cumulativo. Ambos são necessários, sem duplicar mecanicamente um no outro. Preserve description, progress.note e registros históricos; a timeline preserva síntese anterior/nova. Se faltar contexto, explicite o que não está confirmado. A obrigação continua na própria task, mesmo quando subtarefa cross-board.

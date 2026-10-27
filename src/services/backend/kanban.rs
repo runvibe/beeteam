@@ -241,6 +241,7 @@ async fn create_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     data["statusId"] = json!(status);
     data["parentId"] = json!(parent);
     data["autonomyMode"] = b.get("autonomyMode").cloned().unwrap_or(json!("manual"));
+    data["currentSummary"] = json!("");
     data["progress"] = json!({"percent":0,"note":""});
     data["block"] = json!({"blocked":false,"reason":null});
     data["latestExecutionSummaryId"] = Value::Null;
@@ -284,10 +285,17 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     let mut created: Option<(&str, Uuid)> = None;
     let (kind, audit) = match c.operation.as_str() {
         "updateTask" => {
+            validate_current_summary(b, b.get("progress").is_some())?;
             patch(
                 unit.records.get_mut("tasks", id)?,
                 b,
-                &["title", "description", "progress", "autonomyMode"],
+                &[
+                    "title",
+                    "description",
+                    "progress",
+                    "currentSummary",
+                    "autonomyMode",
+                ],
             );
             ("task.updated", json!({"previous":old.data,"changes":b}))
         }
@@ -303,6 +311,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         }
         "moveTask" => {
             let status = body_id(b, "statusId")?;
+            validate_current_summary(b, old.reference("statusId") != Some(status))?;
             validate_status(&unit.records, board, status)?;
             if unit.records.get("statuses", status)?.data["isDone"] == true
                 && old.reference("statusId") != Some(status)
@@ -351,10 +360,14 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                     task.touch();
                 }
             }
-            patch(unit.records.get_mut("tasks", id)?, b, &["statusId"]);
+            patch(
+                unit.records.get_mut("tasks", id)?,
+                b,
+                &["statusId", "currentSummary"],
+            );
             (
                 "position.changed",
-                json!({"previousStatusId":old.data["statusId"],"statusId":status,"beforeTaskId":before}),
+                json!({"previousStatusId":old.data["statusId"],"statusId":status,"beforeTaskId":before,"previousCurrentSummary":old.data["currentSummary"],"currentSummary":unit.records.get("tasks",id)?.data["currentSummary"]}),
             )
         }
         "blockTask" => {
@@ -427,6 +440,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             ("comment.created", json!({"commentId":rid}))
         }
         "createExecutionSummary" => {
+            validate_current_summary(b, true)?;
             let status = body_id(b, "statusId")?;
             validate_status(&unit.records, board, status)?;
             let context = hierarchy::context(&unit.records, id)?;
@@ -475,10 +489,12 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             data["reviewContext"] = b.get("reviewContext").cloned().unwrap_or(Value::Null);
             data["executionContext"] = context;
             data.as_object_mut().unwrap().remove("progress");
+            data.as_object_mut().unwrap().remove("currentSummary");
             let sid = unit
                 .records
                 .insert(Record::new("execution_summaries", data));
             let task = unit.records.get_mut("tasks", id)?;
+            task.data["currentSummary"] = b["currentSummary"].clone();
             task.data["statusId"] = json!(status);
             task.data["latestExecutionSummaryId"] = json!(sid);
             if let Some(progress) = b.get("progress") {
@@ -491,7 +507,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             created = Some(("execution_summaries", sid));
             (
                 "execution.recorded",
-                json!({"executionSummaryId":sid,"previousStatusId":old.data["statusId"],"statusId":status}),
+                json!({"executionSummaryId":sid,"previousStatusId":old.data["statusId"],"statusId":status,"previousCurrentSummary":old.data["currentSummary"],"currentSummary":b["currentSummary"]}),
             )
         }
         _ => return Err(Failure::missing()),
@@ -506,5 +522,13 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         Ok(result)
     } else {
         outcome(&unit.records, "tasks", id, false)
+    }
+}
+
+fn validate_current_summary(body: &Value, required: bool) -> Result<()> {
+    match body.get("currentSummary") {
+        Some(Value::String(text)) if !text.trim().is_empty() && text.len() <= 16384 => Ok(()),
+        None if !required => Ok(()),
+        _ => Err(Failure::invalid("currentSummary must be a non-blank cumulative synthesis of at most 16384 UTF-8 bytes; required for work progress or status changes")),
     }
 }

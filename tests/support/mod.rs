@@ -12,6 +12,9 @@ use serde_json::{json, Value};
 use tower::ServiceExt;
 
 pub async fn app() -> Router {
+    app_with_pool().await.0
+}
+pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
     let url = std::env::var("BEE_TEST_DATABASE_URL")
         .expect("BEE_TEST_DATABASE_URL must point to an isolated PostgreSQL 18 test DB");
     let admin = init_pool(&url).await.unwrap();
@@ -37,7 +40,13 @@ pub async fn app() -> Router {
             cors: CorsConfig::Permissive,
         },
     };
-    create_router(AppState::new(DatabaseRepository::new(pool)), &config)
+    (
+        create_router(
+            AppState::new(DatabaseRepository::new(pool.clone())),
+            &config,
+        ),
+        pool,
+    )
 }
 pub async fn request(
     app: &Router,
@@ -46,12 +55,22 @@ pub async fn request(
     body: Value,
     version: Option<i64>,
 ) -> (u16, Value) {
+    request_key(app, method, path, body, version, uuid::Uuid::new_v4()).await
+}
+pub async fn request_key(
+    app: &Router,
+    method: &str,
+    path: &str,
+    body: Value,
+    version: Option<i64>,
+    key: uuid::Uuid,
+) -> (u16, Value) {
     let mut req = Request::builder()
         .method(method)
         .uri(path)
         .header("content-type", "application/json")
         .header("X-Actor-Kind", "human")
-        .header("Idempotency-Key", uuid::Uuid::new_v4().to_string());
+        .header("Idempotency-Key", key.to_string());
     if let Some(v) = version {
         req = req.header("If-Match", format!("\"{v}\""));
     }
@@ -116,4 +135,30 @@ pub fn automatic() -> Value {
 }
 pub async fn get(app: &Router, path: &str) -> Value {
     ok(app, "GET", path, json!({}), None).await
+}
+
+pub async fn legacy_replay(
+    pool: &sqlx::PgPool,
+    operation: &str,
+    key: uuid::Uuid,
+    hashed_input: Value,
+    data: Value,
+) {
+    use sha2::{Digest, Sha256};
+    let hash = Sha256::digest(serde_json::to_vec(&hashed_input).unwrap())
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect::<String>();
+    let repo = beeteam::repositories::resources::ResourceRepository::new(pool.clone());
+    let mut unit = repo.begin().await.unwrap();
+    unit.save_replay(
+        "human:",
+        operation,
+        key,
+        &hash,
+        &beeteam::dto::backend::Outcome::data(data),
+    )
+    .await
+    .unwrap();
+    unit.commit().await.unwrap();
 }

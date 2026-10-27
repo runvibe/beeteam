@@ -24,3 +24,5 @@
 - MCP resources/prompts use an explicit bundled Bee Team allowlist under resources/bee-team. Never expose arbitrary files or imply global skill installation. Update provenance when refreshing the Skills snapshot.
 - Regenerate docs/mcp-catalog.json using `cargo run --locked --features mcp --example mcp_catalog` after catalog/schema changes.
 - Integration tests use an isolated PostgreSQL >=18 instance via BEE_TEST_DATABASE_URL (CREATEDB required for HTTP/MCP tests). Windows Docker wrappers calling WSL may require this URL instead of native Testcontainers. Never point tests at product data.
+
+- Work updates must supply the collaborator-authored cumulative `currentSummary` with progress/status changes and activity closure. Keep it separate from historical `summary` and descriptive notes; never generate it from history. Preserve atomicity, idempotency (including legacy response snapshots), and empty legacy state in HTTP/MCP parity tests.
