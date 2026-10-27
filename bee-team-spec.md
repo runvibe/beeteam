@@ -10,6 +10,10 @@ Organizar, para uso pessoal, equipes de colaboradores de IA que executam demanda
 
 O produto reúne uma skill de coordenação e uma aplicação que preserva perfis, tarefas, decisões e histórico. A primeira plataforma será o Codex, mantendo o modelo independente de plataforma. Particularidades de outros ambientes, como Claude Code e Copilot, poderão ser documentadas separadamente conforme seus recursos disponíveis.
 
+O Bee Team será instalado e executado no computador do usuário como um servidor local, oferecendo interface web, API e MCP locais. A IA executada no Codex ou em outro harness consulta as configurações e utiliza a API ou o MCP para registrar colaboradores, organizar demandas e salvar dados, resultados e histórico.
+
+A aplicação Bee Team não acessa diretamente recursos da IA nem inicia ou controla chats por conta própria. A criação e a condução dos chats cabem à IA e às ferramentas disponíveis no harness, conforme as autorizações do usuário.
+
 ## Estrutura organizacional
 
 - Workspace: espaço organizacional da conta, contendo times e seus registros. O uso inicial é pessoal; isso não implica um produto multiusuário.
@@ -37,6 +41,8 @@ Acompanhar o andamento e esclarecer uma tarefa já autorizada fazem parte da exe
 
 O modo escolhido deve ficar persistido na aplicação e ser consultável pela API ou pelo MCP, independentemente do chat do líder. Ainda está em aberto se essa configuração será única por workspace ou configurável por time.
 
+As solicitações de trabalho e as aprovações de execução acontecem na conversa com o team leader. Os modos acima orientam a atuação da IA no harness; a aplicação armazena as configurações e os registros, sem executar a coordenação por conta própria.
+
 ## Memória persistente e retomada
 
 A aplicação preserva perfis e registros mesmo quando um chat é fechado ou excluído. Essa preservação se aplica às informações já salvas na aplicação, sem presumir recuperação de conteúdo não importado.
@@ -60,11 +66,15 @@ A aplicação guarda colaboradores, times, tarefas, decisões, entregas e histó
 - Entregas e histórico de atualizações.
 - Última atualização recebida, para não apresentar um registro antigo como confirmação de atividade ao vivo.
 
+O painel também permite configurar padrões que os agentes consultam e seguem. Não é uma superfície para despachar tarefas, reorganizar operacionalmente os times ou conceder aprovações de execução; essas interações permanecem na conversa com o team leader.
+
+A interface web pode ser um website comum, acessível em um navegador normal ou no navegador interno do harness, quando disponível. Não exige integração visual específica com Codex ou outro harness.
+
 A escolha entre aplicação própria e adaptação de ferramenta existente permanece em aberto.
 
 ## API, MCP e rotina de atualização
 
-A aplicação disponibiliza API e MCP para que os próprios colaboradores consultem e atualizem seus registros.
+A aplicação disponibiliza API e MCP locais para que os próprios colaboradores consultem configurações, registrem colaboradores, organizem demandas e atualizem dados, resultados e histórico. A IA no harness inicia essas interações com o servidor local, utilizando os recursos disponíveis em seu ambiente.
 
 Ao encerrar uma tarefa, o colaborador registra o que fez, o status resultante, as entregas e referências, as decisões relevantes e eventuais pendências ou próximos passos. Se estiver bloqueado, registra o bloqueio.
 
@@ -91,7 +101,7 @@ Um chat dedicado a acompanhar o quadro pode ser considerado futuramente. Ele nã
 ## Pontos em aberto
 
 - Construir uma aplicação própria ou adaptar uma ferramenta existente.
-- Ambiente de execução e funcionalidades detalhadas da primeira versão.
+- Plataformas de instalação suportadas, stack técnica e funcionalidades detalhadas da primeira versão, mantendo a execução como servidor local no computador do usuário.
 - Contratos técnicos da API e do MCP e modelo de armazenamento.
 - Configuração de autonomia por workspace ou por time.
 - Padrão da opção de histórico e política de retenção ou exclusão.
