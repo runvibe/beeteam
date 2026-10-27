@@ -1,0 +1,25 @@
+// Generated from contracts/ra-openapi.yaml. Do not edit.
+export type Team = {
+  /** Format: uuid */
+  id: string;
+  name: string;
+  /** @description Máximo 64 KiB UTF-8; texto, não transcrição integral. */
+  purpose: string;
+  /** @description Máximo 64 KiB UTF-8; texto, não transcrição integral. */
+  context: string;
+  /** Format: uuid */
+  leaderId: string;
+  collaboratorCount: number;
+  /** Format: date-time */
+  archivedAt: string | null;
+  version: number;
+  /** Format: date-time */
+  createdAt: string;
+  /** Format: date-time */
+  updatedAt: string;
+  /**
+   * Format: date-time
+   * @description Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.
+   */
+  deletedAt: string | null;
+};
