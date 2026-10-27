@@ -28,3 +28,5 @@
 - Work updates must supply the collaborator-authored cumulative `currentSummary` with progress/status changes and activity closure. Keep it separate from historical `summary` and descriptive notes; never generate it from history. Preserve atomicity, idempotency (including legacy response snapshots), and empty legacy state in HTTP/MCP parity tests.
 
 - Preserve task `specification` and plan/revision `content` as Markdown text (65536 UTF-8 bytes), without rendering or executing it. Keep requirements, short description, execution plans, and current work synthesis independent; specification-only edits do not require a new work summary.
+
+- Agent/team/task slugs are immutable URL aliases, never internal identifiers. Resolve via the typed by-slug endpoint/tool, then keep UUIDv7 in mutations and prompt arguments. Preserve deleted slug reservations and keep migration/application advisory lock ordering consistent before table access.

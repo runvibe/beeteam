@@ -45,6 +45,7 @@ pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) 
     let operation = format!("{name}:{id}");
     if let Some(mut result) = unit.replay(&actor.key(), &operation, key, &hash).await? {
         fill_legacy_task_fields(&mut result.data);
+        fill_legacy_slugs(&mut result.data, &unit.records);
         return Ok(result.data);
     }
     validation?;

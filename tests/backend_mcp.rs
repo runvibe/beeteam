@@ -59,7 +59,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 57);
+    assert_eq!(tools.len(), 60);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -76,7 +76,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("8263cea"));
+            .contains("25a615a"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]
@@ -114,6 +114,18 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","specification":"# Requirements\r\n- **Acceptance**\r\n","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","specification":"## Child requirements\n- [ ] Acceptance","parentId":id(&task),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
     let task = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
+    for (name, entity) in [
+        ("resolveAgentSlug", &agent),
+        ("resolveTeamSlug", &team),
+        ("resolveTaskSlug", &task),
+    ] {
+        let resolved = success(&app, name, json!({"params":{"slug":entity["slug"]}})).await;
+        assert_eq!(
+            resolved["data"],
+            json!({"id":entity["id"],"slug":entity["slug"]})
+        );
+    }
+
     let prepared = success(&app, "prepare_execution", json!({"taskId":id(&task)})).await;
     assert_eq!(prepared["task"]["version"], task["version"]);
     assert_eq!(prepared["executionContext"]["effectiveMode"], "manual");
@@ -186,6 +198,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let mut old_task = task.clone();
         old_task.as_object_mut().unwrap().remove("currentSummary");
         old_task.as_object_mut().unwrap().remove("specification");
+        old_task.as_object_mut().unwrap().remove("slug");
         let snapshot =
             json!({"task":old_task,"updatedTasks":[old_task],"notice":"Stored atomically."});
         legacy_replay(
@@ -202,6 +215,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let replayed = success(&app, name, legacy.clone()).await;
         assert_eq!(replayed["task"]["currentSummary"], "");
         assert_eq!(replayed["task"]["specification"], "");
+        assert_eq!(replayed["task"]["slug"], task["slug"]);
         assert_eq!(replayed["task"]["version"], task["version"]);
         assert_eq!(get(&app, &path).await, current);
         assert_eq!(get(&app, &format!("{path}/timeline")).await, before);

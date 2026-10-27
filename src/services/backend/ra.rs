@@ -30,6 +30,10 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 data["image"] = Value::Null;
             }
             validate_url(data["image"]["url"].as_str())?;
+            data["slug"] = json!(
+                unit.allocate_slug("agents", data["name"].as_str().unwrap())
+                    .await?
+            );
             let id = unit.records.insert(Record::new("agents", data));
             outcome(&unit.records, "agents", id, true)
         }
@@ -96,6 +100,10 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             let mut data = defaults(body, &["purpose", "context"]);
             data.as_object_mut().unwrap().remove("collaboratorIds");
             data.as_object_mut().unwrap().remove("coordinationContext");
+            data["slug"] = json!(
+                unit.allocate_slug("teams", data["name"].as_str().unwrap())
+                    .await?
+            );
             let id = unit.records.insert(Record::new("teams", data));
             let members = body["collaboratorIds"]
                 .as_array()
@@ -173,6 +181,10 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             if let Some(name) = body.get("name") {
                 data["name"] = name.clone();
             }
+            data["slug"] = json!(
+                unit.allocate_slug("agents", data["name"].as_str().unwrap())
+                    .await?
+            );
             let id = unit.records.insert(Record::new("agents", data));
             if source.data["image"]["kind"] == "upload"
                 || source.data["image"]["kind"] == "uploaded"

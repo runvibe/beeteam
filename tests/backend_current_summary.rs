@@ -315,6 +315,8 @@ fn openapi_examples_remain_valid_after_current_summary_contract_change() {
             _ => {}
         }
     }
-    let op = beeteam::dto::contracts::operation("getTask").unwrap();
-    check(&op.document, &op.document["paths"]);
+    for name in ["getTask", "getAgent"] {
+        let op = beeteam::dto::contracts::operation(name).unwrap();
+        check(&op.document, &op.document["paths"]);
+    }
 }

@@ -108,6 +108,19 @@ impl ResourceRepository {
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
+    pub async fn resolve_slug(&self, table: &'static str, slug: &str) -> Result<(Uuid, String)> {
+        if !matches!(table, "agents" | "teams" | "tasks") {
+            return Err(Failure::missing());
+        }
+        let row = sqlx::query(sqlx::AssertSqlSafe(format!(
+            "SELECT id,slug FROM {table} WHERE slug=$1 AND deleted_at IS NULL"
+        )))
+        .bind(slug)
+        .fetch_optional(&self.pool)
+        .await?
+        .ok_or_else(Failure::missing)?;
+        Ok((row.get("id"), row.get("slug")))
+    }
     pub async fn begin(&self) -> Result<UnitOfWork> {
         let mut tx = self.pool.begin().await?;
         // Personal local service: serialize mutations and coherent reads using one DB lock.
@@ -144,6 +157,14 @@ impl ResourceRepository {
     }
 }
 impl UnitOfWork {
+    pub async fn allocate_slug(&mut self, table: &str, label: &str) -> Result<String> {
+        Ok(sqlx::query_scalar("SELECT beeteam_allocate_slug($1,$2)")
+            .bind(table)
+            .bind(label)
+            .fetch_one(&mut *self.tx)
+            .await?)
+    }
+
     pub async fn replay(
         &mut self,
         actor: &str,

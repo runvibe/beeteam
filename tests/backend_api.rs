@@ -20,6 +20,7 @@ async fn create_agent_has_v7_identity_and_strict_input() {
         7
     );
     assert!(agent["deletedAt"].is_null());
+    assert_eq!(agent["slug"], "test-agent");
     let (status, _) = request(
         &app,
         "POST",

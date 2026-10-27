@@ -39,6 +39,38 @@ servers:
   - url: http://127.0.0.1:8080
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v1/tasks/by-slug/{slug}:
+    get:
+      operationId: resolveTaskSlug
+      summary: Resolver slug de Task para UUID interno
+      description: Consulta indexada sem enumerar listagens. Retorna identidade canônica;
+        buscar detalhes na rota por UUID existente. Arquivados resolvem, excluídos retornam
+        404. Não redireciona nem reutiliza slugs.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Slug'
+      responses:
+        '200':
+          description: Identidade encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlugResolution'
+        '400':
+          description: Slug inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Identidade não encontrada ou excluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/boards:
     parameters: []
     post:
@@ -916,6 +948,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -1023,6 +1056,7 @@ paths:
                     executorAgentId: 10000000-0000-7000-8000-000000000016
                     statusId: 10000000-0000-7000-8000-000000000026
                     position: a5
+                    slug: example-task
                     specification: ""
                     currentSummary: ""
                     progress:
@@ -1087,6 +1121,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -1179,6 +1214,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -1273,6 +1309,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -1361,6 +1398,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -2407,6 +2445,7 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
                 specification: ""
                 currentSummary: ""
                 progress:
@@ -2737,6 +2776,27 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    Slug:
+      type: string
+      minLength: 1
+      maxLength: 80
+      pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+      description: Identificador de URL gerado, ASCII lowercase, estável ao renomear,
+        único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo
+        cliente.
+    SlugResolution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        slug:
+          $ref: '#/components/schemas/Slug'
+      required:
+      - id
+      - slug
+      additionalProperties: false
     TaskSpecification:
       type: string
       x-maxBytes: 65536
@@ -3202,6 +3262,8 @@ components:
     Task:
       type: object
       properties:
+        slug:
+          $ref: '#/components/schemas/Slug'
         id:
           type: string
           format: uuid
@@ -3294,6 +3356,7 @@ components:
           description: Autor/dono obrigatório e imutável; agente que escreveu a task. Independente do ator
             declarado que transporta a requisição.
       required:
+        - slug
         - id
         - boardId
         - parentId
@@ -4365,6 +4428,7 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000013
     statusId: 10000000-0000-7000-8000-000000000021
     position: a2
+    slug: example-task
     specification: ""
     currentSummary: ""
     progress:
@@ -4397,6 +4461,7 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000014
     statusId: 10000000-0000-7000-8000-000000000024
     position: a3
+    slug: example-task
     specification: ""
     currentSummary: ""
     progress:
@@ -4429,6 +4494,7 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000015
     statusId: 10000000-0000-7000-8000-000000000025
     position: a4
+    slug: example-task
     specification: ""
     currentSummary: ""
     progress:

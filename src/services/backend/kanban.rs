@@ -245,6 +245,10 @@ async fn create_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     data["progress"] = json!({"percent":0,"note":""});
     data["block"] = json!({"blocked":false,"reason":null});
     data["latestExecutionSummaryId"] = Value::Null;
+    data["slug"] = json!(
+        unit.allocate_slug("tasks", data["title"].as_str().unwrap())
+            .await?
+    );
     let mut task = Record::new("tasks", data);
     let id = task.id;
     if let Some(parent) = parent {

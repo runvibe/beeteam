@@ -20,8 +20,22 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
     if contracts::operation(&command.operation)?.method != "POST" {
         validation.clone()?;
     }
-    for value in command.params.values_mut() {
-        *value = parse_id(value)?.to_string();
+    for (name, value) in command.params.iter_mut() {
+        if name != "slug" {
+            *value = parse_id(value)?.to_string();
+        }
+    }
+    let slug_table = match command.operation.as_str() {
+        "resolveAgentSlug" => Some("agents"),
+        "resolveTeamSlug" => Some("teams"),
+        "resolveTaskSlug" => Some("tasks"),
+        _ => None,
+    };
+    if let Some(table) = slug_table {
+        let (id, slug) = repository
+            .resolve_slug(table, &command.params["slug"])
+            .await?;
+        return Ok(Outcome::data(json!({"id":id,"slug":slug})));
     }
     let op = contracts::operation(&command.operation)?;
     if let Some(schema) = op
@@ -70,6 +84,7 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
             .await?
         {
             fill_legacy_task_fields(&mut replay.data);
+            fill_legacy_slugs(&mut replay.data, &unit.records);
             return Ok(replay);
         }
     }
@@ -269,5 +284,44 @@ mod current_summary_replay_tests {
             "Explicit synthesis"
         );
         assert_eq!(value["executionSummary"], history);
+    }
+}
+
+// Slugs are immutable identity metadata; use stored values even for retired entities.
+pub(super) fn fill_legacy_slugs(value: &mut Value, records: &Records) {
+    match value {
+        Value::Object(fields) => {
+            let table = if fields.contains_key("authorAgentId") && fields.contains_key("boardId") {
+                Some("tasks")
+            } else if fields.contains_key("roleDescription") && fields.contains_key("workStyle") {
+                Some("agents")
+            } else if fields.contains_key("leaderId") && fields.contains_key("purpose") {
+                Some("teams")
+            } else {
+                None
+            };
+            if !fields.contains_key("slug") {
+                if let (Some(table), Some(id)) = (
+                    table,
+                    fields
+                        .get("id")
+                        .and_then(Value::as_str)
+                        .and_then(|v| Uuid::parse_str(v).ok()),
+                ) {
+                    if let Some(record) = records.rows.get(&(table, id)) {
+                        fields.insert("slug".into(), record.data["slug"].clone());
+                    }
+                }
+            }
+            for child in fields.values_mut() {
+                fill_legacy_slugs(child, records);
+            }
+        }
+        Value::Array(items) => {
+            for child in items {
+                fill_legacy_slugs(child, records);
+            }
+        }
+        _ => {}
     }
 }

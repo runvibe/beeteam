@@ -218,8 +218,19 @@ pub fn query(op: &Operation, raw: Vec<(String, String)>) -> Result<BTreeMap<Stri
 }
 pub fn validate_envelope(command: &Command) -> Result<()> {
     let op = operation(&command.operation)?;
-    for value in command.params.values() {
-        super::backend::parse_id(value)?;
+    for parameter in &op.parameters {
+        let parameter = resolve(&op.document, parameter);
+        if parameter["in"] == "path" {
+            let name = parameter["name"].as_str().unwrap();
+            let value = command
+                .params
+                .get(name)
+                .ok_or_else(|| Failure::invalid("Missing path parameter"))?;
+            validate_schema(&op.document, &parameter["schema"], &json!(value))?;
+            if name != "slug" {
+                super::backend::parse_id(value)?;
+            }
+        }
     }
     if op.method != "GET" {
         command.actor()?.validate()?;

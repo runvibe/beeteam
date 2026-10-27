@@ -104,6 +104,8 @@ async fn images_copy_independently_and_attachments_keep_tombstones() {
     let copy = &result["agent"];
     assert_ne!(copy["image"]["imageId"], agent["image"]["imageId"]);
     assert_eq!(copy["contextSummary"], "");
+    assert_ne!(copy["slug"], agent["slug"]);
+    assert_eq!(copy["slug"], "image-source-2");
     assert_eq!(
         request(&app, "DELETE", &path, json!({}), ver(&agent))
             .await

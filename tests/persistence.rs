@@ -31,12 +31,11 @@ async fn schema_enforces_v7_and_soft_deletion() {
     };
     let pool = init_pool(&url).await.unwrap();
     run_migrations(&pool).await.unwrap();
-    let row = sqlx::query(
-        r#"INSERT INTO agents (data) VALUES ('{"name":"test"}') RETURNING id, deleted_at"#,
-    )
-    .fetch_one(&pool)
-    .await
-    .unwrap();
+    let row = sqlx::query("INSERT INTO agents (data) VALUES ($1) RETURNING id, deleted_at")
+        .bind(serde_json::json!({"name":"test","slug":format!("test-{}",uuid::Uuid::now_v7())}))
+        .fetch_one(&pool)
+        .await
+        .unwrap();
     let id: uuid::Uuid = row.get("id");
     assert_eq!(id.get_version_num(), 7);
     assert!(sqlx::query("DELETE FROM agents WHERE id=$1")
@@ -45,7 +44,7 @@ async fn schema_enforces_v7_and_soft_deletion() {
         .await
         .is_err());
     assert!(sqlx::query(
-        "INSERT INTO agents(id,data) VALUES ('10000000-0000-4000-8000-000000000001','{}')"
+        "INSERT INTO agents(id,data) VALUES ('10000000-0000-4000-8000-000000000001','{\"slug\":\"invalid-uuid\"}')"
     )
     .execute(&pool)
     .await
@@ -55,11 +54,12 @@ async fn schema_enforces_v7_and_soft_deletion() {
         "10000000-0000-7000-0000-000000000001",
     ] {
         let mut tx = pool.begin().await.unwrap();
-        let accepted = sqlx::query("INSERT INTO agents(id,data) VALUES($1,'{}')")
-            .bind(uuid::Uuid::parse_str(invalid).unwrap())
-            .execute(&mut *tx)
-            .await
-            .is_ok();
+        let accepted =
+            sqlx::query("INSERT INTO agents(id,data) VALUES($1,'{\"slug\":\"invalid-uuid\"}')")
+                .bind(uuid::Uuid::parse_str(invalid).unwrap())
+                .execute(&mut *tx)
+                .await
+                .is_ok();
         tx.rollback().await.unwrap();
         assert!(
             !accepted,

@@ -39,6 +39,66 @@ servers:
   - url: http://127.0.0.1:8080
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v1/teams/by-slug/{slug}:
+    get:
+      operationId: resolveTeamSlug
+      summary: Resolver slug de Team para UUID interno
+      description: Consulta indexada sem enumerar listagens. Retorna identidade canônica; buscar detalhes na rota por UUID existente. Arquivados resolvem, excluídos retornam 404. Não redireciona nem reutiliza slugs.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Slug'
+      responses:
+        '200':
+          description: Identidade encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlugResolution'
+        '400':
+          description: Slug inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Identidade não encontrada ou excluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/agents/by-slug/{slug}:
+    get:
+      operationId: resolveAgentSlug
+      summary: Resolver slug de Agent para UUID interno
+      description: Consulta indexada sem enumerar listagens. Retorna identidade canônica; buscar detalhes na rota por UUID existente. Arquivados resolvem, excluídos retornam 404. Não redireciona nem reutiliza slugs.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Slug'
+      responses:
+        '200':
+          description: Identidade encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlugResolution'
+        '400':
+          description: Slug inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Identidade não encontrada ou excluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/agents:
     parameters: []
     post:
@@ -74,6 +134,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-agent
                 deletedAt: null
           headers:
             ETag:
@@ -258,6 +319,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-agent
                 deletedAt: null
           headers:
             ETag:
@@ -305,6 +367,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-agent
                 deletedAt: null
           headers:
             ETag:
@@ -379,6 +442,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-agent
                 deletedAt: null
           headers:
             ETag:
@@ -455,6 +519,7 @@ paths:
                   version: 1
                   createdAt: 2026-10-27T20:00:00Z
                   updatedAt: 2026-10-27T20:00:00Z
+                  slug: example-agent
                   deletedAt: null
                 targetTeam:
                   id: 10000000-0000-7000-8000-000000000031
@@ -467,6 +532,7 @@ paths:
                   version: 2
                   createdAt: 2026-10-27T20:00:00Z
                   updatedAt: 2026-10-27T20:00:00Z
+                  slug: example-team
                   deletedAt: null
           headers:
             ETag:
@@ -554,6 +620,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-agent
                 deletedAt: null
           headers:
             ETag:
@@ -709,6 +776,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-team
                 deletedAt: null
           headers:
             ETag:
@@ -891,6 +959,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-team
                 deletedAt: null
           headers:
             ETag:
@@ -932,6 +1001,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-team
                 deletedAt: null
           headers:
             ETag:
@@ -1000,6 +1070,7 @@ paths:
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
                 updatedAt: 2026-10-27T20:00:00Z
+                slug: example-team
                 deletedAt: null
           headers:
             ETag:
@@ -1139,6 +1210,7 @@ paths:
                     version: 1
                     createdAt: 2026-10-27T20:00:00Z
                     updatedAt: 2026-10-27T20:00:00Z
+                    slug: example-team
                     deletedAt: null
         "400":
           $ref: "#/components/responses/400"
@@ -1725,6 +1797,23 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    Slug:
+      type: string
+      minLength: 1
+      maxLength: 80
+      pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+      description: Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.
+    SlugResolution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+        slug:
+          $ref: '#/components/schemas/Slug'
+      required: [id, slug]
+      additionalProperties: false
     CoordinationContext:
       oneOf:
         - type: object
@@ -1879,6 +1968,8 @@ components:
     Agent:
       type: object
       properties:
+        slug:
+          $ref: '#/components/schemas/Slug'
         id:
           type: string
           format: uuid
@@ -1941,6 +2032,7 @@ components:
           description: Resumo de contexto fornecido explicitamente, não transcrição nem cópia automática de
             histórico.
       required:
+        - slug
         - id
         - name
         - roleDescription
@@ -2081,6 +2173,8 @@ components:
     Team:
       type: object
       properties:
+        slug:
+          $ref: '#/components/schemas/Slug'
         id:
           type: string
           format: uuid
@@ -2125,6 +2219,7 @@ components:
           format: date-time
           description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
       required:
+        - slug
         - id
         - name
         - purpose

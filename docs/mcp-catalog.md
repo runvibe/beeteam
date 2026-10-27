@@ -6,7 +6,7 @@ sÃ£o exportados do cÃ³digo do catÃ¡logo, nÃ£o uma proposta desconectada 
 
 ## Envelope das ferramentas simples
 
-Os 52 nomes abaixo sÃ£o os operationId dos contratos, preservando inclusive
+Os 55 nomes abaixo sÃ£o os operationId dos contratos, preservando inclusive
 `listExecutionSummarys`. Todas chamam os mesmos serviÃ§os/DTOs de HTTP. NÃ£o hÃ¡ outro
 modelo de autenticaÃ§Ã£o/permissÃµes no MCP.
 
@@ -85,6 +85,14 @@ Leituras nÃ£o iniciam atividade. ExclusÃµes sÃ£o lÃ³gicas e nÃ£o remov
 | `getResumptionContext` | GET `/api/v1/agents/{agentId}/resumption-context` | read | â€” | ResumeContext |
 | `listAgentActivities` | GET `/api/v1/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
 
+### Resolução por slug
+
+| Tool | HTTP | Efeito | Entrada | Saída |
+|---|---|---|---|---|
+| `resolveAgentSlug` | GET `/api/v1/agents/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+| `resolveTeamSlug` | GET `/api/v1/teams/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+| `resolveTaskSlug` | GET `/api/v1/tasks/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+
 ## Compostas
 
 ### prepare_execution â€” read
@@ -130,7 +138,7 @@ Os schemas exatos de todas entradas e saÃ­das constam no catÃ¡logo JSON.
 
 ## Resources â€” leitura por allowlist
 
-Snapshot editorial dos commit 8263cea da frente Skills, copiado para
+Snapshot editorial dos commit 25a615a da frente Skills, copiado para
 `resources/bee-team`. ConteÃºdo nÃ£o estÃ¡ instalado globalmente. `resources/read`
 aceita somente os URIs anunciados; URI file/path arbitrÃ¡rio Ã© rejeitado. Nenhum acesso
 a segredos ou diretÃ³rios do usuÃ¡rio. Os textos sÃ£o materiais para IA consumir,
@@ -173,7 +181,7 @@ cargo test --locked --features mcp --test backend_mcp
 ```
 
 Teste real cobre discovery, schema validation, tools simples/compostas,
-rollback/idempotÃªncia, resources seguros e os trÃªs prompts. CatÃ¡logo tem 57 tools
+rollback/idempotÃªncia, resources seguros e os trÃªs prompts. CatÃ¡logo tem 60 tools
 (52 de domÃ­nio +3 compostas +2 sistema),6 resources e3 prompts.
 
 ## Síntese cumulativa para cards
@@ -189,3 +197,13 @@ rollback/idempotÃªncia, resources seguros e os trÃªs prompts. CatÃ¡logo te
 Especificação define entrega, requisitos, regras e critérios de aceite. `description` apresenta a tarefa, `PlanRevision.content` descreve execução versionada, `currentSummary` relata estado cumulativo atual. Nenhum substitui o outro. Alteração apenas de specification é administrativa e não exige currentSummary; progress conjunto mantém sua exigência. Timeline mantém antes/depois via task.updated. Replays legados recebem vazio explícito no snapshot, mantendo versão e conteúdo anterior.
 
 Especificações e planos/revisões conservam o texto recebido, incluindo Markdown, Unicode, quebras de linha e trechos de código/HTML literais. O backend não renderiza HTML, executa ou transforma conteúdo. Planos continuam com content Markdown limitado a 65536 bytes, revisões imutáveis e conflitos baseRevision existentes. Sem nova entidade ou versionamento exclusivo de especificação. Clientes devem tratar conteúdo como dados e renderizar com segurança quando necessário.
+
+## Slugs de agentes, times e tasks
+
+Agent.slug, Team.slug e Task.slug (incluindo subtasks) são gerados, sempre presentes e não editáveis. UUIDv7 permanece identidade interna e parâmetro das APIs existentes. Boards não possuem slug. Resolvers GET /api/v1/agents/by-slug/{slug}, /teams/by-slug/{slug}, /tasks/by-slug/{slug} retornam {id,slug}; no MCP: resolveAgentSlug/resolveTeamSlug/resolveTaskSlug com params.slug. Usar o UUID retornado nas APIs/prompts seguintes; não enviar slug onde se exige UUID. Retorno404 para ausente/excluído; arquivados continuam resolvendo. Formato inválido ou não canônico retorna400; não há redirect/normalização implícita no resolver.
+
+Normalização única no PostgreSQL: lowercase+NFKD, remoção de marcas combinantes U+0300..036F, ß/æ/œ para ss/ae/oe, demais caracteres fora de a-z0-9 viram separador, hifens colapsados/sem bordas. Nomes sem caracteres úteis usam agent/team/task; não há transliteração universal de alfabetos não latinos. Máximo80 caracteres ASCII, truncando base para caber sufixos -2,-3... . Reservados new/edit/create/by-slug/resolve/search/archive/settings/api/mcp/agents/teams/tasks e strings em formato UUID recebem prefixo agent-/team-/task-.
+
+Slugs são estáveis ao renomear e únicos por tipo, inclusive archived/deleted. Excluídos nunca liberam o nome para outra identidade; cópia cria novo slug. Migration006 usa created_at,id para backfill determinístico, incluindo tombstones sem alterar conteúdo prévio, versão ou datas. Coluna gerada/index único/trigger de imutabilidade e lock transacional coordenam concorrência. Resolvers consultam índice diretamente, sem snapshot completo ou enumeração de listas. A geração e o backfill compartilham a mesma função SQL, sem algoritmos divergentes.
+
+Replays históricos sem slug ganham o slug canônico imutável do registro correspondente, inclusive tombstones; conservam a versão e demais campos do snapshot original. Não se reconstrói slug pelo nome antigo nem atual. Sem auth/políticas novas; alteração visual/integração frontend não validada nesta frente.
