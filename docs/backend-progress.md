@@ -94,3 +94,10 @@ Implementação registrada no commit local `968b601`. Atributos Git preservam os
 - [x] Build MCP e39 testes Rust aprovados com targetWindows separado, banco isolado55481; dois testes Python aprovados. Sintaxe scripts/diff check/arquivo de credenciais ignorado confirmados. Nenhuma incompatibilidade Rust exigiu alteração de contratos/regras.
 - Limite: não foi executado restart da API ativa durante QA. Comando de instância temporária foi bloqueado pela revisão automática sem motivo específico; persistência foi comprovada por PostgreSQL e novas leituras HTTP/proxy mantendo o serviço ativo. A tentativa inicial de build no artefato ativo falhou por lock Windows e foi substituída por output target separado. Nenhuma falha de produto atribuída a esses limites operacionais.
 - Downloads/imagens sem QA visual binário nesta rodada, cobertos na suíte HTTP backend isolada; não alegar integração visual além das evidências frontend. Nenhum outro worktree editado; sem push/merge/deploy. API e dados mantidos ativos para uso.
+
+## Procedimento local e verificação de retomada
+
+- Runbook separa inicialização/reuso, frontend em primeiro plano, readiness API/proxy/MCP e bootstrap opcional autorizado; sem caminhos de worktree como instalação universal. SQLite não implementado.
+- Runtime real preservado: consultas API/proxy iguais; PostgreSQL existente com 1 board, 2 tasks, 2 agents e 1 team; MCP initialize/list/read/listBoards sem erros. Sem novas escritas de negócio ou reinício do processo da API.
+- Build MCP e 39 testes Rust aprovados; 2 testes Python aprovados. A primeira tentativa da suíte encontrou o contêiner isolado de testes parado; após iniciar apenas esse contêiner, a suíte passou. Testes nunca usaram beeteam_local.
+- Snapshot MCP ativo segue25a615a; nova sincronização editorial será registrada separadamente.

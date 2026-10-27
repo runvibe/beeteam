@@ -1,14 +1,13 @@
 # Preview local com API e PostgreSQL reais
 
-A API deste worktree atende em `http://127.0.0.1:18081`. A porta8080 pertence a outro projeto e foi preservada. O frontend é executado na frente c44d em `http://127.0.0.1:5173`, com proxy Vite de `/api` para18081. Os contratos continuam nas rotas `/openapi/kanban.json` e `/openapi/ra.json`; MCP em `/mcp`.
+O launcher local deste projeto usa API em `http://127.0.0.1:18081`, PostgreSQL em `127.0.0.1:55482` e painel em `http://127.0.0.1:5173`, com proxy Vite de `/api` para18081. Execute os comandos na raiz do checkout correspondente; caminhos de worktrees de desenvolvimento não são uma instalação universal. Os contratos continuam nas rotas `/openapi/kanban.json` e `/openapi/ra.json`; MCP em `/mcp`.
 
 ## Iniciar e reaproveitar
 
-No Windows, com Docker e Rust disponíveis:
+No Windows, com Docker e Rust disponíveis, na raiz do checkout backend:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-local-api.ps1
-python scripts/bootstrap-local-api.py
 ```
 
 O primeiro comando compila com MCP, copia o executável para `.local/api-runtime/` (evitando bloquear o artefato do Cargo no Windows) e inicia a API em processo oculto, com PID/logs em `.local/`. Se a instância própria já estiver ativa, verifica health e a reaproveita. `-SkipBuild` usa o binário já compilado. Não encerra processos que ocupem a porta.
@@ -17,11 +16,36 @@ PostgreSQL18 roda no container `beeteam-local-postgres`, endereço127.0.0.1:5548
 
 A API permanece em segundo plano após a sessão de terminal. Configuração ativa: APP_HOST127.0.0.1, APP_PORT18081, OTEL_ENABLEDfalse, MCP_ENABLEDtrue. CORS permite http://127.0.0.1:5173 e http://localhost:5173. Pelo proxy, requests são same-origin e ETag/Location ficam acessíveis sem configuração extra no navegador. O frontend não recebe credenciais de PostgreSQL.
 
-## Bootstrap identificado
+## Bootstrap opcional, separado da inicialização
 
-O segundo comando cria via HTTP os agentes **Líder local** e **Colaborador local**, **Equipe de integração local**, quadro **Bee Team local**, task **Validar integração real** e subtask **Conferir persistência pelo frontend**. A task contém especificação Markdown, plano/revisão, comentário, síntese atual e execução histórica. Esses registros são fixtures autorizadas de integração, não trabalho operacional de produto.
+Não execute bootstrap, seeds ou reset para iniciar ou validar uma instalação existente. Apenas para criar uma fixture de integração explicitamente autorizada, execute `python scripts/bootstrap-local-api.py`. Esse comando cria via HTTP os agentes **Líder local** e **Colaborador local**, **Equipe de integração local**, quadro **Bee Team local**, task **Validar integração real** e subtask **Conferir persistência pelo frontend**. A task contém especificação Markdown, plano/revisão, comentário, síntese atual e execução histórica. Esses registros são fixtures autorizadas de integração, não trabalho operacional de produto.
 
 `.local/bootstrap.json` mantém pedidos completos, versões originais, chaves de idempotência e resultados das etapas, com substituição atômica do arquivo. Retries reutilizam o pedido original; não adotam silenciosamente versões após edições na UI. A síntese é gravada junto da execução POST idempotente, sem PATCH de bootstrap. Reruns preservam edições já feitas na UI e não recriam etapas concluídas. O script não enumera nem altera registros externos à sua fixture. Mantenha o arquivo para preservar essa associação.
+
+## Painel e readiness
+
+O checkout frontend precisa conter `frontend/package.json` e o proxy em `frontend/vite.config.ts`. Com dependências já instaladas, execute no diretório `frontend/`:
+
+```powershell
+npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
+```
+
+Esse comando permanece em primeiro plano. Reutilize um painel saudável já ativo. Porta ocupada não autoriza encerrar processos. Se uma política de aprovação bloquear a inicialização automática, informe o bloqueio e solicite execução manual; não tente outro mecanismo para contorná-lo. O painel usa PostgreSQL por meio da API, nunca diretamente. Não existe fallback automático para fixtures/mock.
+
+Verifique separadamente:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:18081/health
+Invoke-RestMethod http://127.0.0.1:18081/api/v1/boards
+Invoke-WebRequest http://127.0.0.1:5173
+Invoke-RestMethod http://127.0.0.1:5173/api/v1/boards
+```
+
+Health confirma o processo; a consulta de boards confirma leitura do armazenamento; a igualdade API/proxy confirma encaminhamento; HTML200 não prova renderização ou navegação visual. Abra o painel e navegue pelos registros reais para esse último nível de evidência. Uma página antiga ainda aberta não prova que o servidor está ativo.
+
+O endpoint MCP é `http://127.0.0.1:18081/mcp`, transporte Streamable HTTP, sem sessão persistente. Valide por cliente MCP/JSON-RPC com `initialize`, `notifications/initialized`, `tools/list`, `resources/list` e `prompts/list`, enviando `Accept: application/json, text/event-stream` e a versão negociada em `MCP-Protocol-Version`. Não use navegação GET como prova de funcionamento MCP. O catálogo atual anuncia60 ferramentas,6 recursos e3 prompts; conectar esse servidor ao harness é uma configuração separada, não feita pela inicialização da API.
+
+As Skills bundled são incorporadas no binário em compilação. Copiar novos arquivos ou regenerar catálogo não atualiza uma instância ativa. Registre separadamente revisão fonte, build e revisão servida; combine um reinício antes de trocar o processo saudável. Preserve banco, volume e credenciais. O launcher é de inicialização/reuso, não um atualizador de processo ativo. PostgreSQL18 permanece o armazenamento suportado; este procedimento não implementa SQLite nem migração entre bancos.
 
 ## Contrato do transporte
 
@@ -44,3 +68,7 @@ Frontend commit `a1c9eae` reportou navegação/edição/reload reais no preview5
 Frontend também reportou paginação/filtro, vínculos e navegação de subtask por slug, leitura de planos/revisões e histórico. Downloads/imagens não tiveram QA visual com fixture binária nesta rodada; seus fluxos HTTP são cobertos pelos testes de integração backend isolados. O processo ativo inicial usa o binário original; futuras partidas pelo script usam cópia em `.local/api-runtime`. Não foi necessário interromper a API para provar persistência: registros foram conferidos diretamente no PostgreSQL e relidos via HTTP/proxy.
 
 Validação backend nesta rodada: build MCP e39 testes Rust aprovados com `--target x86_64-pc-windows-msvc`, mantendo output separado do executável ativo no Windows; dois testes Python de recuperação do bootstrap aprovados. Testes usam exclusivamente PostgreSQL55481/banco de teste, nunca `beeteam_local`55482. Sintaxe dos scripts e diff check aprovados.
+
+## Verificação real da retomada em 27/10/2026
+
+Sem seeds, reset ou novas escritas de negócio: API18081 e proxy5173 responderam200 e JSON idêntico para boards, tasks, agents e teams; PostgreSQL confirmou1 board,2 tasks,2 agents e1 team. MCP initialize/list/read e tools/call listBoards responderam sem erro, com60 ferramentas,6 recursos e3 prompts. Os recursos leader/integration ativos correspondiam ao snapshot25a615a antes da atualização editorial. Esta rodada verifica transporte/leitura/persistência já existente; não substitui QA visual, testes de mutações ou uma instalação limpa em outra máquina.
