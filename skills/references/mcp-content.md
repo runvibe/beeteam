@@ -40,3 +40,7 @@ Os três prompts consultam currentSummary como estado cumulativo, sem atualizá-
 ## Especificação em Markdown
 
 Os prompts consultam Task.specification junto da task, distinguindo requisitos/aceite de description, plan.content e currentSummary. Preparação retorna specification inclusive nos filhos; ler Markdown não o executa nem autoriza escrita. A edição via createTask/updateTask aceita string opcional, inclusive vazia para limpeza explícita, mas não null. Os exemplos foram validados contra o catálogo regenerado com specification; o backend deve sincronizar os textos editoriais deste commit.
+
+## Slugs na entrada do consumidor
+
+resolveAgentSlug, resolveTeamSlug e resolveTaskSlug resolvem referências legíveis para `{id,slug}`. Resolva antes de prompts/get: os três prompts mantêm argumentos UUIDv7, sem novos parâmetros de slug. Seis resources e três prompts permanecem iguais; tools passam a 60. Este conteúdo não acrescenta aliases nem gera slug em cliente.

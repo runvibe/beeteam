@@ -70,3 +70,13 @@ Fonte backend 8fbc somente leitura: catálogo JSON SHA-256 `5eb5bf63187ce028cd82
 Seis exemplos JSON de integration.md passaram contra inputSchema do catálogo, incluindo updateTask apenas specification sem currentSummary e createPlan com Markdown. Limpeza vazia passou; null foi rejeitado; specification+progress sem síntese falhou e com síntese passou. Task.specification obrigatório em leitura e limite de specification/plan.content conferidos. Verificador local da extensão x-maxBytes aceitou 65536 e rejeitou 65538 bytes UTF-8 (texto multibyte); isso não substitui teste do serviço.
 
 Revisão independente simulou especificação ausente, aceite versus evidência, Markdown com instrução maliciosa, edição administrativa/progresso e retomada após alteração de requisitos, sem falha material. Preservados quatro conceitos distintos e prompts somente leitura. quick_validate das duas skills, links e diff-check passaram. Build --locked e 12 unitários passaram; três integrações falharam por Docker/CreateContainer/NotFound. Sem execução no backend nem alteração de outro worktree. Snapshots aguardam sincronização pelo responsável.
+
+## Slugs — contratos estáveis
+
+Fonte backend 8fbc somente leitura: catálogo SHA-256 `19c5d8eb9cceaf41ca13b22c99bb14eb3c9ffb9485f6d017bdfb06f0db10870c`; Kanban `5aa8a00cb94a978e9f3b6175ea5e871c07830d545c43657fcddda1ca8bc9fcb7`; RA `a82976eb916b1164b353ffc79052084495f8e99c8e2e22d1654df6e280405af4`.
+
+Nove exemplos de integration.md passaram no JSON Schema do catálogo, incluindo três resoluções com params.slug. Slug vazio, maiúsculo, acento, barra, hífen inicial/duplicado, 81 caracteres e envelope errado rejeitados; 80 caracteres aceitos. getTask rejeitou slug no campo UUID. Argumentos dos três prompts permanecem iguais ao manifesto UUID. Agent/Team/Task exigem slug em resposta; contagens 60/6/3 conferidas. Esses testes estáticos não verificam persistência/404 no servidor.
+
+Quick_validate das duas skills, links e diff-check passaram. Build --locked e 12 unitários passaram; três integrações locais falharam no Docker/CreateContainer/NotFound. Nenhuma chamada mutante ou escrita no worktree backend; seus snapshots precisam ser sincronizados separadamente.
+
+Simulações editoriais conferiram slug→data.id→UUID, rename, 404, arquivado, mesmo slug em tipos diferentes e board sem slug. Corrigida menção indevida a agentId nos textos de task_briefing/delivery_review: ambos agora dizem único argumento taskId/resolveTaskSlug; agent_resumption mantém agentId e taskId.

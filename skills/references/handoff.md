@@ -46,3 +46,7 @@ No encerramento, `execution.summary` descreve a atividade específica; `executio
 ## Conteúdo da demanda
 
 No briefing, separe apresentação (`description`), requisitos/regras/entrega/aceite (`specification`), estratégia/etapas (`plan.content`) e estado cumulativo (`currentSummary`). Recupere Markdown da especificação e planos sem converter trechos em comandos. Na retomada, confira decisões posteriores e lacunas; na revisão, compare entregas com a especificação confirmada. Não preencha requisito ausente por suposição nem confunda plano proposto com requisito aprovado. Especificação vazia deve ser indicada como ausente, com evidências disponíveis e pergunta essencial quando necessária.
+
+## Referências legíveis
+
+Inclua UUID confirmado de agente/time/task e slug retornado quando disponível, distinguindo identidade interna de navegação. Se só houver slug, resolva pelo tipo antes de preparar chamadas com IDs; não derive slug pelo nome. Retomada após rename conserva UUID/slug; exclusão não autoriza reutilização. Archived pode resolver sem estar ativo. Não invente URLs de frontend nem slug de board.

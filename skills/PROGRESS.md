@@ -55,3 +55,11 @@ Validação final feita no catálogo regenerado: 57 tools, seis resources e trê
 - [x] Validar cenários, estrutura e links; build/12 unitários passaram, três integrações bloqueadas por Docker; entrega em commit local com lista de snapshots.
 
 Exemplos updateTask/specification e createPlan/content publicados e validados contra catálogo estável. Nenhum runtime ou snapshot de outro worktree foi alterado.
+
+## Slugs de navegação
+
+- [x] Preparar distinção slug/UUID e resolução por tipo nas skills, referências e prompts.
+- [x] Conferir fontes estáveis: nove exemplos passaram; negativos de slug/envelope, UUIDs e argumentos de prompts conferidos.
+- [x] Validar cenários de slug; corrigir parâmetros descritos de briefing/revisão; build/12 unitários passaram, integração Docker bloqueada; entrega em commit local e lista de snapshots.
+
+Catálogo estável com 60 tools, seis resources e três prompts conferido; backend não foi alterado nesta frente.

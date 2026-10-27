@@ -61,7 +61,7 @@ Se API/MCP estiver indisponível, entregue um registro pendente na conversa: IDs
 
 ## MCP implementado: uso operacional
 
-Fonte autoritativa: `docs/mcp-catalog.md` e `docs/mcp-catalog.json` do backend, incluindo a revisão currentSummary identificada em validation.md. São 52 tools de domínio com nomes dos operationId, três compostas e `health_check`/`echo_request`, rmcp 2.0.0, MCP 2025-11-25 via Streamable HTTP. Consulte discovery da instalação atual; código implementado não prova servidor conectado nesta sessão. Não execute health/echo como prova de autorização ou persistência de task.
+Fonte autoritativa: `docs/mcp-catalog.md` e `docs/mcp-catalog.json` do backend, incluindo a revisão currentSummary identificada em validation.md. São 55 tools de domínio com nomes dos operationId, três compostas e `health_check`/`echo_request`, rmcp 2.0.0, MCP 2025-11-25 via Streamable HTTP. Consulte discovery da instalação atual; código implementado não prova servidor conectado nesta sessão. Não execute health/echo como prova de autorização ou persistência de task.
 
 Tools simples usam `{params,query,body,actor,expectedVersion,idempotencyKey}` conforme schema; omita campos desnecessários. `params` são IDs do path; `query` filtros tipados/offset/limit; `body` DTO HTTP. Actor declarado: `{kind:"agent",id:"UUIDv7"}` para o agente real; não use human para contornar limites. `expectedVersion` é inteiro, correspondente ao If-Match; POST usa UUID de idempotência. Upload usa `upload:{name,mediaType,dataBase64}`; download devolve contentPath HTTP, não path local. Saída simples `{data,version,createdId}`. Erros de domínio têm `isError:true` e `{error,code,details}`; ausência de exceção de transporte não significa sucesso. Falhas de protocolo são JSON-RPC.
 
@@ -124,3 +124,33 @@ Exemplos de Markdown, estruturais e sem execução (IDs/versões ilustrativos a 
 ```
 
 Primeiro exemplo altera somente requisitos confirmados, sem atualizar andamento nem síntese; o segundo registra como executar. Não transforma requisitos ilustrativos em decisão real. Limpeza explícita usa `body:{"specification":""}`, com mesma disciplina de autorização/versão; nunca envie null. Uma versão deve vir da resposta atual, não de suposição sobre quantas escritas ocorreram.
+
+## Resolução de slugs
+
+Agent.slug, Team.slug e Task.slug são strings ASCII lowercase de 1..80 caracteres, somente leitura, únicas por tipo; subtasks usam o mesmo tipo Task. Boards ficam fora desse recurso. A geração pertence ao servidor: nome/title normalizado NFKD sem acentos, fallback agent/team/task, colisões com -2/-3, truncamento ao limite e prefixação de UUIDs/termos reservados. Não reproduza esse algoritmo no agente para presumir identidade; use o valor retornado.
+
+| Tipo | Tool MCP | HTTP |
+|---|---|---|
+| Agente | resolveAgentSlug | GET /api/v1/agents/by-slug/{slug} |
+| Time | resolveTeamSlug | GET /api/v1/teams/by-slug/{slug} |
+| Task/subtask | resolveTaskSlug | GET /api/v1/tasks/by-slug/{slug} |
+
+A resolução retorna SlugResolution `{id,slug}` com UUIDv7. Resolva uma vez quando só houver slug; conserve UUID para chamadas/relacionamentos seguintes e use as leituras normais para revalidar estado/versão. taskId/agentId dos prompts continuam UUID. Sem resolução confirmada, não envie slug no lugar de ID. HTTP 404 significa desconhecido/excluído, enquanto arquivado ainda resolve. Slug não é reutilizado após deleted e não muda com rename; preserve links e autoria. Não deduza que resolver implica recurso ativo ou autorização.
+
+Essas três tools ampliam o catálogo para 60, sem alterar seis resources ou três prompts. Use `params.slug` no envelope simples e leia `data.id`/`data.slug` da resposta MCP; não adicione slug aos corpos de criação/edição nem às configurações de board.
+
+Exemplos de resolução somente leitura; os slugs são ilustrativos, não gerados a partir de suposição sobre registros existentes:
+
+```json
+{"tool":"resolveTaskSlug","arguments":{"params":{"slug":"projetar-caixa"}}}
+```
+
+```json
+{"tool":"resolveAgentSlug","arguments":{"params":{"slug":"ana-financeiro"}}}
+```
+
+```json
+{"tool":"resolveTeamSlug","arguments":{"params":{"slug":"tesouraria"}}}
+```
+
+A resposta simples envolve SlugResolution em `data`: use o `data.id` real da task em `prepare_execution.taskId` ou no argumento taskId de task_briefing/delivery_review; para agent_resumption, resolva também o agente e forneça seu UUID em agentId. Não passe a string do slug ao prompt. Nome/title posterior não altera o mapeamento. Em erro, verifique isError/code e não substitua o resultado ausente por UUID inventado. Se já recebeu UUID confirmado, a resolução adicional é desnecessária.
