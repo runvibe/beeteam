@@ -13,6 +13,10 @@ Use os endereços e serviços confirmados pelo líder. Não inicie processos con
 
 Inicialização/reparo coordenado cabe ao líder pelo procedimento local suportado; permissão de executar uma task não autoriza reiniciar infraestrutura. Não contorne recusa de ferramentas, não altere banco/portas por conta própria. Na retomada, confirme novamente estado, responsabilidade e versão antes de escrever; a reinicialização de serviço não equivale à retomada de agentes.
 
+## Confirmar conexão MCP
+
+Ao entrar em chat novo, confira ferramentas Bee Team expostas e faça leitura autorizada para validar acesso. Skill carregada, endpoint ativo ou conexão disponível no chat do líder não comprovam conexão nesta sessão. Se faltarem ferramentas, reporte ao líder e use [onboarding Codex](../references/codex.md#conectar-bee-team-ao-codex); alteração de configuração exige autorização do usuário e mecanismo suportado. Não crie outro servidor nem reconfigure a conta por conta própria. Após atualização da conexão/nova sessão, revalide capacidades e contexto antes de escrever.
+
 ## Receber ou retomar
 
 Leia perfil/regras/limites, tarefa, perfil organizacional e board, planejamento aprovado, decisões aceitas/rejeitadas, resumos, entregas e pendências. Confira autoria e responsabilidade atuais antes de escrever: colaborador só atualiza suas próprias tarefas/subtarefas; a tarefa pai não autoriza editar irmãos ou filhos de outro responsável. Confira `authorAgentId` preservado e `executorAgentId` obrigatório: ambos podem ser líder ou colaborador. Sua responsabilidade de execução é indicada por `executorAgentId`, não pelo time gestor do board.

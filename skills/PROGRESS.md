@@ -73,3 +73,9 @@ Catálogo estável com 60 tools, seis resources e três prompts conferido; backe
 - [x] Avaliar seis cenários simulados; validar estrutura e links; build e 12 unitários passaram, três integrações falharam ao criar containers neste checkout.
 
 Nenhum teste de parada executado no ambiente compartilhado; cenários simulados e verificações reais estão separados em validation.md. Sem SQLite, migração, bootstrap/seed, reset ou restart. Entrega em commit local; sincronização dos snapshots e validação do novo runtime cabem ao backend.
+
+## Onboarding MCP no chat
+
+- [x] Corrigir lacuna entre endpoint ativo e conexão cadastrada/exposta.
+- [x] Incluir comandos Codex oficiais, endereços locais por finalidade, autorização/escopo e atualização de sessão.
+- [x] Validar skills, links e build; 12 unitários passaram, três integrações falharam ao criar containers. Sem alteração de configuração pessoal, instalação ou restart.

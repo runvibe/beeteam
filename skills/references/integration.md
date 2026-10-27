@@ -6,6 +6,8 @@ Antes de usar os links, confira a revisão: este pacote exige coleções diretas
 
 ## Descobrir a capacidade real
 
+Distinga quatro estados: skill carregada, servidor ativo, conexão cadastrada no harness e ferramentas utilizáveis no chat. Um não comprova o seguinte. Se o chat não expuser Bee Team, descubra endpoint/host reais e faça onboarding conforme [Codex](codex.md#conectar-bee-team-ao-codex) ou documentação do harness. Configure somente dentro da autorização do usuário, preservando conexões existentes. Valide initialize/discovery no servidor e chamada de leitura pela ferramenta efetivamente exposta na sessão; informe limitações de resources/prompts e eventual reconexão/nova sessão necessária.
+
 A seção MCP abaixo cobre o catálogo implementado; no pacote local, [conteúdo MCP](mcp-content.md) complementa empacotamento e exemplos. Esse arquivo complementar não é um resource anunciado.
 
 Confirme endereço/configuração local e recursos disponíveis no ambiente. Um OpenAPI é contrato, não prova de servidor em execução. Não teste mutações apenas para descobrir disponibilidade. MCP deve ser descoberto pela lista/documentação de ferramentas do ambiente: `operationId` HTTP não é nome garantido de ferramenta MCP. Não implemente backend, frontend ou conectores para suprir uma capacidade ausente nesta skill.
