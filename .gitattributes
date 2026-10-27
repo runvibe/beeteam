@@ -1,0 +1,3 @@
+# Preserve applied SQLx migration checksums across platform checkouts.
+migrations/*.sql -text
+migrations/202610270001_beeteam.sql whitespace=cr-at-eol

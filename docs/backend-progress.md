@@ -9,7 +9,7 @@ Retomada final autorizada em 27/10/2026. Fonte documental sincronizada sem escre
 - [x] MCP: 52 tools equivalentes, 3 compostas, 2 sistema, 6 resources e 3 prompts; templates Skills 7487ee1 empacotados.
 - [x] Revisão independente e regressões dos problemas encontrados.
 - [x] Documentação, catálogo exportado e verificação final.
-- [ ] Registrar commits locais; preservar branch/worktree sem push, merge ou deploy.
+- [x] Registrar commits locais; preservar branch/worktree sem push, merge ou deploy.
 
 ## Verificações realizadas
 
@@ -41,3 +41,5 @@ Ruling: snapshots de skills são recursos editoriais locais do commit 7487ee1, n
 Ruling: advisory lock protege escritores do serviço, não SQL externo que o ignore. Documentação e testes delimitam essa garantia. Escala multi-tenant não foi solicitada.
 
 Nenhum achado importante ficou sem correção. Sem merge/push/deploy. Container de teste preservado.
+
+Implementação registrada no commit local `968b601`. Atributos Git preservam os bytes das migrations, incluindo CRLF da migration inicial já aplicada, para manter checksums SQLx entre checkouts.
