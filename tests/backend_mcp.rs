@@ -68,7 +68,15 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         }
     }
     let resources = rpc(&app, "resources/list", json!({})).await;
+    assert_eq!(
+        resources["result"]["resources"].as_array().unwrap().len(),
+        6
+    );
     for resource in resources["result"]["resources"].as_array().unwrap() {
+        assert!(resource["description"]
+            .as_str()
+            .unwrap()
+            .contains("e96f759"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]
@@ -156,6 +164,8 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
             .as_str()
             .unwrap();
         assert!(text.contains("originBoardId"));
+        assert!(text.contains("No MCP implementado"));
+        assert!(text.contains(name));
         assert!(!text.contains("{{taskId}}"));
     }
 }

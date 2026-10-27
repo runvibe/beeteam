@@ -43,3 +43,12 @@ Ruling: advisory lock protege escritores do serviço, não SQL externo que o ign
 Nenhum achado importante ficou sem correção. Sem merge/push/deploy. Container de teste preservado.
 
 Implementação registrada no commit local `968b601`. Atributos Git preservam os bytes das migrations, incluindo CRLF da migration inicial já aplicada, para manter checksums SQLx entre checkouts.
+
+## Atualização editorial pós-MCP — e96f759
+
+- Nove snapshots solicitados copiados byte a byte de skills/ no worktree Skills, conferidos contra o commit e96f759. Nenhuma escrita no worktree de origem.
+- Metadados de resources/list e catálogos Markdown/JSON atualizados para e96f759. Catálogo JSON regenerado pelo backend; tools e prompts permanecem idênticos ao catálogo anterior, com 57 tools, seis resources e três prompts. mcpName do manifesto confere com nomes, descrições e argumentos anunciados.
+- team-examples.md e references/mcp-content.md preservados; allowlist e funcionalidades inalteradas. Política de edição do líder continua pendente.
+- cargo build --locked e cargo build --locked --features mcp passaram. cargo test --locked: 27 testes; com --features mcp: 30 testes. Integração MCP repetiu resources/list/read e prompts/list/get/render, incluindo novo hash e conteúdo editorial renderizado.
+- Primeiras tentativas tiveram timeout porque o container isolado estava parado e depois recebeu fast shutdown. Reiniciado; validação final passou mantendo uma sessão Docker ativa. Causa do shutdown não confirmada, sem atribuição ao produto. Container e bancos preservados.
+- Sem push, merge ou deploy; atualização registrada em commit local dedicado.

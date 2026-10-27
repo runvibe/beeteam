@@ -7,3 +7,5 @@ Compare cada critério com evidência concreta. Diferencie resultado observado, 
 Entregue parecer com critérios/evidências, limitações, correções propostas, pendências e próximo passo. Indique se cabe continuar, revisar ou concluir, sem gravar essa sugestão como decisão. A política de edição do líder sobre tasks de executores geridos ainda está pendente; não presuma permissão por gestão de board/time.
 
 Se posteriormente houver encerramento autorizado, use a ferramenta disponível e o schema anunciado para resumo, entregas, pendências, status e revisão. Encerrar atividade não obriga concluir task. Falha/timeout de persistência exige reconciliação e comunicação explícita, nunca alegação de gravação confirmada.
+
+No MCP implementado, `delivery_review(taskId)` incorpora contexto consultado por `prepare_execution`, entregas e origem. Complete evidências/páginas com tools simples anunciadas. Para eventual registro posterior autorizado, `close_activity` recebe `execution` e bloco/comentário opcionais na mesma transação; `reviewContext` só descreve orientação real e não fabrica aprovação. Em erro isError, não anuncie gravação nem efeitos parciais.
