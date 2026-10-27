@@ -29,7 +29,8 @@ it("reconstructs a direct board filter and page size, opens card body, and retur
   await userEvent.click(
     within(card as HTMLElement).getByText(/Jornada inicial mapeada/),
   );
-  expect(location.pathname).toBe(`/tasks/${ids.task}`);
+  expect(location.pathname).toBe("/tasks/mapear-a-jornada-de-primeiro-uso");
+  await screen.findByRole("region", { name: "Task" });
   const topPath = screen.getByRole("navigation", { name: "Caminho" });
   expect(
     await within(topPath).findByRole("link", { name: "Lançamento do produto" }),
@@ -45,7 +46,9 @@ it("reconstructs a direct board filter and page size, opens card body, and retur
   ).toHaveValue("Mapear");
   expect(new URLSearchParams(location.search).get("kanban.limit")).toBe("1");
   window.history.forward();
-  await waitFor(() => expect(location.pathname).toBe(`/tasks/${ids.task}`));
+  await waitFor(() =>
+    expect(location.pathname).toBe("/tasks/mapear-a-jornada-de-primeiro-uso"),
+  );
   expect(await screen.findByRole("region", { name: "Task" })).toBeVisible();
 });
 it("uses a deterministic direct-task fallback and rejects external return URLs", async () => {
@@ -90,13 +93,13 @@ it("preserves the executor action instead of opening the task and exposes settin
   await userEvent.click(
     await within(card as HTMLElement).findByRole("button", { name: /Lia/ }),
   );
-  expect(location.pathname).toBe(`/agents/${ids.agent}`);
+  expect(location.pathname).toBe("/agents/lia");
   expect(screen.queryByRole("dialog")).toBeNull();
   await userEvent.click(
     await screen.findByRole("button", { name: "Configurar" }),
   );
   const dialog = await screen.findByRole("dialog");
-  expect(location.pathname).toBe(`/agents/${ids.agent}/settings`);
+  expect(location.pathname).toBe("/agents/lia/settings");
   await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
   expect(screen.queryByRole("dialog")).toBeNull();
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));

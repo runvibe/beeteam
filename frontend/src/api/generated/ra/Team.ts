@@ -1,5 +1,6 @@
 // Generated from contracts/ra-openapi.yaml. Do not edit.
 export type Team = {
+  slug: import("./Slug").Slug;
   /** Format: uuid */
   id: string;
   name: string;

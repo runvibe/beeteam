@@ -1,3 +1,5 @@
+import { useRouteEntity } from "./routing/entity-route";
+import { QueryState } from "./components/shared";
 import {
   useRestorePosition,
   useLocation,
@@ -23,6 +25,7 @@ import { Teams, TeamPage } from "./features/teams";
 import "./App.css";
 export function App() {
   useRestorePosition();
+  const routeEntity = useRouteEntity();
   const knownRoute = isKnownRoute(useLocation());
   const { taskId, agentId, teamId } = useUi();
   const area = useUi((s) => s.area),
@@ -109,6 +112,9 @@ export function App() {
               <h1>Página não encontrada</h1>
               <Button onClick={() => setArea("boards")}>Ir para boards</Button>
             </div>
+          ) : routeEntity.active &&
+            (routeEntity.isPending || routeEntity.error) ? (
+            <QueryState query={routeEntity}>{null}</QueryState>
           ) : taskId ? (
             <TaskPage />
           ) : agentId ? (

@@ -77,13 +77,15 @@ it("keeps team leader action separate and returns from board and settings to the
   expect(within(dialog).queryByText("Boards geridos")).toBeNull();
   await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
   expect(screen.queryByRole("dialog")).toBeNull();
-  expect(location.pathname).toBe(`/teams/${ids.team}`);
+  expect(location.pathname).toBe("/teams/produto-engenharia");
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
   expect(
     await screen.findByRole("searchbox", { name: "Buscar times" }),
   ).toHaveValue("Produto");
   window.history.forward();
-  await waitFor(() => expect(location.pathname).toBe(`/teams/${ids.team}`));
+  await waitFor(() =>
+    expect(location.pathname).toBe("/teams/produto-engenharia"),
+  );
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 it("restores a direct settings URL to its profile with tab and pagination intact", async () => {

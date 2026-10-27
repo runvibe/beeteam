@@ -1,3 +1,4 @@
+import { fixtureSlugs } from "./mock-slugs";
 import type { Resources } from "./types";
 export const uuid = (n: number) =>
   `019a23a0-0000-7000-8000-${n.toString(16).padStart(12, "0")}`;
@@ -46,7 +47,7 @@ export function makeSeed(): Database {
       ...lifecycle,
     },
   ];
-  const teams: Resources["teams"][] = [
+  const teams: Omit<Resources["teams"], "slug">[] = [
     {
       id: ids.team,
       name: "Produto & engenharia",
@@ -66,7 +67,7 @@ export function makeSeed(): Database {
       ...lifecycle,
     },
   ];
-  const agents: Resources["agents"][] = [
+  const agents: Omit<Resources["agents"], "slug">[] = [
     {
       id: ids.agent,
       name: "Lia",
@@ -136,7 +137,7 @@ export function makeSeed(): Database {
     "Validar paginação da API",
     "Preparar critérios de aceite",
   ];
-  const tasks: Resources["tasks"][] = titles.map((title, i) => ({
+  const tasks: Omit<Resources["tasks"], "slug">[] = titles.map((title, i) => ({
     id: uuid(100 + i),
     boardId: ids.board,
     authorAgentId: uuid(31),
@@ -357,10 +358,10 @@ export function makeSeed(): Database {
   ];
   return {
     boards,
-    teams,
-    agents,
+    teams: fixtureSlugs(teams, "team"),
+    agents: fixtureSlugs(agents, "agent"),
     statuses,
-    tasks,
+    tasks: fixtureSlugs(tasks, "task"),
     plans,
     comments,
     summaries,

@@ -113,3 +113,12 @@ Revertida a aplicação indevida do anexo antigo 2347f736 no commit833c24c. Refe
 - 70 testes frontend passaram; build/TypeScript e lint sem erros (avisos preexistentes). Cargo build passou, 12 unitários passam e3integrações continuam bloqueadas por Docker CreateContainer OS2. Revisão independente sem achados.
 - Browser desktop/mobile: corpo do card, perfil sem overlay, modal configuração, recarga, retorno task/board. Mobile agente viewport433/doc433; time433/416; zero dialogs em leitura. Capturas agent-page-final/mobile e team-page-final/mobile em diretório de visualizações desta conversa.
 - Tema final e98a1056 radius .625rem confirmado computado; ícones preservados. Commit local, sem push/merge/deploy/API real.
+
+## URLs legíveis por slug
+
+- Agent/Team/Task.slug readonly e resolvers oficiais sincronizados dos contratos8fbc; 88 schemas gerados. Boards continuam por UUID.
+- Rota resolve slug para UUID e mantém IDs em relações/consultas/mutações. Cards/settings/breadcrumb/ancestrais usam slugs; UUID legado e from aninhado canonicalizam via replaceState preservando query/índices de retorno.
+- Mock fixture-only replica normalização/reservados/prefixoUUID/colisões numéricas80chars, reserva deleted e mantém rename estável; resolver archived válido/deleted404 e escrita de slug rejeitada.
+- 79 testes passam; build/TypeScript e lint sem erros (warnings preexistentes e bundle663kB). Cargo build passou,12unit passaram;3integrações Docker OS2 permanecem impedidas. Revisão independente sem defeito concreto.
+- Browser confirmou UUID agente→/agents/lia preservando atividades/busca, task/subtask por slug, recarga/breadcrumb, time/settings/fechar e Voltar+Forward. Desktop/mobile capturados; viewport433/doc416, tema radius.625rem.
+- Snapshots kanban/RA/catalog JSON comparados por SHA256 com fonte8fbc no fechamento, iguais. Sem API real/push/merge/deploy.

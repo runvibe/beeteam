@@ -88,6 +88,10 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  resolveSlug(
+    resource: "agents" | "teams" | "tasks",
+    slug: string,
+  ): Promise<import("./generated/kanban/SlugResolution").SlugResolution>;
   list<K extends keyof Resources>(
     resource: K,
     scope?: string,

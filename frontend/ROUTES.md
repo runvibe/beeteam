@@ -7,13 +7,13 @@ History API + useSyncExternalStore, em routing/location.ts/query.ts. Sem estado 
 | / e /boards | Lista de boards |
 | /boards/:id | Kanban |
 | /boards/:id/settings | Configuracao do board em painel |
-| /tasks/:id | Task em pagina inteira; filhos usam a mesma rota por ID |
+| /tasks/:slug | Task em pagina inteira; filhos usam a mesma rota por ID |
 | /agents | Lista de agentes |
-| /agents/:id | Perfil em página completa, com abas |
-| /agents/:id/settings | Configuração do perfil em modal; página permanece ao fundo |
+| /agents/:slug | Perfil em página completa, com abas |
+| /agents/:slug/settings | Configuração do perfil em modal; página permanece ao fundo |
 | /teams | Lista de times |
-| /teams/:id | Composição e boards geridos em página completa |
-| /teams/:id/settings | Configuração dos metadados em modal |
+| /teams/:slug | Composição e boards geridos em página completa |
+| /teams/:slug/settings | Configuração dos metadados em modal |
 
 ## Query string
 
@@ -45,3 +45,13 @@ Hospedagem estatica deve servir index.html como fallback de rotas SPA; Vite dev/
 - `revision.<planId>.show=true` expande Histórico de alterações. Seleções não reiniciam offsets; recarga e histórico do navegador preservam os parâmetros.
 
 Agentes e times usam cards com link no bloco principal e títulos textuais. O líder no card de time é uma ação independente. `Voltar` restaura a origem validada e seus parâmetros; links de membros, vínculo de time, tasks e boards registram `from`. Configurações usam a mesma query da página e fechar remove apenas `/settings`, mantendo aba/filtros/paginação. Sem origem, a página volta à listagem correspondente.
+
+## URLs canônicas por slug
+
+Agentes, times e tasks/subtasks usam `/agents/:slug`, `/teams/:slug`, `/tasks/:slug`; configuração conserva `/settings`. Boards continuam `/boards/:id`.
+
+O adapter `resolveSlug` corresponde a GET `/api/v1/{agents|teams|tasks}/by-slug/{slug}` e retorna `SlugResolution {id,slug}`. A rota resolve para UUID; consultas filhas, relações e mutações usam somente IDs. Cards usam o slug persistido, nunca derivam slug do nome no componente.
+
+URLs UUID antigas resolvem por ID e usam replaceState para a URL canônica, mantendo query e índices de retorno. Origens UUID em `from` também são normalizadas quando disponíveis. Filtros contendo IDs nunca são reescritos. Deep links desconhecidos/excluídos mostram erro; arquivados resolvem.
+
+Slugs são readonly e estáveis em rename. Mock usa allocator exclusivo de fixtures conforme backend: NFKD, remoção de marcas, ASCII lowercase/separadores, fallback por entidade, reservados/UUID prefixados e colisões -2/-3 limitadas a80 caracteres. Registros excluídos participam da reserva; não há criação real pelo frontend.

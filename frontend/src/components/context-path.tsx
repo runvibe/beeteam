@@ -16,10 +16,16 @@ export function AppPath() {
   const task = useEntity("tasks", taskId ?? "");
   const agent = useEntity("agents", agentId ?? "");
   const team = useEntity("teams", teamId ?? "");
-  const configuring = useLocation().split("?")[0].endsWith("/settings");
+  const routePath=useLocation().split("?")[0];
+  const configuring = routePath.endsWith("/settings");
+  const [,routeKind,routeKey]=routePath.split('/');
+  if(routeKey && ['agents','teams','tasks'].includes(routeKind) && !agentId && !teamId && !taskId){
+    const root=routeKind==='tasks'?'boards':routeKind;
+    return <nav aria-label="Caminho" className="context-path"><ol><li><a href={findOrigin(`/${root}`) ?? `/${root}`} onClick={openCardLink}>{root==='boards'?'Boards':root==='agents'?'Agentes':'Times'}</a></li><li><span aria-current="page">Carregando…</span></li></ol></nav>;
+  }
   if (agentId || teamId) {
     const resource = agentId ? "agents" : "teams";
-    const id = agentId ?? teamId;
+    const id = (agentId ? agent.data : team.data)?.slug ?? agentId ?? teamId;
     const name = (agentId ? agent.data : team.data)?.name ?? "Carregando…";
     return (
       <nav aria-label="Caminho" className="context-path">
@@ -165,7 +171,7 @@ export function TaskPath({
         {ancestors.data?.map((parent) => (
           <li key={parent.id}>
             <a
-              href={contextHref(`/tasks/${parent.id}`)}
+              href={contextHref(`/tasks/${parent.slug}`)}
               onClick={(event) => {
                 if (
                   !event.ctrlKey &&

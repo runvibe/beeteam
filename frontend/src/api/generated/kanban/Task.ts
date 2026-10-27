@@ -1,5 +1,6 @@
 // Generated from contracts/kanban-openapi.yaml. Do not edit.
 export type Task = {
+  slug: import("./Slug").Slug;
   /** Format: uuid */
   id: string;
   /** Format: uuid */

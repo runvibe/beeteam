@@ -104,13 +104,13 @@ export function Teams() {
                     key={t.id}
                     className="board-card team-card"
                     onClick={(e) =>
-                      openCardBody(e, destination(`/teams/${t.id}`))
+                      openCardBody(e, destination(`/teams/${t.slug}`))
                     }
                   >
                     <a
                       className="task-card-main"
                       aria-label={t.name}
-                      href={destination(`/teams/${t.id}`)}
+                      href={destination(`/teams/${t.slug}`)}
                       onClick={openCardLink}
                     >
                       <CardHeader>
@@ -228,7 +228,7 @@ function TeamDetail({ id }: { id: string }) {
             <Button
               variant="outline"
               onClick={() =>
-                navigate(`/teams/${id}/settings${location.search}`)
+                navigate(`/teams/${q.data.slug}/settings${location.search}`)
               }
             >
               Editar metadados do time
@@ -236,7 +236,7 @@ function TeamDetail({ id }: { id: string }) {
             <Dialog
               open={configuring}
               onOpenChange={(v) =>
-                !v && navigate(`/teams/${id}${location.search}`, true)
+                !v && navigate(`/teams/${q.data.slug}${location.search}`, true)
               }
             >
               <DialogContent className="detail-dialog">

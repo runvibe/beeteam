@@ -134,7 +134,7 @@ export function Agents() {
                     key={a.id}
                     className="board-card-link"
                     aria-label={a.name}
-                    href={destination(`/agents/${a.id}`)}
+                    href={destination(`/agents/${a.slug}`)}
                     onClick={openCardLink}
                   >
                     <Card className="agent-card board-card">
@@ -216,7 +216,7 @@ function AgentDetail({ id }: { id: string }) {
               <Button
                 variant="outline"
                 onClick={() =>
-                  navigate(`/agents/${id}/settings${location.search}`)
+                  navigate(`/agents/${q.data.slug}/settings${location.search}`)
                 }
               >
                 Configurar
@@ -245,7 +245,7 @@ function AgentDetail({ id }: { id: string }) {
             <Dialog
               open={configuring}
               onOpenChange={(v) =>
-                !v && navigate(`/agents/${id}${location.search}`, true)
+                !v && navigate(`/agents/${q.data.slug}${location.search}`, true)
               }
             >
               <DialogContent className="detail-dialog">

@@ -26,6 +26,8 @@ export function patchRecord<K extends keyof Patches>(
   body: Patches[K],
   version: number,
 ): PatchResults[K] {
+  if ("slug" in body)
+    throw new ApiError(400, "invalid_request", "Slug é somente leitura.");
   const row = db[resource].find((r) => r.id === id && !r.deletedAt);
   if (!row) throw new ApiError(404, "not_found", "Registro não encontrado.");
   if (row.version !== version)

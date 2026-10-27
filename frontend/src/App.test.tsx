@@ -37,7 +37,7 @@ describe("Bee Team interface", () => {
         name: "Descrever hipóteses da jornada",
       }),
     );
-    dialog = screen.getByRole("region", { name: "Task" });
+    dialog = await screen.findByRole("region", { name: "Task" });
     await userEvent.click(
       within(dialog).getByRole("tab", { name: "Subtasks" }),
     );
@@ -46,7 +46,7 @@ describe("Bee Team interface", () => {
         name: "Validar hipóteses com pesquisa",
       }),
     );
-    dialog = screen.getByRole("region", { name: "Task" });
+    dialog = await screen.findByRole("region", { name: "Task" });
     const path = within(dialog).getByRole("navigation", {
       name: "Caminho da task",
     });
@@ -116,7 +116,9 @@ describe("Bee Team interface", () => {
       screen.getByRole("button", { name: "Recursos de Agentes" }),
     );
     await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
-    await userEvent.click(screen.getByRole("button", { name: "Configurar" }));
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Configurar" }),
+    );
     const dialog = await screen.findByRole("dialog");
     const input = within(dialog).getByLabelText("Nome", { exact: true });
     await userEvent.clear(input);

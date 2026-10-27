@@ -73,6 +73,27 @@ export function safeOrigin(value: string | null): string | null {
 export function destination(path: string) {
   return `${path}?${new URLSearchParams({ from: currentUrl() })}`;
 }
+/** Canonical identity replacement must not create a navigation or lose return indexes. */
+export function replaceCanonicalUrl(to: string) {
+  const previous = currentUrl();
+  if (to === previous) return;
+  savePosition(previous);
+  positions.set(to, positions.get(previous)!);
+  const state = window.history.state;
+  window.history.replaceState(
+    state?.bee
+      ? {
+          ...state,
+          returnUrl: safeOrigin(
+            new URLSearchParams(to.split("?")[1]).get("from"),
+          ),
+        }
+      : state,
+    "",
+    to,
+  );
+  window.dispatchEvent(new Event(eventName));
+}
 export function goBack(fallback = "/boards") {
   const from = safeOrigin(new URLSearchParams(location.search).get("from"));
   savePosition(currentUrl());

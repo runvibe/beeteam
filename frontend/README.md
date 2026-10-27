@@ -32,7 +32,7 @@ O board de origem da raiz governa a cadeia: manual força manual; automatic for�
 
 ## Contratos e adapter
 
-`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 84 schemas em módulos pequenos em `src/api/generated/`.
+`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 88 schemas em módulos pequenos em `src/api/generated/`.
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.
 
@@ -96,3 +96,7 @@ Referência final e98a1056: radius .625rem e demais tokens fornecidos preservado
 ## Páginas de agentes e times
 
 `/agents/:id` e `/teams/:id` abrem conteúdo na área principal, com breadcrumb e Voltar. Perfil, atividades, chats, retomada, membros e boards permanecem disponíveis. Somente `/settings` abre um modal de configuração, cujo fechamento conserva o estado da página. Cards navegam pelo corpo e pelo teclado; títulos são texto, e o líder do time mantém uma ação independente. Seleção de texto não dispara navegação. Query strings preservam abas, buscas e paginação em links diretos, recarga e retorno entre entidades. Tema e98a1056 (.625rem) e ícones existentes preservados.
+
+## Slugs legíveis
+
+Agentes, times e tasks/subtasks têm URLs por slug persistido. Boards mantêm UUID. O adapter resolve slug para UUID e a UI continua usando IDs nas APIs e relações. Links UUID antigos são canonicalizados preservando query, origem e histórico. Renomear não muda o slug. Contratos OpenAPI kanban/RA e catálogo MCP sincronizados com os três resolvers; fixtures reproduzem unicidade e colisões sem substituir o backend como fonte da verdade.

@@ -371,7 +371,7 @@ function Column({
   );
 }
 export function TaskCard({ task }: { task: Task }) {
-  const href = destination(`/tasks/${task.id}`);
+  const href = destination(`/tasks/${task.slug}`);
   return (
     <Card className="task-card" onClick={(event) => openCardBody(event, href)}>
       <a

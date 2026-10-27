@@ -248,6 +248,13 @@ export function createMockApi(
       await wait();
       return clone(paginate(filtered(resource, scope, f), f));
     },
+    async resolveSlug(resource, slug) {
+      await wait();
+      const row = db[resource].find((r) => r.slug === slug && !r.deletedAt);
+      if (!row)
+        throw new ApiError(404, "not_found", "Registro não encontrado.");
+      return { id: row.id, slug: row.slug };
+    },
     async get<K extends keyof Entities>(resource: K, id: string) {
       await wait();
       const row = db[resource].find((r) => r.id === id && !r.deletedAt);
