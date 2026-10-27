@@ -21,3 +21,11 @@ Pendente de produto: alcance de edição do líder sobre tasks de executores ger
 Baseline anterior sem skill: perguntou escolha de modo em vez de aplicar aprovação padrão; encerramento não explicitou todos os dados de continuidade. Versão anterior passou validação estrutural e seis cenários do líder; isso não valida as regras finais alteradas. Build anterior passou; test foi interrompido durante a pausa solicitada.
 
 Evidências detalhadas e hashes: [validation.md](validation.md).
+
+## Incremento de conteúdo MCP
+
+- [x] Conferir protocolo e SDK efetivo: rmcp 2.0.0, handlers resources/prompts presentes; sem upgrade.
+- [x] Criar três templates parametrizados e manifesto editorial, sem nomes de tools/URIs inventados.
+- [x] Documentar allowlist, descoberta, efeito somente leitura e integração com compostas.
+- [x] Validar renderização e quatro cenários simulados; build passou, 12 unitários passaram, três integrações bloqueadas por Docker.
+- [x] Entregar caminhos ao coordenador; incremento em commit local separado, sem push/merge.

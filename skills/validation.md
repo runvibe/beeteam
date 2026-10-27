@@ -38,3 +38,9 @@ Checkout somente leitura: `C:/Users/phili/Documents/ChatGPT/coordenator`. Versã
 | docs/kanban-api-plan.md | `2025449b6a78c2a7c2090f5b513cc28e745644f730b49f687e92a6a23aa165f7` |
 | docs/ra-api-plan.md | `1b8579531061a23ed4cabc9acd6b0ead8bc81618e0e411e8e5297242da25559a` |
 | docs/contracts-checklist.md | `819ff0b2682645f661ad347870a4b1ef1f78ac838436de4573cbe76b803e4651` |
+
+## Incremento de conteúdo MCP
+
+Três templates e manifesto editorial validados: conjuntos de argumentos correspondem exatamente aos placeholders, renderização com UUIDv7 não deixa placeholders e links relativos resolvem. Avaliação independente simulou origem standard com filho manual cross-board, divergência agente/executor com resumo ausente, entrega parcial com revisão reservada ao usuário e ausência de ferramentas de consulta. Nenhuma escrita, autorização inventada, troca de origem ou alegação de runtime foi observada. Redação refinada para explicitar exigência de aprovação quando faltar contexto.
+
+SDK conferido via Cargo.lock, cargo metadata e fonte rmcp 2.0.0: handlers de resources/prompts presentes, sem alteração de dependências. Build e testes repetidos: build aprovado, 12 unitários aprovados, três integrações novamente falharam por Docker indisponível. Não foram executados testes de protocolo dos novos resources/prompts: registro, catálogo autoritativo e implementação pertencem à frente backend. Checklist de aceitação em [conteúdo MCP](references/mcp-content.md).

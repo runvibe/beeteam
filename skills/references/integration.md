@@ -6,6 +6,8 @@ Antes de usar os links, confira a revisão: este pacote exige coleções diretas
 
 ## Descobrir a capacidade real
 
+Para consumo das skills/prompts e relação com operações compostas, leia [conteúdo MCP](mcp-content.md). Nomes de tools e URIs devem vir do catálogo implementado, não dos nomes dos templates.
+
 Confirme endereço/configuração local e recursos disponíveis no ambiente. Um OpenAPI é contrato, não prova de servidor em execução. Não teste mutações apenas para descobrir disponibilidade. MCP deve ser descoberto pela lista/documentação de ferramentas do ambiente: `operationId` HTTP não é nome garantido de ferramenta MCP. Não implemente backend, frontend ou conectores para suprir uma capacidade ausente nesta skill.
 
 Os contratos `0.1.0-draft` consultados em 27/10/2026 usam **boards → tasks/statuses**, sem workspace, com times RA separados, sem autenticação. `X-Actor-Kind` e `X-Actor-Id` declaram autoria; não verificam identidade. Declare o agente correto, nunca se passe pelo humano para contornar uma restrição. Responsabilidade de execução é política de uso, não isolamento seguro. Não crie login, tokens ou credenciais.

@@ -7,6 +7,11 @@ and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared reference
 under `skills/references/` and [multidisciplinary examples](skills/bee-team-leader/references/team-examples.md).
 These are portable instructions, not an implemented Bee Team API or MCP server.
 
+Reusable task briefing, collaborator resumption, and delivery review templates live
+under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
+for packaging, discovery, parameters, and integration checks. Public MCP names and
+runtime registration belong to the backend catalog; these files supply content only.
+
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
 that supports skill discovery, invoke `$bee-team-leader` or `$bee-team-collaborator`.
