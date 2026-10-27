@@ -1,0 +1,35 @@
+use super::contracts;
+use serde_json::{json, Value};
+pub fn is_composite(name: &str) -> bool {
+    matches!(
+        name,
+        "prepare_execution" | "record_progress" | "close_activity"
+    )
+}
+pub fn composite_tools() -> Vec<Value> {
+    let doc = &contracts::operation("createExecutionSummary")
+        .unwrap()
+        .document;
+    let ref_schema =
+        |name: &str| contracts::inline_schema(doc, &doc["components"]["schemas"][name]);
+    let ra = &contracts::operation("getAgent").unwrap().document;
+    let preparation_output = json!({"type":"object","properties":{
+        "task":ref_schema("Task"),"executorProfile":contracts::inline_schema(ra,&ra["components"]["schemas"]["Agent"]),
+        "plans":ref_schema("PlanRevisionPage"),"children":ref_schema("TaskPage"),"latestExecutionSummary":{"anyOf":[ref_schema("ExecutionSummary"),{"type":"null"}]},
+        "pending":{"type":"array","items":{"type":"string"}},"executionContext":ref_schema("TaskExecutionContext"),"notice":{"type":"string"}
+    },"required":["task","executorProfile","plans","children","latestExecutionSummary","pending","executionContext","notice"],"additionalProperties":false});
+    let mutation_output = json!({"type":"object","properties":{"task":ref_schema("Task"),"updatedTasks":{"type":"array","items":ref_schema("Task")},"notice":{"type":"string"}},"required":["task","updatedTasks","notice"],"additionalProperties":false});
+    let actor = json!({"type":"object","properties":{"kind":{"enum":["human","agent"]},"id":{"type":["string","null"],"format":"uuid"}},"required":["kind"],"additionalProperties":false});
+    let task = json!({"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"});
+    let mut progress = json!({"type":"object","properties":{"taskId":task,"expectedVersion":{"type":"integer","minimum":1},"progress":ref_schema("Progress"),"block":ref_schema("Block"),"comment":{"type":"string","minLength":1,"x-maxBytes":16384}},"required":["taskId","expectedVersion"],"additionalProperties":false});
+    let child = progress.clone();
+    progress["properties"]["actor"] = actor.clone();
+    progress["properties"]["idempotencyKey"] = json!({"type":"string","format":"uuid"});
+    progress["properties"]["subtaskUpdates"] = json!({"type":"array","maxItems":100,"items":child});
+    progress["required"] = json!(["taskId", "expectedVersion", "actor", "idempotencyKey"]);
+    let close = json!({"type":"object","properties":{"taskId":task,"expectedVersion":{"type":"integer","minimum":1},"actor":actor,"idempotencyKey":{"type":"string","format":"uuid"},"execution":ref_schema("RecordExecution"),"block":ref_schema("Block"),"comment":{"type":"string","minLength":1,"x-maxBytes":16384}},"required":["taskId","expectedVersion","actor","idempotencyKey","execution"],"additionalProperties":false});
+    let prepare = json!({"type":"object","properties":{"taskId":task,"offset":{"type":"integer","minimum":0,"maximum":2147483647},"limit":{"type":"integer","minimum":1,"maximum":100}},"required":["taskId"],"additionalProperties":false});
+    [("prepare_execution","Read task, current executor profile, latest plan revisions page, direct children across boards, latest result/pending work and effective origin context. Does not start work.",prepare,true),
+     ("record_progress","Atomically record comment/progress/block for task and explicitly named descendants; checklist is derived from real subtasks. All supplied versions must match. No implicit completion.",progress,false),
+     ("close_activity","Atomically record optional block/comment and execution summary, deliverables, pending work, status and optional review. Does not require task completion.",close,false)].into_iter().map(|(name,description,mut input,read)|{input["components"]=doc["components"].clone();json!({"name":name,"description":description,"inputSchema":input,"outputSchema":if read{preparation_output.clone()}else{mutation_output.clone()},"annotations":{"readOnlyHint":read,"destructiveHint":false,"idempotentHint":true,"openWorldHint":false}})}).collect()
+}

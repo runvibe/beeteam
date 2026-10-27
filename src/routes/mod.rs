@@ -6,16 +6,21 @@ use utoipa_swagger_ui::SwaggerUi;
 
 use crate::{config::AppConfig, state::AppState};
 
+pub mod backend;
 mod cors;
 #[cfg(feature = "mcp")]
 pub mod mcp;
+#[cfg(feature = "mcp")]
+mod mcp_adapter;
+#[cfg(feature = "mcp")]
+mod mcp_materials;
 pub mod system;
 
 #[derive(OpenApi)]
 #[openapi(
     info(
         title = env!("CARGO_PKG_NAME"),
-        description = "Starter API with health and echo features.",
+        description = "Bee Team local service: system endpoints. Kanban and RA contracts are separate documents.",
         version = env!("CARGO_PKG_VERSION"),
         license(name = "Apache-2.0", url = "https://www.apache.org/licenses/LICENSE-2.0.html")
     )
@@ -27,7 +32,27 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
         .merge(system::router())
         .split_for_parts();
 
-    let api_router = api_router.merge(SwaggerUi::new("/docs").url("/openapi.json", api));
+    let api_router = api_router
+        .layer(RequestBodyLimitLayer::new(config.body_limit_bytes))
+        .merge(
+            SwaggerUi::new("/docs")
+                .url("/openapi.json", api)
+                .external_url_unchecked(
+                    "/openapi/kanban.json",
+                    crate::dto::contracts::operation("getTask")
+                        .unwrap()
+                        .document
+                        .clone(),
+                )
+                .external_url_unchecked(
+                    "/openapi/ra.json",
+                    crate::dto::contracts::operation("getAgent")
+                        .unwrap()
+                        .document
+                        .clone(),
+                ),
+        )
+        .merge(backend::router(config.body_limit_bytes));
 
     let api_router = if config.otel_enabled {
         api_router
@@ -37,13 +62,11 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
         api_router
     };
 
-    let api_router = api_router
-        .layer(cors::build_cors_layer(&config.cors, None))
-        .layer(RequestBodyLimitLayer::new(config.body_limit_bytes));
+    let api_router = api_router.layer(cors::build_cors_layer(&config.cors, None));
 
     #[cfg(feature = "mcp")]
     let api_router = if config.mcp.enabled {
-        api_router.merge(mcp::router(&config.mcp))
+        api_router.merge(mcp::router(&config.mcp, state.clone()))
     } else {
         api_router
     };

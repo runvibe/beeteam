@@ -1,1 +1,3 @@
 target
+# Local backend verification logs
+backend-*.log

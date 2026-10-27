@@ -1,130 +1,57 @@
-# beeteam
+# Bee Team
 
-Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It exposes:
+Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harness executam o trabalho; Bee Team guarda configuração, autoria declarada, planos, arquivos e resultados. Não cria chats nem acessa provedores de IA.
 
-- `/health` as a liveness endpoint that returns `200 OK` with a JSON status payload.
-- `/echo` to reflect the incoming request across all HTTP verbs with tracing spans per method when OTEL is enabled.
-- `/mcp` as an optional MCP Streamable HTTP endpoint for `health_check` and `echo_request` tools when the `mcp` Cargo feature is enabled.
+## Executar
 
-## Template Bootstrap
+Requer Rust >=1.94 e PostgreSQL >=18. A migration recusa versões anteriores. O `docker-compose.yaml` existente utiliza PostgreSQL 18; use um banco dedicado e preserve volumes existentes.
 
-After creating a new repository from this template, run:
-
-- `./scripts/init-template.sh`
-
-The script uses the current repository directory name as the new Cargo package/bin name, updates the main hardcoded references (`Cargo.toml`, Rust imports, README, `.env.example`, and `Dockerfile.artifact`), then runs `cargo build` and `cargo test`.
-
-If you want to override the detected name, pass it explicitly:
-
-- `./scripts/init-template.sh my-new-api`
-
-## Getting Started
-
-### Prerequisites
-
-- Rust toolchain 1.94 or newer.
-- PostgreSQL access. You can use the included Docker Compose if you want a local DB.
-
-### Quick start
-
-1. Start a database (optional example using Compose):
-   - `docker compose up -d postgres jaeger`
-   - If you are upgrading from an older Postgres image and see a volume layout error, recreate the Postgres volume once:
-   - `docker compose down -v`
-   - `docker compose up -d postgres jaeger`
-2. Set `DATABASE_URL` (example for the Compose service):
-   - `export DATABASE_URL=postgres://postgres:postgres@localhost:5453/postgres`
-3. Optionally set:
-   - `APP_HOST` and `APP_PORT` (defaults: `127.0.0.1:8080`).
-   - `APP_CORS_ALLOW_ORIGINS` (comma-separated or `*`) and `APP_BODY_LIMIT_BYTES`.
-   - `OTEL_ENABLED=false` to disable OpenTelemetry export and HTTP tracing middleware while keeping structured logs.
-   - `MCP_ENABLED=true` to expose the MCP endpoint when compiled with `--features mcp`.
-   - `MCP_PATH=/mcp` to change the MCP path.
-   - `MCP_ALLOWED_ORIGINS=*` to keep the MCP endpoint fully open, or provide a comma-separated allowlist if you want to restrict it.
-4. Run:
-   - `cargo run`
-
-Migrations are managed by SQLx and executed on startup from `migrations/`.
-Swagger UI is available at `/docs` with the generated OpenAPI contract.
-
-### MCP HTTP
-
-This template can expose an MCP server over Streamable HTTP in stateless JSON mode.
-
-- It is not compiled into the default build. Use `--features mcp` to include MCP support.
-- It only mounts when both the `mcp` Cargo feature is enabled and `MCP_ENABLED=true`.
-- The MCP endpoint is intentionally not included in `/openapi.json`.
-- CORS is permissive by default for both the REST API and MCP. Set `APP_CORS_ALLOW_ORIGINS` or `MCP_ALLOWED_ORIGINS` only if you want to restrict them.
-
-The first version exposes two tools:
-
-- `health_check` returns the service status and version.
-- `echo_request` mirrors `method`, `path`, `headers`, and `body` from the tool input.
-- When MCP is enabled, startup logs include the MCP endpoint URL.
-
-To test with the inspector:
-
-1. Start the API with MCP enabled:
-   - `MCP_ENABLED=true cargo run --features mcp`
-2. Launch the inspector:
-   - `npx @modelcontextprotocol/inspector`
-3. Connect using Streamable HTTP:
-   - `http://127.0.0.1:8080/mcp`
-
-Current limitations:
-
-- no resources or prompts
-- no bearer auth
-- no SSE/session mode; `GET /mcp` returns `405 Method Not Allowed`
-
-### Artifact image
-
-`Dockerfile.artifact` expects a prebuilt binary in `artifacts/<bin-name>/<arch>/` and accepts `BIN_NAME` as a build argument. Example:
-
-`docker build -f Dockerfile.artifact --build-arg TARGETARCH=amd64 --build-arg BIN_NAME=beeteam .`
-
-### SQLx note
-
-The SQLx query macros use the database schema at compile time. Make sure `DATABASE_URL` is set when building. If you prefer offline builds, run `cargo sqlx prepare` and set `SQLX_OFFLINE=true`.
-
-### Testing
-
-- Unit tests: `cargo test`
-- MCP tests: `cargo test --features mcp mcp`
-- Integration tests: `cargo test --test integration`
-  - Requires Docker; tests spin up `pgvector/pgvector:pg18` and, unless `OTEL_ENABLED=false`, a Jaeger collector via testcontainers.
-
-## Architecture
-
-This template is organized around four main layers:
-
-- `routes/`: transport and protocol adapters for HTTP and MCP
-- `services/`: business rules and use-case orchestration
-- `repositories/`: persistence and external integration adapters
-- `dto/`: request/response contracts, validation, and data transformation structs
-
-Preferred flow:
-
-- `route -> dto -> service -> repository -> service -> dto -> route`
-
-Guidelines:
-
-- keep HTTP and MCP details inside `routes/`
-- keep business decisions inside `services/`
-- keep SQLx, queues, and external API clients inside `repositories/`
-- keep payload contracts and transformation structs inside `dto/`
-- let `AppState` carry concrete repositories instead of exposing raw driver clients when possible
-
-## Project Layout
-
-```
-src/
-  config.rs         # environment loading
-  db.rs             # connection pool + migrations
-  dto/              # request/response contracts and shared transport payloads
-  repositories/     # DB, queue, cache, and external integration adapters
-  routes/           # HTTP and MCP transport handlers plus wiring
-  services/         # business rules and use-case orchestration
+```powershell
+docker compose up -d postgres
+$env:DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5453/postgres"
+$env:OTEL_ENABLED="false"
+$env:MCP_ENABLED="true"
+cargo run --features mcp
 ```
 
-Adjust the repositories and services to fit your application, then expand the router with new modules as needed.
+Por padrão escuta em `127.0.0.1:8080`. `APP_HOST`, `APP_PORT`, `APP_CORS_ALLOW_ORIGINS`, `APP_BODY_LIMIT_BYTES`, `MCP_PATH` e `MCP_ALLOWED_ORIGINS` continuam configuráveis. Migrations rodam no startup. Sem `--features mcp` ou sem `MCP_ENABLED=true`, `/mcp` não é montado.
+
+Não há workspace, autenticação, login ou tokens. Escritas declaram `X-Actor-Kind: human`; agentes declaram `X-Actor-Kind: agent` e `X-Actor-Id` UUIDv7 cadastrado. Isso é auditoria declarada, não identidade verificada. Política de edição pelo líder via executor gerido continua pendente e não foi transformada em bloqueio presumido.
+
+## API e MCP
+
+- `/health` e `/echo`: endpoints originais preservados.
+- `/docs`: Swagger com os documentos System, Kanban e RA.
+- `/openapi.json`: sistema; `/openapi/kanban.json` e `/openapi/ra.json`: contratos de domínio.
+- `/api/v1`: 31 operações Kanban e 21 RA, sem prefixo workspace.
+- `/mcp`: SDK **rmcp 2.0.0**, Streamable HTTP stateless JSON, protocolo 2025-11-25.
+
+[Catálogo MCP](docs/mcp-catalog.md): 52 tools equivalentes às APIs, 3 compostas (`prepare_execution`, `record_progress`, `close_activity`) e 2 tools de sistema. Schemas de entrada/saída completos estão no [catálogo JSON](docs/mcp-catalog.json), exportado do mesmo código de `tools/list`. Skills são resources com allowlist; prompts usam templates Bee Team empacotados, sem instalação global ou execução automática.
+
+Primeiro crie agentes por `POST /api/v1/agents`, depois um time com líder e um board com `teamId` gestor. POST requer `Idempotency-Key` UUID; versões individuais usam ETag/`If-Match: "N"`. Há exemplos completos nos [contratos Kanban](docs/kanban-openapi.yaml) e [RA](docs/ra-openapi.yaml). A descrição histórica de revisão/pausa nos documentos não substitui o estado de implementação registrado aqui.
+
+## Modelo
+
+Cada board tem um time gestor transferível e criador preservado. Um time pode gerir vários boards. Tasks têm autor e executor obrigatórios, sem time próprio. Subtasks são tasks recursivas com `parentId`, inclusive entre boards e executores distintos. Não existe endpoint de reparenting.
+
+O board da raiz governa o contexto de execução: `manual` força manual; `automatic` força automático; `standard` considera somente `autonomyMode` da task atual. Modo do board de destino e flag do pai não substituem essa regra. Mudança do modo de origem invalida versões das tasks afetadas sem alterar suas flags individuais.
+
+Perfil é único; cada agente pode liderar um time e colaborar em outro. Transferir agente não reatribui tasks nem copia contexto interno. Arquivar time preserva vínculos e permite transferência explícita. Arquivar agente exige ausência de vínculos e tasks não finais atribuídas. Cópia cria nova identidade; `contextSummary` só é copiado quando explicitamente fornecido.
+
+Todos IDs novos persistidos são UUIDv7. Exclusões são lógicas (`deleted_at`/`deletedAt`); arquivos e registros permanecem no banco. `archivedAt` é separado e reversível. Registros históricos mantêm suas referências. Todas listagens usam offset/limit, filtros antes do total e ordenação estável.
+
+## Testes
+
+```powershell
+# Banco PostgreSQL 18 exclusivo de testes, nunca um banco de trabalho.
+$env:BEE_TEST_DATABASE_URL="postgres://postgres:test@127.0.0.1:55481/postgres"
+$env:OTEL_ENABLED="false"
+cargo build --locked
+cargo test --locked
+cargo build --locked --features mcp
+cargo test --locked --features mcp
+```
+
+Os novos testes HTTP/MCP criam bancos isolados de nomes aleatórios na instância de teste (usuário precisa de CREATEDB). O teste de persistência e testes originais usam o banco indicado. Sem `BEE_TEST_DATABASE_URL`, testes originais/persistência tentam Testcontainers; no Windows, uma CLI Docker que chama WSL não fornece automaticamente um socket compatível ao SDK nativo. A URL explícita evita essa dependência. Nenhum teste faz trabalho de produto real.
+
+[Implementação e integração](docs/backend-implementation.md), [acompanhamento](docs/backend-progress.md). O frontend permanece em sua frente mockada; não foi integrado/servido por este backend. O contrato de conexão futura está documentado, sem alegar validação da UI integrada.

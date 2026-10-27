@@ -9,7 +9,6 @@ use axum::{
     response::Response,
     Router,
 };
-use http_body_util::BodyExt;
 use beeteam::{
     config::{
         otel_enabled_from_env, AppConfig, CorsConfig, McpConfig, DEFAULT_BODY_LIMIT_BYTES,
@@ -21,6 +20,7 @@ use beeteam::{
     routes::create_router,
     state::AppState,
 };
+use http_body_util::BodyExt;
 use serde_json::Value;
 use sqlx::PgPool;
 use testcontainers::{
@@ -76,6 +76,9 @@ static ENV_LOADED: OnceCell<()> = OnceCell::const_new();
 const MCP_PROTOCOL_VERSION: &str = "2025-11-25";
 
 async fn database_url() -> String {
+    if let Ok(url) = std::env::var("BEE_TEST_DATABASE_URL") {
+        return url;
+    }
     TEST_DB_URL
         .get_or_init(|| async {
             let image = GenericImage::new("pgvector/pgvector", "pg18")
