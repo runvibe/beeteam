@@ -1,5 +1,7 @@
 # Leader: entrada e formação de times
 
+Visualização dos três casos: [PNG](diagrams/leader-onboarding-flows.png), [SVG editável](diagrams/leader-onboarding-flows.drawio.svg) e [fonte Draw.io](diagrams/leader-onboarding-flows.drawio). Diagrama criado com a skill Draw.io e revisado visualmente; representa os fluxos aprovados/propostos, não sua implementação no runtime.
+
 Status: decisões de produto aprovadas em 27/10/2026, documentadas para implementação posterior. Esta rodada não altera a skill executável, instalação pessoal, MCP, API, interface ou registros reais. Referência de comportamento atual: [Leader](../skills/bee-team-leader/SKILL.md) no commit `dfd4e19161b27a71451a05da4ab05d02e1379b0b`.
 
 ## Entrada comum aos três casos
