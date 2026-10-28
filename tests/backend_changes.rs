@@ -133,3 +133,30 @@ async fn sse_starts_with_reset_reconnects_and_delivers_committed_change() {
         // Dropping the response cancels this subscriber without stopping other subscriptions.
     }
 }
+
+#[tokio::test]
+async fn quiet_stream_sends_observable_heartbeat_without_invalidation() {
+    let (app, _) = app_with_pool().await;
+    let response = app
+        .oneshot(
+            Request::builder()
+                .uri("/api/v1/changes")
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let mut body = response.into_body();
+    tokio::time::timeout(Duration::from_secs(20), async {
+        loop {
+            let frame = body.frame().await.unwrap().unwrap();
+            let text = String::from_utf8_lossy(frame.data_ref().unwrap());
+            assert!(!text.contains("event: invalidate"));
+            if text.contains("event: heartbeat") {
+                break;
+            }
+        }
+    })
+    .await
+    .unwrap();
+}

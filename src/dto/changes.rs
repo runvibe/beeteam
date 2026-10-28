@@ -3,6 +3,7 @@ use serde::Serialize;
 pub enum Change {
     Reset,
     Invalidate,
+    Heartbeat,
 }
 #[derive(Serialize)]
 pub struct Invalidation {
@@ -13,6 +14,7 @@ impl Change {
         match self {
             Self::Reset => "reset",
             Self::Invalidate => "invalidate",
+            Self::Heartbeat => "heartbeat",
         }
     }
     pub fn payload(self) -> Invalidation {

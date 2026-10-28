@@ -1,7 +1,7 @@
 use crate::{dto::changes::Change, state::AppState};
 use axum::{
     extract::State,
-    response::sse::{Event, KeepAlive, Sse},
+    response::sse::{Event, Sse},
     routing::get,
     Router,
 };
@@ -18,10 +18,11 @@ async fn subscribe(State(state): State<AppState>) -> impl axum::response::IntoRe
             let change = if initial {
                 Change::Reset
             } else {
-                match receiver.recv().await {
-                    Ok(value) => value,
-                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => Change::Reset,
-                    Err(tokio::sync::broadcast::error::RecvError::Closed) => return None,
+                match tokio::time::timeout(Duration::from_secs(15), receiver.recv()).await {
+                    Ok(Ok(value)) => value,
+                    Ok(Err(tokio::sync::broadcast::error::RecvError::Lagged(_))) => Change::Reset,
+                    Ok(Err(tokio::sync::broadcast::error::RecvError::Closed)) => return None,
+                    Err(_) => Change::Heartbeat,
                 }
             };
             let event = Event::default()
@@ -32,12 +33,5 @@ async fn subscribe(State(state): State<AppState>) -> impl axum::response::IntoRe
             Some((Ok::<_, Infallible>(event), (receiver, false, state)))
         },
     );
-    (
-        [("X-Accel-Buffering", "no")],
-        Sse::new(stream).keep_alive(
-            KeepAlive::new()
-                .interval(Duration::from_secs(15))
-                .text("keepalive"),
-        ),
-    )
+    ([("X-Accel-Buffering", "no")], Sse::new(stream))
 }

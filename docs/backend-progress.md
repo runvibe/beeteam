@@ -131,3 +131,5 @@ Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reu
 - Testes isolados cobrem pós-commit, silêncio pré-commit/rollback/replay/read/erro, reconexão SSE e recuperação real após término de LISTEN. Teste MCP cobre notificação única de composta e silêncio de rollback/replay.
 - Revisão independente sem defeito funcional; removida espera fixa de prontidão do teste. Fixture QA autorizada criada somente no banco exclusivo bee_sse_qa_20261028/55481, API18083, nunca produto55482.
 - Snapshot Skills e6d6b7f sincronizado com catálogo/proveniência; instalações globais não alteradas. Validação visual frontend e atualização do runtime serão reportadas separadamente.
+
+- QA visual isolado identificou conexão EventSource half-open após kill atrás do proxy: nova conexão funcionava, antiga não recebia mudanças. Corrigido com heartbeat SSE nomeado15s e watchdog45s no frontend; heartbeat não invalida dados. Build e42 testes MCP passaram após correção; leitura real QA confirmou heartbeat aos15s. Reconexão visual estática será conferida sem HMR.
