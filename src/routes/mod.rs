@@ -12,6 +12,7 @@ mod cors;
 mod data_transfer;
 #[cfg(feature = "mcp")]
 mod data_transfer_mcp;
+mod frontend;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
@@ -32,6 +33,17 @@ pub mod system;
 struct ApiDoc;
 
 pub fn create_router(state: AppState, config: &AppConfig) -> Router {
+    create_router_with_frontend(
+        state,
+        config,
+        crate::services::frontend::FrontendMode::default(),
+    )
+}
+pub fn create_router_with_frontend(
+    state: AppState,
+    config: &AppConfig,
+    mode: crate::services::frontend::FrontendMode,
+) -> Router {
     let (api_router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(system::router())
         .split_for_parts();
@@ -86,5 +98,13 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
         api_router
     };
 
+    let api_router = if mode == crate::services::frontend::FrontendMode::Embedded {
+        let mcp_path = config.mcp.path.clone();
+        api_router.fallback(move |method, uri, headers| {
+            frontend::respond(method, uri, headers, mcp_path.clone())
+        })
+    } else {
+        api_router
+    };
     api_router.with_state(state)
 }

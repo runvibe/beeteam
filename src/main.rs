@@ -1,7 +1,7 @@
 use anyhow::Result;
 use beeteam::{
     config::AppConfig, libs::telemetry, repositories::database::DatabaseRepository,
-    routes::create_router, state::AppState,
+    routes::create_router_with_frontend, state::AppState,
 };
 use tokio::net::TcpListener;
 
@@ -9,6 +9,7 @@ use tokio::net::TcpListener;
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let config = AppConfig::from_env()?;
+    let frontend_mode = beeteam::services::frontend::FrontendMode::from_env()?;
     let _telemetry = telemetry::init_tracing(config.otel_enabled)?;
     let database =
         DatabaseRepository::connect(config.database_driver, &config.database_url).await?;
@@ -41,7 +42,7 @@ async fn main() -> Result<()> {
         state = state.with_transfers(transfer);
     }
 
-    let router = create_router(state, &config);
+    let router = create_router_with_frontend(state, &config, frontend_mode);
 
     let addr = config.listen_addr()?;
     let listener = TcpListener::bind(addr).await?;

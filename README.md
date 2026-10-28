@@ -260,6 +260,81 @@ cargo test --locked --features mcp --test sqlite_persistence
 Remove-Item Env:BEE_TEST_DRIVER
 ```
 
+## Single executable and separate development frontend
+
+Build the distributable from the repository root:
+
+```powershell
+node scripts/build-distribution.mjs
+```
+
+The command installs the pinned frontend dependencies with `npm ci --include=dev` in the
+isolated `.local/distribution/frontend` build directory, forces `NODE_ENV=production`, builds against the real
+same-origin `/api/v1`, then runs
+`cargo build --locked --release --features mcp,embedded-ui`. It does not install
+over a running Vite checkout's `node_modules`. Build prerequisites are Rust from
+`Cargo.toml`, Node.js and npm; this workflow was validated with Node 22.19.0 and
+npm 11.12.1. Commit both lockfiles and use these versions for repeatable inputs.
+Native executable hashes can differ across compiler/OS toolchains; byte-identical
+cross-machine Rust builds are not claimed.
+
+The output is `target/release/beeteam.exe` on Windows, or
+`target/release/beeteam` on Unix. Copy that executable to the runtime machine.
+There is no Node/Vite, `frontend/dist`, source checkout or npm dependency at
+runtime. The selected database and its persistent data remain external to the
+executable; PostgreSQL stays the default and SQLite remains explicit opt-in.
+
+```powershell
+# Run the copied executable from a writable application directory.
+$env:DATABASE_DRIVER="sqlite"
+$env:DATABASE_URL="sqlite://./beeteam.sqlite"
+$env:APP_HOST="127.0.0.1"
+$env:APP_PORT="18081"
+$env:OTEL_ENABLED="false"
+$env:MCP_ENABLED="true"
+$env:BEE_FRONTEND_MODE="embedded"
+./beeteam.exe
+```
+
+Open `http://127.0.0.1:18081/`. UI, `/api/v1`, `/docs` and the configured MCP
+endpoint share the listener. Deep links under boards/tasks/agents/teams load the
+SPA. Only known UI paths get HTML; missing assets, API paths and MCP prefixes
+retain non-HTML errors. Fingerprinted Vite assets use immutable caching and
+ETags; HTML and public non-fingerprinted files revalidate. HEAD and conditional
+GET are supported. Existing route errors are never replaced with HTML.
+
+`BEE_FRONTEND_MODE` accepts `embedded` or `disabled`. Its default is `embedded`
+when compiled with `embedded-ui`, otherwise `disabled`. Requesting embedded mode
+from an API-only executable fails startup explicitly. For development:
+
+```powershell
+# Terminal 1, repository root; keep the desired existing DB configuration.
+$env:BEE_FRONTEND_MODE="disabled"
+cargo run --locked --features mcp
+# Terminal 2, frontend/; use npm ci once in a fresh checkout.
+$env:BEE_API_TARGET="http://127.0.0.1:18081"
+npm run dev
+```
+
+Vite keeps its `/api` proxy and hot reload. Never run `npm ci` over a checkout
+whose native Node modules are in use; use the isolated distribution command or
+stop your own dev session first. No service is automatically restarted by the
+build command.
+
+For manual embedded builds, run `npm ci` and `npm run build:embedded` inside
+`frontend`, then compile Cargo with `embedded-ui`. A normal `npm run build` does
+not create the embedding provenance manifest. Cargo rejects absent/stale sources,
+changed asset bytes or inventory mismatches. The build-only `BEE_FRONTEND_DIST`
+can point at another verified dist directory, such as
+`.local/distribution/frontend/dist`; it is not consulted at runtime. Source and
+output SHA-256 hashes guard freshness, not publisher authenticity. The generated
+`.beeteam-build.json` is not served by the executable.
+
+Export/import remains disabled unless explicitly enabled. In embedded mode its
+browser allowlist must include the chosen UI origin, for example
+`BEE_TRANSFER_ALLOWED_ORIGINS=http://127.0.0.1:18081` (and the localhost variant
+only if used). A same-origin UI does not remove the administrative opt-in.
+
 ## Portable export and import
 
 Global **Configurações globais → Exportar e importar dados** exports a complete
