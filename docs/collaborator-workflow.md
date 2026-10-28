@@ -1,6 +1,6 @@
 # Collaborator — preparação, execução e continuidade
 
-Status: regras de produto aprovadas em 27/10/2026, documentadas com fluxo proposto. Esta entrega não implementa o fluxo na skill, MCP, API ou interface, nem altera instalação ou registros reais. Complementa os [três fluxos do Leader](leader-onboarding-flows.md). Criar um chat não comprova entendimento: após o handoff, o colaborador confirma que compreendeu papel e contexto por um canal disponível, sem resposta inventada.
+Status: regras de produto aprovadas em 27/10/2026, documentadas com fluxo proposto. Esta entrega não implementa o fluxo na skill, MCP, API ou interface, nem altera instalação ou registros reais. Complementa os [três fluxos do Leader](leader-onboarding-flows.md). Criar um chat não comprova entendimento: após o handoff, há duas confirmações por canal disponível: identidade/perfil prontos e, quando houver task atribuída, compreensão dessa tarefa e pendências. Nenhuma resposta é inventada.
 
 ## Fluxo principal — começar pelo chat
 
@@ -10,13 +10,14 @@ Leia este primeiro diagrama de cima para baixo. Ele não tem setas de retorno: o
 flowchart TD
     INICIO(["INÍCIO: usuário ou Leader solicita usar a skill Collaborator neste chat"]) --> IDENTIDADE{"Identidade indicada?"}
     IDENTIDADE -->|Existente| EXISTENTE["Consultar cadastro e assumir perfil, regras e contexto"]
-    IDENTIDADE -->|Novo no time informado| NOVO["Autocadastrar e vincular conforme papel recebido; confirmar persistência"]
+    IDENTIDADE -->|Novo explicitamente autorizado| NOVO["Autocadastrar e vincular conforme papel recebido; confirmar persistência"]
     IDENTIDADE -->|Ambígua| ESCLARECER["Esclarecer identidade, time ou papel; aguardar sem duplicar"]
-    EXISTENTE --> LISTAR["Listar tasks por executor ID em qualquer board; incluir subtasks, estados e pendências"]
-    NOVO --> LISTAR
+    EXISTENTE --> PERFIL["Confirmar identidade e perfil prontos; isso não autoriza trabalho"]
+    NOVO --> PERFIL
+    PERFIL --> LISTAR["Listar tasks por executor ID em qualquer board; incluir subtasks, estados e pendências"]
     LISTAR --> ATRIBUIDA{"Existe task real atribuída a ele para este trabalho?"}
     ATRIBUIDA -->|Não| AGUARDAR["Orientar registro e atribuição pelo Leader ou usuário na plataforma; aguardar sem executar nem criar task própria"]
-    ATRIBUIDA -->|Sim| CONFERIR["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar entendimento"]
+    ATRIBUIDA -->|Sim| CONFERIR["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar compreensão da task e pendências"]
     CONFERIR --> PREPARAR["Completar mesma task: descrição, specification e plano versionado; subtasks só se criação no escopo"]
     PREPARAR --> SALVO{"Preparação persistida e sem impedimento essencial?"}
     SALVO -->|Não| PENDENTE["Registrar ou comunicar impedimento; suspender execução dependente; recuperar sem duplicar"]
@@ -24,8 +25,9 @@ flowchart TD
     AUTONOMIA --> EXECUTAR["Executar; registrar progresso real, evidências e currentSummary"]
     EXECUTAR --> CICLOS["Tratar mudanças, bloqueios e ajustes conforme detalhamento abaixo"]
     CICLOS --> VALIDAR["Validar contra specification; declarar resultados e limitações reais"]
-    VALIDAR --> ENTREGAR["Registrar entrega, resumo histórico, síntese, status e pendências; avisar Leader"]
-    ENTREGAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
+    VALIDAR --> ENTREGAR["Salvar entrega, resumo histórico, síntese, status e pendências; confirmar persistência"]
+    ENTREGAR --> COMUNICAR["Só então comunicar ao Leader; declarar envio pendente se indisponível"]
+    COMUNICAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
 ```
 
 ## Detalhamento — execução, ajustes e retomada
@@ -38,15 +40,17 @@ flowchart TD
     EVENTO -->|Continuar| TRABALHO
     EVENTO -->|Mudança| MUDANCA["Atualizar mesma task e revisar plano; comentar antes, novo, motivo e autoria conhecida"]
     MUDANCA --> REVALIDAR
-    EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário, síntese e aviso ao Leader"]
-    BLOQUEIO --> RETOMADA["Ao retomar, confirmar desbloqueio e atualizar registros e plano necessário"]
+    EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário e síntese; confirmar persistência"]
+    BLOQUEIO --> AVISOB["Só então avisar Leader do bloqueio; declarar falha de comunicação"]
+    AVISOB --> RETOMADA["Ao retomar, confirmar desbloqueio e atualizar registros e plano necessário"]
     RETOMADA --> REVALIDAR
     EVENTO -->|Etapa pronta| TESTAR["Validar contra specification"]
     TESTAR --> RESULTADO{"Atende aos critérios?"}
     RESULTADO -->|Não| AJUSTES["Ajustar trabalho e planejamento conforme impacto"]
     AJUSTES --> REVALIDAR
-    RESULTADO -->|Sim| ENTREGA["Registrar entregas, evidências, limitações, pendências, resumo histórico, síntese e status; avisar Leader"]
-    ENTREGA --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
+    RESULTADO -->|Sim| ENTREGA["Registrar entregas, evidências, limitações, pendências, resumo histórico, síntese e status; confirmar persistência"]
+    ENTREGA --> AVISOR["Após salvar, comunicar encerramento ou decisão necessária; declarar envio pendente se faltar canal"]
+    AVISOR --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
     REVISAO -->|Ajustes solicitados| AJUSTES
     REVISAO -->|Aceite aplicável e critérios atendidos| CONCLUIR(["Concluir task quando cabível"])
     ENTREGA -->|Etapa parcial| PARCIAL["Fechar atividade sem concluir task; preservar próximo passo"]
@@ -64,7 +68,11 @@ Falha em qualquer gravação obrigatória aplica o caminho FALHA, inclusive em p
 
 A entrada é uma solicitação para este chat usar a skill Collaborator, feita diretamente por um humano ou pelo chat Leader. Isso ativa o papel, não autoriza trabalho de negócio sem task registrada e atribuída. Ativação e cadastro do perfil não são execução da demanda de negócio; pode explicar o fluxo e verificar identidade sem começar o projeto.
 
-Se a solicitação indicar um colaborador existente, como XPTO, consultar seu cadastro e assumir seu perfil funcional, regras e contexto. Se pedir um novo colaborador no time XPTO, o fallback é autocadastrar e vincular ao time informado segundo o papel recebido, confirmando a persistência antes de assumir essa identidade como registrada. Se identidade, time ou papel essencial forem ambíguos, esclarecer especificamente a lacuna e conferir cadastros antes de criar, sem duplicar agentes nem inventar uma entidade Project.
+Se a solicitação indicar um colaborador existente, como XPTO, consultar seu cadastro e assumir seu perfil funcional, regras e contexto. Se houver autorização explícita para novo colaborador no time XPTO, o fallback é autocadastrar e vincular ao time informado segundo o papel recebido, confirmando a persistência antes de assumir essa identidade como registrada. Se identidade, time ou papel essencial forem ambíguos, esclarecer especificamente a lacuna e conferir cadastros antes de criar, sem duplicar agentes nem inventar uma entidade Project.
+
+O handoff do Leader deve pedir explicitamente uso da skill Collaborator e trazer identidade existente (ou autorização explícita para fallback novo), time, referência real da task quando existir, contexto de execução do board de origem e ação esperada. Conferir informações nos dados persistidos, sem inventar IDs. Primeiro confirmar identidade/perfil prontos. Sem task, aguardar registro/atribuição pelo Leader ou usuário, sem iniciar demanda nem criar task própria. Depois de consultar task atribuída, confirmar separadamente compreensão e pendências. O Leader registra/atribui antes de pedir execução; ativação do chat é etapa distinta.
+
+Exemplo: “Use Collaborator e assuma o cadastro existente Backend do time informado. Confirme identidade/perfil prontos; consulte a referência real da task atribuída e seu contexto de origem, e confirme entendimento e pendências.” Sem atribuição válida, confirmar identidade e aguardar registro, sem execução nem autoautorização.
 
 Depois da identidade, listar tarefas atribuídas ao seu cadastro por `executorAgentId`, em qualquer board, incluindo subtasks, estados e pendências. O nome serve à identificação humana, não substitui o ID. Não filtrar pelo time gestor nem exigir descobrir primeiro os boards do time: uma atribuição pode estar em board gerido por outro time. Não iniciar arbitrariamente qualquer item encontrado.
 
@@ -108,7 +116,7 @@ Exemplo com task já atribuída: a integração passou do endpoint A para B. Man
 
 ## 4. Bloqueio, falha de persistência e retomada
 
-Bloqueio é flag separada do status, não um status inventado. Registrar motivo, impacto e o que falta para continuar, comentário e currentSummary; avisar o Leader pelo canal autorizado. Não marcar concluída para encerrar uma atividade bloqueada. Trabalhos independentes só podem avançar quando já registrados, atribuídos, preparados e autorizados.
+Bloqueio é flag separada do status, não um status inventado. Registrar motivo, impacto e o que falta para continuar, comentário e currentSummary; confirmar gravação e só então avisar o Leader pelo canal autorizado. Sem canal, declarar comunicação pendente; falha de gravação deve ser comunicada como registro não confirmado. Não marcar concluída para encerrar uma atividade bloqueada. Trabalhos independentes só podem avançar quando já registrados, atribuídos, preparados e autorizados.
 
 Exemplo: falta acesso necessário à API B. Registrar que a validação está impedida, qual acesso falta e como sua concessão permitirá retomar, preservando as partes já feitas. Não publicar segredos. Ao receber acesso, confirmar a condição, atualizar bloqueio/comentário/síntese e revisar o plano se houver impacto; não apenas continuar com flag antiga ou assumir que a tarefa terminou.
 
@@ -120,9 +128,11 @@ Na retomada, reler perfil, responsabilidade, task, specification, plano e revis�
 
 Validar contra specification e critérios de aceite no nível necessário à afirmação. Se falhar, ajustar e atualizar planejamento quando o impacto exigir, preservando histórico. Dizer quais verificações rodaram, resultados, limitações e o que não foi testado. Não apresentar teste não executado como aprovado.
 
-Registrar resumo histórico da atividade, entregas/referências/anexos, evidências, limitações, pendências e próximo passo, além de currentSummary e status coerentes com o estado real. Confirmar persistência e avisar o Leader pelo canal autorizado; sem canal, declarar comunicação pendente pelo meio disponível, sem inventar envio.
+Registrar resumo histórico da atividade, entregas/referências/anexos, evidências, limitações, pendências e próximo passo, além de currentSummary e status coerentes com o estado real. Confirmar persistência e só então avisar o Leader pelo canal autorizado; sem canal, declarar comunicação pendente pelo meio disponível, sem inventar envio.
 
 Fechar atividade não equivale a concluir task. Revisão por usuário ou Leader segue a orientação e autonomia aplicáveis, sem revisão humana universal nem uma nova cerimônia obrigatória. Se houver reprovação ou pedido de ajuste, retornar ao trabalho correspondente e atualizar registros. Concluir task quando critérios e aceite aplicável forem atendidos; uma entrega parcial pode encerrar somente a atividade, mantendo a task não finalizada.
+
+O mesmo ordenamento vale para decisão necessária durante o trabalho: salvar primeiro na task contexto, progresso/síntese e comentário pertinente e depois solicitar decisão ao Leader. Se a gravação falhar, informar registro não confirmado, sem fingir que a sequência foi completada; indisponibilidade do canal fica explícita. A resposta do Leader não substitui atualização dos registros afetados.
 
 ## Critérios de aceite textual
 
@@ -140,6 +150,8 @@ Fechar atividade não equivale a concluir task. Revisão por usuário ou Leader 
 | Falha ou timeout ao registrar | Nenhum falso sucesso ou execução dependente; consulta/reconciliação sem duplicar. |
 | Validação falha ou não pode ocorrer | Ajustes/pendências e limites reais; nenhum teste fictício ou caminho automático de conclusão. |
 | Entrega parcial ou revisão com ajustes | Atividade pode encerrar sem task done; ajustes retornam ao registro e trabalho apropriados. |
+| Handoff recebido | Confirmar identidade/perfil primeiro; compreensão da task e pendências somente após validar atribuição real. |
+| Bloqueio, decisão necessária ou encerramento | Salvar registros pertinentes antes de comunicar ao Leader; declarar gravação ou envio pendente sem inventar sucesso. |
 | Retomada em outro chat | Usar registros persistidos, confirmar identidade/atribuição/versão/estado e não reexecutar concluída nem duplicar execução ativa. |
 
 ## Contratos consultados e limites

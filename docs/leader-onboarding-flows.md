@@ -8,14 +8,14 @@ Fluxo aprovado/proposto, ainda não implementado. O MCP ativo serve a Leader `df
 
 ```mermaid
 flowchart TD
-    A["Usuário invoca Leader no chat"] --> B["Cumprimentar e preparar acesso local necessário"]
+    A(["INÍCIO: usuário invoca a skill Leader neste chat"]) --> B["Cumprimentar e preparar acesso local necessário"]
     B --> C["Abrir Teams em /teams no endereço descoberto"]
     C --> D["Usuário escolhe na interface e informa no chat"]
     D --> E{"Time existente ou novo?"}
     E -->|Existente| F{"Time tem líder?"}
     F -->|Sim: caso 1| G["Consultar líder e assumir perfil, instruções, estilo, regras e contexto"]
     F -->|Não: caso 2| H["Ler time, criar e vincular liderança adequada; assumir perfil"]
-    G --> I["Ler time, colaboradores, boards, tarefas, histórico, progresso e bloqueios"]
+    G --> I["Ler time e boards geridos; consultar atribuições dos colaboradores em qualquer board e seu histórico"]
     H --> I
     I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
     J --> X["Apresentar resumo curto: colaboradores, boards, tarefas em andamento, bloqueios e lacunas"]
@@ -24,7 +24,6 @@ flowchart TD
     L --> M["Propor composição sucinta com líder e perfis funcionais: execução e responsabilidades"]
     M --> N{"Usuário revisa e aprova?"}
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
-    O --> M
     N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
     P --> Q["Buscar candidatos por nomes e referências disponíveis; consultar contexto quando permitido"]
     K --> Q
@@ -32,12 +31,32 @@ flowchart TD
     S -->|Sim| T["Proposta conjunta: perguntar continuar nos candidatos ou criar novos"]
     T --> U["Aplicar escolhas do usuário; reutilizar ou criar conforme autorização"]
     S -->|Não| U
-    U --> W["Handoff aos chats escolhidos usando referências existentes do harness"]
-    W --> Y{"Colaboradores confirmaram papel e contexto?"}
-    Y -->|Sim| R
-    Y -->|Pendente ou falha| Z["Declarar pendência; retomar somente etapa faltante, sem duplicar cadastros ou chats"]
-    Z --> W
+    U --> W["Handoff: usar Collaborator; identidade, time, dados persistidos e ação esperada"]
+    W --> Y{"Identidade e perfil confirmados?"}
+    Y -->|Pendente| Z["Declarar pendência; recuperar só etapa faltante conforme detalhamento"]
+    Y -->|Sim| TASK{"Há task registrada e atribuída para executar?"}
+    TASK -->|Não| WAIT["Identidade pronta; aguardar. Leader registra e atribui antes de pedir execução"]
+    TASK -->|Sim| WORK["Informar referência real da task e contexto de origem; receber confirmação de compreensão e pendências"]
+    WORK --> R
     R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
+```
+
+O diagrama principal não tem ciclos: inicia pela ativação da skill no chat. Revisões de proposta e recuperação retomam somente a etapa necessária, conforme o detalhamento abaixo, sem repetir cadastros.
+
+### Detalhamento — recuperação e retorno do Collaborator
+
+```mermaid
+flowchart TD
+    PENDENCIA["Proposta a ajustar ou etapa de handoff pendente"] --> RECUPERAR["Rever só proposta ou etapa faltante; preservar agentes, time e chats"]
+    RECUPERAR --> CONFIRMAR{"Escolhas e confirmações obtidas?"}
+    CONFIRMAR -->|Não| PENDENCIA
+    CONFIRMAR -->|Sim| CONTINUAR["Revalidar task registrada e atribuída antes de pedir execução"]
+    RESULTADO["Collaborator salva na task progresso, síntese, comentários e resultado pertinentes"] --> SALVO{"Persistência confirmada?"}
+    SALVO -->|Sim| AVISO["Comunicar ao Leader bloqueio, decisão necessária ou encerramento"]
+    SALVO -->|Não| FALHA["Informar falha de persistência e suspender trabalho dependente; não alegar salvo"]
+    AVISO --> CANAL{"Comunicação confirmada?"}
+    CANAL -->|Não| SEMCANAL["Declarar envio pendente, sem fingir mensagem"]
+    CANAL -->|Sim| LEITURA["Leader consulta registros atuais; gestão futura conforme orientação"]
 ```
 
 A escolha na interface não é recebida automaticamente pelo chat. Squad com competências completas não habilita execução automática: preservar modos de boards/tasks. Projeto é a demanda, não uma entidade Project/workspace. Geração de avatar e demais mecanismos dependem das capacidades reais do harness e serão detalhados.
@@ -56,7 +75,7 @@ Conferências técnicas de conexão MCP, API, banco e painel dão suporte à con
 
 Após receber a escolha no chat, consultar o time e identificar seu agente líder. Carregar o perfil único desse agente, seus dados, instruções, estilo, regras, limites e contexto, assumindo essa identidade funcional nesta sessão. Não criar outro líder nem sobrescrever perfil ou associação para adequá-los ao chat.
 
-Ler descrição e contexto do time, colaboradores, boards sob sua gestão e tarefas relacionadas. Consultar histórico, progresso, pendências e bloqueios para reconstruir o que foi concluído, o que está em andamento e o que foi interrompido. Diferenciar registros históricos de atividade confirmada agora; apresentar lacunas sem inventar continuidade.
+Ler descrição e contexto do time, colaboradores e boards sob sua gestão. Consultar também tarefas atribuídas aos colaboradores por executor ID em qualquer board, incluindo subtasks, sem limitar a busca aos boards do time. Uma atribuição em outro board não dá ao time propriedade ou gestão desse board. Consultar histórico, progresso, pendências e bloqueios para reconstruir o que foi concluído, o que está em andamento e o que foi interrompido. Diferenciar registros históricos de atividade confirmada agora; apresentar lacunas sem inventar continuidade.
 
 Após contextualizar e antes de agir, apresentar um resumo curto dos colaboradores, boards, tarefas em andamento, bloqueios e lacunas, distinguindo concluído e interrompido quando relevante. O resultado é um líder contextualizado, pronto para continuar a gestão com o usuário. A política para escolher a próxima tarefa, retomar atividades interrompidas, distribuir trabalho ou manter gestão contínua será detalhada depois. Este documento não escolhe automaticamente uma tarefa nem autoriza execução só por carregar o contexto.
 
@@ -66,7 +85,7 @@ Consultar primeiro as informações do time escolhido. Criar liderança por meio
 
 A criação deve usar informações reais do time e respeitar os contratos e vínculos válidos. Se faltar um dado obrigatório ou houver uma inconsistência diferente da simples ausência de líder, esclarecer especificamente essa lacuna; não inventar requisitos, identidade persistida ou sucesso de cadastro. Detalhes de como derivar e revisar o perfil desse líder serão refinados posteriormente.
 
-Depois de estabelecer a liderança, conhecer membros, boards, tarefas e situação atual com a mesma leitura contextual do caso 1. Se faltar estrutura para o trabalho, conversar sobre o projeto e propor o próximo passo adequado: criar board, assumir ou transferir a gestão de um board existente quando autorizado, organizar tarefas ou colaboradores.
+Depois de estabelecer a liderança, conhecer membros, boards, tarefas e situação atual com a mesma leitura contextual do caso 1, incluindo atribuições dos colaboradores em qualquer board. Se faltar estrutura para o trabalho, conversar sobre o projeto e propor o próximo passo adequado: criar board, assumir ou transferir a gestão de um board existente quando autorizado, organizar tarefas ou colaboradores.
 
 A criação da liderança não concede autorização irrestrita para transferir gestão, mover dados, modificar perfis existentes ou executar tarefas. Propostas de estrutura e suas autorizações devem ser concretas; sequência e política de gestão posterior permanecem em aberto.
 
@@ -100,9 +119,17 @@ Para time novo, a aprovação da composição pode incluir a criação dos chats
 
 A coordenação atual precisa saber qual chat foi escolhido para cada colaborador e que o chat atual desempenha o papel do líder. Decisão aprovada: NÃO construir vínculo persistente adicional chat–colaborador no Bee Team nesta fase. Aproveitar somente relações e referências que o harness/LLM já disponibilize para coordenar as sessões reais, sem exigir novo mapeamento em banco ou cadastro extra de IDs. Não inventar relação nativa pai/filho nem presumir que todas as ferramentas mantenham os mesmos vínculos.
 
-Após o handoff ao chat escolhido, obter confirmação do colaborador de que entendeu seu papel e contexto, pelas capacidades reais do harness. Criar chat não significa que esteja pronto ou trabalhando. Sem resposta observável, declarar confirmação pendente, sem inventar aceite. Em falha parcial, retomar apenas a etapa faltante e preservar agentes, times, vínculos de equipe e chats já criados; não repetir cadastros nem recriar sessões válidas. Se faltar contexto, complementar o handoff existente.
+No handoff ao chat escolhido, explicitar uso da skill Collaborator, identidade existente ou autorização explícita para cadastrar novo colaborador como fallback, time, referência da task quando existir, contexto de execução do board de origem e ação esperada. Usar dados persistidos como fonte, sem inventar IDs ou substituir registro por mensagem.
+
+Separar duas confirmações observáveis: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Criar chat ou confirmar identidade não autoriza trabalho. Sem task registrada e atribuída, o colaborador confirma identidade e aguarda; o Leader registra e atribui antes de solicitar execução. Pedido direto humano ou Leader não substitui esse requisito. Criar/desdobrar tasks pelo colaborador só cabe no escopo de uma task já atribuída, nunca para se autoautorizar. Sem resposta observável, declarar confirmação pendente, sem inventar aceite. Em falha parcial, retomar apenas a etapa faltante e preservar agentes, times, vínculos de equipe e chats já criados; não repetir cadastros nem recriar sessões válidas. Se faltar contexto, complementar o handoff existente.
 
 Se faltarem ferramentas para consultar, criar ou acessar chats, informar a etapa pendente e fornecer handoff para abertura pelo mecanismo disponível. Não tratar subagente temporário como chat persistente nem afirmar comunicação entre sessões sem capacidade confirmada. A política de próxima tarefa e gestão contínua continua em aberto.
+
+### Exemplo curto de handoff e retorno
+
+“Use a skill Collaborator neste chat. Assuma o colaborador existente Backend do time informado, consultando seu cadastro e perfil. Confirme identidade/perfil prontos. Consulte a referência real da task registrada e atribuída que acompanha o handoff e o contexto do board de origem; confirme entendimento e pendências antes de executar conforme a autonomia aplicável.” Usar referência do registro real, nunca ID inventado. Sem task, pedir apenas confirmação da identidade e espera pelo registro/atribuição. Fallback novo deve explicitar autorização, time e papel, sem duplicar cadastro.
+
+No retorno, o Collaborator salva primeiro na task progresso, currentSummary, comentários e resultado pertinentes, confirma persistência e só então comunica bloqueio, decisão necessária ou encerramento ao Leader. Se a gravação falhar, comunica essa falha como registro não confirmado e suspende trabalho dependente. Sem canal de comunicação, declara envio pendente; o Leader consulta os registros disponíveis. Não fingir envio nem definir aqui uma nova política de gestão contínua.
 
 ## Modelo e limites preservados
 
@@ -133,7 +160,10 @@ Se faltarem ferramentas para consultar, criar ou acessar chats, informar a etapa
 | Nome do chat precisa de ajuste | Usar nome do colaborador como base legível | Somente nome do chat atualizado; identidade do colaborador e registros de tarefa/autoria preservados; formato exato não imposto. |
 | Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
 | Contextualização concluída | Apresentar resumo curto antes de agir | Colaboradores, boards, tarefas em andamento, bloqueios e lacunas visíveis ao usuário. |
-| Handoff entregue | Aguardar confirmação real do colaborador | Papel e contexto confirmados por resposta observável; criação do chat não comprova prontidão ou trabalho. |
+| Handoff de inicialização | Confirmar identidade/perfil prontos | Uso de Collaborator e identidade/time explícitos; fallback novo autorizado; não autoriza trabalho sem task. |
+| Task registrada e atribuída | Confirmar compreensão e pendências | Referência real e contexto de origem conferidos; Leader registra/atribui antes de pedir execução. |
+| Retorno do Collaborator | Salvar na task antes de comunicar | Persistência e envio confirmados separadamente; falhas declaradas sem sucesso fictício. |
+| Retomada do Leader | Consultar atribuições dos colaboradores em qualquer board | Busca por executor ID não implica gestão dos boards alheios. |
 | Falha parcial | Retomar apenas etapa faltante | Agentes, times e chats já criados preservados, sem duplicação; pendências declaradas. |
 | Squad formado | Preparar continuidade de gestão | Competências completas não mudam autonomia de execução; política posterior ainda não definida. |
 
