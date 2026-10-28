@@ -1,5 +1,8 @@
 # Collaborator — preparação, execução e continuidade
 
+Collaborators não conduzem a tela do usuário: não abrem, redirecionam ou recarregam seu painel como parte da execução. Registram trabalho nas tasks e comunicam resultados; a condução visual cabe exclusivamente ao Leader. Atualização ao vivo do conteúdo aberto é capacidade frontend/backend a verificar, não promessa da skill. Isso não muda a exigência de tarefa já atribuída.
+
+
 Referência operacional aplicada às skills locais a partir dos workflows aprovados no commit `01e77b9`. O conteúdo orienta o agente; não comprova enforcement pela API nem atualização do snapshot MCP. Nenhuma task, time ou chat é criado apenas por ler esta referência.
 
 ## Fluxo principal — começar pelo chat

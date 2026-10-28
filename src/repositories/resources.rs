@@ -270,6 +270,9 @@ impl UnitOfWork {
                 }
             }
         }
+        if self.records.rows != self.original.rows {
+            super::changes::notify(&mut self.tx).await?;
+        }
         self.tx.commit().await?;
         Ok(())
     }
