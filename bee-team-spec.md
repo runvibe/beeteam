@@ -1,121 +1,81 @@
 # Bee Team — especificação do produto
 
-Atualizada em 27 de outubro de 2026.
+Atualizada em 27 de outubro de 2026. Revisão documental autorizada; implementação frontend/backend e skills permanecem pausadas. Estes documentos não comprovam runtime implementado.
 
-Estado: planejamento consolidado. Esta especificação não constitui a skill implementada nem a aplicação pronta.
+## Objetivo e execução local
 
-## Objetivo
+Organizar, para uso pessoal, equipes de colaboradores de IA para desenvolvimento, tesouraria, planejamento financeiro, pesquisa, planilhas e outras demandas. O produto reúne uma skill coordenadora e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos.
 
-Organizar, para uso pessoal, equipes de colaboradores de IA que executam demandas em diferentes áreas: desenvolvimento, tesouraria, planejamento financeiro, pesquisa, criação e análise de planilhas, entre outras.
+Bee Team é instalado no computador do usuário como servidor local com interface web, API e MCP. A IA no Codex ou outro harness consulta configurações e registra trabalho. Bee Team não acessa diretamente recursos da IA, não inicia/controla chats e não executa tarefas por conta própria. A skill orienta o uso dos recursos disponíveis no harness; capacidades ausentes devem ser explicitadas.
 
-O produto reúne uma skill de coordenação e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos do trabalho por tarefa. A primeira plataforma será o Codex, mantendo o modelo independente de plataforma. Particularidades de outros ambientes, como Claude Code e Copilot, poderão ser documentadas separadamente conforme seus recursos disponíveis.
+## Modelo final
 
-O Bee Team será instalado e executado no computador do usuário como um servidor local, oferecendo interface web, API e MCP locais. A IA executada no Codex ou em outro harness consulta as configurações e utiliza a API ou o MCP para registrar colaboradores, organizar demandas e salvar dados, resultados e resumos nas tarefas correspondentes.
+- **Board:** organiza tasks e status configuráveis. Identifica obrigatoriamente seu criador e preserva essa autoria. Tem exatamente um time responsável pela gestão, transferível para outro time. Um time pode gerir vários boards. Transferir gestão não altera autoria, executor, hierarquia ou histórico das tasks.
+- **Task:** pertence a um board; tem autor/dono obrigatório (agente que a escreveu) e executor obrigatório (agente que a executará). Ambos podem atuar como líder ou colaborador. Autor é preservado; executor pode ser reatribuído pelo usuário.
+- **Subtask:** é Task com parentId. Recursão sem limite fixo de níveis, executor próprio obrigatório, podendo ser diferente do pai, e board próprio, podendo ser diferente do pai. Ciclos parentais são inválidos. Checklist é projeção dos filhos, sem duplicar estado.
+- **Time:** grupo organizacional de agentes que o líder utiliza para distribuir demandas. Pode gerir boards, mas tasks não têm vínculo direto de pertencimento ao time. Cada time tem exatamente um líder.
+- **Agente:** perfil e identidade persistentes, independentes de chats. No máximo um vínculo como colaborador e um como líder, em times diferentes. Sem papel especial de gerente.
+- **Chat:** sessão externa referenciada; não é identidade permanente do agente.
 
-A aplicação Bee Team não acessa diretamente recursos da IA nem inicia ou controla chats por conta própria. A criação e a condução dos chats cabem à IA e às ferramentas disponíveis no harness, conforme as autorizações do usuário.
+Informações e histórico das tasks estão disponíveis a todos. Mudar o time de um agente não muda suas tarefas, autoria ou acesso ao histórico das tasks. Transferir uma task muda somente seu executor; não copia o histórico interno do agente anterior. Autoria do board é registrada a partir do contexto declarado da criação; detalhes de representação HTTP estão no contrato.
 
-## Estrutura organizacional
+## Coordenação e autonomia
 
-- Workspace: espaço organizacional da conta, contendo times e seus registros. O uso inicial é pessoal; isso não implica um produto multiusuário.
-- Time: possui propósito, contexto, colaboradores, demandas e um team leader próprio.
-- Team leader: conversa com o usuário, ajuda a definir e organizar o time, preserva o contexto e coordena sua execução.
-- Colaborador: possui identidade e perfil persistentes, com nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. Seu trabalho é consultável pelas tarefas vinculadas e respectivos resumos.
-- Tarefa: reúne planejamento, descrição ou resumo, responsável quando atribuído, status, andamento da execução, decisões, entregas, pendências e histórico das atividades, incluindo os resumos do trabalho realizado.
-- Chat: sessão de trabalho vinculada a um colaborador; não é a identidade permanente dele.
+O usuário coordena solicitações e aprovações na conversa com o team leader. Autonomia libera coordenação dentro do escopo concedido e não amplia autorizações externas nem concede recursos ausentes no harness.
 
-Um team leader pode atuar como colaborador em outro time. Assim, o usuário pode organizar um time de líderes usando a mesma estrutura, sem introduzir um tipo especial de gerente. Essa decisão substitui a proposta inicial de um único coordenador responsável diretamente por vários times.
+Board tem três modos: **totalmente manual**, **padrão** e **totalmente automático**. Task tem modo individual **manual** ou **automático**. O default inicial permanece seguro: aprovação/manual. O nome do modo de board 'padrão' não significa que ele seja escolhido implicitamente como valor inicial.
 
-Os times são elaborados com o usuário durante a conversa e podem evoluir e ser reorganizados, preservando seus registros. Não há necessidade confirmada de uma camada separada de projetos neste momento.
+O contexto de execução é o board que originou a task principal. rootTaskId identifica a task principal; originBoardId identifica esse board. O harness carrega esse contexto por toda a cadeia recursiva, incluindo subtasks em outros boards. O board de destino não substitui o de origem; calcular o modo efetivo não altera configurações salvas.
 
-## Coordenação e autorização
-
-O team leader ajuda no planejamento, propõe a divisão do trabalho, acompanha dependências, bloqueios e entregas e reúne os resultados para o usuário. Os colaboradores podem ser escolhidos por contexto ou tarefa, sem departamentos fixos.
-
-Existem dois modos selecionáveis:
-
-| Modo | Comportamento |
+| Modo do board de origem | Modo efetivo na task atual |
 |---|---|
-| Com aprovação — padrão inicial | Apresenta quais colaboradores e chats pretende reutilizar ou criar, qual tarefa caberá a cada um e os motivos. Aguarda autorização antes de criar chats, distribuir ou transferir tarefas. |
-| Autônomo | Decide como organizar a equipe, cria e reutiliza chats, distribui tarefas e muda responsáveis sem solicitar aprovação a cada ação, dentro da demanda autorizada. Registra e informa suas decisões. |
+| Totalmente manual | Manual, independentemente da flag individual e do board de destino. |
+| Padrão | Usa a flag individual da task atual; não herda automático do pai. |
+| Totalmente automático | Automático em toda a cadeia, independentemente das flags individuais e dos boards de destino. |
 
-Acompanhar o andamento e esclarecer uma tarefa já autorizada fazem parte da execução. O modo autônomo diz respeito à organização e delegação do trabalho; não amplia por si só o escopo autorizado da demanda.
+Sem contexto de execução, manter aprovação. Bee Team armazena configurações e informa o contexto/modo efetivo; o harness executa e cumpre aprovações. O servidor não é um engine executor.
 
-O modo escolhido deve ficar persistido na aplicação e ser consultável pela API ou pelo MCP, independentemente do chat do líder. Ainda está em aberto se essa configuração será única por workspace ou configurável por time.
+Colaborador trabalha nas tasks que executa. O líder distribui demandas usando agentes geridos, mas não existe 'líder do time da task'. O alcance de edição do líder sobre tasks de executores geridos ainda aguarda decisão; não tratá-lo como permissão confirmada. Não há autenticação ou política de segurança implícita nessa descrição.
 
-As solicitações de trabalho e as aprovações de execução acontecem na conversa com o team leader. Os modos acima orientam a atuação da IA no harness; a aplicação armazena as configurações e os registros, sem executar a coordenação por conta própria.
+## Interface: Tarefas e RA
 
-## Memória persistente e retomada
+A área **Tarefas** apresenta Kanban por board. Status têm nomes/ordem configuráveis; fluxo inicial sugerido: Backlog, A fazer, Em andamento, Em revisão, Concluída. Não exigir passagem por todas as etapas. Bloqueio é marca com motivo separada de status. Revisão segue a orientação do usuário, podendo ser pelo líder quando permitido no contexto.
 
-A aplicação preserva perfis e registros das tarefas mesmo quando um chat é fechado ou excluído. A retomada utiliza o perfil textual do colaborador e suas tarefas, resumos, decisões e entregas já salvos na aplicação, sem depender de transcrições das conversas ou presumir recuperação de informações não registradas.
+O card mostra título, descrição, autor, executor, status, andamento, planejamentos, filhos/checklist, comentários, arquivos, entregas, pendências e timeline com autoria. Comentários e uploads existem em qualquer nível de task. Vários planejamentos podem ser salvos; versionamento imutável é proposta técnica de preservação de histórico.
 
-Para retomar um colaborador em um novo chat, os registros devem permitir recuperar:
+Ao encerrar atividade, executor atualiza a task correspondente e salva resumo, resultado/status, entregas, decisões e pendências. Encerrar atividade não significa necessariamente concluir a task. Não há transcrição integral/parcial de conversa nem flag de salvamento por agente; preservar resumos do trabalho por task.
 
-- Objetivo e contexto do trabalho.
-- Responsabilidades e decisões relevantes.
-- Atividades realizadas e entregas produzidas.
-- Localização ou referências dos arquivos e resultados.
-- Pendências, bloqueios e próximo passo.
+A área **RA — Recursos de Agentes** lista perfis com nome, imagem opcional, atuação, estilo, instruções, regras e limites. Imagem pode ser produzida externamente por IA; servidor não implementa geração. Limites do perfil orientam uso, mas permissões reais dependem do harness. Sem campo de skills no perfil ou task; a skill coordenadora e seus exemplos permanecem.
 
-## Aplicação e painel
+Referências de chats e contexto de retomada reutilizam perfil e leituras de tasks/resumos/decisões/entregas. O perfil consulta suas atividades por relações com tasks, sem replicar histórico. Contexto/histórico interno do agente não é entregue automaticamente ao novo executor de uma task.
 
-A interface tem duas áreas principais: **Tarefas** e **RA — Recursos de Agentes**. A aplicação guarda colaboradores, times, tarefas, decisões, entregas e histórico das atividades por tarefa. O painel permite visualizar times, líderes, colaboradores e chats vinculados ao trabalho, além da última atualização recebida, para não apresentar um registro antigo como confirmação de atividade ao vivo.
+## Times, transferência e cópia
 
-### Tarefas
+Arquivar time preserva time, colaboradores, vínculos e histórico. Não libera vínculos automaticamente. Transferência explícita de agente para outro time é permitida inclusive saindo de time arquivado, mantendo identidade e tasks. Validar cardinalidades de papéis no estado final da transação; não mover nem reatribuir tasks durante essa transferência.
 
-Um quadro Kanban, inspirado conceitualmente em Trello e Jira, apresenta o planejamento e o acompanhamento das tarefas. A conversa com o team leader gera o planejamento que os agentes registram no quadro pela API ou pelo MCP.
+Cópia solicitada cria identidade independente, reutilizando perfil e contexto resumido apenas quando pedido. Não duplica autoria de atividades, tasks, chats ou histórico interno. Os detalhes técnicos de cópia de imagem e referência de resumo são propostas no contrato RA.
 
-Ao abrir um card, o usuário consulta:
+## Limites do painel e retomada
 
-- Descrição ou resumo da tarefa.
-- Responsável, quando atribuído.
-- Status da tarefa e andamento da execução.
-- Entregas, pendências e bloqueios.
-- Decisões e histórico pertencente à tarefa, incluindo os resumos do trabalho realizado.
+Painel visualiza trabalho e configura padrões. Não introduzir despacho operacional de tasks, reorganização de times ou aprovação de execução pela UI sem decisão específica; solicitações e aprovações permanecem na conversa. Website comum pode ser usado no navegador normal ou interno do harness, sem integração visual especial.
 
-Ao encerrar uma atividade, o colaborador atualiza o status e as informações pertinentes e salva o resumo do trabalho na própria tarefa.
+Perfis e registros já salvos sobrevivem ao fechamento/exclusão de chat. Retomada recupera objetivo, instruções, responsabilidades, decisões, entregas, referências, pendências e próximo passo. Não presumir recuperação de conversa perdida ou não registrada. Não há conectores de captura contínua. Um chat supervisor adicional é opcional e não requisito.
 
-### RA — Recursos de Agentes
+Datas de atualização e estados ativo/arquivado são registros cadastrais; não comprovam agente vivo ou execução contínua.
 
-A área RA apresenta a lista de colaboradores e seus perfis. Cada perfil reúne nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. A imagem pode ser gerada por IA, sem que esta definição implique implementar geração de imagens agora.
+## Decisões técnicas e contratos
 
-O perfil textual pode ser reutilizado como contexto e instruções para retomar o colaborador em um novo chat. Os limites registrados orientam sua atuação; as permissões reais dependem do harness.
+Backend Rust existente, PostgreSQL >=18. IDs persistidos UUID v7; referências externas de chat/harness são texto opaco. Exclusões de banco são lógicas via deleted_at (JSON deletedAt); preservar dados físicos e histórico. archivedAt é separado de exclusão.
 
-A relação entre tarefa e colaborador permite consultar no perfil todas as tarefas realizadas e seus respectivos resumos. Os resumos e o histórico permanecem nas tarefas, sem duplicação no perfil. O perfil não possui campo de skills; também não está previsto um campo de skills por tarefa nesta definição. A skill coordenadora Bee Team permanece parte do produto.
+Sem autenticação, tokens, schemes ou modelo de identidade verificada. Autoria declarada na API não prova quem enviou a requisição. O contexto HTTP human/agent é proposta de auditoria, não barreira de acesso.
 
-### Limites e configurações do painel
+Listagens usam offset/limit e filtros pertinentes, ordenação estável e totais após filtros/exclusão lógica. Frontend futuro usa mock API conforme contrato. Nesta revisão não se implementa frontend, backend nem skills.
 
-O painel também permite configurar padrões que os agentes consultam e seguem. Não é uma superfície para despachar tarefas, reorganizar operacionalmente os times ou conceder aprovações de execução; essas interações permanecem na conversa com o team leader.
+- [Contrato Kanban](docs/kanban-openapi.yaml) e [plano Kanban](docs/kanban-api-plan.md).
+- [Contrato RA](docs/ra-openapi.yaml) e [plano RA](docs/ra-api-plan.md).
+- [Checklist desta revisão](docs/contracts-checklist.md).
 
-A interface web pode ser um website comum, acessível em um navegador normal ou no navegador interno do harness, quando disponível. Não exige integração visual específica com Codex ou outro harness.
-
-A escolha entre aplicação própria e adaptação de ferramenta existente permanece em aberto.
-
-## API, MCP e rotina de atualização
-
-A aplicação disponibiliza API e MCP locais para que os próprios colaboradores consultem configurações, registrem colaboradores, organizem demandas e atualizem dados, resultados e resumos por tarefa. A IA no harness inicia essas interações com o servidor local, utilizando os recursos disponíveis em seu ambiente.
-
-Ao encerrar uma atividade, o colaborador salva na tarefa correspondente um resumo do que fez e atualiza o status resultante, o andamento da execução, as entregas e referências, as decisões relevantes e eventuais pendências ou próximos passos. Se estiver bloqueado, registra o bloqueio. Encerrar uma atividade não implica necessariamente concluir a tarefa.
-
-Essa rotina será descrita na skill e cumprida sem exigir um novo pedido do usuário a cada encerramento.
-
-Não haverá, no escopo inicial, conectores específicos de captura nem integração direta monitorando continuamente os chats. O colaborador utiliza os recursos disponíveis em seu ambiente e envia os dados à aplicação. Capacidades indisponíveis devem ser explicitadas, sem presumir que todos os ambientes oferecem os mesmos recursos.
-
-## Resumos por tarefa
-
-A primeira versão guarda resumos do trabalho nas tarefas em substituição ao histórico de conversas. Não inclui salvamento de transcrições integrais ou parciais nem opção por colaborador para habilitar esse salvamento.
-
-O histórico consultável registra as atividades da tarefa, seus resumos, decisões e entregas. A atualização ao encerrar uma atividade faz parte da rotina do colaborador, sem um novo pedido do usuário; não significa sincronização contínua nem manter chats fechados executando.
-
-## Supervisão adicional
-
-Um chat dedicado a acompanhar o quadro pode ser considerado futuramente. Ele não é necessário ao funcionamento básico: colaboradores atualizam suas demandas e o team leader acompanha e confere as entregas. Sua criação segue o modo de autorização vigente.
-
-## Pontos em aberto
-
-- Construir uma aplicação própria ou adaptar uma ferramenta existente.
-- Plataformas de instalação suportadas, stack técnica e funcionalidades detalhadas da primeira versão, mantendo a execução como servidor local no computador do usuário.
-- Contratos técnicos da API e do MCP e modelo de armazenamento.
-- Configuração de autonomia por workspace ou por time.
+Pendência material encaminhada: edição de task pelo líder via executor gerido. Detalhes técnicos de nomes de campos, arquivamento de agentes, revisão de planejamento, limites de payload e representação do contexto permanecem propostas explicitadas nos contratos, sem reabrir decisões finais acima.
 
 ## Anexo A — exemplos de organização de equipes
 
