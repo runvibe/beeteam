@@ -17,7 +17,7 @@ flowchart TD
     H --> I
     I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
     J --> K["Se faltar estrutura: conversar projeto e propor boards, tarefas ou colaboradores; transferências exigem autorização"]
-    E -->|Novo: caso 3| L["Entender projeto antes de definir pessoas; uma pergunta por vez; skills de apoio disponíveis"]
+    E -->|Novo: caso 3| L["Entender projeto antes de definir pessoas; uma pergunta por vez"]
     L --> M["Propor squad multidisciplinar e personas, incluindo líder: nome, avatar, descrição, especialidade, responsabilidades, instruções, estilo e regras"]
     M --> N{"Usuário revisa e aprova?"}
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
@@ -62,7 +62,7 @@ A criação da liderança não concede autorização irrestrita para transferir 
 
 Antes de cadastrar qualquer coisa, conversar e incentivar o usuário a detalhar o projeto: objetivo, história e contexto, área de atuação, entregas esperadas e organização do trabalho. Fazer perguntas curtas, uma por vez, aproveitando as respostas já fornecidas. Projeto significa a demanda discutida; não introduz entidade `Project` ou workspace no modelo.
 
-Recorrer a skills de brainstorming ou planejamento realmente disponíveis no harness quando úteis. O fluxo é portável e não pressupõe Codex, um plugin específico ou ferramentas ausentes. Indisponibilidade de uma skill auxiliar não deve ser mascarada como execução dela.
+A LLM decide naturalmente se usa ferramentas ou skills auxiliares disponíveis que julgue úteis, como brainstorming, assim como em qualquer projeto. Esse apoio é opcional, não uma etapa do fluxo nem uma escolha que o Leader deva impor ao usuário. Não pedir ao usuário que selecione uma skill nem bloquear a descoberta aguardando isso. O usuário pode sugerir uma espontaneamente; a conversa continua centrada no projeto e nos objetivos. O fluxo é portável e não pressupõe Codex, plugins ou ferramentas ausentes.
 
 Somente com compreensão clara da demanda, propor um squad multidisciplinar suficiente para as necessidades do projeto. A composição não se limita a desenvolvimento: pode incluir backend e frontend, ou finanças, pricing e marketing, entre outras especialidades pertinentes. Dimensionar a equipe pelo trabalho, sem impor uma lista fixa de personas.
 
