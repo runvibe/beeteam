@@ -1,8 +1,11 @@
 use super::hierarchy;
-use crate::{dto::backend::*, repositories::resources::Records};
-use chrono::{DateTime, Utc};
+use crate::{
+    dto::backend::*,
+    repositories::{contracts::UnitOfWork, records::Records},
+};
+use chrono::Utc;
 use serde_json::{json, Value};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 use uuid::Uuid;
 
 pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value> {
@@ -50,7 +53,8 @@ pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value
     }
     Ok(value)
 }
-pub(super) fn run(records: &Records, c: &Command) -> Result<Value> {
+pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
+    let records = &unit.records;
     for (key, table) in [
         ("agentId", "agents"),
         ("teamId", "teams"),
@@ -93,261 +97,47 @@ pub(super) fn run(records: &Records, c: &Command) -> Result<Value> {
         "getTeam" => resource(records, "teams", c.id("teamId")?),
         "getBoard" => resource(records, "boards", c.id("boardId")?),
         "getTask" => resource(records, "tasks", c.id("taskId")?),
-        "getBoardView" => board_view(records, c),
+        "getBoardView" => board_view(unit, c).await,
         "getResumptionContext" => resume(records, c),
-        "listAgentActivities" => activities(records, c),
-        "listTeamMembers" => {
-            let id = c.id("teamId")?;
-            let team = records.get("teams", id)?;
-            let mut ids = vec![(team.reference("leaderId").unwrap(), "leader")];
-            ids.extend(
-                records
-                    .list("memberships")
-                    .iter()
-                    .filter(|m| m.reference("teamId") == Some(id))
-                    .map(|m| (m.reference("agentId").unwrap(), "collaborator")),
-            );
-            let items=ids.into_iter().map(|(id,role)|{let a=records.get("agents",id)?;Ok(json!({"agentId":id,"name":a.data["name"],"role":role,"agentArchivedAt":a.archived_at}))}).collect::<Result<Vec<_>>>()?;
-            page(items, c, "agentId")
-        }
-        _ => list(records, c),
+        "listAgentActivities" => activities(unit, c).await,
+        _ => list(unit, c).await,
     }
 }
-fn list(records: &Records, c: &Command) -> Result<Value> {
-    let table = match c.operation.as_str() {
-        "listAgents" => "agents",
-        "listTeams" => "teams",
-        "listBoards" => "boards",
-        "listStatuses" => "statuses",
-        "listTasks" | "listAllTasks" => "tasks",
-        "listPlans" | "listPlanRevisions" => "plan_revisions",
-        "listComments" => "comments",
-        "listAttachments" => "attachments",
-        "listExecutionSummarys" => "execution_summaries",
-        "getTimeline" => "events",
-        "listChatReferences" => "chat_references",
-        _ => return Err(Failure::missing()),
-    };
-    let descendants = if table == "events" && c.q("includeChildren") == true {
-        Some(hierarchy::descendants(records, c.id("taskId")?)?)
-    } else {
-        None
-    };
-    let mut rows = Vec::new();
-    for r in records.rows.values().filter(|r| r.table == table) {
-        if r.deleted_at.is_some() && !(table == "attachments" && c.q("includeRemoved") == true) {
-            continue;
+async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
+    let page = unit.select(c).await?;
+    let mut items = page.items;
+    if page.table == "tasks" && c.operation != "listAgentActivities" {
+        for item in &mut items {
+            let id = value_id(&item["id"])?;
+            let value = resource(&unit.records, "tasks", id)?;
+            item["childSummary"] = value["childSummary"].clone();
+            item["executionContext"] = value["executionContext"].clone();
         }
-        let mut matches = true;
-        for key in ["boardId", "taskId", "agentId", "planId"] {
-            if let Some(id) = c.params.get(key) {
-                if key == "taskId" && descendants.is_some() {
-                    matches &= r
-                        .reference("taskId")
-                        .is_some_and(|id| descendants.as_ref().unwrap().contains(&id));
-                } else {
-                    matches &= r.data[key] == *id;
-                }
-            }
-        }
-        if !matches {
-            continue;
-        }
-        let mut value = if r.deleted_at.is_some() {
-            r.value()
-        } else {
-            resource(records, table, r.id)?
-        };
-        if table == "tasks" {
-            value["_archived"] = json!(hierarchy::archived(records, r.id)?);
-        }
-        if table == "agents" && (c.query.contains_key("teamId") || c.query.contains_key("role")) {
-            let role = c.q("role");
-            let team = c.q("teamId");
-            let binding = &value["bindings"];
-            let has = |field: &str| {
-                !binding[field].is_null() && (team.is_null() || binding[field] == team)
-            };
-            if !match role.as_str() {
-                Some("leader") => has("leaderTeamId"),
-                Some("collaborator") => has("collaboratorTeamId"),
-                _ => has("leaderTeamId") || has("collaboratorTeamId"),
-            } {
-                continue;
-            }
-        }
-        if table == "teams"
-            && c.query.contains_key("collaboratorId")
-            && !records.list("memberships").iter().any(|m| {
-                m.reference("teamId") == Some(r.id) && m.data["agentId"] == c.q("collaboratorId")
-            })
-        {
-            continue;
-        }
-        rows.push(value);
     }
-    if c.operation == "listPlans" {
-        let mut latest: BTreeMap<String, Value> = BTreeMap::new();
-        for row in rows {
-            let key = row["planId"].as_str().unwrap().to_owned();
-            if latest
-                .get(&key)
-                .is_none_or(|old| old["revision"].as_i64() < row["revision"].as_i64())
-            {
-                latest.insert(key, row);
-            }
+    if c.operation == "listAgentActivities" {
+        let actor = c.id("agentId")?;
+        for item in &mut items {
+            let id = value_id(&item["taskId"])?;
+            item["taskPath"] = json!(format!("/api/v1/tasks/{id}"));
+            item["summariesPath"] = json!(format!(
+                "/api/v1/tasks/{id}/execution-summaries?actorId={actor}"
+            ));
         }
-        rows = latest.into_values().collect();
     }
-    page(rows, c, "id")
-}
-pub(super) fn page(mut items: Vec<Value>, c: &Command, id_key: &str) -> Result<Value> {
-    items.retain(|row| matches_filters(row, c));
-    let sort = c.q("sortBy");
-    let sort = sort.as_str().unwrap_or("createdAt");
-    let descending = c.q("sortOrder") == "desc";
-    items.sort_by(|a, b| {
-        let compare = |a: &Value, b: &Value| {
-            if let (Some(a), Some(b)) = (a.as_f64(), b.as_f64()) {
-                a.total_cmp(&b)
-            } else {
-                a.as_str().unwrap_or("").cmp(b.as_str().unwrap_or(""))
-            }
-        };
-        let order = compare(&a[sort], &b[sort]).then_with(|| compare(&a[id_key], &b[id_key]));
-        if descending {
-            order.reverse()
-        } else {
-            order
-        }
-    });
-    let total = items.len();
-    let offset = c.q("offset").as_u64().unwrap_or(0) as usize;
-    let limit = c.q("limit").as_u64().unwrap_or(50) as usize;
-    let items: Vec<_> = items.into_iter().skip(offset).take(limit).collect();
-    let has_more = offset + items.len() < total;
+    let next = page.offset + items.len();
+    let more = next < page.total;
     Ok(
-        json!({"items":items,"offset":offset,"limit":limit,"total":total,"hasMore":has_more,"nextOffset":if has_more{Some(offset+items.len())}else{None}}),
+        json!({"items":items,"offset":page.offset,"limit":page.limit,"total":page.total,"hasMore":more,"nextOffset":if more {Some(next)}else{None}}),
     )
 }
-fn matches_filters(row: &Value, c: &Command) -> bool {
-    for (key, expected) in &c.query {
-        if matches!(
-            key.as_str(),
-            "offset"
-                | "limit"
-                | "sortBy"
-                | "sortOrder"
-                | "includeChildren"
-                | "includeRemoved"
-                | "limitPerColumn"
-                | "taskIds"
-                | "relation"
-                | "collaboratorId"
-        ) {
-            continue;
-        }
-        if c.operation == "listAgents" && matches!(key.as_str(), "role" | "teamId") {
-            continue;
-        }
-        if key == "includeArchived" {
-            if *expected == false && !row["archivedAt"].is_null() {
-                return false;
-            }
-            continue;
-        }
-        if key == "archived" {
-            let archived = row["_archived"]
-                .as_bool()
-                .unwrap_or(!row["archivedAt"].is_null());
-            if expected.as_bool() != Some(archived) {
-                return false;
-            }
-            continue;
-        }
-        if key == "rootOnly" {
-            if *expected == true && !row["parentId"].is_null() {
-                return false;
-            }
-            continue;
-        }
-        if key == "blocked" {
-            if row["block"]["blocked"] != *expected {
-                return false;
-            }
-            continue;
-        }
-        if key == "types" {
-            if !expected
-                .as_array()
-                .unwrap()
-                .iter()
-                .any(|t| row["type"] == *t)
-            {
-                return false;
-            }
-            continue;
-        }
-        if key.ends_with("From") || key.ends_with("Before") {
-            let prefix = key.trim_end_matches("From").trim_end_matches("Before");
-            let field = if prefix == "updated" && c.operation == "listAgentActivities" {
-                "taskUpdatedAt".into()
-            } else {
-                format!("{prefix}At")
-            };
-            let actual = row[&field]
-                .as_str()
-                .and_then(|s| DateTime::parse_from_rfc3339(s).ok());
-            let bound = expected
-                .as_str()
-                .and_then(|s| DateTime::parse_from_rfc3339(s).ok());
-            if let (Some(actual), Some(bound)) = (actual, bound) {
-                if (key.ends_with("From") && actual < bound)
-                    || (key.ends_with("Before") && actual >= bound)
-                {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-            continue;
-        }
-        if matches!(key.as_str(), "name" | "title" | "label" | "fileName") {
-            let field = if key == "fileName" {
-                "originalName"
-            } else {
-                key
-            };
-            if !row[field]
-                .as_str()
-                .unwrap_or("")
-                .to_lowercase()
-                .contains(&expected.as_str().unwrap_or("").to_lowercase())
-            {
-                return false;
-            }
-            continue;
-        }
-        if key == "mediaType" {
-            if row[key].as_str().unwrap_or("").to_lowercase()
-                != expected.as_str().unwrap_or("").to_lowercase()
-            {
-                return false;
-            }
-            continue;
-        }
-        if row[key] != *expected {
-            return false;
-        }
-    }
-    true
-}
-fn board_view(records: &Records, c: &Command) -> Result<Value> {
+async fn board_view(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     let id = c.id("boardId")?;
-    let mut statuses = records
+    let mut statuses = unit
+        .records
         .list("statuses")
         .into_iter()
         .filter(|s| s.reference("boardId") == Some(id) && s.archived_at.is_none())
+        .cloned()
         .collect::<Vec<_>>();
     statuses.sort_by_key(|s| s.data["position"].as_i64().unwrap_or(0));
     let mut columns = Vec::new();
@@ -360,8 +150,8 @@ fn board_view(records: &Records, c: &Command) -> Result<Value> {
         query.query.insert("rootOnly".into(), json!(true));
         query.query.insert("archived".into(), json!(false));
         query.query.insert("sortBy".into(), json!("position"));
-        let mut column = list(records, &query)?;
-        column["status"] = resource(records, "statuses", status.id)?;
+        let mut column = list(unit, &query).await?;
+        column["status"] = resource(&unit.records, "statuses", status.id)?;
         column["tasks"] = column["items"].take();
         column.as_object_mut().unwrap().remove("items");
         columns.push(column);
@@ -398,44 +188,9 @@ fn resume(records: &Records, c: &Command) -> Result<Value> {
         json!({"agent":agent,"teamContexts":contexts,"activityIndexPath":format!("/api/v1/agents/{id}/activities"),"chatReferencesPath":format!("/api/v1/agents/{id}/chat-references"),"taskIds":ids,"generatedAt":Utc::now(),"notice":"Stored context only; no session is started or monitored."}),
     )
 }
-fn activities(records: &Records, c: &Command) -> Result<Value> {
+async fn activities(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     if c.query.contains_key("statusId") && !c.query.contains_key("boardId") {
         return Err(Failure::invalid("statusId requires boardId"));
     }
-    let id = c.id("agentId")?;
-    let relation = c.q("relation");
-    let mut items = Vec::new();
-    for task in records.list("tasks") {
-        let authored = task.reference("authorAgentId") == Some(id);
-        let executing = task.reference("executorAgentId") == Some(id);
-        let latest = records
-            .list("execution_summaries")
-            .into_iter()
-            .filter(|s| {
-                s.reference("taskId") == Some(task.id) && s.reference("actorId") == Some(id)
-            })
-            .max_by_key(|s| (s.created_at, s.id));
-        if !match relation.as_str().unwrap_or("any") {
-            "authored" => authored,
-            "executing" => executing,
-            "worked" => latest.is_some(),
-            _ => authored || executing || latest.is_some(),
-        } {
-            continue;
-        }
-        let mut item = task.value();
-        item["_archived"] = json!(hierarchy::archived(records, task.id)?);
-        item["taskId"] = json!(task.id);
-        item["isCurrentExecutor"] = json!(executing);
-        item["lastWorkedAt"] = json!(latest.map(|s| s.created_at));
-        item["latestOwnSummaryId"] = json!(latest.map(|s| s.id));
-        item["taskUpdatedAt"] = json!(task.updated_at);
-        item["taskPath"] = json!(format!("/api/v1/tasks/{}", task.id));
-        item["summariesPath"] = json!(format!(
-            "/api/v1/tasks/{}/execution-summaries?actorId={id}",
-            task.id
-        ));
-        items.push(item);
-    }
-    page(items, c, "taskId")
+    list(unit, c).await
 }

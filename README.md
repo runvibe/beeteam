@@ -175,3 +175,30 @@ A skill Leader acompanha a conversa no painel (time, board e task em página int
 ## Atualização ao vivo
 
 `GET /api/v1/changes` fornece SSE de invalidação para HTTP e MCP. Eventos `invalidate` e `reset` carregam apenas `{"scope":"all"}`; clientes devem refazer queries ativas e preservar rascunhos locais. `reset` é enviado em cada conexão/reconexão e após perda de mensagens. Não há replay durável nem cursor; `Last-Event-ID` não evita o refetch. Heartbeat SSE nomeado15s e retry3000ms. PostgreSQL NOTIFY entrega somente após commit real; rollback, replay idempotente e leituras não emitem invalidação. Cada processo usa um listener compartilhado com fila limitada, sem consultar tabelas periodicamente. Alterações SQL externas que não passam pelo UnitOfWork não notificam. O stream não é ferramenta MCP e não transporta conteúdo de negócio. Proxy deve preservar streaming sem buffering. Detalhes: [contrato SSE](docs/live-changes.md).
+
+## Fronteira de persistência PostgreSQL
+
+HTTP e MCP recebem o mesmo `BackendService` composto em `AppState`; não recebem
+pool, driver ou transação. Os serviços dependem dos contratos `ResourceStore`,
+`TransactionStore` e `ChangeSource` em `repositories/contracts.rs`. Toda integração
+com PostgreSQL fica em `repositories/`: conexão, migrações, SQL, tradução de erros,
+arquivos, idempotência, slugs, sequências, transações e LISTEN/NOTIFY. `db.rs`
+mantém somente reexports de compatibilidade para inicialização e testes.
+
+As listagens usam filtros, ordenação determinística, contagem e `LIMIT/OFFSET`
+no PostgreSQL. `query.rs` seleciona a página e `reads.rs` carrega o contexto
+relacionado necessário, incluindo ancestrais entre boards. Os serviços continuam
+responsáveis pelas regras de execução e pela montagem dos contratos de resposta.
+Leituras usam `REPEATABLE READ READ ONLY`, sem o advisory lock de gravação, para
+manter contagem, página e contexto na mesma visão consistente.
+
+Gravações ainda usam o snapshot completo de recursos e o advisory lock global
+dentro do repository. Essa escolha preserva as invariantes entre recursos e a
+atomicidade dos comandos compostos; não é uma otimização de concorrência das
+escritas. O `UnitOfWork` não expõe a transação SQL e confirma notificações apenas
+após commit. PostgreSQL continua sendo o único driver implementado.
+
+`tests/repository_boundaries.rs` verifica isolamento de camadas, leituras durante
+gravações, ausência de leitura de tabelas alheias, estabilidade do snapshot,
+proteção contra gravação em leitura e paginação. Rode os testes com
+`BEE_TEST_DATABASE_URL` apontando para PostgreSQL 18 isolado, nunca para dados do produto.

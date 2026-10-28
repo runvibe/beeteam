@@ -1,3 +1,4 @@
+use super::contracts::{ChangeSource, ChangeStream, RepositoryFuture};
 use sqlx::{postgres::PgListener, PgPool, Postgres, Transaction};
 pub const CHANNEL: &str = "beeteam_changes";
 pub async fn notify(tx: &mut Transaction<'_, Postgres>) -> Result<(), sqlx::Error> {
@@ -31,5 +32,21 @@ impl ChangeListener {
     }
     pub async fn next(&mut self) -> Result<bool, sqlx::Error> {
         Ok(self.0.try_recv().await?.is_some())
+    }
+}
+
+impl ChangeSource for ChangeRepository {
+    fn is_closed(&self) -> bool {
+        self.pool.is_closed()
+    }
+    fn connect(&self) -> RepositoryFuture<'_, Box<dyn ChangeStream>> {
+        Box::pin(async move {
+            Ok(Box::new(ChangeListener::connect(&self.pool).await?) as Box<dyn ChangeStream>)
+        })
+    }
+}
+impl ChangeStream for ChangeListener {
+    fn next(&mut self) -> RepositoryFuture<'_, bool> {
+        Box::pin(async move { Ok(ChangeListener::next(self).await?) })
     }
 }

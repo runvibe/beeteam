@@ -8,16 +8,19 @@ pub struct AppState {
 }
 
 struct SharedState {
-    pub database: DatabaseRepository,
+    backend: crate::services::backend::service::BackendService,
     changes: crate::services::changes::ChangeFeed,
 }
 
 impl AppState {
     pub fn new(database: DatabaseRepository) -> Self {
-        let changes = crate::services::changes::ChangeFeed::new(
+        let changes = crate::services::changes::ChangeFeed::new(Arc::new(
             crate::repositories::changes::ChangeRepository::new(database.pool()),
-        );
-        let inner = SharedState { database, changes };
+        ));
+        let backend = crate::services::backend::service::BackendService::new(Arc::new(
+            crate::repositories::resources::ResourceRepository::new(database.pool()),
+        ));
+        let inner = SharedState { backend, changes };
         Self {
             inner: Arc::new(inner),
         }
@@ -27,8 +30,8 @@ impl AppState {
         &self.inner.changes
     }
 
-    pub fn database(&self) -> DatabaseRepository {
-        self.inner.database.clone()
+    pub fn backend(&self) -> &crate::services::backend::service::BackendService {
+        &self.inner.backend
     }
 }
 
@@ -40,11 +43,11 @@ mod tests {
     use crate::repositories::database::DatabaseRepository;
 
     #[tokio::test]
-    async fn state_exposes_database_repository() {
+    async fn state_exposes_backend_service() {
         let pool = PgPoolOptions::new().connect_lazy("postgres://postgres:postgres@localhost/test");
         let repository = DatabaseRepository::new(pool.expect("lazy pool"));
         let state = AppState::new(repository.clone());
 
-        let _ = state.database();
+        let _ = state.backend();
     }
 }

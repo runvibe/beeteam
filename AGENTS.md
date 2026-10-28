@@ -18,6 +18,9 @@
 
 ## Backend / MCP workflow
 
+- Compose `BackendService` and repository adapters in `AppState`; controllers receive services, never pools or concrete repositories. Services depend on `repositories/contracts.rs`, not SQLx or PostgreSQL adapters. Keep transaction handles private and translate SQL driver errors within repositories.
+- Read queries use repository-owned repeatable-read, read-only snapshots with database filtering/order/pagination and targeted context hydration. Do not reintroduce the global write lock or full-resource preload on GET/prepare_execution. Writes retain the existing serialized UnitOfWork until a separately validated concurrency redesign.
+
 - HTTP and MCP adapt the same DTO validation and business services; compound MCP writes must use one database transaction and one idempotency key.
 - The checked-in Kanban/RA OpenAPIs define the current boards/tasks model; never restore workspace or task/team ownership from older notes.
 - Actor context is declared metadata, not authentication. Do not introduce a leader editing restriction while that product policy remains unresolved.
