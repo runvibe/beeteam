@@ -85,3 +85,10 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - [x] Primeira interação escolhe time salvo contexto explícito; identidade/perfil do líder existente preservados.
 - [x] Nova equipe exige descoberta e aprovação concreta mesmo com autonomia; exemplos de alterações e inconsistências incluídos.
 - [x] Revisão textual de cenários, links e quick_validate UTF-8 passaram; build e 12 unitários passaram, três integrações CreateContainer/NotFound falharam.
+
+## Aplicação dos workflows aprovados
+
+- [x] Entradas enxutas com invariantes, referências próprias e workflows completos derivados de docs01e77b9.
+- [x] Alinhar handoff/integração/Codex/exemplos/prompts e remover exigência antiga de persistência adicional de chat no RA.
+- [x] Revisão comportamental independente e validação estrutura/links/templates; build e 12 unitários passaram, três integrações falharam ao criar containers.
+- [ ] Backend sincronizar conteúdo completo e verificar runtime; instalação pessoal é operação separada com proveniência e backup.

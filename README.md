@@ -4,7 +4,7 @@
 
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
-This specification distinguishes future behavior from the current installed skill.
+The skills now apply the approved workflows through concise entrypoints and complete local references; backend MCP snapshots require separate synchronization and verification.
 The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
 execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
@@ -22,11 +22,11 @@ and `delivery_review`; runtime registration remains owned by the backend.
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
 that supports skill discovery, invoke `$bee-team-leader` or `$bee-team-collaborator`.
-Keep the entire `skills/` layout together so relative references resolve; no global
-installation is performed by this repository. Integration references link to this
-repository's specification and draft contracts; keep those available when packaging.
-The destination branch must also include the current contracts identified in
-[validation evidence](skills/validation.md); the skills commit does not include them.
+Each skill folder is self-contained: copy its SKILL.md and references/ together.
+The complete workflows, integration, handoff, connection procedure and prompts live
+inside each package. Shared editorial sources remain under skills/references and
+skills/prompts; synchronize their packaged copies when those sources change.
+Installation and backend snapshot publication are separate operations.
 
 Coordination defaults to manual approval. Execution follows the root task's origin
 board: `manual` forces manual, `standard` uses each current task's individual mode,

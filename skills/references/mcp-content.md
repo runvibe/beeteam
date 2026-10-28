@@ -44,3 +44,9 @@ Os prompts consultam Task.specification junto da task, distinguindo requisitos/a
 ## Slugs na entrada do consumidor
 
 resolveAgentSlug, resolveTeamSlug e resolveTaskSlug resolvem referências legíveis para `{id,slug}`. Resolva antes de prompts/get: os três prompts mantêm argumentos UUIDv7, sem novos parâmetros de slug. Seis resources e três prompts permanecem iguais; tools passam a 60. Este conteúdo não acrescenta aliases nem gera slug em cliente.
+
+## Workflows operacionais em pacotes autocontidos
+
+As duas pastas bee-team-leader e bee-team-collaborator contêm SKILL.md enxuto e references/ com workflows completos (texto e Mermaid), integração, handoff, Codex, exemplos e templates. Os links locais ficam dentro do próprio pacote. Os workflows derivam dos documentos aprovados no commit 01e77b9; as cópias operacionais retiram a advertência histórica de que a skill ainda não aplica essas decisões, sem afirmar runtime atualizado.
+
+Ao sincronizar MCP, incorporar as duas entradas, os workflows e suas referências alcançáveis; não publicar entradas com links inacessíveis como se os workflows estivessem disponíveis. O backend deve disponibilizar esse conteúdo por resources realmente anunciados ou por conteúdo agregado ao resource correspondente, e validar discovery/leitura e prompts. Esta frente não define novas URIs de runtime. A tabela acima descreve o catálogo anterior; conferir resources/list após atualização. Templates de briefing/retomada/revisão agora preservam atribuição obrigatória, duas confirmações e salvar antes de notificar, sem alterar argumentos UUID nem tornar prompts mutantes.
