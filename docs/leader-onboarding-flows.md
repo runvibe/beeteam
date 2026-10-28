@@ -18,7 +18,7 @@ flowchart TD
     I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
     J --> K["Se faltar estrutura: conversar projeto e propor boards, tarefas ou colaboradores; transferências exigem autorização"]
     E -->|Novo: caso 3| L["Entender projeto antes de definir pessoas; uma pergunta por vez"]
-    L --> M["Propor squad multidisciplinar e personas, incluindo líder: nome, avatar, descrição, especialidade, responsabilidades, instruções, estilo e regras"]
+    L --> M["Propor composição sucinta com líder e perfis funcionais: execução e responsabilidades"]
     M --> N{"Usuário revisa e aprova?"}
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
     O --> M
@@ -64,13 +64,15 @@ Antes de cadastrar qualquer coisa, conversar e incentivar o usuário a detalhar 
 
 A LLM decide naturalmente se usa ferramentas ou skills auxiliares disponíveis que julgue úteis, como brainstorming, assim como em qualquer projeto. Esse apoio é opcional, não uma etapa do fluxo nem uma escolha que o Leader deva impor ao usuário. Não pedir ao usuário que selecione uma skill nem bloquear a descoberta aguardando isso. O usuário pode sugerir uma espontaneamente; a conversa continua centrada no projeto e nos objetivos. O fluxo é portável e não pressupõe Codex, plugins ou ferramentas ausentes.
 
-Somente com compreensão clara da demanda, propor um squad multidisciplinar suficiente para as necessidades do projeto. A composição não se limita a desenvolvimento: pode incluir backend e frontend, ou finanças, pricing e marketing, entre outras especialidades pertinentes. Dimensionar a equipe pelo trabalho, sem impor uma lista fixa de personas.
+Somente com compreensão clara da demanda, propor um squad multidisciplinar suficiente para as necessidades do projeto. A composição não se limita a desenvolvimento: pode incluir backend e frontend, ou finanças, pricing e marketing, entre outras especialidades pertinentes. Dimensionar a equipe pelo trabalho, sem impor uma lista fixa de perfis.
 
-Definir as personas, inclusive a líder, com nome, avatar desejado, descrição, especialidade, responsabilidades, instruções, estilo e regras. Indicar identidades a reutilizar ou criar, respeitando os vínculos existentes e o perfil único de cada agente. O avatar é parte desejada do perfil; mecanismo de geração, armazenamento e limites do harness serão detalhados, sem prometer ferramenta inexistente.
+Definir perfis funcionais, inclusive o líder, centrados em execução e responsabilidade: escopo, descrição da atuação, especialidade, responsabilidades, instruções, estilo de trabalho e regras úteis ao projeto. Não criar personagens ou biografias fictícias com idade, juventude, história pessoal ou personalidade ornamental. Nome e avatar permanecem elementos de identificação, sem longa discussão nem aprovação individual obrigatória. Indicar identidades a reutilizar ou criar, respeitando vínculos e perfil único. Geração e armazenamento do avatar dependem de mecanismos a detalhar e das capacidades reais do harness.
 
-Apresentar composição e perfis para revisão. O usuário pode alterar, rejeitar ou aprovar. Incorporar mudanças e obter aprovação concreta da proposta resultante antes de cadastrar agentes, time e vínculos. A intenção de criar um time ou o silêncio não aprovam uma composição indefinida. Essa aprovação é requisito explícito, independente de modos automáticos de tarefas ou boards.
+Apresentar a composição de forma sucinta, fluida e direta por padrão. Aprofundar um perfil individual somente se o usuário pedir ou um requisito essencial realmente exigir; não prolongar a entrevista para preencher detalhes ornamentais. Uma aprovação objetiva da composição é suficiente, sem exigir aprovações separadas por agente ou campo. O usuário pode alterar, rejeitar ou aprovar; incorporar mudanças e obter aprovação da proposta resultante antes de cadastrar agentes, time e vínculos. A intenção de criar um time ou o silêncio não aprovam uma composição indefinida. Essa aprovação é requisito explícito, independente de modos automáticos de tarefas ou boards.
 
-Depois da aprovação aplicável, cadastrar agentes, time e vínculos e criar chats separados para as personas trabalharem. A proposta deve explicitar esses chats; seguir também as autorizações e capacidades efetivas do harness. Cada handoff leva perfil, contexto do projeto, responsabilidade, limites e referências necessárias; persistir referências reais dos chats criados. Não tratar subagente temporário como chat persistente nem declarar criação se a ferramenta não estiver disponível. Nessa limitação, informar a etapa pendente e fornecer handoff para abertura suportada.
+Exemplo compacto: “Eu lidero a coordenação. Backend: backend e infraestrutura; Frontend: interface; QA: testes. Criaremos chats separados para esse trabalho. Posso prosseguir?”. Nomes e avatares identificam os agentes, sem transformar essa proposta em uma discussão de biografias.
+
+Depois da aprovação aplicável, cadastrar agentes, time e vínculos e criar chats separados para os agentes trabalharem. A proposta deve explicitar esses chats; seguir também as autorizações e capacidades efetivas do harness. Cada handoff leva perfil, contexto do projeto, responsabilidade, limites e referências necessárias; persistir referências reais dos chats criados. Não tratar subagente temporário como chat persistente nem declarar criação se a ferramenta não estiver disponível. Nessa limitação, informar a etapa pendente e fornecer handoff para abertura suportada.
 
 Squad autônomo significa cobertura de competências para realizar o projeto. Não ativa execução automática: continuam valendo os modos e o contexto de origem de boards/tasks, além das permissões para ações externas. Formação do time, criação de chats e início do trabalho são fatos distintos a confirmar.
 
@@ -94,7 +96,7 @@ Squad autônomo significa cobertura de competências para realizar o projeto. N�
 | Time sem líder | Ler time, criar liderança adequada e assumir perfil | Ausência não gera parada genérica; criação confirmada antes de assumir identidade persistida; vínculos respeitados. |
 | Time sem estrutura suficiente | Conversar projeto e propor organização | Criar/transferir board ou organizar pessoas/tarefas não ocorre como autorização implícita irrestrita. |
 | Novo time solicitado | Descobrir demanda uma pergunta por vez | Nenhum cadastro antes de compreender projeto e aprovar proposta concreta. |
-| Compreensão suficiente | Propor squad e perfis completos | Inclui líder, competências e justificativa, avatar desejado e limites de ferramentas conhecidos. |
+| Compreensão suficiente | Propor composição sucinta e perfis funcionais | Inclui líder, execução e responsabilidades; nome/avatar identificam, sem biografias fictícias ou aprovação individual obrigatória. Uma aprovação objetiva basta; aprofundamento apenas a pedido ou por requisito essencial. |
 | Proposta alterada/rejeitada | Revisar e obter aprovação resultante | Nenhum cadastro da proposta rejeitada; silêncio não aprova. |
 | Proposta aprovada | Cadastrar e criar chats autorizados | Identidades, vínculos, handoffs e referências reais confirmados; falhas parciais declaradas sem alegar conclusão. |
 | Squad formado | Preparar continuidade de gestão | Competências completas não mudam autonomia de execução; política posterior ainda não definida. |
@@ -106,7 +108,7 @@ Squad autônomo significa cobertura de competências para realizar o projeto. N�
 | Entrada | Pergunta qual time usar salvo contexto explícito; readiness e onboarding MCP documentados | Acrescentar saudação, abertura de Teams e escolha feita na interface e comunicada no chat. |
 | Time com líder | Reutiliza líder/perfil/contexto sem duplicação | Detalhar leitura de descrição, colaboradores, boards, tarefas e situação histórica/atual antes da gestão. |
 | Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
-| Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Detalhar personas completas, avatar desejado, abrangência multidisciplinar e chats separados após aprovação aplicável. |
+| Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
 | Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
 
 O documento registra intenção aprovada, não comprova que a skill, o frontend ou o MCP já executem os novos comportamentos. A divergência do caso 2 é deliberadamente explicitada; sua implementação será uma etapa posterior autorizada.
@@ -117,7 +119,7 @@ O documento registra intenção aprovada, não comprova que a skill, o frontend 
 2. Detalhes para derivar o perfil da liderança ausente e tratar dados obrigatórios incompletos, concorrência ou falha parcial na criação/vínculo.
 3. Sequência e autorização de criar boards, assumir/transferir sua gestão e organizar tarefas/colaboradores quando faltar estrutura.
 4. Geração, escolha, armazenamento e limites dos avatares em diferentes harnesses.
-5. Recuperação de falhas parciais entre cadastro de personas/time/vínculos e criação de chats, sem inventar atomicidade entre aplicação e harness.
+5. Recuperação de falhas parciais entre cadastro de agentes/time/vínculos e criação de chats, sem inventar atomicidade entre aplicação e harness.
 6. Eventual integração de eventos de seleção da interface com o chat. Por enquanto, a comunicação é explícita pelo usuário.
 
 ## Escopo desta entrega
