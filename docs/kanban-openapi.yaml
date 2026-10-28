@@ -1,0 +1,4582 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Bee Team Kanban — contrato proposto
+  version: 0.1.0-draft
+  description: Revisão documental final. Domínio boards, tasks, times e agentes. Board tem um time
+    gestor obrigatório e transferível; Task não tem vínculo direto com time. Times agrupam agentes e
+    podem gerir vários boards. Board preserva criador declarado; Task tem autor/dono e executor
+    agentes obrigatórios, sem task desatribuída. Subtask é Task com parentId recursivo sem limite
+    fixo, pode estar em outro board e usar outro executor; ciclos inválidos. Informações de tasks
+    disponíveis a todos. Contexto é o board que originou a task principal, preservado por toda a
+    cadeia recursiva, mesmo em outros boards. Origem manual força manual; origem automatic força
+    automatic; origem standard usa somente autonomyMode da task atual, sem herança da flag do pai.
+    Board de destino não interfere. Cálculo não altera configurações persistidas; Bee Team não
+    executa tarefas. Sem autenticação, autoria declarada não verificada. Backend Rust/PostgreSQL
+    >=18; IDs persistidos UUID v7, referências externas opacas; exclusão lógica deleted_at/JSON
+    deletedAt, archivedAt separado. offset/limit e filtros. Harness executa, Bee Team
+    armazena/consulta; frontend/backend/skills seguem pausados nesta revisão.
+  x-confirmed-decisions:
+    - board-creator-preserved
+    - task-author-and-executor-required
+    - recursive-cross-board-subtasks
+    - execution-origin-board-precedence
+    - no-auth
+    - postgresql>=18
+    - persisted-uuidv7
+    - soft-delete-deleted_at
+    - offset-limit
+    - archived-team-explicit-transfer
+    - board-managing-team-required-transferable
+    - task-no-team-ownership
+  x-pending-proposals:
+    - leader-edit-scope-via-managed-executor
+    - declared-author-header-format
+    - reparenting-not-exposed
+    - archive-agent-rules
+    - planning-revisions-and-payload-limits
+servers:
+  - url: http://127.0.0.1:8080
+    description: Endereço local proposto; não comprova API implementada.
+paths:
+  /api/v1/boards:
+    parameters: []
+    post:
+      operationId: createBoard
+      summary: Criar board
+      description: Criar board com teamId gestor obrigatório e criador declarado preservado. Um time pode
+        gerir vários boards. Tasks não herdam pertencimento a time. autonomyMode inicial manual.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Criar board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoardCreated"
+              example:
+                id: 10000000-0000-7000-8000-000000000001
+                name: Produto
+                description: Board independente
+                autonomyMode: manual
+                createdBy:
+                  actorKind: agent
+                  actorId: 10000000-0000-7000-8000-000000000010
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                statuses:
+                  - id: 10000000-0000-7000-8000-000000000020
+                    boardId: 10000000-0000-7000-8000-000000000001
+                    name: A fazer
+                    isDone: false
+                    position: 0
+                    archivedAt: null
+                    version: 1
+                    deletedAt: null
+                teamId: 10000000-0000-7000-8000-000000000030
+                lastManagementChange: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBoard"
+            example:
+              name: Produto
+              autonomyMode: standard
+              teamId: 10000000-0000-7000-8000-000000000030
+    get:
+      operationId: listBoards
+      summary: Listar boards
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive em name do board. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados, inclusive por ancestral arquivado. Aplicado antes do
+            total."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+              - name
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: teamId
+          in: query
+          required: false
+          schema: &a2
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Filtro por time gestor do board; não representa vínculo da task.
+      responses:
+        "200":
+          description: Listar boards
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoardPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/boards/{boardId}:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getBoard
+      summary: Consultar board
+      description: ""
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Board"
+              example:
+                id: 10000000-0000-7000-8000-000000000001
+                name: Produto
+                description: Board independente
+                autonomyMode: manual
+                createdBy:
+                  actorKind: agent
+                  actorId: 10000000-0000-7000-8000-000000000010
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                teamId: 10000000-0000-7000-8000-000000000030
+                lastManagementChange: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateBoard
+      summary: Atualizar ou arquivar board
+      description: Editar metadados, modo e/ou teamId gestor. If-Match do board. Transferência válida
+        grava board.management_changed e o novo teamId atomicamente; não altera creator,
+        autor/executor das tasks, parentId, originBoardId ou histórico. Enviar teamId atual não gera
+        novo evento de transferência.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Atualizar ou arquivar board
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Board"
+              example:
+                id: 10000000-0000-7000-8000-000000000001
+                name: Produto
+                description: Board independente
+                autonomyMode: manual
+                createdBy:
+                  actorKind: agent
+                  actorId: 10000000-0000-7000-8000-000000000010
+                archivedAt: null
+                version: 2
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:01:00Z
+                deletedAt: null
+                teamId: 10000000-0000-7000-8000-000000000031
+                lastManagementChange:
+                  id: 10000000-0000-7000-8000-000000000090
+                  boardId: 10000000-0000-7000-8000-000000000001
+                  type: board.management_changed
+                  previousTeamId: 10000000-0000-7000-8000-000000000030
+                  teamId: 10000000-0000-7000-8000-000000000031
+                  actor:
+                    actorKind: human
+                    actorId: null
+                  occurredAt: 2026-10-27T20:01:00Z
+                  deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchBoard"
+            examples:
+              transferManagement:
+                summary: Transferir gestão mantendo tasks inalteradas
+                value:
+                  teamId: 10000000-0000-7000-8000-000000000031
+  /api/v1/boards/{boardId}/statuses:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listStatuses
+      summary: Listar status ordenados
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive em name do status. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: isDone
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: "False: somente ativos; true: ativos e arquivados."
+          schema:
+            type: boolean
+            default: false
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - position
+              - name
+            default: position
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar status ordenados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusList"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createStatus
+      summary: Criar status ao fim
+      description: "Política de uso proposta: usuário configura o board. Contexto declarado, não
+        identidade verificada. Máximo 50 status ativos; ao menos um ativo não final. Nome ativo
+        único sem distinção de caixa/espaços externos."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Criar status ao fim
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+              example:
+                id: 10000000-0000-7000-8000-000000000020
+                boardId: 10000000-0000-7000-8000-000000000001
+                name: A fazer
+                isDone: false
+                position: 0
+                archivedAt: null
+                version: 1
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusInput"
+  /api/v1/boards/{boardId}/statuses/{statusId}:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: statusId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    patch:
+      operationId: updateStatus
+      summary: Configurar status
+      description: "Política de uso proposta: usuário configura o board. Contexto declarado, não
+        identidade verificada. If-Match do Status. Em uso (inclusive tarefas arquivadas): proíbe
+        arquivamento ou mudança isDone."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Configurar status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+              example:
+                id: 10000000-0000-7000-8000-000000000020
+                boardId: 10000000-0000-7000-8000-000000000001
+                name: A fazer
+                isDone: false
+                position: 0
+                archivedAt: null
+                version: 1
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchStatus"
+  /api/v1/boards/{boardId}/status-order:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: orderStatuses
+      summary: Ordenar todos os status ativos
+      description: "Política de uso proposta: usuário configura o board. Contexto declarado, não
+        identidade verificada."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Ordenar todos os status ativos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusOrderResult"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusOrder"
+  /api/v1/boards/{boardId}/view:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getBoardView
+      summary: Consultar quadro
+      description: Projeção por board, todas as colunas ativas visíveis, cards raiz locais em position,id
+        asc. limitPerColumn default20 max100. Task filha em outro board continua acessível na
+        listagem e checklist global; filtros locais não definem contexto de execução. Cada card traz
+        autor/executor e executionContext. Continuação via listagem do board com statusId/rootOnly e
+        mesmos filtros.
+      x-contract-status: proposed
+      parameters:
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title da tarefa. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: executorAgentId
+          in: query
+          required: false
+          description: Um único responsável atual.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: blocked
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: limitPerColumn
+          in: query
+          required: false
+          description: Não pagina nem esconde colunas.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Consultar quadro
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BoardView"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/boards/{boardId}/tasks:
+    parameters:
+      - name: boardId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listTasks
+      summary: Listar tarefas e subtarefas
+      description: Listagem limitada ao board do path, inclusive tasks filhas de outro board. parentId
+        filtra filhos diretos dentro deste board. Para checklist completo cross-board usar GET
+        /tasks?parentId=...; informações de tasks disponíveis a todos.
+      x-contract-status: proposed
+      parameters:
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title da tarefa. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: statusId
+          in: query
+          required: false
+          description: Um único status pertencente ao board.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: executorAgentId
+          in: query
+          required: false
+          description: Um único responsável atual.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: parentId
+          in: query
+          required: false
+          description: Somente filhos diretos deste pai no board.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: rootOnly
+          in: query
+          required: false
+          description: True é incompatível com parentId; false sem parentId inclui raízes e subtarefas.
+          schema:
+            type: boolean
+            default: false
+        - name: blocked
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados, inclusive por ancestral arquivado. Aplicado antes do
+            total."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - position
+              - createdAt
+              - updatedAt
+              - title
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: authorAgentId
+          in: query
+          required: false
+          schema: &a1
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Autor/dono imutável.
+      responses:
+        "200":
+          description: Listar tarefas e subtarefas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createTask
+      summary: Criar tarefa ou subtarefa
+      description: Autor e executor obrigatórios; parentId opcional. Filho pode estar em outro board e ter
+        outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
+        rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
+        pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
+        nesta revisão.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ParentIfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Criar tarefa ou subtarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTask"
+            example:
+              title: Subtask em outro board
+              authorAgentId: 10000000-0000-7000-8000-000000000010
+              executorAgentId: 10000000-0000-7000-8000-000000000011
+              parentId: 10000000-0000-7000-8000-000000000002
+              autonomyMode: manual
+              coordinationContext:
+                mode: manual
+                conversationRef: chat-1
+                approvalRef: msg-1
+  /api/v1/tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTask
+      summary: Consultar tarefa
+      description: Retorna task e executionContext calculado para sua cadeia principal. Contexto é o board
+        que originou a task principal, preservado por toda a cadeia recursiva, mesmo em outros
+        boards. Board de destino não interfere. Cálculo não altera configurações persistidas; Bee
+        Team não executa tarefas.
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              examples:
+                crossBoardCurrentTask:
+                  summary: Task manual em board de destino automático; origem standard usa flag atual
+                  value: &a3
+                    id: 10000000-0000-7000-8000-000000000005
+                    boardId: 10000000-0000-7000-8000-000000000006
+                    parentId: 10000000-0000-7000-8000-000000000004
+                    title: Task 5
+                    description: Trabalho com autor e executor
+                    authorAgentId: 10000000-0000-7000-8000-000000000010
+                    executorAgentId: 10000000-0000-7000-8000-000000000016
+                    statusId: 10000000-0000-7000-8000-000000000026
+                    position: a5
+                    progress:
+                      percent: 0
+                      note: ""
+                    block:
+                      blocked: false
+                      reason: null
+                    childSummary:
+                      total: 0
+                      done: 0
+                    latestExecutionSummaryId: null
+                    archivedAt: null
+                    version: 1
+                    createdAt: 2026-10-27T20:00:00Z
+                    updatedAt: 2026-10-27T20:00:00Z
+                    deletedAt: null
+                    autonomyMode: manual
+                    executionContext:
+                      rootTaskId: 10000000-0000-7000-8000-000000000002
+                      originBoardId: 10000000-0000-7000-8000-000000000001
+                      originBoardMode: standard
+                      effectiveMode: manual
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateTask
+      summary: Atualizar conteúdo e progresso
+      description: Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId.
+        Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
+        efetivo usa o board da origem da cadeia.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Atualizar conteúdo e progresso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchTask"
+            example:
+              autonomyMode: automatic
+  /api/v1/tasks/{taskId}/assignment:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: assignTask
+      summary: Atribuir ou transferir responsável
+      description: Novo executor agente obrigatório, nunca null. Usuário pode transferir. Preserva autor,
+        histórico da task e contexto de execução; não copia histórico interno do executor anterior.
+        Sem restrição de time.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Atribuir ou transferir responsável
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Assignment"
+            example:
+              executorAgentId: 10000000-0000-7000-8000-000000000012
+              coordinationContext:
+                mode: manual
+                conversationRef: chat-1
+                approvalRef: msg-2
+  /api/v1/tasks/{taskId}/position:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: moveTask
+      summary: Mover ou reordenar tarefa
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Mover ou reordenar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Position"
+  /api/v1/tasks/{taskId}/block:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: blockTask
+      summary: Bloquear ou desbloquear
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Bloquear ou desbloquear
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Block"
+  /api/v1/tasks/{taskId}/plans:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listPlans
+      summary: Listar plans
+      description: "Planos: lista revisão atual de cada planId. Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Ordenação estável com desempate id; sem snapshot entre requisições.
+        Primeiro selecionar a revisão atual de cada planId; depois filtrar por autor/data dessa
+        revisão e paginar. Não retornar revisão antiga por corresponder ao filtro."
+      x-contract-status: proposed
+      parameters:
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title do planejamento. Percentual, underscore e
+            barra invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt da revisão atual, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt da revisão atual, RFC3339 com timezone. From
+            deve ser estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - title
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevisionPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createPlan
+      summary: Registrar plans
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Registrar plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevision"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/comments:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listComments
+      summary: Listar comments
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createComment
+      summary: Registrar comments
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Registrar comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateComment"
+  /api/v1/tasks/{taskId}/attachments:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listAttachments
+      summary: Listar attachments
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: fileName
+          in: query
+          required: false
+          description: Substring literal case-insensitive em originalName. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: mediaType
+          in: query
+          required: false
+          description: Correspondência exata case-insensitive do media type armazenado, sem parâmetros.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            pattern: ^[^\s/;]+/[^\s/;]+$
+        - name: includeRemoved
+          in: query
+          required: false
+          description: True inclui metadados com deletedAt preenchido; download continua 404. Bytes preservados.
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - originalName
+              - sizeBytes
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar attachments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttachmentPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createAttachment
+      summary: Registrar attachments
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Registrar attachments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadAttachment"
+            encoding:
+              file:
+                contentType: application/octet-stream
+        description: Um arquivo, até 20 MiB; corpo multipart até 21 MiB. Nome não é caminho; bytes não ficam
+          na raiz web.
+        x-maxBytes: 22020096
+  /api/v1/tasks/{taskId}/execution-summaries:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listExecutionSummarys
+      summary: Listar execution-summaries
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: outcome
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - progress
+              - completed
+              - blocked
+        - name: statusId
+          in: query
+          required: false
+          description: Status registrado no resumo, não o status atual da tarefa.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar execution-summaries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecutionSummaryPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createExecutionSummary
+      summary: Registrar execution-summaries
+      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Registrar execution-summaries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecutionResult"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordExecution"
+            example:
+              summary: Atividade concluída
+              outcome: progress
+              statusId: 10000000-0000-7000-8000-000000000020
+              deliverables: []
+              pending: []
+              executionContext:
+                rootTaskId: 10000000-0000-7000-8000-000000000002
+                originBoardId: 10000000-0000-7000-8000-000000000001
+  /api/v1/tasks/{taskId}/plans/{planId}/revisions:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: planId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    post:
+      operationId: revisePlan
+      summary: Salvar revisão imutável
+      description: Verificação individual para subtarefas; perder atribuição remove escrita. If-Match da
+        tarefa; baseRevision divergente retorna 409 revision_conflict.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Salvar revisão imutável
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevision"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevisePlan"
+    get:
+      operationId: listPlanRevisions
+      summary: Listar revisões de planejamento
+      description: "Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Ordenação estável com
+        desempate id; sem snapshot entre requisições."
+      x-contract-status: proposed
+      parameters:
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - revision
+              - createdAt
+            default: revision
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar revisões de planejamento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevisionPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/attachments/{attachmentId}/content:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: attachmentId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: downloadAttachment
+      summary: ""
+      description: Arquivo removido retorna 404. Nenhum caminho local arbitrário é aceito.
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Bytes do arquivo
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: attachment; filename seguro
+            X-Content-Type-Options:
+              schema:
+                type: string
+                const: nosniff
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/attachments/{attachmentId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: attachmentId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    delete:
+      operationId: removeAttachment
+      summary: Remover acesso ao anexo e preservar registro excluído logicamente
+      description: "Verificação individual para subtarefas; perder atribuição remove escrita. If-Match da
+        tarefa. Dados e bytes físicos são preservados; exclusão lógica via deleted_at. Exclusão
+        lógica: preencher deleted_at no registro de arquivo/imagem, preservar bytes e dados físicos,
+        registrar evento. Limpar somente o vínculo atual quando aplicável; archivedAt não é
+        exclusão. Repetição retorna 404 para recurso já excluído."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "204":
+          description: Remover acesso ao anexo e preservar registro excluído logicamente
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/timeline:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTimeline
+      summary: Consultar timeline unificada
+      description: Timeline disponível a todos. includeChildren=true reúne toda a descendência recursiva,
+        inclusive cross-board, sem limite fixo de níveis; preservar taskId/autor de cada evento, sem
+        duplicação. Ordenar por sequence e paginar offset/limit.
+      x-contract-status: proposed
+      parameters:
+        - name: includeChildren
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+            default: false
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: types
+          in: query
+          required: false
+          description: Lista CSV de tipos; OR entre tipos, AND com demais filtros.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
+            minItems: 1
+            uniqueItems: true
+          style: form
+          explode: false
+        - name: occurredFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de occurredAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: occurredBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de occurredAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - sequence
+            default: sequence
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Consultar timeline unificada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/archive:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: archiveTask
+      summary: Arquivar ou restaurar tarefa
+      description: Arquivar pai bloqueia mutações dos filhos.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Arquivar ou restaurar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+              example:
+                id: 10000000-0000-7000-8000-000000000002
+                boardId: 10000000-0000-7000-8000-000000000001
+                parentId: null
+                title: Task 2
+                description: Trabalho com autor e executor
+                authorAgentId: 10000000-0000-7000-8000-000000000010
+                executorAgentId: 10000000-0000-7000-8000-000000000013
+                statusId: 10000000-0000-7000-8000-000000000021
+                position: a2
+                progress:
+                  percent: 0
+                  note: ""
+                block:
+                  blocked: false
+                  reason: null
+                childSummary:
+                  total: 1
+                  done: 0
+                latestExecutionSummaryId: null
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+                autonomyMode: automatic
+                executionContext:
+                  rootTaskId: 10000000-0000-7000-8000-000000000002
+                  originBoardId: 10000000-0000-7000-8000-000000000001
+                  originBoardMode: standard
+                  effectiveMode: automatic
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Board.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Archive"
+  /api/v1/tasks:
+    parameters: []
+    get:
+      operationId: listAllTasks
+      summary: Listar tasks entre boards e consultar filhos recursivos
+      description: Consulta de tasks entre boards; parentId retorna filhos diretos sem limitar board.
+        Repetir para cada nó sem limite fixo de níveis. boardId é filtro opcional; não usar esse
+        filtro para ocultar filhos cross-board no checklist. Informações disponíveis a todos.
+      x-contract-status: proposed
+      parameters:
+        - name: boardId
+          in: query
+          required: false
+          schema: *a1
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title da tarefa. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: statusId
+          in: query
+          required: false
+          description: Um único status pertencente ao board.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: executorAgentId
+          in: query
+          required: false
+          description: Um único responsável atual.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: parentId
+          in: query
+          required: false
+          description: Somente filhos diretos deste pai no board.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: rootOnly
+          in: query
+          required: false
+          description: True é incompatível com parentId; false sem parentId inclui raízes e subtarefas.
+          schema:
+            type: boolean
+            default: false
+        - name: blocked
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados, inclusive por ancestral arquivado. Aplicado antes do
+            total."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - position
+              - createdAt
+              - updatedAt
+              - title
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: authorAgentId
+          in: query
+          required: false
+          schema: *a1
+          description: Autor/dono imutável.
+      responses:
+        "200":
+          description: Listar tarefas e subtarefas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+components:
+  parameters:
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag forte da entidade alvo; em comandos de conteúdo, da tarefa; em ordenação de
+        status, do board.
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+        examples:
+          - '"1"'
+    ParentIfMatch:
+      name: If-Match
+      in: header
+      required: false
+      description: "Obrigatório se parentId não nulo: ETag do pai. Ausência retorna 428."
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Retry por 24h vinculado a rota, contexto de autoria declarado e hash do pedido. Mesma
+        chave/conteúdo retorna resposta original; conteúdo diferente dá 409.
+      schema:
+        type: string
+        format: uuid
+        description: Chave de requisição, não ID de entidade persistida; qualquer versão UUID.
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Máximo de itens na página; valores fora do intervalo são rejeitados, não truncados.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: Offset além do total retorna items vazio.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2147483647
+        default: 0
+    ActorKind:
+      name: X-Actor-Kind
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - human
+          - agent
+      description: Autoria declarada; sem autenticação ou prova de identidade.
+    ActorId:
+      name: X-Actor-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      description: UUID v7 do agente declarado quando actorKind=agent; ausente com human. Não é prova de
+        identidade. Em criação de task, authorAgentId é obrigatório separadamente.
+  responses:
+    "400":
+      description: invalid_request; invalid_actor_context
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "404":
+      description: not_found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "409":
+      description: Conflito estrutural, versão em composição, recurso arquivado/em uso, idempotência ou
+        contexto de execução incompatível; não autenticação.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "412":
+      description: version_conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "413":
+      description: payload_too_large
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "415":
+      description: unsupported_media_type
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "428":
+      description: version_required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "500":
+      description: internal_error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "503":
+      description: storage_unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Progress:
+      type: object
+      properties:
+        percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        note:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - percent
+        - note
+      additionalProperties: false
+    Block:
+      oneOf:
+        - type: object
+          properties:
+            blocked:
+              const: true
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+            - blocked
+            - reason
+          additionalProperties: false
+        - type: object
+          properties:
+            blocked:
+              const: false
+            reason:
+              type: "null"
+          required:
+            - blocked
+            - reason
+          additionalProperties: false
+    CoordinationContext:
+      oneOf:
+        - type: object
+          properties:
+            mode:
+              const: manual
+            conversationRef:
+              type: string
+              minLength: 1
+            approvalRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+            - approvalRef
+          additionalProperties: false
+        - type: object
+          properties:
+            mode:
+              const: automatic
+            conversationRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+          additionalProperties: false
+      description: mode deve corresponder ao modo efetivo do contexto da execução. Manual exige referência
+        à aprovação; automatic não pede nova aprovação de coordenação no escopo. Referências não são
+        autenticação.
+    ReviewContext:
+      type: object
+      properties:
+        reviewerType:
+          type: string
+          enum:
+            - user
+            - team_leader
+        conversationRef:
+          type: string
+          minLength: 1
+        instructionRef:
+          type: string
+          minLength: 1
+      required:
+        - reviewerType
+        - conversationRef
+        - instructionRef
+      additionalProperties: false
+      description: Orientação de revisão na conversa; não prova consentimento por si só.
+    Deliverable:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        attachmentId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        url:
+          type: string
+          format: uri
+          pattern: ^https?://
+      required:
+        - label
+      additionalProperties: false
+      not:
+        required:
+          - attachmentId
+          - url
+    Board:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        autonomyMode:
+          $ref: "#/components/schemas/BoardAutonomyMode"
+        createdBy:
+          $ref: "#/components/schemas/DeclaredActor"
+        teamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Time gestor do board; pode mudar sem alterar criador, tasks, executores, hierarquia ou
+            histórico.
+        lastManagementChange:
+          oneOf:
+            - $ref: "#/components/schemas/BoardManagementChange"
+            - type: "null"
+          description: Último evento de transferência; log completo append-only preservado. Null antes da
+            primeira transferência.
+      required:
+        - id
+        - name
+        - description
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - autonomyMode
+        - createdBy
+        - teamId
+        - lastManagementChange
+      additionalProperties: false
+    Status:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        boardId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+        position:
+          type: integer
+          minimum: 0
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+      required:
+        - id
+        - boardId
+        - name
+        - isDone
+        - position
+        - archivedAt
+        - version
+        - deletedAt
+      additionalProperties: false
+    BoardCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        autonomyMode:
+          $ref: "#/components/schemas/BoardAutonomyMode"
+        createdBy:
+          $ref: "#/components/schemas/DeclaredActor"
+        teamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Time gestor do board; pode mudar sem alterar criador, tasks, executores, hierarquia ou
+            histórico.
+        lastManagementChange:
+          oneOf:
+            - $ref: "#/components/schemas/BoardManagementChange"
+            - type: "null"
+          description: Último evento de transferência; log completo append-only preservado. Null antes da
+            primeira transferência.
+      required:
+        - id
+        - name
+        - description
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - statuses
+        - deletedAt
+        - autonomyMode
+        - createdBy
+        - teamId
+        - lastManagementChange
+      additionalProperties: false
+    StatusInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+          default: false
+      required:
+        - name
+      additionalProperties: false
+    CreateBoard:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusInput"
+          minItems: 1
+          maxItems: 50
+        autonomyMode:
+          $ref: "#/components/schemas/BoardAutonomyMode"
+        teamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Time gestor do board; pode mudar sem alterar criador, tasks, executores, hierarquia ou
+            histórico.
+      required:
+        - name
+        - teamId
+      additionalProperties: false
+      description: Criar board com teamId gestor obrigatório e criador declarado preservado. Um time pode
+        gerir vários boards. Tasks não herdam pertencimento a time. autonomyMode inicial manual.
+    PatchBoard:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        archived:
+          type: boolean
+        autonomyMode:
+          $ref: "#/components/schemas/BoardAutonomyMode"
+        teamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Time gestor do board; pode mudar sem alterar criador, tasks, executores, hierarquia ou
+            histórico.
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Editar metadados, modo e/ou teamId gestor. If-Match do board. Transferência válida
+        grava board.management_changed e o novo teamId atomicamente; não altera creator,
+        autor/executor das tasks, parentId, originBoardId ou histórico. Enviar teamId atual não gera
+        novo evento de transferência.
+    PatchStatus:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+        archived:
+          type: boolean
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Status em uso não pode ser arquivado ou mudar isDone. Nome pode mudar.
+    StatusOrder:
+      type: object
+      properties:
+        statusIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          minItems: 1
+          maxItems: 50
+          uniqueItems: true
+      required:
+        - statusIds
+      additionalProperties: false
+      description: Todos os status ativos exatamente uma vez.
+    StatusList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    StatusOrderResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        boardVersion:
+          type: integer
+          minimum: 1
+      required:
+        - items
+        - boardVersion
+      additionalProperties: false
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        boardId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        parentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        executorAgentId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Executor obrigatório, reatribuível pelo usuário, sem restrição de time.
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        position:
+          type: string
+          description: Rank opaco gerado pelo servidor.
+        progress:
+          $ref: "#/components/schemas/Progress"
+        block:
+          $ref: "#/components/schemas/Block"
+        childSummary:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            done:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - done
+          additionalProperties: false
+        latestExecutionSummaryId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        autonomyMode:
+          $ref: "#/components/schemas/TaskAutonomyMode"
+        executionContext:
+          $ref: "#/components/schemas/TaskExecutionContext"
+        authorAgentId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          description: Autor/dono obrigatório e imutável; agente que escreveu a task. Independente do ator
+            declarado que transporta a requisição.
+      required:
+        - id
+        - boardId
+        - parentId
+        - title
+        - description
+        - executorAgentId
+        - statusId
+        - position
+        - progress
+        - block
+        - childSummary
+        - latestExecutionSummaryId
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - autonomyMode
+        - executionContext
+        - authorAgentId
+      additionalProperties: false
+      description: Task recursiva com autor e executor obrigatórios, ambos agentes. parentId aponta outra
+        Task sem limite fixo de profundidade; board e executor podem diferir do pai. Sem vínculo com
+        time. Autor/histórico preservados após reatribuição/transferência de agente. Checklist é
+        projeção dos filhos.
+    CreateTask:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        parentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        executorAgentId: *a1
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        coordinationContext:
+          $ref: "#/components/schemas/CoordinationContext"
+        autonomyMode:
+          $ref: "#/components/schemas/TaskAutonomyMode"
+        authorAgentId: *a1
+      required:
+        - title
+        - coordinationContext
+        - authorAgentId
+        - executorAgentId
+      additionalProperties: false
+      description: Autor e executor obrigatórios; parentId opcional. Filho pode estar em outro board e ter
+        outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
+        rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
+        pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
+        nesta revisão.
+    PatchTask:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        progress:
+          $ref: "#/components/schemas/Progress"
+        autonomyMode:
+          $ref: "#/components/schemas/TaskAutonomyMode"
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId.
+        Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
+        efetivo usa o board da origem da cadeia.
+    Assignment:
+      type: object
+      properties:
+        executorAgentId: *a1
+        coordinationContext:
+          $ref: "#/components/schemas/CoordinationContext"
+      required:
+        - executorAgentId
+        - coordinationContext
+      additionalProperties: false
+      description: Novo executor agente obrigatório, nunca null. Usuário pode transferir. Preserva autor,
+        histórico da task e contexto de execução; não copia histórico interno do executor anterior.
+        Sem restrição de time.
+    Position:
+      type: object
+      properties:
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        beforeTaskId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      required:
+        - statusId
+        - beforeTaskId
+      additionalProperties: false
+      description: Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige
+        execution-summaries; reordenar no mesmo status final é permitido.
+    Archive:
+      type: object
+      properties:
+        archived:
+          type: boolean
+      required:
+        - archived
+      additionalProperties: false
+    CreatePlan:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - title
+        - content
+      additionalProperties: false
+    RevisePlan:
+      type: object
+      properties:
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        changeSummary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        baseRevision:
+          type: integer
+          minimum: 1
+      required:
+        - content
+        - changeSummary
+        - baseRevision
+      additionalProperties: false
+    PlanRevision:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        planId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        revision:
+          type: integer
+          minimum: 1
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        changeSummary:
+          type:
+            - string
+            - "null"
+        actorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        createdAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+      required:
+        - id
+        - planId
+        - taskId
+        - title
+        - revision
+        - content
+        - changeSummary
+        - actorId
+        - createdAt
+        - deletedAt
+        - actorKind
+      additionalProperties: false
+    CreateComment:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+      required:
+        - body
+      additionalProperties: false
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        body:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        actorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        createdAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+      required:
+        - id
+        - taskId
+        - body
+        - actorId
+        - createdAt
+        - deletedAt
+        - actorKind
+      additionalProperties: false
+    UploadAttachment:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Bytes, máximo 20 MiB.
+          x-maxBytes: 20971520
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - file
+      additionalProperties: false
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        originalName:
+          type: string
+        mediaType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        actorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        createdAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+      required:
+        - id
+        - taskId
+        - originalName
+        - mediaType
+        - sizeBytes
+        - description
+        - actorId
+        - createdAt
+        - deletedAt
+        - actorKind
+      additionalProperties: false
+    RecordExecution:
+      type: object
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        outcome:
+          type: string
+          enum:
+            - progress
+            - completed
+            - blocked
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        deliverables:
+          type: array
+          items:
+            $ref: "#/components/schemas/Deliverable"
+        pending:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        reviewContext:
+          $ref: "#/components/schemas/ReviewContext"
+        progress:
+          $ref: "#/components/schemas/Progress"
+        executionContext:
+          $ref: "#/components/schemas/ExecutionContextRef"
+      required:
+        - summary
+        - outcome
+        - statusId
+        - deliverables
+        - pending
+        - executionContext
+      additionalProperties: false
+      description: Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes
+        exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do
+        usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia
+        da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.
+    ExecutionSummary:
+      type: object
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        outcome:
+          type: string
+          enum:
+            - progress
+            - completed
+            - blocked
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        deliverables:
+          type: array
+          items:
+            $ref: "#/components/schemas/Deliverable"
+        pending:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        reviewContext:
+          anyOf:
+            - $ref: "#/components/schemas/ReviewContext"
+            - type: "null"
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        actorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        createdAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+        executionContext:
+          $ref: "#/components/schemas/ExecutionContextRef"
+      required:
+        - summary
+        - outcome
+        - statusId
+        - deliverables
+        - pending
+        - reviewContext
+        - id
+        - taskId
+        - actorId
+        - createdAt
+        - deletedAt
+        - actorKind
+        - executionContext
+      additionalProperties: false
+    ExecutionResult:
+      type: object
+      properties:
+        executionSummary:
+          $ref: "#/components/schemas/ExecutionSummary"
+        task:
+          $ref: "#/components/schemas/Task"
+      required:
+        - executionSummary
+        - task
+      additionalProperties: false
+    EventType:
+      type: string
+      enum:
+        - task.created
+        - task.updated
+        - assignment.changed
+        - position.changed
+        - block.changed
+        - plan.created
+        - plan.revised
+        - comment.created
+        - attachment.added
+        - attachment.removed
+        - execution.recorded
+        - task.archived
+        - task.restored
+        - subtask.created
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        sequence:
+          type: integer
+          minimum: 1
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        type:
+          $ref: "#/components/schemas/EventType"
+        actorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        occurredAt:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
+          description: Dados relevantes anteriores/novos e IDs relacionados. comment.created traz commentId,
+            sem duplicar corpo.
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+      required:
+        - id
+        - sequence
+        - taskId
+        - type
+        - actorId
+        - occurredAt
+        - data
+        - deletedAt
+        - actorKind
+      additionalProperties: false
+    BoardViewColumn:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/Status"
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - status
+        - tasks
+        - total
+        - offset
+        - limit
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: Página inicial da coluna (tasks em vez de items), offset=0, limit=limitPerColumn. Todas
+        as colunas ativas são retornadas mesmo vazias.
+    BoardView:
+      type: object
+      properties:
+        boardId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/BoardViewColumn"
+      required:
+        - boardId
+        - columns
+      additionalProperties: false
+      description: Projeção de colunas do board administrado pelo time gestor. Tasks não pertencem ao
+        time. O contexto de execução de uma task filha pode ter origem em outro board.
+    BoardPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Board"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    TaskPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    PlanRevisionPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanRevision"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    CommentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    AttachmentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    ExecutionSummaryPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExecutionSummary"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    EventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: ""
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem
+        usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot."
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          enum:
+            - invalid_request
+            - coordination_context_required
+            - coordination_mode_mismatch
+            - not_found
+            - archived_resource
+            - status_in_use
+            - summary_required
+            - task_blocked
+            - revision_conflict
+            - idempotency_conflict
+            - duplicate_status
+            - version_conflict
+            - version_required
+            - payload_too_large
+            - unsupported_media_type
+            - internal_error
+            - storage_unavailable
+            - invalid_actor_context
+            - usage_policy_conflict
+            - parent_cycle
+            - execution_context_mismatch
+        details:
+          type: object
+          additionalProperties: true
+      required:
+        - error
+        - code
+        - details
+      additionalProperties: false
+    ApprovalCoordinationContext:
+      type: object
+      properties:
+        mode:
+          const: manual
+        conversationRef:
+          type: string
+          minLength: 1
+        approvalRef:
+          type: string
+          minLength: 1
+      required:
+        - mode
+        - conversationRef
+        - approvalRef
+      additionalProperties: false
+      description: Sem contexto de execução, aprovação/manual. Não concede autonomia global.
+    BoardAutonomyMode:
+      type: string
+      enum:
+        - manual
+        - standard
+        - automatic
+      default: manual
+      description: manual = totalmente manual; standard = padrão que respeita flag individual de cada
+        task; automatic = totalmente automático. Default inicial manual, distinto do nome standard.
+    TaskAutonomyMode:
+      type: string
+      enum:
+        - manual
+        - automatic
+      default: manual
+      description: Modo individual da task, usado apenas se o board de origem do contexto estiver em standard.
+    DeclaredActor:
+      oneOf:
+        - type: object
+          properties:
+            actorKind:
+              const: human
+            actorId:
+              type: "null"
+          required:
+            - actorKind
+            - actorId
+          additionalProperties: false
+        - type: object
+          properties:
+            actorKind:
+              const: agent
+            actorId: *a1
+          required:
+            - actorKind
+            - actorId
+          additionalProperties: false
+      description: Criador declarado na requisição. human identifica o usuário local; agent usa ID
+        persistido. Não verifica identidade.
+    ExecutionContextRef:
+      type: object
+      properties:
+        rootTaskId: *a1
+        originBoardId: *a1
+      required:
+        - rootTaskId
+        - originBoardId
+      additionalProperties: false
+      description: Identifica a origem da cadeia. Persistida/derivada pelo servidor a partir da task
+        principal, nunca substituída pelo board de destino.
+    TaskExecutionContext:
+      type: object
+      properties:
+        rootTaskId: *a1
+        originBoardId: *a1
+        originBoardMode:
+          $ref: "#/components/schemas/BoardAutonomyMode"
+        effectiveMode:
+          type: string
+          enum:
+            - manual
+            - automatic
+      required:
+        - rootTaskId
+        - originBoardId
+        - originBoardMode
+        - effectiveMode
+      additionalProperties: false
+      readOnly: true
+      description: Board de origem da task principal governa toda cadeia recursiva, inclusive cross-board.
+        originBoardMode=manual força effectiveMode=manual; automatic força automatic; standard usa
+        somente autonomyMode da task atual. Não herdar flag do pai nem consultar modo do board de
+        destino. Não modificar configurações persistidas. rootTaskId/originBoardId são derivados da
+        cadeia e transportados pelo harness; o servidor não executa tasks.
+    BoardManagementChange:
+      type: object
+      properties:
+        id: *a2
+        boardId: *a2
+        type:
+          type: string
+          const: board.management_changed
+        previousTeamId: *a2
+        teamId: *a2
+        actor:
+          $ref: "#/components/schemas/DeclaredActor"
+        occurredAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - id
+        - boardId
+        - type
+        - previousTeamId
+        - teamId
+        - actor
+        - occurredAt
+        - deletedAt
+      additionalProperties: false
+x-recursive-task-example:
+  - id: 10000000-0000-7000-8000-000000000002
+    boardId: 10000000-0000-7000-8000-000000000001
+    parentId: null
+    title: Task 2
+    description: Trabalho com autor e executor
+    authorAgentId: 10000000-0000-7000-8000-000000000010
+    executorAgentId: 10000000-0000-7000-8000-000000000013
+    statusId: 10000000-0000-7000-8000-000000000021
+    position: a2
+    progress:
+      percent: 0
+      note: ""
+    block:
+      blocked: false
+      reason: null
+    childSummary:
+      total: 1
+      done: 0
+    latestExecutionSummaryId: null
+    archivedAt: null
+    version: 1
+    createdAt: 2026-10-27T20:00:00Z
+    updatedAt: 2026-10-27T20:00:00Z
+    deletedAt: null
+    autonomyMode: automatic
+    executionContext:
+      rootTaskId: 10000000-0000-7000-8000-000000000002
+      originBoardId: 10000000-0000-7000-8000-000000000001
+      originBoardMode: standard
+      effectiveMode: automatic
+  - id: 10000000-0000-7000-8000-000000000003
+    boardId: 10000000-0000-7000-8000-000000000004
+    parentId: 10000000-0000-7000-8000-000000000002
+    title: Task 3
+    description: Trabalho com autor e executor
+    authorAgentId: 10000000-0000-7000-8000-000000000010
+    executorAgentId: 10000000-0000-7000-8000-000000000014
+    statusId: 10000000-0000-7000-8000-000000000024
+    position: a3
+    progress:
+      percent: 0
+      note: ""
+    block:
+      blocked: false
+      reason: null
+    childSummary:
+      total: 1
+      done: 0
+    latestExecutionSummaryId: null
+    archivedAt: null
+    version: 1
+    createdAt: 2026-10-27T20:00:00Z
+    updatedAt: 2026-10-27T20:00:00Z
+    deletedAt: null
+    autonomyMode: manual
+    executionContext:
+      rootTaskId: 10000000-0000-7000-8000-000000000002
+      originBoardId: 10000000-0000-7000-8000-000000000001
+      originBoardMode: standard
+      effectiveMode: manual
+  - id: 10000000-0000-7000-8000-000000000004
+    boardId: 10000000-0000-7000-8000-000000000005
+    parentId: 10000000-0000-7000-8000-000000000003
+    title: Task 4
+    description: Trabalho com autor e executor
+    authorAgentId: 10000000-0000-7000-8000-000000000010
+    executorAgentId: 10000000-0000-7000-8000-000000000015
+    statusId: 10000000-0000-7000-8000-000000000025
+    position: a4
+    progress:
+      percent: 0
+      note: ""
+    block:
+      blocked: false
+      reason: null
+    childSummary:
+      total: 1
+      done: 0
+    latestExecutionSummaryId: null
+    archivedAt: null
+    version: 1
+    createdAt: 2026-10-27T20:00:00Z
+    updatedAt: 2026-10-27T20:00:00Z
+    deletedAt: null
+    autonomyMode: automatic
+    executionContext:
+      rootTaskId: 10000000-0000-7000-8000-000000000002
+      originBoardId: 10000000-0000-7000-8000-000000000001
+      originBoardMode: standard
+      effectiveMode: automatic
+  - *a3
+x-autonomy-scenarios:
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: manual
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: manual
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: automatic
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: standard
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: manual
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: manual
+    destinationBoardMode: automatic
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: manual
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: standard
+    expectedMode: automatic
+  - originBoardMode: automatic
+    currentTaskMode: automatic
+    parentTaskMode: automatic
+    destinationBoardMode: automatic
+    expectedMode: automatic

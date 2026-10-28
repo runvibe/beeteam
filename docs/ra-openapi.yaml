@@ -1,0 +1,2761 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Bee Team RA — contrato proposto
+  version: 0.1.0-draft
+  description: Revisão documental final. Domínio boards, tasks, times e agentes. Board tem um time
+    gestor obrigatório e transferível; Task não tem vínculo direto com time. Times agrupam agentes e
+    podem gerir vários boards. Board preserva criador declarado; Task tem autor/dono e executor
+    agentes obrigatórios, sem task desatribuída. Subtask é Task com parentId recursivo sem limite
+    fixo, pode estar em outro board e usar outro executor; ciclos inválidos. Informações de tasks
+    disponíveis a todos. Contexto é o board que originou a task principal, preservado por toda a
+    cadeia recursiva, mesmo em outros boards. Origem manual força manual; origem automatic força
+    automatic; origem standard usa somente autonomyMode da task atual, sem herança da flag do pai.
+    Board de destino não interfere. Cálculo não altera configurações persistidas; Bee Team não
+    executa tarefas. Sem autenticação, autoria declarada não verificada. Backend Rust/PostgreSQL
+    >=18; IDs persistidos UUID v7, referências externas opacas; exclusão lógica deleted_at/JSON
+    deletedAt, archivedAt separado. offset/limit e filtros. Harness executa, Bee Team
+    armazena/consulta; frontend/backend/skills seguem pausados nesta revisão.
+  x-confirmed-decisions:
+    - board-creator-preserved
+    - task-author-and-executor-required
+    - recursive-cross-board-subtasks
+    - execution-origin-board-precedence
+    - no-auth
+    - postgresql>=18
+    - persisted-uuidv7
+    - soft-delete-deleted_at
+    - offset-limit
+    - archived-team-explicit-transfer
+    - board-managing-team-required-transferable
+    - task-no-team-ownership
+  x-pending-proposals:
+    - leader-edit-scope-via-managed-executor
+    - declared-author-header-format
+    - reparenting-not-exposed
+    - archive-agent-rules
+    - planning-revisions-and-payload-limits
+servers:
+  - url: http://127.0.0.1:8080
+    description: Endereço local proposto; não comprova API implementada.
+paths:
+  /api/v1/agents:
+    parameters: []
+    post:
+      operationId: createAgent
+      summary: Criar perfil único sem vínculo
+      description: "Política de uso proposta: usuário administra perfis e composição."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Criar perfil único sem vínculo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+              example:
+                id: 10000000-0000-7000-8000-000000000010
+                name: Carlos
+                roleDescription: Engenharia
+                workStyle: Objetivo
+                workInstructions: Registrar resultado na task
+                rules: []
+                accessLimits: []
+                contextSummary: ""
+                image: null
+                bindings:
+                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  leaderTeamId: 10000000-0000-7000-8000-000000000031
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "URI do recurso criado; referência de chat usa coleção com #id, sem criar GET
+                adicional."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAgent"
+            example:
+              name: Carlos
+    get:
+      operationId: listAgents
+      summary: Listar agentes
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive; %, _ e barra invertida não são wildcards.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: teamId
+          in: query
+          required: false
+          description: Vínculo atual em qualquer papel ou no role especificado.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: role
+          in: query
+          required: false
+          description: Com teamId filtra papel nesse time; sem teamId exige algum vínculo nesse papel.
+          schema:
+            type: string
+            enum:
+              - leader
+              - collaborator
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados. Lifecycle, não execução."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: sortBy
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+              - name
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Desempate id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Listar agentes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/agents/{agentId}:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getAgent
+      summary: Consultar perfil e vínculos
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar perfil e vínculos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+              example:
+                id: 10000000-0000-7000-8000-000000000010
+                name: Carlos
+                roleDescription: Engenharia
+                workStyle: Objetivo
+                workInstructions: Registrar resultado na task
+                rules: []
+                accessLimits: []
+                contextSummary: ""
+                image: null
+                bindings:
+                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  leaderTeamId: 10000000-0000-7000-8000-000000000031
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateAgent
+      summary: Editar perfil compartilhado
+      description: "Política de uso proposta: usuário administra perfis e composição."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Editar perfil compartilhado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+              example:
+                id: 10000000-0000-7000-8000-000000000010
+                name: Carlos
+                roleDescription: Engenharia
+                workStyle: Objetivo
+                workInstructions: Registrar resultado na task
+                rules: []
+                accessLimits: []
+                contextSummary: ""
+                image: null
+                bindings:
+                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  leaderTeamId: 10000000-0000-7000-8000-000000000031
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchAgent"
+  /api/v1/agents/{agentId}/archive:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: archiveAgent
+      summary: Arquivar ou reativar perfil
+      description: "Política de uso proposta: usuário administra perfis e composição. Arquivar exige
+        nenhum vínculo de time (incluindo arquivado) e nenhuma tarefa não final atribuída. Não apaga
+        história."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Arquivar ou reativar perfil
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+              example:
+                id: 10000000-0000-7000-8000-000000000010
+                name: Carlos
+                roleDescription: Engenharia
+                workStyle: Objetivo
+                workInstructions: Registrar resultado na task
+                rules: []
+                accessLimits: []
+                contextSummary: ""
+                image: null
+                bindings:
+                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  leaderTeamId: 10000000-0000-7000-8000-000000000031
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Archive"
+  /api/v1/agents/{agentId}/copies:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    post:
+      operationId: copyAgent
+      summary: Copiar perfil para novo colaborador
+      description: "Política de uso proposta: usuário administra perfis e composição. Nova identidade
+        independente. 412 para origem desatualizada; 409 composition_conflict para versão do
+        destino. Imagem local recebe novo imageId e snapshot de bytes independente."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Copiar perfil para novo colaborador
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CopyResult"
+              example:
+                agent:
+                  id: 10000000-0000-7000-8000-000000000012
+                  name: Carlos
+                  roleDescription: Engenharia
+                  workStyle: Objetivo
+                  workInstructions: Registrar resultado na task
+                  rules: []
+                  accessLimits: []
+                  contextSummary: ""
+                  image: null
+                  bindings:
+                    collaboratorTeamId: 10000000-0000-7000-8000-000000000031
+                    leaderTeamId: null
+                  archivedAt: null
+                  version: 1
+                  createdAt: 2026-10-27T20:00:00Z
+                  updatedAt: 2026-10-27T20:00:00Z
+                  deletedAt: null
+                targetTeam:
+                  id: 10000000-0000-7000-8000-000000000031
+                  name: Tecnologia
+                  purpose: Organizar agentes
+                  context: Demandas técnicas
+                  leaderId: 10000000-0000-7000-8000-000000000010
+                  collaboratorCount: 1
+                  archivedAt: null
+                  version: 2
+                  createdAt: 2026-10-27T20:00:00Z
+                  updatedAt: 2026-10-27T20:00:00Z
+                  deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "URI do recurso criado; referência de chat usa coleção com #id, sem criar GET
+                adicional."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CopyAgent"
+            example:
+              targetTeamId: 10000000-0000-7000-8000-000000000031
+              expectedTeamVersion: 1
+              contextSummary: Resumo solicitado pelo usuário
+              coordinationContext:
+                mode: manual
+                conversationRef: chat-1
+                approvalRef: msg-2
+  /api/v1/agents/{agentId}/image:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    post:
+      operationId: uploadAgentImage
+      summary: Enviar ou substituir imagem
+      description: "Política de uso proposta: usuário administra perfis e composição."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Enviar ou substituir imagem
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+              example:
+                id: 10000000-0000-7000-8000-000000000010
+                name: Carlos
+                roleDescription: Engenharia
+                workStyle: Objetivo
+                workInstructions: Registrar resultado na task
+                rules: []
+                accessLimits: []
+                contextSummary: ""
+                image: null
+                bindings:
+                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  leaderTeamId: 10000000-0000-7000-8000-000000000031
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "URI do recurso criado; referência de chat usa coleção com #id, sem criar GET
+                adicional."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        description: Um arquivo de até 5 MiB; corpo multipart até 6 MiB. Sem SVG, sem geração IA;
+          PNG/JPEG/WebP validados por conteúdo e não extensão.
+        x-maxBytes: 6291456
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImageUpload"
+            encoding:
+              file:
+                contentType: image/png, image/jpeg, image/webp
+    delete:
+      operationId: removeAgentImage
+      summary: Remover imagem atual
+      description: "Política de uso proposta: usuário administra perfis e composição. Limpa vínculo atual;
+        cópias independentes não são afetadas. Exclusão lógica: preencher deleted_at no registro de
+        arquivo/imagem, preservar bytes e dados físicos, registrar evento. Limpar somente o vínculo
+        atual quando aplicável; archivedAt não é exclusão. Repetição retorna 404 para recurso já
+        excluído."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "204":
+          description: Remover imagem atual
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/agents/{agentId}/image/content:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: downloadAgentImage
+      summary: ""
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica. Somente imagem
+        upload; imagem ausente ou externa retorna 404; URL externa consultável no perfil, sem fetch
+        servidor.
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Bytes de imagem validada
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: attachment; filename seguro
+            X-Content-Type-Options:
+              schema:
+                type: string
+                const: nosniff
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/teams:
+    parameters: []
+    post:
+      operationId: createTeam
+      summary: Criar time com líder e membros
+      description: "Política de uso proposta: usuário administra perfis e composição."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Criar time com líder e membros
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+              example:
+                id: 10000000-0000-7000-8000-000000000031
+                name: Tecnologia
+                purpose: Organizar agentes
+                context: Demandas técnicas
+                leaderId: 10000000-0000-7000-8000-000000000010
+                collaboratorCount: 0
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "URI do recurso criado; referência de chat usa coleção com #id, sem criar GET
+                adicional."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeam"
+            example:
+              name: Tecnologia
+              leaderId: 10000000-0000-7000-8000-000000000010
+              coordinationContext:
+                mode: manual
+                conversationRef: chat-1
+                approvalRef: msg-1
+    get:
+      operationId: listTeams
+      summary: Listar times
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive; %, _ e barra invertida não são wildcards.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: leaderId
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: collaboratorId
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados. Lifecycle, não execução."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: sortBy
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+              - name
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Desempate id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Listar times
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/teams/{teamId}:
+    parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTeam
+      summary: Consultar time
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+              example:
+                id: 10000000-0000-7000-8000-000000000031
+                name: Tecnologia
+                purpose: Organizar agentes
+                context: Demandas técnicas
+                leaderId: 10000000-0000-7000-8000-000000000010
+                collaboratorCount: 0
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateTeam
+      summary: Editar propósito e contexto do time
+      description: "Política de uso proposta: usuário ou líder edita metadados de seu time. Contexto declarado."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Editar propósito e contexto do time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+              example:
+                id: 10000000-0000-7000-8000-000000000031
+                name: Tecnologia
+                purpose: Organizar agentes
+                context: Demandas técnicas
+                leaderId: 10000000-0000-7000-8000-000000000010
+                collaboratorCount: 0
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchTeam"
+  /api/v1/teams/{teamId}/archive:
+    parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    put:
+      operationId: archiveTeam
+      summary: Arquivar ou reativar time
+      description: Arquivar/restaurar preserva time, agentes, vínculos e histórico. Não libera
+        participação automaticamente e não altera tasks. Transferência explícita permanece
+        disponível mesmo da origem arquivada.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Arquivar ou reativar time
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+              example:
+                id: 10000000-0000-7000-8000-000000000031
+                name: Tecnologia
+                purpose: Organizar agentes
+                context: Demandas técnicas
+                leaderId: 10000000-0000-7000-8000-000000000010
+                collaboratorCount: 0
+                archivedAt: null
+                version: 1
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Archive"
+  /api/v1/teams/{teamId}/members:
+    parameters:
+      - name: teamId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listTeamMembers
+      summary: Listar líder e colaboradores
+      description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive; %, _ e barra invertida não são wildcards.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: role
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - leader
+              - collaborator
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: sortBy
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - name
+              - agentId
+            default: name
+        - name: sortOrder
+          in: query
+          required: false
+          description: Desempate agentId na mesma direção.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Listar líder e colaboradores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemberPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/team-composition-changes:
+    parameters: []
+    post:
+      operationId: changeTeamComposition
+      summary: Alterar composição ou transferir entre times atomicamente
+      description: Estado final completo dos times afetados, em transação. Pode remover/transferir agente
+        de time arquivado; preserva identidade, tasks e autoria. Arquivar não libera vínculos.
+        Respeitar máximo um vínculo por papel em times diferentes; não impor constraints de tasks ou
+        boards.
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Alterar composição ou transferir entre times atomicamente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompositionResult"
+              example:
+                teams:
+                  - id: 10000000-0000-7000-8000-000000000031
+                    name: Tecnologia
+                    purpose: Organizar agentes
+                    context: Demandas técnicas
+                    leaderId: 10000000-0000-7000-8000-000000000010
+                    collaboratorCount: 0
+                    archivedAt: null
+                    version: 1
+                    createdAt: 2026-10-27T20:00:00Z
+                    updatedAt: 2026-10-27T20:00:00Z
+                    deletedAt: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeComposition"
+            example:
+              teams:
+                - teamId: 10000000-0000-7000-8000-000000000030
+                  expectedVersion: 1
+                  leaderId: 10000000-0000-7000-8000-000000000012
+                  collaboratorIds: []
+                - teamId: 10000000-0000-7000-8000-000000000031
+                  expectedVersion: 1
+                  leaderId: 10000000-0000-7000-8000-000000000010
+                  collaboratorIds:
+                    - 10000000-0000-7000-8000-000000000011
+              coordinationContext:
+                mode: manual
+                conversationRef: chat-1
+                approvalRef: msg-3
+  /api/v1/agents/{agentId}/chat-references:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    post:
+      operationId: createChatReference
+      summary: Registrar referência a chat externo
+      description: "Política de uso proposta: usuário ou próprio agente gerencia referências e retomada.
+        Contexto declarado; não há controle de leitura privado. Referências não têm isolamento
+        privado garantido; não armazenar segredos. If-Match do agente. Bloqueado se perfil
+        arquivado. Não inicia sessão. Incrementa versão do agente e cria referência versionada."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "201":
+          description: Registrar referência a chat externo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatReference"
+              example:
+                id: 10000000-0000-7000-8000-000000000040
+                agentId: 10000000-0000-7000-8000-000000000010
+                harness: codex
+                externalId: session-arbitrary-42
+                url: null
+                label: Trabalho
+                archivedAt: null
+                version: 1
+                createdByActorId: 10000000-0000-7000-8000-000000000010
+                actorKind: agent
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "URI do recurso criado; referência de chat usa coleção com #id, sem criar GET
+                adicional."
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateChatReference"
+            example:
+              harness: codex
+              externalId: session-arbitrary-42
+              label: Sessão externa
+    get:
+      operationId: listChatReferences
+      summary: Listar referências de chats
+      description: "Política de uso proposta: usuário ou próprio agente gerencia referências e retomada.
+        Contexto declarado; não há controle de leitura privado. Referências não têm isolamento
+        privado garantido; não armazenar segredos."
+      x-contract-status: proposed
+      parameters:
+        - name: label
+          in: query
+          required: false
+          description: Substring literal case-insensitive; %, _ e barra invertida não são wildcards.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: harness
+          in: query
+          required: false
+          description: Igualdade literal.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados. Lifecycle, não execução."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: sortBy
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+              - label
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Desempate id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Listar referências de chats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatReferencePage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/agents/{agentId}/chat-references/{chatReferenceId}:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: chatReferenceId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    patch:
+      operationId: updateChatReference
+      summary: Editar ou arquivar referência
+      description: "Política de uso proposta: usuário ou próprio agente gerencia referências e retomada.
+        Contexto declarado; não há controle de leitura privado. Referências não têm isolamento
+        privado garantido; não armazenar segredos. If-Match da referência; agenteId deve coincidir.
+        Perfil arquivado bloqueia escrita. Incrementa versão da referência e versão/updatedAt do
+        agente. Nenhuma chamada ao harness."
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+        - $ref: "#/components/parameters/ActorKind"
+        - $ref: "#/components/parameters/ActorId"
+      responses:
+        "200":
+          description: Editar ou arquivar referência
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatReference"
+              example:
+                id: 10000000-0000-7000-8000-000000000040
+                agentId: 10000000-0000-7000-8000-000000000010
+                harness: codex
+                externalId: session-arbitrary-42
+                url: null
+                label: Trabalho
+                archivedAt: null
+                version: 1
+                createdByActorId: 10000000-0000-7000-8000-000000000010
+                actorKind: agent
+                createdAt: 2026-10-27T20:00:00Z
+                updatedAt: 2026-10-27T20:00:00Z
+                deletedAt: null
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão do recurso retornado; CopyResult usa agente novo.
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchChatReference"
+  /api/v1/agents/{agentId}/resumption-context:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getResumptionContext
+      summary: Consultar contexto para retomar agente
+      description: "Política de uso proposta: usuário ou próprio agente gerencia referências e retomada.
+        Contexto declarado; não há controle de leitura privado. Referências não têm isolamento
+        privado garantido; não armazenar segredos."
+      x-contract-status: proposed
+      parameters:
+        - name: taskIds
+          in: query
+          required: false
+          description: CSV opcional; validar leitura Kanban de todos ou 404, sem resultado parcial silencioso.
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+              pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+            uniqueItems: true
+            maxItems: 20
+            minItems: 1
+          style: form
+          explode: false
+      responses:
+        "200":
+          description: Consultar contexto para retomar agente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResumeContext"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/agents/{agentId}/activities:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listAgentActivities
+      summary: Consultar índice de tarefas e resumos do agente
+      description: Lista informações públicas das tasks por relação com o agente (autor, executor atual,
+        autor de resumo ou união sem duplicação). Não depende do time atual do agente.
+      x-contract-status: proposed
+      parameters:
+        - name: boardId
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive; %, _ e barra invertida não são wildcards.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: statusId
+          in: query
+          required: false
+          description: Status atual da tarefa; exige boardId para validar pertencimento.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: relation
+          in: query
+          required: false
+          description: "authored: autor/dono; executing: executor atual; worked: autor declarado de resumo;
+            any: união sem duplicar taskId."
+          schema:
+            type: string
+            enum:
+              - authored
+              - executing
+              - worked
+              - any
+            default: any
+        - name: archived
+          in: query
+          required: false
+          description: Estado da tarefa, incluindo ancestral arquivado.
+          schema:
+            type: boolean
+            default: false
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Inclusivo; RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Exclusivo; From deve ser anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+        - name: sortBy
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - taskUpdatedAt
+              - title
+            default: taskUpdatedAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Desempate taskId na mesma direção.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Consultar índice de tarefas e resumos do agente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityLinkPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+components:
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: ""
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag forte do recurso alvo (agente, time ou referência de chat). Cópia usa versão da
+        origem; imagem usa versão do agente.
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+        examples:
+          - '"1"'
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Retry por 24h vinculado a rota, contexto de autoria declarado e hash do pedido. Mesma
+        chave/conteúdo retorna resposta original; conteúdo diferente dá 409.
+      schema:
+        type: string
+        format: uuid
+        description: Chave de requisição, não ID de entidade persistida; qualquer versão UUID.
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: ""
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2147483647
+        default: 0
+    ActorKind:
+      name: X-Actor-Kind
+      in: header
+      required: true
+      schema:
+        type: string
+        enum:
+          - human
+          - agent
+      description: Autoria declarada; sem autenticação ou prova de identidade.
+    ActorId:
+      name: X-Actor-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      description: UUID v7 do agente declarado quando actorKind=agent; ausente com human. Não é prova de
+        identidade. Em criação de task, authorAgentId é obrigatório separadamente.
+  responses:
+    "400":
+      description: invalid_request; invalid_composition; invalid_actor_context
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "404":
+      description: not_found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "409":
+      description: Conflito estrutural, versão em composição, recurso arquivado/em uso, idempotência ou
+        contexto de execução incompatível; não autenticação.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "412":
+      description: version_conflict; version_conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "413":
+      description: payload_too_large
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "415":
+      description: unsupported_media_type
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "428":
+      description: version_required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "500":
+      description: internal_error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "503":
+      description: storage_unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    CoordinationContext:
+      oneOf:
+        - type: object
+          properties:
+            mode:
+              const: manual
+            conversationRef:
+              type: string
+              minLength: 1
+            approvalRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+            - approvalRef
+          additionalProperties: false
+        - type: object
+          properties:
+            mode:
+              const: automatic
+            conversationRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+          additionalProperties: false
+      description: mode deve corresponder ao modo efetivo do contexto da execução. Manual exige referência
+        à aprovação; automatic não pede nova aprovação de coordenação no escopo. Referências não são
+        autenticação.
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          enum:
+            - invalid_request
+            - coordination_context_required
+            - coordination_mode_mismatch
+            - not_found
+            - archived_resource
+            - status_in_use
+            - team_in_use
+            - summary_required
+            - task_blocked
+            - revision_conflict
+            - idempotency_conflict
+            - duplicate_status
+            - version_conflict
+            - version_required
+            - payload_too_large
+            - unsupported_media_type
+            - internal_error
+            - storage_unavailable
+            - invalid_composition
+            - role_cardinality_conflict
+            - same_team_roles
+            - leader_required
+            - leadership_cycle
+            - agent_in_use
+            - assignment_in_use
+            - composition_conflict
+            - invalid_actor_context
+            - usage_policy_conflict
+        details:
+          type: object
+          additionalProperties: true
+      required:
+        - error
+        - code
+        - details
+      additionalProperties: false
+    ExternalImage:
+      type: object
+      properties:
+        kind:
+          const: external
+        url:
+          type: string
+          format: uri
+          pattern: ^https://
+      required:
+        - kind
+        - url
+      additionalProperties: false
+    UploadedImage:
+      type: object
+      properties:
+        kind:
+          const: upload
+        imageId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        mediaType:
+          type: string
+          enum:
+            - image/png
+            - image/jpeg
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 1
+          maximum: 5242880
+        contentPath:
+          type: string
+          pattern: ^/api/v1/agents/[^/]+/image/content$
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - kind
+        - imageId
+        - mediaType
+        - sizeBytes
+        - contentPath
+        - deletedAt
+      additionalProperties: false
+    Image:
+      oneOf:
+        - $ref: "#/components/schemas/ExternalImage"
+        - $ref: "#/components/schemas/UploadedImage"
+        - type: "null"
+      description: Imagem opcional. URL não é buscada pelo servidor; upload validado por conteúdo. Sem
+        geração de IA.
+    RoleBindings:
+      type: object
+      properties:
+        collaboratorTeamId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        leaderTeamId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      required:
+        - collaboratorTeamId
+        - leaderTeamId
+      additionalProperties: false
+      description: No máximo um time por papel; quando ambos não nulos, devem ser diferentes. Inclui
+        vínculos em times arquivados.
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        roleDescription:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workStyle:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workInstructions:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        rules:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        accessLimits:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        image:
+          $ref: "#/components/schemas/Image"
+        bindings:
+          $ref: "#/components/schemas/RoleBindings"
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        contextSummary:
+          type: string
+          x-maxBytes: 65536
+          description: Resumo de contexto fornecido explicitamente, não transcrição nem cópia automática de
+            histórico.
+      required:
+        - id
+        - name
+        - roleDescription
+        - workStyle
+        - workInstructions
+        - rules
+        - accessLimits
+        - image
+        - bindings
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - contextSummary
+      additionalProperties: false
+      description: Perfil único por identidade. ArchivedAt é lifecycle cadastral, nunca estado de
+        execução. UpdatedAt não prova agente vivo.
+    CreateAgent:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        roleDescription:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workStyle:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workInstructions:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        rules:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        accessLimits:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        image:
+          oneOf:
+            - $ref: "#/components/schemas/ExternalImage"
+            - type: "null"
+        contextSummary: &a1
+          type: string
+          x-maxBytes: 65536
+      required:
+        - name
+      additionalProperties: false
+      description: Campos textuais omitidos viram string vazia, arrays omitidos viram []; image padrão null.
+    PatchAgent:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        roleDescription:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workStyle:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        workInstructions:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        rules:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        accessLimits:
+          type: array
+          items:
+            type: string
+            x-maxBytes: 65536
+            description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        image:
+          oneOf:
+            - $ref: "#/components/schemas/ExternalImage"
+            - type: "null"
+        contextSummary: *a1
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Omissão preserva; null só para image.
+    Archive:
+      type: object
+      properties:
+        archived:
+          type: boolean
+      required:
+        - archived
+      additionalProperties: false
+    CopyAgent:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        targetTeamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        expectedTeamVersion:
+          type: integer
+          minimum: 1
+        coordinationContext:
+          $ref: "#/components/schemas/ApprovalCoordinationContext"
+        contextSummary:
+          type: string
+          x-maxBytes: 65536
+          description: Quando explicitamente solicitado, texto resumido a colocar na nova identidade. Omissão
+            deixa vazio; não importar histórico automaticamente.
+      required:
+        - targetTeamId
+        - expectedTeamVersion
+        - coordinationContext
+      additionalProperties: false
+      description: Nova identidade independente no time destino; copia perfil, sem duplicar autoria de
+        atividades. contextSummary somente quando fornecido. Fonte pode ser arquivada; transferência
+        da mesma identidade usa composição, não cópia.
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        purpose:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        context:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        leaderId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        collaboratorCount:
+          type: integer
+          minimum: 0
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+      required:
+        - id
+        - name
+        - purpose
+        - context
+        - leaderId
+        - collaboratorCount
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - deletedAt
+      additionalProperties: false
+      description: Grupo de agentes com líder único; pode gerir vários boards. Tasks não pertencem
+        diretamente ao time. Arquivar preserva vínculos/histórico; transferência explícita de
+        agentes continua permitida da origem arquivada, sem alterar tasks.
+    CreateTeam:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        purpose:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        context:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        leaderId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        collaboratorIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          uniqueItems: true
+        coordinationContext:
+          $ref: "#/components/schemas/ApprovalCoordinationContext"
+      required:
+        - name
+        - leaderId
+        - coordinationContext
+      additionalProperties: false
+      description: Criar grupo com líder e membros, sem entidade de agrupamento superior nem vincular
+        tarefas. Identidades existentes; cardinalidades de papéis válidas.
+    PatchTeam:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        purpose:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+        context:
+          type: string
+          x-maxBytes: 65536
+          description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Composição somente por comando atômico separado.
+    Member:
+      type: object
+      properties:
+        agentId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        role:
+          type: string
+          enum:
+            - leader
+            - collaborator
+        agentArchivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - agentId
+        - name
+        - role
+        - agentArchivedAt
+      additionalProperties: false
+      description: Projeção dos vínculos atuais, incluindo o único líder. Ordenação por agentId desempata.
+    TeamComposition:
+      type: object
+      properties:
+        teamId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        expectedVersion:
+          type: integer
+          minimum: 1
+        leaderId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        collaboratorIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          uniqueItems: true
+      required:
+        - teamId
+        - expectedVersion
+        - leaderId
+        - collaboratorIds
+      additionalProperties: false
+      description: Composição final de time alterado (inclusive origem arquivada), com líder obrigatório.
+        Times não enviados intactos; validar versões e cardinalidade final.
+    ChangeComposition:
+      type: object
+      properties:
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamComposition"
+          minItems: 1
+          maxItems: 20
+        coordinationContext:
+          $ref: "#/components/schemas/ApprovalCoordinationContext"
+      required:
+        - teams
+        - coordinationContext
+      additionalProperties: false
+      description: Estado final completo dos times afetados, em transação. Pode remover/transferir agente
+        de time arquivado; preserva identidade, tasks e autoria. Arquivar não libera vínculos.
+        Respeitar máximo um vínculo por papel em times diferentes; não impor constraints de tasks ou
+        boards.
+    CompositionResult:
+      type: object
+      properties:
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/Team"
+      required:
+        - teams
+      additionalProperties: false
+      description: Resumo dos times alterados e novas versões; não é listagem paginada.
+    CopyResult:
+      type: object
+      properties:
+        agent:
+          $ref: "#/components/schemas/Agent"
+        targetTeam:
+          $ref: "#/components/schemas/Team"
+      required:
+        - agent
+        - targetTeam
+      additionalProperties: false
+    ChatReference:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        agentId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        harness:
+          type: string
+          minLength: 1
+          maxLength: 100
+        externalId:
+          type: string
+          minLength: 1
+          maxLength: 500
+        url:
+          type:
+            - string
+            - "null"
+          format: uri
+          pattern: ^(https?://|codex://)
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdByActorId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
+        actorKind:
+          type: string
+          enum:
+            - human
+            - agent
+      required:
+        - id
+        - agentId
+        - harness
+        - externalId
+        - url
+        - label
+        - archivedAt
+        - version
+        - createdByActorId
+        - createdAt
+        - updatedAt
+        - deletedAt
+        - actorKind
+      additionalProperties: false
+      description: Metadados de referência, não transcrição. Arquivar referência não fecha chat. Nenhum
+        campo de live/running.
+    CreateChatReference:
+      type: object
+      properties:
+        harness:
+          type: string
+          minLength: 1
+          maxLength: 100
+        externalId:
+          type: string
+          minLength: 1
+          maxLength: 500
+        url:
+          type:
+            - string
+            - "null"
+          format: uri
+          pattern: ^(https?://|codex://)
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+        - harness
+        - externalId
+        - label
+      additionalProperties: false
+      description: URL omitida null. Não aceita segredos na URL; não resolve/faz fetch do link.
+    PatchChatReference:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        url:
+          type:
+            - string
+            - "null"
+          format: uri
+          pattern: ^(https?://|codex://)
+        archived:
+          type: boolean
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Não muda agentId, harness ou externalId. Identidade externa única por agente
+        (harness,externalId).
+    ImageUpload:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          x-maxBytes: 5242880
+          description: Imagem PNG/JPEG/WebP validada por bytes, até 5 MiB. Nome não é caminho.
+      required:
+        - file
+      additionalProperties: false
+    ActivityLink:
+      type: object
+      properties:
+        taskId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        boardId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        parentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        statusId:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        executorAgentId: &a2
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        isCurrentExecutor:
+          type: boolean
+        lastWorkedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        taskUpdatedAt:
+          type: string
+          format: date-time
+        latestOwnSummaryId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        taskPath:
+          type: string
+          pattern: ^/api/v1/tasks/[^/]+$
+        summariesPath:
+          type: string
+          pattern: ^/api/v1/tasks/[^/]+/execution-summaries\?actorId=
+        authorAgentId: *a2
+      required:
+        - taskId
+        - boardId
+        - parentId
+        - title
+        - statusId
+        - executorAgentId
+        - isCurrentExecutor
+        - lastWorkedAt
+        - taskUpdatedAt
+        - latestOwnSummaryId
+        - taskPath
+        - summariesPath
+        - authorAgentId
+      additionalProperties: false
+      description: "Índice de tasks reais, sem cópia de histórico. Relações: autor, executor atual ou
+        autor declarado de resumo. Transferência de time/execução não elimina autoria nem acesso.
+        Histórico interno do agente não é copiado ao executor seguinte."
+    ResumeContext:
+      type: object
+      properties:
+        agent:
+          $ref: "#/components/schemas/Agent"
+        teamContexts:
+          type: array
+          items:
+            type: object
+            properties:
+              teamId:
+                type: string
+                format: uuid
+                pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+              role:
+                type: string
+                enum:
+                  - leader
+                  - collaborator
+              name:
+                type: string
+                minLength: 1
+                maxLength: 200
+              purpose:
+                type: string
+                x-maxBytes: 65536
+                description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+              context:
+                type: string
+                x-maxBytes: 65536
+                description: Máximo 64 KiB UTF-8; texto, não transcrição integral.
+            required:
+              - teamId
+              - role
+              - name
+              - purpose
+              - context
+            additionalProperties: false
+          maxItems: 2
+        activityIndexPath:
+          type: string
+          pattern: ^/api/v1/agents/[^/]+/activities$
+        chatReferencesPath:
+          type: string
+          pattern: ^/api/v1/agents/[^/]+/chat-references$
+        taskIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+          uniqueItems: true
+          maxItems: 20
+        generatedAt:
+          type: string
+          format: date-time
+        notice:
+          type: string
+      required:
+        - agent
+        - teamContexts
+        - activityIndexPath
+        - chatReferencesPath
+        - taskIds
+        - generatedAt
+        - notice
+      additionalProperties: false
+      description: Perfil e contexto do agente solicitado; referências às tasks e seus resumos públicos,
+        sem entregar contexto interno de outro agente. Para execução consultar Task.executionContext
+        com rootTaskId/originBoardId. Sem contexto, manual. Não executa chats.
+    AgentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Agent"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais,
+        senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."
+    TeamPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Team"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais,
+        senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."
+    MemberPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Member"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais,
+        senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."
+    ChatReferencePage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatReference"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais,
+        senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."
+    ActivityLinkPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityLink"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        hasMore:
+          type: boolean
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais,
+        senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."
+    ApprovalCoordinationContext:
+      type: object
+      properties:
+        mode:
+          const: manual
+        conversationRef:
+          type: string
+          minLength: 1
+        approvalRef:
+          type: string
+          minLength: 1
+      required:
+        - mode
+        - conversationRef
+        - approvalRef
+      additionalProperties: false
+      description: Sem contexto de execução, aprovação/manual. Não concede autonomia global.
