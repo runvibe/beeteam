@@ -36,7 +36,7 @@ info:
     - archive-agent-rules
     - planning-revisions-and-payload-limits
 servers:
-  - url: http://127.0.0.1:8080
+  - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
   /api/v1/teams/by-slug/{slug}:

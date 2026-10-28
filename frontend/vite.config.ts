@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const proxy = {
     "/api": {
-      target: env.BEE_API_TARGET || "http://127.0.0.1:18081",
+      target: env.BEE_API_TARGET || "http://127.0.0.1:59865",
       changeOrigin: true,
     },
   };

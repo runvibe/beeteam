@@ -1,6 +1,6 @@
 # Preview local com API e PostgreSQL reais
 
-O launcher local deste projeto usa API em `http://127.0.0.1:18081`, PostgreSQL em `127.0.0.1:55482` e painel em `http://127.0.0.1:5173`, com proxy Vite de `/api` para18081. Execute os comandos na raiz do checkout correspondente; caminhos de worktrees de desenvolvimento não são uma instalação universal. Os contratos continuam nas rotas `/openapi/kanban.json` e `/openapi/ra.json`; MCP em `/mcp`.
+O launcher local deste projeto usa API em `http://127.0.0.1:59865`, PostgreSQL em `127.0.0.1:55482` e painel em `http://127.0.0.1:5173`, com proxy Vite de `/api` para59865. Execute os comandos na raiz do checkout correspondente; caminhos de worktrees de desenvolvimento não são uma instalação universal. Os contratos continuam nas rotas `/openapi/kanban.json` e `/openapi/ra.json`; MCP em `/mcp`.
 
 ## Iniciar e reaproveitar
 
@@ -14,7 +14,7 @@ O primeiro comando compila com MCP, copia o executável para `.local/api-runtime
 
 PostgreSQL18 roda no container `beeteam-local-postgres`, endereço127.0.0.1:55482, banco `beeteam_local`, volume nomeado `beeteam-local-pg18`. Não compartilha banco/volume com os testes. As sete migrations (template inicial e seis de domínio) rodam no startup. Container/volume existentes são reaproveitados. A configuração de senha aleatória fica somente em `.local/postgres.env`, ignorada pelo Git; preserve esse arquivo junto do volume. Se houver storage sem a configuração original, o script não troca credenciais nem reinicializa dados. O wrapper Docker via WSL Ubuntu disponível nesta máquina recebe o path convertido por wslpath.
 
-A API permanece em segundo plano após a sessão de terminal. Configuração ativa: APP_HOST127.0.0.1, APP_PORT18081, OTEL_ENABLEDfalse, MCP_ENABLEDtrue. CORS permite http://127.0.0.1:5173 e http://localhost:5173. Pelo proxy, requests são same-origin e ETag/Location ficam acessíveis sem configuração extra no navegador. O frontend não recebe credenciais de PostgreSQL.
+A API permanece em segundo plano após a sessão de terminal. Defaults do launcher: APP_HOST127.0.0.1, APP_PORT59865, OTEL_ENABLEDfalse, MCP_ENABLEDtrue. CORS permite http://127.0.0.1:5173 e http://localhost:5173. Pelo proxy, requests são same-origin e ETag/Location ficam acessíveis sem configuração extra no navegador. O frontend não recebe credenciais de PostgreSQL.
 
 ## Bootstrap opcional, separado da inicialização
 
@@ -35,21 +35,23 @@ Esse comando permanece em primeiro plano. Reutilize um painel saudável já ativ
 Verifique separadamente:
 
 ```powershell
-Invoke-RestMethod http://127.0.0.1:18081/health
-Invoke-RestMethod http://127.0.0.1:18081/api/v1/boards
+Invoke-RestMethod http://127.0.0.1:59865/health
+Invoke-RestMethod http://127.0.0.1:59865/api/v1/boards
 Invoke-WebRequest http://127.0.0.1:5173
 Invoke-RestMethod http://127.0.0.1:5173/api/v1/boards
 ```
 
 Health confirma o processo; a consulta de boards confirma leitura do armazenamento; a igualdade API/proxy confirma encaminhamento; HTML200 não prova renderização ou navegação visual. Abra o painel e navegue pelos registros reais para esse último nível de evidência. Uma página antiga ainda aberta não prova que o servidor está ativo.
 
-O endpoint MCP é `http://127.0.0.1:18081/mcp`, transporte Streamable HTTP, sem sessão persistente. Valide por cliente MCP/JSON-RPC com `initialize`, `notifications/initialized`, `tools/list`, `resources/list` e `prompts/list`, enviando `Accept: application/json, text/event-stream` e a versão negociada em `MCP-Protocol-Version`. Não use navegação GET como prova de funcionamento MCP. O catálogo atual anuncia60 ferramentas,6 recursos e3 prompts; conectar esse servidor ao harness é uma configuração separada, não feita pela inicialização da API.
+O endpoint MCP é `http://127.0.0.1:59865/mcp`, transporte Streamable HTTP, sem sessão persistente. Valide por cliente MCP/JSON-RPC com `initialize`, `notifications/initialized`, `tools/list`, `resources/list` e `prompts/list`, enviando `Accept: application/json, text/event-stream` e a versão negociada em `MCP-Protocol-Version`. Não use navegação GET como prova de funcionamento MCP. O catálogo atual anuncia60 ferramentas,6 recursos e3 prompts; conectar esse servidor ao harness é uma configuração separada, não feita pela inicialização da API.
 
 As Skills bundled são incorporadas no binário em compilação. Copiar novos arquivos ou regenerar catálogo não atualiza uma instância ativa. Registre separadamente revisão fonte, build e revisão servida; combine um reinício antes de trocar o processo saudável. Preserve banco, volume e credenciais. O launcher é de inicialização/reuso, não um atualizador de processo ativo. PostgreSQL18 permanece o armazenamento suportado; este procedimento não implementa SQLite nem migração entre bancos.
 
 ## Contrato do transporte
 
 Leituras não exigem autenticação. Escritas declaram X-Actor-Kind:human; POST envia Idempotency-Key por intenção, reutilizada em retry; mutações versionadas enviam If-Match:"N" da versão atual. Conflito deve recarregar o registro e preservar o erro; não há failover para mock. Slugs resolvem por `/api/v1/{agents|teams|tasks}/by-slug/{slug}` e retornam UUID para as demais APIs. `specification`, planos e `currentSummary` são conteúdos separados. Mudanças apenas administrativas não exigem síntese nova.
+
+A porta padrão é `59865`. `APP_PORT` explícita é preservada pelo launcher e pelo bootstrap. Ao usar outra porta, ajuste também `BEE_API_TARGET` no Vite. Registros abaixo documentam portas históricas e não definem o default atual.
 
 ## Evidência e limite
 

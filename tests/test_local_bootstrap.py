@@ -1,5 +1,7 @@
 import importlib.util
 import json
+import os
+import runpy
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +12,13 @@ bootstrap=importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bootstrap)
 
 class BootstrapRecoveryTests(unittest.TestCase):
+    def test_target_port_defaults_and_explicit_override(self):
+        script = Path(__file__).resolve().parents[1] / 'scripts' / 'bootstrap-local-api.py'
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(runpy.run_path(str(script))['BASE'], 'http://127.0.0.1:59865')
+        with patch.dict(os.environ, {'APP_PORT': '23456'}):
+            self.assertEqual(runpy.run_path(str(script))['BASE'], 'http://127.0.0.1:23456')
+
     def setUp(self):
         self.directory=tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)

@@ -1,5 +1,8 @@
 param([switch]$SkipBuild)
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'local-http.ps1')
+$http = Get-LocalHttpConfiguration
+if (-not (Test-Path Env:APP_PORT)) { $env:APP_PORT = [string]$http.Port }
 . (Join-Path $PSScriptRoot 'local-database.ps1')
 $database = Get-LocalDatabaseConfiguration
 $env:DATABASE_DRIVER = $database.Driver
@@ -54,31 +57,30 @@ if (Test-Path -LiteralPath $apiPidFile) {
     $existingPid = [int](Get-Content -LiteralPath $apiPidFile)
     $existingProcess = Get-Process -Id $existingPid -ErrorAction SilentlyContinue
     if ($existingProcess -and $existingProcess.Path -in @($binaryPath, $runtimeBinary)) {
-        Invoke-RestMethod -Uri 'http://127.0.0.1:18081/health' -TimeoutSec 2 | Out-Null
-        Write-Output "Bee Team API already running at http://127.0.0.1:18081 (PID $existingPid). Existing database settings were not changed; restart the API to apply different settings."
+        Invoke-RestMethod -Uri "$($http.BaseUrl)/health" -TimeoutSec 2 | Out-Null
+        Write-Output "Bee Team API already running at $($http.BaseUrl) (PID $existingPid). Existing database settings were not changed; restart the API to apply different settings."
         exit 0
     }
 }
-if (Get-NetTCPConnection -State Listen -LocalPort 18081 -ErrorAction SilentlyContinue) { throw 'Port 18081 is occupied; no process was stopped.' }
+if (Get-NetTCPConnection -State Listen -LocalPort $http.Port -ErrorAction SilentlyContinue) { throw "Port $($http.Port) is occupied; no process was stopped." }
 if (-not $SkipBuild) {
     Push-Location $projectRoot
     try { & cargo build --locked --features mcp; if ($LASTEXITCODE -ne 0) { throw 'Build failed.' } }
     finally { Pop-Location }
 }
 $env:APP_HOST = '127.0.0.1'
-$env:APP_PORT = '18081'
 $env:OTEL_ENABLED = 'false'
 $env:MCP_ENABLED = 'true'
-$env:APP_CORS_ALLOW_ORIGINS = 'http://127.0.0.1:5173,http://localhost:5173'
-$env:MCP_ALLOWED_ORIGINS = $env:APP_CORS_ALLOW_ORIGINS
+if (-not (Test-Path Env:APP_CORS_ALLOW_ORIGINS)) { $env:APP_CORS_ALLOW_ORIGINS = 'http://127.0.0.1:5173,http://localhost:5173' }
+if (-not (Test-Path Env:MCP_ALLOWED_ORIGINS)) { $env:MCP_ALLOWED_ORIGINS = $env:APP_CORS_ALLOW_ORIGINS }
 New-Item -ItemType Directory -Force $runtimeDir | Out-Null
 Copy-Item -LiteralPath $binaryPath -Destination $runtimeBinary -Force
 $process = Start-Process -FilePath $runtimeBinary -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $localDir 'api.stdout.log') -RedirectStandardError (Join-Path $localDir 'api.stderr.log') -PassThru
 [IO.File]::WriteAllText($apiPidFile, [string]$process.Id)
 for ($attempt = 0; $attempt -lt 30; $attempt++) {
     try {
-        Invoke-RestMethod -Uri 'http://127.0.0.1:18081/health' -TimeoutSec 2 | Out-Null
-        Write-Output "Bee Team API ready at http://127.0.0.1:18081 (PID $($process.Id)); storage driver $($database.Driver)."
+        Invoke-RestMethod -Uri "$($http.BaseUrl)/health" -TimeoutSec 2 | Out-Null
+        Write-Output "Bee Team API ready at $($http.BaseUrl) (PID $($process.Id)); storage driver $($database.Driver)."
         exit 0
     } catch {
         if ($process.HasExited) { throw 'API exited; inspect .local/api.stderr.log. Database and volume are preserved.' }

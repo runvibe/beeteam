@@ -16,6 +16,6 @@ ARG BIN_NAME=beeteam
 ENV BIN_NAME=${BIN_NAME}
 COPY ./artifacts/${BIN_NAME}/${TARGETARCH}/${BIN_NAME} /app/${BIN_NAME}
 
-EXPOSE 8080
+EXPOSE 59865
 
 CMD ["sh", "-c", "./${BIN_NAME}"]

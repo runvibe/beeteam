@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 from urllib.request import Request, urlopen
 
-BASE = 'http://127.0.0.1:18081'
+BASE = f"http://127.0.0.1:{os.environ.get('APP_PORT', '59865')}"
 STATE = Path(__file__).resolve().parent.parent / '.local' / 'bootstrap.json'
 state = {'keys': {}, 'results': {}, 'requests': {}}
 

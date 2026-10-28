@@ -14,7 +14,7 @@ $env:MCP_ENABLED="true"
 cargo run --features mcp
 ```
 
-Por padrão escuta em `127.0.0.1:8080`. `APP_HOST`, `APP_PORT`, `APP_CORS_ALLOW_ORIGINS`, `APP_BODY_LIMIT_BYTES`, `MCP_PATH` e `MCP_ALLOWED_ORIGINS` continuam configuráveis. Migrations rodam no startup. Sem `--features mcp` ou sem `MCP_ENABLED=true`, `/mcp` não é montado.
+Por padrão escuta em `127.0.0.1:59865`. `APP_HOST`, `APP_PORT`, `APP_CORS_ALLOW_ORIGINS`, `APP_BODY_LIMIT_BYTES`, `MCP_PATH` e `MCP_ALLOWED_ORIGINS` continuam configuráveis. Migrations rodam no startup. Sem `--features mcp` ou sem `MCP_ENABLED=true`, `/mcp` não é montado.
 
 Não há workspace, autenticação, login ou tokens. Escritas declaram `X-Actor-Kind: human`; agentes declaram `X-Actor-Kind: agent` e `X-Actor-Id` UUIDv7 cadastrado. Isso é auditoria declarada, não identidade verificada. Política de edição pelo líder via executor gerido continua pendente e não foi transformada em bloqueio presumido.
 
@@ -54,7 +54,7 @@ cargo test --locked --features mcp
 
 Os novos testes HTTP/MCP criam bancos isolados de nomes aleatórios na instância de teste (usuário precisa de CREATEDB). O teste de persistência e testes originais usam o banco indicado. Sem `BEE_TEST_DATABASE_URL`, testes originais/persistência tentam Testcontainers; no Windows, uma CLI Docker que chama WSL não fornece automaticamente um socket compatível ao SDK nativo. A URL explícita evita essa dependência. Nenhum teste faz trabalho de produto real.
 
-[Implementação e integração](docs/backend-implementation.md), [acompanhamento](docs/backend-progress.md). A integração local com o frontend usa API18081, PostgreSQL dedicado55482 e proxy Vite5173. Veja [iniciar e validar o preview real](docs/local-integration.md); o QA visual da frente frontend e a confirmação PostgreSQL/proxy estão registrados no runbook.
+[Implementação e integração](docs/backend-implementation.md), [acompanhamento](docs/backend-progress.md). A integração local com o frontend usa API59865, PostgreSQL dedicado55482 e proxy Vite5173. Veja [iniciar e validar o preview real](docs/local-integration.md); o QA visual da frente frontend e a confirmação PostgreSQL/proxy estão registrados no runbook.
 
 ### Resumo atual nos cards
 
@@ -168,7 +168,7 @@ default path in this workflow; SQLite is an explicit opt-in described below. Dat
 
 ## Bee Team frontend
 
-The React frontend lives in `frontend/`. Run `npm ci` and `npm run dev` there. The normal preview uses the real API through a Vite `/api` proxy to `http://127.0.0.1:18081`; see `frontend/.env.example` and `frontend/README.md` for configuration. Mock mode is explicit opt-in (`VITE_API_MODE=mock`), with no automatic fallback.
+The React frontend lives in `frontend/`. Run `npm ci` and `npm run dev` there. The normal preview uses the real API through a Vite `/api` proxy to `http://127.0.0.1:59865`; see `frontend/.env.example` and `frontend/README.md` for configuration. Mock mode is explicit opt-in (`VITE_API_MODE=mock`), with no automatic fallback.
 
 A skill Leader acompanha a conversa no painel (time, board e task em página inteira), com URLs reais e preservação de edição ativa. Collaborators registram trabalho sem conduzir a tela. Sem UI, o Leader mantém o registro e fornece link; atualização ao vivo depende da implementação frontend/backend verificada.
 
@@ -289,14 +289,18 @@ executable; PostgreSQL stays the default and SQLite remains explicit opt-in.
 $env:DATABASE_DRIVER="sqlite"
 $env:DATABASE_URL="sqlite://./beeteam.sqlite"
 $env:APP_HOST="127.0.0.1"
-$env:APP_PORT="18081"
+$env:APP_PORT="59865"
 $env:OTEL_ENABLED="false"
 $env:MCP_ENABLED="true"
 $env:BEE_FRONTEND_MODE="embedded"
 ./beeteam.exe
 ```
 
-Open `http://127.0.0.1:18081/`. UI, `/api/v1`, `/docs` and the configured MCP
+`APP_PORT` defaults to `59865`; set it explicitly to select another port. The local
+launcher preserves that override, and the MCP endpoint uses the configured port.
+For a separate Vite process, set `BEE_API_TARGET` to the same API port.
+
+Open `http://127.0.0.1:59865/`. UI, `/api/v1`, `/docs` and the configured MCP
 endpoint share the listener. Deep links under boards/tasks/agents/teams load the
 SPA. Only known UI paths get HTML; missing assets, API paths and MCP prefixes
 retain non-HTML errors. Fingerprinted Vite assets use immutable caching and
@@ -312,7 +316,7 @@ from an API-only executable fails startup explicitly. For development:
 $env:BEE_FRONTEND_MODE="disabled"
 cargo run --locked --features mcp
 # Terminal 2, frontend/; use npm ci once in a fresh checkout.
-$env:BEE_API_TARGET="http://127.0.0.1:18081"
+$env:BEE_API_TARGET="http://127.0.0.1:59865"
 npm run dev
 ```
 
@@ -332,7 +336,7 @@ output SHA-256 hashes guard freshness, not publisher authenticity. The generated
 
 Export/import remains disabled unless explicitly enabled. In embedded mode its
 browser allowlist must include the chosen UI origin, for example
-`BEE_TRANSFER_ALLOWED_ORIGINS=http://127.0.0.1:18081` (and the localhost variant
+`BEE_TRANSFER_ALLOWED_ORIGINS=http://127.0.0.1:59865` (and the localhost variant
 only if used). A same-origin UI does not remove the administrative opt-in.
 
 ## Portable export and import

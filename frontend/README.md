@@ -12,7 +12,7 @@ npm ci
 npm run dev -- --host 127.0.0.1
 ```
 
-A API local deve estar ativa em http://127.0.0.1:18081. O Vite encaminha `/api` para esse endereço. Copie `.env.example` para `.env.local` se precisar ajustar `BEE_API_TARGET` (destino do proxy) ou `VITE_API_BASE_URL` (base HTTP do cliente). O servidor não cria nem apaga dados automaticamente. O bootstrap e o startup pertencem ao backend.
+A API local deve estar ativa em http://127.0.0.1:59865. O Vite encaminha `/api` para esse endereço. Copie `.env.example` para `.env.local` se precisar ajustar `BEE_API_TARGET` (destino do proxy) ou `VITE_API_BASE_URL` (base HTTP do cliente). O servidor não cria nem apaga dados automaticamente. O bootstrap e o startup pertencem ao backend.
 
 Para demonstração isolada, defina `VITE_API_MODE=mock` e reinicie o Vite; nesse modo, alterações são perdidas ao recarregar. Não há fallback automático quando a API falha.
 
