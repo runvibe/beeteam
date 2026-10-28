@@ -2,14 +2,24 @@
 
 Continuidade após o handoff: [fluxo de trabalho do Collaborator](collaborator-workflow.md), documentado separadamente com Mermaid.
 
+## Condução visual natural — exclusiva do Leader
+
+Mantenha o painel acompanhando o assunto da conversa: Teams na seleção, página do time após resolução, board durante criação/gestão e task em página inteira durante planejamento ou edição. Depois de uma criação, navegue somente após confirmar a persistência e obter a referência real. Resolva a URL canônica pela instalação/rotas e pelos dados retornados: team/task usam slug persistido; board usa ID. Nunca derive slug do título nem invente link.
+
+Use as ferramentas reais de navegação disponíveis no harness. Reutilize a aba ou painel apropriado, evitando abrir novas abas a cada ação. Respeite o contexto do usuário: não tome outra superfície nem descarte ou interrompa edição ativa; mantenha o contexto e ofereça o link quando a navegação conflitar com ela. Navegação dentro do fluxo autorizado não exige permissão a cada mudança de tela.
+
+Converse sobre o resultado do trabalho, por exemplo “criei o board” ou “atualizei o planejamento”, depois de confirmá-lo. Não narre cliques, abertura de páginas ou sincronização como ritual. Não diga que a tela está sincronizada se isso não foi confirmado; mencione uma limitação visual apenas quando houver impacto concreto para o usuário.
+
+Sem ferramenta de UI, continue o registro autorizado e forneça o link correto como alternativa; navegação não é pré-requisito de persistência. Atualização ao vivo do conteúdo aberto depende da implementação e verificação frontend/backend: esta skill não garante transporte live, nem substitui essa atualização por recargas que interrompam edição. Collaborators registram trabalho e não conduzem a tela do usuário. Permanecem a task própria de planejamento do Leader e o gate de atribuição do Collaborator.
+
 ## Fluxograma dos três casos
 
-Fluxo aprovado/proposto, ainda não implementado. O MCP ativo serve a Leader `dfd4e19`; os novos três casos permanecem documentação. MCP fornece registros, skills e prompts; o harness controla abertura do painel e criação de chats conforme capacidades e autorização.
+Fluxo operacional das skills; a versão servida pelo MCP depende de sincronização e verificação do backend. MCP fornece registros, skills e prompts; o harness controla abertura do painel e criação de chats conforme capacidades e autorização.
 
 ```mermaid
 flowchart TD
     A(["INÍCIO: usuário invoca a skill Leader neste chat"]) --> B["Cumprimentar e preparar acesso local necessário"]
-    B --> C["Abrir Teams em /teams no endereço descoberto"]
+    B --> C["Mostrar Teams na superfície apropriada; sem UI, fornecer link e continuar"]
     C --> D["Usuário escolhe na interface e informa no chat"]
     D --> E{"Time existente ou novo?"}
     E -->|Existente| F{"Time tem líder?"}
@@ -19,7 +29,7 @@ flowchart TD
     H --> I
     I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
     J --> X["Apresentar resumo curto: colaboradores, boards, tarefas em andamento, bloqueios e lacunas"]
-    X --> K["Escolher ou reutilizar board adequado; criar se necessário dentro da demanda autorizada"]
+    X --> K["Resolver board adequado autorizado; após confirmação, mostrar board sem interromper edição"]
     E -->|Novo: caso 3| L["Entender contexto inicial; sem cadastros ainda, coletar o necessário sem circularidade"]
     L --> M["Propor composição sucinta com líder e perfis funcionais: execução e responsabilidades"]
     M --> N{"Usuário revisa e aprova?"}
@@ -27,7 +37,7 @@ flowchart TD
     N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
     P --> K
     K --> PLAN["Reutilizar tarefa de planejamento ou criar coordenação atribuída ao Leader; materializar contexto inicial"]
-    PLAN --> PERSIST["Antes do planejamento substantivo: confirmar task; atualizar descrição, specification, plano versionado e síntese durante a conversa"]
+    PLAN --> PERSIST["Confirmar task antes de planejar; mostrar página inteira se possível; persistir descrição, specification, plano e síntese na conversa"]
     PERSIST --> Q["Buscar candidatos por nomes e referências disponíveis; consultar contexto quando permitido"]
     Q --> S{"Há candidatos para reutilizar?"}
     S -->|Sim| T["Proposta conjunta: perguntar continuar nos candidatos ou criar novos"]
