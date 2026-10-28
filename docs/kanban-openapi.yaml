@@ -1,0 +1,3675 @@
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: Bee Team Kanban — contrato proposto
+  version: 0.1.0-draft
+  description: Design revisável, não implementado. Todos os paths, schemas, limites, identidade e
+    persistência são propostas técnicas. Servidor local; UI de visualização/configuração, gestão
+    pelos agentes, aprovações na conversa. Fluxo flexível sem transições obrigatórias. Projeto/time
+    e leitura conforme kanban-api-plan.md. Sem CRUD de colaboradores, skills ou transcrições. Campos
+    desconhecidos rejeitados. Resumos e eventos transacionais com autor do token, nunca do body.
+    Tokens devem ser separados por colaborador. CORS não autentica. Recursos arquivados somente
+    leitura, exceto restauração autorizada. Paginação offset (padrão 0) e limit (padrão 50, máximo
+    100), com total, hasMore e nextOffset; autorização e filtros antes dos totais. AND entre
+    filtros, types CSV com OR interno. Sem snapshot entre chamadas. Textos limitados em bytes UTF-8
+    conforme x-maxBytes, não caracteres. Idempotência POST por 24h; alterações de conteúdo
+    incrementam versão Task. If-Match identifica entidade alvo. Comentários/planos/resumos
+    imutáveis. Configuração de autonomia por workspace/time ainda aberta. Referências
+    conversacionais auditam, mas não provam consentimento. REST atual de sistema e MCP ficam fora
+    deste contrato Kanban.
+servers:
+  - url: http://127.0.0.1:8080
+    description: Endereço local proposto; não comprova API implementada.
+security:
+  - AgentBearer: []
+paths:
+  /api/v1/workspaces/{workspaceId}/projects:
+    parameters:
+      - name: workspaceId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: createProject
+      summary: Criar projeto
+      description: "Somente proprietário do workspace. "
+      x-authorization: Owner
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "201":
+          description: Criar projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectCreated"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProject"
+    get:
+      operationId: listProjects
+      summary: Listar projetos
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive em name do projeto. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: teamId
+          in: query
+          required: false
+          description: ""
+          schema: &a3
+            type: string
+            format: uuid
+        - &a9
+          name: archived
+          in: query
+          required: false
+          description: "False: ativos; true: arquivados, inclusive por ancestral arquivado. Aplicado antes do
+            total."
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - updatedAt
+              - name
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - &a1
+          $ref: "#/components/parameters/Offset"
+        - &a2
+          $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Listar projetos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/projects/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getProject
+      summary: Consultar projeto
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404. "
+      x-authorization: R
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateProject
+      summary: Atualizar ou arquivar projeto
+      description: Proprietário ou administrador explicitamente delegado do projeto; liderar time não
+        concede administração automaticamente. Arquivado bloqueia mutações descendentes. Remover
+        time em uso retorna 409; restauração continua permitida.
+      x-authorization: P
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Atualizar ou arquivar projeto
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchProject"
+  /api/v1/projects/{projectId}/statuses:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listStatuses
+      summary: Listar status ordenados
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Substring literal case-insensitive em name do status. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: isDone
+          in: query
+          required: false
+          description: ""
+          schema: &a4
+            type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: "False: somente ativos; true: ativos e arquivados."
+          schema:
+            type: boolean
+            default: false
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - position
+              - name
+            default: position
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar status ordenados
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusList"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createStatus
+      summary: Criar status ao fim
+      description: Proprietário ou administrador explicitamente delegado do projeto; liderar time não
+        concede administração automaticamente. Máximo 50 status ativos; ao menos um ativo não final.
+        Nome ativo único sem distinção de caixa/espaços externos.
+      x-authorization: P
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "201":
+          description: Criar status ao fim
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusInput"
+  /api/v1/projects/{projectId}/statuses/{statusId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+      - name: statusId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    patch:
+      operationId: updateStatus
+      summary: Configurar status
+      description: "Proprietário ou administrador explicitamente delegado do projeto; liderar time não
+        concede administração automaticamente. If-Match do Status. Em uso (inclusive tarefas
+        arquivadas): proíbe arquivamento ou mudança isDone."
+      x-authorization: P
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Configurar status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Status"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchStatus"
+  /api/v1/projects/{projectId}/status-order:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: orderStatuses
+      summary: Ordenar todos os status ativos
+      description: "Proprietário ou administrador explicitamente delegado do projeto; liderar time não
+        concede administração automaticamente. "
+      x-authorization: P
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Ordenar todos os status ativos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusOrderResult"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusOrder"
+  /api/v1/projects/{projectId}/board:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getBoard
+      summary: Consultar quadro
+      description: "Leitura R. Projeção sem paginação global: retorna todos os status ativos, inclusive
+        colunas vazias, ordenados por position,id asc. Cada coluna contém somente raízes ativas,
+        primeiros limitPerColumn cards em position,id asc, offset=0 e seu total filtrado/autorizado.
+        Continuar usando listTasks com statusId da coluna, rootOnly=true, archived=false,
+        sortBy=position, sortOrder=asc, offset=nextOffset, limit=limitPerColumn e mesmos filtros.
+        Sem offset global nem filtro de status que esconda colunas. Filtros distintos compõem AND;
+        somente types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares:
+        repetidos ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos
+        retornam 400 invalid_request. Aplicar autorização e filtros antes de total, offset e limit.
+        Ordenação estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - &a5
+          name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title da tarefa. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - &a6
+          name: teamId
+          in: query
+          required: false
+          description: ""
+          schema: *a3
+        - &a7
+          name: assigneeId
+          in: query
+          required: false
+          description: Um único responsável atual.
+          schema: *a3
+        - &a8
+          name: blocked
+          in: query
+          required: false
+          description: ""
+          schema: *a4
+        - &a10
+          name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - &a11
+          name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - &a12
+          name: updatedFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de updatedAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - &a13
+          name: updatedBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de updatedAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: limitPerColumn
+          in: query
+          required: false
+          description: Primeiros N cards autorizados/filtrados por coluna. Não pagina nem esconde colunas.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Consultar quadro
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Board"
+              examples:
+                emptyColumn:
+                  summary: Coluna preservada sem cards correspondentes aos filtros
+                  value:
+                    projectId: 00000000-0000-4000-8000-000000000001
+                    columns:
+                      - status:
+                          id: 00000000-0000-4000-8000-000000000002
+                          projectId: 00000000-0000-4000-8000-000000000001
+                          name: Backlog
+                          isDone: false
+                          position: 0
+                          archivedAt: null
+                          version: 1
+                        tasks: []
+                        offset: 0
+                        limit: 20
+                        total: 0
+                        hasMore: false
+                        nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/projects/{projectId}/tasks:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listTasks
+      summary: Listar tarefas e subtarefas
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições. Sem statusId, sortBy=position
+        compara os ranks opacos armazenados e id; para reproduzir uma coluna do quadro, usar
+        statusId, rootOnly=true, archived=false, sortBy=position e sortOrder=asc. Filtros por IDs
+        devem pertencer ao escopo consultado; não revelar existência fora da leitura."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - *a5
+        - name: statusId
+          in: query
+          required: false
+          description: Um único status pertencente ao projeto.
+          schema: *a3
+        - *a6
+        - *a7
+        - name: parentId
+          in: query
+          required: false
+          description: Somente filhos diretos deste pai no projeto.
+          schema: *a3
+        - name: rootOnly
+          in: query
+          required: false
+          description: True é incompatível com parentId; false sem parentId inclui raízes e subtarefas.
+          schema:
+            type: boolean
+            default: false
+        - *a8
+        - *a9
+        - *a10
+        - *a11
+        - *a12
+        - *a13
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - position
+              - createdAt
+              - updatedAt
+              - title
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar tarefas e subtarefas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createTask
+      summary: Criar tarefa ou subtarefa
+      description: Team leader do time da tarefa; criação/atribuição exigem contexto de coordenação
+        compatível com política efetiva. Sem parentId cria raiz. Se subtarefa, If-Match do pai. Não
+        criar já em status final; registrar conclusão com resumo.
+      x-authorization: L
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/ParentIfMatch"
+      responses:
+        "201":
+          description: Criar tarefa ou subtarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTask"
+  /api/v1/tasks/{taskId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getTask
+      summary: Consultar tarefa
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404. "
+      x-authorization: R
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Consultar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    patch:
+      operationId: updateTask
+      summary: Atualizar conteúdo e progresso
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Atualizar conteúdo e progresso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchTask"
+  /api/v1/tasks/{taskId}/assignment:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: assignTask
+      summary: Atribuir ou transferir responsável
+      description: "Team leader do time da tarefa; criação/atribuição exigem contexto de coordenação
+        compatível com política efetiva. "
+      x-authorization: L
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Atribuir ou transferir responsável
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Assignment"
+  /api/v1/tasks/{taskId}/position:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: moveTask
+      summary: Mover ou reordenar tarefa
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Mover ou reordenar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Position"
+  /api/v1/tasks/{taskId}/block:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: blockTask
+      summary: Bloquear ou desbloquear
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Bloquear ou desbloquear
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Block"
+  /api/v1/tasks/{taskId}/plans:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listPlans
+      summary: Listar plans
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404. Planos: lista revisão atual de cada
+        planId. Filtros distintos compõem AND; somente types aceita múltiplos valores CSV (OR
+        interno). Demais parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID,
+        enum, faixa de datas e números inválidos retornam 400 invalid_request. Aplicar autorização e
+        filtros antes de total, offset e limit. Ordenação estável com desempate id; sem snapshot
+        entre requisições. Primeiro selecionar a revisão atual de cada planId; depois filtrar por
+        autor/data dessa revisão e paginar. Não retornar revisão antiga por corresponder ao filtro."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - name: title
+          in: query
+          required: false
+          description: Substring literal case-insensitive em title do planejamento. Percentual, underscore e
+            barra invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - &a14
+          name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema: *a3
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt da revisão atual, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt da revisão atual, RFC3339 com timezone. From
+            deve ser estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - title
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevisionPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createPlan
+      summary: Registrar plans
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "201":
+          description: Registrar plans
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevision"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/comments:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listComments
+      summary: Listar comments
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - *a14
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createComment
+      summary: Registrar comments
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "201":
+          description: Registrar comments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateComment"
+  /api/v1/tasks/{taskId}/attachments:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listAttachments
+      summary: Listar attachments
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - name: fileName
+          in: query
+          required: false
+          description: Substring literal case-insensitive em originalName. Percentual, underscore e barra
+            invertida são caracteres literais; não são wildcards, regex ou SQL. Valor vazio
+            rejeitado.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - *a14
+        - name: mediaType
+          in: query
+          required: false
+          description: Correspondência exata case-insensitive do media type armazenado, sem parâmetros.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+            pattern: ^[^\s/;]+/[^\s/;]+$
+        - name: includeRemoved
+          in: query
+          required: false
+          description: True inclui tombstones; não restabelece download de arquivos removidos.
+          schema:
+            type: boolean
+            default: false
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+              - originalName
+              - sizeBytes
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar attachments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttachmentPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createAttachment
+      summary: Registrar attachments
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "201":
+          description: Registrar attachments
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadAttachment"
+            encoding:
+              file:
+                contentType: application/octet-stream
+        description: Um arquivo, até 20 MiB; corpo multipart até 21 MiB. Nome não é caminho; bytes não ficam
+          na raiz web.
+        x-maxBytes: 22020096
+  /api/v1/tasks/{taskId}/execution-summaries:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: listExecutionSummarys
+      summary: Listar execution-summaries
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - *a14
+        - name: outcome
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: string
+            enum:
+              - progress
+              - completed
+              - blocked
+        - name: statusId
+          in: query
+          required: false
+          description: Status registrado no resumo, não o status atual da tarefa.
+          schema: *a3
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - createdAt
+            default: createdAt
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar execution-summaries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecutionSummaryPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+    post:
+      operationId: createExecutionSummary
+      summary: Registrar execution-summaries
+      description: "Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. "
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "201":
+          description: Registrar execution-summaries
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecutionResult"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecordExecution"
+  /api/v1/tasks/{taskId}/plans/{planId}/revisions:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+      - name: planId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    post:
+      operationId: revisePlan
+      summary: Salvar revisão imutável
+      description: Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. If-Match da tarefa; baseRevision divergente
+        retorna 409 revision_conflict.
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "201":
+          description: Salvar revisão imutável
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevision"
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri-reference
+              description: "Referência URI ao recurso criado. Recursos sem rota de detalhe usam URL da coleção com
+                fragmento #UUID; não implica nova rota."
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevisePlan"
+    get:
+      operationId: listPlanRevisions
+      summary: Listar revisões de planejamento
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404.  Filtros distintos compõem AND; somente
+        types aceita múltiplos valores CSV (OR interno). Demais parâmetros são escalares: repetidos
+        ou desconhecidos retornam 400. UUID, enum, faixa de datas e números inválidos retornam 400
+        invalid_request. Aplicar autorização e filtros antes de total, offset e limit. Ordenação
+        estável com desempate id; sem snapshot entre requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - *a14
+        - name: createdFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de createdAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: createdBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de createdAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - revision
+              - createdAt
+            default: revision
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Listar revisões de planejamento
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlanRevisionPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/attachments/{attachmentId}/content:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+      - name: attachmentId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: downloadAttachment
+      summary: Baixar arquivo autenticado
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404. Arquivo removido retorna 404. Nenhum
+        caminho local arbitrário é aceito."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters: []
+      responses:
+        "200":
+          description: Bytes do arquivo
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+              description: attachment; filename seguro
+            X-Content-Type-Options:
+              schema:
+                type: string
+                const: nosniff
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/attachments/{attachmentId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+      - name: attachmentId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    delete:
+      operationId: removeAttachment
+      summary: Remover acesso ao anexo e preservar tombstone
+      description: Responsável atual pela tarefa ou líder do seu time. Verificação individual para
+        subtarefas; perder atribuição remove escrita. If-Match da tarefa. Limpeza física posterior;
+        prazo não definido.
+      x-authorization: W
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "204":
+          description: Remover acesso ao anexo e preservar tombstone
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/timeline:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    get:
+      operationId: getTimeline
+      summary: Consultar timeline unificada
+      description: "Leitura: membros dos times participantes no workspace ou proprietário; projeto sem
+        times só proprietário. Fora do escopo retorna 404. Ordenação padrão por sequence crescente;
+        comentários aparecem uma vez via commentId. Incluir filhos não duplica eventos. Filtros
+        distintos compõem AND; somente types aceita múltiplos valores CSV (OR interno). Demais
+        parâmetros são escalares: repetidos ou desconhecidos retornam 400. UUID, enum, faixa de
+        datas e números inválidos retornam 400 invalid_request. Aplicar autorização e filtros antes
+        de total, offset e limit. Ordenação estável com desempate id; sem snapshot entre
+        requisições."
+      x-authorization: R
+      x-contract-status: proposed
+      parameters:
+        - name: includeChildren
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+            default: false
+        - *a14
+        - name: types
+          in: query
+          required: false
+          description: Lista CSV de tipos; OR entre tipos, AND com demais filtros.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
+            minItems: 1
+            uniqueItems: true
+          style: form
+          explode: false
+        - name: occurredFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de occurredAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: occurredBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de occurredAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - sequence
+            default: sequence
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - *a1
+        - *a2
+      responses:
+        "200":
+          description: Consultar timeline unificada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventPage"
+              examples:
+                empty:
+                  summary: Nenhum resultado autorizado para os filtros
+                  value:
+                    items: []
+                    offset: 0
+                    limit: 50
+                    total: 0
+                    hasMore: false
+                    nextOffset: null
+                pastEnd:
+                  summary: Offset além do total filtrado
+                  value:
+                    items: []
+                    offset: 100
+                    limit: 50
+                    total: 7
+                    hasMore: false
+                    nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/archive:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+    put:
+      operationId: archiveTask
+      summary: Arquivar ou restaurar tarefa
+      description: Team leader do time da tarefa; criação/atribuição exigem contexto de coordenação
+        compatível com política efetiva. Arquivar pai bloqueia mutações dos filhos. Restaurar pai
+        não restaura filhos individualmente arquivados.
+      x-authorization: L
+      x-contract-status: proposed
+      parameters:
+        - $ref: "#/components/parameters/IfMatch"
+      responses:
+        "200":
+          description: Arquivar ou restaurar tarefa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+          headers:
+            ETag:
+              schema:
+                type: string
+              description: Versão da entidade retornada; ExecutionResult usa Task, StatusOrderResult usa Project.
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+        "412":
+          $ref: "#/components/responses/412"
+        "413":
+          $ref: "#/components/responses/413"
+        "415":
+          $ref: "#/components/responses/415"
+        "428":
+          $ref: "#/components/responses/428"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Archive"
+components:
+  securitySchemes:
+    AgentBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: Credencial individual provisionada localmente. Servidor resolve ator/workspace e
+        consulta papéis atuais; UI recebe somente escopo de leitura.
+  parameters:
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag forte da entidade alvo; em comandos de conteúdo, da tarefa; em ordenação de
+        status, do projeto.
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+        examples:
+          - '"1"'
+    ParentIfMatch:
+      name: If-Match
+      in: header
+      required: false
+      description: "Obrigatório se parentId não nulo: ETag do pai. Ausência retorna 428."
+      schema:
+        type: string
+        pattern: ^"[1-9][0-9]*"$
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: Retry idêntico por 24h retorna resposta original; validar autorização atual antes de replay.
+      schema:
+        type: string
+        format: uuid
+    Limit:
+      name: limit
+      in: query
+      required: false
+      description: Máximo de itens na página; valores fora do intervalo são rejeitados, não truncados.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 50
+    Offset:
+      name: offset
+      in: query
+      required: false
+      description: Quantidade de registros autorizados e filtrados a pular. Offset além do total retorna
+        items vazio.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2147483647
+        default: 0
+  responses:
+    "400":
+      description: invalid_request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "401":
+      description: unauthenticated
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "403":
+      description: task_write_forbidden, project_admin_required, coordination_context_required,
+        coordination_mode_mismatch
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "404":
+      description: not_found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "409":
+      description: archived_resource, status_in_use, team_in_use, summary_required, task_blocked,
+        revision_conflict, idempotency_conflict, duplicate_status
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "412":
+      description: version_conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "413":
+      description: payload_too_large
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "415":
+      description: unsupported_media_type
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "428":
+      description: version_required
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "500":
+      description: internal_error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    "503":
+      description: storage_unavailable
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Progress:
+      type: object
+      properties:
+        percent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        note:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - percent
+        - note
+      additionalProperties: false
+    Block:
+      oneOf:
+        - type: object
+          properties:
+            blocked:
+              const: true
+            reason:
+              type: string
+              minLength: 1
+              maxLength: 2000
+          required:
+            - blocked
+            - reason
+          additionalProperties: false
+        - type: object
+          properties:
+            blocked:
+              const: false
+            reason:
+              type: "null"
+          required:
+            - blocked
+            - reason
+          additionalProperties: false
+    CoordinationContext:
+      description: Auditável, não prova criptográfica de consentimento. Modo validado contra política
+        efetiva persistida.
+      oneOf:
+        - type: object
+          properties:
+            mode:
+              const: approval
+            conversationRef:
+              type: string
+              minLength: 1
+            approvalRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+            - approvalRef
+          additionalProperties: false
+        - type: object
+          properties:
+            mode:
+              const: autonomous
+            conversationRef:
+              type: string
+              minLength: 1
+          required:
+            - mode
+            - conversationRef
+          additionalProperties: false
+    ReviewContext:
+      type: object
+      properties:
+        reviewerType:
+          type: string
+          enum:
+            - user
+            - team_leader
+        conversationRef:
+          type: string
+          minLength: 1
+        instructionRef:
+          type: string
+          minLength: 1
+      required:
+        - reviewerType
+        - conversationRef
+        - instructionRef
+      additionalProperties: false
+      description: Orientação de revisão na conversa; não prova consentimento por si só.
+    Deliverable:
+      type: object
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 200
+        attachmentId:
+          type: string
+          format: uuid
+        url:
+          type: string
+          format: uri
+          pattern: ^https?://
+      required:
+        - label
+      additionalProperties: false
+      not:
+        required:
+          - attachmentId
+          - url
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspaceId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        teamIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - workspaceId
+        - name
+        - description
+        - teamIds
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+      additionalProperties: false
+    Status:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+        position:
+          type: integer
+          minimum: 0
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+      required:
+        - id
+        - projectId
+        - name
+        - isDone
+        - position
+        - archivedAt
+        - version
+      additionalProperties: false
+    ProjectCreated:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspaceId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        teamIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+      required:
+        - id
+        - workspaceId
+        - name
+        - description
+        - teamIds
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+        - statuses
+      additionalProperties: false
+    StatusInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+          default: false
+      required:
+        - name
+      additionalProperties: false
+    CreateProject:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        teamIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+          default: []
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusInput"
+          minItems: 1
+          maxItems: 50
+      required:
+        - name
+      additionalProperties: false
+      description: Sem statuses, cria Backlog, A fazer, Em andamento, Em revisão e Concluída (somente
+        última isDone). Ao menos um status não final ativo.
+    PatchProject:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        teamIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+        archived:
+          type: boolean
+      required: []
+      additionalProperties: false
+      minProperties: 1
+    PatchStatus:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isDone:
+          type: boolean
+        archived:
+          type: boolean
+      required: []
+      additionalProperties: false
+      minProperties: 1
+      description: Status em uso não pode ser arquivado ou mudar isDone. Nome pode mudar.
+    StatusOrder:
+      type: object
+      properties:
+        statusIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          minItems: 1
+          maxItems: 50
+          uniqueItems: true
+      required:
+        - statusIds
+      additionalProperties: false
+      description: Todos os status ativos exatamente uma vez.
+    StatusList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    StatusOrderResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Status"
+        projectVersion:
+          type: integer
+          minimum: 1
+      required:
+        - items
+        - projectVersion
+      additionalProperties: false
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        teamId:
+          type: string
+          format: uuid
+        parentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        assigneeId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        statusId:
+          type: string
+          format: uuid
+        position:
+          type: string
+          description: Rank opaco gerado pelo servidor.
+        progress:
+          $ref: "#/components/schemas/Progress"
+        block:
+          $ref: "#/components/schemas/Block"
+        childSummary:
+          type: object
+          properties:
+            total:
+              type: integer
+              minimum: 0
+            done:
+              type: integer
+              minimum: 0
+          required:
+            - total
+            - done
+          additionalProperties: false
+        latestExecutionSummaryId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        archivedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        version:
+          type: integer
+          minimum: 1
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - teamId
+        - parentId
+        - title
+        - description
+        - assigneeId
+        - statusId
+        - position
+        - progress
+        - block
+        - childSummary
+        - latestExecutionSummaryId
+        - archivedAt
+        - version
+        - createdAt
+        - updatedAt
+      additionalProperties: false
+    CreateTask:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        teamId:
+          type: string
+          format: uuid
+        parentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        assigneeId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        statusId:
+          type: string
+          format: uuid
+        coordinationContext:
+          $ref: "#/components/schemas/CoordinationContext"
+      required:
+        - title
+        - teamId
+        - coordinationContext
+      additionalProperties: false
+      description: Um nível de filhos. Mesmo projeto/time do pai. Status inicial não final; padrão
+        primeiro não final. If-Match do pai obrigatório somente se parentId não nulo.
+    PatchTask:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        progress:
+          $ref: "#/components/schemas/Progress"
+      required: []
+      additionalProperties: false
+      minProperties: 1
+    Assignment:
+      type: object
+      properties:
+        assigneeId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        coordinationContext:
+          $ref: "#/components/schemas/CoordinationContext"
+      required:
+        - assigneeId
+        - coordinationContext
+      additionalProperties: false
+    Position:
+      type: object
+      properties:
+        statusId:
+          type: string
+          format: uuid
+        beforeTaskId:
+          type:
+            - string
+            - "null"
+          format: uuid
+      required:
+        - statusId
+        - beforeTaskId
+      additionalProperties: false
+      description: Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige
+        execution-summaries; reordenar no mesmo status final é permitido.
+    Archive:
+      type: object
+      properties:
+        archived:
+          type: boolean
+      required:
+        - archived
+      additionalProperties: false
+    CreatePlan:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - title
+        - content
+      additionalProperties: false
+    RevisePlan:
+      type: object
+      properties:
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        changeSummary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        baseRevision:
+          type: integer
+          minimum: 1
+      required:
+        - content
+        - changeSummary
+        - baseRevision
+      additionalProperties: false
+    PlanRevision:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        planId:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        revision:
+          type: integer
+          minimum: 1
+        content:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        changeSummary:
+          type:
+            - string
+            - "null"
+        actorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - planId
+        - taskId
+        - title
+        - revision
+        - content
+        - changeSummary
+        - actorId
+        - createdAt
+      additionalProperties: false
+    CreateComment:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+      required:
+        - body
+      additionalProperties: false
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        body:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        actorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - taskId
+        - body
+        - actorId
+        - createdAt
+      additionalProperties: false
+    UploadAttachment:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Bytes, máximo 20 MiB.
+          x-maxBytes: 20971520
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+      required:
+        - file
+      additionalProperties: false
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        originalName:
+          type: string
+        mediaType:
+          type: string
+        sizeBytes:
+          type: integer
+          minimum: 0
+        description:
+          type: string
+          description: Markdown, máximo 65536 bytes UTF-8.
+          x-maxBytes: 65536
+        actorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        removedAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - id
+        - taskId
+        - originalName
+        - mediaType
+        - sizeBytes
+        - description
+        - actorId
+        - createdAt
+        - removedAt
+      additionalProperties: false
+    RecordExecution:
+      type: object
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        outcome:
+          type: string
+          enum:
+            - progress
+            - completed
+            - blocked
+        statusId:
+          type: string
+          format: uuid
+        deliverables:
+          type: array
+          items:
+            $ref: "#/components/schemas/Deliverable"
+        pending:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        reviewContext:
+          $ref: "#/components/schemas/ReviewContext"
+        progress:
+          $ref: "#/components/schemas/Progress"
+      required:
+        - summary
+        - outcome
+        - statusId
+        - deliverables
+        - pending
+      additionalProperties: false
+      description: Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes
+        exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do
+        usuário, sem etapa universal obrigatória.
+    ExecutionSummary:
+      type: object
+      properties:
+        summary:
+          type: string
+          minLength: 1
+          description: Máximo 16384 bytes UTF-8.
+          x-maxBytes: 16384
+        outcome:
+          type: string
+          enum:
+            - progress
+            - completed
+            - blocked
+        statusId:
+          type: string
+          format: uuid
+        deliverables:
+          type: array
+          items:
+            $ref: "#/components/schemas/Deliverable"
+        pending:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        reviewContext:
+          anyOf:
+            - $ref: "#/components/schemas/ReviewContext"
+            - type: "null"
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        actorId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - summary
+        - outcome
+        - statusId
+        - deliverables
+        - pending
+        - reviewContext
+        - id
+        - taskId
+        - actorId
+        - createdAt
+      additionalProperties: false
+    ExecutionResult:
+      type: object
+      properties:
+        executionSummary:
+          $ref: "#/components/schemas/ExecutionSummary"
+        task:
+          $ref: "#/components/schemas/Task"
+      required:
+        - executionSummary
+        - task
+      additionalProperties: false
+    EventType:
+      type: string
+      enum:
+        - task.created
+        - task.updated
+        - assignment.changed
+        - position.changed
+        - block.changed
+        - plan.created
+        - plan.revised
+        - comment.created
+        - attachment.added
+        - attachment.removed
+        - execution.recorded
+        - task.archived
+        - task.restored
+        - subtask.created
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sequence:
+          type: integer
+          minimum: 1
+        taskId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/EventType"
+        actorId:
+          type: string
+          format: uuid
+        occurredAt:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties: true
+          description: Dados relevantes anteriores/novos e IDs relacionados. comment.created traz commentId,
+            sem duplicar corpo. Nunca tokens/bytes.
+      required:
+        - id
+        - sequence
+        - taskId
+        - type
+        - actorId
+        - occurredAt
+        - data
+      additionalProperties: false
+    BoardColumn:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/Status"
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - status
+        - tasks
+        - total
+        - offset
+        - limit
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: Página inicial da coluna (tasks em vez de items), offset=0, limit=limitPerColumn. Todas
+        as colunas ativas são retornadas mesmo vazias.
+    Board:
+      type: object
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        columns:
+          type: array
+          items:
+            $ref: "#/components/schemas/BoardColumn"
+      required:
+        - projectId
+        - columns
+      additionalProperties: false
+      description: Projeção de todas as colunas ativas em position,id asc, até 50 status. Raízes ativas
+        por coluna em position,id asc, limitada por limitPerColumn. Continuar via listTasks com
+        statusId/rootOnly/archived e ordenação/filtros compatíveis, offset=nextOffset. Sem snapshot
+        entre chamadas.
+    ProjectPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    TaskPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    PlanRevisionPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanRevision"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    CommentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Comment"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    AttachmentPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attachment"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    ExecutionSummaryPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ExecutionSummary"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    EventPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+          description: Offset solicitado; no quadro é sempre zero.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Limite efetivamente solicitado/aplicado.
+        total:
+          type: integer
+          minimum: 0
+          description: Total autorizado após filtros, antes de paginação.
+        hasMore:
+          type: boolean
+          description: offset + quantidade de itens retornados < total.
+        nextOffset:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: offset + quantidade de itens retornados quando hasMore; senão null.
+      required:
+        - items
+        - offset
+        - limit
+        - total
+        - hasMore
+        - nextOffset
+      additionalProperties: false
+      description: "Página autorizada e filtrada. Offset além do total: items=[], hasMore=false,
+        nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre
+        requisições não há snapshot."
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+          enum:
+            - invalid_request
+            - unauthenticated
+            - task_write_forbidden
+            - project_admin_required
+            - coordination_context_required
+            - coordination_mode_mismatch
+            - not_found
+            - archived_resource
+            - status_in_use
+            - team_in_use
+            - summary_required
+            - task_blocked
+            - revision_conflict
+            - idempotency_conflict
+            - duplicate_status
+            - version_conflict
+            - version_required
+            - payload_too_large
+            - unsupported_media_type
+            - internal_error
+            - storage_unavailable
+        details:
+          type: object
+          additionalProperties: true
+      required:
+        - error
+        - code
+        - details
+      additionalProperties: false

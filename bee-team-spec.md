@@ -18,14 +18,15 @@ A aplicação Bee Team não acessa diretamente recursos da IA nem inicia ou cont
 
 - Workspace: espaço organizacional da conta, contendo times e seus registros. O uso inicial é pessoal; isso não implica um produto multiusuário.
 - Time: possui propósito, contexto, colaboradores, demandas e um team leader próprio.
+- Projeto: organiza um quadro Kanban com tarefas e status configuráveis. É distinto de time; a relação técnica entre projetos e times ainda é proposta no contrato do Kanban.
 - Team leader: conversa com o usuário, ajuda a definir e organizar o time, preserva o contexto e coordena sua execução.
 - Colaborador: possui identidade e perfil persistentes, com nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. Seu trabalho é consultável pelas tarefas vinculadas e respectivos resumos.
 - Tarefa: reúne planejamento, descrição ou resumo, responsável quando atribuído, status, andamento da execução, decisões, entregas, pendências e histórico das atividades, incluindo os resumos do trabalho realizado.
 - Chat: sessão de trabalho vinculada a um colaborador; não é a identidade permanente dele.
 
-Um team leader pode atuar como colaborador em outro time. Assim, o usuário pode organizar um time de líderes usando a mesma estrutura, sem introduzir um tipo especial de gerente. Essa decisão substitui a proposta inicial de um único coordenador responsável diretamente por vários times.
+Cada agente tem uma identidade e um perfil únicos. Pode ser colaborador de no máximo um time e team leader de no máximo um time. Pode acumular os dois papéis somente em times diferentes; não pode repetir o mesmo papel em vários times nem ser líder e colaborador do mesmo time. Cada time tem exatamente um líder. Por exemplo, Carlos pode liderar tecnologia e ser colaborador de coordenação com o mesmo perfil, permitindo um time de líderes sem criar um papel especial de gerente.
 
-Os times são elaborados com o usuário durante a conversa e podem evoluir e ser reorganizados, preservando seus registros. Não há necessidade confirmada de uma camada separada de projetos neste momento.
+Os times são elaborados com o usuário durante a conversa e podem evoluir e ser reorganizados, preservando seus registros. O Kanban organiza o trabalho em projetos distintos dos times.
 
 ## Coordenação e autorização
 
@@ -43,6 +44,8 @@ Acompanhar o andamento e esclarecer uma tarefa já autorizada fazem parte da exe
 O modo escolhido deve ficar persistido na aplicação e ser consultável pela API ou pelo MCP, independentemente do chat do líder. Ainda está em aberto se essa configuração será única por workspace ou configurável por time.
 
 As solicitações de trabalho e as aprovações de execução acontecem na conversa com o team leader. Os modos acima orientam a atuação da IA no harness; a aplicação armazena as configurações e os registros, sem executar a coordenação por conta própria.
+
+Cada colaborador só pode atualizar sua própria tarefa ou subtarefa. O team leader pode atualizar todas as tarefas do seu time. A timeline registra o autor das alterações. Criar, atribuir e transferir trabalho continua sujeito ao modo de aprovação. A identificação verificável do ator e o escopo de leitura são propostas técnicas a revisar.
 
 ## Memória persistente e retomada
 
@@ -64,6 +67,8 @@ A interface tem duas áreas principais: **Tarefas** e **RA — Recursos de Agent
 
 Um quadro Kanban, inspirado conceitualmente em Trello e Jira, apresenta o planejamento e o acompanhamento das tarefas. A conversa com o team leader gera o planejamento que os agentes registram no quadro pela API ou pelo MCP.
 
+Cada projeto tem seus próprios status, com nomes e ordem configuráveis. O fluxo inicial sugerido é Backlog, A fazer, Em andamento, Em revisão e Concluída, sem obrigatoriedade de passar por todas as etapas. Bloqueio é uma marca com motivo, separada do status. A revisão cabe ao usuário ou ao team leader conforme a orientação recebida; no modo autônomo o líder pode revisar, sempre respeitando instruções explícitas do usuário.
+
 Ao abrir um card, o usuário consulta:
 
 - Descrição ou resumo da tarefa.
@@ -71,6 +76,11 @@ Ao abrir um card, o usuário consulta:
 - Status da tarefa e andamento da execução.
 - Entregas, pendências e bloqueios.
 - Decisões e histórico pertencente à tarefa, incluindo os resumos do trabalho realizado.
+- Planejamentos salvos, permitindo vários planejamentos na mesma tarefa.
+- Subtarefas reais vinculadas, apresentadas como checklist sem duplicar seu estado.
+- Comentários e arquivos enviados, disponíveis tanto nas tarefas quanto nas subtarefas.
+
+A timeline reúne comentários e eventos de status, responsável, planejamento, arquivos e subtarefas, com autoria. Estado e responsável próprios por subtarefa, versionamento de planejamentos e regras de arquivamento são propostas técnicas, não decisões já confirmadas.
 
 Ao encerrar uma atividade, o colaborador atualiza o status e as informações pertinentes e salva o resumo do trabalho na própria tarefa.
 
@@ -79,6 +89,12 @@ Ao encerrar uma atividade, o colaborador atualiza o status e as informações pe
 A área RA apresenta a lista de colaboradores e seus perfis. Cada perfil reúne nome, imagem opcional, atuação, estilo de trabalho, regras e limites de acesso. A imagem pode ser gerada por IA, sem que esta definição implique implementar geração de imagens agora.
 
 O perfil textual pode ser reutilizado como contexto e instruções para retomar o colaborador em um novo chat. Os limites registrados orientam sua atuação; as permissões reais dependem do harness.
+
+O usuário pode solicitar a cópia de um colaborador para outro time. A cópia gera uma nova identidade independente, reutilizando o perfil, sem copiar chats, tarefas, histórico ou credenciais. Copiar não é necessário para acumular os dois papéis permitidos em times diferentes. Os detalhes de vínculo, imagem e autorização da cópia são propostas técnicas no contrato RA.
+
+O RA mantém referências aos chats associados ao agente e permite consultar o contexto de retomada. Essas referências não criam nem controlam sessões: a IA e o harness continuam responsáveis pelos chats. O estado ativo ou arquivado do cadastro não representa execução ao vivo; registros exibem sua última atualização.
+
+Listagem, consulta e edição de perfis e composição dos times serão descritas no [contrato RA](docs/ra-openapi.yaml) e no [plano RA](docs/ra-api-plan.md). Arquivamento/reativação com preservação do histórico, transferências atômicas, política de edição por usuário/líder/próprio agente e proteção contra ciclos de liderança são propostas técnicas a revisar. Os limites de participação por papel são invariantes confirmadas e devem ser validados no servidor.
 
 A relação entre tarefa e colaborador permite consultar no perfil todas as tarefas realizadas e seus respectivos resumos. Os resumos e o histórico permanecem nas tarefas, sem duplicação no perfil. O perfil não possui campo de skills; também não está previsto um campo de skills por tarefa nesta definição. A skill coordenadora Bee Team permanece parte do produto.
 
@@ -116,6 +132,8 @@ Um chat dedicado a acompanhar o quadro pode ser considerado futuramente. Ele nã
 - Plataformas de instalação suportadas, stack técnica e funcionalidades detalhadas da primeira versão, mantendo a execução como servidor local no computador do usuário.
 - Contratos técnicos da API e do MCP e modelo de armazenamento.
 - Configuração de autonomia por workspace ou por time.
+- Relação projeto-time, leitura autorizada, identidade verificável dos agentes e detalhes técnicos do Kanban descritos como propostas no [plano e contrato](docs/kanban-api-plan.md).
+- Políticas de edição, arquivamento e retomada do RA, sem alterar as cardinalidades confirmadas dos papéis, conforme [plano RA](docs/ra-api-plan.md). A granularidade da configuração de autonomia continua em aberto.
 
 ## Anexo A — exemplos de organização de equipes
 
