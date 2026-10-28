@@ -4,7 +4,7 @@ Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harnes
 
 ## Executar
 
-Requer Rust >=1.94 e PostgreSQL >=18. A migration recusa versões anteriores. O `docker-compose.yaml` existente utiliza PostgreSQL 18; use um banco dedicado e preserve volumes existentes.
+Requer Rust >=1.94. PostgreSQL >=18 is the default; SQLite is available through explicit environment selection. A migration recusa versões anteriores. O `docker-compose.yaml` existente utiliza PostgreSQL 18; use um banco dedicado e preserve volumes existentes.
 
 ```powershell
 docker compose up -d postgres
@@ -163,7 +163,7 @@ and report failures without starting competing processes. See the
 [readiness checks](skills/references/integration.md). Startup does not run preview
 bootstrap automatically or reset storage. Tool-policy rejection requires a clear
 manual handoff, not an alternative launcher. PostgreSQL 18 remains the supported
-path in this workflow; SQLite/migration work is outside its scope.
+default path in this workflow; SQLite is an explicit opt-in described below. Data conversion is outside its scope.
 
 
 ## Bee Team frontend
@@ -196,9 +196,66 @@ Gravações ainda usam o snapshot completo de recursos e o advisory lock global
 dentro do repository. Essa escolha preserva as invariantes entre recursos e a
 atomicidade dos comandos compostos; não é uma otimização de concorrência das
 escritas. O `UnitOfWork` não expõe a transação SQL e confirma notificações apenas
-após commit. PostgreSQL continua sendo o único driver implementado.
+após commit. SQLite is an explicit opt-in; see below.
 
 `tests/repository_boundaries.rs` verifica isolamento de camadas, leituras durante
 gravações, ausência de leitura de tabelas alheias, estabilidade do snapshot,
 proteção contra gravação em leitura e paginação. Rode os testes com
 `BEE_TEST_DATABASE_URL` apontando para PostgreSQL 18 isolado, nunca para dados do produto.
+
+
+## SQLite environment opt-in
+
+PostgreSQL stays the default when `DATABASE_DRIVER` is absent or empty. Set
+`DATABASE_DRIVER=postgres|sqlite` and a matching `DATABASE_URL`; unknown drivers
+and mismatched URL schemes fail startup before a connection is opened. There is
+no fallback to another driver. Selecting a new SQLite file starts an independent
+empty database; it does not copy, migrate or reset PostgreSQL data.
+
+```powershell
+# Choose a dedicated path whose parent directory already exists.
+$env:DATABASE_DRIVER="sqlite"
+$env:DATABASE_URL="sqlite://C:/bee-data/beeteam.sqlite"
+$env:OTEL_ENABLED="false"
+$env:MCP_ENABLED="true"
+cargo run --locked --features mcp
+```
+
+For a disposable in-memory instance use `sqlite::memory:`. For persistence use a
+file. The local `scripts/start-local-api.ps1` also respects these environment
+variables and skips Docker for SQLite or an explicit external PostgreSQL URL;
+it reads the process environment, not `.env`. An already running API must be
+restarted explicitly before its driver changes. `cargo run` continues to load
+`.env` through dotenvy. To return to PostgreSQL set `DATABASE_DRIVER=postgres`
+and its PostgreSQL URL. Neither path converts existing data.
+
+SQLite uses independent migrations under `migrations/sqlite/`, foreign keys,
+WAL and a 30-second busy timeout. Its `BEGIN IMMEDIATE` write transaction
+serializes writers across processes before loading the existing mutation
+snapshot. Reads use WAL snapshots, SQL filtering/count/order/pagination and
+targeted related-record hydration without the writer lock. UUIDv7, retired slug
+reservations, soft deletion, file storage, replay snapshots and atomic compound
+commands share the existing application contracts. Database constraints guard
+relationships, immutable structure/slugs and unique live bindings. The adapter
+registers Unicode-aware name comparisons and literal case-insensitive searches.
+SQLite files must be opened through this adapter for those custom functions.
+
+SQLite SSE invalidation polls a transactionally incremented clock every 200ms
+through the shared process listener. Other API processes using the same SQLite
+file observe committed resource changes; rollback, reads and replay-only commits
+do not advance it. PostgreSQL retains LISTEN/NOTIFY. These are invalidation hints,
+with the same reconnect/reset behavior and no durable event replay. Direct SQL
+writes bypassing UnitOfWork do not notify with either driver.
+
+```powershell
+# Existing HTTP/MCP tests use isolated temporary SQLite files through app().
+$env:BEE_TEST_DRIVER="sqlite"
+$env:OTEL_ENABLED="false"
+# PG-specific tests still require their isolated PostgreSQL 18 URL.
+$env:BEE_TEST_DATABASE_URL="postgres://postgres:test@127.0.0.1:55481/beeteam_test"
+cargo test --locked --features mcp
+# Focused SQLite persistence, concurrency, snapshots and notification checks:
+cargo test --locked --features mcp --test sqlite_persistence
+# Return shared HTTP/MCP tests to PostgreSQL:
+Remove-Item Env:BEE_TEST_DRIVER
+```

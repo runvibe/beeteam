@@ -33,3 +33,6 @@
 - Preserve task `specification` and plan/revision `content` as Markdown text (65536 UTF-8 bytes), without rendering or executing it. Keep requirements, short description, execution plans, and current work synthesis independent; specification-only edits do not require a new work summary.
 
 - Agent/team/task slugs are immutable URL aliases, never internal identifiers. Resolve via the typed by-slug endpoint/tool, then keep UUIDv7 in mutations and prompt arguments. Preserve deleted slug reservations and keep migration/application advisory lock ordering consistent before table access.
+
+- SQLite is explicit opt-in through DATABASE_DRIVER=sqlite and a matching DATABASE_URL; PostgreSQL stays default. Keep independent migrations in migrations/sqlite, WAL/foreign_keys on every connection, serialized BEGIN IMMEDIATE mutations and bounded snapshot reads. ResourceStore/TransactionStore/ChangeSource remain the only service ports. Do not convert/reset existing product databases.
+- BEE_TEST_DRIVER=sqlite routes shared HTTP/MCP app() tests to temporary files; app_with_pool and PostgreSQL-specific tests still require isolated PostgreSQL >=18. Set OTEL_ENABLED=false when Jaeger is unavailable. Verify both drivers after persistence changes.

@@ -14,12 +14,9 @@ struct SharedState {
 
 impl AppState {
     pub fn new(database: DatabaseRepository) -> Self {
-        let changes = crate::services::changes::ChangeFeed::new(Arc::new(
-            crate::repositories::changes::ChangeRepository::new(database.pool()),
-        ));
-        let backend = crate::services::backend::service::BackendService::new(Arc::new(
-            crate::repositories::resources::ResourceRepository::new(database.pool()),
-        ));
+        let (resources, source) = database.stores();
+        let changes = crate::services::changes::ChangeFeed::new(source);
+        let backend = crate::services::backend::service::BackendService::new(resources);
         let inner = SharedState { backend, changes };
         Self {
             inner: Arc::new(inner),

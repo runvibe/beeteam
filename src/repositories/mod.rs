@@ -11,3 +11,5 @@ pub mod records;
 
 pub mod query;
 mod reads;
+
+pub mod sqlite;

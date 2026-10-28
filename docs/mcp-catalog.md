@@ -221,3 +221,11 @@ O catálogo atual anuncia 13 resources; esta seção substitui contagens histór
 - `beeteam://references/content-manifest`
 
 Links Markdown relativos são mapeados pelo nome do arquivo sem extensão para `beeteam://references/{nome}`; ignore fragmento de seção ao ler o resource. Assim `references/leader-onboarding-flows.md` e `prompts/task-briefing.md` são resolvidos pela allowlist anunciada. O conteúdo permanece igual ao snapshot; Mermaid é texto, não executado. Os templates também continuam disponíveis pelos três prompts parametrizados read-only. PROGRESS, validation e README não são recursos. Nenhum filesystem arbitrário é exposto.
+
+
+### Local SQLite startup guidance (2026-10-28)
+
+The bundled Codex reference preserves the e6d6b7f editorial baseline with a local
+update matching DATABASE_DRIVER selection, independent SQLite storage and
+driver-aware readiness. The repository source and bundled copy match; this does
+not update installed global skills or personal MCP configuration.

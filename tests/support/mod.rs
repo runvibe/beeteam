@@ -12,7 +12,35 @@ use serde_json::{json, Value};
 use tower::ServiceExt;
 
 pub async fn app() -> Router {
-    app_with_pool().await.0
+    if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("sqlite") {
+        let url = format!(
+            "sqlite://{}",
+            std::env::temp_dir()
+                .join(format!("beeteam-test-{}.sqlite", uuid::Uuid::new_v4()))
+                .to_string_lossy()
+                .replace('\\', "/")
+        );
+        let database = DatabaseRepository::connect(beeteam::config::DatabaseDriver::Sqlite, &url)
+            .await
+            .unwrap();
+        let config = AppConfig {
+            database_driver: beeteam::config::DatabaseDriver::Sqlite,
+            database_url: url,
+            host: "127.0.0.1".parse().unwrap(),
+            port: 0,
+            cors: CorsConfig::Permissive,
+            body_limit_bytes: 22 * 1024 * 1024,
+            otel_enabled: false,
+            mcp: McpConfig {
+                enabled: cfg!(feature = "mcp"),
+                path: DEFAULT_MCP_PATH.into(),
+                cors: CorsConfig::Permissive,
+            },
+        };
+        create_router(AppState::new(database), &config)
+    } else {
+        app_with_pool().await.0
+    }
 }
 pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
     let url = std::env::var("BEE_TEST_DATABASE_URL")
@@ -28,6 +56,7 @@ pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
     let pool = init_pool(test_url.as_str()).await.unwrap();
     run_migrations(&pool).await.unwrap();
     let config = AppConfig {
+        database_driver: beeteam::config::DatabaseDriver::Postgres,
         database_url: url,
         host: "127.0.0.1".parse().unwrap(),
         port: 0,

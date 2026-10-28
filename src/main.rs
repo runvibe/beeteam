@@ -1,11 +1,7 @@
 use anyhow::Result;
 use beeteam::{
-    config::AppConfig,
-    db::{init_pool, run_migrations},
-    libs::telemetry,
-    repositories::database::DatabaseRepository,
-    routes::create_router,
-    state::AppState,
+    config::AppConfig, libs::telemetry, repositories::database::DatabaseRepository,
+    routes::create_router, state::AppState,
 };
 use tokio::net::TcpListener;
 
@@ -14,14 +10,9 @@ async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let config = AppConfig::from_env()?;
     let _telemetry = telemetry::init_tracing(config.otel_enabled)?;
-    let pool = init_pool(&config.database_url).await?;
-
-    if let Err(error) = run_migrations(&pool).await {
-        tracing::error!("failed to run database migrations: {error}");
-        return Err(error);
-    }
-
-    let state = AppState::new(DatabaseRepository::new(pool));
+    let database =
+        DatabaseRepository::connect(config.database_driver, &config.database_url).await?;
+    let state = AppState::new(database);
 
     let router = create_router(state, &config);
 
