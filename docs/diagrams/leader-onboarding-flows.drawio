@@ -1,0 +1,117 @@
+<mxGraphModel adaptiveColors="auto" page="0" background="#ffffff">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="title" value="&lt;b&gt;Bee Team Leader · três fluxos de entrada&lt;/b&gt;" style="text;strokeColor=none;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=32;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="30" y="20" width="1550" height="60" />
+    </mxCell>
+    <mxCell id="status" value="&lt;b&gt;FLUXO APROVADO / PROPOSTO — ainda não implementado&lt;/b&gt;&lt;br&gt;MCP ativo: Leader dfd4e19 (versão anterior). Novos três casos: somente documentação." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="30" y="90" width="1550" height="85" />
+    </mxCell>
+    <mxCell id="start" value="Usuário invoca &lt;b&gt;Leader&lt;/b&gt; no chat" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="570" y="210" width="440" height="65" />
+    </mxCell>
+    <mxCell id="open" value="Cumprimentar · preparar acesso local necessário&lt;br&gt;&lt;b&gt;Abrir Teams: /teams&lt;/b&gt;&lt;br&gt;Endereço descoberto; atual: 127.0.0.1:5173" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="510" y="310" width="560" height="100" />
+    </mxCell>
+    <mxCell id="choose" value="Usuário escolhe na interface&lt;br&gt;e &lt;b&gt;informa no chat&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="570" y="450" width="440" height="80" />
+    </mxCell>
+    <mxCell id="kind" value="Existente&lt;br&gt;ou novo?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="670" y="570" width="240" height="100" />
+    </mxCell>
+    <mxCell id="has" value="Time existente:&lt;br&gt;tem líder?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="315" y="710" width="280" height="120" />
+    </mxCell>
+    <mxCell id="one" value="&lt;b&gt;CASO 1 · COM LÍDER&lt;/b&gt;&lt;br&gt;Consultar time e agente líder&lt;br&gt;Assumir perfil, instruções,&lt;br&gt;estilo, regras e contexto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dcfce7;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="40" y="890" width="380" height="140" />
+    </mxCell>
+    <mxCell id="two" value="&lt;b&gt;CASO 2 · SEM LÍDER&lt;/b&gt;&lt;br&gt;Ler time · criar e vincular&lt;br&gt;liderança adequada&lt;br&gt;Assumir o perfil criado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dbeafe;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="490" y="890" width="380" height="140" />
+    </mxCell>
+    <mxCell id="read" value="&lt;b&gt;Contextualizar o time&lt;/b&gt;&lt;br&gt;Descrição · colaboradores · boards geridos&lt;br&gt;Tarefas relacionadas · histórico · progresso&lt;br&gt;Pendências e bloqueios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="235" y="1090" width="440" height="145" />
+    </mxCell>
+    <mxCell id="state" value="&lt;b&gt;Situação reconstruída&lt;/b&gt;&lt;br&gt;Concluído · em andamento · interrompido&lt;br&gt;Sem duplicar líder existente ou sobrescrever perfil" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=20;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="235" y="1290" width="440" height="110" />
+    </mxCell>
+    <mxCell id="structure" value="&lt;b&gt;Se faltar estrutura&lt;/b&gt;&lt;br&gt;Conversar sobre projeto e propor próximos passos:&lt;br&gt;board, tarefas e colaboradores.&lt;br&gt;Transferir gestão só quando autorizado." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=20;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="100" y="1450" width="710" height="120" />
+    </mxCell>
+    <mxCell id="new" value="&lt;b&gt;CASO 3 · NOVO TIME&lt;/b&gt;&lt;br&gt;Entender projeto antes de definir pessoas&lt;br&gt;Objetivo · história · atuação · entregas&lt;br&gt;Uma pergunta por vez; skills de apoio disponíveis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="1040" y="710" width="500" height="140" />
+    </mxCell>
+    <mxCell id="proposal" value="&lt;b&gt;Propor squad multidisciplinar e personas&lt;/b&gt;&lt;br&gt;Inclui líder: nome, avatar desejado, descrição,&lt;br&gt;especialidade, responsabilidades,&lt;br&gt;instruções, estilo e regras" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="1040" y="900" width="500" height="140" />
+    </mxCell>
+    <mxCell id="review" value="Usuário revisa&lt;br&gt;e aprova?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="1150" y="1090" width="280" height="120" />
+    </mxCell>
+    <mxCell id="register" value="&lt;b&gt;Após aprovação concreta&lt;/b&gt;&lt;br&gt;Cadastrar agentes, time e vínculos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="1040" y="1280" width="500" height="90" />
+    </mxCell>
+    <mxCell id="chats" value="Criar chats separados autorizados&lt;br&gt;Handoff com perfil/contexto&lt;br&gt;Persistir referências reais dos chats" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e8ff;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=21;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="1040" y="1430" width="500" height="110" />
+    </mxCell>
+    <mxCell id="future" value="&lt;b&gt;Pronto para continuidade de gestão&lt;/b&gt;&lt;br&gt;Política de próxima tarefa, retomada e gestão contínua: A DETALHAR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e2e8f0;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=23;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="410" y="1660" width="760" height="100" />
+    </mxCell>
+    <mxCell id="notes" value="&lt;b&gt;LIMITES&lt;/b&gt; · Squad com competências completas ≠ execução automática. Preservar modos board/task.&lt;br&gt;Projeto é a demanda, não entidade Project/workspace. Escolha na UI não chega automaticamente ao chat.&lt;br&gt;&lt;b&gt;MCP&lt;/b&gt;: registros, skills e prompts. &lt;b&gt;Harness&lt;/b&gt;: ferramentas para abrir painel e criar chats, conforme capacidade/autorização.&lt;br&gt;Avatar e mecanismos de geração: a detalhar. Sem ferramentas disponíveis, declarar a etapa pendente." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#64748b;fontColor=#0f172a;fontFamily=Arial;fontSize=20;spacing=14;" vertex="1" parent="1">
+      <mxGeometry as="geometry" x="30" y="1810" width="1550" height="150" />
+    </mxCell>
+    <mxCell id="e21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="start" target="open" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="open" target="choose" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="choose" target="kind" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e24" value="Existente" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="kind" target="has" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e25" value="Novo" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="kind" target="new" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e26" value="Sim" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="has" target="one" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e27" value="Não" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="has" target="two" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="one" target="read" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e29" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="two" target="read" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e30" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="read" target="state" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e31" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="state" target="structure" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="structure" target="future" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e33" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="new" target="proposal" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e34" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="proposal" target="review" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e35" value="Ajustar / rejeitar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="review" target="proposal" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e36" value="Aprovar" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="review" target="register" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e37" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="register" target="chats" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+    <mxCell id="e38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;strokeColor=#475569;strokeWidth=2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#ffffff;" edge="1" source="chats" target="future" parent="1">
+      <mxGeometry as="geometry" relative="1" />
+    </mxCell>
+  </root>
+</mxGraphModel>

@@ -101,3 +101,67 @@ Build e39 testes Rust passaram no banco isolado, incluindo paridade dos workflow
 ## Coordenação incremental — Skills 7b14ebf
 
 Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reutiliza tarefa de coordenação atribuída a si antes de planejamento substantivo, salva decisões incrementalmente e trata bootstrap sem circularidade; Collaborator não se autoautoriza. Discovery permanece autoritativo, sem contagem fixa nas instruções. Build e39 testes Rust aprovados. API reiniciada isoladamente para PID59996, backup `.local/api-runtime/beeteam-before-7b14ebf.exe` preservado. Na verificação atual foram descobertos13 resources iguais ao commit fonte, links mapeados,3 prompts renderizados e60 tools; health e painel200. Coleções completas pré/pós/proxy iguais:1board,2tasks,3agents,2teams. Sem dados de negócio criados, seed/reset ou alteração pessoal; PostgreSQL/frontend preservados. Validação comprova conteúdo/transporte e persistência, não execução das decisões de IA.
+
+## Bee Team skills
+
+The approved next onboarding behavior is documented in
+[Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
+The skills now apply the approved workflows through concise entrypoints and complete local references; backend MCP snapshots require separate synchronization and verification.
+The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
+execution, changes, blockers, validation and delivery with an inline Mermaid flow.
+
+Versioned guidance is available in [team leader](skills/bee-team-leader/SKILL.md)
+and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared references
+under `skills/references/` and [multidisciplinary examples](skills/bee-team-leader/references/team-examples.md).
+These are portable instructions. The backend MCP catalog documents the implemented
+server capabilities; this checkout supplies editorial content for its snapshots.
+
+Reusable task briefing, collaborator resumption, and delivery review templates live
+under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
+for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`, `agent_resumption`,
+and `delivery_review`; runtime registration remains owned by the backend.
+
+To use from this checkout, ask the harness to read the selected `SKILL.md` by its
+full local path and follow it for the authorized demand. If installed in a harness
+that supports skill discovery, invoke `$bee-team-leader` or `$bee-team-collaborator`.
+Each skill folder is self-contained: copy its SKILL.md and references/ together.
+The complete workflows, integration, handoff, connection procedure and prompts live
+inside each package. Shared editorial sources remain under skills/references and
+skills/prompts; synchronize their packaged copies when those sources change.
+Installation and backend snapshot publication are separate operations.
+
+Coordination defaults to manual approval. Execution follows the root task's origin
+board: `manual` forces manual, `standard` uses each current task's individual mode,
+and `automatic` covers the recursive chain across boards. Tasks have an author and
+executor, with no team ownership; each board has one managing team. See
+[validation and progress](skills/PROGRESS.md) for checks and dependencies.
+
+
+## Local readiness managed by the leader
+
+Before substantive planning, the Leader reuses or creates its own coordination task
+and records conversation decisions incrementally in Bee Team. New-team bootstrap
+materializes the collected context as soon as approved identity/team/board exist.
+This does not allow Collaborators to create tasks to authorize themselves.
+
+The leader starts by asking which team to use unless the context already identifies
+one. It loads the existing leader's profile and context. For a new team, it first
+discusses the work, proposes the composition, and obtains explicit approval before
+creating agents, the team, or memberships, including under automatic task modes.
+
+Loading a skill does not connect its MCP server. The skills now include
+[Codex MCP onboarding](skills/references/codex.md#conectar-bee-team-ao-codex):
+discover the real endpoint, register it only with user authorization, then verify
+tools in the active chat separately from server health. Examples are documentation;
+they do not change personal Codex configuration or install skills.
+
+The leader skill now checks and reuses the database, API, MCP and real frontend,
+starts only missing components through the installation's supported procedure,
+and provides a verified clickable panel URL. Collaborators reuse that environment
+and report failures without starting competing processes. See the
+[Windows/Codex procedure](skills/references/codex.md) and
+[readiness checks](skills/references/integration.md). Startup does not run preview
+bootstrap automatically or reset storage. Tool-policy rejection requires a clear
+manual handoff, not an alternative launcher. PostgreSQL 18 remains the supported
+path in this workflow; SQLite/migration work is outside its scope.
+

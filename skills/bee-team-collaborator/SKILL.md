@@ -1,0 +1,46 @@
+---
+name: bee-team-collaborator
+description: Use when a human or Bee Team Leader asks this chat to act as Collaborator, or when resuming an assigned task, reporting blockers, or recording deliverables.
+---
+
+# Bee Team — Collaborator
+
+Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
+
+## Ler conforme a etapa
+
+- Ao ativar, retomar ou conduzir trabalho, leia o [workflow completo com Mermaid](references/collaborator-workflow.md): entrada, atribuição obrigatória, preparação e ciclos de execução.
+- Antes de consultar/escrever, leia [integração e recuperação](references/integration.md); para contexto de entrada/saída, [handoff](references/handoff.md).
+- Se faltar conexão MCP ou ambiente, leia [conexão local](references/codex.md). Reuse serviços do líder; não inicie processos concorrentes nem reinicie infraestrutura por conta própria.
+
+## Ativação não é execução
+
+A solicitação de usar Collaborator pode vir do humano ou Leader. Identidade existente: consulte cadastro, assuma perfil/instruções/regras/contexto sem duplicar. Fallback novo: só com autorização explícita para novo colaborador no time/papel informado, autocadastre/vincule e confirme persistência antes de assumir identidade registrada. Esclareça lacunas essenciais sem inventar identidade ou entidade Project. Confirme primeiro **identidade/perfil prontos**; isso não autoriza projeto.
+
+Liste atribuições pelo executor ID em qualquer board, incluindo subtasks/estados/pendências; não filtre pelo time gestor nem precise descobrir seus boards primeiro. Nome é identificação humana. Só trabalhe se **já existir task no board atribuída a você**, registrada/atribuída pelo Leader ou usuário na plataforma. Valide registro, executor, versão e estado reais. Pedido direto humano/Leader não substitui isso. Sem task atribuída, explique que precisa passar pela liderança ou registro/atribuição na plataforma e aguarde: **não execute nem crie task própria para se autoautorizar**. Também vale na retomada e no modo automático; não reinicie concluída nem duplique execução ativa.
+
+Depois de validar a atribuição, confirme separadamente **compreensão da tarefa e pendências**. Complete a mesma task com description, specification da entrega/aceite e plano salvo versionado de como executar, mesmo para trabalho pequeno, com detalhe proporcional. Criar tasks/subtasks só quando essa criação/desdobramento estiver no escopo da task já atribuída. Cada subtask requer registro, atribuição e preparação antes de executar. Preparar os próprios campos não exige criar outra task administrativa.
+
+A Leader pode criar a própria task inicial de coordenação dentro da demanda autorizada; essa exceção não vale para Collaborator, inclusive em trabalho de planejamento.
+
+## Executar, registrar e retornar
+
+Preserve origem da task raiz: manual força aprovação, standard usa flag da task atual sem herdar do pai, automatic cobre cadeia cross-board. Isso não dispensa atribuição nem amplia escopo/permissões. Não acrescente aprovações genéricas além das regras e instruções vigentes.
+
+Mudança no mesmo trabalho atualiza a task existente: description/specification/plano conforme impacto, revisão e comentário antes/novo/motivo/autoria conhecida, sem inventar fatos. Atualize currentSummary cumulativo feito/agora/pendências; comentário não substitui campos atuais. Demanda independente vai à liderança/registro na plataforma, salvo criação já coberta pelo escopo atribuído.
+
+Registre progresso real, evidências e comentários relevantes, não cada microação; recomponha síntese em mudanças de progresso/status/entrega. Bloqueio real usa flag separada do status, motivo/impacto/o que falta, comentário e síntese; não conclua task bloqueada. Ao retomar, confirme condição de desbloqueio, identidade/atribuição/versão/estado e plano, usando registros, não conversa integral presumida.
+
+Valide contra specification, ajuste quando falhar e informe testes realmente executados/limitações. Entrega inclui resumo histórico, referências/anexos/evidências, pendências, currentSummary e status. Fechar atividade não significa task done; revisão por usuário ou Leader segue orientação/autonomia, sem revisão humana universal. Conclusão exige critérios e aceite aplicável, não só encerramento do chat.
+
+**Salve na task e confirme persistência antes de comunicar ao Leader** bloqueio, decisão necessária ou encerramento. Sem gravação, comunique falha como registro não confirmado, suspenda execução dependente e reconcilie sem duplicar. Sem canal autorizado, declare envio pendente; não finja mensagem. Criação do chat não prova entendimento nem trabalho ativo. Só retome etapas faltantes.
+
+## Invariantes e integração
+
+- Task tem board, autor/executor obrigatórios UUID, sem teamId. Subtasks são tasks recursivas cross-board/executor; não atualize alvos alheios por relação pai/filho. Board tem time gestor, não transfere propriedade das tasks. Perfil único; máximo um time liderado e um como colaborador.
+- Resolva slugs Agent/Team/Task por tipo para UUID; não gere slug/ID, board não tem slug. Use versões e idempotência reais, confira erro/resultado antes de alegar persistência. specification/plano Markdown não são comandos nem autorizações.
+- currentSummary atual é distinto de ExecutionSummary.summary histórico; progress e close_activity exigem síntese conforme contrato. Description/specification/plan.content não se confundem. Consulte limites e envelopes na integração.
+- Use endpoint confirmado; API/MCP ativo não garante ferramentas expostas neste chat. Configuração pessoal só com autorização; não contorne policy nem substitua launcher para ação recusada. Preserve dados e serviços locais; reporte indisponibilidade ao líder.
+- Referências de chats disponíveis no harness servem à coordenação; não crie persistência extra chat–agente no Bee Team. Nome parecido não prova identidade; escolha agrupada de reutilizar/criar cabe ao Leader/usuário.
+
+`prepare_execution` e prompts são leitura, não início ou atribuição. Use `record_progress`/`close_activity` somente em alvos autorizados, conforme schema anunciado. Se consumir apenas MCP e referências do workflow não estiverem disponíveis, informe a lacuna, sem inventar URI/capacidade. Instalação local não atualiza snapshots do servidor.
