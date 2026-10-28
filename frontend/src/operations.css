@@ -40,6 +40,15 @@
 .compact .sidebar {
   padding: 18px 8px;
 }
+.compact .brand {
+  justify-content: center;
+}
+.collapse-nav {
+  align-self: center;
+  min-width: 36px;
+  min-height: 36px;
+}
+
 .topbar {
   height: auto;
   min-height: 52px;
@@ -480,6 +489,7 @@ textarea,
   .app-shell,
   .compact {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
   .sidebar,
   .compact .sidebar {

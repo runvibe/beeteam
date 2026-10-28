@@ -1,4 +1,3 @@
-import {runtimeConfig} from "./runtime";
 import { useRouteEntity } from "./routing/entity-route";
 import { QueryState } from "./components/shared";
 import {
@@ -12,8 +11,8 @@ import {
   Columns3,
   Users,
   Network,
-  PanelLeftClose,
-  PanelLeftOpen,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
@@ -53,13 +52,15 @@ export function App() {
           variant="ghost"
           size="icon"
           aria-label={collapsed ? "Expandir navegação" : "Recolher navegação"}
+          aria-expanded={!collapsed}
+          aria-controls="primary-navigation"
           className="collapse-nav"
           onClick={() => setCollapsed(!collapsed)}
         >
-          {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
         </Button>
 
-        <nav aria-label="Navegação principal">
+        <nav id="primary-navigation" aria-label="Navegação principal">
           <Button
             aria-label="Tarefas"
             title="Boards"
@@ -103,7 +104,6 @@ export function App() {
         <header className="topbar">
           <AppPath />
           <div className="topbar-actions">
-            <span className="environment-label">{runtimeConfig.mock ? "Demonstração" : "API local"}</span>
             <ThemeControl />
           </div>
         </header>
@@ -130,9 +130,6 @@ export function App() {
             <Teams />
           )}
         </main>
-        <footer className="app-footer">
-          {runtimeConfig.mock ? "Dados fictícios reiniciam ao recarregar · Modo demonstração" : "Dados persistidos na API local"}
-        </footer>
       </div>
     </div>
   );

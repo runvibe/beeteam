@@ -1,42 +1,21 @@
 import { useStore } from "zustand";
-import { Monitor, Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "lucide-react";
 import { themeController } from "@/state/theme-runtime";
-import { isThemePreference } from "@/state/theme";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "./ui/select";
+import { Button } from "./ui/button";
 export function ThemeControl() {
-  const preference = useStore(themeController.store, (s) => s.preference);
-  const Icon =
-    preference === "system" ? Monitor : preference === "dark" ? Moon : Sun;
+  const resolved = useStore(themeController.store, (s) => s.resolved);
+  const next = resolved === "dark" ? "light" : "dark";
+  const label = next === "light" ? "Ativar tema claro" : "Ativar tema escuro";
+  const Icon = next === "light" ? Sun : Moon;
   return (
-    <Select
-      value={preference}
-      onValueChange={(value) => {
-        if (isThemePreference(value))
-          themeController.store.getState().setPreference(value);
-      }}
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={label}
+      title={label}
+      onClick={() => themeController.store.getState().setPreference(next)}
     >
-      <SelectTrigger
-        aria-label="Tema"
-        title="Tema: claro, escuro ou sistema"
-        className="theme-control"
-      >
-        <Icon aria-hidden="true" />
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectItem value="system">Sistema</SelectItem>
-          <SelectItem value="light">Claro</SelectItem>
-          <SelectItem value="dark">Escuro</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+      <Icon aria-hidden="true" />
+    </Button>
   );
 }

@@ -67,7 +67,7 @@ Consulte `PROGRESS.md` para checklist e evidências finais. Não houve merge, pu
 
 ## Aparência
 
-O seletor Tema no topo oferece Sistema, Claro e Escuro. Na primeira visita, Sistema segue a preferência do sistema operacional e reage às mudanças. A escolha explícita é salva em localStorage (`beeteam.theme`) e prevalece após recarregar. Voltar a Sistema reativa o acompanhamento. Se o armazenamento estiver bloqueado, a troca funciona apenas na sessão. Entidades continuam somente no mock.
+O botão de tema no topo mostra a próxima ação: sol para ativar claro, lua para ativar escuro. Sem preferência salva, acompanha o sistema operacional; a escolha manual é persistida em localStorage (`beeteam.theme`). Funciona por teclado e possui nome acessível. Na sidebar recolhida, logo e seta de expansão ficam centralizadas; a seta aponta para a ação de expandir/recolher. Indicadores decorativos de infraestrutura foram removidos do cabeçalho e rodapé; erros de conexão permanecem visíveis.
 
 Um script síncrono no head aplica a classe e color-scheme antes do React; as paletas semânticas ficam centralizadas em index.css. Testes exercitam o bootstrap real e o controlador, incluindo armazenamento indisponível. Verificação manual confirmou Claro/Escuro após recarga, controles e conteúdo em desktop e viewport estreito; não foi feito ensaio de rede artificialmente lenta.
 
