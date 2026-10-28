@@ -69,7 +69,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Current server advertises 13 resources, including mcp-content; this discovery supersedes older six-resource counts in source text. Bundled Skills commit 0e3a780. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 7b14ebf. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS

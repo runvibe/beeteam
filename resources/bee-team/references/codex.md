@@ -10,7 +10,7 @@ Ao criar ou reutilizar uma sessão autorizada, forneça o briefing completo e id
 
 Se a ferramenta não existir ou uma política impedir a ação, informe a limitação concreta e entregue o briefing para abertura manual. Não fabrique IDs, não crie automações ou chats supervisores como substituição implícita.
 
-Bee Team MCP expõe `prepare_execution`, `record_progress`, `close_activity` e tools de domínio; nenhuma é ferramenta Codex de criar/controlar chats. Use resources/list/read nas seis URIs anunciadas e prompts/list/get para `task_briefing`, `agent_resumption`, `delivery_review` quando o cliente as oferecer. Se o harness só expuser tools, não alegue leitura de resource ou obtenção de prompt; use os materiais locais fornecidos e explique a capacidade ausente. Estado consultado por prompt deve ser revalidado antes de escrita concorrente.
+Bee Team MCP expõe `prepare_execution`, `record_progress`, `close_activity` e tools de domínio; nenhuma é ferramenta Codex de criar/controlar chats. Use resources/list/read nas URIs realmente anunciadas pelo catálogo conectado e prompts/list/get para `task_briefing`, `agent_resumption`, `delivery_review` quando o cliente as oferecer. Se o harness só expuser tools, não alegue leitura de resource ou obtenção de prompt; use os materiais locais fornecidos e explique a capacidade ausente. Estado consultado por prompt deve ser revalidado antes de escrita concorrente.
 
 ## Conectar Bee Team ao Codex
 
@@ -47,7 +47,7 @@ O Bee Team local atual não exige OAuth/token; não execute login nem invente cr
 
 Após cadastro, verifique o estado da conexão pelo cliente. Na TUI do Codex, `/mcp` mostra servidores ativos; não suponha esse comando em qualquer interface. Se a sessão continuar com catálogo antigo, use atualização/reconexão oferecida pelo cliente ou abra nova sessão quando necessário, preservando o briefing. A documentação consultada não garante hot reload em todas as superfícies. Não reinicie a API para tentar atualizar ferramentas do chat.
 
-Aceite em duas camadas: servidor responde initialize e anuncia tools/resources/prompts; sessão expõe ferramentas Bee Team e executa leitura real, por exemplo listBoards com schema descoberto. Uma chamada HTTP direta de diagnóstico não comprova exposição nativa. Liste/leia resources e obtenha prompts apenas se o cliente oferecer essas capacidades; informe o que ficou indisponível. Não prometa que todas as seis URIs/três prompts são utilizáveis só porque o servidor as anunciou. Handoff registra endpoint, host/escopo, leitura validada e eventual atualização de sessão pendente, sem segredos.
+Aceite em duas camadas: servidor responde initialize e anuncia tools/resources/prompts; sessão expõe ferramentas Bee Team e executa leitura real, por exemplo listBoards com schema descoberto. Uma chamada HTTP direta de diagnóstico não comprova exposição nativa. Liste/leia resources e obtenha prompts apenas se o cliente oferecer essas capacidades; informe o que ficou indisponível. Não prometa que resources/prompts são utilizáveis no cliente só porque o servidor os anunciou. Handoff registra endpoint, host/escopo, leitura validada e eventual atualização de sessão pendente, sem segredos.
 
 Fontes oficiais consultadas em 27/10/2026: [OpenAI — MCP e configuração Codex](https://developers.openai.com/codex/mcp) e [comandos codex mcp](https://learn.chatgpt.com/docs/developer-commands#codex-mcp). Sintaxe `add --url` também conferida em `codex mcp add --help` local. Os exemplos acima são instruções; sua presença no pacote não configura a conta.
 

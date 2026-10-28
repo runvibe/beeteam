@@ -15,18 +15,20 @@ flowchart TD
     E -->|Existente| F{"Time tem líder?"}
     F -->|Sim: caso 1| G["Consultar líder e assumir perfil, instruções, estilo, regras e contexto"]
     F -->|Não: caso 2| H["Ler time, criar e vincular liderança adequada; assumir perfil"]
-    G --> I["Ler time e boards geridos; consultar atribuições dos colaboradores em qualquer board e seu histórico"]
+    G --> I["Ler time, boards e backlog; consultar tarefas próprias e dos colaboradores em qualquer board"]
     H --> I
     I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
     J --> X["Apresentar resumo curto: colaboradores, boards, tarefas em andamento, bloqueios e lacunas"]
-    X --> K["Se faltar estrutura: conversar projeto e propor boards, tarefas ou colaboradores; transferências exigem autorização"]
-    E -->|Novo: caso 3| L["Entender projeto antes de definir pessoas; uma pergunta por vez"]
+    X --> K["Escolher ou reutilizar board adequado; criar se necessário dentro da demanda autorizada"]
+    E -->|Novo: caso 3| L["Entender contexto inicial; sem cadastros ainda, coletar o necessário sem circularidade"]
     L --> M["Propor composição sucinta com líder e perfis funcionais: execução e responsabilidades"]
     M --> N{"Usuário revisa e aprova?"}
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
     N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
-    P --> Q["Buscar candidatos por nomes e referências disponíveis; consultar contexto quando permitido"]
-    K --> Q
+    P --> K
+    K --> PLAN["Reutilizar tarefa de planejamento ou criar coordenação atribuída ao Leader; materializar contexto inicial"]
+    PLAN --> PERSIST["Antes do planejamento substantivo: confirmar task; atualizar descrição, specification, plano versionado e síntese durante a conversa"]
+    PERSIST --> Q["Buscar candidatos por nomes e referências disponíveis; consultar contexto quando permitido"]
     Q --> S{"Há candidatos para reutilizar?"}
     S -->|Sim| T["Proposta conjunta: perguntar continuar nos candidatos ou criar novos"]
     T --> U["Aplicar escolhas do usuário; reutilizar ou criar conforme autorização"]
@@ -71,6 +73,20 @@ Pede ao usuário escolher um time existente ou criar um time. O usuário faz a e
 
 Conferências técnicas de conexão MCP, API, banco e painel dão suporte à conversa, sem substituir a escolha por um checklist técnico. Servidor acessível, conexão configurada e ferramentas expostas no chat são verificações distintas. Em indisponibilidade, informar o impedimento, preservar dados e continuar somente conversa ou atividades independentes possíveis; não inventar consultas ou persistência.
 
+## Planejamento do Leader também é trabalho registrado
+
+Após assumir identidade e time, consultar boards, backlog e tarefas existentes, incluindo atribuições da própria Leader e dos colaboradores. Escolher/reutilizar um board adequado à demanda ou criar um quando necessário dentro da solicitação autorizada. Não transferir gestão de board alheio implicitamente. Conferir IDs reais de board, status e agentes antes de escrever.
+
+Antes do trabalho substantivo de planejamento, reutilizar a task de planejamento/coordenação pertinente ou criar uma inicial, como “Planejar projeto e montar time”, atribuída à própria Leader. Usar autor e executor reais conforme contrato, nunca inventar identidade. Essa criação é permitida ao Leader dentro da solicitação do usuário, sem criar uma etapa artificial de aprovação quando a autorização já a cobre. Não duplicar tarefa só porque mudou o chat ou porque o backlog está vazio.
+
+Registrar incrementalmente as decisões da conversa nessa mesma task: description da demanda, specification do que entregar/aceitar, plano com revisões do como, comentários de mudanças e currentSummary cumulativo feito/em curso/pendente. Não deixar decisões apenas no chat enquanto afirma atualizar um plano. Usar status reais do board: backlog enquanto o trabalho não começou; em andamento quando efetivamente planeja. Se faltar status adequado, tratar a lacuna sem inventar ID ou nome obrigatório. Confirmação de composição do time e escolha agrupada de chats continuam exigidas; registrar planejamento não aprova propostas por si só.
+
+Cumprimentar, escolher time e consultar cadastro não exigem tasks artificiais. Se o time for novo e identidade/time/board ainda não existirem, coletar o contexto inicial necessário e resolver cadastros conforme aprovações já previstas, sem exigir um registro impossível nem interromper toda conversa por burocracia. Assim que os pré-requisitos existirem, materializar o contexto já coletado numa task de coordenação e seguir nela antes de avançar no planejamento substantivo. O contexto coletado antes disso está pendente de registro, não salvo.
+
+Só afirmar “salvo” ou “plano atualizado no Bee Team” após confirmação da persistência. Em erro, explicar o que não foi confirmado, suspender trabalho dependente do registro e reconciliar somente a etapa faltante, preservando cadastros existentes. Atualizar plano em ferramenta do harness ou na conversa não equivale a salvar plan.content/revisão no Bee Team.
+
+**Distinção de papéis:** o Leader pode criar essa tarefa inicial de coordenação dentro da solicitação do usuário. O Collaborator não pode criar task para se autoautorizar: só executa task já registrada/atribuída e só cria/desdobra quando isso estiver no escopo atribuído.
+
 ## Caso 1 — Time existente com líder
 
 Após receber a escolha no chat, consultar o time e identificar seu agente líder. Carregar o perfil único desse agente, seus dados, instruções, estilo, regras, limites e contexto, assumindo essa identidade funcional nesta sessão. Não criar outro líder nem sobrescrever perfil ou associação para adequá-los ao chat.
@@ -85,13 +101,13 @@ Consultar primeiro as informações do time escolhido. Criar liderança por meio
 
 A criação deve usar informações reais do time e respeitar os contratos e vínculos válidos. Se faltar um dado obrigatório ou houver uma inconsistência diferente da simples ausência de líder, esclarecer especificamente essa lacuna; não inventar requisitos, identidade persistida ou sucesso de cadastro. Detalhes de como derivar e revisar o perfil desse líder serão refinados posteriormente.
 
-Depois de estabelecer a liderança, conhecer membros, boards, tarefas e situação atual com a mesma leitura contextual do caso 1, incluindo atribuições dos colaboradores em qualquer board. Se faltar estrutura para o trabalho, conversar sobre o projeto e propor o próximo passo adequado: criar board, assumir ou transferir a gestão de um board existente quando autorizado, organizar tarefas ou colaboradores.
+Depois de estabelecer a liderança, conhecer membros, boards, tarefas e situação atual com a mesma leitura contextual do caso 1, incluindo atribuições dos colaboradores em qualquer board. Se faltar estrutura para o trabalho, preparar board/task de coordenação conforme a regra acima e registrar nela a conversa e proposta do próximo passo adequado: criar board, assumir ou transferir a gestão de um board existente quando autorizado, organizar tarefas ou colaboradores.
 
 A criação da liderança não concede autorização irrestrita para transferir gestão, mover dados, modificar perfis existentes ou executar tarefas. Propostas de estrutura e suas autorizações devem ser concretas; sequência e política de gestão posterior permanecem em aberto.
 
 ## Caso 3 — Criar novo time
 
-Antes de cadastrar qualquer coisa, conversar e incentivar o usuário a detalhar o projeto: objetivo, história e contexto, área de atuação, entregas esperadas e organização do trabalho. Fazer perguntas curtas, uma por vez, aproveitando as respostas já fornecidas. Projeto significa a demanda discutida; não introduz entidade `Project` ou workspace no modelo.
+Na entrada de time novo, coletar contexto e incentivar o usuário a detalhar o projeto antes de cadastrar a composição: objetivo, história e contexto, área de atuação, entregas esperadas e organização do trabalho. Fazer perguntas curtas, uma por vez, aproveitando as respostas já fornecidas. Projeto significa a demanda discutida; não introduz entidade `Project` ou workspace no modelo. Se ainda faltarem cadastros, seguir a exceção de inicialização acima e materializar o contexto na task da Leader assim que possível; não manter planejamento substantivo indefinidamente só no chat.
 
 A LLM decide naturalmente se usa ferramentas ou skills auxiliares disponíveis que julgue úteis, como brainstorming, assim como em qualquer projeto. Esse apoio é opcional, não uma etapa do fluxo nem uma escolha que o Leader deva impor ao usuário. Não pedir ao usuário que selecione uma skill nem bloquear a descoberta aguardando isso. O usuário pode sugerir uma espontaneamente; a conversa continua centrada no projeto e nos objetivos. O fluxo é portável e não pressupõe Codex, plugins ou ferramentas ausentes.
 
@@ -147,6 +163,10 @@ No retorno, o Collaborator salva primeiro na task progresso, currentSummary, com
 | Chat inicia com Leader | Cumprimentar, preparar acesso necessário e abrir Teams | Endereço descoberto; tela `/teams` aberta ou limitação declarada com link; pergunta de escolha compreensível. |
 | Usuário escolhe apenas na interface | Aguardar informação no chat | Nenhuma escolha inferida como evento recebido automaticamente. |
 | Escolha já informada explicitamente | Resolver o time ou intenção de criação | Sem pergunta repetida; ambiguidades reais esclarecidas. |
+| Board/backlog vazio após identidade confirmada | Preparar board adequado e criar task de coordenação própria | Task real antes de planejamento substantivo; não planejar só no chat nem inventar author/executor/status. |
+| Planejamento já registrado | Reutilizar a task pertinente | Atualizações incrementais da mesma task, com plano versionado, comentários e síntese; sem duplicata por novo chat. |
+| Time novo sem cadastros | Coletar contexto necessário e resolver cadastros aprovados | Materializar na task assim que possível, sem circularidade; não alegar que o contexto já está salvo. |
+| Decisão de planejamento mudou | Atualizar campos/plano/histórico/síntese | Status real backlog antes do início e em andamento enquanto planeja; só afirmar salvo após confirmação. |
 | Time com líder | Carregar líder e contexto do time | Mesma identidade/perfil preservados; visão de concluído/em andamento/interrompido e lacunas; nenhuma próxima tarefa arbitrariamente iniciada. |
 | Time sem líder | Ler time, criar liderança adequada e assumir perfil | Ausência não gera parada genérica; criação confirmada antes de assumir identidade persistida; vínculos respeitados. |
 | Time sem estrutura suficiente | Conversar projeto e propor organização | Criar/transferir board ou organizar pessoas/tarefas não ocorre como autorização implícita irrestrita. |
@@ -176,6 +196,7 @@ No retorno, o Collaborator salva primeiro na task progresso, currentSummary, com
 | Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
 | Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
 | Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Buscar por nome/contexto permitido, apresentar proposta conjunta de reutilização ou criação e confirmar entendimento após handoff; usar referências existentes, sem persistência adicional no Bee Team. |
+| Planejamento inicial | Contextualização e propostas sem requisito explícito de task própria | Reutilizar/criar task de coordenação atribuída à Leader antes de planejamento substantivo, com exceção inicial sem cadastros e persistência incremental. |
 | Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
 
 A tabela registra a evolução em relação ao baseline dfd4e19. Esta skill aplica as decisões atuais; frontend/API e MCP precisam de validação própria, sem inferir atualização do runtime pela leitura do pacote.

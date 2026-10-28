@@ -138,7 +138,7 @@ Os schemas exatos de todas entradas e saÃ­das constam no catÃ¡logo JSON.
 
 ## Resources â€” leitura por allowlist
 
-Snapshot editorial dos commit 0e3a780 da frente Skills, copiado para
+Snapshot editorial dos commit 7b14ebf da frente Skills, copiado para
 `resources/bee-team`. ConteÃºdo nÃ£o estÃ¡ instalado globalmente. `resources/read`
 aceita somente os URIs anunciados; URI file/path arbitrÃ¡rio Ã© rejeitado. Nenhum acesso
 a segredos ou diretÃ³rios do usuÃ¡rio. Os textos sÃ£o materiais para IA consumir,
@@ -208,7 +208,7 @@ Slugs são estáveis ao renomear e únicos por tipo, inclusive archived/deleted.
 
 Replays históricos sem slug ganham o slug canônico imutável do registro correspondente, inclusive tombstones; conservam a versão e demais campos do snapshot original. Não se reconstrói slug pelo nome antigo nem atual. Sem auth/políticas novas; alteração visual/integração frontend não validada nesta frente.
 
-## Workflows completos — snapshot 0e3a780
+## Workflows completos — snapshot 7b14ebf
 
 O catálogo atual anuncia 13 resources; esta seção substitui contagens históricas acima e nos textos editoriais preservados. Os seis URIs anteriores permanecem. Novos URIs:
 
