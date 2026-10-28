@@ -23,9 +23,16 @@ flowchart TD
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
     O --> M
     N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
-    P --> Q["Etapa comum: verificar, reutilizar ou recriar chats conforme autorização; vincular agentes, time e chat líder; handoff e referências reais"]
+    P --> Q["Etapa comum: procurar chat pelo nome do colaborador; conferir referências, existência e acesso"]
     K --> Q
-    Q --> R
+    Q --> S{"Encontrou candidato?"}
+    S -->|Sim| T{"Perguntar ao usuário: continuar nele ou criar outro?"}
+    T -->|Continuar| U["Reutilizar o chat escolhido"]
+    T -->|Criar outro| V["Criar chat conforme autorização; entregar perfil e contexto"]
+    S -->|Não| V
+    U --> W["Identificar chat escolhido na coordenação atual; nome baseado no colaborador"]
+    V --> W
+    W --> R
     R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
 ```
 
@@ -73,21 +80,23 @@ Apresentar a composição de forma sucinta, fluida e direta por padrão. Aprofun
 
 Exemplo compacto: “Eu lidero a coordenação. Backend: backend e infraestrutura; Frontend: interface; QA: testes. Criaremos chats separados para esse trabalho. Posso prosseguir?”. Nomes e avatares identificam os agentes, sem transformar essa proposta em uma discussão de biografias.
 
-Depois da aprovação aplicável, cadastrar agentes, time e vínculos e seguir a etapa comum de gestão de chats abaixo. Para um time novo, criar chats separados dos colaboradores e vinculá-los ao chat atual do líder para comunicação; a aprovação concreta da proposta pode incluir essa criação. Não solicitar novamente permissão para ações já cobertas pela autorização vigente.
+Depois da aprovação aplicável, cadastrar agentes, time e vínculos e seguir a etapa comum de gestão de chats abaixo. Para um time novo, criar ou reutilizar chats separados dos colaboradores, identificando os escolhidos na coordenação do chat atual do líder; a aprovação concreta da proposta pode incluir essa criação. Não solicitar novamente permissão para ações já cobertas pela autorização vigente.
 
 Squad autônomo significa cobertura de competências para realizar o projeto. Não ativa execução automática: continuam valendo os modos e o contexto de origem de boards/tasks, além das permissões para ações externas. Formação do time, criação de chats e início do trabalho são fatos distintos a confirmar.
 
-## Etapa comum aos três casos — Gestão e vínculo de chats
+## Etapa comum aos três casos — Criar ou reutilizar/apropriar chat
 
-Após contextualizar um time existente, com ou sem líder anterior, ou formar um time novo, verificar as sessões de trabalho antes da continuidade de gestão. Vincular o chat atual à identidade do líder e registrar as referências de coordenação entre agentes, time, chats dos colaboradores e chat coordenador. Se o harness não tiver relação nativa pai/filho, representar isso como referência de coordenação pelos mecanismos suportados; não inventar hierarquia ou capacidade de comunicação.
+Após contextualizar um time existente, com ou sem líder anterior, ou formar um time novo, procurar chats existentes pelo nome de cada colaborador. Referências disponíveis ajudam a localizar e validar candidatos. Conferir existência e acesso reais no harness: nomes iguais ou semelhantes não provam identidade, e referência antiga não comprova disponibilidade. Se o acesso não puder ser confirmado, declarar a limitação sem afirmar que o chat foi apagado.
 
-Consultar referências persistidas e verificar existência e acesso reais às sessões no harness. Reutilizar chats válidos. Um chat pode ter sido apagado, estar perdido ou não existir; referência antiga não comprova disponibilidade. Nome do agente pode orientar um nome legível para o chat, mas nomes iguais ou semelhantes não comprovam identidade: priorizar ID/referência persistente do harness e conferir o agente associado. Se o acesso não puder ser confirmado, declarar essa limitação, sem afirmar que o chat foi apagado.
+Se encontrar um candidato, perguntar explicitamente ao usuário se quer continuar naquele chat ou criar outro. Não reutilizar automaticamente, mesmo em modo automático: essa escolha foi solicitada explicitamente. Se o usuário aprovar a reutilização, usar o chat escolhido; se preferir outro, criar o novo conforme autorização e fornecer perfil funcional e contexto do colaborador. Se não houver chat, criar conforme autorização aplicável. Uma escolha já respondida não precisa ser perguntada novamente.
 
-Quando for necessário criar ou recriar uma sessão, propor ou executar a substituição conforme o modo e as autorizações vigentes, incluindo as exigências do harness. Para times existentes, não presumir autorização apenas porque há um cadastro de agente; também não repetir perguntas quando a ação já estiver autorizada. Para time novo, a aprovação da composição pode cobrir os chats explicitados na proposta. Esta documentação não solicita criação de chats reais agora.
+O nome do colaborador deve ser a base ou padrão legível do nome do chat; o formato exato permanece indefinido. Se houver ajuste de nome ao escolher a sessão, atualizar somente o nome do chat, não o nome ou a identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar handoff com perfil funcional, contexto, tarefas relevantes, plano, specification, currentSummary, pendências e limites; não alegar recuperação integral de conversa inexistente.
 
-Recriar chat não duplica o agente nem apaga autoria ou histórico. Manter a identidade persistente e preparar handoff com perfil funcional, contexto, tarefas relevantes, plano, specification, currentSummary, pendências e limites. Recuperar apenas informações disponíveis; não alegar recuperação integral de uma conversa inexistente. Persistir a referência real da nova sessão e seu vínculo com agente, time e chat líder, preservando o histórico da substituição pelos recursos suportados.
+Para time novo, a aprovação da composição pode incluir a criação dos chats explicitados na proposta. Para existentes, seguir modo, autorizações vigentes e exigências do harness, sem repetir pedidos já cobertos; isso não elimina a escolha explícita entre continuar no candidato encontrado ou criar outro. Esta documentação não solicita criação de chats reais agora.
 
-Se faltarem ferramentas para consultar, criar ou vincular chats, informar a etapa pendente e fornecer handoff para abertura pelo mecanismo disponível. Não tratar subagente temporário como chat persistente nem afirmar comunicação entre sessões sem capacidade confirmada. A política de próxima tarefa e gestão contínua continua em aberto.
+A coordenação atual precisa saber qual chat foi escolhido para cada colaborador e que o chat atual desempenha o papel do líder. A decisão de persistir um vínculo chat–colaborador, seu local de armazenamento e sua forma permanecem EM ABERTO: não exigir novos cadastros de IDs ou vínculos persistentes nesta especificação. Usar IDs/referências reais disponíveis para identificar sessões não equivale a decidir essa persistência futura. Não inventar relação nativa pai/filho se o harness não a oferecer.
+
+Se faltarem ferramentas para consultar, criar ou acessar chats, informar a etapa pendente e fornecer handoff para abertura pelo mecanismo disponível. Não tratar subagente temporário como chat persistente nem afirmar comunicação entre sessões sem capacidade confirmada. A política de próxima tarefa e gestão contínua continua em aberto.
 
 ## Modelo e limites preservados
 
@@ -112,9 +121,10 @@ Se faltarem ferramentas para consultar, criar ou vincular chats, informar a etap
 | Compreensão suficiente | Propor composição sucinta e perfis funcionais | Inclui líder, execução e responsabilidades; nome/avatar identificam, sem biografias fictícias ou aprovação individual obrigatória. Uma aprovação objetiva basta; aprofundamento apenas a pedido ou por requisito essencial. |
 | Proposta alterada/rejeitada | Revisar e obter aprovação resultante | Nenhum cadastro da proposta rejeitada; silêncio não aprova. |
 | Proposta aprovada | Cadastrar agentes/time/vínculos e seguir etapa comum de chats | Aprovação pode incluir chats dos colaboradores; nenhum pedido de permissão repetido para ação já coberta. |
-| Qualquer caso contextualizado/formado | Verificar, reutilizar ou recriar e vincular chats | Chat atual associado ao líder; referências reais ligam colaboradores, agentes, time e coordenação, sem presumir pai/filho nativo. |
-| Referência de chat ausente ou chat confirmado apagado | Criar substituto conforme autorização vigente | Mesmo agente, autoria e histórico preservados; novo ID persistido e handoff com perfil, tarefas, plano, specification, currentSummary e pendências. |
-| Chat com nome igual ou semelhante | Conferir ID, associação e acesso antes de reutilizar | Nome sozinho não identifica sessão; não reutilizar o chat de outro agente por semelhança. |
+| Qualquer caso contextualizado/formado | Procurar chats pelo nome do colaborador e conferir candidatos | Nome é base legível, não prova de identidade; referências disponíveis, existência e acesso são conferidos. |
+| Nenhum chat encontrado ou chat confirmado apagado | Criar conforme autorização vigente | Mesmo agente, autoria e histórico preservados; handoff com perfil, tarefas, plano, specification, currentSummary e pendências; persistência do vínculo em aberto. |
+| Candidato encontrado, inclusive nome igual ou semelhante | Perguntar se quer continuar nele ou criar outro | Reutilizar somente após escolha explícita, mesmo no automático; se prefere novo, entregar perfil/contexto ao novo chat. |
+| Nome do chat precisa de ajuste | Usar nome do colaborador como base legível | Somente nome do chat atualizado; identidade do colaborador e registros de tarefa/autoria preservados; formato exato não imposto. |
 | Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
 | Squad formado | Preparar continuidade de gestão | Competências completas não mudam autonomia de execução; política posterior ainda não definida. |
 
@@ -126,7 +136,7 @@ Se faltarem ferramentas para consultar, criar ou vincular chats, informar a etap
 | Time com líder | Reutiliza líder/perfil/contexto sem duplicação | Detalhar leitura de descrição, colaboradores, boards, tarefas e situação histórica/atual antes da gestão. |
 | Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
 | Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
-| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Verificar existência/acesso, reutilizar ou substituir conforme autorização e vincular à identidade do agente, time e chat líder. |
+| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Buscar por nome, validar candidato e perguntar continuar ou criar outro; identificar escolha na coordenação atual, com persistência do vínculo em aberto. |
 | Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
 
 O documento registra intenção aprovada, não comprova que a skill, o frontend ou o MCP já executem os novos comportamentos. A divergência do caso 2 é deliberadamente explicitada; sua implementação será uma etapa posterior autorizada.
@@ -137,7 +147,7 @@ O documento registra intenção aprovada, não comprova que a skill, o frontend 
 2. Detalhes para derivar o perfil da liderança ausente e tratar dados obrigatórios incompletos, concorrência ou falha parcial na criação/vínculo.
 3. Sequência e autorização de criar boards, assumir/transferir sua gestão e organizar tarefas/colaboradores quando faltar estrutura.
 4. Geração, escolha, armazenamento e limites dos avatares em diferentes harnesses.
-5. Detalhes operacionais de persistência dos vínculos de coordenação e recuperação de falhas parciais entre cadastro e criação/substituição de chats, sem inventar atomicidade ou relação pai/filho nativa no harness. A exigência da etapa comum de chats já está definida acima.
+5. Se haverá vínculo persistente chat–colaborador, onde e como armazená-lo; formato exato dos nomes dos chats e recuperação de falhas parciais. A escolha da sessão na coordenação atual já é necessária, mas não define persistência, atomicidade ou relação pai/filho nativa.
 6. Eventual integração de eventos de seleção da interface com o chat. Por enquanto, a comunicação é explícita pelo usuário.
 
 ## Escopo desta entrega
