@@ -2,6 +2,10 @@
 
 ## Bee Team skills
 
+The approved next onboarding behavior is documented in
+[Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
+This specification distinguishes future behavior from the current installed skill.
+
 Versioned guidance is available in [team leader](skills/bee-team-leader/SKILL.md)
 and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared references
 under `skills/references/` and [multidisciplinary examples](skills/bee-team-leader/references/team-examples.md).
