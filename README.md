@@ -5,6 +5,8 @@
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
 This specification distinguishes future behavior from the current installed skill.
+The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
+execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
 Versioned guidance is available in [team leader](skills/bee-team-leader/SKILL.md)
 and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared references

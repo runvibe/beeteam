@@ -1,5 +1,7 @@
 # Leader: entrada e formação de times
 
+Continuidade após o handoff: [fluxo de trabalho do Collaborator](collaborator-workflow.md), documentado separadamente com Mermaid.
+
 ## Fluxograma dos três casos
 
 Fluxo aprovado/proposto, ainda não implementado. O MCP ativo serve a Leader `dfd4e19`; os novos três casos permanecem documentação. MCP fornece registros, skills e prompts; o harness controla abertura do painel e criação de chats conforme capacidades e autorização.
