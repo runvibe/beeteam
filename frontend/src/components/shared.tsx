@@ -64,13 +64,23 @@ export function QueryState({
   query,
   children,
 }: {
-  query: { isPending: boolean; error: unknown; refetch: () => unknown };
+  query: {
+    isPending: boolean;
+    error: unknown;
+    data?: unknown;
+    refetch: () => unknown;
+  };
   children: ReactNode;
 }) {
   if (query.isPending) return <Loading />;
-  if (query.error)
-    return <Failure error={query.error} retry={() => void query.refetch()} />;
-  return children;
+  return (
+    <>
+      {query.error ? (
+        <Failure error={query.error} retry={() => void query.refetch()} />
+      ) : null}
+      {(!query.error || query.data !== undefined) && children}
+    </>
+  );
 }
 export function Pager({
   page,

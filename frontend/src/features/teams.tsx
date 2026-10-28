@@ -246,7 +246,7 @@ function TeamDetail({ id }: { id: string }) {
                     Editar metadados do time.
                   </DialogDescription>
                 </DialogHeader>
-                <TeamForm key={q.data.version} team={q.data} />
+                <TeamForm key={q.data.id} team={q.data} />
               </DialogContent>
             </Dialog>
           </>
@@ -255,7 +255,8 @@ function TeamDetail({ id }: { id: string }) {
     </DetailPage>
   );
 }
-function TeamForm({ team }: { team: Team }) {
+function TeamForm({ team: latest }: { team: Team }) {
+  const [team, setBaseline] = useState(latest);
   const [name, setName] = useState(team.name),
     [purpose, setPurpose] = useState(team.purpose),
     [context, setContext] = useState(team.context);
@@ -264,7 +265,10 @@ function TeamForm({ team }: { team: Team }) {
   const mutation = useMutation({
     mutationFn: () =>
       api.patch("teams", team.id, { name, purpose, context }, team.version),
-    onSuccess: () => client.invalidateQueries(),
+    onSuccess: (saved) => {
+      setBaseline(saved);
+      return client.invalidateQueries();
+    },
   });
   return (
     <form
@@ -305,6 +309,13 @@ function TeamForm({ team }: { team: Team }) {
       <Button disabled={mutation.isPending || !!team.archivedAt} type="submit">
         Salvar metadados
       </Button>
+      {latest.version > team.version && (
+        <p role="status" className="small-note">
+          Este registro foi atualizado em outra sessão. Seu rascunho foi
+          preservado; feche e reabra a configuração para carregar a versão atual
+          antes de editar novamente.
+        </p>
+      )}
       <SaveFeedback mutation={mutation} />
     </form>
   );

@@ -1,3 +1,5 @@
+import { LiveUpdates } from "./live-updates";
+import type { ChangeSource } from "./live-refresh";
 import { createContext, useContext, useState, type ReactNode } from "react";
 import {
   QueryClient,
@@ -9,8 +11,10 @@ const Context = createContext<BeeApi | null>(null);
 export function ApiProvider({
   api,
   children,
+  changes,
 }: {
   api: BeeApi;
+  changes?: ChangeSource;
   children: ReactNode;
 }) {
   const [client] = useState(
@@ -28,7 +32,10 @@ export function ApiProvider({
   );
   return (
     <Context.Provider value={api}>
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        {changes && <LiveUpdates source={changes} />}
+        {children}
+      </QueryClientProvider>
     </Context.Provider>
   );
 }

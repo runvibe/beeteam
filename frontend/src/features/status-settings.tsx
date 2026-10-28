@@ -53,7 +53,7 @@ export function StatusSettings({ board }: { board: Board }) {
       <QueryState query={q}>
         {q.data &&
           q.data.items.map((s, i) => (
-            <div className="status-config" key={`${s.id}:${s.version}`}>
+            <div className="status-config" key={s.id}>
               <StatusForm status={s} disabled={!!board.archivedAt} />
               <div className="flex gap-2">
                 <Button
@@ -128,12 +128,13 @@ export function StatusSettings({ board }: { board: Board }) {
   );
 }
 function StatusForm({
-  status,
+  status: latest,
   disabled,
 }: {
   status: Status;
   disabled: boolean;
 }) {
+  const [status, setBaseline] = useState(latest);
   const [name, setName] = useState(status.name),
     [done, setDone] = useState(status.isDone);
   const api = useApi(),
@@ -147,7 +148,10 @@ function StatusForm({
         status.version,
         status.boardId,
       ),
-    onSuccess: () => client.invalidateQueries(),
+    onSuccess: (saved) => {
+      setBaseline(saved);
+      return client.invalidateQueries();
+    },
   });
   return (
     <form
@@ -186,6 +190,13 @@ function StatusForm({
         />
         <FieldLabel htmlFor={`done-${status.id}`}>Conclusão</FieldLabel>
       </Field>
+      {latest.version > status.version && (
+        <p role="status" className="small-note">
+          Este registro foi atualizado em outra sessão. Seu rascunho foi
+          preservado; feche e reabra a configuração para carregar a versão atual
+          antes de editar novamente.
+        </p>
+      )}
       {mutation.error && <Failure error={mutation.error} />}
     </form>
   );

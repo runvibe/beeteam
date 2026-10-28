@@ -255,7 +255,7 @@ function AgentDetail({ id }: { id: string }) {
                     Configurações do perfil do agente.
                   </DialogDescription>
                 </DialogHeader>
-                <ProfileForm key={q.data.version} agent={q.data} />
+                <ProfileForm key={q.data.id} agent={q.data} />
               </DialogContent>
             </Dialog>
           </>

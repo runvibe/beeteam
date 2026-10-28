@@ -67,7 +67,7 @@ Consulte `PROGRESS.md` para checklist e evidências finais. Não houve merge, pu
 
 ## Aparência
 
-O seletor Tema no topo oferece Sistema, Claro e Escuro. Na primeira visita, Sistema segue a preferência do sistema operacional e reage às mudanças. A escolha explícita é salva em localStorage (`beeteam.theme`) e prevalece após recarregar. Voltar a Sistema reativa o acompanhamento. Se o armazenamento estiver bloqueado, a troca funciona apenas na sessão. Entidades continuam somente no mock.
+O botão de tema no topo mostra a próxima ação: sol para ativar claro, lua para ativar escuro. Sem preferência salva, acompanha o sistema operacional; a escolha manual é persistida em localStorage (`beeteam.theme`). Funciona por teclado e possui nome acessível. Na sidebar recolhida, logo e seta de expansão ficam centralizadas; a seta aponta para a ação de expandir/recolher. Indicadores decorativos de infraestrutura foram removidos do cabeçalho e rodapé; erros de conexão permanecem visíveis.
 
 Um script síncrono no head aplica a classe e color-scheme antes do React; as paletas semânticas ficam centralizadas em index.css. Testes exercitam o bootstrap real e o controlador, incluindo armazenamento indisponível. Verificação manual confirmou Claro/Escuro após recarga, controles e conteúdo em desktop e viewport estreito; não foi feito ensaio de rede artificialmente lenta.
 
@@ -104,3 +104,13 @@ Referência final e98a1056: radius .625rem e demais tokens fornecidos preservado
 ## Slugs legíveis
 
 Agentes, times e tasks/subtasks têm URLs por slug persistido. Boards mantêm UUID. O adapter resolve slug para UUID e a UI continua usando IDs nas APIs e relações. Links UUID antigos são canonicalizados preservando query, origem e histórico. Renomear não muda o slug. Contratos OpenAPI kanban/RA e catálogo MCP sincronizados com os três resolvers; fixtures reproduzem unicidade e colisões sem substituir o backend como fonte da verdade.
+
+## Atualização automática
+
+No modo HTTP, uma conexão EventSource em `/api/v1/changes` recebe `invalidate` e `reset` com escopo global. Os eventos são avisos; a UI consulta novamente a API para obter os registros. Eventos próximos são agrupados em 150 ms; consultas anteriores ao evento são canceladas no cache para não publicar um snapshot antigo. Queries visíveis são atualizadas e as demais ficam stale até a próxima leitura. Não há navegação automática, alteração da URL nem reset de rolagem.
+
+Na conexão/reconexão e ao voltar à aba, o estado é consultado novamente. Se a conexão falhar (ou a abertura demorar mais de 10 segundos), aparece um aviso discreto e há consulta a cada 15 segundos enquanto a aba estiver visível. EventSource tenta reconectar conforme o servidor; sem SSE não se promete atualização instantânea. O mock não abre conexão.
+
+Formulários abertos preservam os campos e a versão de edição mesmo quando chega uma alteração externa; salvar uma versão antiga retorna conflito em vez de sobrescrever a mudança remota. Perfil/time/status avisam quando existe versão mais nova; fechar e reabrir carrega essa versão descartando o rascunho. O board oferece recarga explícita após erro. Falhas de consulta em background mantêm os dados anteriores e os campos montados, com mensagem de erro.
+
+O servidor envia `heartbeat` nomeado a cada 15 segundos. Se nenhum evento chegar em 45 segundos, a UI fecha e reabre a conexão e ativa o mesmo fallback. Isso cobre proxies que mantêm uma conexão aberta após a queda do upstream sem disparar `onerror`.
