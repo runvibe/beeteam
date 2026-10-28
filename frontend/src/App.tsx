@@ -114,7 +114,8 @@ export function App() {
               <Button onClick={() => setArea("boards")}>Ir para boards</Button>
             </div>
           ) : routeEntity.active &&
-            (routeEntity.isPending || routeEntity.error) ? (
+            (routeEntity.isPending ||
+              (routeEntity.error && !routeEntity.data)) ? (
             <QueryState query={routeEntity}>{null}</QueryState>
           ) : taskId ? (
             <TaskPage />

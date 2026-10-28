@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SaveFeedback } from "./settings";
-export function ProfileForm({ agent }: { agent: Agent }) {
+export function ProfileForm({ agent: latest }: { agent: Agent }) {
+  const [agent, setBaseline] = useState(latest);
   const [name, setName] = useState(agent.name),
     [role, setRole] = useState(agent.roleDescription),
     [style, setStyle] = useState(agent.workStyle),
@@ -46,7 +47,10 @@ export function ProfileForm({ agent }: { agent: Agent }) {
         },
         agent.version,
       ),
-    onSuccess: () => client.invalidateQueries(),
+    onSuccess: (saved) => {
+      setBaseline(saved);
+      return client.invalidateQueries();
+    },
   });
   return (
     <form
@@ -146,6 +150,13 @@ export function ProfileForm({ agent }: { agent: Agent }) {
       </Button>
       {agent.archivedAt && (
         <p className="small-note">Perfil arquivado: somente leitura.</p>
+      )}
+      {latest.version > agent.version && (
+        <p role="status" className="small-note">
+          Este registro foi atualizado em outra sessão. Seu rascunho foi
+          preservado; feche e reabra a configuração para carregar a versão atual
+          antes de editar novamente.
+        </p>
       )}
       <SaveFeedback mutation={mutation} />
     </form>
