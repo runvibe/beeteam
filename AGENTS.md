@@ -15,3 +15,18 @@
 - Commit changes with clear messages reflecting the modifications made.
 - Write tests for new features or bug fixes to ensure code quality.
 - Update documentation in README.md to reflect new features or changes.
+
+## Backend / MCP workflow
+
+- HTTP and MCP adapt the same DTO validation and business services; compound MCP writes must use one database transaction and one idempotency key.
+- The checked-in Kanban/RA OpenAPIs define the current boards/tasks model; never restore workspace or task/team ownership from older notes.
+- Actor context is declared metadata, not authentication. Do not introduce a leader editing restriction while that product policy remains unresolved.
+- MCP resources/prompts use an explicit bundled Bee Team allowlist under resources/bee-team. Never expose arbitrary files or imply global skill installation. Update provenance when refreshing the Skills snapshot.
+- Regenerate docs/mcp-catalog.json using `cargo run --locked --features mcp --example mcp_catalog` after catalog/schema changes.
+- Integration tests use an isolated PostgreSQL >=18 instance via BEE_TEST_DATABASE_URL (CREATEDB required for HTTP/MCP tests). Windows Docker wrappers calling WSL may require this URL instead of native Testcontainers. Never point tests at product data.
+
+- Work updates must supply the collaborator-authored cumulative `currentSummary` with progress/status changes and activity closure. Keep it separate from historical `summary` and descriptive notes; never generate it from history. Preserve atomicity, idempotency (including legacy response snapshots), and empty legacy state in HTTP/MCP parity tests.
+
+- Preserve task `specification` and plan/revision `content` as Markdown text (65536 UTF-8 bytes), without rendering or executing it. Keep requirements, short description, execution plans, and current work synthesis independent; specification-only edits do not require a new work summary.
+
+- Agent/team/task slugs are immutable URL aliases, never internal identifiers. Resolve via the typed by-slug endpoint/tool, then keep UUIDv7 in mutations and prompt arguments. Preserve deleted slug reservations and keep migration/application advisory lock ordering consistent before table access.

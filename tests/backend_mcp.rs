@@ -1,0 +1,294 @@
+#![cfg(feature = "mcp")]
+mod support;
+use axum::{body::Body, http::Request, Router};
+use http_body_util::BodyExt;
+use serde_json::{json, Value};
+use support::*;
+use tower::ServiceExt;
+
+async fn rpc(app: &Router, method: &str, params: Value) -> Value {
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/mcp")
+                .header("host", "127.0.0.1")
+                .header("content-type", "application/json")
+                .header("accept", "application/json, text/event-stream")
+                .header("mcp-protocol-version", "2025-11-25")
+                .body(Body::from(
+                    json!({"jsonrpc":"2.0","id":1,"method":method,"params":params}).to_string(),
+                ))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    assert_eq!(response.status(), 200);
+    let bytes = response.into_body().collect().await.unwrap().to_bytes();
+    serde_json::from_slice(&bytes).unwrap()
+}
+async fn tool(app: &Router, name: &str, args: Value) -> Value {
+    let response = rpc(app, "tools/call", json!({"name":name,"arguments":args})).await;
+    assert!(response.get("error").is_none(), "{response}");
+    response["result"].clone()
+}
+async fn success(app: &Router, name: &str, args: Value) -> Value {
+    let result = tool(app, name, args).await;
+    assert_eq!(result["isError"], false, "{result}");
+    let catalog = beeteam::routes::mcp::catalog();
+    let definition = catalog["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|tool| tool["name"] == name)
+        .unwrap();
+    if let Some(schema) = definition.get("outputSchema") {
+        jsonschema::validator_for(schema)
+            .unwrap()
+            .validate(&result["structuredContent"])
+            .unwrap_or_else(|e| panic!("{name} output schema: {e}"));
+    }
+    result["structuredContent"].clone()
+}
+#[tokio::test]
+async fn sdk_tools_resources_prompts_and_atomic_compounds() {
+    let (app, pool) = app_with_pool().await;
+    let init=rpc(&app,"initialize",json!({"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}})).await;
+    assert!(init["result"]["capabilities"].get("resources").is_some());
+    assert!(init["result"]["capabilities"].get("prompts").is_some());
+    let listing = rpc(&app, "tools/list", json!({})).await;
+    let tools = listing["result"]["tools"].as_array().unwrap();
+    assert_eq!(tools.len(), 60);
+    for tool in tools {
+        jsonschema::validator_for(&tool["inputSchema"])
+            .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
+        if let Some(schema) = tool.get("outputSchema") {
+            jsonschema::validator_for(schema).unwrap();
+        }
+    }
+    let resources = rpc(&app, "resources/list", json!({})).await;
+    assert_eq!(
+        resources["result"]["resources"].as_array().unwrap().len(),
+        13
+    );
+    for (uri, expected) in [
+        (
+            "beeteam://references/leader-onboarding-flows",
+            include_str!("../resources/bee-team/references/leader-onboarding-flows.md"),
+        ),
+        (
+            "beeteam://references/collaborator-workflow",
+            include_str!("../resources/bee-team/references/collaborator-workflow.md"),
+        ),
+    ] {
+        assert!(resources["result"]["resources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r["uri"] == uri));
+        let read = rpc(&app, "resources/read", json!({"uri":uri})).await;
+        assert_eq!(read["result"]["contents"][0]["text"], expected);
+        assert!(expected.contains("```mermaid"));
+    }
+    for resource in resources["result"]["resources"].as_array().unwrap() {
+        assert!(resource["description"]
+            .as_str()
+            .unwrap()
+            .contains("7b14ebf"));
+        let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
+        assert!(
+            read["result"]["contents"][0]["text"]
+                .as_str()
+                .unwrap()
+                .len()
+                > 100
+        );
+    }
+    assert!(rpc(
+        &app,
+        "resources/read",
+        json!({"uri":"file:///C:/Users/phili/.ssh/id_rsa"})
+    )
+    .await
+    .get("error")
+    .is_some());
+    let agent=success(&app,"createAgent",json!({"body":{"name":"MCP agent"},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await["data"].clone();
+    let team = ok(
+        &app,
+        "POST",
+        "/api/v1/teams",
+        json!({"name":"MCP team","leaderId":id(&agent),"coordinationContext":manual()}),
+        None,
+    )
+    .await;
+    let board = ok(
+        &app,
+        "POST",
+        "/api/v1/boards",
+        json!({"name":"MCP board","teamId":id(&team)}),
+        None,
+    )
+    .await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","specification":"# Requirements\r\n- **Acceptance**\r\n","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","specification":"## Child requirements\n- [ ] Acceptance","parentId":id(&task),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
+    let task = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
+    for (name, entity) in [
+        ("resolveAgentSlug", &agent),
+        ("resolveTeamSlug", &team),
+        ("resolveTaskSlug", &task),
+    ] {
+        let resolved = success(&app, name, json!({"params":{"slug":entity["slug"]}})).await;
+        assert_eq!(
+            resolved["data"],
+            json!({"id":entity["id"],"slug":entity["slug"]})
+        );
+    }
+
+    let prepared = success(&app, "prepare_execution", json!({"taskId":id(&task)})).await;
+    assert_eq!(prepared["task"]["version"], task["version"]);
+    assert_eq!(prepared["executionContext"]["effectiveMode"], "manual");
+    assert_eq!(prepared["children"]["total"], 1);
+    assert_eq!(prepared["task"]["specification"], task["specification"]);
+    assert_eq!(
+        prepared["children"]["items"][0]["specification"],
+        child["specification"]
+    );
+    let failed=tool(&app,"record_progress",json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":999,"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]})).await;
+    assert_eq!(failed["isError"], true);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/comments", id(&task))).await["total"],
+        0
+    );
+    let input = json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Progress","currentSummary":"Root: planning done; implementation underway; tests next.","progress":{"percent":20,"note":"Started"},"subtaskUpdates":[{"taskId":id(&child),"expectedVersion":child["version"],"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]});
+    let result = success(&app, "record_progress", input.clone()).await;
+    assert_eq!(result["task"]["progress"]["percent"], 20);
+    assert_eq!(result["task"]["currentSummary"], input["currentSummary"]);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(&child))).await["currentSummary"],
+        input["subtaskUpdates"][0]["currentSummary"]
+    );
+    let mut conflict = input.clone();
+    conflict["currentSummary"] = json!("Different synthesis with same idempotency key");
+    assert_eq!(
+        tool(&app, "record_progress", conflict).await["isError"],
+        true
+    );
+    assert_eq!(success(&app, "record_progress", input).await, result);
+    let task = &result["task"];
+    let missing=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"progress":{"percent":25,"note":"missing synthesis"}})).await;
+    assert_eq!(missing["isError"], true);
+    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
+    assert_eq!(failed["isError"], true);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(task))).await["currentSummary"],
+        task["currentSummary"]
+    );
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/comments", id(task))).await["total"],
+        1
+    );
+    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
+    assert_eq!(result["task"]["statusId"], task["statusId"]);
+    assert_eq!(
+        result["task"]["currentSummary"],
+        "Root: implementation done; validation underway; review next."
+    );
+    let summaries = get(
+        &app,
+        &format!("/api/v1/tasks/{}/execution-summaries", id(task)),
+    )
+    .await;
+    assert_eq!(summaries["total"], 1);
+    let malformed=tool(&app,"createAttachment",json!({"params":{"taskId":id(task)},"body":{"description":42},"actor":{"kind":"human"},"expectedVersion":result["task"]["version"],"idempotencyKey":uuid::Uuid::new_v4(),"upload":{"name":"file.txt","mediaType":"text/plain","dataBase64":"YQ=="}})).await;
+    assert_eq!(
+        malformed["isError"], true,
+        "MCP must enforce the same multipart metadata schema as HTTP"
+    );
+    for name in ["record_progress", "close_activity"] {
+        let key = uuid::Uuid::new_v4();
+        let mut legacy = json!({"taskId":id(task),"expectedVersion":1,"actor":{"kind":"human"},"idempotencyKey":key});
+        if name == "record_progress" {
+            legacy["progress"] = json!({"percent":10,"note":"Old update"});
+            legacy["subtaskUpdates"] = json!([{"taskId":id(&child),"expectedVersion":1,"progress":{"percent":10,"note":"Old child update"}}]);
+        } else {
+            legacy["execution"] = json!({"summary":"Old historical summary","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
+        }
+        let mut old_task = task.clone();
+        old_task.as_object_mut().unwrap().remove("currentSummary");
+        old_task.as_object_mut().unwrap().remove("specification");
+        old_task.as_object_mut().unwrap().remove("slug");
+        let snapshot =
+            json!({"task":old_task,"updatedTasks":[old_task],"notice":"Stored atomically."});
+        legacy_replay(
+            &pool,
+            &format!("{name}:{}", id(task)),
+            key,
+            legacy.clone(),
+            snapshot,
+        )
+        .await;
+        let path = format!("/api/v1/tasks/{}", id(task));
+        let before = get(&app, &format!("{path}/timeline")).await;
+        let current = get(&app, &path).await;
+        let replayed = success(&app, name, legacy.clone()).await;
+        assert_eq!(replayed["task"]["currentSummary"], "");
+        assert_eq!(replayed["task"]["specification"], "");
+        assert_eq!(replayed["task"]["slug"], task["slug"]);
+        assert_eq!(replayed["task"]["version"], task["version"]);
+        assert_eq!(get(&app, &path).await, current);
+        assert_eq!(get(&app, &format!("{path}/timeline")).await, before);
+        legacy["idempotencyKey"] = json!(uuid::Uuid::new_v4());
+        assert_eq!(tool(&app, name, legacy).await["isError"], true);
+    }
+    // A late descendant failure must roll back the root synthesis already staged.
+    let live_root = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
+    let live_child = get(&app, &format!("/api/v1/tasks/{}", id(&child))).await;
+    let archived = ok(
+        &app,
+        "PUT",
+        &format!("/api/v1/tasks/{}/archive", id(&child)),
+        json!({"archived":true}),
+        ver(&live_child),
+    )
+    .await;
+    let before = get(&app, &format!("/api/v1/tasks/{}/timeline", id(task))).await;
+    let failed=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":live_root["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"currentSummary":"Must not persist root synthesis","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":archived["version"],"currentSummary":"Cannot update archived child"}]})).await;
+    assert_eq!(failed["isError"], true);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(task))).await,
+        live_root
+    );
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/timeline", id(task))).await,
+        before
+    );
+    let spec_markdown = "# Delivery\r\n- [ ] **Acceptance**\r\n```text\r\nliteral\r\n```";
+    let spec_task=success(&app,"createTask",json!({"params":{"boardId":id(&board)},"body":{"title":"Specification task","specification":spec_markdown,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await["data"].clone();
+    assert_eq!(spec_task["specification"], spec_markdown);
+    let updated=success(&app,"updateTask",json!({"params":{"taskId":id(&spec_task)},"body":{"specification":"## Revised requirements\n- Rule"},"actor":{"kind":"human"},"expectedVersion":spec_task["version"]})).await["data"].clone();
+    assert_eq!(updated["currentSummary"], "");
+    let context = success(&app, "prepare_execution", json!({"taskId":id(&spec_task)})).await;
+    assert_eq!(context["task"]["specification"], updated["specification"]);
+    let prompts = rpc(&app, "prompts/list", json!({})).await;
+    assert_eq!(prompts["result"]["prompts"].as_array().unwrap().len(), 3);
+    for (name, args) in [
+        ("task_briefing", json!({"taskId":id(task)})),
+        (
+            "agent_resumption",
+            json!({"taskId":id(task),"agentId":id(&agent)}),
+        ),
+        ("delivery_review", json!({"taskId":id(task)})),
+    ] {
+        let prompt = rpc(&app, "prompts/get", json!({"name":name,"arguments":args})).await;
+        assert!(prompt.get("error").is_none(), "{prompt}");
+        let text = prompt["result"]["messages"][0]["content"]["text"]
+            .as_str()
+            .unwrap();
+        assert!(text.contains("originBoardId"));
+        assert!(text.contains("No MCP implementado"));
+        assert!(text.contains(name));
+        assert!(text.contains("specification"));
+        assert!(!text.contains("{{taskId}}"));
+    }
+}

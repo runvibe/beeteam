@@ -39,6 +39,38 @@ servers:
   - url: http://127.0.0.1:8080
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v1/tasks/by-slug/{slug}:
+    get:
+      operationId: resolveTaskSlug
+      summary: Resolver slug de Task para UUID interno
+      description: Consulta indexada sem enumerar listagens. Retorna identidade canônica;
+        buscar detalhes na rota por UUID existente. Arquivados resolvem, excluídos retornam
+        404. Não redireciona nem reutiliza slugs.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/Slug'
+      responses:
+        '200':
+          description: Identidade encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SlugResolution'
+        '400':
+          description: Slug inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Identidade não encontrada ou excluída
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/v1/boards:
     parameters: []
     post:
@@ -646,7 +678,7 @@ paths:
       description: Projeção por board, todas as colunas ativas visíveis, cards raiz locais em position,id
         asc. limitPerColumn default20 max100. Task filha em outro board continua acessível na
         listagem e checklist global; filtros locais não definem contexto de execução. Cada card traz
-        autor/executor e executionContext. Continuação via listagem do board com statusId/rootOnly e
+        autor/executor, currentSummary e executionContext. Continuação via listagem do board com statusId/rootOnly e
         mesmos filtros.
       x-contract-status: proposed
       parameters:
@@ -916,6 +948,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -1021,6 +1056,9 @@ paths:
                     executorAgentId: 10000000-0000-7000-8000-000000000016
                     statusId: 10000000-0000-7000-8000-000000000026
                     position: a5
+                    slug: example-task
+                    specification: ""
+                    currentSummary: ""
                     progress:
                       percent: 0
                       note: ""
@@ -1058,7 +1096,7 @@ paths:
     patch:
       operationId: updateTask
       summary: Atualizar conteúdo e progresso
-      description: Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId.
+      description: Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida.
         Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
         efetivo usa o board da origem da cadeia.
       x-contract-status: proposed
@@ -1083,6 +1121,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -1173,6 +1214,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -1265,6 +1309,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -1351,6 +1398,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -2003,6 +2053,7 @@ paths:
             schema:
               $ref: "#/components/schemas/RecordExecution"
             example:
+              currentSummary: Implementação realizada; validação em andamento; revisão pendente.
               summary: Atividade concluída
               outcome: progress
               statusId: 10000000-0000-7000-8000-000000000020
@@ -2394,6 +2445,9 @@ paths:
                 executorAgentId: 10000000-0000-7000-8000-000000000013
                 statusId: 10000000-0000-7000-8000-000000000021
                 position: a2
+                slug: example-task
+                specification: ""
+                currentSummary: ""
                 progress:
                   percent: 0
                   note: ""
@@ -2722,6 +2776,41 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    Slug:
+      type: string
+      minLength: 1
+      maxLength: 80
+      pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+      description: Identificador de URL gerado, ASCII lowercase, estável ao renomear,
+        único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo
+        cliente.
+    SlugResolution:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        slug:
+          $ref: '#/components/schemas/Slug'
+      required:
+      - id
+      - slug
+      additionalProperties: false
+    TaskSpecification:
+      type: string
+      x-maxBytes: 65536
+      description: Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.
+    CurrentSummary:
+      type: string
+      x-maxBytes: 16384
+      description: Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.
+    CurrentSummaryInput:
+      type: string
+      minLength: 1
+      pattern: '\S'
+      x-maxBytes: 16384
+      description: Síntese cumulativa completa, não vazia, substitui a atual preservando a anterior na timeline. Não é um delta ou transcrição.
     Progress:
       type: object
       properties:
@@ -3173,6 +3262,8 @@ components:
     Task:
       type: object
       properties:
+        slug:
+          $ref: '#/components/schemas/Slug'
         id:
           type: string
           format: uuid
@@ -3191,6 +3282,8 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        specification:
+          $ref: "#/components/schemas/TaskSpecification"
         description:
           type: string
           description: Markdown, máximo 65536 bytes UTF-8.
@@ -3207,6 +3300,8 @@ components:
         position:
           type: string
           description: Rank opaco gerado pelo servidor.
+        currentSummary:
+          $ref: "#/components/schemas/CurrentSummary"
         progress:
           $ref: "#/components/schemas/Progress"
         block:
@@ -3261,14 +3356,17 @@ components:
           description: Autor/dono obrigatório e imutável; agente que escreveu a task. Independente do ator
             declarado que transporta a requisição.
       required:
+        - slug
         - id
         - boardId
         - parentId
         - title
         - description
+        - specification
         - executorAgentId
         - statusId
         - position
+        - currentSummary
         - progress
         - block
         - childSummary
@@ -3293,6 +3391,8 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        specification:
+          $ref: "#/components/schemas/TaskSpecification"
         description:
           type: string
           description: Markdown, máximo 65536 bytes UTF-8.
@@ -3331,18 +3431,24 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        specification:
+          $ref: "#/components/schemas/TaskSpecification"
         description:
           type: string
           description: Markdown, máximo 65536 bytes UTF-8.
           x-maxBytes: 65536
+        currentSummary:
+          $ref: "#/components/schemas/CurrentSummaryInput"
         progress:
           $ref: "#/components/schemas/Progress"
         autonomyMode:
           $ref: "#/components/schemas/TaskAutonomyMode"
+      dependentRequired:
+        progress: [currentSummary]
       required: []
       additionalProperties: false
       minProperties: 1
-      description: Edita conteúdo/progresso e modo individual, sem alterar authorAgentId/boardId/parentId.
+      description: Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida.
         Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
         efetivo usa o board da origem da cadeia.
     Assignment:
@@ -3361,6 +3467,8 @@ components:
     Position:
       type: object
       properties:
+        currentSummary:
+          $ref: "#/components/schemas/CurrentSummaryInput"
         statusId:
           type: string
           format: uuid
@@ -3376,7 +3484,7 @@ components:
         - beforeTaskId
       additionalProperties: false
       description: Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige
-        execution-summaries; reordenar no mesmo status final é permitido.
+        execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.
     Archive:
       type: object
       properties:
@@ -3611,6 +3719,8 @@ components:
     RecordExecution:
       type: object
       properties:
+        currentSummary:
+          $ref: "#/components/schemas/CurrentSummaryInput"
         summary:
           type: string
           minLength: 1
@@ -3642,6 +3752,7 @@ components:
         executionContext:
           $ref: "#/components/schemas/ExecutionContextRef"
       required:
+        - currentSummary
         - summary
         - outcome
         - statusId
@@ -3652,7 +3763,7 @@ components:
       description: Completed exige status final e sem bloqueio, define progresso 100. Outros outcomes
         exigem status não final; blocked exige bloqueio existente. Revisão respeita instrução do
         usuário, sem etapa universal obrigatória. O contexto informado deve coincidir com a cadeia
-        da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch.
+        da task, inclusive origem cross-board; divergência retorna 409 execution_context_mismatch. currentSummary é a síntese cumulativa atual obrigatória, salva atomicamente na task; summary permanece o registro histórico desta atividade.
     ExecutionSummary:
       type: object
       properties:
@@ -4317,6 +4428,9 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000013
     statusId: 10000000-0000-7000-8000-000000000021
     position: a2
+    slug: example-task
+    specification: ""
+    currentSummary: ""
     progress:
       percent: 0
       note: ""
@@ -4347,6 +4461,9 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000014
     statusId: 10000000-0000-7000-8000-000000000024
     position: a3
+    slug: example-task
+    specification: ""
+    currentSummary: ""
     progress:
       percent: 0
       note: ""
@@ -4377,6 +4494,9 @@ x-recursive-task-example:
     executorAgentId: 10000000-0000-7000-8000-000000000015
     statusId: 10000000-0000-7000-8000-000000000025
     position: a4
+    slug: example-task
+    specification: ""
+    currentSummary: ""
     progress:
       percent: 0
       note: ""
