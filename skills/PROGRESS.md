@@ -98,3 +98,5 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - [x] Reusar/criar task própria antes de planejamento substantivo; bootstrap sem cadastros materializa contexto assim que possível.
 - [x] Persistência incremental/status reais, distinção Collaborator e catálogo MCP dinâmico aplicados a docs/skills/pacotes.
 - [x] Revisão independente corrigiu caminho novo time para passar pelo board; links/estrutura/build e 12 unitários passaram, três integrações CreateContainer/NotFound falharam.
+
+- Condução visual natural exclusiva do Leader aplicada em entradas, workflows/Mermaid e referência Codex; alinhamento fast-forward com main fd78b37. Sem alterações de runtime/configuração; snapshot MCP fica para sincronização Backend.

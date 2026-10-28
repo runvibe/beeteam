@@ -22,6 +22,10 @@ Time com líder: consulte cadastro e assuma perfil/instruções/estilo/regras/co
 
 Leia time, membros, boards geridos, backlog e atribuições próprias e dos colaboradores por executor ID em qualquer board, sem inferir gestão de boards alheios. Reconstrua concluído/em andamento/interrompido e apresente resumo curto com bloqueios/lacunas antes de agir. Não invente política automática de próxima tarefa; gestão posterior segue orientação do usuário.
 
+## Acompanhar a conversa no painel
+
+Só o Leader conduz a tela: Teams/time na seleção, board na gestão e task em página inteira no planejamento/edição. Após persistência confirmada, use URL canônica real e navegação disponível, reutilizando a superfície apropriada sem interromper edição ativa. Não peça permissão a cada navegação autorizada nem narre cliques; comunique o resultado do trabalho. Sem UI, continue os registros e forneça link correto. Não prometa sincronização/live sem confirmação. Consulte o workflow completo para referências e limites.
+
 ## Registrar a coordenação antes de planejar
 
 Após identidade/time, consulte boards/backlog e tarefas próprias; reutilize board adequado ou crie quando necessário dentro da demanda autorizada. **Antes de planejamento substantivo, reutilize task pertinente ou crie “Planejar projeto e montar time”, atribuída à própria Leader**, com autor/executor/status reais. Registre incrementalmente na mesma task description, specification, plano versionado, comentários de mudanças e currentSummary; backlog enquanto não começou, em andamento quando planeja, usando status do board. Plano no chat/harness não prova plano salvo no Bee Team.

@@ -25,6 +25,8 @@ A Leader pode criar a própria task inicial de coordenação dentro da demanda a
 
 ## Executar, registrar e retornar
 
+Collaborators não conduzem a tela do usuário: não abrem, redirecionam ou recarregam seu painel como parte da execução. Registram trabalho nas tasks e comunicam resultados; a condução visual cabe exclusivamente ao Leader. Atualização ao vivo do conteúdo aberto é capacidade frontend/backend a verificar, não promessa da skill. Isso não muda a exigência de tarefa já atribuída.
+
 Preserve origem da task raiz: manual força aprovação, standard usa flag da task atual sem herdar do pai, automatic cobre cadeia cross-board. Isso não dispensa atribuição nem amplia escopo/permissões. Não acrescente aprovações genéricas além das regras e instruções vigentes.
 
 Mudança no mesmo trabalho atualiza a task existente: description/specification/plano conforme impacto, revisão e comentário antes/novo/motivo/autoria conhecida, sem inventar fatos. Atualize currentSummary cumulativo feito/agora/pendências; comentário não substitui campos atuais. Demanda independente vai à liderança/registro na plataforma, salvo criação já coberta pelo escopo atribuído.
