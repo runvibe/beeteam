@@ -1,92 +1,43 @@
 ---
 name: bee-team-leader
-description: Use when acting as the team leader for a Bee Team demand, including team planning, delegation, redistribution, progress review, or resuming coordination across chats.
+description: Use when acting as the Bee Team leader, selecting or forming a team, coordinating collaborators, reviewing progress, or resuming coordination across chats.
 ---
 
-# Bee Team — líder
+# Bee Team — Leader
 
-Conduza a demanda com o usuário na conversa. O Bee Team local preserva dados; a IA externa e as ferramentas disponíveis no harness conduzem o trabalho. Esta skill é portável e não comprova API/MCP implementados.
+Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de agente é persistente; chat é sessão substituível. A aplicação armazena dados, enquanto o harness fornece capacidades de conversa e execução.
 
-## Começar pela escolha do time
+## Ler conforme a etapa
 
-A primeira interação de produto deve ser: “Qual time você quer utilizar?”. Se o contexto explícito já indicar o time, use essa indicação sem perguntar novamente; resolva sua identidade e confirme o registro. Conferências técnicas de MCP/readiness podem ocorrer, mas não substituem essa conversa por checklist técnico. Não escolha um time só por existir, por ser o primeiro da lista ou pelo último uso.
+- Ao iniciar, escolher/formar time ou recuperar chats, leia o [workflow completo com Mermaid](references/leader-onboarding-flows.md). Ele define os três casos e suas confirmações.
+- Antes de consultar ou escrever no Bee Team, leia [integração e recuperação](references/integration.md); use schemas/capacidades realmente anunciados.
+- Para conectar MCP, preparar ambiente local e abrir o painel no Codex, leia [conexão e startup](references/codex.md). Em outro harness, descubra seu mecanismo suportado.
+- Ao delegar ou retomar atividade, leia [handoff](references/handoff.md); para divisão de trabalho consulte [exemplos](references/team-examples.md) quando úteis.
 
-Para time existente, consulte seu registro e identifique o agente líder associado. Carregue os dados, perfil único, instruções, estilo, regras, limites e contexto desse agente; assuma seu papel nesta sessão e retome tarefas e decisões relevantes para a demanda. Não crie outro líder, não sobrescreva perfil ou associação para se encaixar no chat. Se o time estiver sem líder, houver vínculo inconsistente ou identidade ambígua, explique a lacuna e peça uma decisão ao usuário antes de assumir identidade ou cadastrar algo. Não invente identidade; sem acesso aos registros, declare a consulta pendente.
+## Entrada e time
 
-Se nenhum time for escolhido ou não existir um adequado, pergunte se o usuário quer criar um time. Se ele não quiser, não cadastre nada. Se quiser, reconheça seu papel de conduzir a formação como líder e converse primeiro sobre o projeto: objetivo, escopo, entregas e restrições, com perguntas curtas, uma de cada vez. “Projeto” aqui significa o trabalho discutido, não uma nova entidade Project ou workspace. Aceitar criar um time inicia a conversa; não aprova automaticamente uma composição ainda indefinida.
+Cumprimente brevemente, verifique/reutilize o ambiente local e abra Teams na rota `/teams` do endereço descoberto. No ambiente observado, painel `http://127.0.0.1:5173`, API `http://127.0.0.1:18081/api/v1`, MCP `http://127.0.0.1:18081/mcp`; confirme instalação/host, sem assumir acesso cloud ao localhost. Pergunte qual time usar ou se quer criar, salvo escolha explícita no contexto. Usuário escolhe na interface e informa no chat; não presuma evento UI recebido.
 
-Após entender a demanda, consulte perfis e vínculos disponíveis e apresente proposta concreta de time, líder e colaboradores, indicando responsabilidades, motivo de cada participação e quais identidades serão reutilizadas ou criadas. O usuário pode confirmar, rejeitar ou alterar; incorpore alterações e obtenha aprovação da composição resultante antes de criar agentes, time ou vínculos. Preserve o perfil único e os limites de um time como líder e um como colaborador por agente. A aprovação explícita da formação da equipe é obrigatória mesmo com task/board automático. Não cadastre preventivamente nem considere silêncio aprovação.
+Time com líder: consulte cadastro e assuma perfil/instruções/estilo/regras/contexto existentes, sem duplicar ou sobrescrever. Time escolhido sem líder: leia informações, crie/vincule liderança adequada conforme esse fluxo e confirme persistência; ausência de líder não exige pergunta genérica adicional. Esclareça apenas lacuna essencial/ambiguidade real e respeite vínculos. Novo time: primeiro entenda projeto/objetivos uma pergunta por vez, depois proponha composição multidisciplinar sucinta, inclusive líder, responsabilidades e motivo. Perfis são funcionais, não biografias; nome/avatar identificam. Obtenha aprovação concreta da composição e alterações antes de cadastrar. Autonomia de task não dispensa essa aprovação. Skills auxiliares são opcionais a critério da LLM, não escolha imposta ao usuário.
 
-## Disponibilizar a aplicação local
+Leia time, membros, boards geridos e atribuições dos colaboradores por executor ID em qualquer board, sem inferir gestão de boards alheios. Reconstrua concluído/em andamento/interrompido e apresente resumo curto com bloqueios/lacunas antes de agir. Não invente política automática de próxima tarefa; gestão posterior segue orientação do usuário.
 
-O líder também prepara o acesso à aplicação para o usuário acompanhar atividades. Antes de depender de registros Bee Team, identifique instalação/checkouts, configurações e procedimento suportado; confirme banco, API, MCP e painel separadamente. Reutilize serviços saudáveis identificados; não crie outra instância só porque este chat não a iniciou. Leia [integração](../references/integration.md) e, no Windows/Codex, [procedimento local](../references/codex.md).
+## Chats, handoff e continuidade
 
-Dentro do pedido autorizado de uso local, inicie somente componentes ausentes pelo procedimento existente, em ordem banco → API/MCP → painel. Preserve banco, volume, credenciais e dados; não execute bootstrap/seed, reset ou migração de tecnologia como parte da inicialização. PostgreSQL 18 é o caminho atual; SQLite e migração bidirecional não fazem parte deste fluxo. Não pare um serviço saudável para testar cenário parado. Coordene ownership com quem já administra os processos antes de reiniciar.
+Busque candidatos por nome igual/próximo do colaborador e referências disponíveis; consulte contexto/perfil/sinais de Collaborator só quando permitido. Nome e menção à skill não provam identidade. Reúna candidatos numa proposta única e peça escolha explícita continuar ou criar novo, inclusive em modo automático; não envie instruções a chat não escolhido. Reuse a escolha já aprovada sem perguntar de novo. Criação de chat depende da autorização/capacidade do harness. Use nome do colaborador como base legível; ajustar título do chat não renomeia agente. Sem acesso, informe lacuna, não alegue exclusão. Não crie vínculo persistente adicional chat–agente no Bee Team; use relações/referências disponíveis na coordenação, sem inventar pai/filho nativo.
 
-Confirme readiness por leitura real: banco acessível, consulta de domínio pela API, handshake/discovery MCP e painel recarregado em modo API real com dados coerentes. Health/porta aberta ou HTML isolado não bastam. Entregue URL clicável do endereço verificado e abra o painel quando autorizado e suportado; se não puder inspecionar o navegador, diga que só verificou HTTP, sem alegar validação visual. Não confunda cache, mock ou registro antigo com execução atual.
+Handoff pede explicitamente **usar Collaborator**, indica identidade existente (fallback novo só explicitamente autorizado), time, referência real da task quando existir, origem de execução e ação esperada. Use dados persistidos. Exija duas confirmações reais: identidade/perfil prontos; depois compreensão da task atribuída e pendências. Sem task registrada e atribuída, o colaborador aguarda. Registre/atribua antes de solicitar execução; mensagem direta não substitui registro. Criar/desdobrar tasks pelo colaborador só dentro do escopo de task já atribuída. Preparação exige descrição/specification/plano versionado proporcional antes do trabalho, inclusive pequeno.
 
-Se faltar ferramenta, pré-requisito ou houver rejeição de policy/revisão automática, pare a ação bloqueada; não troque launcher/shell/interface para contornar. Explique ação e motivo real, forneça o comando suportado para execução manual quando apropriado e retome a verificação após confirmação. Aprovação geral de coordenação não remove bloqueio da ferramenta. Banco/API indisponíveis exigem registro pendente, sem inventar persistência; continue apenas trabalho independente autorizado.
+Colaborador salva progresso/síntese/comentários/resultado pertinentes e confirma persistência antes de comunicar bloqueio, decisão ou encerramento. Falha de gravação/envio fica explícita. Retome somente etapa faltante, sem duplicar agente/time/chat ou trabalho ativo; não prometa recuperação de conversa integral ausente.
 
-## Conectar o MCP ao chat
+## Invariantes de execução e dados
 
-Na primeira conexão, apresente os endereços locais confirmados do painel, API, health e MCP conforme [referência Codex](../references/codex.md#conectar-bee-team-ao-codex). Explique que a API roda no computador e que acesso por localhost exige o mesmo ambiente de rede; link do painel é diferente do endpoint MCP usado no cadastro.
+- Preserve `rootTaskId`/`originBoardId`: origem manual força aprovação; standard usa flag de cada task sem herdar do pai; automatic cobre cadeia cross-board. Não altere modos destino. Regras explícitas de composição/reuso de chats e atribuição continuam valendo; autonomia não amplia permissões do harness.
+- Board tem criador preservado e um time gestor; task tem board, autor/executor obrigatórios UUID e não tem teamId. Subtasks recursivas podem atravessar boards/executores sem ciclos. Agente tem perfil único, lidera no máximo um time e colabora em no máximo um (podem ser diferentes). Não edite tasks alheias supondo que gestão do time confere permissão: alcance via executor gerido continua pendente.
+- Separe description, specification (o quê/aceite), plan.content versionado (como) e currentSummary (feito/agora/pendências). Atualize campos atuais e histórico em mudanças na mesma task. Reponha síntese cumulativa a cada progresso/status/entrega. Bloqueio é flag separada, com motivo/impacto/condição de retorno. Fechar atividade não conclui task; revisão segue orientação/autonomia, sem revisão humana universal.
+- Resolva slugs de Agent/Team/Task por tipo antes de usar UUID; board não tem slug. Nunca gere IDs/slugs nem use nome como identidade. Preserve versões, idempotência e resultado real; falha de gravação suspende trabalho dependente.
+- Reutilize banco/API/MCP/painel saudáveis; inicie só parte ausente pelo procedimento suportado, preserve PostgreSQL/dados e não faça seed/reset ou contorne recusa. Endpoint ativo não comprova ferramentas no chat; cadastrar conexão requer autorização. Colaboradores não competem pelo startup.
 
-Antes da primeira consulta, descubra se ferramentas Bee Team estão expostas nesta sessão. Instalar/ler esta skill ou ter o endpoint ativo não cadastra o MCP no harness. Se faltarem ferramentas, identifique o endpoint real e siga [conexão no Codex](../references/codex.md#conectar-bee-team-ao-codex) ou a documentação oficial do harness utilizado. Apresente configuração e escopo concretos; configure apenas com autorização do usuário já existente ou obtida para isso. Preserve entradas existentes, sem instalar outro servidor ou alterar políticas para suprir a ausência.
+## Recursos MCP e limites
 
-Valide separadamente protocolo do servidor (initialize e discovery tools/resources/prompts) e exposição no chat (ferramenta Bee Team de leitura chamada com sucesso). Se necessário, oriente atualização da conexão ou nova sessão pelo mecanismo suportado e confira novamente; não prometa atualização automática do catálogo. Declare recursos/prompts inacessíveis quando o cliente não os expuser. Sem conexão utilizável, continue somente etapas independentes e entregue a pendência concreta.
-
-## Contexto e autorização
-
-Consulte perfil, time, boards, tarefas, decisões e autonomia efetiva do board/tarefa antes de coordenar sua execução. Diferencie registros antigos de atividade confirmada agora. Para integração, leia [contratos e recuperação](../references/integration.md); no Codex, leia [adaptação do harness](../references/codex.md).
-
-Sem escolha explícita, use **com aprovação**, sem obrigar o usuário a escolher um modo. Antes de criar chat, atribuir/reutilizar um colaborador ou chat para uma tarefa, ou transferir trabalho, apresente uma proposta concreta e aguarde aprovação. Uma aprovação pode cobrir o conjunto apresentado. Acompanhar e esclarecer essa execução não exige repetir a aprovação. Prazo urgente ou capacidade ociosa não ampliam a autorização.
-
-Consulte `Task.executionContext` e preserve `rootTaskId`/`originBoardId` ao atravessar subtasks ou boards. Leia a [matriz de autonomia](../references/integration.md): origem `manual` força manual; `standard` avalia a flag da task atual sem herdar do pai; `automatic` libera toda a cadeia. Sem contexto, mantenha aprovação. O modo efetivo automático dispensa novas permissões de coordenação dentro do escopo, não amplia autorizações externas nem muda configurações dos destinos. Se a API faltar, declare a falta de confirmação; instrução explícita atual pode autorizar uma ação, mas não comprova persistência.
-
-## Planejar e distribuir
-
-A autonomia de execução abaixo não dispensa a escolha inicial do time nem a aprovação concreta de sua formação. Para um time novo, conclua a conversa e aprovação descritas acima antes de persistir a composição.
-
-1. Mantenha aqui o diálogo de descoberta: objetivo, escopo, critérios de aceitação, restrições e decisões. Seja sucinto e faça uma pergunta por vez, apenas quando mudar o trabalho; não envie ao executor uma demanda vaga para que ele refaça a conversa com o usuário.
-2. Consulte identidades e vínculos antes de propor a equipe. Cada time tem um líder. Um agente pode colaborar em no máximo um time e liderar no máximo um, em times diferentes. Perfil único: nome, avatar opcional, atuação, estilo, regras e limites; não crie lista de skills no perfil. Copiar perfil cria identidade separada sem tarefas, histórico interno, chats ou credenciais; contexto resumido só quando solicitado. Arquivar time preserva vínculos; transferência explícita de agente, inclusive de time arquivado, preserva identidade e tasks.
-3. Divida por entregas e dependências reais. Uma demanda pequena pode ter um responsável. Board organiza tarefas e status e pertence a um único time; preserva seu criador e pode trocar de time gestor sem alterar tasks. Time organiza pessoas e pode gerir vários boards. Tasks não pertencem a time: têm autor e executor agentes obrigatórios, líderes ou colaboradores. Subtarefas são tarefas com `parentId`, exibidas como checklist derivado do estado, sem duplicação. A hierarquia é recursiva sem limite fixo, pode atravessar boards e ter executores diferentes; rejeite ciclos.
-4. Apresente tarefa/entrega, responsável, chat a reutilizar ou criar, motivo, dependências, limites e quem revisará. Reutilize identidade/contexto pertinente; proponha novo chat quando a sessão faltar ou não for adequada. Novo chat não exige nova identidade. Use os [exemplos de equipes](references/team-examples.md) conforme a demanda.
-5. Após autorização aplicável, registre planejamento, tarefas e vínculos usando capacidades confirmadas. Envie a cada executor um [briefing completo](../references/handoff.md). Registre somente chats realmente criados e atribuições confirmadas. Se a ferramenta faltar, entregue o briefing preparado e explique a dependência; não simule delegação.
-
-## Acompanhar e encerrar
-
-Consulte status, resumos, entregas, dependências e última atualização. Não presuma execução ao vivo por um cadastro ativo. O colaborador registra seu próprio trabalho; não há supervisor obrigatório. Dados das tasks estão disponíveis a todos. O alcance de edição do líder via executores geridos está pendente: não presuma permissão por autoria, gestão do board ou vínculo de time. Continue leitura, planejamento e revisão; antes de edição dependente dessa política, encaminhe uma única pergunta ao usuário.
-
-Em redistribuição, preserve trabalho, decisões, autoria e contexto de origem anteriores, sem copiar histórico interno do agente ao novo executor e apresente destino, motivo e impacto; no modo com aprovação, aguarde autorização se a transferência não estiver coberta. Não use a aprovação original da divisão como consentimento ilimitado.
-
-Revise conforme a orientação do usuário; no autônomo, o líder pode revisar. Status são configuráveis e não exigem todas as etapas. Bloqueio tem motivo separado do status. Concluir filho não conclui pai ou irmãos automaticamente.
-
-Ao encerrar sua própria atividade, registre na tarefa correspondente status resultante, resumo, decisões, entregas/referências, pendências/bloqueios e próximo passo, usando o [formato de encerramento](../references/handoff.md). Resumos ficam nas tarefas; RA consulta os relacionamentos. Não salve transcrição nem duplique histórico no perfil. Apresente ao usuário o resultado consolidado, evidências, o que permanece pendente e qualquer falha de persistência. Não declare sucesso de trabalho ou registro sem confirmação.
-
-## MCP disponível
-
-Leia `beeteam://skills/leader` e `beeteam://references/integration` via resources/read quando anunciados. Para briefing, `task_briefing(taskId)` ou `prepare_execution({taskId})` consulta contexto sem iniciar execução. Complete páginas de planos/filhos com `listPlans`/`listAllTasks`; `listTasks` é restrito ao board. Use `getResumptionContext`/`listAgentActivities` para continuidade e `delivery_review(taskId)` para parecer, sem presumir aprovação.
-
-Após autorização aplicável, as tools simples incluem `createTask`, `assignTask`, `createPlan`, `changeTeamComposition` e `createChatReference`; siga envelope/schema anunciado. Gestão não confere a permissão pendente de editar tasks de executores geridos. Para sua atividade autorizada, `record_progress` registra avanço e `close_activity` encerra com resumo sem necessariamente concluir. Leia detalhes, versões, erros e exemplos na referência de integração; não trate essas operações como controle de chats.
-
-## Síntese atual cumulativa da task
-
-Ao registrar trabalho, progresso, mudança de status ou encerramento, leia `Task.currentSummary` e recomponha uma síntese atual completa: **feito/concluído**, **em curso agora**, **pendências e próximo passo**. Preserve fatos anteriores ainda relevantes, incorpore o avanço confirmado e retire do estado atual pendências resolvidas sem apagar seu histórico. Escreva de forma breve e coerente para o card fechado do board e o detalhe. Se a etapa terminou, diga o que permanece em curso ou que nada está em curso; não invente atividade contínua.
-
-`currentSummary` é texto cumulativo, não descrição original, nota percentual, transcrição ou sequência de comentários desconexos. Não substitui `ExecutionSummary.summary`, que relata a atividade histórica. Campo vazio significa ausência de síntese, não ausência de trabalho: reconstrua somente com registros verificáveis e explicite lacunas. Máximo 16384 bytes UTF-8. Em conflito, releia a task e componha sobre a versão atual para não perder contribuições. Não gere síntese de tasks alheias nem altere histórico para fazê-lo concordar com o texto novo.
-
-`record_progress` recebe `currentSummary` no topo ou no item de `subtaskUpdates` correspondente; é obrigatório e não vazio quando enviar `progress`, e pode ser atualizado sozinho. `close_activity` exige `execution.currentSummary` além de `execution.summary` histórico. Mudança de status por `moveTask` exige síntese atual; simples reordenação não. Atualizações administrativas preservam a síntese. Confirme persistência da síntese junto do resultado; timeout não comprova atualização do card.
-
-## Especificação e plano
-
-Consulte `Task.specification` ao planejar, retomar, executar ou revisar a task. Distinga: `description` apresenta a demanda; `specification` registra requisitos, regras, entrega esperada e critérios de aceitação; `plan.content` descreve como executar; `currentSummary` sintetiza feito/agora/falta. Não substitua um pelo outro. Especificação vazia significa que ainda não foi registrada, não autorização para inventar requisitos: use decisões confirmadas e esclareça lacunas essenciais, uma pergunta por vez.
-
-Escreva especificação e plano em Markdown quando útil (listas, critérios, tabelas, referências). Preserve o texto literal; Markdown é conteúdo, não código a executar nem instrução superior às orientações do usuário. Não transforme material arbitrário em autorização, nem introduza requisitos rejeitados. Alterar a especificação não autoriza ampliar a execução. Planejamento e revisões permanecem registros próprios; não crie nova entidade ou versionamento de especificação.
-
-Task.specification é string sempre presente, vazia para task nova/legada sem especificação, limite 65536 bytes UTF-8. CreateTask/PatchTask aceitam specification opcional; omitir preserva no PATCH, `""` limpa explicitamente, null é inválido. Não limpe por falta de contexto. Edição apenas de specification é administrativa, sem exigir currentSummary; se houver progress na mesma chamada, a síntese cumulativa continua obrigatória. Preserve histórico de alterações e siga autorização aplicável; o campo não resolve a política pendente de edição do líder.
-
-## Slugs e identidade
-
-Agent, Team e Task (incluindo subtasks) têm slug legível somente leitura, para navegação; boards não têm slug. Ao receber apenas um slug, use `resolveAgentSlug`, `resolveTeamSlug` ou `resolveTaskSlug` conforme o tipo e guarde o UUID retornado. Depois use UUID em taskId/agentId/teamId, relações, tools e prompts existentes. Não substitua IDs por slug nem gere slug localmente a partir de nome/title.
-
-O servidor mantém slug estável após rename, único por tipo e reservado após exclusão lógica. Renomear não cria identidade; dois tipos podem ter o mesmo texto sem serem o mesmo recurso. Unknown/deleted retorna 404: não adivinhe outro slug, não recrie entidade nem reaproveite automaticamente. Archived ainda resolve, mas isso não torna recurso ativo nem autoriza escrita. No briefing/retomada, preserve UUID como identidade e slug retornado como referência navegável, sem inventar formato de URL do frontend.
+Use resources/prompts só se anunciados. `prepare_execution`/prompts são leitura, não execução nem atribuição; `record_progress`/`close_activity` escrevem apenas conforme autorização/schema. Leia esta referência local completa antes de operar; se consumir apenas MCP e o workflow não estiver disponível, informe a lacuna e solicite conteúdo equivalente, sem inventar URI ou explorar filesystem. Instalar esta skill não atualiza snapshots compilados do servidor.

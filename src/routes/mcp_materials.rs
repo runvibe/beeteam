@@ -32,16 +32,53 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
         "Team examples",
         include_str!("../../resources/bee-team/bee-team-leader/references/team-examples.md"),
     ),
+    (
+        "beeteam://references/leader-onboarding-flows",
+        "Leader onboarding workflow",
+        include_str!("../../resources/bee-team/references/leader-onboarding-flows.md"),
+    ),
+    (
+        "beeteam://references/collaborator-workflow",
+        "Collaborator workflow",
+        include_str!("../../resources/bee-team/references/collaborator-workflow.md"),
+    ),
+    (
+        "beeteam://references/mcp-content",
+        "MCP content guidance",
+        include_str!("../../resources/bee-team/references/mcp-content.md"),
+    ),
+    (
+        "beeteam://references/task-briefing",
+        "Task briefing template",
+        include_str!("../../resources/bee-team/prompts/task-briefing.md"),
+    ),
+    (
+        "beeteam://references/collaborator-resumption",
+        "Collaborator resumption template",
+        include_str!("../../resources/bee-team/prompts/collaborator-resumption.md"),
+    ),
+    (
+        "beeteam://references/delivery-review",
+        "Delivery review template",
+        include_str!("../../resources/bee-team/prompts/delivery-review.md"),
+    ),
+    (
+        "beeteam://references/content-manifest",
+        "Prompt content manifest",
+        include_str!("../../resources/bee-team/prompts/content-manifest.json"),
+    ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":"text/markdown","description":"Bundled Bee Team content, snapshot of Skills commit dfd4e19. Not installed globally; never executed by this server."})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Current server advertises 13 resources, including mcp-content; this discovery supersedes older six-resource counts in source text. Bundled Skills commit 0e3a780. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS
         .iter()
         .find(|(allowed, _, _)| *allowed == uri)
         .ok_or_else(Failure::missing)?;
-    Ok(json!({"contents":[{"uri":uri,"mimeType":"text/markdown","text":text}]}))
+    Ok(
+        json!({"contents":[{"uri":uri,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"text":text}]}),
+    )
 }
 pub const PROMPT_TEMPLATES: &[(&str, &str, &str)] = &[
     (

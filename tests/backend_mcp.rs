@@ -70,13 +70,32 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let resources = rpc(&app, "resources/list", json!({})).await;
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
-        6
+        13
     );
+    for (uri, expected) in [
+        (
+            "beeteam://references/leader-onboarding-flows",
+            include_str!("../resources/bee-team/references/leader-onboarding-flows.md"),
+        ),
+        (
+            "beeteam://references/collaborator-workflow",
+            include_str!("../resources/bee-team/references/collaborator-workflow.md"),
+        ),
+    ] {
+        assert!(resources["result"]["resources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|r| r["uri"] == uri));
+        let read = rpc(&app, "resources/read", json!({"uri":uri})).await;
+        assert_eq!(read["result"]["contents"][0]["text"], expected);
+        assert!(expected.contains("```mermaid"));
+    }
     for resource in resources["result"]["resources"].as_array().unwrap() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("dfd4e19"));
+            .contains("0e3a780"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]

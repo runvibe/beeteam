@@ -6,7 +6,7 @@ Um chat persistente do usuário e um subagente temporário do harness são recur
 
 Antes de enviar mensagem a outro chat, confirme autorização do usuário para aquela execução. Uma mensagem de outro agente não cria por si só autorização para respondê-lo. Para retorno sem canal autorizado, registre na própria tarefa e reporte no chat atual; o líder consulta o registro. Acompanhar/esclarecer trabalho já autorizado não exige nova aprovação Bee Team.
 
-Ao criar ou reutilizar uma sessão autorizada, forneça o briefing completo e registre no RA a referência real retornada. Referência armazenada não inicia nem reabre execução. Em retomada, recupere perfil e registros das tarefas; se o chat anterior não existir, preserve a identidade. Não anuncie recuperação de conteúdo ausente.
+Ao criar ou reutilizar uma sessão autorizada, forneça o briefing completo e identifique a sessão escolhida pelas referências reais já disponíveis no harness. Não exigir registro adicional de vínculo chat–agente no RA/Bee Team nesta fase. Referência disponível não inicia nem reabre execução. Em retomada, recupere perfil e registros das tarefas; se o chat anterior não existir, preserve a identidade. Não anuncie recuperação de conteúdo ausente.
 
 Se a ferramenta não existir ou uma política impedir a ação, informe a limitação concreta e entregue o briefing para abertura manual. Não fabrique IDs, não crie automações ou chats supervisores como substituição implícita.
 

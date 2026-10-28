@@ -1,8 +1,6 @@
 # Integração Bee Team: contratos e recuperação
 
-Leia antes de consultar ou alterar dados. Fonte funcional: [especificação](../../bee-team-spec.md). Contratos HTTP propostos: [Kanban](../../docs/kanban-openapi.yaml) e [RA](../../docs/ra-openapi.yaml). Planos complementares: [Kanban](../../docs/kanban-api-plan.md) e [RA](../../docs/ra-api-plan.md). Os planos podem conter propostas antigas; instruções explícitas prevalecem. Se houver incompatibilidade operacional, informe-a antes da ação dependente.
-
-Antes de usar os links, confira a revisão: este pacote exige coleções diretas `/boards`, `/tasks`, `/agents`, `/teams`, campos `authorAgentId`/`executorAgentId` e `Task.executionContext`. Se os arquivos vinculados ainda tiverem workspace, pertencimento de task a time ou autonomia sem os três modos, são snapshots incompatíveis: consulte a revisão fornecida pelo responsável dos contratos ou reporte a dependência. Não use bindings antigos para preencher lacunas. A revisão de referência e seus hashes estão em [validação](../validation.md).
+Leia antes de consultar ou alterar dados. Use contratos e schemas atuais anunciados pelo backend instalado. Exija coleções diretas boards/tasks/agents/teams, autor/executor e contexto de origem; snapshots com workspace ou propriedade de task por time são incompatíveis. Não invente bindings para preencher lacunas. Este pacote inclui orientação operacional, não depende de arquivos de um worktree nem incorpora contratos antigos como fonte atual.
 
 ## Descobrir a capacidade real
 
@@ -166,3 +164,9 @@ Verifique em camadas: (1) banco disponível e consulta de domínio bem-sucedida,
 Em ambiente parcial, inicie somente a parte ausente. Porta ocupada por processo desconhecido exige diagnóstico; não mate processo, não escolha outra base silenciosamente, não duplique banco. Se a tentativa suportada falhar, registre componente/erro e interrompa retries cegos. Uma rejeição automática não autoriza alternativa de execução; informe e peça a etapa manual necessária. Não execute testes de parada/restart em ambiente usado por outros chats sem coordenação explícita.
 
 Ao concluir, informe separadamente banco, API, MCP, painel e limitações, com URL clicável realmente verificada. Abra a página pelo recurso disponível quando permitido; verifique a tela em vez de confiar em cache/HTML. Servidor não inicia agentes: preparar aplicação e iniciar trabalho são atos distintos. Snapshots MCP são compilados no binário; atualizar arquivos não atualiza processo já ativo. Build/restart para nova revisão exige coordenação e validação posterior, não reinício oculto durante trabalho alheio.
+
+## Entrada e atribuição obrigatória
+
+Ativar Collaborator confirma identidade/perfil, não autoriza trabalho. Consultar atribuições pelo executor ID em qualquer board, incluindo subtasks; não filtrar pelo time gestor. Sem task real previamente registrada e atribuída, aguardar Leader/usuário registrar e atribuir, sem executar pedido direto nem criar task de autoautorização. Completar description/specification/plano versionado na mesma task antes de executar. Criação de tasks/subtasks somente quando coberta pelo escopo de task já atribuída. Esses requisitos também valem em automatic e retomada; não reexecutar concluída nem duplicar execução ativa.
+
+Depois de validar atribuição, confirmar compreensão e pendências. Atualizar campos atuais e histórico em mudanças, bloqueio separado do status com motivo/impacto/condição e síntese. Confirmar gravação antes de comunicar ao Leader; falha de persistência suspende trabalho dependente e exige reconciliação sem duplicatas. As regras operacionais das skills não equivalem a garantia de enforcement de todas essas condições pela API.

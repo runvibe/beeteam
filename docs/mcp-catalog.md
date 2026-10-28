@@ -138,7 +138,7 @@ Os schemas exatos de todas entradas e saÃ­das constam no catÃ¡logo JSON.
 
 ## Resources â€” leitura por allowlist
 
-Snapshot editorial dos commit dfd4e19 da frente Skills, copiado para
+Snapshot editorial dos commit 0e3a780 da frente Skills, copiado para
 `resources/bee-team`. ConteÃºdo nÃ£o estÃ¡ instalado globalmente. `resources/read`
 aceita somente os URIs anunciados; URI file/path arbitrÃ¡rio Ã© rejeitado. Nenhum acesso
 a segredos ou diretÃ³rios do usuÃ¡rio. Os textos sÃ£o materiais para IA consumir,
@@ -207,3 +207,17 @@ Normalização única no PostgreSQL: lowercase+NFKD, remoção de marcas combina
 Slugs são estáveis ao renomear e únicos por tipo, inclusive archived/deleted. Excluídos nunca liberam o nome para outra identidade; cópia cria novo slug. Migration006 usa created_at,id para backfill determinístico, incluindo tombstones sem alterar conteúdo prévio, versão ou datas. Coluna gerada/index único/trigger de imutabilidade e lock transacional coordenam concorrência. Resolvers consultam índice diretamente, sem snapshot completo ou enumeração de listas. A geração e o backfill compartilham a mesma função SQL, sem algoritmos divergentes.
 
 Replays históricos sem slug ganham o slug canônico imutável do registro correspondente, inclusive tombstones; conservam a versão e demais campos do snapshot original. Não se reconstrói slug pelo nome antigo nem atual. Sem auth/políticas novas; alteração visual/integração frontend não validada nesta frente.
+
+## Workflows completos — snapshot 0e3a780
+
+O catálogo atual anuncia 13 resources; esta seção substitui contagens históricas acima e nos textos editoriais preservados. Os seis URIs anteriores permanecem. Novos URIs:
+
+- `beeteam://references/leader-onboarding-flows`
+- `beeteam://references/collaborator-workflow`
+- `beeteam://references/mcp-content`
+- `beeteam://references/task-briefing`
+- `beeteam://references/collaborator-resumption`
+- `beeteam://references/delivery-review`
+- `beeteam://references/content-manifest`
+
+Links Markdown relativos são mapeados pelo nome do arquivo sem extensão para `beeteam://references/{nome}`; ignore fragmento de seção ao ler o resource. Assim `references/leader-onboarding-flows.md` e `prompts/task-briefing.md` são resolvidos pela allowlist anunciada. O conteúdo permanece igual ao snapshot; Mermaid é texto, não executado. Os templates também continuam disponíveis pelos três prompts parametrizados read-only. PROGRESS, validation e README não são recursos. Nenhum filesystem arbitrário é exposto.

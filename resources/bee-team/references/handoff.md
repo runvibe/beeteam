@@ -2,6 +2,8 @@
 
 ## Briefing para execução ou retomada
 
+Peça explicitamente **usar a skill Collaborator neste chat**. Indique identidade existente ou autorização explícita para fallback novo, time, referência real da task quando existir, contexto do board de origem e ação esperada, usando dados persistidos. Duas confirmações: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Sem task registrada e atribuída, confirmar identidade e aguardar; o Leader registra/atribui antes de pedir execução. Não criar task para se autoautorizar. Desdobramento só no escopo de uma task já atribuída.
+
 Transfira o contexto completo relevante, fiel ao usuário, nesta ordem:
 
 - Identidade/perfil e regras/limites; board e tarefa/subtarefa, autor/executor, vínculos organizacionais relevantes, com IDs conhecidos.
@@ -54,3 +56,7 @@ Inclua UUID confirmado de agente/time/task e slug retornado quando disponível, 
 ## Ambiente de execução
 
 Inclua endereços confirmados de API/MCP/painel, momento e alcance da última verificação, modo real/mock, responsável pelos processos e bloqueios conhecidos. Não inclua segredos. Colaborador reutiliza; líder coordena startup conforme procedimento suportado. URL e processo existente não comprovam tarefa em execução. Se o ambiente cair, preserve dados da atividade e sinalize persistência não confirmada.
+
+## Retorno e referências de chat
+
+Salvar progresso/currentSummary/comentários/resultado pertinentes na task e confirmar persistência antes de comunicar bloqueio, decisão necessária ou encerramento ao Leader. Falha de gravação deve ser comunicada como registro não confirmado, com suspensão do trabalho dependente. Sem canal, declarar envio pendente, sem fingir mensagem. Reconciliar só etapa faltante. Não construir vínculo persistente adicional chat–agente no Bee Team; usar referências/relações disponíveis do harness, sem presumir pai/filho ou comunicação universal.
