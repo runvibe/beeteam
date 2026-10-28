@@ -23,9 +23,10 @@ flowchart TD
     N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
     O --> M
     N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
-    P --> Q["Criar chats separados autorizados; handoff com perfil e contexto; persistir referências reais"]
-    K --> R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
+    P --> Q["Etapa comum: verificar, reutilizar ou recriar chats conforme autorização; vincular agentes, time e chat líder; handoff e referências reais"]
+    K --> Q
     Q --> R
+    R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
 ```
 
 A escolha na interface não é recebida automaticamente pelo chat. Squad com competências completas não habilita execução automática: preservar modos de boards/tasks. Projeto é a demanda, não uma entidade Project/workspace. Geração de avatar e demais mecanismos dependem das capacidades reais do harness e serão detalhados.
@@ -72,9 +73,21 @@ Apresentar a composição de forma sucinta, fluida e direta por padrão. Aprofun
 
 Exemplo compacto: “Eu lidero a coordenação. Backend: backend e infraestrutura; Frontend: interface; QA: testes. Criaremos chats separados para esse trabalho. Posso prosseguir?”. Nomes e avatares identificam os agentes, sem transformar essa proposta em uma discussão de biografias.
 
-Depois da aprovação aplicável, cadastrar agentes, time e vínculos e criar chats separados para os agentes trabalharem. A proposta deve explicitar esses chats; seguir também as autorizações e capacidades efetivas do harness. Cada handoff leva perfil, contexto do projeto, responsabilidade, limites e referências necessárias; persistir referências reais dos chats criados. Não tratar subagente temporário como chat persistente nem declarar criação se a ferramenta não estiver disponível. Nessa limitação, informar a etapa pendente e fornecer handoff para abertura suportada.
+Depois da aprovação aplicável, cadastrar agentes, time e vínculos e seguir a etapa comum de gestão de chats abaixo. Para um time novo, criar chats separados dos colaboradores e vinculá-los ao chat atual do líder para comunicação; a aprovação concreta da proposta pode incluir essa criação. Não solicitar novamente permissão para ações já cobertas pela autorização vigente.
 
 Squad autônomo significa cobertura de competências para realizar o projeto. Não ativa execução automática: continuam valendo os modos e o contexto de origem de boards/tasks, além das permissões para ações externas. Formação do time, criação de chats e início do trabalho são fatos distintos a confirmar.
+
+## Etapa comum aos três casos — Gestão e vínculo de chats
+
+Após contextualizar um time existente, com ou sem líder anterior, ou formar um time novo, verificar as sessões de trabalho antes da continuidade de gestão. Vincular o chat atual à identidade do líder e registrar as referências de coordenação entre agentes, time, chats dos colaboradores e chat coordenador. Se o harness não tiver relação nativa pai/filho, representar isso como referência de coordenação pelos mecanismos suportados; não inventar hierarquia ou capacidade de comunicação.
+
+Consultar referências persistidas e verificar existência e acesso reais às sessões no harness. Reutilizar chats válidos. Um chat pode ter sido apagado, estar perdido ou não existir; referência antiga não comprova disponibilidade. Nome do agente pode orientar um nome legível para o chat, mas nomes iguais ou semelhantes não comprovam identidade: priorizar ID/referência persistente do harness e conferir o agente associado. Se o acesso não puder ser confirmado, declarar essa limitação, sem afirmar que o chat foi apagado.
+
+Quando for necessário criar ou recriar uma sessão, propor ou executar a substituição conforme o modo e as autorizações vigentes, incluindo as exigências do harness. Para times existentes, não presumir autorização apenas porque há um cadastro de agente; também não repetir perguntas quando a ação já estiver autorizada. Para time novo, a aprovação da composição pode cobrir os chats explicitados na proposta. Esta documentação não solicita criação de chats reais agora.
+
+Recriar chat não duplica o agente nem apaga autoria ou histórico. Manter a identidade persistente e preparar handoff com perfil funcional, contexto, tarefas relevantes, plano, specification, currentSummary, pendências e limites. Recuperar apenas informações disponíveis; não alegar recuperação integral de uma conversa inexistente. Persistir a referência real da nova sessão e seu vínculo com agente, time e chat líder, preservando o histórico da substituição pelos recursos suportados.
+
+Se faltarem ferramentas para consultar, criar ou vincular chats, informar a etapa pendente e fornecer handoff para abertura pelo mecanismo disponível. Não tratar subagente temporário como chat persistente nem afirmar comunicação entre sessões sem capacidade confirmada. A política de próxima tarefa e gestão contínua continua em aberto.
 
 ## Modelo e limites preservados
 
@@ -98,7 +111,11 @@ Squad autônomo significa cobertura de competências para realizar o projeto. N�
 | Novo time solicitado | Descobrir demanda uma pergunta por vez | Nenhum cadastro antes de compreender projeto e aprovar proposta concreta. |
 | Compreensão suficiente | Propor composição sucinta e perfis funcionais | Inclui líder, execução e responsabilidades; nome/avatar identificam, sem biografias fictícias ou aprovação individual obrigatória. Uma aprovação objetiva basta; aprofundamento apenas a pedido ou por requisito essencial. |
 | Proposta alterada/rejeitada | Revisar e obter aprovação resultante | Nenhum cadastro da proposta rejeitada; silêncio não aprova. |
-| Proposta aprovada | Cadastrar e criar chats autorizados | Identidades, vínculos, handoffs e referências reais confirmados; falhas parciais declaradas sem alegar conclusão. |
+| Proposta aprovada | Cadastrar agentes/time/vínculos e seguir etapa comum de chats | Aprovação pode incluir chats dos colaboradores; nenhum pedido de permissão repetido para ação já coberta. |
+| Qualquer caso contextualizado/formado | Verificar, reutilizar ou recriar e vincular chats | Chat atual associado ao líder; referências reais ligam colaboradores, agentes, time e coordenação, sem presumir pai/filho nativo. |
+| Referência de chat ausente ou chat confirmado apagado | Criar substituto conforme autorização vigente | Mesmo agente, autoria e histórico preservados; novo ID persistido e handoff com perfil, tarefas, plano, specification, currentSummary e pendências. |
+| Chat com nome igual ou semelhante | Conferir ID, associação e acesso antes de reutilizar | Nome sozinho não identifica sessão; não reutilizar o chat de outro agente por semelhança. |
+| Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
 | Squad formado | Preparar continuidade de gestão | Competências completas não mudam autonomia de execução; política posterior ainda não definida. |
 
 ## Decisões aprovadas versus implementação atual
@@ -109,6 +126,7 @@ Squad autônomo significa cobertura de competências para realizar o projeto. N�
 | Time com líder | Reutiliza líder/perfil/contexto sem duplicação | Detalhar leitura de descrição, colaboradores, boards, tarefas e situação histórica/atual antes da gestão. |
 | Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
 | Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
+| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Verificar existência/acesso, reutilizar ou substituir conforme autorização e vincular à identidade do agente, time e chat líder. |
 | Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
 
 O documento registra intenção aprovada, não comprova que a skill, o frontend ou o MCP já executem os novos comportamentos. A divergência do caso 2 é deliberadamente explicitada; sua implementação será uma etapa posterior autorizada.
@@ -119,7 +137,7 @@ O documento registra intenção aprovada, não comprova que a skill, o frontend 
 2. Detalhes para derivar o perfil da liderança ausente e tratar dados obrigatórios incompletos, concorrência ou falha parcial na criação/vínculo.
 3. Sequência e autorização de criar boards, assumir/transferir sua gestão e organizar tarefas/colaboradores quando faltar estrutura.
 4. Geração, escolha, armazenamento e limites dos avatares em diferentes harnesses.
-5. Recuperação de falhas parciais entre cadastro de agentes/time/vínculos e criação de chats, sem inventar atomicidade entre aplicação e harness.
+5. Detalhes operacionais de persistência dos vínculos de coordenação e recuperação de falhas parciais entre cadastro e criação/substituição de chats, sem inventar atomicidade ou relação pai/filho nativa no harness. A exigência da etapa comum de chats já está definida acima.
 6. Eventual integração de eventos de seleção da interface com o chat. Por enquanto, a comunicação é explícita pelo usuário.
 
 ## Escopo desta entrega
