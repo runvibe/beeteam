@@ -95,7 +95,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("7b14ebf"));
+            .contains("e6d6b7f"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         assert!(
             read["result"]["contents"][0]["text"]
@@ -154,14 +154,30 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         prepared["children"]["items"][0]["specification"],
         child["specification"]
     );
+    let mut changes = sqlx::postgres::PgListener::connect_with(&pool)
+        .await
+        .unwrap();
+    changes
+        .listen(beeteam::repositories::changes::CHANNEL)
+        .await
+        .unwrap();
     let failed=tool(&app,"record_progress",json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback","subtaskUpdates":[{"taskId":id(&child),"expectedVersion":999,"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]})).await;
     assert_eq!(failed["isError"], true);
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}/comments", id(&task))).await["total"],
         0
     );
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(100), changes.recv())
+            .await
+            .is_err()
+    );
     let input = json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Progress","currentSummary":"Root: planning done; implementation underway; tests next.","progress":{"percent":20,"note":"Started"},"subtaskUpdates":[{"taskId":id(&child),"expectedVersion":child["version"],"currentSummary":"Child: half done; completing implementation; tests pending.","progress":{"percent":50,"note":"Half"}}]});
     let result = success(&app, "record_progress", input.clone()).await;
+    tokio::time::timeout(std::time::Duration::from_secs(2), changes.recv())
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(result["task"]["progress"]["percent"], 20);
     assert_eq!(result["task"]["currentSummary"], input["currentSummary"]);
     assert_eq!(
@@ -175,6 +191,11 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         true
     );
     assert_eq!(success(&app, "record_progress", input).await, result);
+    assert!(
+        tokio::time::timeout(std::time::Duration::from_millis(100), changes.recv())
+            .await
+            .is_err()
+    );
     let task = &result["task"];
     let missing=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"progress":{"percent":25,"note":"missing synthesis"}})).await;
     assert_eq!(missing["isError"], true);

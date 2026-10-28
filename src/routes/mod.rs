@@ -7,6 +7,7 @@ use utoipa_swagger_ui::SwaggerUi;
 use crate::{config::AppConfig, state::AppState};
 
 pub mod backend;
+mod changes;
 mod cors;
 #[cfg(feature = "mcp")]
 pub mod mcp;
@@ -52,7 +53,8 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
                         .clone(),
                 ),
         )
-        .merge(backend::router(config.body_limit_bytes));
+        .merge(backend::router(config.body_limit_bytes))
+        .merge(changes::router());
 
     let api_router = if config.otel_enabled {
         api_router

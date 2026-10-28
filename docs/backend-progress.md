@@ -123,3 +123,11 @@ Build e39 testes Rust passaram no banco isolado, incluindo paridade dos workflow
 ## Coordenação incremental — Skills 7b14ebf
 
 Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reutiliza tarefa de coordenação atribuída a si antes de planejamento substantivo, salva decisões incrementalmente e trata bootstrap sem circularidade; Collaborator não se autoautoriza. Discovery permanece autoritativo, sem contagem fixa nas instruções. Build e39 testes Rust aprovados. API reiniciada isoladamente para PID59996, backup `.local/api-runtime/beeteam-before-7b14ebf.exe` preservado. Na verificação atual foram descobertos13 resources iguais ao commit fonte, links mapeados,3 prompts renderizados e60 tools; health e painel200. Coleções completas pré/pós/proxy iguais:1board,2tasks,3agents,2teams. Sem dados de negócio criados, seed/reset ou alteração pessoal; PostgreSQL/frontend preservados. Validação comprova conteúdo/transporte e persistência, não execução das decisões de IA.
+
+## Atualização ao vivo SSE
+
+- Branch alinhada por fast-forward com main fd78b37 antes das mudanças. GET /api/v1/changes anuncia reset/invalidate scope all, heartbeat15s/retry3s e refetch integral após conexão/perda. Sem conteúdo de negócio/cursor durável.
+- PostgreSQL NOTIFY transacional no UnitOfWork comum HTTP/MCP; emissão só após commit alterado, incluindo compostas. Fanout compartilhado/bounded, re-LISTEN/reset após desconexão, cleanup do listener/assinantes.
+- Testes isolados cobrem pós-commit, silêncio pré-commit/rollback/replay/read/erro, reconexão SSE e recuperação real após término de LISTEN. Teste MCP cobre notificação única de composta e silêncio de rollback/replay.
+- Revisão independente sem defeito funcional; removida espera fixa de prontidão do teste. Fixture QA autorizada criada somente no banco exclusivo bee_sse_qa_20261028/55481, API18083, nunca produto55482.
+- Snapshot Skills e6d6b7f sincronizado com catálogo/proveniência; instalações globais não alteradas. Validação visual frontend e atualização do runtime serão reportadas separadamente.

@@ -9,14 +9,20 @@ pub struct AppState {
 
 struct SharedState {
     pub database: DatabaseRepository,
+    changes: crate::services::changes::ChangeFeed,
 }
 
 impl AppState {
     pub fn new(database: DatabaseRepository) -> Self {
-        let inner = SharedState { database };
+        let changes = crate::services::changes::ChangeFeed::new(database.pool());
+        let inner = SharedState { database, changes };
         Self {
             inner: Arc::new(inner),
         }
+    }
+
+    pub fn changes(&self) -> &crate::services::changes::ChangeFeed {
+        &self.inner.changes
     }
 
     pub fn database(&self) -> DatabaseRepository {

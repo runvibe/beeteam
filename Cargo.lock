@@ -232,6 +232,7 @@ dependencies = [
  "bytes",
  "chrono",
  "dotenvy",
+ "futures-util",
  "http-body-util",
  "image",
  "jsonschema",

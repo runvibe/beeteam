@@ -4,3 +4,5 @@ pub mod echo;
 pub mod health;
 
 pub mod mcp;
+
+pub mod changes;
