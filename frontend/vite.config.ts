@@ -1,0 +1,27 @@
+import { loadEnv } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vitest/config";
+import { fileURLToPath, URL } from "node:url";
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const proxy = {
+    "/api": {
+      target: env.BEE_API_TARGET || "http://127.0.0.1:18081",
+      changeOrigin: true,
+    },
+  };
+  return {
+    server: { host: "127.0.0.1", port: 5173, strictPort: true, proxy },
+    preview: { proxy },
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    },
+    test: {
+      environment: "jsdom",
+      setupFiles: ["./src/test/setup.ts"],
+      css: false,
+    },
+  };
+});

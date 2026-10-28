@@ -1,0 +1,87 @@
+import type { BeeApi, Resources, Filters } from "./types";
+import { ApiError } from "./types";
+import { createTransport, type HttpOptions } from "./http-transport";
+const segment = encodeURIComponent;
+function query(filters: Filters = {}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters))
+    if (value !== undefined && value !== null && value !== "")
+      params.set(key, String(value));
+  return params.size ? `?${params}` : "";
+}
+function collection(resource: keyof Resources, scope: string) {
+  switch (resource) {
+    case "boards":
+    case "agents":
+    case "teams":
+      return `/${resource}`;
+    case "tasks":
+      return scope ? `/boards/${segment(scope)}/tasks` : "/tasks";
+    case "statuses":
+      return `/boards/${segment(scope)}/statuses`;
+    case "members":
+      return `/teams/${segment(scope)}/members`;
+    case "activities":
+      return `/agents/${segment(scope)}/activities`;
+    case "chats":
+      return `/agents/${segment(scope)}/chat-references`;
+    case "summaries":
+      return `/tasks/${segment(scope)}/execution-summaries`;
+    default:
+      return `/tasks/${segment(scope)}/${resource}`;
+  }
+}
+export function createHttpApi(options: HttpOptions = {}): BeeApi {
+  const request = createTransport(options);
+  return {
+    resolveSlug: (resource, slug) =>
+      request(`/${resource}/by-slug/${segment(slug)}`),
+    list: (resource, scope = "", filters = {}) =>
+      request(collection(resource, scope) + query(filters)),
+    get: (resource, id) => request(`/${resource}/${segment(id)}`),
+    board: (id, filters = {}) =>
+      request(`/boards/${segment(id)}/view` + query(filters)),
+    patch: (resource, id, body, version, scope) => {
+      if (resource === "statuses" && !scope)
+        throw new ApiError(
+          400,
+          "invalid_request",
+          "Board do status não informado.",
+        );
+      const path =
+        resource === "statuses"
+          ? `/boards/${segment(scope!)}/statuses/${segment(id)}`
+          : `/${resource}/${segment(id)}`;
+      return request(path, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+        headers: { "If-Match": `"${version}"` },
+      });
+    },
+    revisions: (taskId, planId, filters = {}) =>
+      request(
+        `/tasks/${segment(taskId)}/plans/${segment(planId)}/revisions` +
+          query(filters),
+      ),
+    resume: (id) => request(`/agents/${segment(id)}/resumption-context`),
+    createStatus: (boardId, input, key = crypto.randomUUID()) =>
+      request(`/boards/${segment(boardId)}/statuses`, {
+        method: "POST",
+        body: JSON.stringify(input),
+        headers: { "Idempotency-Key": key },
+      }),
+    reorderStatuses: (boardId, statusIds, version) =>
+      request(`/boards/${segment(boardId)}/status-order`, {
+        method: "PUT",
+        body: JSON.stringify({ statusIds }),
+        headers: { "If-Match": `"${version}"` },
+      }),
+    download: (taskId, id) =>
+      request(
+        `/tasks/${segment(taskId)}/attachments/${segment(id)}/content`,
+        {},
+        true,
+      ),
+    image: (id) => request(`/agents/${segment(id)}/image/content`, {}, true),
+  };
+}
