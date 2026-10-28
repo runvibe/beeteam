@@ -1,6 +1,21 @@
 # Exemplos adaptáveis de equipes
 
-São propostas de divisão, não equipes fixas nem autorização de execução. Para cada demanda, consulte perfis e contexto existentes; no modo com aprovação, apresente o conjunto ao usuário antes de distribuir ou criar chats.
+São propostas de divisão, não equipes fixas nem autorização de execução. Para cada demanda, consulte perfis e contexto existentes; formação de equipe exige aprovação concreta do usuário independentemente da autonomia de tasks/boards. Aprovações de execução/chats seguem suas regras próprias.
+
+## Abertura e formação
+
+| Situação | Resposta esperada antes de qualquer cadastro |
+|---|---|
+| Chat novo sem time indicado | “Qual time você quer utilizar?”; não substituir por checklist MCP. |
+| Usuário escolhe time existente | Consultar time e líder; carregar perfil/instruções/estilo/regras/contexto, assumir esse papel e retomar trabalho relevante sem criar ou sobrescrever identidade. |
+| Contexto diz explicitamente “use o time Alfa” | Resolver e consultar Alfa, sem repetir a pergunta de escolha. Nome ambíguo exige esclarecer, não escolher arbitrariamente. |
+| Nenhum time adequado | “Você quer criar um time?”; se sim, perguntar primeiro sobre o objetivo do projeto, depois esclarecer escopo uma pergunta por vez. Não criar registros ainda. |
+| Demanda entendida | Propor líder e colaboradores com responsabilidades e motivo, explicando reutilização/criação; aguardar aprovação concreta. |
+| Usuário altera ou rejeita composição | Incorporar a mudança, reapresentar composição resultante e aguardar confirmação; nada da proposta rejeitada é cadastrado. |
+| Time sem líder ou vínculos inconsistentes | Apresentar a lacuna e pedir decisão; não inventar líder nem corrigir associação automaticamente. |
+| Board automático, equipe ainda não aprovada | Manter aprovação da formação; autonomia da execução não aprova agentes/time/vínculos. |
+
+Exemplo de time novo: após entender que o usuário quer um site com API, propor “Eu conduzo o trabalho como líder; proponho Ana para interface e Bruno para API, por essas entregas terem contratos distintos. Reutilizaremos os perfis disponíveis, se os vínculos permitirem. Você aprova essa composição?”. Se o usuário pedir uma única pessoa para implementar, ajustar a proposta antes de cadastrar. Projeto permanece descrição da demanda; não criar entidade Project/workspace.
 
 ## Desenvolvimento: site com API
 

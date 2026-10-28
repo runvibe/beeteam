@@ -36,6 +36,11 @@ Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It e
 
 ## Local readiness managed by the leader
 
+The leader starts by asking which team to use unless the context already identifies
+one. It loads the existing leader's profile and context. For a new team, it first
+discusses the work, proposes the composition, and obtains explicit approval before
+creating agents, the team, or memberships, including under automatic task modes.
+
 Loading a skill does not connect its MCP server. The skills now include
 [Codex MCP onboarding](skills/references/codex.md#conectar-bee-team-ao-codex):
 discover the real endpoint, register it only with user authorization, then verify

@@ -7,6 +7,16 @@ description: Use when acting as the team leader for a Bee Team demand, including
 
 Conduza a demanda com o usuário na conversa. O Bee Team local preserva dados; a IA externa e as ferramentas disponíveis no harness conduzem o trabalho. Esta skill é portável e não comprova API/MCP implementados.
 
+## Começar pela escolha do time
+
+A primeira interação de produto deve ser: “Qual time você quer utilizar?”. Se o contexto explícito já indicar o time, use essa indicação sem perguntar novamente; resolva sua identidade e confirme o registro. Conferências técnicas de MCP/readiness podem ocorrer, mas não substituem essa conversa por checklist técnico. Não escolha um time só por existir, por ser o primeiro da lista ou pelo último uso.
+
+Para time existente, consulte seu registro e identifique o agente líder associado. Carregue os dados, perfil único, instruções, estilo, regras, limites e contexto desse agente; assuma seu papel nesta sessão e retome tarefas e decisões relevantes para a demanda. Não crie outro líder, não sobrescreva perfil ou associação para se encaixar no chat. Se o time estiver sem líder, houver vínculo inconsistente ou identidade ambígua, explique a lacuna e peça uma decisão ao usuário antes de assumir identidade ou cadastrar algo. Não invente identidade; sem acesso aos registros, declare a consulta pendente.
+
+Se nenhum time for escolhido ou não existir um adequado, pergunte se o usuário quer criar um time. Se ele não quiser, não cadastre nada. Se quiser, reconheça seu papel de conduzir a formação como líder e converse primeiro sobre o projeto: objetivo, escopo, entregas e restrições, com perguntas curtas, uma de cada vez. “Projeto” aqui significa o trabalho discutido, não uma nova entidade Project ou workspace. Aceitar criar um time inicia a conversa; não aprova automaticamente uma composição ainda indefinida.
+
+Após entender a demanda, consulte perfis e vínculos disponíveis e apresente proposta concreta de time, líder e colaboradores, indicando responsabilidades, motivo de cada participação e quais identidades serão reutilizadas ou criadas. O usuário pode confirmar, rejeitar ou alterar; incorpore alterações e obtenha aprovação da composição resultante antes de criar agentes, time ou vínculos. Preserve o perfil único e os limites de um time como líder e um como colaborador por agente. A aprovação explícita da formação da equipe é obrigatória mesmo com task/board automático. Não cadastre preventivamente nem considere silêncio aprovação.
+
 ## Disponibilizar a aplicação local
 
 O líder também prepara o acesso à aplicação para o usuário acompanhar atividades. Antes de depender de registros Bee Team, identifique instalação/checkouts, configurações e procedimento suportado; confirme banco, API, MCP e painel separadamente. Reutilize serviços saudáveis identificados; não crie outra instância só porque este chat não a iniciou. Leia [integração](../references/integration.md) e, no Windows/Codex, [procedimento local](../references/codex.md).
@@ -34,6 +44,8 @@ Sem escolha explícita, use **com aprovação**, sem obrigar o usuário a escolh
 Consulte `Task.executionContext` e preserve `rootTaskId`/`originBoardId` ao atravessar subtasks ou boards. Leia a [matriz de autonomia](../references/integration.md): origem `manual` força manual; `standard` avalia a flag da task atual sem herdar do pai; `automatic` libera toda a cadeia. Sem contexto, mantenha aprovação. O modo efetivo automático dispensa novas permissões de coordenação dentro do escopo, não amplia autorizações externas nem muda configurações dos destinos. Se a API faltar, declare a falta de confirmação; instrução explícita atual pode autorizar uma ação, mas não comprova persistência.
 
 ## Planejar e distribuir
+
+A autonomia de execução abaixo não dispensa a escolha inicial do time nem a aprovação concreta de sua formação. Para um time novo, conclua a conversa e aprovação descritas acima antes de persistir a composição.
 
 1. Mantenha aqui o diálogo de descoberta: objetivo, escopo, critérios de aceitação, restrições e decisões. Seja sucinto e faça uma pergunta por vez, apenas quando mudar o trabalho; não envie ao executor uma demanda vaga para que ele refaça a conversa com o usuário.
 2. Consulte identidades e vínculos antes de propor a equipe. Cada time tem um líder. Um agente pode colaborar em no máximo um time e liderar no máximo um, em times diferentes. Perfil único: nome, avatar opcional, atuação, estilo, regras e limites; não crie lista de skills no perfil. Copiar perfil cria identidade separada sem tarefas, histórico interno, chats ou credenciais; contexto resumido só quando solicitado. Arquivar time preserva vínculos; transferência explícita de agente, inclusive de time arquivado, preserva identidade e tasks.

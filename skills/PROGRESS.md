@@ -79,3 +79,9 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - [x] Corrigir lacuna entre endpoint ativo e conexão cadastrada/exposta.
 - [x] Incluir comandos Codex oficiais, endereços locais por finalidade, autorização/escopo e atualização de sessão.
 - [x] Validar skills, links e build; 12 unitários passaram, três integrações falharam ao criar containers. Sem alteração de configuração pessoal, instalação ou restart.
+
+## Escolha e formação do time
+
+- [x] Primeira interação escolhe time salvo contexto explícito; identidade/perfil do líder existente preservados.
+- [x] Nova equipe exige descoberta e aprovação concreta mesmo com autonomia; exemplos de alterações e inconsistências incluídos.
+- [x] Revisão textual de cenários, links e quick_validate UTF-8 passaram; build e 12 unitários passaram, três integrações CreateContainer/NotFound falharam.
