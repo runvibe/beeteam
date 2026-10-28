@@ -1,5 +1,4 @@
-use crate::{dto::changes::Change, repositories::changes::ChangeListener};
-use sqlx::PgPool;
+use crate::{dto::changes::Change, repositories::changes::ChangeRepository};
 use std::time::Duration;
 use tokio::{sync::broadcast, task::JoinHandle};
 pub struct ChangeFeed {
@@ -7,15 +6,15 @@ pub struct ChangeFeed {
     task: JoinHandle<()>,
 }
 impl ChangeFeed {
-    pub fn new(pool: PgPool) -> Self {
+    pub fn new(repository: ChangeRepository) -> Self {
         let (sender, _) = broadcast::channel(64);
         let output = sender.clone();
         let task = tokio::spawn(async move {
             loop {
-                if pool.is_closed() {
+                if repository.is_closed() {
                     break;
                 }
-                if let Ok(mut listener) = ChangeListener::connect(&pool).await {
+                if let Ok(mut listener) = repository.connect().await {
                     let _ = output.send(Change::Reset);
                     loop {
                         match listener.next().await {

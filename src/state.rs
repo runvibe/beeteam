@@ -14,7 +14,9 @@ struct SharedState {
 
 impl AppState {
     pub fn new(database: DatabaseRepository) -> Self {
-        let changes = crate::services::changes::ChangeFeed::new(database.pool());
+        let changes = crate::services::changes::ChangeFeed::new(
+            crate::repositories::changes::ChangeRepository::new(database.pool()),
+        );
         let inner = SharedState { database, changes };
         Self {
             inner: Arc::new(inner),

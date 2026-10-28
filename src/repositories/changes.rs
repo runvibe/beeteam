@@ -8,6 +8,20 @@ pub async fn notify(tx: &mut Transaction<'_, Postgres>) -> Result<(), sqlx::Erro
         .await?;
     Ok(())
 }
+pub struct ChangeRepository {
+    pool: PgPool,
+}
+impl ChangeRepository {
+    pub fn new(pool: PgPool) -> Self {
+        Self { pool }
+    }
+    pub fn is_closed(&self) -> bool {
+        self.pool.is_closed()
+    }
+    pub async fn connect(&self) -> Result<ChangeListener, sqlx::Error> {
+        ChangeListener::connect(&self.pool).await
+    }
+}
 pub struct ChangeListener(PgListener);
 impl ChangeListener {
     pub async fn connect(pool: &PgPool) -> Result<Self, sqlx::Error> {
