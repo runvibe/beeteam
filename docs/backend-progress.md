@@ -133,3 +133,9 @@ Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reu
 - Snapshot Skills e6d6b7f sincronizado com catálogo/proveniência; instalações globais não alteradas. Validação visual frontend e atualização do runtime serão reportadas separadamente.
 
 - QA visual isolado identificou conexão EventSource half-open após kill atrás do proxy: nova conexão funcionava, antiga não recebia mudanças. Corrigido com heartbeat SSE nomeado15s e watchdog45s no frontend; heartbeat não invalida dados. Build e42 testes MCP passaram após correção; leitura real QA confirmou heartbeat aos15s. Reconexão visual estática será conferida sem HMR.
+
+## Aceitação live SSE — 28/10/2026
+
+Build MCP e42 testes Rust aprovados; revisão independente sem defeito funcional. QA frontend d204ed5 em preview estático5175/API18083/banco isolado55481 confirmou mutação externa sem reload, foco/scroll/URL/draft preservados e conflito em save stale. Primeiro ciclo Vite/HMR foi inconclusivo; segundo revelou conexão half-open do proxy, corrigida com heartbeat observável15s e watchdog45s. Regressão final: queda65s gerou aviso, retorno removeu aviso e novo PATCH externo apareceu automaticamente com draft/foco/URL preservados. Fixtures e mutações ocorreram exclusivamente no banco bee_sse_qa_20261028.
+
+API produto18081 reiniciada isoladamente para PID70624, backup `.local/api-runtime/beeteam-before-sse.exe` preservado; frontend5173/PostgreSQL55482 não foram parados. Verificação somente leitura: health/painel200, SSE direto reset+heartbeat e proxy reset;13 recursos MCP iguais ao commit Skills e6d6b7f,3 prompts renderizados,60tools. Coleções completas pré/pós/proxy idênticas:2boards,3tasks,6agents,2teams. Nenhum dado de negócio criado/alterado nesta verificação. QAAPI18083 permanece separada PID10264. Root conduz integração main; esta frente não publicou/mesclou a entrega final nem alterou configuração pessoal.
