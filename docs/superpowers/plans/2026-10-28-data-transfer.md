@@ -8,7 +8,21 @@
 
 **Tech Stack:** Rust, Axum, Tokio, SQLx/PostgreSQL 18+/SQLite, serde_json, SHA-256; codec ZIP com suporte ZIP64 a selecionar e fixar no Cargo.lock durante a implementação; frontend React/Vite existente.
 
-**Spec:** `docs/data-transfer-design.md` (proposta, não aprovada para implementação).
+**Spec:** `docs/data-transfer-design.md` (primeira entrega aprovada em 28/10/2026).
+
+## Registro da execução
+
+Implementação concluída em seis frentes no mesmo worktree, com revisão independente somente leitura. Os passos e nomes de commits abaixo são o plano original; o commit integrado final e a evidência de cada cenário estão em `docs/data-transfer-verification.md`. A verificação visual em servidor descartável foi bloqueada pela revisão automática de aprovação; testes de componente, build e HTTP/MCP foram executados. Nenhuma publicação ou reinicialização de produto.
+
+### Entrega verificada
+
+- [x] Codec ZIP64/JSONL, hashes e rejeição de pacotes inválidos.
+- [x] Snapshots PostgreSQL/SQLite e escrita concorrente isolada.
+- [x] Restore vazio transacional, precisão explícita, sequência e notificações.
+- [x] Jobs, idempotência, confirmação, recuperação, retenção e cancelamento.
+- [x] HTTP/MCP e diálogo global com testes de componentes.
+- [x] Matriz dos quatro drivers, reabertura HTTP/MCP, builds, suítes e revisão independente.
+- [ ] Inspeção visual interativa: inicialização do ambiente QA rejeitada pela revisão automática (`blocked by policy`); não executada.
 
 ## Global Constraints
 
@@ -18,7 +32,7 @@
 - Não executar SQL do pacote nem desligar FKs/triggers/proteções de exclusão.
 - Importar somente em banco vazio na primeira entrega; trocar banco existente exige etapa operacional separada.
 - Testes somente em PostgreSQL 18 isolado e arquivos SQLite temporários; não usar dados de produto.
-- Não implementar antes de aprovar as decisões do design. Este plano não autoriza migração nem apagamento.
+- Implementação da primeira entrega aprovada; não executar migração/reset sobre dados atuais nem implementar apagamento/cutover.
 - Manter arquivos fonte abaixo de 1000 linhas; build e testes a cada entrega; commits claros.
 
 ## Review Focus
@@ -36,10 +50,10 @@
 - Novos `src/repositories/transfer/{mod,archive,jobs}.rs`: composição, arquivos ZIP/JSONL/blobs, journal/lease de jobs.
 - Novos `src/repositories/transfer/{postgres,sqlite}.rs`: snapshot/exportação, validação final e bulk restore de cada driver.
 - Novos `src/services/data_transfer/{mod,validation,export,import}.rs`: regras e orquestração por interfaces.
-- Novos `src/routes/data_transfer.rs` e `docs/data-transfer-openapi.yaml`: API administrativa e upload/download streaming.
+- Novos `src/routes/data_transfer.rs` e `docs/data-transfer-openapi.json`: API administrativa e upload/download streaming.
 - Alterar `src/{config,state,main}.rs`, `src/repositories/{mod,database}.rs`, `src/routes/{mod,mcp_adapter}.rs` e catálogo MCP para composição, jobs e transporte compartilhado.
 - Novas migrations de metadados técnicos: uma em `migrations/` para PostgreSQL e outra em `migrations/sqlite/`. Nomes únicos conforme histórico atual; identidade do destino e marcadores de restore, nunca dados seed.
-- Novo `frontend/src/features/data-transfer.tsx`, cliente em `frontend/src/api/data-transfer.ts`; ligar à página global de configurações existente, não a BoardSettings.
+- Novo `frontend/src/features/data-transfer.tsx`, cliente em `frontend/src/api/transfers.ts`; ligar à página global de configurações existente, não a BoardSettings.
 - Novos testes `tests/transfer_{archive,export,restore,jobs,http,mcp}.rs` e `frontend/src/features/data-transfer.test.tsx`.
 
 Interfaces propostas (assinaturas conceituais; Futures/streams seguem o padrão RepositoryFuture atual):

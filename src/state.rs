@@ -5,6 +5,7 @@ use crate::repositories::database::DatabaseRepository;
 #[derive(Clone)]
 pub struct AppState {
     inner: Arc<SharedState>,
+    transfers: Option<Arc<crate::services::data_transfer::service::TransferService>>,
 }
 
 struct SharedState {
@@ -20,7 +21,21 @@ impl AppState {
         let inner = SharedState { backend, changes };
         Self {
             inner: Arc::new(inner),
+            transfers: None,
         }
+    }
+
+    pub fn with_transfers(
+        mut self,
+        service: crate::services::data_transfer::service::TransferService,
+    ) -> Self {
+        self.transfers = Some(Arc::new(service));
+        self
+    }
+    pub fn transfers(
+        &self,
+    ) -> Option<&Arc<crate::services::data_transfer::service::TransferService>> {
+        self.transfers.as_ref()
     }
 
     pub fn changes(&self) -> &crate::services::changes::ChangeFeed {

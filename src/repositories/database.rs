@@ -27,6 +27,16 @@ impl DatabaseRepository {
             }
         }
     }
+    pub fn transfers(&self) -> std::sync::Arc<dyn super::transfer::contracts::TransferDatabase> {
+        match &self.pool {
+            DatabasePool::Postgres(pool) => std::sync::Arc::new(
+                super::transfer::postgres::TransferRepository::new(pool.clone()),
+            ),
+            DatabasePool::Sqlite(pool) => std::sync::Arc::new(
+                super::transfer::sqlite::TransferRepository::new(pool.clone()),
+            ),
+        }
+    }
     pub fn stores(
         &self,
     ) -> (

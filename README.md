@@ -259,3 +259,76 @@ cargo test --locked --features mcp --test sqlite_persistence
 # Return shared HTTP/MCP tests to PostgreSQL:
 Remove-Item Env:BEE_TEST_DRIVER
 ```
+
+## Portable export and import
+
+Global **Configurações globais → Exportar e importar dados** exports a complete
+`.beeteam.zip` and restores it into an **empty** PostgreSQL or SQLite installation.
+The package contains a versioned manifest, 17 JSONL groups, SHA-256 inventories and
+binary attachments. It preserves IDs, retired slugs, versions, links, Markdown,
+author-written summaries, history, tombstones and original replay responses. This
+is a complete portable backup, not a CSV report or a merge of installations.
+
+Enable explicitly on the intended instance before starting it:
+
+```powershell
+$env:BEE_TRANSFER_ENABLED="true"
+$env:BEE_TRANSFER_DIR="C:/bee-data/transfers"
+$env:BEE_TRANSFER_ALLOWED_ORIGINS="http://localhost:5173,http://127.0.0.1:5173"
+```
+
+Origins must match exactly, including port. Browser requests with an Origin not
+listed are rejected, including actual writes; requests without Origin remain
+available to local CLI/MCP clients. This setting is not authentication. Keep the
+service and its transfer directory restricted to the intended administrator;
+archives include deleted data and historical responses. On Windows provision the
+directory with the process account's ACL. Never share its journal across unrelated
+database installations. Processes serving the same instance must share this path
+so the OS lease can enforce one active transfer.
+
+| Environment variable | Default |
+| --- | --- |
+| `BEE_TRANSFER_ENABLED` | `false` |
+| `BEE_TRANSFER_DIR` | `.local/transfers` |
+| `BEE_TRANSFER_ALLOWED_ORIGINS` | empty (no browser Origin allowed) |
+| `BEE_TRANSFER_UPLOAD_BYTES` | 2147483648 (2 GiB) |
+| `BEE_TRANSFER_EXPANDED_BYTES` | 10737418240 (10 GiB) |
+| `BEE_TRANSFER_MAX_ENTRIES` | 100000 |
+| `BEE_TRANSFER_LINE_BYTES` | 1048576 (1 MiB) |
+| `BEE_TRANSFER_TIMEOUT_SECONDS` | 1800 |
+| `BEE_TRANSFER_RETENTION_SECONDS` | 86400 |
+
+The validator also bounds the manifest to 64 MiB and the reference index to one
+million records. Local disk space is checked before writes and extraction.
+Exports read one consistent online snapshot and stream blobs in 64 KiB chunks;
+ongoing writes can continue. PostgreSQL legacy `authors`/`posts` data is explicitly
+rejected rather than silently omitted. Artifacts become downloadable only after
+the archive is complete. Terminal artifacts expire through periodic maintenance;
+job/idempotency records and DB commit markers remain available for recovery.
+
+To change database engine, first export the source, start a **separate empty**
+destination with the chosen driver, upload, inspect its preview and confirm.
+Import rechecks emptiness under the normal writer lock and commits all data,
+sequence floor and completion marker together. Any pre-commit failure rolls back.
+The committed marker wins over late cancellation or process failure before the
+journal update. PostgreSQL timestamps have microsecond precision: nanoseconds
+require explicit `truncate_to_microseconds` approval. JSON/Markdown/replay contents
+are never traversed to rewrite date-like strings. The default is strict rejection.
+There is no force/reset/replace operation and no automatic runtime cutover.
+
+The [HTTP contract](docs/data-transfer-openapi.json) documents jobs, streaming
+upload/download, previews, restore and cancellation. Mutations require a UUID
+`Idempotency-Key`; upload also requires the whole-file `X-Archive-SHA256` and one
+multipart `file` field. Reuse the same key after an uncertain response; different
+content with that key conflicts. Poll `/api/v1/data-transfers/jobs/{id}` after
+reconnect. The UI retains the job ID locally. MCP tools `exportData`,
+`getDataTransfer`, `previewDataImport`, `restoreDataImport`, `cancelDataTransfer`
+use the same service; upload/download stay on HTTP and no filesystem path is
+accepted as an MCP argument. Queries continue during a SQLite restore; successful
+commit produces one invalidation, preserving existing frontend drafts and URL.
+
+Transfer tests: `cargo test --locked --features mcp --test transfer_archive
+--test transfer_export --test transfer_restore --test transfer_roundtrip
+--test transfer_jobs --test transfer_http` (one command). The roundtrip suite
+requires the isolated PostgreSQL 18 `BEE_TEST_DATABASE_URL` and covers all four
+driver pairs, typed precision, tombstones, blobs, hierarchy and rollback.

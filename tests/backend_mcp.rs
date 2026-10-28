@@ -59,7 +59,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 60);
+    assert_eq!(tools.len(), 65);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));

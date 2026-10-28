@@ -104,9 +104,13 @@ pub(super) fn tools() -> Vec<Value> {
         },"required":needed}}));
     }
     tools.extend(crate::dto::mcp::composite_tools());
+    tools.extend(crate::dto::data_transfer_tools::tools());
     tools
 }
 pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Result<Value> {
+    if crate::dto::data_transfer_tools::NAMES.contains(&name) {
+        return super::data_transfer_mcp::call(state, name, arguments).await;
+    }
     if crate::dto::mcp::is_composite(name) {
         return state.backend().execute_compound(name, arguments).await;
     }

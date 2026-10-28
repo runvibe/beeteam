@@ -12,7 +12,34 @@ async fn main() -> Result<()> {
     let _telemetry = telemetry::init_tracing(config.otel_enabled)?;
     let database =
         DatabaseRepository::connect(config.database_driver, &config.database_url).await?;
-    let state = AppState::new(database);
+    let transfer_config = beeteam::services::data_transfer::config::TransferConfig::from_env()?;
+    let transfer = if transfer_config.enabled {
+        Some(
+            beeteam::services::data_transfer::service::TransferService::new(
+                database.transfers(),
+                transfer_config,
+            )?,
+        )
+    } else {
+        None
+    };
+    let mut state = AppState::new(database);
+    if let Some(transfer) = transfer {
+        if transfer.recover().await.is_err() {
+            tracing::warn!("transfer recovery pending; background maintenance will retry");
+        }
+        let maintenance = transfer.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(60));
+            loop {
+                interval.tick().await;
+                if maintenance.recover().await.is_err() {
+                    tracing::warn!("transfer maintenance will retry");
+                }
+            }
+        });
+        state = state.with_transfers(transfer);
+    }
 
     let router = create_router(state, &config);
 

@@ -27034,6 +27034,161 @@
         ],
         "type": "object"
       }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "exportData"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "type": "object"
+      },
+      "name": "getDataTransfer"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "type": "object"
+      },
+      "name": "previewDataImport"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "additionalProperties": false,
+            "properties": {
+              "archiveSha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "confirmationToken": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "destinationId": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "timestampPolicy": {
+                "enum": [
+                  "strict",
+                  "truncate_to_microseconds"
+                ]
+              }
+            },
+            "required": [
+              "confirmationToken",
+              "archiveSha256",
+              "destinationId"
+            ],
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "idempotencyKey",
+          "confirmation"
+        ],
+        "type": "object"
+      },
+      "name": "restoreDataImport"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "cancelDataTransfer"
     }
   ]
 }

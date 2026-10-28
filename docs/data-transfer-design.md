@@ -1,12 +1,12 @@
 # Exportação, importação e troca de banco do Bee Team
 
-Estado: proposta para revisão, baseada no código de `4f2dc2b`. Nenhuma feature de transferência implementada, nenhum banco alterado.
+Estado: primeira entrega implementada sobre `1f7a9ed`/`4f2dc2b`, com validação isolada em 28/10/2026. Nenhum banco de produto ou serviço ativo foi alterado. Evidências: `docs/data-transfer-verification.md`.
 
 ## Objetivo e escopo
 
 Exportar uma instância Bee Team em PostgreSQL ou SQLite e restaurar em outra instância Bee Team, nos quatro pares de origem/destino. A exportação pode ocorrer com a aplicação rodando. A importação restaura um conjunto completo; não combina cadastros de duas instalações.
 
-O pedido autoriza avaliar e planejar. Formato, substituição e limites abaixo são recomendações, não decisões já aprovadas nem autorização para apagar dados.
+O usuário aprovou a primeira entrega integral: ZIP portátil, destino vazio, precisão explícita e limites administrativos. Substituição/cutover e apagamento continuam fora do escopo.
 
 ## Recomendação de formato
 
@@ -121,7 +121,7 @@ Jobs e arquivos temporários ficam em repository próprio em diretório configur
 
 MCP usa o mesmo serviço: criar exportação, consultar job, consultar prévia e confirmar importação já enviada pela UI. Não aceitar caminho arbitrário do computador ou URL remota, nem retornar anexos grandes dentro de respostas MCP. Download/upload pela API/UI. Confirmação de restauração permanece explícita mesmo em execução automática de tasks.
 
-## Limites e exposição — valores iniciais propostos
+## Limites e exposição — valores iniciais implementados
 
 Configurar por env, sem alterar o limite geral de payload do restante da API:
 

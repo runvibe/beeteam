@@ -18,6 +18,7 @@ import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
 import { ThemeControl } from "./components/theme-control";
+import { DataTransferSettings } from "./features/data-transfer";
 import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
@@ -104,6 +105,7 @@ export function App() {
         <header className="topbar">
           <AppPath />
           <div className="topbar-actions">
+            <DataTransferSettings />
             <ThemeControl />
           </div>
         </header>
