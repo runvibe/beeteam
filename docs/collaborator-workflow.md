@@ -2,49 +2,63 @@
 
 Status: regras de produto aprovadas em 27/10/2026, documentadas com fluxo proposto. Esta entrega não implementa o fluxo na skill, MCP, API ou interface, nem altera instalação ou registros reais. Complementa os [três fluxos do Leader](leader-onboarding-flows.md). Criar um chat não comprova entendimento: após o handoff, o colaborador confirma que compreendeu papel e contexto por um canal disponível, sem resposta inventada.
 
-## Fluxo em Mermaid
+## Fluxo principal — começar pelo chat
+
+Leia este primeiro diagrama de cima para baixo. Ele não tem setas de retorno: o único início é a solicitação de uso da skill neste chat. Esperas e falhas são saídas explícitas; após resolvê-las, revalidar identidade e atribuição conforme o detalhamento seguinte, sem criar trabalho próprio.
 
 ```mermaid
 flowchart TD
-    A["Solicitação humana ou do Leader para usar Collaborator; ou retomada"] --> B{"Identidade indicada?"}
-    B -->|Existente| B1["Consultar cadastro e assumir perfil, regras e contexto"]
-    B -->|Novo no time informado| B2["Autocadastrar e vincular segundo papel recebido; confirmar persistência"]
-    B -->|Ambígua| B3["Esclarecer identidade, time ou papel essencial sem duplicar"]
-    B3 --> B
-    B1 --> C["Listar tasks pelo executor ID em qualquer board, incluindo subtasks e estados"]
-    B2 --> C
-    C --> D{"Há task real atribuída a ele para este trabalho?"}
-    D -->|Não| D0["Orientar registro e atribuição pelo Leader ou usuário na plataforma; aguardar sem executar nem criar task própria"]
-    D0 -->|Registro e atribuição informados| C
-    D -->|Sim| D1["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar entendimento"]
-    D1 --> E["Completar mesma task: descrição, specification e plano versionado; subtasks só se desdobramento no escopo"]
-    E --> F{"Registro obrigatório confirmado?"}
-    F -->|Não| G["Comunicar falha; pausar execução dependente; reconciliar sem duplicar"]
-    G --> C
-    F -->|Sim| H{"Lacuna ou dependência impeditiva?"}
-    H -->|Sim| I["Registrar bloqueio, motivo, impacto e condição de retorno; comentário e síntese; avisar Leader"]
-    I --> J["Na retomada, confirmar desbloqueio e atualizar registros e plano necessário"]
-    J --> C
-    H -->|Não| K["Aplicar autonomia do board de origem e autorizações vigentes"]
-    K --> L["Executar e registrar progresso real, evidências e currentSummary"]
-    L --> M{"Mudança, bloqueio ou etapa pronta?"}
-    M -->|Mudança| N["Atualizar mesma task e revisar plano conforme impacto; comentar antes, novo, motivo e autoria conhecida"]
-    N --> E
-    M -->|Bloqueio| I
-    M -->|Continuar| L
-    M -->|Etapa pronta| O["Validar resultado contra specification"]
-    O --> P{"Validação atende?"}
-    P -->|Não| Q["Ajustar trabalho; atualizar planejamento se necessário"]
-    Q --> E
-    P -->|Sim| R["Registrar entrega, evidências, limitações, pendências, resumo histórico, síntese e status; avisar Leader"]
-    R --> S["Revisão conforme orientação e autonomia, pelo usuário ou Leader quando aplicável"]
-    S -->|Ajustes solicitados| Q
-    S -->|Aceite aplicável e critérios atendidos| T["Concluir task quando cabível; fechar atividade não implica task concluída"]
-    R -->|Etapa parcial ou continuidade pendente| U["Encerrar atividade sem concluir task; preservar próximo passo"]
-    U -->|Retomada| A
+    INICIO(["INÍCIO: usuário ou Leader solicita usar a skill Collaborator neste chat"]) --> IDENTIDADE{"Identidade indicada?"}
+    IDENTIDADE -->|Existente| EXISTENTE["Consultar cadastro e assumir perfil, regras e contexto"]
+    IDENTIDADE -->|Novo no time informado| NOVO["Autocadastrar e vincular conforme papel recebido; confirmar persistência"]
+    IDENTIDADE -->|Ambígua| ESCLARECER["Esclarecer identidade, time ou papel; aguardar sem duplicar"]
+    EXISTENTE --> LISTAR["Listar tasks por executor ID em qualquer board; incluir subtasks, estados e pendências"]
+    NOVO --> LISTAR
+    LISTAR --> ATRIBUIDA{"Existe task real atribuída a ele para este trabalho?"}
+    ATRIBUIDA -->|Não| AGUARDAR["Orientar registro e atribuição pelo Leader ou usuário na plataforma; aguardar sem executar nem criar task própria"]
+    ATRIBUIDA -->|Sim| CONFERIR["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar entendimento"]
+    CONFERIR --> PREPARAR["Completar mesma task: descrição, specification e plano versionado; subtasks só se criação no escopo"]
+    PREPARAR --> SALVO{"Preparação persistida e sem impedimento essencial?"}
+    SALVO -->|Não| PENDENTE["Registrar ou comunicar impedimento; suspender execução dependente; recuperar sem duplicar"]
+    SALVO -->|Sim| AUTONOMIA["Aplicar autonomia do board de origem e autorizações vigentes"]
+    AUTONOMIA --> EXECUTAR["Executar; registrar progresso real, evidências e currentSummary"]
+    EXECUTAR --> CICLOS["Tratar mudanças, bloqueios e ajustes conforme detalhamento abaixo"]
+    CICLOS --> VALIDAR["Validar contra specification; declarar resultados e limitações reais"]
+    VALIDAR --> ENTREGAR["Registrar entrega, resumo histórico, síntese, status e pendências; avisar Leader"]
+    ENTREGAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
 ```
 
-Falha em qualquer gravação obrigatória aplica o mesmo tratamento de reconciliação do nó G, inclusive em progresso, bloqueio e entrega. O desenho não cria aprovação extra: o nó de autonomia aplica as regras existentes. Validação parcial ou inviável deve ser registrada honestamente, sem forçar o caminho de sucesso; uma etapa pode ser encerrada com pendências.
+## Detalhamento — execução, ajustes e retomada
+
+Este segundo diagrama detalha o trabalho após a entrada e a preparação acima; não é o início da interação. A execução só prossegue com task registrada, atribuída, preparada e autorização aplicável. Seus retornos representam revalidação, não permissão para criar uma task de autoautorização.
+
+```mermaid
+flowchart TD
+    TRABALHO["Executar trabalho autorizado e registrar progresso, evidências e síntese"] --> EVENTO{"Mudança, bloqueio ou etapa pronta?"}
+    EVENTO -->|Continuar| TRABALHO
+    EVENTO -->|Mudança| MUDANCA["Atualizar mesma task e revisar plano; comentar antes, novo, motivo e autoria conhecida"]
+    MUDANCA --> REVALIDAR
+    EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário, síntese e aviso ao Leader"]
+    BLOQUEIO --> RETOMADA["Ao retomar, confirmar desbloqueio e atualizar registros e plano necessário"]
+    RETOMADA --> REVALIDAR
+    EVENTO -->|Etapa pronta| TESTAR["Validar contra specification"]
+    TESTAR --> RESULTADO{"Atende aos critérios?"}
+    RESULTADO -->|Não| AJUSTES["Ajustar trabalho e planejamento conforme impacto"]
+    AJUSTES --> REVALIDAR
+    RESULTADO -->|Sim| ENTREGA["Registrar entregas, evidências, limitações, pendências, resumo histórico, síntese e status; avisar Leader"]
+    ENTREGA --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
+    REVISAO -->|Ajustes solicitados| AJUSTES
+    REVISAO -->|Aceite aplicável e critérios atendidos| CONCLUIR(["Concluir task quando cabível"])
+    ENTREGA -->|Etapa parcial| PARCIAL["Fechar atividade sem concluir task; preservar próximo passo"]
+    PARCIAL -->|Retomada| REVALIDAR
+    FALHA["Falha em qualquer gravação obrigatória: comunicar e suspender execução dependente"] --> RECUPERAR["Consultar estado real e reconciliar somente etapa faltante, sem duplicar"]
+    RECUPERAR --> REVALIDAR
+    REVALIDAR["Reler identidade, atribuição, versão, estado e registros; não duplicar execução ativa nem reexecutar concluída"] --> PRONTO{"Task atribuída, preparada, persistida e liberada?"}
+    PRONTO -->|Sim| TRABALHO
+    PRONTO -->|Não| ESPERA["Aguardar condição faltante; sem atribuição, orientar Leader ou usuário a registrar e atribuir"]
+```
+
+Falha em qualquer gravação obrigatória aplica o caminho FALHA, inclusive em progresso, bloqueio e entrega. O desenho não cria aprovação extra: autonomia segue as regras existentes e não elimina atribuição. Validação parcial ou inviável deve ser registrada honestamente, sem forçar sucesso. A retomada pelo segundo diagrama consulta os registros novamente, como a entrada, sem depender da conversa integral.
 
 ## 1. Ativar papel, identificar colaborador e localizar atribuições
 
