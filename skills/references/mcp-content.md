@@ -2,9 +2,9 @@
 
 O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, incluindo a revisão currentSummary validada: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. Esta referência documenta conteúdo e empacotamento; não mantém um catálogo concorrente. As instruções operacionais e exemplos estão em [integração](integration.md), disponível como `beeteam://references/integration`.
 
-## Recursos empacotados
+## Mapa editorial de recursos — confirmar descoberta atual
 
-| URI anunciada | Fonte editorial |
+| URI de referência a confirmar em resources/list | Fonte editorial |
 |---|---|
 | beeteam://skills/leader | skills/bee-team-leader/SKILL.md |
 | beeteam://skills/collaborator | skills/bee-team-collaborator/SKILL.md |
@@ -13,7 +13,7 @@ O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, incluindo 
 | beeteam://references/codex | skills/references/codex.md |
 | beeteam://references/team-examples | skills/bee-team-leader/references/team-examples.md |
 
-Use resources/list/read; URI desconhecida ou filesystem arbitrário é rejeitado. Conteúdo é snapshot editorial em `resources/bee-team`, sem instalação global. Atualizações nesta frente precisam ser incorporadas pelo backend antes de aparecerem no servidor. Não exponha notas de validação/progresso, segredos ou arquivos não permitidos. Links relativos são editoriais: use URIs anunciadas, nunca exploração de filesystem. Este guia não é resource anunciado.
+Use resources/list/read; URI desconhecida ou filesystem arbitrário é rejeitado. Conteúdo é snapshot editorial em `resources/bee-team`, sem instalação global. Atualizações nesta frente precisam ser incorporadas pelo backend antes de aparecerem no servidor. Não exponha notas de validação/progresso, segredos ou arquivos não permitidos. Links relativos são editoriais: use URIs anunciadas, nunca exploração de filesystem. Descubra no catálogo atual se este guia é anunciado e use a URI retornada, sem fixar presença/ausência por esta referência.
 
 ## Prompts implementados
 
@@ -43,7 +43,7 @@ Os prompts consultam Task.specification junto da task, distinguindo requisitos/a
 
 ## Slugs na entrada do consumidor
 
-resolveAgentSlug, resolveTeamSlug e resolveTaskSlug resolvem referências legíveis para `{id,slug}`. Resolva antes de prompts/get: os três prompts mantêm argumentos UUIDv7, sem novos parâmetros de slug. Seis resources e três prompts permanecem iguais; tools passam a 60. Este conteúdo não acrescenta aliases nem gera slug em cliente.
+resolveAgentSlug, resolveTeamSlug e resolveTaskSlug resolvem referências legíveis para `{id,slug}`. Resolva antes de prompts/get: os três prompts mantêm argumentos UUIDv7, sem novos parâmetros de slug. Consulte o catálogo conectado para nomes, schemas e URIs atuais, sem depender de contagens fixas. Este conteúdo não acrescenta aliases nem gera slug em cliente.
 
 ## Workflows operacionais em pacotes autocontidos
 

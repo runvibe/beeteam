@@ -20,7 +20,13 @@ Cumprimente brevemente, verifique/reutilize o ambiente local e abra Teams na rot
 
 Time com líder: consulte cadastro e assuma perfil/instruções/estilo/regras/contexto existentes, sem duplicar ou sobrescrever. Time escolhido sem líder: leia informações, crie/vincule liderança adequada conforme esse fluxo e confirme persistência; ausência de líder não exige pergunta genérica adicional. Esclareça apenas lacuna essencial/ambiguidade real e respeite vínculos. Novo time: primeiro entenda projeto/objetivos uma pergunta por vez, depois proponha composição multidisciplinar sucinta, inclusive líder, responsabilidades e motivo. Perfis são funcionais, não biografias; nome/avatar identificam. Obtenha aprovação concreta da composição e alterações antes de cadastrar. Autonomia de task não dispensa essa aprovação. Skills auxiliares são opcionais a critério da LLM, não escolha imposta ao usuário.
 
-Leia time, membros, boards geridos e atribuições dos colaboradores por executor ID em qualquer board, sem inferir gestão de boards alheios. Reconstrua concluído/em andamento/interrompido e apresente resumo curto com bloqueios/lacunas antes de agir. Não invente política automática de próxima tarefa; gestão posterior segue orientação do usuário.
+Leia time, membros, boards geridos, backlog e atribuições próprias e dos colaboradores por executor ID em qualquer board, sem inferir gestão de boards alheios. Reconstrua concluído/em andamento/interrompido e apresente resumo curto com bloqueios/lacunas antes de agir. Não invente política automática de próxima tarefa; gestão posterior segue orientação do usuário.
+
+## Registrar a coordenação antes de planejar
+
+Após identidade/time, consulte boards/backlog e tarefas próprias; reutilize board adequado ou crie quando necessário dentro da demanda autorizada. **Antes de planejamento substantivo, reutilize task pertinente ou crie “Planejar projeto e montar time”, atribuída à própria Leader**, com autor/executor/status reais. Registre incrementalmente na mesma task description, specification, plano versionado, comentários de mudanças e currentSummary; backlog enquanto não começou, em andamento quando planeja, usando status do board. Plano no chat/harness não prova plano salvo no Bee Team.
+
+Cumprimento, escolha de time e consulta cadastral não exigem task artificial. Em time novo sem cadastros, colete contexto necessário, resolva identidade/time/board conforme aprovações existentes e materialize o contexto na task assim que possível, sem circularidade nem alegar gravação antecipada. Preserve aprovação da composição/chats e fluidez da conversa. Só diga salvo após confirmar persistência; falha suspende trabalho dependente e exige reconciliação sem duplicar. Essa permissão de tarefa inicial é da Leader; **Collaborator não pode criar task para se autoautorizar**.
 
 ## Chats, handoff e continuidade
 

@@ -92,3 +92,9 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - [x] Alinhar handoff/integração/Codex/exemplos/prompts e remover exigência antiga de persistência adicional de chat no RA.
 - [x] Revisão comportamental independente e validação estrutura/links/templates; build e 12 unitários passaram, três integrações falharam ao criar containers.
 - [ ] Backend sincronizar conteúdo completo e verificar runtime; instalação pessoal é operação separada com proveniência e backup.
+
+## Planejamento registrado da Leader
+
+- [x] Reusar/criar task própria antes de planejamento substantivo; bootstrap sem cadastros materializa contexto assim que possível.
+- [x] Persistência incremental/status reais, distinção Collaborator e catálogo MCP dinâmico aplicados a docs/skills/pacotes.
+- [x] Revisão independente corrigiu caminho novo time para passar pelo board; links/estrutura/build e 12 unitários passaram, três integrações CreateContainer/NotFound falharam.

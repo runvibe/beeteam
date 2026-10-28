@@ -80,6 +80,8 @@ Só começar trabalho se já houver task registrada em um board e atribuída a e
 
 Essa condição vale também na retomada e nos modos automáticos. Confirmar que a task continua atribuída, não foi concluída e não tem trabalho ativo que seria duplicado. Recuperar contexto por registros persistidos e fontes autorizadas, não por conversa integral presumida. Compreender responsabilidade e critérios e confirmar entendimento do handoff.
 
+A permissão do Leader de criar sua tarefa inicial de coordenação não se estende ao Collaborator: o papel de colaborador continua sem poder criar uma task para se autoautorizar, mesmo quando a demanda se chama planejamento. Só desdobrar/criar quando esse trabalho estiver no escopo de uma task já atribuída.
+
 ### Preparar a task já atribuída
 
 Antes de executar, completar a mesma task com descrição, specification da entrega e critérios e plano salvo versionado de como executar. Nenhuma tarefa, mesmo pequena, dispensa preparação; detalhe proporcional evita burocracia. Criar tasks ou subtasks somente quando essa criação fizer parte do escopo de uma task já atribuída, como elaborar a specification e identificar/desdobrar tarefas. Um plano não obriga criar subtasks nem autoriza desdobramento fora do escopo. Cada subtask precisa estar registrada, atribuída ao executor correto e preparada antes da sua própria execução.

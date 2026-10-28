@@ -42,6 +42,11 @@ Starter project for building APIs with Axum, PostgreSQL, and OpenTelemetry. It e
 
 ## Local readiness managed by the leader
 
+Before substantive planning, the Leader reuses or creates its own coordination task
+and records conversation decisions incrementally in Bee Team. New-team bootstrap
+materializes the collected context as soon as approved identity/team/board exist.
+This does not allow Collaborators to create tasks to authorize themselves.
+
 The leader starts by asking which team to use unless the context already identifies
 one. It loads the existing leader's profile and context. For a new team, it first
 discusses the work, proposes the composition, and obtains explicit approval before

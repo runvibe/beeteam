@@ -21,6 +21,8 @@ Liste atribuições pelo executor ID em qualquer board, incluindo subtasks/estad
 
 Depois de validar a atribuição, confirme separadamente **compreensão da tarefa e pendências**. Complete a mesma task com description, specification da entrega/aceite e plano salvo versionado de como executar, mesmo para trabalho pequeno, com detalhe proporcional. Criar tasks/subtasks só quando essa criação/desdobramento estiver no escopo da task já atribuída. Cada subtask requer registro, atribuição e preparação antes de executar. Preparar os próprios campos não exige criar outra task administrativa.
 
+A Leader pode criar a própria task inicial de coordenação dentro da demanda autorizada; essa exceção não vale para Collaborator, inclusive em trabalho de planejamento.
+
 ## Executar, registrar e retornar
 
 Preserve origem da task raiz: manual força aprovação, standard usa flag da task atual sem herdar do pai, automatic cobre cadeia cross-board. Isso não dispensa atribuição nem amplia escopo/permissões. Não acrescente aprovações genéricas além das regras e instruções vigentes.

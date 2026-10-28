@@ -60,3 +60,7 @@ Inclua endereços confirmados de API/MCP/painel, momento e alcance da última ve
 ## Retorno e referências de chat
 
 Salvar progresso/currentSummary/comentários/resultado pertinentes na task e confirmar persistência antes de comunicar bloqueio, decisão necessária ou encerramento ao Leader. Falha de gravação deve ser comunicada como registro não confirmado, com suspensão do trabalho dependente. Sem canal, declarar envio pendente, sem fingir mensagem. Reconciliar só etapa faltante. Não construir vínculo persistente adicional chat–agente no Bee Team; usar referências/relações disponíveis do harness, sem presumir pai/filho ou comunicação universal.
+
+## Planejamento da Leader e atribuição
+
+Leader pode criar/reutilizar task de coordenação própria dentro da demanda autorizada, antes de planejamento substantivo, em board adequado; registrar decisões incrementalmente nela. Cumprimentos/consulta cadastral não exigem task. Sem identidade/time/board em time novo, coletar contexto necessário e materializar assim que pré-requisitos aprovados existirem, sem inventar IDs. Antes de pedir execução ao Collaborator, registrar e atribuir a task real. Essa permissão inicial da Leader não autoriza Collaborator a criar task própria para se autoautorizar. Informar apenas registros cuja persistência esteja confirmada; plano de chat/harness não é plano salvo no Bee Team.

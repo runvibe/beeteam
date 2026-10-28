@@ -8,7 +8,7 @@ Antes de usar os links, confira a revisão: este pacote exige coleções diretas
 
 Distinga quatro estados: skill carregada, servidor ativo, conexão cadastrada no harness e ferramentas utilizáveis no chat. Um não comprova o seguinte. Se o chat não expuser Bee Team, descubra endpoint/host reais e faça onboarding conforme [Codex](codex.md#conectar-bee-team-ao-codex) ou documentação do harness. Configure somente dentro da autorização do usuário, preservando conexões existentes. Valide initialize/discovery no servidor e chamada de leitura pela ferramenta efetivamente exposta na sessão; informe limitações de resources/prompts e eventual reconexão/nova sessão necessária.
 
-A seção MCP abaixo cobre o catálogo implementado; no pacote local, [conteúdo MCP](mcp-content.md) complementa empacotamento e exemplos. Esse arquivo complementar não é um resource anunciado.
+A seção MCP abaixo cobre o catálogo implementado; no pacote local, [conteúdo MCP](mcp-content.md) complementa empacotamento e exemplos. Para acesso MCP, descubra no catálogo atual se este conteúdo é anunciado e use a URI retornada; não presuma presença nem ausência por uma lista antiga.
 
 Confirme endereço/configuração local e recursos disponíveis no ambiente. Um OpenAPI é contrato, não prova de servidor em execução. Não teste mutações apenas para descobrir disponibilidade. MCP deve ser descoberto pela lista/documentação de ferramentas do ambiente: `operationId` HTTP não é nome garantido de ferramenta MCP. Não implemente backend, frontend ou conectores para suprir uma capacidade ausente nesta skill.
 
@@ -139,7 +139,7 @@ Agent.slug, Team.slug e Task.slug são strings ASCII lowercase de 1..80 caracter
 
 A resolução retorna SlugResolution `{id,slug}` com UUIDv7. Resolva uma vez quando só houver slug; conserve UUID para chamadas/relacionamentos seguintes e use as leituras normais para revalidar estado/versão. taskId/agentId dos prompts continuam UUID. Sem resolução confirmada, não envie slug no lugar de ID. HTTP 404 significa desconhecido/excluído, enquanto arquivado ainda resolve. Slug não é reutilizado após deleted e não muda com rename; preserve links e autoria. Não deduza que resolver implica recurso ativo ou autorização.
 
-Essas três tools ampliam o catálogo para 60, sem alterar seis resources ou três prompts. Use `params.slug` no envelope simples e leia `data.id`/`data.slug` da resposta MCP; não adicione slug aos corpos de criação/edição nem às configurações de board.
+Descubra tools, resources e prompts atuais com paginação; não use contagem fixa como critério de compatibilidade. Use `params.slug` no envelope simples e leia `data.id`/`data.slug` da resposta MCP; não adicione slug aos corpos de criação/edição nem às configurações de board.
 
 Exemplos de resolução somente leitura; os slugs são ilustrativos, não gerados a partir de suposição sobre registros existentes:
 
@@ -172,3 +172,7 @@ Ao concluir, informe separadamente banco, API, MCP, painel e limitações, com U
 Ativar Collaborator confirma identidade/perfil, não autoriza trabalho. Consultar atribuições pelo executor ID em qualquer board, incluindo subtasks; não filtrar pelo time gestor. Sem task real previamente registrada e atribuída, aguardar Leader/usuário registrar e atribuir, sem executar pedido direto nem criar task de autoautorização. Completar description/specification/plano versionado na mesma task antes de executar. Criação de tasks/subtasks somente quando coberta pelo escopo de task já atribuída. Esses requisitos também valem em automatic e retomada; não reexecutar concluída nem duplicar execução ativa.
 
 Depois de validar atribuição, confirmar compreensão e pendências. Atualizar campos atuais e histórico em mudanças, bloqueio separado do status com motivo/impacto/condição e síntese. Confirmar gravação antes de comunicar ao Leader; falha de persistência suspende trabalho dependente e exige reconciliação sem duplicatas. As regras operacionais das skills não equivalem a garantia de enforcement de todas essas condições pela API.
+
+## Registro do planejamento da Leader
+
+Leader consulta boards/backlog e tarefas próprias, reutiliza board/task pertinentes ou cria coordenação atribuída a si dentro da demanda autorizada antes de planejamento substantivo. Persistir description/specification/plano revisado/comentários/currentSummary durante a conversa, status real backlog antes de começar e em andamento quando planeja. Em inicialização sem cadastros, materializar contexto assim que identidade/time/board aprovados existirem; sem circularidade ou author/executor inventados. Confirmar gravação antes de dizer salvo; falha suspende dependência. Collaborator continua sujeito à task preexistente atribuída e não recebe essa permissão de auto-inicialização.
