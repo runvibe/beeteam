@@ -1,6 +1,34 @@
 # Leader: entrada e formação de times
 
-Visualização dos três casos: [PNG](diagrams/leader-onboarding-flows.png), [SVG editável](diagrams/leader-onboarding-flows.drawio.svg) e [fonte Draw.io](diagrams/leader-onboarding-flows.drawio). Diagrama criado com a skill Draw.io e revisado visualmente; representa os fluxos aprovados/propostos, não sua implementação no runtime.
+## Fluxograma dos três casos
+
+Fluxo aprovado/proposto, ainda não implementado. O MCP ativo serve a Leader `dfd4e19`; os novos três casos permanecem documentação. MCP fornece registros, skills e prompts; o harness controla abertura do painel e criação de chats conforme capacidades e autorização.
+
+```mermaid
+flowchart TD
+    A["Usuário invoca Leader no chat"] --> B["Cumprimentar e preparar acesso local necessário"]
+    B --> C["Abrir Teams em /teams no endereço descoberto"]
+    C --> D["Usuário escolhe na interface e informa no chat"]
+    D --> E{"Time existente ou novo?"}
+    E -->|Existente| F{"Time tem líder?"}
+    F -->|Sim: caso 1| G["Consultar líder e assumir perfil, instruções, estilo, regras e contexto"]
+    F -->|Não: caso 2| H["Ler time, criar e vincular liderança adequada; assumir perfil"]
+    G --> I["Ler time, colaboradores, boards, tarefas, histórico, progresso e bloqueios"]
+    H --> I
+    I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
+    J --> K["Se faltar estrutura: conversar projeto e propor boards, tarefas ou colaboradores; transferências exigem autorização"]
+    E -->|Novo: caso 3| L["Entender projeto antes de definir pessoas; uma pergunta por vez; skills de apoio disponíveis"]
+    L --> M["Propor squad multidisciplinar e personas, incluindo líder: nome, avatar, descrição, especialidade, responsabilidades, instruções, estilo e regras"]
+    M --> N{"Usuário revisa e aprova?"}
+    N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
+    O --> M
+    N -->|Aprovar| P["Cadastrar agentes, time e vínculos"]
+    P --> Q["Criar chats separados autorizados; handoff com perfil e contexto; persistir referências reais"]
+    K --> R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
+    Q --> R
+```
+
+A escolha na interface não é recebida automaticamente pelo chat. Squad com competências completas não habilita execução automática: preservar modos de boards/tasks. Projeto é a demanda, não uma entidade Project/workspace. Geração de avatar e demais mecanismos dependem das capacidades reais do harness e serão detalhados.
 
 Status: decisões de produto aprovadas em 27/10/2026, documentadas para implementação posterior. Esta rodada não altera a skill executável, instalação pessoal, MCP, API, interface ou registros reais. Referência de comportamento atual: [Leader](../skills/bee-team-leader/SKILL.md) no commit `dfd4e19161b27a71451a05da4ab05d02e1379b0b`.
 
