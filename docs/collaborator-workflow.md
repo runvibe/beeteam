@@ -6,17 +6,25 @@ Status: regras de produto aprovadas em 27/10/2026, documentadas com fluxo propos
 
 ```mermaid
 flowchart TD
-    A["Receber demanda ou retomar pelos registros persistidos"] --> B["Assumir perfil funcional; conferir identidade, executor, versão, contexto e trabalho ativo"]
-    B --> C["Compreender tarefa e confirmar entendimento do handoff"]
-    C --> D["Criar task se ausente ou completar a existente, sem duplicar"]
-    D --> E["Preparar descrição, specification, plano salvo versionado e subtasks cabíveis"]
+    A["Solicitação humana ou do Leader para usar Collaborator; ou retomada"] --> B{"Identidade indicada?"}
+    B -->|Existente| B1["Consultar cadastro e assumir perfil, regras e contexto"]
+    B -->|Novo no time informado| B2["Autocadastrar e vincular segundo papel recebido; confirmar persistência"]
+    B -->|Ambígua| B3["Esclarecer identidade, time ou papel essencial sem duplicar"]
+    B3 --> B
+    B1 --> C["Listar tasks pelo executor ID em qualquer board, incluindo subtasks e estados"]
+    B2 --> C
+    C --> D{"Há task real atribuída a ele para este trabalho?"}
+    D -->|Não| D0["Orientar registro e atribuição pelo Leader ou usuário na plataforma; aguardar sem executar nem criar task própria"]
+    D0 -->|Registro e atribuição informados| C
+    D -->|Sim| D1["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar entendimento"]
+    D1 --> E["Completar mesma task: descrição, specification e plano versionado; subtasks só se desdobramento no escopo"]
     E --> F{"Registro obrigatório confirmado?"}
     F -->|Não| G["Comunicar falha; pausar execução dependente; reconciliar sem duplicar"]
-    G --> D
+    G --> C
     F -->|Sim| H{"Lacuna ou dependência impeditiva?"}
     H -->|Sim| I["Registrar bloqueio, motivo, impacto e condição de retorno; comentário e síntese; avisar Leader"]
     I --> J["Na retomada, confirmar desbloqueio e atualizar registros e plano necessário"]
-    J --> B
+    J --> C
     H -->|Não| K["Aplicar autonomia do board de origem e autorizações vigentes"]
     K --> L["Executar e registrar progresso real, evidências e currentSummary"]
     L --> M{"Mudança, bloqueio ou etapa pronta?"}
@@ -38,15 +46,25 @@ flowchart TD
 
 Falha em qualquer gravação obrigatória aplica o mesmo tratamento de reconciliação do nó G, inclusive em progresso, bloqueio e entrega. O desenho não cria aprovação extra: o nó de autonomia aplica as regras existentes. Validação parcial ou inviável deve ser registrada honestamente, sem forçar o caminho de sucesso; uma etapa pode ser encerrada com pendências.
 
-## 1. Receber e preparar a tarefa
+## 1. Ativar papel, identificar colaborador e localizar atribuições
 
-Assumir a identidade e o perfil funcional do colaborador, compreender demanda, responsabilidade, contexto e critérios, e confirmar entendimento do handoff. Conferir executor, versão e estado atuais; não duplicar trabalho que já esteja ativo. Na retomada, consultar registros persistidos e fontes autorizadas, não presumir acesso à conversa integral anterior.
+A entrada é uma solicitação para este chat usar a skill Collaborator, feita diretamente por um humano ou pelo chat Leader. Isso ativa o papel, não autoriza trabalho de negócio sem task registrada e atribuída. Ativação e cadastro do perfil não são execução da demanda de negócio; pode explicar o fluxo e verificar identidade sem começar o projeto.
 
-Nenhuma tarefa é executada sem registro preparado no Bee Team, mesmo pequena. Se não existir task, criá-la; se existir, completar a mesma. Antes de executar o trabalho solicitado, confirmar descrição, specification com entrega e critérios, plano salvo versionado de como executar e subtasks quando cabíveis. Detalhe proporcional: uma tarefa simples pode ter poucos parágrafos e passos, mas não dispensa preparação. Cada subtask é uma task e segue as mesmas condições antes da sua execução, sem exigir decomposição artificial.
+Se a solicitação indicar um colaborador existente, como XPTO, consultar seu cadastro e assumir seu perfil funcional, regras e contexto. Se pedir um novo colaborador no time XPTO, o fallback é autocadastrar e vincular ao time informado segundo o papel recebido, confirmando a persistência antes de assumir essa identidade como registrada. Se identidade, time ou papel essencial forem ambíguos, esclarecer especificamente a lacuna e conferir cadastros antes de criar, sem duplicar agentes nem inventar uma entidade Project.
 
-“Criar a especificação do projeto” é uma tarefa macro válida: sua specification inicial descreve qual documento produzir e como aceitá-lo; o plano descreve o processo. Redigir e registrar esses próprios campos faz parte da preparação e não exige criar uma tarefa anterior para cadastrar a tarefa. Não gerar regressão infinita de tasks administrativas.
+Depois da identidade, listar tarefas atribuídas ao seu cadastro por `executorAgentId`, em qualquer board, incluindo subtasks, estados e pendências. O nome serve à identificação humana, não substitui o ID. Não filtrar pelo time gestor nem exigir descobrir primeiro os boards do time: uma atribuição pode estar em board gerido por outro time. Não iniciar arbitrariamente qualquer item encontrado.
 
-Autor e executor são agentes obrigatórios (`authorAgentId` e `executorAgentId`, UUID confirmado), e task pertence a um board, sem `teamId`. Subtasks podem atravessar boards e executores, preservando origem e responsabilidade; não editar trabalho alheio por pertencer à mesma cadeia. Resolver slugs pelos recursos disponíveis antes de usar os UUIDs nos contratos.
+Só começar trabalho se já houver task registrada em um board e atribuída a esse colaborador pelo Leader ou pelo usuário diretamente na plataforma. Pedido no chat, vindo do humano ou Leader, não substitui registro e atribuição. Se citarem uma task, consultar o registro real e conferir executor, versão e estado; não confiar apenas na mensagem. Sem atribuição correspondente, informar a necessidade, orientar passar pela liderança ou registrar/atribuir na plataforma e aguardar. Não criar task própria de “iniciar trabalho” para se autorizar nem executar o pedido direto.
+
+Essa condição vale também na retomada e nos modos automáticos. Confirmar que a task continua atribuída, não foi concluída e não tem trabalho ativo que seria duplicado. Recuperar contexto por registros persistidos e fontes autorizadas, não por conversa integral presumida. Compreender responsabilidade e critérios e confirmar entendimento do handoff.
+
+### Preparar a task já atribuída
+
+Antes de executar, completar a mesma task com descrição, specification da entrega e critérios e plano salvo versionado de como executar. Nenhuma tarefa, mesmo pequena, dispensa preparação; detalhe proporcional evita burocracia. Criar tasks ou subtasks somente quando essa criação fizer parte do escopo de uma task já atribuída, como elaborar a specification e identificar/desdobrar tarefas. Um plano não obriga criar subtasks nem autoriza desdobramento fora do escopo. Cada subtask precisa estar registrada, atribuída ao executor correto e preparada antes da sua própria execução.
+
+“Criar a especificação do projeto e desdobrar tarefas” é uma task macro válida quando já registrada e atribuída. Completar sua specification inicial com o documento a produzir e os critérios, e seu plano com o processo; depois executar o desdobramento autorizado. Redigir os próprios campos é preparação da task atribuída, não exige outra task administrativa e não gera regressão infinita. Uma tarefa de apenas escrever specification não autoriza automaticamente criar outras tasks.
+
+Autor e executor são agentes obrigatórios (`authorAgentId` e `executorAgentId`, UUID confirmado), e task pertence a um board, sem `teamId`. Subtasks podem atravessar boards e executores, preservando origem e responsabilidade; não editar trabalho alheio por pertencer à mesma cadeia. Resolver slugs pelos recursos disponíveis antes de usar UUIDs nos contratos.
 
 ## 2. Onde registrar cada informação
 
@@ -55,7 +73,7 @@ Autor e executor são agentes obrigatórios (`authorAgentId` e `executorAgentId`
 | Demanda atual | `Task.description`: apresentação do trabalho vigente. |
 | O que entregar e como aceitar | `Task.specification`: requisitos, regras, entrega e critérios, com Markdown quando útil. |
 | Como executar | `plan.content` e revisões do plano: estratégia/passos salvos e versionados, preservando revisões anteriores. |
-| Decomposição | Tasks com `parentId`, quando cabíveis; não apenas checklist fictício. |
+| Decomposição | Tasks com `parentId`, quando cabíveis e com criação no escopo da task atribuída; não apenas checklist fictício. |
 | Estado atual cumulativo | `Task.currentSummary`: feito/concluído, em curso, pendências e próximo passo. |
 | História humana relevante | Comentários: decisões, interferências, mudanças, problemas e bloqueios, com autoria conhecida. Não registrar cada microação. |
 | Bloqueio | Flag de bloqueio separada do status, motivo/impacto/condição de retorno, comentário e síntese atual. |
@@ -66,23 +84,23 @@ Os campos representam a situação atual; comentários e revisões preservam o h
 
 ## 3. Executar conforme contexto e tratar mudanças
 
-Aplicar `Task.executionContext` do board de origem da tarefa raiz: `manual` força aprovação; `standard` usa a flag de cada task atual, sem herdar a do pai; `automatic` cobre a cadeia, inclusive cross-board. Não alterar modos dos destinos para reproduzir o cálculo. Observar instruções explícitas e permissões do harness, sem inventar aprovações adicionais pela skill nem ampliar escopo por autonomia.
+Somente após confirmar registro e atribuição, aplicar `Task.executionContext` do board de origem da tarefa raiz: `manual` força aprovação; `standard` usa a flag de cada task atual, sem herdar a do pai; `automatic` cobre a cadeia, inclusive cross-board. Não alterar modos dos destinos para reproduzir o cálculo. Observar instruções explícitas e permissões do harness, sem inventar aprovações adicionais pela skill nem ampliar escopo por autonomia.
 
 Antes de executar, resolver lacunas essenciais e dependências necessárias. Uma dúvida não impeditiva não precisa gerar bloqueio artificial; impedimento real exige registro e comunicação. Durante o trabalho, registrar progresso confirmado, subtasks e evidências, comentários relevantes e síntese atual, distinguindo tentativa de resultado verificado.
 
-Se a demanda mudar durante a execução, atualizar a task existente e os campos afetados, revisar o plano quando necessário e preservar revisões/histórico. Comentar situação anterior, nova decisão, motivo e autoria quando conhecidos, sem inventar quem decidiu. Atualizar currentSummary para refletir o trabalho preservado e o próximo passo. Uma demanda independente pode justificar outra task após identificar essa separação; mudança do mesmo trabalho não gera duplicata.
+Se a demanda mudar durante a execução, atualizar a task existente e os campos afetados, revisar o plano quando necessário e preservar revisões/histórico. Comentar situação anterior, nova decisão, motivo e autoria quando conhecidos, sem inventar quem decidiu. Atualizar currentSummary para refletir o trabalho preservado e o próximo passo. Uma demanda independente pode justificar outra task; encaminhar para registro/atribuição pelo Leader ou usuário, salvo se sua criação já integrar o escopo da task atribuída. Mudança do mesmo trabalho não gera duplicata.
 
-Exemplo: a integração passou do endpoint A para B. Manter a task, ajustar descrição/specification conforme impacto, salvar revisão do plano para B, comentar “antes A; agora B; motivo informado…; decisão de…” apenas com fatos disponíveis. A síntese indica o que continua aproveitável, a adaptação em curso e os testes pendentes. Não criar outra task só pela troca de endpoint nem deixar A nos campos atuais com B apenas em comentário.
+Exemplo com task já atribuída: a integração passou do endpoint A para B. Manter a task, ajustar descrição/specification conforme impacto, salvar revisão do plano para B, comentar “antes A; agora B; motivo informado…; decisão de…” apenas com fatos disponíveis. A síntese indica o que continua aproveitável, a adaptação em curso e os testes pendentes. Não criar outra task só pela troca de endpoint nem deixar A nos campos atuais com B apenas em comentário.
 
 ## 4. Bloqueio, falha de persistência e retomada
 
-Bloqueio é flag separada do status, não um status inventado. Registrar motivo, impacto e o que falta para continuar, comentário e currentSummary; avisar o Leader pelo canal autorizado. Não marcar concluída para encerrar uma atividade bloqueada. Trabalhos independentes só podem avançar quando também preparados e autorizados.
+Bloqueio é flag separada do status, não um status inventado. Registrar motivo, impacto e o que falta para continuar, comentário e currentSummary; avisar o Leader pelo canal autorizado. Não marcar concluída para encerrar uma atividade bloqueada. Trabalhos independentes só podem avançar quando já registrados, atribuídos, preparados e autorizados.
 
 Exemplo: falta acesso necessário à API B. Registrar que a validação está impedida, qual acesso falta e como sua concessão permitirá retomar, preservando as partes já feitas. Não publicar segredos. Ao receber acesso, confirmar a condição, atualizar bloqueio/comentário/síntese e revisar o plano se houver impacto; não apenas continuar com flag antiga ou assumir que a tarefa terminou.
 
 Se uma gravação obrigatória falhar, não alegar que foi salva. Interromper a execução dependente desse registro, comunicar o impedimento e reconciliar usando estado/versão reais e idempotência quando suportada. Timeout não prova falha nem sucesso: consultar antes de repetir criação, comentário ou entrega. Recuperar somente a etapa faltante, sem duplicar tasks, revisões ou trabalho confirmado.
 
-Na retomada, reler perfil, responsabilidade, task, specification, plano e revisões, comentários, síntese, bloqueios e evidências pertinentes. Confirmar versão e se existe execução ativa antes de prosseguir. Conversa perdida não apaga identidade ou autoria e não autoriza inventar histórico.
+Na retomada, reler perfil, responsabilidade, task, specification, plano e revisões, comentários, síntese, bloqueios e evidências pertinentes. Revalidar atribuição, versão, estado não concluído e existência de execução ativa antes de prosseguir. Conversa perdida não apaga identidade ou autoria e não autoriza inventar histórico.
 
 ## 5. Validar, entregar e encerrar
 
@@ -96,22 +114,25 @@ Fechar atividade não equivale a concluir task. Revisão por usuário ou Leader 
 
 | Cenário | Resultado esperado |
 |---|---|
-| Trabalho pequeno, task ausente | Criar e preparar descrição/specification/plano antes da execução; sem dispensar etapas nem decompor artificialmente. |
-| Task existente incompleta | Completar a mesma, sem duplicar; subtasks preparadas antes de sua própria execução. |
-| Tarefa é escrever uma especificação | Registrar a task macro e preparação proporcional, sem cadeia infinita de tarefas de cadastro. |
+| Ativação sem task atribuída, mesmo trabalho pequeno | Assumir/verificar identidade e orientar registro/atribuição; aguardar sem executar nem criar task para se autorizar. |
+| Pedido no chat “mude o endpoint”, sem task atribuída | Encaminhar à liderança ou registro/atribuição na plataforma; origem humana ou Leader não elimina a condição. |
+| Identidade existente / novo colaborador em time informado | Consultar e reutilizar cadastro existente / autocadastrar e vincular conforme papel recebido, após esclarecer ambiguidades essenciais e sem duplicação. |
+| Tasks atribuídas em board de outro time | Encontrar por executor ID, sem filtro pelo time gestor ou descoberta prévia de seus boards; não iniciar arbitrariamente. |
+| Task atribuída existente incompleta | Completar a mesma; criar subtasks só se o desdobramento estiver no escopo; cada uma registrada, atribuída e preparada antes de executar. |
+| Task já atribuída é criar specification e desdobrar | Preparar a macro e realizar criação de tasks/subtasks dentro desse escopo; sem cadeia infinita de tasks de cadastro. |
 | Endpoint A muda para B | Mesma task, campos atuais e plano coerentes com B, histórico da alteração e autoria conhecida, síntese atualizada. |
-| Board origem manual/standard/automatic | Aplicar contexto raiz e flag individual quando cabível; nenhum modo herdado indevidamente ou aprovação extra inventada. |
+| Board origem manual/standard/automatic | Aplicar contexto raiz e flag individual quando cabível; nenhum modo herdado indevidamente ou aprovação extra inventada; automático não elimina registro/atribuição. |
 | Dependência realmente impeditiva | Flag de bloqueio, motivo/impacto/condição, comentário e síntese; Leader avisado; task não concluída. |
 | Falha ou timeout ao registrar | Nenhum falso sucesso ou execução dependente; consulta/reconciliação sem duplicar. |
 | Validação falha ou não pode ocorrer | Ajustes/pendências e limites reais; nenhum teste fictício ou caminho automático de conclusão. |
 | Entrega parcial ou revisão com ajustes | Atividade pode encerrar sem task done; ajustes retornam ao registro e trabalho apropriados. |
-| Retomada em outro chat | Usar registros persistidos, confirmar identidade/versão/estado e não duplicar execução ativa. |
+| Retomada em outro chat | Usar registros persistidos, confirmar identidade/atribuição/versão/estado e não reexecutar concluída nem duplicar execução ativa. |
 
 ## Contratos consultados e limites
 
 Conferidos os materiais locais da [skill Collaborator](../skills/bee-team-collaborator/SKILL.md) e [integração](../skills/references/integration.md), além do OpenAPI atual do checkout backend `8fbc` (somente leitura): `Task.specification`, `currentSummary`, `executionContext`, `CreatePlan`, `RevisePlan`, revisão de plano e bloqueio separado de status. O snapshot OpenAPI antigo presente neste worktree não tem todos os campos recentes; não foi alterado para esta entrega. Esta especificação não inventa endpoint nem versão separada para specification: versionamento aqui é o do plano e os mecanismos de histórico existentes.
 
-Obrigar preparação antes de qualquer execução é regra do fluxo aprovado, não afirmação de que a API já rejeite toda task incompleta. O desenho e os critérios foram revisados editorialmente; não são execução ponta a ponta nem alteração da skill instalada.
+A nova entrada e a condição de task previamente registrada e atribuída substituem a orientação documental anterior de criar task ausente na entrada. São regras propostas documentadas, divergentes da skill instalada, que não foi atualizada nesta rodada. Não representam afirmação de que a API já imponha todo esse fluxo ou rejeite toda task incompleta. O desenho e os critérios foram revisados editorialmente; não são execução ponta a ponta nem alteração da skill instalada.
 
 ## Pontos ainda em aberto
 
