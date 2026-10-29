@@ -451,3 +451,5 @@ An active team filter with empty search shows only its resolved selected team, i
 The team autocomplete does not display a recent-teams caption or leave spacing for it; loading, error and empty-result feedback remain.
 
 The main content has zero left/right padding on desktop and mobile. The top bar removes only its left padding. Vertical spacing, top bar right padding, and all rail, card, form and popover padding remain unchanged.
+
+The card-list viewport removes only its left padding and retains 8px on the right; measured capacity already subtracts both computed sides independently.
