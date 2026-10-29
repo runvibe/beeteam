@@ -8,7 +8,7 @@ import {
 import { useLocation } from "@/routing/location";
 import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
-import { ArrowBigUp } from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import "./card-list-viewport.css";
 
 type Position = { top: number; id?: string; inset?: number };
@@ -244,7 +244,7 @@ export function CardListViewport({
           }
         >
           <span>
-            <ArrowBigUp fill="currentColor" aria-hidden="true" />
+            <ChevronUp aria-hidden="true" />
           </span>
         </button>
       )}

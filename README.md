@@ -441,3 +441,5 @@ Configuration editing autosaves text on blur and options on change. Board metada
 The header is a single 48px breadcrumb/filter row. Global settings and theme controls live at the bottom of the navigation rail as circular 44px targets; board settings stays with contextual filters. Mobile filter controls scroll horizontally without wrapping; list scrolling still reaches the viewport bottom. The two explanatory board captions were removed without changing tasks, subtasks or history.
 
 Card lists show a small bottom-centered return-to-top overlay after scrolling. Its 44px keyboard-accessible target scrolls only the card region, preserves filters and loaded pages, respects reduced motion, and moves above a visible loading/retry footer. It reserves no layout space.
+
+The return-to-top control uses a small outlined chevron (no shaft or filled arrow), retaining its circular 44px interaction target.
