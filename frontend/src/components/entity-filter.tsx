@@ -35,6 +35,24 @@ export function EntityFilter({
   const Options = compact ? FilterOptions : Choice;
   const content = (
     <div className="entity-filter">
+      <Input
+        aria-label={`Buscar opções de ${label}`}
+        value={name}
+        autoFocus={compact}
+        onChange={(e) => {
+          setName(e.target.value);
+          setOffset(0);
+        }}
+        onKeyDown={(e) => {
+          if (compact && e.key === "ArrowDown") {
+            e.preventDefault();
+            e.currentTarget.parentElement
+              ?.querySelector<HTMLElement>('[role="radio"]')
+              ?.focus();
+          }
+        }}
+        placeholder="Filtrar opções…"
+      />
       <Options
         label={label}
         value={value}
@@ -44,15 +62,6 @@ export function EntityFilter({
       />
       {(q.data?.hasMore || offset > 0 || name) && (
         <div className="selector-pages">
-          <Input
-            aria-label={`Buscar opções de ${label}`}
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setOffset(0);
-            }}
-            placeholder="Filtrar opções…"
-          />
           <QueryState query={q}>
             {q.data && <Pager page={q.data} onOffset={setOffset} />}
           </QueryState>

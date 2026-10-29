@@ -102,3 +102,17 @@
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+/* Keep the full interaction outline inside the scroll clipping boundary. */
+.balanced-card-grid .board-card:hover {
+  outline: 1px solid var(--ring);
+  outline-offset: -1px;
+}
+.balanced-card-grid .board-card:focus-within,
+.balanced-card-grid .board-card-link:focus-visible .board-card {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.balanced-card-grid .board-card-link:focus-visible,
+.balanced-card-grid .team-card > .task-card-main:focus-visible {
+  outline: none;
+}

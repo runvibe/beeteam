@@ -304,3 +304,34 @@
     min-height: 44px;
   }
 }
+.filter-popover:has(.entity-filter) {
+  overflow: hidden;
+}
+.filter-popover .entity-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+.filter-popover .entity-filter > input,
+.filter-popover .entity-filter > .selector-pages {
+  flex-shrink: 0;
+}
+.filter-popover .entity-filter > .filter-options-list {
+  min-height: 0;
+  max-height: 304px;
+  overflow-y: auto;
+  flex: 0 1 auto;
+  padding-inline: 2px;
+}
+.filter-popover .entity-filter .filter-option {
+  height: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
+}
+.filter-popover .entity-filter .filter-option > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -169,7 +169,7 @@ export function CardListViewport({
         <div
           ref={sentinel}
           className="card-list-footer"
-          style={{ minHeight: state.hasMore ? rowHeight + 64 : 64 }}
+          style={{ minHeight: state.hasMore || state.initialLoading ? 64 : 32 }}
         >
           {state.error ? (
             <div role="alert">

@@ -75,3 +75,19 @@ html:has(.kanban),
 body:has(.kanban) {
   overflow: hidden;
 }
+/* These screens own their scroll regions; focus must not scroll the document. */
+html:has(.card-list-viewport),
+body:has(.card-list-viewport),
+html:has(.kanban),
+body:has(.kanban) {
+  overflow: clip;
+}
+.icon-navigation main {
+  padding-bottom: 0;
+}
+
+.icon-navigation:has(.card-list-viewport),
+.icon-navigation:has(.kanban) {
+  position: fixed;
+  inset: 0;
+}

@@ -50,6 +50,9 @@ it("prefetches within its own scroll root and preserves cards through loading/er
       ),
     );
     expect(state.loadMore).toHaveBeenCalledOnce();
+    expect(document.querySelector(".card-list-footer")).toHaveStyle({
+      minHeight: "64px",
+    });
     state.fetching = true;
     rerender(draw());
     expect(screen.getByText("Existing card")).toBeInTheDocument();
@@ -67,6 +70,9 @@ it("prefetches within its own scroll root and preserves cards through loading/er
     state.hasMore = false;
     rerender(draw());
     expect(screen.getByText(/Fim dos registros/)).toBeInTheDocument();
+    expect(document.querySelector(".card-list-footer")).toHaveStyle({
+      minHeight: "32px",
+    });
     expect(
       screen.queryByRole("button", { name: "Carregar mais" }),
     ).not.toBeInTheDocument();

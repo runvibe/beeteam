@@ -80,6 +80,15 @@ it("keeps entity search, option pagination and selected values reachable inside 
   await user.click(screen.getByRole("button", { name: "Time" }));
   await screen.findByRole("textbox", { name: "Buscar opções de Time" });
   const popup = screen.getByRole("dialog", { name: "Time" });
+  const optionSearch = within(popup).getByRole("textbox", {
+    name: "Buscar opções de Time",
+  });
+  expect(optionSearch).toHaveFocus();
+  expect(
+    optionSearch.compareDocumentPosition(
+      within(popup).getByRole("radiogroup"),
+    ) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
   await user.click(within(popup).getByRole("button", { name: "Próxima" }));
   await user.click(
     await within(popup).findByRole("radio", { name: second.name }),
