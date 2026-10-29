@@ -66,3 +66,46 @@ main:has(.card-list-viewport) > .listing-heading {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.card-list-frame {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+.card-list-to-top {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+}
+.card-list-to-top[data-above-footer="true"] {
+  bottom: 76px;
+}
+.card-list-to-top span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 18%);
+}
+.card-list-to-top svg {
+  width: 16px;
+  height: 16px;
+}
+.card-list-to-top:hover span {
+  background: var(--accent);
+}

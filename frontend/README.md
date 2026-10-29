@@ -131,3 +131,5 @@ Nas listagens, cards têm altura uniforme de 272px, títulos em até duas linhas
 
 Configuration forms use `settings-autosave`: text commits on blur, options on change, serialized/coalesced versioned PATCH requests, retained failed drafts and explicit retry/reload. Closing a focused form flushes its final valid value. Creation and data transfers are not autosaved. Draft retention is in memory for this app session.
 The global header hosts listing/board filters beside the breadcrumb; preferences and the theme toggle sit at the bottom of the icon rail. Empty team searches request five teams by `createdAt desc`; typed searches request at most five name matches across the API.
+
+Card lists show a small bottom-centered return-to-top overlay after scrolling. Its 44px keyboard-accessible target scrolls only the card region, preserves filters and loaded pages, respects reduced motion, and moves above a visible loading/retry footer. It reserves no layout space.

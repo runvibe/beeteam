@@ -8,6 +8,7 @@ import {
 import { useLocation } from "@/routing/location";
 import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
+import { ArrowBigUp } from "lucide-react";
 import "./card-list-viewport.css";
 
 type Position = { top: number; id?: string; inset?: number };
@@ -54,11 +55,21 @@ export function CardListViewport({
   const position = useRef<Position | undefined>(restore(url));
   const [rowHeight, setRowHeight] = useState(286);
   const [overflowed, setOverflowed] = useState(false);
+  const [awayFromTop, setAwayFromTop] = useState(false);
+  const [footerVisible, setFooterVisible] = useState(false);
+  const topButton = useRef<HTMLButtonElement>(null);
   const viewportSize = useRef("");
   const capture = () => {
     const node = root.current;
     if (!node) return;
     const bounds = node.getBoundingClientRect();
+    setAwayFromTop(node.scrollTop > 8);
+    const footer = sentinel.current?.getBoundingClientRect();
+    setFooterVisible(
+      !!footer && footer.top < bounds.bottom && footer.bottom > bounds.top,
+    );
+    if (node.scrollTop <= 8 && document.activeElement === topButton.current)
+      node.focus({ preventScroll: true });
     const card = Array.from(
       node.querySelectorAll<HTMLElement>("[data-card-id]"),
     ).find((card) => card.getBoundingClientRect().bottom > bounds.top);
@@ -93,7 +104,8 @@ export function CardListViewport({
         node.getBoundingClientRect().top -
         (position.current.inset ?? 0);
     else node.scrollTop = position.current.top;
-  });
+    setAwayFromTop(node.scrollTop > 8);
+  }, [url, state.items, rowHeight, overflowed]);
   useLayoutEffect(() => {
     const node = root.current;
     if (!node || !content.current) return;
@@ -155,62 +167,87 @@ export function CardListViewport({
     state.error,
   ]);
   return (
-    <div
-      ref={root}
-      className="card-list-viewport"
-      role="region"
-      aria-label={label}
-      tabIndex={0}
-      onScroll={capture}
-      data-overflowed={overflowed}
-    >
-      <div ref={content} className="card-list-content">
-        {state.initialLoading ? <LoadingIndicator /> : children}
-        <div
-          ref={sentinel}
-          className="card-list-footer"
-          style={{
-            minHeight:
-              state.hasMore || state.initialLoading || state.error
-                ? 64
-                : "1rem",
-            paddingTop:
-              state.hasMore || state.initialLoading || state.error ? 12 : 0,
-          }}
-        >
-          {state.error ? (
-            <div role="alert">
-              <p>Não foi possível carregar os cards.</p>
-              <Button onClick={() => void state.retry()}>
-                Tentar novamente
-              </Button>
-            </div>
-          ) : state.hasMore ? (
-            <>
-              <LoadingIndicator
-                label={
-                  state.fetching
-                    ? "Carregando mais registros"
-                    : "Aguardando próximos registros"
-                }
-              />
-              <Button
-                className="sr-only focus:not-sr-only"
-                disabled={state.fetching}
-                onClick={state.loadMore}
-              >
-                Carregar mais
-              </Button>
-            </>
-          ) : (
-            !state.initialLoading && (
-              <p className="sr-only" role="status">
-                Fim dos registros · {state.total} no total
-              </p>
-            )
-          )}
+    <div className="card-list-frame">
+      <div
+        ref={root}
+        className="card-list-viewport"
+        role="region"
+        aria-label={label}
+        tabIndex={0}
+        onScroll={capture}
+        data-overflowed={overflowed}
+      >
+        <div ref={content} className="card-list-content">
+          {state.initialLoading ? <LoadingIndicator /> : children}
+          <div
+            ref={sentinel}
+            className="card-list-footer"
+            style={{
+              minHeight:
+                state.hasMore || state.initialLoading || state.error
+                  ? 64
+                  : "1rem",
+              paddingTop:
+                state.hasMore || state.initialLoading || state.error ? 12 : 0,
+            }}
+          >
+            {state.error ? (
+              <div role="alert">
+                <p>Não foi possível carregar os cards.</p>
+                <Button onClick={() => void state.retry()}>
+                  Tentar novamente
+                </Button>
+              </div>
+            ) : state.hasMore ? (
+              <>
+                <LoadingIndicator
+                  label={
+                    state.fetching
+                      ? "Carregando mais registros"
+                      : "Aguardando próximos registros"
+                  }
+                />
+                <Button
+                  className="sr-only focus:not-sr-only"
+                  disabled={state.fetching}
+                  onClick={state.loadMore}
+                >
+                  Carregar mais
+                </Button>
+              </>
+            ) : (
+              !state.initialLoading && (
+                <p className="sr-only" role="status">
+                  Fim dos registros · {state.total} no total
+                </p>
+              )
+            )}
+          </div>
         </div>
       </div>
+      {awayFromTop && (
+        <button
+          ref={topButton}
+          type="button"
+          className="card-list-to-top"
+          aria-label="Voltar ao topo"
+          title="Voltar ao topo"
+          data-above-footer={footerVisible && (state.hasMore || !!state.error)}
+          onClick={() =>
+            root.current?.scrollTo({
+              top: 0,
+              behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+                .matches
+                ? "instant"
+                : "smooth",
+            })
+          }
+        >
+          <span>
+            <ArrowBigUp fill="currentColor" aria-hidden="true" />
+          </span>
+        </button>
+      )}
     </div>
   );
 }

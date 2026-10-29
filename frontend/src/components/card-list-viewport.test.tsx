@@ -144,3 +144,53 @@ it("preserves the anchor beyond five blocks, restores it and allows scrolling to
     geometry.mockRestore();
   }
 });
+
+it.each([false, true])(
+  "returns only the card region to the top (reduced motion: %s)",
+  (reduced) => {
+    window.history.replaceState({}, "", `/teams?to-top=${reduced}`);
+    const url = location.href;
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: reduced })));
+    const state = {
+      items: [{ id: "retained" }],
+      hasMore: false,
+      fetching: false,
+      initialLoading: false,
+      error: null,
+      total: 80,
+      loadMore: vi.fn(),
+      retry: vi.fn(),
+      setCapacity: vi.fn(),
+    };
+    render(
+      <CardListViewport state={state} label="Cards">
+        <article data-card-id="retained">Retained card</article>
+      </CardListViewport>,
+    );
+    const region = screen.getByRole("region", { name: "Cards" });
+    const scrollTo = vi.fn();
+    region.scrollTo = scrollTo;
+    expect(
+      screen.queryByRole("button", { name: "Voltar ao topo" }),
+    ).not.toBeInTheDocument();
+    region.scrollTop = 600;
+    fireEvent.scroll(region);
+    const button = screen.getByRole("button", { name: "Voltar ao topo" });
+    button.focus();
+    fireEvent.click(button);
+    expect(scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: reduced ? "instant" : "smooth",
+    });
+    expect(location.href).toBe(url);
+    expect(screen.getByText("Retained card")).toBeInTheDocument();
+    region.scrollTop = 0;
+    fireEvent.scroll(region);
+    expect(
+      screen.queryByRole("button", { name: "Voltar ao topo" }),
+    ).not.toBeInTheDocument();
+    expect(region).toHaveFocus();
+    expect(state.loadMore).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  },
+);
