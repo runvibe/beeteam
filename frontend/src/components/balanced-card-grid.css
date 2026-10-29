@@ -40,10 +40,10 @@
 /* Deterministic listing previews; detail and Kanban cards keep their own layout. */
 .balanced-card-grid > .board-card-link,
 .balanced-card-grid > .team-card {
-  height: 340px;
+  height: 272px;
 }
 .balanced-card-grid .board-card {
-  height: 340px;
+  height: 272px;
 }
 .balanced-card-grid [data-slot="card-header"],
 .balanced-card-grid [data-slot="card-content"] {
@@ -115,4 +115,27 @@
 .balanced-card-grid .board-card-link:focus-visible,
 .balanced-card-grid .team-card > .task-card-main:focus-visible {
   outline: none;
+}
+.team-card-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  color: inherit;
+}
+.team-card-shortcut svg {
+  width: 17px;
+  height: 17px;
+}
+.team-card-shortcut:hover {
+  background: var(--accent);
+}
+.balanced-card-grid .team-card [data-slot="card-footer"] {
+  padding-block: 2px;
+}
+.balanced-card-grid .team-card [data-slot="card-footer"] {
+  justify-content: flex-end;
 }

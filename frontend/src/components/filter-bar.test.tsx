@@ -65,8 +65,8 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
   ).not.toBeInTheDocument();
 });
 
-it("keeps entity search, option pagination and selected values reachable inside the popover", async () => {
-  window.history.replaceState({}, "", "/agents?selector-teams-Time.limit=1");
+it("searches teams globally from a focused combobox and applies the selected suggestion", async () => {
+  window.history.replaceState({}, "", "/agents");
   const api = createMockApi({ delay: 0 });
   const second = (
     await api.list("teams", "", { limit: 1, offset: 1, sortBy: "name" })
@@ -78,35 +78,30 @@ it("keeps entity search, option pagination and selected values reachable inside 
     </ApiProvider>,
   );
   await user.click(screen.getByRole("button", { name: "Time" }));
-  await screen.findByRole("textbox", { name: "Buscar opções de Time" });
   const popup = screen.getByRole("dialog", { name: "Time" });
-  const optionSearch = within(popup).getByRole("textbox", {
+  const input = within(popup).getByRole("combobox", {
     name: "Buscar opções de Time",
   });
-  expect(optionSearch).toHaveFocus();
+  expect(input).toHaveFocus();
+  expect(within(popup).queryAllByRole("option")).toHaveLength(0);
   expect(
-    optionSearch.compareDocumentPosition(
-      within(popup).getByRole("radiogroup"),
-    ) & Node.DOCUMENT_POSITION_FOLLOWING,
-  ).toBeTruthy();
-  await user.click(within(popup).getByRole("button", { name: "Próxima" }));
-  await user.click(
-    await within(popup).findByRole("radio", { name: second.name }),
-  );
+    within(popup).getByText("Digite para buscar times."),
+  ).toBeInTheDocument();
+  await user.type(input, second.name);
+  await within(popup).findByRole("option", { name: second.name });
+  await user.keyboard("{ArrowDown}{Enter}");
   expect(new URLSearchParams(location.search).get("agents.teamId")).toBe(
     second.id,
   );
-  await user.click(within(popup).getByRole("button", { name: "Anterior" }));
   expect(
-    await within(popup).findByRole("radio", { name: second.name }),
-  ).toHaveAttribute("aria-checked", "true");
+    within(popup).queryByRole("button", { name: "Próxima" }),
+  ).not.toBeInTheDocument();
   await user.keyboard("{Escape}");
   expect(screen.getByRole("button", { name: "Time" })).toHaveAttribute(
     "data-active",
     "true",
   );
 });
-
 it("removes just one active filter from its tag with keyboard, resets pages and keeps other URL state", async () => {
   window.history.replaceState(
     {},

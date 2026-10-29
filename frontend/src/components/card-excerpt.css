@@ -1,7 +1,7 @@
 :root {
   --card-excerpt-font-size: 13px;
   --card-excerpt-line-height: 22px;
-  --card-excerpt-height: 132px;
+  --card-excerpt-height: 110px;
 }
 .card-excerpt {
   height: var(--card-excerpt-height);

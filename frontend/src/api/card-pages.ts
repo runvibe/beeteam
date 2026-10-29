@@ -10,7 +10,7 @@ const cap = (value: number) => Math.max(1, Math.min(100, Math.floor(value)));
 function initialCapacity() {
   const columns =
     innerWidth <= 850 ? 1 : Math.max(1, Math.floor((innerWidth - 106) / 294));
-  return cap(columns * Math.max(1, Math.ceil((innerHeight - 160) / 354)));
+  return cap(columns * Math.max(1, Math.ceil((innerHeight - 160) / 286)));
 }
 function readWindow(raw: string | null, fallback: Block): Block[] {
   if (!raw) return [fallback];

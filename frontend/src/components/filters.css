@@ -335,3 +335,31 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.team-autocomplete {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.team-autocomplete [role="listbox"] {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.team-autocomplete [role="option"] {
+  padding: 8px;
+  min-height: 36px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.team-autocomplete [role="option"][data-active="true"],
+.team-autocomplete [role="option"]:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.team-autocomplete [role="option"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

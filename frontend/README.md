@@ -127,4 +127,4 @@ A faixa lateral mostra somente o logo no topo e três botões circulares de 44 p
 
 Validação: navegação e tooltip pelo teclado, temas claro/escuro, mobile e largura mínima de 320 px; o Kanban mantém seu scroll horizontal e o destaque de bloqueio. O preview visual usa fixtures somente em memória em processo separado; o binário ativo e o banco do usuário não são substituídos pelo desenvolvimento frontend.
 
-Nas listagens, cards têm altura uniforme de 340px, títulos em até duas linhas e áreas reservadas para descrição. O fade é aplicado apenas quando a medição detecta texto excedente; o conteúdo integral permanece acessível e disponível no detalhe, sem alterar os dados.
+Nas listagens, cards têm altura uniforme de 272px, títulos em até duas linhas e áreas reservadas para descrição. O fade é aplicado apenas quando a medição detecta texto excedente; o conteúdo integral permanece acessível e disponível no detalhe, sem alterar os dados.

@@ -2,7 +2,7 @@ import {
   Crown,
   UserRound,
   UserRoundMinus,
-  Hand,
+  ZapOff,
   Zap,
   SlidersHorizontal,
 } from "lucide-react";
@@ -12,7 +12,7 @@ const symbols = {
   leader: { icon: Crown, label: "Líder" },
   collaborator: { icon: UserRound, label: "Colaborador" },
   unbound: { icon: UserRoundMinus, label: "Sem vínculo" },
-  manual: { icon: Hand, label: "Totalmente manual" },
+  manual: { icon: ZapOff, label: "Totalmente manual" },
   automatic: { icon: Zap, label: "Totalmente automático" },
   standard: { icon: SlidersHorizontal, label: "Padrão" },
 };

@@ -1,11 +1,13 @@
 import { useUrlState, usePageSize } from "@/routing/query";
+import type { ComponentProps } from "react";
+import { TeamFilter } from "./team-filter";
 import { useEntity, useList } from "@/api/context";
 import { Choice, Pager, QueryState } from "./shared";
 import { Input } from "./ui/input";
 import { useCompactFilters } from "./filter-context";
 import { FilterPopover, FilterOptions } from "./filter-controls";
 /** A searchable, paginated selector: options beyond the first page remain reachable. */
-export function EntityFilter({
+function PaginatedEntityFilter({
   resource,
   label,
   value,
@@ -83,5 +85,14 @@ export function EntityFilter({
     </FilterPopover>
   ) : (
     content
+  );
+}
+export function EntityFilter(
+  props: ComponentProps<typeof PaginatedEntityFilter>,
+) {
+  return props.resource === "teams" ? (
+    <TeamFilter {...props} />
+  ) : (
+    <PaginatedEntityFilter {...props} />
   );
 }

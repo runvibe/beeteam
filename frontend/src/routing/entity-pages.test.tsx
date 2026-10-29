@@ -52,7 +52,7 @@ it("keeps team leader action separate and returns from board and settings to the
   });
   const card = link.closest("[data-slot=card]")! as HTMLElement;
   await userEvent.click(
-    await within(card).findByRole("button", { name: "Theo" }),
+    await within(card).findByRole("link", { name: "Abrir liderança: Theo" }),
   );
   expect(await screen.findByRole("region", { name: "Agente" })).toBeVisible();
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
@@ -97,4 +97,25 @@ it("restores a direct settings URL to its profile with tab and pagination intact
   );
   expect(location.search).toContain("activities.offset=1");
   expect(screen.queryByRole("dialog")).toBeNull();
+});
+
+it("opens collaborators from a team footer with team and role filters and a return URL", async () => {
+  setup("/teams?teams.name=Produto");
+  const teamLink = await screen.findByRole("link", {
+    name: "Produto & engenharia",
+  });
+  const card = teamLink.closest("[data-slot=card]") as HTMLElement;
+  const shortcut = within(card).getByRole("link", {
+    name: /colaboradores do time Produto/,
+  });
+  expect(shortcut.closest("a")?.parentElement?.closest("a")).toBeNull();
+  await userEvent.click(shortcut);
+  expect(location.pathname).toBe("/agents");
+  const params = new URLSearchParams(location.search);
+  expect(params.get("agents.teamId")).toBe(ids.team);
+  expect(params.get("agents.role")).toBe("collaborator");
+  expect(params.get("from")).toBe("/teams?teams.name=Produto");
+  expect(
+    await screen.findByRole("button", { name: /Remover filtro Time:/ }),
+  ).toBeInTheDocument();
 });

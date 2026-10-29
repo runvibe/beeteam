@@ -1,4 +1,4 @@
-import { CardSymbol } from "@/components/card-symbol";
+import { TeamCardLinks } from "@/components/team-card-links";
 import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
@@ -129,14 +129,7 @@ export function Teams() {
                       </CardContent>
                     </a>
                     <CardFooter className="justify-between">
-                      <AgentName id={t.leaderId} />
-                      <Badge variant="outline">
-                        <CardSymbol
-                          kind="collaborator"
-                          label={`${t.collaboratorCount} ${t.collaboratorCount === 1 ? "colaborador" : "colaboradores"}`}
-                        />
-                        <span aria-hidden="true">{t.collaboratorCount}</span>
-                      </Badge>
+                      <TeamCardLinks team={t} />
                     </CardFooter>
                   </Card>
                 ))}

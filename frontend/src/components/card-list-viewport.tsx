@@ -52,7 +52,7 @@ export function CardListViewport({
   });
   const previousUrl = useRef(url);
   const position = useRef<Position | undefined>(restore(url));
-  const [rowHeight, setRowHeight] = useState(354);
+  const [rowHeight, setRowHeight] = useState(286);
   const [overflowed, setOverflowed] = useState(false);
   const viewportSize = useRef("");
   const capture = () => {
@@ -105,7 +105,7 @@ export function CardListViewport({
         1,
         ...cards.map((card) => card.getBoundingClientRect().height),
       );
-      const height = measured > 1 ? measured + 14 : 354;
+      const height = measured > 1 ? measured + 14 : 286;
       const style = getComputedStyle(node);
       const contentWidth =
         node.clientWidth -
@@ -169,7 +169,14 @@ export function CardListViewport({
         <div
           ref={sentinel}
           className="card-list-footer"
-          style={{ minHeight: state.hasMore || state.initialLoading ? 64 : 32 }}
+          style={{
+            minHeight:
+              state.hasMore || state.initialLoading || state.error
+                ? 64
+                : "1rem",
+            paddingTop:
+              state.hasMore || state.initialLoading || state.error ? 12 : 0,
+          }}
         >
           {state.error ? (
             <div role="alert">
@@ -197,7 +204,7 @@ export function CardListViewport({
             </>
           ) : (
             !state.initialLoading && (
-              <p className="small-note" role="status">
+              <p className="sr-only" role="status">
                 Fim dos registros · {state.total} no total
               </p>
             )

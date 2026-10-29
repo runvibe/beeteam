@@ -69,9 +69,9 @@ it("prefetches within its own scroll root and preserves cards through loading/er
     state.error = null;
     state.hasMore = false;
     rerender(draw());
-    expect(screen.getByText(/Fim dos registros/)).toBeInTheDocument();
+    expect(screen.getByText(/Fim dos registros/)).toHaveClass("sr-only");
     expect(document.querySelector(".card-list-footer")).toHaveStyle({
-      minHeight: "32px",
+      minHeight: "1rem",
     });
     expect(
       screen.queryByRole("button", { name: "Carregar mais" }),
