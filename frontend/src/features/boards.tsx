@@ -16,7 +16,8 @@ import {
   goBack,
 } from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
-import { Settings2, CheckCheck, LockKeyhole, ArrowUpLeft } from "lucide-react";
+import { Settings, CheckCheck, LockKeyhole, ArrowUpLeft } from "lucide-react";
+import { Tooltip } from "radix-ui";
 import { useApi, useEntity, useList } from "@/api/context";
 import type { BoardView, Filters, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -69,7 +70,7 @@ function BoardIndex() {
   return (
     <>
       <header className="page-heading listing-heading">
-        <div>
+        <div className="sr-only">
           <h1>Boards</h1>
           <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
         </div>
@@ -214,12 +215,35 @@ function BoardScreen({ id }: { id: string }) {
       <QueryState query={entity}>
         {entity.data && (
           <header className="page-heading listing-heading">
-            <div>
+            <div className="sr-only">
               <h1>{entity.data.name}</h1>
               <p>{entity.data.description}</p>
             </div>
             <div className="listing-heading-actions">
               <FilterBar
+                trailingAction={
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="filter-icon"
+                        aria-label="Configurações do board"
+                        onClick={() => setSettings(true)}
+                      >
+                        <Settings aria-hidden="true" />
+                      </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="navigation-tooltip"
+                        sideOffset={6}
+                      >
+                        Configurações do board
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                }
                 search={
                   <>
                     <Search
@@ -269,10 +293,6 @@ function BoardScreen({ id }: { id: string }) {
                   </label>
                 </FilterPopover>
               </FilterBar>
-              <Button variant="outline" onClick={() => setSettings(true)}>
-                <Settings2 data-icon="inline-start" />
-                Configurações
-              </Button>
             </div>
           </header>
         )}

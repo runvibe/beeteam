@@ -68,8 +68,8 @@ function TaskDetail({ id }: { id: string }) {
         <ArrowUpLeft />
         Voltar
       </Button>
-      <header className="task-page-heading">
-        {q.data && <TaskPath task={q.data} />}
+      {q.data && <TaskPath task={q.data} />}
+      <header className="sr-only">
         <h1 ref={heading} tabIndex={-1}>
           {q.data?.title ?? "Detalhes da task"}
         </h1>

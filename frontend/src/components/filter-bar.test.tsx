@@ -13,6 +13,9 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
     </ApiProvider>,
   );
   expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /filtros ativos/ }),
+  ).not.toBeInTheDocument();
   const trigger = screen.getByRole("button", { name: "Buscar agentes" });
   await user.click(trigger);
   const input = screen.getByRole("searchbox", { name: "Buscar agentes" });
@@ -22,16 +25,44 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
   expect(trigger).toHaveFocus();
   expect(trigger).toHaveAttribute("data-active", "true");
   expect(location.search).toContain("agents.name=Lia");
+  await user.click(trigger);
+  expect(screen.getByRole("searchbox", { name: "Buscar agentes" })).toHaveValue(
+    "Lia",
+  );
+  expect(
+    screen.getByRole("searchbox", { name: "Buscar agentes" }),
+  ).toHaveFocus();
+  expect(
+    screen.queryByRole("dialog", { name: "Buscar agentes" }),
+  ).not.toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: "Fechar buscar agentes" }),
+  );
+  expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+  expect(location.search).toContain("agents.name=Lia");
   await user.click(screen.getByRole("button", { name: "Papel" }));
   await user.click(screen.getByRole("radio", { name: "Colaborador" }));
   expect(location.search).toContain("agents.role=collaborator");
   await user.keyboard("{Escape}");
+  const summary = await screen.findByRole("button", {
+    name: "Expandir 2 filtros ativos",
+  });
+  expect(summary).toHaveTextContent("Buscar agentes: Lia");
+  await user.click(summary);
+  expect(summary).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByText("Papel: Colaborador")).toBeVisible();
+  await user.click(summary);
+  await user.unhover(summary);
+  expect(summary).toHaveAttribute("aria-expanded", "false");
   window.history.back();
   await waitFor(() => expect(location.search).not.toContain("agents.role="));
   expect(location.search).toContain("agents.name=Lia");
   await user.click(screen.getByRole("button", { name: "Limpar filtros" }));
   expect(location.search).not.toContain("agents.name=");
   expect(location.search).toContain("agents.limit=1");
+  expect(
+    screen.queryByRole("button", { name: /filtros ativos/ }),
+  ).not.toBeInTheDocument();
 });
 
 it("keeps entity search, option pagination and selected values reachable inside the popover", async () => {

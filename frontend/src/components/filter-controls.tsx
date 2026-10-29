@@ -1,4 +1,5 @@
-import { useId, type ReactNode } from "react";
+import { useContext, useEffect, useId, type ReactNode } from "react";
+import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
 import {
   Search,
@@ -40,6 +41,14 @@ export function FilterPopover({
 }) {
   const Icon = search ? Search : icons[label] || ListFilter;
   const heading = useId();
+  const register = useContext(FilterSummaryContext);
+  useEffect(() => {
+    register?.(
+      heading,
+      active ? { label, value: summary || label } : undefined,
+    );
+    return () => register?.(heading);
+  }, [register, heading, active, label, summary]);
   const hint = summary ? `${label}: ${summary}` : label;
   return (
     <Popover.Root>

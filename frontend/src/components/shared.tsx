@@ -1,5 +1,6 @@
 import { useId, type ReactNode } from "react";
 import { useCompactFilters } from "./filter-context";
+import { InlineFilterSearch } from "./inline-filter-search";
 import { FilterPopover, FilterOptions } from "./filter-controls";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "./ui/empty";
@@ -199,9 +200,7 @@ export function Search({
     </Field>
   );
   return compact ? (
-    <FilterPopover label={label} search active={!!value} summary={value}>
-      {field}
-    </FilterPopover>
+    <InlineFilterSearch label={label} value={value} onChange={onChange} />
   ) : (
     field
   );

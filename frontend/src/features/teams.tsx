@@ -56,7 +56,7 @@ export function Teams() {
   return (
     <>
       <header className="page-heading listing-heading">
-        <div>
+        <div className="sr-only">
           <h1>Times</h1>
           <p>Um líder por time. Uma identidade por agente.</p>
         </div>

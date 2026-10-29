@@ -62,7 +62,7 @@ export function Agents() {
   return (
     <>
       <header className="page-heading listing-heading">
-        <div>
+        <div className="sr-only">
           <h1>Agentes</h1>
           <p>Perfis, instruções e contexto para continuar de onde parou.</p>
         </div>

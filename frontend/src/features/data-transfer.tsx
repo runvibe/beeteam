@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { Tooltip } from "radix-ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,9 +26,26 @@ export function DataTransferSettings() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="ghost" onClick={() => setOpen(true)}>
-        Configurações globais
-      </Button>
+      <Tooltip.Provider delayDuration={300}>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="filter-icon"
+              aria-label="Configurações globais"
+              onClick={() => setOpen(true)}
+            >
+                <SlidersHorizontal aria-hidden="true" />
+            </Button>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content className="navigation-tooltip" sideOffset={6}>
+              Configurações globais
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="detail-dialog">
           <DialogHeader>

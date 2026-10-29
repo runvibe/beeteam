@@ -29,7 +29,7 @@ export function DetailPage({
         <ArrowUpLeft />
         Voltar
       </Button>
-      <header className="task-page-heading">
+      <header className="sr-only">
         <h1 ref={heading} tabIndex={-1}>
           {title}
         </h1>
