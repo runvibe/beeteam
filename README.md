@@ -449,3 +449,5 @@ Team autocomplete marks selected matches inline with a check. It does not repeat
 An active team filter with empty search shows only its resolved selected team, including direct URL navigation. Typing switches to global matches; activating the selected option again clears the filter with pointer or keyboard. Unfiltered empty search still shows the five newest teams.
 
 The team autocomplete does not display a recent-teams caption or leave spacing for it; loading, error and empty-result feedback remain.
+
+The main content has zero left/right padding on desktop and mobile. The top bar removes only its left padding. Vertical spacing, top bar right padding, and all rail, card, form and popover padding remain unchanged.

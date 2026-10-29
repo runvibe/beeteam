@@ -162,3 +162,8 @@
     width: 180px;
   }
 }
+
+/* Main content reaches its horizontal bounds; component padding is unchanged. */
+.icon-navigation main { padding-left: 0; padding-right: 0; }
+
+.icon-navigation .topbar { padding-left: 0; }
