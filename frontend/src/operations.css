@@ -246,12 +246,20 @@ h1 {
   margin: 0 0 12px;
   font-size: 11px;
 }
+main:has(> .kanban) {
+  display: flex;
+  flex-direction: column;
+}
+main > .kanban {
+  flex: 1;
+}
 .kanban {
   gap: 12px;
   grid-auto-columns: minmax(230px, 1fr);
   min-height: 450px;
 }
 .kanban-column {
+  align-self: stretch;
   border-radius: var(--radius);
   padding: 8px;
   gap: 10px;
@@ -275,6 +283,11 @@ h1 {
   gap: 10px;
   padding-block: 14px;
   box-shadow: var(--shadow-sm);
+}
+.task-card[data-blocked="true"] {
+  background: color-mix(in oklch, var(--destructive) 12%, var(--card));
+  border-color: color-mix(in oklch, var(--destructive) 45%, var(--border));
+  box-shadow: inset 3px 0 0 var(--destructive), var(--shadow-sm);
 }
 .task-card [data-slot="card-header"],
 .task-card [data-slot="card-content"],
