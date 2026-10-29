@@ -300,7 +300,13 @@ function BoardScreen({ id }: { id: string }) {
       </div>
       <QueryState query={q}>
         {q.data && (
-          <div className="kanban" key={JSON.stringify(filters)}>
+          <div
+            className="kanban"
+            key={JSON.stringify(filters)}
+            role="region"
+            aria-label="Quadro de tarefas"
+            tabIndex={0}
+          >
             {q.data.columns.map((c) => (
               <Column
                 key={c.status.id}

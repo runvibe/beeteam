@@ -18,6 +18,7 @@ import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import "./App.css";
 import "./navigation.css";
+import "./scrollbars.css";
 export function App() {
   useRestorePosition();
   const routeEntity = useRouteEntity();

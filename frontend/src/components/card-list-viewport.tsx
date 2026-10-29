@@ -106,10 +106,15 @@ export function CardListViewport({
         ...cards.map((card) => card.getBoundingClientRect().height),
       );
       const height = measured > 1 ? measured + 14 : 354;
+      const style = getComputedStyle(node);
+      const contentWidth =
+        node.clientWidth -
+        parseFloat(style.paddingLeft || "0") -
+        parseFloat(style.paddingRight || "0");
       const columns =
         innerWidth <= 850
           ? 1
-          : Math.max(1, Math.floor((node.clientWidth + 14) / 294));
+          : Math.max(1, Math.floor((contentWidth + 14) / 294));
       current.current.setCapacity(
         columns * Math.max(1, Math.ceil(node.clientHeight / height)),
       );
