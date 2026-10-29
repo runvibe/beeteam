@@ -120,3 +120,9 @@ O servidor envia `heartbeat` nomeado a cada 15 segundos. Se nenhum evento chegar
 Cards bloqueados mantêm o ícone e texto "Bloqueada" e recebem fundo/borda avermelhados discretos, usando o token semântico de erro nos temas claro e escuro. As colunas ocupam o espaço vertical restante da página e se estendem igualmente, inclusive vazias; conteúdo maior continua com rolagem e o Kanban mantém a rolagem horizontal em telas estreitas.
 
 Alterar o frontend fonte não atualiza um processo com UI embutida já iniciado. Gere a nova distribuição com `node scripts/build-distribution.mjs`; a ativação do novo executável é uma etapa separada. Para preview sem substituir o binário, execute Vite em outra porta com `BEE_API_TARGET=http://127.0.0.1:59865`.
+
+### Navegação fixa por ícones
+
+A faixa lateral mostra somente o logo no topo e três botões circulares de 44 px, centralizados verticalmente. A largura é 72 px no desktop e 56 px em telas estreitas. Os botões conservam nomes acessíveis, indicação da seção ativa, foco visível e tooltips Radix por mouse/teclado (Escape fecha). Não há controle de expandir/recolher. Sidebar e navbar são transparentes e sem bordas; breadcrumb, configurações globais e alternância de tema permanecem disponíveis.
+
+Validação: navegação e tooltip pelo teclado, temas claro/escuro, mobile e largura mínima de 320 px; o Kanban mantém seu scroll horizontal e o destaque de bloqueio. O preview visual usa fixtures somente em memória em processo separado; o binário ativo e o banco do usuário não são substituídos pelo desenvolvimento frontend.

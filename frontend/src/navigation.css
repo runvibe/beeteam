@@ -1,0 +1,75 @@
+/* Fixed icon rail shared by desktop and mobile. Surfaces use the page background. */
+.app-shell.icon-navigation {
+  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-rows: 1fr;
+}
+.navigation-rail {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: minmax(44px, 1fr) auto minmax(16px, 1fr);
+  justify-items: center;
+  padding-block: 16px;
+  background: transparent;
+  border: 0;
+}
+.navigation-logo {
+  grid-row: 1;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--foreground);
+}
+.navigation-logo svg {
+  width: 26px;
+  height: 26px;
+}
+.navigation-rail nav {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.navigation-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+.navigation-button svg {
+  width: 20px;
+  height: 20px;
+}
+.navigation-tooltip {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.icon-navigation .topbar {
+  background: transparent;
+  border: 0;
+  height: auto;
+  flex-wrap: wrap;
+}
+@media (max-width: 850px) {
+  .app-shell.icon-navigation {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .navigation-rail {
+    padding-block: 12px;
+  }
+  .icon-navigation .topbar {
+    padding-inline: 12px;
+  }
+  .icon-navigation main {
+    padding-inline: 12px;
+  }
+}

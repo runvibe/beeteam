@@ -5,15 +5,7 @@ import {
   useLocation,
   isKnownRoute,
 } from "./routing/location";
-import { useState } from "react";
-import {
-  Hexagon,
-  Columns3,
-  Users,
-  Network,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { NavigationRail } from "./components/navigation-rail";
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
@@ -24,6 +16,7 @@ import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import "./App.css";
+import "./navigation.css";
 export function App() {
   useRestorePosition();
   const routeEntity = useRouteEntity();
@@ -31,76 +24,9 @@ export function App() {
   const { taskId, agentId, teamId } = useUi();
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
-  const [collapsed, setCollapsed] = useState(false);
   return (
-    <div className={collapsed ? "app-shell compact" : "app-shell"}>
-      <aside className="sidebar">
-        <a
-          className="brand"
-          aria-label="Bee Team — ir para boards"
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setArea("boards");
-          }}
-        >
-          <span className="brand-mark">
-            <Hexagon size={24} />
-          </span>
-          <span>bee team</span>
-        </a>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={collapsed ? "Expandir navegação" : "Recolher navegação"}
-          aria-expanded={!collapsed}
-          aria-controls="primary-navigation"
-          className="collapse-nav"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? <ChevronRight /> : <ChevronLeft />}
-        </Button>
-
-        <nav id="primary-navigation" aria-label="Navegação principal">
-          <Button
-            aria-label="Tarefas"
-            title="Boards"
-            variant={area === "boards" ? "secondary" : "ghost"}
-            onClick={() => setArea("boards")}
-            aria-current={area === "boards" ? "page" : undefined}
-          >
-            <Columns3 data-icon="inline-start" />
-            <span>Tarefas</span>
-          </Button>
-          <Button
-            aria-label="Recursos de Agentes"
-            title="Agentes"
-            variant={area === "agents" ? "secondary" : "ghost"}
-            onClick={() => setArea("agents")}
-            aria-current={area === "agents" ? "page" : undefined}
-          >
-            <Users data-icon="inline-start" />
-            <span>Agentes</span>
-          </Button>
-          <Button
-            aria-label="Times"
-            title="Times"
-            variant={area === "teams" ? "secondary" : "ghost"}
-            onClick={() => setArea("teams")}
-            aria-current={area === "teams" ? "page" : undefined}
-          >
-            <Network data-icon="inline-start" />
-            <span>Times</span>
-          </Button>
-        </nav>
-        <div className="sidebar-bottom">
-          <span className="local-dot" />
-          Ambiente local
-          <p>
-            Planejamento e aprovações acontecem na conversa com o team leader.
-          </p>
-        </div>
-      </aside>
+    <div className="app-shell icon-navigation">
+      <NavigationRail />
       <div className="main-shell">
         <header className="topbar">
           <AppPath />
