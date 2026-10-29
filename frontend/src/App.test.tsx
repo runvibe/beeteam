@@ -12,6 +12,38 @@ describe("Bee Team interface", () => {
     window.history.replaceState({}, "", "/boards");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
+  it("keeps global controls in the rail and contextual filters in the compact header", async () => {
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    const topbar = document.querySelector(".topbar") as HTMLElement;
+    const rail = document.querySelector(".navigation-footer") as HTMLElement;
+    expect(
+      within(rail).getByRole("button", { name: "Configurações globais" }),
+    ).toBeVisible();
+    expect(
+      within(rail).getByRole("button", { name: /Ativar tema/ }),
+    ).toBeVisible();
+    expect(
+      within(topbar).getByRole("button", { name: "Buscar boards" }),
+    ).toBeVisible();
+    await userEvent.click(
+      await screen.findByRole("link", { name: "Lançamento do produto" }),
+    );
+    expect(
+      await within(topbar).findByRole("button", {
+        name: "Configurações do board",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.queryByText(/Tasks principais · subtasks/),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Atualizações registradas, sem indicação/),
+    ).not.toBeInTheDocument();
+  });
   it("keeps filtered board context while the task breadcrumb follows cross-board ancestry", async () => {
     render(
       <ApiProvider api={createMockApi({ delay: 0 })}>
@@ -122,9 +154,7 @@ describe("Bee Team interface", () => {
     const input = within(dialog).getByLabelText("Nome", { exact: true });
     await userEvent.clear(input);
     await userEvent.type(input, "Lia revisada");
-    await userEvent.click(
-      within(dialog).getByRole("button", { name: "Salvar perfil" }),
-    );
+    await userEvent.tab();
     expect(
       await within(dialog).findByRole("heading", { name: "Lia revisada" }),
     ).toBeInTheDocument();

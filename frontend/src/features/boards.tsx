@@ -73,6 +73,7 @@ function BoardIndex() {
           <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
         </div>
         <FilterBar
+          inHeader
           search={
             <>
               <Search
@@ -216,6 +217,7 @@ function BoardScreen({ id }: { id: string }) {
             </div>
             <div className="listing-heading-actions">
               <FilterBar
+                inHeader
                 trailingAction={
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
@@ -294,10 +296,6 @@ function BoardScreen({ id }: { id: string }) {
         )}
       </QueryState>
 
-      <div className="board-meta">
-        <span>Tasks principais · subtasks no detalhe de cada task</span>
-        <span>Atualizações registradas, sem indicação de execução ao vivo</span>
-      </div>
       <QueryState query={q}>
         {q.data && (
           <div

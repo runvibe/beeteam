@@ -2,6 +2,8 @@ import { Hexagon, Columns3, Users, Network } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
+import { ThemeControl } from "./theme-control";
+import { DataTransferSettings } from "@/features/data-transfer";
 
 const sections = [
   { area: "boards", label: "Tarefas", name: "Tarefas", Icon: Columns3 },
@@ -69,6 +71,10 @@ export function NavigationRail() {
           ))}
         </nav>
       </Tooltip.Provider>
+      <div className="navigation-footer" aria-label="Preferências globais">
+        <DataTransferSettings />
+        <ThemeControl />
+      </div>
     </aside>
   );
 }

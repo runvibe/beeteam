@@ -42,23 +42,14 @@ function TeamSuggestions({
   const [text, setText] = useState("");
   const [active, setActive] = useState(-1);
   const term = text.trim();
+  const filters = term
+    ? { name: term, limit: 5, offset: 0, sortBy: "name" }
+    : { limit: 5, offset: 0, sortBy: "createdAt", sortOrder: "desc" as const };
   const query = useQuery({
-    queryKey: [
-      "teams",
-      "autocomplete",
-      { name: term, limit: 5, offset: 0, sortBy: "name" },
-    ],
-    queryFn: ({ signal }) =>
-      api.list(
-        "teams",
-        "",
-        { name: term, limit: 5, offset: 0, sortBy: "name" },
-        signal,
-      ),
-    enabled: !!term,
+    queryKey: ["teams", "autocomplete", filters],
+    queryFn: ({ signal }) => api.list("teams", "", filters, signal),
   });
-  const items =
-    term && !query.isFetching ? (query.data?.items ?? []).slice(0, 5) : [];
+  const items = !query.isFetching ? (query.data?.items ?? []).slice(0, 5) : [];
   const choose = (index: number) => {
     const item = items[index];
     if (item) {
@@ -107,17 +98,17 @@ function TeamSuggestions({
         }}
       />
       <div id={`${id}-status`} role="status" className="small-note">
-        {!term
-          ? "Digite para buscar times."
-          : query.isFetching
-            ? "Buscando times…"
-            : query.error
-              ? "Não foi possível buscar times."
-              : !items.length
-                ? "Nenhum time encontrado."
+        {query.isFetching
+          ? "Buscando times…"
+          : query.error
+            ? "Não foi possível buscar times."
+            : !items.length
+              ? "Nenhum time encontrado."
+              : !term
+                ? "Times criados mais recentemente."
                 : `${items.length} sugestões disponíveis.`}
       </div>
-      {query.error && !!term && (
+      {query.error && (
         <Button onClick={() => void query.refetch()}>Tentar novamente</Button>
       )}
       <ul id={`${id}-list`} role="listbox" aria-label="Sugestões de times">

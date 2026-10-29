@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useSettingsAutosave,
+  AutosaveFeedback,
+} from "@/components/settings-autosave";
 import { useApi } from "@/api/context";
 import type { Agent } from "@/api/types";
 import {
@@ -10,56 +12,56 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { SaveFeedback } from "./settings";
 export function ProfileForm({ agent: latest }: { agent: Agent }) {
-  const [agent, setBaseline] = useState(latest);
-  const [name, setName] = useState(agent.name),
-    [role, setRole] = useState(agent.roleDescription),
-    [style, setStyle] = useState(agent.workStyle),
-    [instructions, setInstructions] = useState(agent.workInstructions),
-    [rules, setRules] = useState(agent.rules.join("\n")),
-    [limits, setLimits] = useState(agent.accessLimits.join("\n")),
-    [context, setContext] = useState(agent.contextSummary),
-    [image, setImage] = useState(
-      agent.image?.kind === "external" ? agent.image.url : "",
-    );
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: () =>
+  const api = useApi();
+  const autosave = useSettingsAutosave({
+    resource: "agents",
+    load: () => api.get("agents", latest.id),
+    latest,
+    values: (agent: Agent) => ({
+      name: agent.name,
+      roleDescription: agent.roleDescription,
+      workStyle: agent.workStyle,
+      workInstructions: agent.workInstructions,
+      rules: agent.rules.join("\n"),
+      accessLimits: agent.accessLimits.join("\n"),
+      contextSummary: agent.contextSummary,
+      image: agent.image?.kind === "external" ? agent.image.url : "",
+    }),
+    save: (draft, version) =>
       api.patch(
         "agents",
-        agent.id,
+        latest.id,
         {
-          name,
-          roleDescription: role,
-          workStyle: style,
-          workInstructions: instructions,
-          rules: rules.split("\n").filter(Boolean),
-          accessLimits: limits.split("\n").filter(Boolean),
-          contextSummary: context,
-          ...(image
-            ? { image: { kind: "external" as const, url: image } }
-            : agent.image?.kind === "external"
+          name: draft.name,
+          roleDescription: draft.roleDescription,
+          workStyle: draft.workStyle,
+          workInstructions: draft.workInstructions,
+          contextSummary: draft.contextSummary,
+          rules: draft.rules.split("\n").filter(Boolean),
+          accessLimits: draft.accessLimits.split("\n").filter(Boolean),
+          ...(draft.image
+            ? { image: { kind: "external" as const, url: draft.image } }
+            : latest.image?.kind === "external"
               ? { image: null }
               : {}),
         },
-        agent.version,
+        version,
       ),
-    onSuccess: (saved) => {
-      setBaseline(saved);
-      return client.invalidateQueries();
-    },
   });
+  const {
+    name,
+    roleDescription: role,
+    workStyle: style,
+    workInstructions: instructions,
+    rules,
+    accessLimits: limits,
+    contextSummary: context,
+    image,
+  } = autosave.draft;
+  const agent = latest;
   return (
-    <form
-      className="detail-section profile-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-    >
+    <form className="detail-section profile-form" {...autosave.formProps}>
       <FieldGroup>
         <h3>Identidade</h3>
         <Field>
@@ -69,7 +71,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
             required
             maxLength={200}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => autosave.change("name", e.target.value)}
           />
         </Field>
         <Field>
@@ -77,7 +79,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-role"
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => autosave.change("roleDescription", e.target.value)}
           />
         </Field>
         <h3>Orientações de trabalho</h3>
@@ -86,7 +88,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-style"
             value={style}
-            onChange={(e) => setStyle(e.target.value)}
+            onChange={(e) => autosave.change("workStyle", e.target.value)}
           />
         </Field>
         <Field>
@@ -94,7 +96,9 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-instructions"
             value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
+            onChange={(e) =>
+              autosave.change("workInstructions", e.target.value)
+            }
           />
         </Field>
         <Field>
@@ -102,7 +106,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-rules"
             value={rules}
-            onChange={(e) => setRules(e.target.value)}
+            onChange={(e) => autosave.change("rules", e.target.value)}
           />
         </Field>
         <Field>
@@ -112,7 +116,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-limits"
             value={limits}
-            onChange={(e) => setLimits(e.target.value)}
+            onChange={(e) => autosave.change("accessLimits", e.target.value)}
           />
           <FieldDescription>
             Orientações de atuação; as permissões reais são definidas no
@@ -127,7 +131,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           <Textarea
             id="agent-context"
             value={context}
-            onChange={(e) => setContext(e.target.value)}
+            onChange={(e) => autosave.change("contextSummary", e.target.value)}
           />
           <FieldDescription>
             Não inclua transcrições de conversas.
@@ -140,25 +144,22 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
             type="url"
             pattern="https://.*"
             value={image}
-            onChange={(e) => setImage(e.target.value)}
+            onChange={(e) => autosave.change("image", e.target.value)}
             placeholder="https://…"
           />
         </Field>
       </FieldGroup>
-      <Button type="submit" disabled={mutation.isPending || !!agent.archivedAt}>
-        {mutation.isPending ? "Salvando…" : "Salvar perfil"}
-      </Button>
       {agent.archivedAt && (
         <p className="small-note">Perfil arquivado: somente leitura.</p>
       )}
-      {latest.version > agent.version && (
+      {latest.version > autosave.version && (
         <p role="status" className="small-note">
           Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado; feche e reabra a configuração para carregar a versão atual
-          antes de editar novamente.
+          preservado. Use Recarregar formulário após o conflito para descartar o
+          rascunho e carregar a versão atual.
         </p>
       )}
-      <SaveFeedback mutation={mutation} />
+      <AutosaveFeedback state={autosave} />
     </form>
   );
 }

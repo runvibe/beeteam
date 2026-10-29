@@ -128,3 +128,6 @@ A faixa lateral mostra somente o logo no topo e três botões circulares de 44 p
 Validação: navegação e tooltip pelo teclado, temas claro/escuro, mobile e largura mínima de 320 px; o Kanban mantém seu scroll horizontal e o destaque de bloqueio. O preview visual usa fixtures somente em memória em processo separado; o binário ativo e o banco do usuário não são substituídos pelo desenvolvimento frontend.
 
 Nas listagens, cards têm altura uniforme de 272px, títulos em até duas linhas e áreas reservadas para descrição. O fade é aplicado apenas quando a medição detecta texto excedente; o conteúdo integral permanece acessível e disponível no detalhe, sem alterar os dados.
+
+Configuration forms use `settings-autosave`: text commits on blur, options on change, serialized/coalesced versioned PATCH requests, retained failed drafts and explicit retry/reload. Closing a focused form flushes its final valid value. Creation and data transfers are not autosaved. Draft retention is in memory for this app session.
+The global header hosts listing/board filters beside the breadcrumb; preferences and the theme toggle sit at the bottom of the icon rail. Empty team searches request five teams by `createdAt desc`; typed searches request at most five name matches across the API.

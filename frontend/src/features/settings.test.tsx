@@ -44,7 +44,7 @@ it("reloads server metadata after a rejected stale write without overwriting it"
   );
   await userEvent.clear(screen.getByLabelText("Descrição"));
   await userEvent.type(screen.getByLabelText("Descrição"), "Rascunho local");
-  await userEvent.click(screen.getByRole("button", { name: "Salvar board" }));
+  await userEvent.tab();
   await userEvent.click(
     await screen.findByRole("button", { name: "Recarregar formulário" }),
   );
@@ -59,7 +59,7 @@ it("reloads server metadata after a rejected stale write without overwriting it"
     screen.getByLabelText("Descrição"),
     "Edição após reload",
   );
-  await userEvent.click(screen.getByRole("button", { name: "Salvar board" }));
+  await userEvent.tab();
   await waitFor(async () =>
     expect((await api.get("boards", board.id)).description).toBe(
       "Edição após reload",

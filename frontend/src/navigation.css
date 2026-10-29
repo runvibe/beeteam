@@ -78,3 +78,87 @@
 .icon-navigation .topbar {
   padding-inline: 8px;
 }
+
+.navigation-footer {
+  grid-row: 3;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.navigation-footer > button,
+.navigation-footer button.filter-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  color: var(--muted-foreground);
+}
+.navigation-footer button svg {
+  width: 17px;
+  height: 17px;
+}
+.icon-navigation .main-shell > .topbar {
+  min-height: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding-block: 2px;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.icon-navigation main {
+  padding-top: 8px;
+}
+.header-filter-slot {
+  min-width: 0;
+  max-width: 70%;
+}
+.header-filter-slot:empty {
+  display: none;
+}
+.header-filter-slot .compact-filter-bar {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+.filter-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.header-filter-slot .filter-controls-row {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.header-filter-slot .filter-controls-row > * {
+  flex-shrink: 0;
+}
+.listing-heading:has(.filter-bar-portaled) {
+  display: contents;
+}
+.listing-heading-actions:has(.filter-bar-portaled) {
+  display: contents;
+}
+.icon-navigation main:has(.kanban) > .task-back {
+  display: none;
+}
+@media (max-width: 850px) {
+  .header-filter-slot {
+    max-width: calc(100% - 104px);
+  }
+  .header-filter-slot .filter-controls-row {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    padding: 2px;
+  }
+  .header-filter-slot .filter-controls-row::-webkit-scrollbar {
+    display: none;
+  }
+  .header-filter-slot .filter-controls-row > * {
+    flex-shrink: 0;
+  }
+  .header-filter-slot .inline-filter-search[data-open="true"] {
+    width: 180px;
+  }
+}

@@ -72,6 +72,7 @@ export function Agents() {
           <p>Perfis, instruções e contexto para continuar de onde parou.</p>
         </div>
         <FilterBar
+          inHeader
           search={
             <>
               <Search

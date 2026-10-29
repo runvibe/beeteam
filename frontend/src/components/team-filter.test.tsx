@@ -6,7 +6,7 @@ import { createMockApi } from "@/api/mock";
 import type { BeeApi, Page, Team } from "@/api/types";
 import { TeamFilter } from "./team-filter";
 
-it("does not load a catalog, limits suggestions to five and ignores an aborted old search", async () => {
+it("loads five recent teams, searches globally and ignores an aborted old search", async () => {
   const api = createMockApi({ delay: 0 });
   const sample = (await api.list("teams")).items[0];
   let oldSignal: AbortSignal | undefined;
@@ -37,7 +37,13 @@ it("does not load a catalog, limits suggestions to five and ignores an aborted o
       <TeamFilter label="Time" value="" onChange={vi.fn()} />
     </ApiProvider>,
   );
-  expect(list).not.toHaveBeenCalled();
+  await waitFor(() => expect(screen.getAllByRole("option")).toHaveLength(5));
+  expect(list).toHaveBeenLastCalledWith(
+    "teams",
+    "",
+    { limit: 5, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
+    expect.any(AbortSignal),
+  );
   const input = screen.getByRole("combobox");
   const user = userEvent.setup();
   await user.type(input, "old");
@@ -66,4 +72,14 @@ it("does not load a catalog, limits suggestions to five and ignores an aborted o
     screen.queryByRole("option", { name: "Obsolete" }),
   ).not.toBeInTheDocument();
   expect(screen.getAllByRole("option")).toHaveLength(5);
+  await user.clear(input);
+  await waitFor(() =>
+    expect(screen.getByText("Times criados mais recentemente.")).toBeVisible(),
+  );
+  expect(list).toHaveBeenCalledWith(
+    "teams",
+    "",
+    { limit: 5, offset: 0, sortBy: "createdAt", sortOrder: "desc" },
+    expect.any(AbortSignal),
+  );
 });

@@ -3,8 +3,6 @@ import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
 import { BalancedCardGrid } from "@/components/balanced-card-grid";
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
 import { useLocation, navigate, destination } from "@/routing/location";
 import { openCardLink, openCardBody } from "@/routing/card-navigation";
@@ -42,7 +40,10 @@ import {
   TextBlock,
 } from "@/components/shared";
 import { AgentName } from "@/components/names";
-import { SaveFeedback } from "./settings";
+import {
+  useSettingsAutosave,
+  AutosaveFeedback,
+} from "@/components/settings-autosave";
 export function Teams() {
   const [name, setName] = useUrlState<string>("teams.name", ""),
     [offset, setOffset] = useUrlState<number>("teams.offset", 0),
@@ -65,6 +66,7 @@ export function Teams() {
           <p>Um líder por time. Uma identidade por agente.</p>
         </div>
         <FilterBar
+          inHeader
           search={
             <>
               <Search
@@ -259,28 +261,21 @@ function TeamDetail({ id }: { id: string }) {
   );
 }
 function TeamForm({ team: latest }: { team: Team }) {
-  const [team, setBaseline] = useState(latest);
-  const [name, setName] = useState(team.name),
-    [purpose, setPurpose] = useState(team.purpose),
-    [context, setContext] = useState(team.context);
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: () =>
-      api.patch("teams", team.id, { name, purpose, context }, team.version),
-    onSuccess: (saved) => {
-      setBaseline(saved);
-      return client.invalidateQueries();
-    },
+  const api = useApi();
+  const autosave = useSettingsAutosave({
+    resource: "teams",
+    load: () => api.get("teams", latest.id),
+    latest,
+    values: (team: Team) => ({
+      name: team.name,
+      purpose: team.purpose,
+      context: team.context,
+    }),
+    save: (draft, version) => api.patch("teams", latest.id, draft, version),
   });
+  const { name, purpose, context } = autosave.draft;
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-      className="detail-section"
-    >
+    <form {...autosave.formProps} className="detail-section">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="team-name">Nome</FieldLabel>
@@ -289,7 +284,7 @@ function TeamForm({ team: latest }: { team: Team }) {
             required
             maxLength={200}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => autosave.change("name", e.target.value)}
           />
         </Field>
         <Field>
@@ -297,7 +292,7 @@ function TeamForm({ team: latest }: { team: Team }) {
           <Textarea
             id="team-purpose"
             value={purpose}
-            onChange={(e) => setPurpose(e.target.value)}
+            onChange={(e) => autosave.change("purpose", e.target.value)}
           />
         </Field>
         <Field>
@@ -305,21 +300,18 @@ function TeamForm({ team: latest }: { team: Team }) {
           <Textarea
             id="team-context"
             value={context}
-            onChange={(e) => setContext(e.target.value)}
+            onChange={(e) => autosave.change("context", e.target.value)}
           />
         </Field>
       </FieldGroup>
-      <Button disabled={mutation.isPending || !!team.archivedAt} type="submit">
-        Salvar metadados
-      </Button>
-      {latest.version > team.version && (
+      {latest.version > autosave.version && (
         <p role="status" className="small-note">
           Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado; feche e reabra a configuração para carregar a versão atual
-          antes de editar novamente.
+          preservado. Use Recarregar formulário após o conflito para descartar o
+          rascunho e carregar a versão atual.
         </p>
       )}
-      <SaveFeedback mutation={mutation} />
+      <AutosaveFeedback state={autosave} />
     </form>
   );
 }
