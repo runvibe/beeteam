@@ -1,42 +1,48 @@
-import { useState, useId, type ReactNode } from "react";
-import { SlidersHorizontal } from "lucide-react";
+import type { ReactNode } from "react";
+import { Tooltip } from "radix-ui";
+import { FilterX } from "lucide-react";
 import { Button } from "./ui/button";
+import { CompactFilters } from "./filter-context";
+import "./filters.css";
 export function FilterBar({
   search,
   children,
   active = false,
   onClear,
 }: {
-  search: ReactNode;
+  search?: ReactNode;
   children: ReactNode;
   active?: boolean;
   onClear: () => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const id = useId();
   return (
-    <div className="filter-bar">
-      <div className="filter-search">
-        {search}
-        <Button
-          className="filter-toggle"
-          variant="outline"
-          aria-expanded={expanded}
-          aria-controls={id}
-          onClick={() => setExpanded(!expanded)}
-        >
-          <SlidersHorizontal />
-          Filtros{active ? " ativos" : ""}
-        </Button>
-      </div>
-      <div id={id} className={`filter-options${expanded ? " expanded" : ""}`}>
-        {children}
-      </div>
-      {active && (
-        <Button variant="ghost" className="clear-filters" onClick={onClear}>
-          Limpar filtros
-        </Button>
-      )}
-    </div>
+    <CompactFilters.Provider value={true}>
+      <Tooltip.Provider delayDuration={300}>
+        <div className="compact-filter-bar" role="group" aria-label="Filtros">
+          {search}
+          {children}
+          {active && (
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="filter-icon"
+                  aria-label="Limpar filtros"
+                  onClick={onClear}
+                >
+                  <FilterX aria-hidden="true" />
+                </Button>
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content className="navigation-tooltip" sideOffset={6}>
+                  Limpar filtros
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          )}
+        </div>
+      </Tooltip.Provider>
+    </CompactFilters.Provider>
   );
 }

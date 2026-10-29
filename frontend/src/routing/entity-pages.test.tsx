@@ -1,3 +1,4 @@
+import { openSearch } from "@/test/filter";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { it, expect, vi } from "vitest";
@@ -41,9 +42,7 @@ it("opens agent body with keyboard and restores filtered list, then forward/deep
     "active",
   );
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-  expect(
-    await screen.findByRole("searchbox", { name: "Buscar agentes" }),
-  ).toHaveValue("Lia");
+  expect(await openSearch("Buscar agentes")).toHaveValue("Lia");
   expect(new URLSearchParams(location.search).get("agents.limit")).toBe("1");
 });
 it("keeps team leader action separate and returns from board and settings to the exact team page", async () => {
@@ -79,9 +78,7 @@ it("keeps team leader action separate and returns from board and settings to the
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(location.pathname).toBe("/teams/produto-engenharia");
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-  expect(
-    await screen.findByRole("searchbox", { name: "Buscar times" }),
-  ).toHaveValue("Produto");
+  expect(await openSearch("Buscar times")).toHaveValue("Produto");
   window.history.forward();
   await waitFor(() =>
     expect(location.pathname).toBe("/teams/produto-engenharia"),

@@ -1,4 +1,6 @@
 import { useId, type ReactNode } from "react";
+import { useCompactFilters } from "./filter-context";
+import { FilterPopover, FilterOptions } from "./filter-controls";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "./ui/empty";
 import { Skeleton } from "./ui/skeleton";
@@ -128,6 +130,26 @@ export function Choice({
   options: { value: string; label: string }[];
   all?: string;
 }) {
+  const compact = useCompactFilters();
+  if (compact) {
+    const selected =
+      options.find((option) => option.value === value)?.label || all;
+    return (
+      <FilterPopover
+        label={label}
+        summary={selected}
+        active={value !== (all ? "" : options[0]?.value || "")}
+      >
+        <FilterOptions
+          label={label}
+          value={value}
+          onChange={onChange}
+          options={options}
+          all={all}
+        />
+      </FilterPopover>
+    );
+  }
   return (
     <Field className="filter-field">
       <FieldLabel>{label}</FieldLabel>
@@ -162,7 +184,8 @@ export function Search({
   label?: string;
 }) {
   const id = useId();
-  return (
+  const compact = useCompactFilters();
+  const field = (
     <Field className="filter-field grow">
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
@@ -174,6 +197,13 @@ export function Search({
         onChange={(e) => onChange(e.target.value)}
       />
     </Field>
+  );
+  return compact ? (
+    <FilterPopover label={label} search active={!!value} summary={value}>
+      {field}
+    </FilterPopover>
+  ) : (
+    field
   );
 }
 export const formatDate = (value: string) =>

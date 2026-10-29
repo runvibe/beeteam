@@ -1,3 +1,4 @@
+import { openSearch } from "@/test/filter";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach } from "vitest";
@@ -20,7 +21,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(
       await screen.findByRole("link", { name: "Lançamento do produto" }),
     );
-    const search = screen.getByRole("searchbox", { name: "Buscar tasks" });
+    const search = await openSearch("Buscar tasks");
     await userEvent.type(search, "Mapear");
     await userEvent.click(
       await screen.findByRole("link", {
@@ -69,9 +70,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-    expect(
-      await screen.findByRole("searchbox", { name: "Buscar tasks" }),
-    ).toHaveValue("Mapear");
+    expect(await openSearch("Buscar tasks")).toHaveValue("Mapear");
     expect(
       screen.getByRole("heading", { name: "Lançamento do produto" }),
     ).toBeInTheDocument();
@@ -88,7 +87,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
     const agent = await screen.findByRole("region", { name: "Agente" });
     await userEvent.click(within(agent).getByRole("tab", { name: "Tasks" }));
-    const filter = within(agent).getByRole("searchbox");
+    const filter = await openSearch("Buscar tasks do agente");
     await userEvent.type(filter, "Mapear");
     await userEvent.click(
       await within(agent).findByRole("button", {
@@ -102,7 +101,7 @@ describe("Bee Team interface", () => {
     expect(
       within(restored).getByRole("tab", { name: "Tasks" }),
     ).toHaveAttribute("data-state", "active");
-    expect(within(restored).getByRole("searchbox")).toHaveValue("Mapear");
+    expect(await openSearch("Buscar tasks do agente")).toHaveValue("Mapear");
   });
   it("saves a profile through the adapter without changing organizational bindings", async () => {
     const api = createMockApi({ delay: 0 });

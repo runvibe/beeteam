@@ -1,3 +1,4 @@
+import { openSearch } from "@/test/filter";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, it, expect, vi } from "vitest";
@@ -41,9 +42,7 @@ it("reconstructs a direct board filter and page size, opens card body, and retur
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("tab", { name: "Subtasks" }));
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-  expect(
-    await screen.findByRole("searchbox", { name: "Buscar tasks" }),
-  ).toHaveValue("Mapear");
+  expect(await openSearch("Buscar tasks")).toHaveValue("Mapear");
   expect(new URLSearchParams(location.search).get("kanban.limit")).toBe("1");
   window.history.forward();
   await waitFor(() =>
@@ -70,7 +69,7 @@ it("reads invalid query defaults and resets offsets without dropping page size",
   );
   const spy = vi.spyOn(api, "list");
   expect(await screen.findByRole("link", { name: "Lia" })).toBeVisible();
-  const search = screen.getByRole("searchbox");
+  const search = await openSearch("Buscar agentes");
   await userEvent.clear(search);
   await waitFor(() =>
     expect(new URLSearchParams(location.search).has("agents.offset")).toBe(
@@ -132,9 +131,7 @@ it("opens a board card body and restores list query through its breadcrumb", asy
       { name: "Boards" },
     ),
   );
-  expect(
-    await screen.findByRole("searchbox", { name: "Buscar boards" }),
-  ).toHaveValue("Lan");
+  expect(await openSearch("Buscar boards")).toHaveValue("Lan");
   expect(new URLSearchParams(location.search).get("boards.limit")).toBe("1");
   const restored = await screen.findByRole("link", {
     name: "Lançamento do produto",

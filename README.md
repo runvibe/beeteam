@@ -168,6 +168,8 @@ default path in this workflow; SQLite is an explicit opt-in described below. Dat
 
 ## Bee Team frontend
 
+Listing filters are compact icon buttons aligned to the right. Search opens a focused input; option filters open accessible popovers with tooltips and an active-state indicator. Boards, Kanban, agents, teams, agent activities and task timeline share these controls while retaining URL filters, pagination and browser history. Escape closes a popover and returns focus to its trigger; the clear button resets active filters.
+
 The React frontend lives in `frontend/`. Run `npm ci` and `npm run dev` there. The normal preview uses the real API through a Vite `/api` proxy to `http://127.0.0.1:59865`; see `frontend/.env.example` and `frontend/README.md` for configuration. Mock mode is explicit opt-in (`VITE_API_MODE=mock`), with no automatic fallback.
 
 A skill Leader acompanha a conversa no painel (time, board e task em página inteira), com URLs reais e preservação de edição ativa. Collaborators registram trabalho sem conduzir a tela. Sem UI, o Leader mantém o registro e fornece link; atualização ao vivo depende da implementação frontend/backend verificada.

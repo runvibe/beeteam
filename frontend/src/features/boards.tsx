@@ -1,5 +1,6 @@
 import { openCardBody, openCardLink } from "@/routing/card-navigation";
 import { FilterBar } from "@/components/filter-bar";
+import { FilterPopover } from "@/components/filter-controls";
 import { EntityFilter } from "@/components/entity-filter";
 import {
   useUrlState,
@@ -254,15 +255,21 @@ function BoardScreen({ id }: { id: string }) {
           ]}
           all="Todas"
         />
-        <label className="date-filter">
-          Atualizadas desde
-          <input
-            aria-label="Atualizadas desde"
-            type="date"
-            value={updatedFrom}
-            onChange={(e) => setUpdatedFrom(e.target.value)}
-          />
-        </label>
+        <FilterPopover
+          label="Atualizadas desde"
+          active={!!updatedFrom}
+          summary={updatedFrom}
+        >
+          <label className="date-filter">
+            Atualizadas desde
+            <input
+              aria-label="Atualizadas desde"
+              type="date"
+              value={updatedFrom}
+              onChange={(e) => setUpdatedFrom(e.target.value)}
+            />
+          </label>
+        </FilterPopover>
       </FilterBar>
       <div className="board-meta">
         <span>Tasks principais · subtasks no detalhe de cada task</span>
