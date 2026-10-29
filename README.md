@@ -411,3 +411,7 @@ Transfer tests: `cargo test --locked --features mcp --test transfer_archive
 --test transfer_jobs --test transfer_http` (one command). The roundtrip suite
 requires the isolated PostgreSQL 18 `BEE_TEST_DATABASE_URL` and covers all four
 driver pairs, typed precision, tombstones, blobs, hierarchy and rollback.
+
+## MCP Skills snapshot — 2026-10-29
+
+Bundled resources and the three read-only prompt templates incorporate Skills commit `8ab75d1c422c41a1a66ca82166c209063c50d760`: work is recorded and assigned before execution; substantive agent communication belongs to the task, with reference-only notifications after confirmed persistence. Identity activation without a task remains separate. Harness permissions are unchanged. The Codex reference retains three existing SQLite-aware startup/readiness paragraphs; exact source/bundle hashes are in `resources/bee-team/provenance.json`. Existing services must be updated separately to serve this compiled snapshot; this change does not restart them or install global skills.

@@ -58,3 +58,7 @@ Uma análise de mercado pode originar uma subtask financeira em outro board, exe
 ## Chats e duas confirmações
 
 Candidatos por nome/contexto são evidência, não prova: reunir escolha de reuso/novo numa proposta única inclusive em automatic. Handoff explicita usar Collaborator; confirmar identidade/perfil e depois compreensão da task real atribuída. Sem task, aguardar registro/atribuição. Não criar persistência adicional chat–agente.
+
+## Exemplo de pergunta, decisão e entrega
+
+As propostas acima são conversas com o usuário; antes de solicitar execução a outro agente, registre e atribua cada task/subtask. Em uma alteração de endpoint, Collaborator salva a pergunta em comentário e notifica apenas task/comentário e tipo “pergunta”. Leader registra a resposta/decisão e atualiza specification/plano conforme impacto antes de notificar tipo “decisão”. Collaborator lê os registros, executa o escopo atribuído e salva evidências, síntese e estado antes do aviso “entrega”. Referências vêm dos retornos reais; não copiar decisão para o chat. Um aviso repetido não gera nova tarefa, comentário ou confirmação automática.

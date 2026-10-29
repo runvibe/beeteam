@@ -229,3 +229,11 @@ The bundled Codex reference preserves the e6d6b7f editorial baseline with a loca
 update matching DATABASE_DRIVER selection, independent SQLite storage and
 driver-aware readiness. The repository source and bundled copy match; this does
 not update installed global skills or personal MCP configuration.
+
+## Current snapshot — 8ab75d1 (2026-10-29)
+
+Supersedes the historical snapshot descriptions above. Ten approved materials from `8ab75d1c422c41a1a66ca82166c209063c50d760` are bundled, including both entrypoints, handoff, Codex, both workflows, team examples and all three prompts. `resources/bee-team/provenance.json` records source and bundled SHA-256 hashes; only Codex has a local overlay preserving three existing driver-aware startup/readiness paragraphs for SQLite. The remaining integration, mcp-content and content-manifest resources are unchanged. The manifest is build provenance, not an additional MCP filesystem resource.
+
+The 13-resource allowlist and three read-only prompt names/arguments are unchanged. Relative links remain resolvable through their listed reference basename. Task records carry questions, answers, decisions, scope changes, blockers and deliveries; authorized chat notifications carry only persisted references and change type. Identity activation remains possible without a task. Persistence failures, repeated notifications and harness permissions cannot authorize execution or notification loops. This is a compiled package update, not evidence of activation in an existing runtime.
+
+Links ending in `bee-team-leader/SKILL.md` or `bee-team-collaborator/SKILL.md` map to `beeteam://skills/leader` and `beeteam://skills/collaborator`, respectively, rather than a references/SKILL URI.
