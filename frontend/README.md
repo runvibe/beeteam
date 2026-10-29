@@ -114,3 +114,9 @@ Na conexão/reconexão e ao voltar à aba, o estado é consultado novamente. Se 
 Formulários abertos preservam os campos e a versão de edição mesmo quando chega uma alteração externa; salvar uma versão antiga retorna conflito em vez de sobrescrever a mudança remota. Perfil/time/status avisam quando existe versão mais nova; fechar e reabrir carrega essa versão descartando o rascunho. O board oferece recarga explícita após erro. Falhas de consulta em background mantêm os dados anteriores e os campos montados, com mensagem de erro.
 
 O servidor envia `heartbeat` nomeado a cada 15 segundos. Se nenhum evento chegar em 45 segundos, a UI fecha e reabre a conexão e ativa o mesmo fallback. Isso cobre proxies que mantêm uma conexão aberta após a queda do upstream sem disparar `onerror`.
+
+### Visual do Kanban
+
+Cards bloqueados mantêm o ícone e texto "Bloqueada" e recebem fundo/borda avermelhados discretos, usando o token semântico de erro nos temas claro e escuro. As colunas ocupam o espaço vertical restante da página e se estendem igualmente, inclusive vazias; conteúdo maior continua com rolagem e o Kanban mantém a rolagem horizontal em telas estreitas.
+
+Alterar o frontend fonte não atualiza um processo com UI embutida já iniciado. Gere a nova distribuição com `node scripts/build-distribution.mjs`; a ativação do novo executável é uma etapa separada. Para preview sem substituir o binário, execute Vite em outra porta com `BEE_API_TARGET=http://127.0.0.1:59865`.
