@@ -1,10 +1,24 @@
 # Briefing e encerramento
 
+
+## Tarefa como fonte de verdade entre agentes
+
+Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
+
+Perguntas, respostas, decisões, mudanças de escopo, bloqueios e entregas entre agentes ficam na tarefa pertinente. Use comentários para diálogo e histórico; atualize description/specification, plano versionado, currentSummary e status quando exigido pelo tipo de mudança e pelas regras existentes. Comentário não substitui campos atuais, e uma pergunta isolada não exige alteração artificial de status. A segunda confirmação, de compreensão da tarefa e suas pendências, fica em comentário da task e gera somente aviso referencial; a confirmação inicial de identidade pode ocorrer sem tarefa.
+
+Salve primeiro e confirme sucesso; só então notifique pelo canal autorizado com referência real da tarefa/comentário e tipo de mudança. Exemplo de formato, substituindo os marcadores por referências retornadas: “Task <referência real>; comentário <referência real>; tipo: pergunta registrada.” Respostas, decisões e instruções de trabalho não são transportadas pelo chat, mesmo como cópia do conteúdo salvo. O outro agente lê o registro antes de agir. Sem acesso, declara a lacuna e suspende trabalho dependente; não substitui a leitura por instruções em chat.
+
+Notifique apenas mudança relevante ainda não comunicada. Antes de repetir após timeout, confira o registro e resultado disponível; preserve idempotência e não duplique comentários. Aviso repetido não gera comentário de recebimento ou nova notificação automaticamente; só uma nova contribuição substantiva registrada justifica outro aviso. Não crie ciclos de confirmações. Se salvar falhar, sinalize apenas o impedimento e registro não confirmado, sem apresentar decisão/instrução pendente como autorização. Se o envio falhar, mantenha o registro e retome somente a notificação necessária.
+
+Permissões do harness para enviar mensagens continuam obrigatórias; a skill não as amplia. Sem canal autorizado, deixe envio pendente. Ativação de papel/identidade e escolha de chat podem ocorrer sem tarefa, mas não carregar trabalho de negócio: qualquer solicitação desse trabalho exige tarefa previamente registrada e atribuída. Collaborator não cria tarefa para se autoautorizar.
+
+
 ## Briefing para execução ou retomada
 
-Peça explicitamente **usar a skill Collaborator neste chat**. Indique identidade existente ou autorização explícita para fallback novo, time, referência real da task quando existir, contexto do board de origem e ação esperada, usando dados persistidos. Duas confirmações: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Sem task registrada e atribuída, confirmar identidade e aguardar; o Leader registra/atribui antes de pedir execução. Não criar task para se autoautorizar. Desdobramento só no escopo de uma task já atribuída.
+Peça explicitamente **usar a skill Collaborator neste chat**. Indique identidade existente ou autorização explícita para fallback novo, time, referência real da task quando existir, referências persistidas do contexto do board de origem e tipo de mudança, usando dados persistidos. Duas confirmações: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Sem task registrada e atribuída, confirmar identidade e aguardar; o Leader registra/atribui antes de pedir execução. Não criar task para se autoautorizar. Desdobramento só no escopo de uma task já atribuída.
 
-Transfira o contexto completo relevante, fiel ao usuário, nesta ordem:
+Registre o contexto completo relevante na tarefa, fiel ao usuário, nesta ordem; o destinatário o consulta ali:
 
 - Identidade/perfil e regras/limites; board e tarefa/subtarefa, autor/executor, vínculos organizacionais relevantes, com IDs conhecidos.
 - Demanda original e objetivo; escopo aprovado e o que ainda é somente planejamento.
@@ -15,7 +29,7 @@ Transfira o contexto completo relevante, fiel ao usuário, nesta ordem:
 - Pendências/bloqueios, dúvidas não resolvidas e próximo passo concreto.
 - Obrigação de atualizar a própria tarefa ao encerrar e capacidades de API/harness realmente disponíveis.
 
-Esse formato é um briefing de trabalho, não uma transcrição. Links complementam o contexto; não omita decisões essenciais atrás de links inacessíveis. Se um dado não existe, diga que falta. Não delegue novamente a descoberta que o líder já fez com o usuário.
+Esse formato organiza o conteúdo persistido da tarefa, não a mensagem entre chats. A notificação contém apenas referência e tipo de mudança. Se o destinatário não consegue ler o registro, trate a lacuna de acesso sem enviar instruções substitutas pelo chat. Se um dado não existe, diga que falta. Não delegue novamente a descoberta que o líder já fez com o usuário.
 
 ## Registro obrigatório ao encerrar atividade
 
@@ -37,7 +51,7 @@ Na transferência, leve contexto e histórico da task, sem copiar histórico int
 
 ## Via MCP
 
-`task_briefing(taskId)` e `agent_resumption(agentId,taskId)` retornam contexto consultado em mensagem user, sem despacho. Preserve origem e lacunas ao repassá-lo; materialize briefing fiel, sem repetir a descoberta já feita pelo líder. `prepare_execution` não é início de execução. Durante a atividade, use `record_progress` somente nos alvos autorizados. No encerramento, `close_activity` registra o conjunto atomicamente; siga schema/versões e verifique isError/resultado. Obter `delivery_review(taskId)` produz parecer, não aprovação nem alteração de status. Consulte `beeteam://references/integration` para argumentos e paginação.
+`task_briefing(taskId)` e `agent_resumption(agentId,taskId)` retornam contexto consultado em mensagem user, sem despacho. Preserve origem e lacunas ao consultá-lo; esse resultado de leitura não é mensagem de despacho. Materialize o contexto necessário na tarefa antes de notificar, mantendo briefing fiel, sem repetir a descoberta já feita pelo líder. `prepare_execution` não é início de execução. Durante a atividade, use `record_progress` somente nos alvos autorizados. No encerramento, `close_activity` registra o conjunto atomicamente; siga schema/versões e verifique isError/resultado. Obter `delivery_review(taskId)` produz parecer, não aprovação nem alteração de status. Consulte `beeteam://references/integration` para argumentos e paginação.
 
 ## Síntese atual e histórico
 

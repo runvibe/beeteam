@@ -126,3 +126,11 @@ quick_validate UTF-8, links autocontidos e estrutura acíclica do Mermaid princi
 Revisão textual por cenários (sem navegar no chat do usuário ou criar dados): seleção de time leva a Teams/time; board recém-criado só é mostrado após retorno persistido; planejamento usa task em página inteira e slug retornado; ausência de UI mantém gravação e link; edição ativa preserva a superfície; falha de navegação não vira alegação de sincronização; Collaborator atualiza registros sem controlar tela. Gate de atribuição e task própria do Leader preservados. Rotas conferidas em frontend/ROUTES.md; referências Markdown relativas contidas e existentes nos dois pacotes; quick_validate passou em ambos; git diff --check passou. Nenhuma validação live de frontend/backend é reivindicada.
 
 Validação Rust após alinhamento: cargo build --locked passou; cargo test --locked --no-fail-fast falhou em nove alvos de integração, com falha de conexão CreateContainer/HyperLegacyError/NotFound no Testcontainers deste checkout. Não equivale a indisponibilidade global do Docker nem valida o runtime publicado.
+
+## Comunicação referencial entre agentes — 2026-10-29
+
+Baseline independente identificou permissão implícita para decisões/perguntas só no chat, briefing completo no despacho e ausência de proteção específica contra ciclos. Após correção, reavaliação independente passou: mudança de endpoint, pergunta/resposta, entrega, aviso repetido, task inexistente e falha de gravação. Ajuste final explicita compreensão/pendências em comentário da tarefa, preservando ativação de identidade sem tarefa. Prompts continuam leitura, não despacho. Nenhuma entidade de negócio foi criada nem sessão do usuário redirecionada.
+
+quick_validate dos dois pacotes, resolução/containment de links relativos e git diff --check passaram. Cópias globais anteriores conferidas sem drift antes da substituição autorizada. Snapshot MCP é pacote separado e não é declarado atualizado por esta validação.
+
+Rust: cargo build --locked passou; cargo test --locked --no-fail-fast executou e falhou em nove alvos de integração. O log atual exige BEE_TEST_DATABASE_URL apontando para PostgreSQL 18 isolado e informa NotPresent; não foi usado banco de produto como alternativa. Essa limitação não prova falha do runtime ativo; serviços não foram reiniciados.

@@ -2,6 +2,20 @@
 
 Continuidade após o handoff: [fluxo de trabalho do Collaborator](collaborator-workflow.md), documentado separadamente com Mermaid.
 
+
+## Tarefa como fonte de verdade entre agentes
+
+Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
+
+Perguntas, respostas, decisões, mudanças de escopo, bloqueios e entregas entre agentes ficam na tarefa pertinente. Use comentários para diálogo e histórico; atualize description/specification, plano versionado, currentSummary e status quando exigido pelo tipo de mudança e pelas regras existentes. Comentário não substitui campos atuais, e uma pergunta isolada não exige alteração artificial de status. A segunda confirmação, de compreensão da tarefa e suas pendências, fica em comentário da task e gera somente aviso referencial; a confirmação inicial de identidade pode ocorrer sem tarefa.
+
+Salve primeiro e confirme sucesso; só então notifique pelo canal autorizado com referência real da tarefa/comentário e tipo de mudança. Exemplo de formato, substituindo os marcadores por referências retornadas: “Task <referência real>; comentário <referência real>; tipo: pergunta registrada.” Respostas, decisões e instruções de trabalho não são transportadas pelo chat, mesmo como cópia do conteúdo salvo. O outro agente lê o registro antes de agir. Sem acesso, declara a lacuna e suspende trabalho dependente; não substitui a leitura por instruções em chat.
+
+Notifique apenas mudança relevante ainda não comunicada. Antes de repetir após timeout, confira o registro e resultado disponível; preserve idempotência e não duplique comentários. Aviso repetido não gera comentário de recebimento ou nova notificação automaticamente; só uma nova contribuição substantiva registrada justifica outro aviso. Não crie ciclos de confirmações. Se salvar falhar, sinalize apenas o impedimento e registro não confirmado, sem apresentar decisão/instrução pendente como autorização. Se o envio falhar, mantenha o registro e retome somente a notificação necessária.
+
+Permissões do harness para enviar mensagens continuam obrigatórias; a skill não as amplia. Sem canal autorizado, deixe envio pendente. Ativação de papel/identidade e escolha de chat podem ocorrer sem tarefa, mas não carregar trabalho de negócio: qualquer solicitação desse trabalho exige tarefa previamente registrada e atribuída. Collaborator não cria tarefa para se autoautorizar.
+
+
 ## Condução visual natural — exclusiva do Leader
 
 Mantenha o painel acompanhando o assunto da conversa: Teams na seleção, página do time após resolução, board durante criação/gestão e task em página inteira durante planejamento ou edição. Depois de uma criação, navegue somente após confirmar a persistência e obter a referência real. Resolva a URL canônica pela instalação/rotas e pelos dados retornados: team/task usam slug persistido; board usa ID. Nunca derive slug do título nem invente link.
@@ -139,13 +153,13 @@ Após contextualizar um time existente, com ou sem líder anterior, ou formar um
 
 Reunir os candidatos dos colaboradores numa única proposta e perguntar explicitamente ao usuário em quais quer continuar ou se prefere criar novos, evitando perguntas repetitivas por agente. Não reutilizar automaticamente, mesmo em modo automático: essa escolha foi solicitada explicitamente. Não enviar mensagem de tomada de controle ou instruções a um chat ainda não escolhido. Se o usuário aprovar a reutilização, usar o chat escolhido; se preferir outro, criar o novo conforme autorização e fornecer perfil funcional e contexto do colaborador. Se não houver chat, criar conforme autorização aplicável. Uma escolha já respondida não precisa ser perguntada novamente.
 
-O nome do colaborador deve ser a base ou padrão legível do nome do chat; o formato exato permanece indefinido. Se houver ajuste de nome ao escolher a sessão, atualizar somente o nome do chat, não o nome ou a identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar handoff com perfil funcional, contexto, tarefas relevantes, plano, specification, currentSummary, pendências e limites; não alegar recuperação integral de conversa inexistente.
+O nome do colaborador deve ser a base ou padrão legível do nome do chat; o formato exato permanece indefinido. Se houver ajuste de nome ao escolher a sessão, atualizar somente o nome do chat, não o nome ou a identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar esses registros na tarefa: perfil funcional referenciado, contexto, plano, specification, currentSummary, pendências e limites; notificar somente referências e tipo; não alegar recuperação integral de conversa inexistente.
 
 Para time novo, a aprovação da composição pode incluir a criação dos chats explicitados na proposta. Para existentes, seguir modo, autorizações vigentes e exigências do harness, sem repetir pedidos já cobertos; isso não elimina a escolha explícita entre continuar no candidato encontrado ou criar outro. Esta documentação não solicita criação de chats reais agora.
 
 A coordenação atual precisa saber qual chat foi escolhido para cada colaborador e que o chat atual desempenha o papel do líder. Decisão aprovada: NÃO construir vínculo persistente adicional chat–colaborador no Bee Team nesta fase. Aproveitar somente relações e referências que o harness/LLM já disponibilize para coordenar as sessões reais, sem exigir novo mapeamento em banco ou cadastro extra de IDs. Não inventar relação nativa pai/filho nem presumir que todas as ferramentas mantenham os mesmos vínculos.
 
-No handoff ao chat escolhido, explicitar uso da skill Collaborator, identidade existente ou autorização explícita para cadastrar novo colaborador como fallback, time, referência da task quando existir, contexto de execução do board de origem e ação esperada. Usar dados persistidos como fonte, sem inventar IDs ou substituir registro por mensagem.
+No handoff ao chat escolhido, explicitar uso da skill Collaborator, identidade existente ou autorização explícita para cadastrar novo colaborador como fallback, time, referência da task quando existir, referências persistidas do contexto de execução do board de origem e tipo de mudança. Usar dados persistidos como fonte, sem inventar IDs ou substituir registro por mensagem.
 
 Separar duas confirmações observáveis: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Criar chat ou confirmar identidade não autoriza trabalho. Sem task registrada e atribuída, o colaborador confirma identidade e aguarda; o Leader registra e atribui antes de solicitar execução. Pedido direto humano ou Leader não substitui esse requisito. Criar/desdobrar tasks pelo colaborador só cabe no escopo de uma task já atribuída, nunca para se autoautorizar. Sem resposta observável, declarar confirmação pendente, sem inventar aceite. Em falha parcial, retomar apenas a etapa faltante e preservar agentes, times, vínculos de equipe e chats já criados; não repetir cadastros nem recriar sessões válidas. Se faltar contexto, complementar o handoff existente.
 
@@ -153,7 +167,7 @@ Se faltarem ferramentas para consultar, criar ou acessar chats, informar a etapa
 
 ### Exemplo curto de handoff e retorno
 
-“Use a skill Collaborator neste chat. Assuma o colaborador existente Backend do time informado, consultando seu cadastro e perfil. Confirme identidade/perfil prontos. Consulte a referência real da task registrada e atribuída que acompanha o handoff e o contexto do board de origem; confirme entendimento e pendências antes de executar conforme a autonomia aplicável.” Usar referência do registro real, nunca ID inventado. Sem task, pedir apenas confirmação da identidade e espera pelo registro/atribuição. Fallback novo deve explicitar autorização, time e papel, sem duplicar cadastro.
+Ativação sem demanda: “Use a skill Collaborator; assuma a identidade existente indicada e confira seu perfil.” Notificação de trabalho, somente após registro e atribuição confirmados: “Task <referência real>; comentário <referência real>; tipo: atribuição registrada.” Os marcadores são substituídos por referências retornadas, não enviados como IDs fictícios. O destinatário lê a tarefa, registra compreensão/pendências e segue o escopo e autonomia persistidos. Fallback novo exige autorização explícita de identidade/time/papel; não contém instruções de negócio.
 
 No retorno, o Collaborator salva primeiro na task progresso, currentSummary, comentários e resultado pertinentes, confirma persistência e só então comunica bloqueio, decisão necessária ou encerramento ao Leader. Se a gravação falhar, comunica essa falha como registro não confirmado e suspende trabalho dependente. Sem canal de comunicação, declara envio pendente; o Leader consulta os registros disponíveis. Não fingir envio nem definir aqui uma nova política de gestão contínua.
 
