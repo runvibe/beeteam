@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi, useEntity } from "@/api/context";
 import { useCompactFilters } from "./filter-context";
@@ -10,13 +11,7 @@ type Props = { label: string; value: string; onChange: (id: string) => void };
 export function TeamFilter(props: Props) {
   const compact = useCompactFilters();
   const selected = useEntity("teams", props.value);
-  const content = (
-    <TeamSuggestions
-      {...props}
-      selectedName={selected.data?.name}
-      autoFocus={compact}
-    />
-  );
+  const content = <TeamSuggestions {...props} autoFocus={compact} />;
   return compact ? (
     <FilterPopover
       label={props.label}
@@ -34,26 +29,36 @@ function TeamSuggestions({
   label,
   value,
   onChange,
-  selectedName,
   autoFocus,
-}: Props & { selectedName?: string; autoFocus: boolean }) {
+}: Props & { autoFocus: boolean }) {
   const api = useApi();
   const id = useId();
   const [text, setText] = useState("");
   const [active, setActive] = useState(-1);
   const term = text.trim();
+  const selected = useEntity("teams", value);
+  const selectedOnly = !!value && !term;
   const filters = term
     ? { name: term, limit: 5, offset: 0, sortBy: "name" }
     : { limit: 5, offset: 0, sortBy: "createdAt", sortOrder: "desc" as const };
   const query = useQuery({
+    enabled: !selectedOnly,
     queryKey: ["teams", "autocomplete", filters],
     queryFn: ({ signal }) => api.list("teams", "", filters, signal),
   });
-  const items = !query.isFetching ? (query.data?.items ?? []).slice(0, 5) : [];
+  const items = selectedOnly
+    ? selected.data
+      ? [selected.data]
+      : []
+    : !query.isFetching
+      ? (query.data?.items ?? []).slice(0, 5)
+      : [];
+  const loading = selectedOnly ? selected.isPending : query.isFetching;
+  const error = selectedOnly ? selected.error : query.error;
   const choose = (index: number) => {
     const item = items[index];
     if (item) {
-      onChange(item.id);
+      onChange(item.id === value ? "" : item.id);
       setText("");
       setActive(-1);
     }
@@ -98,18 +103,26 @@ function TeamSuggestions({
         }}
       />
       <div id={`${id}-status`} role="status" className="small-note">
-        {query.isFetching
+        {loading
           ? "Buscando times…"
-          : query.error
+          : error
             ? "Não foi possível buscar times."
             : !items.length
               ? "Nenhum time encontrado."
-              : !term
-                ? "Times criados mais recentemente."
-                : `${items.length} sugestões disponíveis.`}
+              : selectedOnly
+                ? ""
+                : !term
+                  ? ""
+                  : `${items.length} sugestões disponíveis.`}
       </div>
-      {query.error && (
-        <Button onClick={() => void query.refetch()}>Tentar novamente</Button>
+      {error && (
+        <Button
+          onClick={() =>
+            void (selectedOnly ? selected.refetch() : query.refetch())
+          }
+        >
+          Tentar novamente
+        </Button>
       )}
       <ul id={`${id}-list`} role="listbox" aria-label="Sugestões de times">
         {items.map((item, index) => (
@@ -123,23 +136,11 @@ function TeamSuggestions({
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => choose(index)}
           >
-            {item.name}
+            <span>{item.name}</span>
+            {item.id === value && <Check aria-hidden="true" />}
           </li>
         ))}
       </ul>
-      {value && (
-        <div className="small-note">
-          Selecionado: {selectedName || "Time selecionado"}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onChange("")}
-            aria-label={`Limpar ${label}`}
-          >
-            Limpar
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

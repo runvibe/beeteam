@@ -443,3 +443,9 @@ The header is a single 48px breadcrumb/filter row. Global settings and theme con
 Card lists show a small bottom-centered return-to-top overlay after scrolling. Its 44px keyboard-accessible target scrolls only the card region, preserves filters and loaded pages, respects reduced motion, and moves above a visible loading/retry footer. It reserves no layout space.
 
 The return-to-top control uses a small outlined chevron (no shaft or filled arrow), retaining its circular 44px interaction target.
+
+Team autocomplete marks selected matches inline with a check. It does not repeat the selected name or offer an internal clear action; the external filter tag remains the removal control. Searching does not clear the stored selection or inject out-of-result items.
+
+An active team filter with empty search shows only its resolved selected team, including direct URL navigation. Typing switches to global matches; activating the selected option again clears the filter with pointer or keyboard. Unfiltered empty search still shows the five newest teams.
+
+The team autocomplete does not display a recent-teams caption or leave spacing for it; loading, error and empty-result feedback remain.

@@ -83,7 +83,7 @@ it("searches teams globally from a focused combobox and applies the selected sug
     name: "Buscar opções de Time",
   });
   expect(input).toHaveFocus();
-  await within(popup).findByText("Times criados mais recentemente.");
+  await within(popup).findByRole("option", { name: second.name });
   await user.type(input, second.name);
   await within(popup).findByRole("option", { name: second.name });
   await user.keyboard("{ArrowDown}{Enter}");
