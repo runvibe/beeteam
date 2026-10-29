@@ -1,3 +1,7 @@
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
@@ -46,7 +50,7 @@ export function Teams() {
       values: booleanValues,
     });
   const limit = usePageSize("teams", 12);
-  const q = useList("teams", "", {
+  const q = useCardPages("teams", {
     name: name || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
@@ -94,12 +98,12 @@ export function Teams() {
           />
         </FilterBar>
       </header>
-      <QueryState query={q}>
-        {q.data && (
+      <CardListViewport key={q.identity} state={q} label="Lista de times">
+        {q.items && (
           <>
-            {q.data.items.length ? (
-              <div className="board-grid">
-                {q.data.items.map((t) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="board-grid">
+                {q.items.map((t) => (
                   <Card
                     key={t.id}
                     className="board-card team-card"
@@ -115,10 +119,12 @@ export function Teams() {
                     >
                       <CardHeader>
                         <CardTitle>{t.name}</CardTitle>
-                        <CardDescription>{t.purpose}</CardDescription>
+                        <CardDescription>
+                          <CardExcerpt text={t.purpose} />
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <TextBlock>{t.context}</TextBlock>
+                        <CardExcerpt text={t.context} />
                       </CardContent>
                     </a>
                     <CardFooter className="justify-between">
@@ -129,7 +135,7 @@ export function Teams() {
                     </CardFooter>
                   </Card>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -140,10 +146,9 @@ export function Teams() {
                 description="Ajuste os filtros para consultar outros times."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }

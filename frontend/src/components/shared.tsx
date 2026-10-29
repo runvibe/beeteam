@@ -4,7 +4,7 @@ import { InlineFilterSearch } from "./inline-filter-search";
 import { FilterPopover, FilterOptions } from "./filter-controls";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "./ui/empty";
-import { Skeleton } from "./ui/skeleton";
+import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -19,11 +19,7 @@ import { Input } from "./ui/input";
 import type { Page } from "@/api/types";
 export function Loading() {
   return (
-    <div role="status" aria-label="Carregando" className="grid gap-3 p-4">
-      <Skeleton className="h-7 w-2/3" />
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
-    </div>
+    <LoadingIndicator />
   );
 }
 export function Failure({

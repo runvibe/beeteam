@@ -1,0 +1,104 @@
+.balanced-card-grid.board-grid,
+.balanced-card-grid.agent-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  max-width: var(--grid-width);
+  margin-inline: auto;
+}
+.balanced-card-grid.board-grid[data-saturated="true"],
+.balanced-card-grid.agent-grid[data-saturated="true"] {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  max-width: none;
+  margin-inline: 0;
+}
+.balanced-card-grid > * {
+  flex: 0 0 280px;
+  max-width: 100%;
+  min-width: 0;
+}
+.balanced-card-region {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width: 850px) {
+  .balanced-card-grid.board-grid,
+  .balanced-card-grid.agent-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+  }
+  .balanced-card-grid.board-grid[data-saturated="true"],
+  .balanced-card-grid.agent-grid[data-saturated="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Deterministic listing previews; detail and Kanban cards keep their own layout. */
+.balanced-card-grid > .board-card-link,
+.balanced-card-grid > .team-card {
+  height: 340px;
+}
+.balanced-card-grid .board-card {
+  height: 340px;
+}
+.balanced-card-grid [data-slot="card-header"],
+.balanced-card-grid [data-slot="card-content"] {
+  min-width: 0;
+  flex-shrink: 0;
+}
+.balanced-card-grid [data-slot="card-title"] {
+  height: 44px;
+  line-height: 22px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.balanced-card-grid .card-excerpt {
+  height: 88px;
+  line-height: 22px;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+}
+.balanced-card-grid .card-excerpt > span {
+  display: block;
+}
+.balanced-card-grid .card-excerpt[data-overflow="true"] {
+  mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
+}
+.balanced-card-grid .team-card [data-slot="card-description"] .card-excerpt {
+  height: 44px;
+}
+.balanced-card-grid
+  .board-card:not(.agent-card):not(.team-card)
+  [data-slot="card-description"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.balanced-card-grid [data-slot="card-footer"] {
+  margin-top: auto;
+  min-height: 66px;
+  height: 66px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.balanced-card-grid [data-slot="card-footer"] > * {
+  min-width: 0;
+}
+.balanced-card-grid [data-slot="card-footer"] .agent-name {
+  overflow: hidden;
+  max-height: 36px;
+  flex: 1;
+}
+.balanced-card-grid [data-slot="card-footer"] [data-slot="badge"] {
+  white-space: normal;
+  flex-shrink: 0;
+  max-width: 55%;
+}

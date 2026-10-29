@@ -1,3 +1,7 @@
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { openCardBody, openCardLink } from "@/routing/card-navigation";
 import { FilterBar } from "@/components/filter-bar";
 import { FilterPopover } from "@/components/filter-controls";
@@ -58,7 +62,7 @@ function BoardIndex() {
     }),
     [offset, setOffset] = useUrlState<number>("boards.offset", 0);
   const limit = usePageSize("boards", 12);
-  const q = useList("boards", "", {
+  const q = useCardPages("boards", {
     name: name || undefined,
     teamId: teamId || undefined,
     archived: archived === "" ? undefined : archived === "true",
@@ -118,12 +122,12 @@ function BoardIndex() {
           />
         </FilterBar>
       </header>
-      <QueryState query={q}>
-        {q.data && (
+      <CardListViewport key={q.identity} state={q} label="Lista de boards">
+        {q.items && (
           <>
-            {q.data.items.length ? (
-              <div className="board-grid">
-                {q.data.items.map((b) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="board-grid">
+                {q.items.map((b) => (
                   <a
                     key={b.id}
                     className="board-card-link"
@@ -140,7 +144,7 @@ function BoardIndex() {
                         <CardTitle>{b.name}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="muted-copy">{b.description}</p>
+                        <CardExcerpt text={b.description} />
                       </CardContent>
                       <CardFooter className="justify-between gap-2">
                         <Badge variant="secondary">
@@ -153,7 +157,7 @@ function BoardIndex() {
                     </Card>
                   </a>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -164,10 +168,9 @@ function BoardIndex() {
                 description="Ajuste os filtros para consultar outros boards."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }

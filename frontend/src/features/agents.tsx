@@ -1,3 +1,7 @@
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { DetailPage } from "@/components/detail-page";
 import { openCardLink } from "@/routing/card-navigation";
 import { useLocation, navigate, destination } from "@/routing/location";
@@ -50,7 +54,7 @@ export function Agents() {
     }),
     [offset, setOffset] = useUrlState<number>("agents.offset", 0);
   const limit = usePageSize("agents", 12);
-  const q = useList("agents", "", {
+  const q = useCardPages("agents", {
     name: name || undefined,
     teamId: teamId || undefined,
     role: (role as "leader" | "collaborator") || undefined,
@@ -124,12 +128,12 @@ export function Agents() {
           />
         </FilterBar>
       </header>
-      <QueryState query={q}>
-        {q.data && (
+      <CardListViewport key={q.identity} state={q} label="Lista de agentes">
+        {q.items && (
           <>
-            {q.data.items.length ? (
-              <div className="agent-grid">
-                {q.data.items.map((a) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="agent-grid">
+                {q.items.map((a) => (
                   <a
                     key={a.id}
                     className="board-card-link"
@@ -141,7 +145,9 @@ export function Agents() {
                       <CardHeader>
                         <AgentAvatar agent={a} />
                         <CardTitle>{a.name}</CardTitle>
-                        <CardDescription>{a.roleDescription}</CardDescription>
+                        <CardDescription>
+                          <CardExcerpt text={a.roleDescription} />
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-wrap gap-2">
@@ -165,7 +171,7 @@ export function Agents() {
                     </Card>
                   </a>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -176,10 +182,9 @@ export function Agents() {
                 description="Ajuste os filtros para consultar outros agentes."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }
@@ -444,7 +449,7 @@ function Resume({ agentId }: { agentId: string }) {
               <article className="record" key={t.teamId}>
                 <h3>{t.name}</h3>
                 <TextBlock>{t.purpose}</TextBlock>
-                <TextBlock>{t.context}</TextBlock>
+                <CardExcerpt text={t.context} />
               </article>
             ))}
             <p className="small-note">

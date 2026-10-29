@@ -126,3 +126,5 @@ Alterar o frontend fonte não atualiza um processo com UI embutida já iniciado.
 A faixa lateral mostra somente o logo no topo e três botões circulares de 44 px, centralizados verticalmente. A largura é 72 px no desktop e 56 px em telas estreitas. Os botões conservam nomes acessíveis, indicação da seção ativa, foco visível e tooltips Radix por mouse/teclado (Escape fecha). Não há controle de expandir/recolher. Sidebar e navbar são transparentes e sem bordas; breadcrumb, configurações globais e alternância de tema permanecem disponíveis.
 
 Validação: navegação e tooltip pelo teclado, temas claro/escuro, mobile e largura mínima de 320 px; o Kanban mantém seu scroll horizontal e o destaque de bloqueio. O preview visual usa fixtures somente em memória em processo separado; o binário ativo e o banco do usuário não são substituídos pelo desenvolvimento frontend.
+
+Nas listagens, cards têm altura uniforme de 340px, títulos em até duas linhas e áreas reservadas para descrição. O fade é aplicado apenas quando a medição detecta texto excedente; o conteúdo integral permanece acessível e disponível no detalhe, sem alterar os dados.

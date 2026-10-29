@@ -49,7 +49,10 @@ export function useUrlState<T extends string | number>(
       ) {
         const scope = key.slice(0, key.lastIndexOf("."));
         for (const k of [...latest.keys()])
-          if (k.startsWith(scope + ".") && k.endsWith("offset"))
+          if (
+            k.startsWith(scope + ".") &&
+            (k.endsWith("offset") || k.endsWith(".window"))
+          )
             latest.delete(k);
       }
       navigate(path + (latest.size ? `?${latest}` : ""));

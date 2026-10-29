@@ -9,6 +9,7 @@ import { NavigationRail } from "./components/navigation-rail";
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
+import { MobileContextPath } from "./components/mobile-context-path";
 import { ThemeControl } from "./components/theme-control";
 import { DataTransferSettings } from "./features/data-transfer";
 import { Boards } from "./features/boards";
@@ -30,6 +31,7 @@ export function App() {
       <div className="main-shell">
         <header className="topbar">
           <AppPath />
+          <MobileContextPath />
           <div className="topbar-actions">
             <DataTransferSettings />
             <ThemeControl />

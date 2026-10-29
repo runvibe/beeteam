@@ -81,6 +81,7 @@ it("reads invalid query defaults and resets offsets without dropping page size",
     "agents",
     "",
     expect.objectContaining({ offset: 0, limit: 1, archived: false }),
+    expect.any(AbortSignal),
   );
 });
 it("preserves the executor action instead of opening the task and exposes settings routes", async () => {

@@ -5,6 +5,24 @@ const response = (value: unknown, status = 200) =>
     status,
     headers: { "Content-Type": "application/json" },
   });
+it("propagates list cancellation to fetch without reporting a timeout", async () => {
+  let transportSignal: AbortSignal | undefined;
+  const fetcher = vi.fn(
+    (_url, init) =>
+      new Promise<Response>((_resolve, reject) => {
+        transportSignal = init.signal;
+        init.signal.addEventListener("abort", () =>
+          reject(new DOMException("cancelled", "AbortError")),
+        );
+      }),
+  );
+  const api = createHttpApi({ fetch: fetcher });
+  const controller = new AbortController();
+  const request = api.list("boards", "", {}, controller.signal);
+  controller.abort();
+  await expect(request).rejects.toMatchObject({ name: "AbortError" });
+  expect(transportSignal?.aborted).toBe(true);
+});
 it("maps scoped/global resources and preserves exact query semantics", async () => {
   const fetcher = vi
     .fn()
