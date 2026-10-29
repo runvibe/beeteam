@@ -61,69 +61,69 @@ export function Agents() {
   });
   return (
     <>
-      <header className="page-heading">
+      <header className="page-heading listing-heading">
         <div>
           <h1>Agentes</h1>
           <p>Perfis, instruções e contexto para continuar de onde parou.</p>
         </div>
+        <FilterBar
+          search={
+            <>
+              <Search
+                label="Buscar agentes"
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+              />
+            </>
+          }
+          active={!!(name || teamId || role || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setTeam("");
+            setRole("");
+            setArchived("false");
+            setOffset(0);
+          }}
+        >
+          <EntityFilter
+            resource="teams"
+            label="Time"
+            value={teamId}
+            onChange={(v) => {
+              setTeam(v);
+              setOffset(0);
+            }}
+          />
+          <Choice
+            label="Papel"
+            value={role}
+            onChange={(v) => {
+              setRole(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "leader", label: "Líder" },
+              { value: "collaborator", label: "Colaborador" },
+            ]}
+            all="Todos"
+          />
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
       </header>
-      <FilterBar
-        search={
-          <>
-            <Search
-              label="Buscar agentes"
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-            />
-          </>
-        }
-        active={!!(name || teamId || role || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setTeam("");
-          setRole("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <EntityFilter
-          resource="teams"
-          label="Time"
-          value={teamId}
-          onChange={(v) => {
-            setTeam(v);
-            setOffset(0);
-          }}
-        />
-        <Choice
-          label="Papel"
-          value={role}
-          onChange={(v) => {
-            setRole(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "leader", label: "Líder" },
-            { value: "collaborator", label: "Colaborador" },
-          ]}
-          all="Todos"
-        />
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>

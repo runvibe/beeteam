@@ -55,45 +55,45 @@ export function Teams() {
   });
   return (
     <>
-      <header className="page-heading">
+      <header className="page-heading listing-heading">
         <div>
           <h1>Times</h1>
           <p>Um líder por time. Uma identidade por agente.</p>
         </div>
-      </header>
-      <FilterBar
-        search={
-          <>
-            <Search
-              label="Buscar times"
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-            />
-          </>
-        }
-        active={!!(name || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
+        <FilterBar
+          search={
+            <>
+              <Search
+                label="Buscar times"
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+              />
+            </>
+          }
+          active={!!(name || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setArchived("false");
             setOffset(0);
           }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
+        >
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
+      </header>
       <QueryState query={q}>
         {q.data && (
           <>

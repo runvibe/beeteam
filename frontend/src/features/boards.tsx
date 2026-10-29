@@ -68,55 +68,55 @@ function BoardIndex() {
   const teams = useList("teams", "", { limit: 100, sortBy: "name" });
   return (
     <>
-      <header className="page-heading">
+      <header className="page-heading listing-heading">
         <div>
           <h1>Boards</h1>
           <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
         </div>
+        <FilterBar
+          search={
+            <>
+              <Search
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+                label="Buscar boards"
+              />
+            </>
+          }
+          active={!!(name || teamId || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setTeam("");
+            setArchived("false");
+            setOffset(0);
+          }}
+        >
+          <EntityFilter
+            resource="teams"
+            label="Time gestor"
+            value={teamId}
+            onChange={(v) => {
+              setTeam(v);
+              setOffset(0);
+            }}
+          />
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
       </header>
-      <FilterBar
-        search={
-          <>
-            <Search
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-              label="Buscar boards"
-            />
-          </>
-        }
-        active={!!(name || teamId || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setTeam("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <EntityFilter
-          resource="teams"
-          label="Time gestor"
-          value={teamId}
-          onChange={(v) => {
-            setTeam(v);
-            setOffset(0);
-          }}
-        />
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -213,64 +213,71 @@ function BoardScreen({ id }: { id: string }) {
       </Button>
       <QueryState query={entity}>
         {entity.data && (
-          <header className="page-heading">
+          <header className="page-heading listing-heading">
             <div>
               <h1>{entity.data.name}</h1>
               <p>{entity.data.description}</p>
             </div>
-            <Button variant="outline" onClick={() => setSettings(true)}>
-              <Settings2 data-icon="inline-start" />
-              Configurações
-            </Button>
+            <div className="listing-heading-actions">
+              <FilterBar
+                search={
+                  <>
+                    <Search
+                      value={title}
+                      onChange={setTitle}
+                      label="Buscar tasks"
+                    />
+                  </>
+                }
+                active={!!(title || executor || blocked || updatedFrom)}
+                onClear={() => {
+                  setTitle("");
+                  setExecutor("");
+                  setBlocked("");
+                  setUpdatedFrom("");
+                }}
+              >
+                <EntityFilter
+                  resource="agents"
+                  label="Executor"
+                  value={executor}
+                  onChange={setExecutor}
+                />
+                <Choice
+                  label="Bloqueio"
+                  value={blocked}
+                  onChange={setBlocked}
+                  options={[
+                    { value: "true", label: "Bloqueadas" },
+                    { value: "false", label: "Sem bloqueio" },
+                  ]}
+                  all="Todas"
+                />
+                <FilterPopover
+                  label="Atualizadas desde"
+                  active={!!updatedFrom}
+                  summary={updatedFrom}
+                >
+                  <label className="date-filter">
+                    Atualizadas desde
+                    <input
+                      aria-label="Atualizadas desde"
+                      type="date"
+                      value={updatedFrom}
+                      onChange={(e) => setUpdatedFrom(e.target.value)}
+                    />
+                  </label>
+                </FilterPopover>
+              </FilterBar>
+              <Button variant="outline" onClick={() => setSettings(true)}>
+                <Settings2 data-icon="inline-start" />
+                Configurações
+              </Button>
+            </div>
           </header>
         )}
       </QueryState>
-      <FilterBar
-        search={
-          <>
-            <Search value={title} onChange={setTitle} label="Buscar tasks" />
-          </>
-        }
-        active={!!(title || executor || blocked || updatedFrom)}
-        onClear={() => {
-          setTitle("");
-          setExecutor("");
-          setBlocked("");
-          setUpdatedFrom("");
-        }}
-      >
-        <EntityFilter
-          resource="agents"
-          label="Executor"
-          value={executor}
-          onChange={setExecutor}
-        />
-        <Choice
-          label="Bloqueio"
-          value={blocked}
-          onChange={setBlocked}
-          options={[
-            { value: "true", label: "Bloqueadas" },
-            { value: "false", label: "Sem bloqueio" },
-          ]}
-          all="Todas"
-        />
-        <FilterPopover
-          label="Atualizadas desde"
-          active={!!updatedFrom}
-          summary={updatedFrom}
-        >
-          <label className="date-filter">
-            Atualizadas desde
-            <input
-              aria-label="Atualizadas desde"
-              type="date"
-              value={updatedFrom}
-              onChange={(e) => setUpdatedFrom(e.target.value)}
-            />
-          </label>
-        </FilterPopover>
-      </FilterBar>
+
       <div className="board-meta">
         <span>Tasks principais · subtasks no detalhe de cada task</span>
         <span>Atualizações registradas, sem indicação de execução ao vivo</span>
