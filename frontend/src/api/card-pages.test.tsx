@@ -75,7 +75,7 @@ it("uses measured next-block sizes and exact offsets, retaining earlier cards wh
   await waitFor(() => expect(result.current.items).toHaveLength(6));
   expect(location.search).toContain("boards.window=0%3A2%2C2%3A3%2C5%3A1");
 });
-it("restores only the encoded bounded window, deduplicates overlapping IDs and refreshes in place", async () => {
+it("restores the encoded blocks, deduplicates overlapping IDs and refreshes in place", async () => {
   window.history.replaceState(
     {},
     "",
@@ -146,11 +146,11 @@ it("aborts an abandoned filter request and ignores its late response", async () 
   );
   expect(result.current.items[0].id).toBe("board-4");
 });
-it("caps retained blocks at five and stops at the real end", async () => {
+it("retains every loaded block beyond five, restores them on reload and resets on filtering", async () => {
   window.history.replaceState({}, "", "/boards?boards.limit=1");
   const { wrapper, records } = await fixture();
   records.splice(7);
-  const { result } = renderHook(useHarness, { wrapper });
+  const { result, unmount } = renderHook(useHarness, { wrapper });
   await waitFor(() => expect(result.current.items).toHaveLength(1));
   for (let index = 1; index < 7; index++) {
     act(() => result.current.loadMore());
@@ -159,10 +159,21 @@ it("caps retained blocks at five and stops at the real end", async () => {
       expect(result.current.items.at(-1)?.id).toBe(`board-${index}`),
     );
   }
-  expect(result.current.items).toHaveLength(5);
-  expect(result.current.start).toBe(2);
+  expect(result.current.items.map((item) => item.id)).toEqual(
+    records.map((item) => item.id),
+  );
+  expect(result.current.start).toBe(0);
   expect(result.current.hasMore).toBe(false);
   const url = location.search;
   act(() => result.current.loadMore());
   expect(location.search).toBe(url);
+  unmount();
+  const restored = renderHook(useHarness, { wrapper });
+  await waitFor(() => expect(restored.result.current.items).toHaveLength(7));
+  expect(restored.result.current.items.map((item) => item.id)).toEqual(
+    records.map((item) => item.id),
+  );
+  act(() => restored.result.current.setName("new filter"));
+  await waitFor(() => expect(restored.result.current.items).toHaveLength(1));
+  expect(location.search).not.toContain("boards.window");
 });

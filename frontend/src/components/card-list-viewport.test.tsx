@@ -74,3 +74,67 @@ it("prefetches within its own scroll root and preserves cards through loading/er
     vi.unstubAllGlobals();
   }
 });
+import { fireEvent } from "@testing-library/react";
+
+it("preserves the anchor beyond five blocks, restores it and allows scrolling to the first card", () => {
+  window.history.replaceState({}, "", "/boards?scroll-retention-test");
+  const geometry = vi
+    .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: HTMLElement) {
+      const parent = this.closest(".card-list-viewport") as HTMLElement | null;
+      const top = this.dataset.cardId
+        ? Number(this.dataset.cardId) * 354 - (parent?.scrollTop ?? 0)
+        : 0;
+      return {
+        x: 0,
+        y: top,
+        top,
+        bottom: top + 340,
+        left: 0,
+        right: 280,
+        width: 280,
+        height: 340,
+        toJSON: () => ({}),
+      };
+    });
+  const state = {
+    items: Array.from({ length: 6 }, (_, id) => ({ id: String(id) })),
+    hasMore: true,
+    fetching: false,
+    initialLoading: false,
+    error: null,
+    total: 8,
+    loadMore: vi.fn(),
+    retry: vi.fn(),
+    setCapacity: vi.fn(),
+  };
+  const draw = () => (
+    <CardListViewport state={state} label="Retained cards">
+      {state.items.map((item) => (
+        <article key={item.id} data-card-id={item.id}>
+          Card {item.id}
+        </article>
+      ))}
+    </CardListViewport>
+  );
+  try {
+    const first = render(draw());
+    let region = screen.getByRole("region", { name: "Retained cards" });
+    region.scrollTop = 5 * 354 + 25;
+    fireEvent.scroll(region);
+    state.items = Array.from({ length: 8 }, (_, id) => ({ id: String(id) }));
+    first.rerender(draw());
+    expect(region.scrollTop).toBe(5 * 354 + 25);
+    expect(screen.getAllByRole("article")).toHaveLength(8);
+    first.unmount();
+    render(draw());
+    region = screen.getByRole("region", { name: "Retained cards" });
+    expect(region.scrollTop).toBe(5 * 354 + 25);
+    region.scrollTop = 0;
+    fireEvent.scroll(region);
+    expect(screen.getByText("Card 0").getBoundingClientRect().top).toBe(0);
+    expect(screen.getAllByRole("article")).toHaveLength(8);
+  } finally {
+    geometry.mockRestore();
+  }
+});

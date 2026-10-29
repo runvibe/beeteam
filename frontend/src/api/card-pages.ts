@@ -14,13 +14,10 @@ function initialCapacity() {
 }
 function readWindow(raw: string | null, fallback: Block): Block[] {
   if (!raw) return [fallback];
-  const blocks = raw
-    .split(",")
-    .slice(-5)
-    .map((part) => {
-      const [offset, limit] = part.split(":").map(Number);
-      return { offset, limit };
-    });
+  const blocks = raw.split(",").map((part) => {
+    const [offset, limit] = part.split(":").map(Number);
+    return { offset, limit };
+  });
   return blocks.length &&
     blocks[0].offset === fallback.offset &&
     blocks.every(
@@ -36,7 +33,7 @@ function readWindow(raw: string | null, fallback: Block): Block[] {
     ? blocks
     : [fallback];
 }
-/** URL stores up to five exact offset:limit blocks; resize only affects the next fetch. */
+/** URL stores all loaded offset:limit blocks; resize only affects the next fetch. */
 export function useCardPages<K extends CardResource>(
   resource: K,
   filters: Filters,
@@ -87,7 +84,7 @@ export function useCardPages<K extends CardResource>(
     const next = [
       ...blocks,
       { offset: nextOffset, limit: cap(explicitLimit ?? capacity) },
-    ].slice(-5);
+    ];
     if (next[0].offset)
       latest.set(`${resource}.offset`, String(next[0].offset));
     else latest.delete(`${resource}.offset`);
