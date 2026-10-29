@@ -97,3 +97,68 @@ it("keeps entity search, option pagination and selected values reachable inside 
     "true",
   );
 });
+
+it("removes just one active filter from its tag with keyboard, resets pages and keeps other URL state", async () => {
+  window.history.replaceState(
+    {},
+    "",
+    "/agents?agents.name=Lia&agents.role=collaborator&agents.offset=5&agents.window=5:1&agents.limit=1",
+  );
+  const user = userEvent.setup();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <App />
+    </ApiProvider>,
+  );
+  const removeSearch = await screen.findByRole("button", {
+    name: "Remover filtro Buscar agentes: Lia",
+  });
+  removeSearch.focus();
+  await user.keyboard("{Enter}");
+  expect(location.search).not.toContain("agents.name");
+  expect(location.search).not.toContain("agents.offset");
+  expect(location.search).not.toContain("agents.window");
+  expect(location.search).toContain("agents.role=collaborator");
+  expect(location.search).toContain("agents.limit=1");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  await user.click(
+    screen.getByRole("button", { name: "Remover filtro Papel: Colaborador" }),
+  );
+  expect(location.search).not.toContain("agents.role");
+  expect(
+    screen.queryByRole("button", { name: /filtros ativos/ }),
+  ).not.toBeInTheDocument();
+});
+
+it("renders team purpose and multiparagraph context inside one clipping container", async () => {
+  window.history.replaceState({}, "", "/teams");
+  const api = createMockApi({ delay: 0 });
+  const list = api.list.bind(api);
+  api.list = (async (resource, scope, filters, signal) => {
+    const page = await list(resource, scope, filters, signal);
+    return resource === "teams"
+      ? {
+          ...page,
+          items: page.items.map((item) => ({
+            ...item,
+            purpose: "Primeiro parágrafo",
+            context: "Segundo parágrafo\n\nTerceiro parágrafo",
+          })),
+        }
+      : page;
+  }) as typeof api.list;
+  const { container } = render(
+    <ApiProvider api={api}>
+      <App />
+    </ApiProvider>,
+  );
+  await waitFor(() =>
+    expect(container.querySelectorAll(".team-card").length).toBeGreaterThan(0),
+  );
+  for (const card of Array.from(container.querySelectorAll(".team-card"))) {
+    expect(card.querySelectorAll(".card-excerpt")).toHaveLength(1);
+    expect(card.querySelector(".card-excerpt")?.textContent).toBe(
+      "Primeiro parágrafo\n\nSegundo parágrafo\n\nTerceiro parágrafo",
+    );
+  }
+});

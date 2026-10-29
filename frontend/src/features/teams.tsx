@@ -1,3 +1,4 @@
+import { CardSymbol } from "@/components/card-symbol";
 import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
@@ -17,7 +18,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -119,18 +119,23 @@ export function Teams() {
                     >
                       <CardHeader>
                         <CardTitle>{t.name}</CardTitle>
-                        <CardDescription>
-                          <CardExcerpt text={t.purpose} />
-                        </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <CardExcerpt text={t.context} />
+                        <CardExcerpt
+                          text={[t.purpose, t.context]
+                            .filter(Boolean)
+                            .join("\n\n")}
+                        />
                       </CardContent>
                     </a>
                     <CardFooter className="justify-between">
                       <AgentName id={t.leaderId} />
                       <Badge variant="outline">
-                        {t.collaboratorCount} colaboradores
+                        <CardSymbol
+                          kind="collaborator"
+                          label={`${t.collaboratorCount} ${t.collaboratorCount === 1 ? "colaborador" : "colaboradores"}`}
+                        />
+                        <span aria-hidden="true">{t.collaboratorCount}</span>
                       </Badge>
                     </CardFooter>
                   </Card>

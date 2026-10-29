@@ -1,3 +1,4 @@
+import { useFilterRemoval } from "./use-filter-removal";
 import { useContext, useEffect, useId, type ReactNode } from "react";
 import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
@@ -32,23 +33,26 @@ export function FilterPopover({
   children,
   search = false,
   summary,
+  onClear,
 }: {
   label: string;
   active?: boolean;
   children: ReactNode;
   search?: boolean;
   summary?: string;
+  onClear?: () => void;
 }) {
+  const remove = useFilterRemoval(onClear);
   const Icon = search ? Search : icons[label] || ListFilter;
   const heading = useId();
   const register = useContext(FilterSummaryContext);
   useEffect(() => {
     register?.(
       heading,
-      active ? { label, value: summary || label } : undefined,
+      active ? { label, value: summary || label, onRemove: remove } : undefined,
     );
     return () => register?.(heading);
-  }, [register, heading, active, label, summary]);
+  }, [register, heading, active, label, summary, remove]);
   const hint = summary ? `${label}: ${summary}` : label;
   return (
     <Popover.Root>

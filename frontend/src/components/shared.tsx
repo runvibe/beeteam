@@ -18,9 +18,7 @@ import { Field, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 import type { Page } from "@/api/types";
 export function Loading() {
-  return (
-    <LoadingIndicator />
-  );
+  return <LoadingIndicator />;
 }
 export function Failure({
   error,
@@ -135,6 +133,7 @@ export function Choice({
       <FilterPopover
         label={label}
         summary={selected}
+        onClear={() => onChange(all ? "" : options[0]?.value || "")}
         active={value !== (all ? "" : options[0]?.value || "")}
       >
         <FilterOptions

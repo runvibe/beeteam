@@ -1,3 +1,4 @@
+import "./card-excerpt.css";
 import { useLayoutEffect, useRef, useState } from "react";
 
 /** Keeps the full text accessible; only its visual preview is clipped. */

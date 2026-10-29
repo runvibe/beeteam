@@ -64,6 +64,7 @@ export function EntityFilter({
   return compact ? (
     <FilterPopover
       label={label}
+      onClear={() => onChange("")}
       active={!!value}
       summary={
         options.find((option) => option.value === value)?.label || "Todos"

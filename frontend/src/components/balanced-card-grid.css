@@ -58,23 +58,6 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
-.balanced-card-grid .card-excerpt {
-  height: 88px;
-  line-height: 22px;
-  overflow: hidden;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  color: var(--muted-foreground);
-}
-.balanced-card-grid .card-excerpt > span {
-  display: block;
-}
-.balanced-card-grid .card-excerpt[data-overflow="true"] {
-  mask-image: linear-gradient(to bottom, black 65%, transparent 100%);
-}
-.balanced-card-grid .team-card [data-slot="card-description"] .card-excerpt {
-  height: 44px;
-}
 .balanced-card-grid
   .board-card:not(.agent-card):not(.team-card)
   [data-slot="card-description"] {
@@ -84,8 +67,9 @@
 }
 .balanced-card-grid [data-slot="card-footer"] {
   margin-top: auto;
-  min-height: 66px;
-  height: 66px;
+  min-height: 48px;
+  height: 48px;
+  padding: 8px 16px;
   flex-shrink: 0;
   gap: 8px;
 }
@@ -101,4 +85,20 @@
   white-space: normal;
   flex-shrink: 0;
   max-width: 55%;
+}
+.card-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+.card-symbol svg {
+  width: 17px;
+  height: 17px;
+}
+.card-symbol:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
 }

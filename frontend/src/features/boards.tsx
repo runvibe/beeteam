@@ -1,3 +1,5 @@
+import { CardSymbol } from "@/components/card-symbol";
+import { RelativeTime } from "@/components/relative-time";
 import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
@@ -35,15 +37,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Choice,
-  Search,
-  QueryState,
-  NoData,
-  Pager,
-  formatDate,
-  modeLabels,
-} from "@/components/shared";
+import { Choice, Search, QueryState, NoData, Pager } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { BoardSettings } from "./settings";
 export function Boards() {
@@ -147,11 +141,9 @@ function BoardIndex() {
                         <CardExcerpt text={b.description} />
                       </CardContent>
                       <CardFooter className="justify-between gap-2">
-                        <Badge variant="secondary">
-                          {modeLabels[b.autonomyMode]}
-                        </Badge>
+                        <CardSymbol kind={b.autonomyMode} />
                         <span className="small-note">
-                          {formatDate(b.updatedAt)}
+                          <RelativeTime value={b.updatedAt} />
                         </span>
                       </CardFooter>
                     </Card>
@@ -284,6 +276,7 @@ function BoardScreen({ id }: { id: string }) {
                   label="Atualizadas desde"
                   active={!!updatedFrom}
                   summary={updatedFrom}
+                  onClear={() => setUpdatedFrom("")}
                 >
                   <label className="date-filter">
                     Atualizadas desde
@@ -425,9 +418,9 @@ export function TaskCard({ task }: { task: Task }) {
           <CardTitle>{task.title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="task-current-summary">
-            {task.currentSummary || "Sem atualização registrada"}
-          </p>
+          <CardExcerpt
+            text={task.currentSummary || "Sem atualização registrada"}
+          />
           {task.block.blocked && (
             <Badge variant="destructive">
               <LockKeyhole />

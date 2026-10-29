@@ -10,7 +10,7 @@ it("fades only measured overflow and retains the complete accessible text", () =
     .spyOn(HTMLElement.prototype, "scrollHeight", "get")
     .mockReturnValue(200);
   try {
-    const text = "Descrição integral ".repeat(100);
+    const text = "Primeiro parágrafo\n\nSegundo parágrafo\n\n".repeat(100);
     const { container, rerender } = render(<CardExcerpt text={text} />);
     expect(container.firstChild).toHaveAttribute("data-overflow", "true");
     expect(container.textContent).toBe(text);

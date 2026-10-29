@@ -1,3 +1,5 @@
+import { CardSymbol } from "@/components/card-symbol";
+import { RelativeTime } from "@/components/relative-time";
 import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
@@ -25,7 +27,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -145,27 +146,25 @@ export function Agents() {
                       <CardHeader>
                         <AgentAvatar agent={a} />
                         <CardTitle>{a.name}</CardTitle>
-                        <CardDescription>
-                          <CardExcerpt text={a.roleDescription} />
-                        </CardDescription>
                       </CardHeader>
                       <CardContent>
+                        <CardExcerpt text={a.roleDescription} />
+                      </CardContent>
+                      <CardFooter className="justify-between gap-2">
                         <div className="flex flex-wrap gap-2">
                           {a.bindings.leaderTeamId && (
-                            <Badge variant="secondary">Líder</Badge>
+                            <CardSymbol kind="leader" />
                           )}
                           {a.bindings.collaboratorTeamId && (
-                            <Badge variant="outline">Colaborador</Badge>
+                            <CardSymbol kind="collaborator" />
                           )}
                           {!a.bindings.leaderTeamId &&
                             !a.bindings.collaboratorTeamId && (
-                              <Badge variant="outline">Sem vínculo</Badge>
+                              <CardSymbol kind="unbound" />
                             )}
                         </div>
-                      </CardContent>
-                      <CardFooter>
                         <span className="small-note">
-                          Atualizado em {formatDate(a.updatedAt)}
+                          <RelativeTime value={a.updatedAt} />
                         </span>
                       </CardFooter>
                     </Card>

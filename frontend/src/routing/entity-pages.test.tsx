@@ -58,7 +58,7 @@ it("keeps team leader action separate and returns from board and settings to the
   await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
   await userEvent.click(
     await screen.findByText(
-      "Ciclos curtos, decisões documentadas e revisão de entregas.",
+      /Ciclos curtos, decisões documentadas e revisão de entregas\./,
     ),
   );
   expect(await screen.findByRole("region", { name: "Time" })).toBeVisible();

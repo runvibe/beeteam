@@ -1,3 +1,4 @@
+import { useFilterRemoval } from "./use-filter-removal";
 import { useContext, useEffect, useId, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { Tooltip } from "radix-ui";
@@ -18,11 +19,12 @@ export function InlineFilterSearch({
   const input = useRef<HTMLInputElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const id = useId();
+  const remove = useFilterRemoval(() => onChange(""));
   const register = useContext(FilterSummaryContext);
   useEffect(() => {
-    register?.(id, value ? { label, value } : undefined);
+    register?.(id, value ? { label, value, onRemove: remove } : undefined);
     return () => register?.(id);
-  }, [register, id, label, value]);
+  }, [register, id, label, value, remove]);
   useEffect(() => {
     if (open) input.current?.focus();
   }, [open]);
@@ -46,7 +48,7 @@ export function InlineFilterSearch({
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Escape") {
-              event.preventDefault();
+            event.preventDefault();
             event.stopPropagation();
             close();
           }

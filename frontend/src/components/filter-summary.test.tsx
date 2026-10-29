@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
@@ -53,4 +54,48 @@ it("supports touch toggling, keyboard focus and Escape without changing filters"
   await user.keyboard("{Escape}");
   expect(toggle).toHaveAttribute("aria-expanded", "false");
   expect(toggle).toHaveTextContent("Busca: Projeto");
+});
+
+it("keeps an expanded stack during successive removals and transfers keyboard focus", async () => {
+  const user = userEvent.setup();
+  const Harness = () => {
+    const [items, setItems] = useState(["A", "B", "C"]);
+    return (
+      <div className="compact-filter-bar">
+        <button>Buscar</button>
+        {items.length > 0 && (
+          <FilterSummary
+            filters={items.map((label) => ({
+              label,
+              value: label,
+              onRemove: () =>
+                setItems((current) => current.filter((item) => item !== label)),
+            }))}
+          />
+        )}
+      </div>
+    );
+  };
+  render(<Harness />);
+  await user.hover(
+    screen.getByRole("button", { name: "Expandir 3 filtros ativos" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Remover filtro B: B" }));
+  expect(
+    screen.getByRole("button", { name: "Recolher 2 filtros ativos" }),
+  ).toBeInTheDocument();
+  const removeA = screen.getByRole("button", { name: "Remover filtro A: A" });
+  removeA.focus();
+  await user.keyboard("{Enter}");
+  expect(
+    screen.getByRole("button", { name: "Remover filtro C: C" }),
+  ).toHaveFocus();
+  expect(
+    screen.getByRole("button", { name: "Recolher 1 filtros ativos" }),
+  ).toBeInTheDocument();
+  await user.keyboard("{Enter}");
+  expect(screen.getByRole("button", { name: "Buscar" })).toHaveFocus();
+  expect(
+    screen.queryByRole("button", { name: /filtros ativos/ }),
+  ).not.toBeInTheDocument();
 });
