@@ -1,3 +1,4 @@
+import { useRef, type RefObject } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { Task, PlanRevision } from "@/api/types";
@@ -10,7 +11,14 @@ import { usePlanPages } from "./plan-pages";
 import { PlanNavigation } from "./plan-navigation";
 import { Markdown } from "@/components/markdown";
 
-export function Plans({ task }: { task: Task }) {
+export function Plans({
+  task,
+  revealConsumed,
+}: {
+  task: Task;
+  revealConsumed?: RefObject<boolean>;
+}) {
+  const ownRevealConsumed = useRef(false);
   const [selected, setSelected] = useUrlState<string>("plans.selected", "", {
     resetOffsets: false,
   });
@@ -41,6 +49,7 @@ export function Plans({ task }: { task: Task }) {
       ) : (
         <PlanNavigation
           taskId={task.id}
+          revealConsumed={revealConsumed ?? ownRevealConsumed}
           plans={plans}
           current={current}
           selectedId={selected || current?.planId}

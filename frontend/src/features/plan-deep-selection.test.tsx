@@ -192,3 +192,50 @@ it("cancels an in-flight locating page when the selected plan changes", async ()
     await screen.findByRole("button", { name: "Cancel 0" }),
   ).toHaveAttribute("aria-current", "page");
 });
+
+it("keeps the exact list scrollTop on ordinary clicks to first, middle and last plans", async () => {
+  const seed = makeSeed();
+  seed.plans = Array.from({ length: 21 }, (_, i) => ({
+    ...seed.plans[0],
+    id: uuid(4600 + i),
+    planId: uuid(4700 + i),
+    title: `Clique ${i}`,
+    revision: 1,
+  }));
+  window.history.replaceState(
+    {},
+    "",
+    `/tasks/${seed.tasks[0].id}?tab=plans&plans.limit=100&plans.selected=${seed.plans[10].planId}`,
+  );
+  const consumed = { current: false };
+  render(
+    <ApiProvider api={createMockApi({ delay: 0, seed })}>
+      <Plans task={seed.tasks[0]} revealConsumed={consumed} />
+    </ApiProvider>,
+  );
+  const nav = await screen.findByRole("navigation", {
+    name: "Planos disponíveis",
+  });
+  await waitFor(() => expect(consumed.current).toBe(true));
+  for (const index of [0, 10, 20]) {
+    nav.scrollTop = 137;
+    fireEvent.click(
+      within(nav).getByRole("button", { name: `Clique ${index}` }),
+    );
+    await waitFor(() =>
+      expect(
+        within(nav).getByRole("button", { name: `Clique ${index}` }),
+      ).toHaveAttribute("aria-current", "page"),
+    );
+    await act(async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    });
+    expect(nav.scrollTop).toBe(137);
+  }
+  fireEvent.wheel(nav);
+  nav.scrollTop = 99;
+  await act(async () => {
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  });
+  expect(nav.scrollTop).toBe(99);
+});

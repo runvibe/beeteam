@@ -44,6 +44,7 @@ export function TaskPage() {
 function TaskDetail({ id }: { id: string }) {
   const q = useEntity("tasks", id);
   const heading = useRef<HTMLHeadingElement>(null);
+  const planRevealConsumed = useRef(false);
   const { primary, hero, pastHeader } = useTaskHeaderVisibility();
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
@@ -121,7 +122,7 @@ function TaskDetail({ id }: { id: string }) {
                     <Children task={q.data} />
                   </TabsContent>
                   <TabsContent value="plans">
-                    <Plans task={q.data} />
+                    <Plans task={q.data} revealConsumed={planRevealConsumed} />
                   </TabsContent>
                   <TabsContent value="comments">
                     <Records resource="comments" task={q.data} />

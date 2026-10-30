@@ -17,14 +17,15 @@ export function usePlanReveal(
   selected: string | undefined,
   plans: ReturnType<typeof usePlanPages>,
   mobile: boolean,
+  consumed: RefObject<boolean>,
 ) {
   const pending = useRef({ selected, revealed: false, manual: false });
   useLayoutEffect(() => {
-    if (pending.current.selected !== selected)
-      pending.current = { selected, revealed: false, manual: false };
+    if (pending.current.selected !== selected) consumed.current = true;
     const state = pending.current;
     const node = list.current;
     if (
+      consumed.current ||
       mobile ||
       !node ||
       !selected ||
@@ -51,10 +52,12 @@ export function usePlanReveal(
       }
       node.scrollTop = Math.min(desired, maximum);
       state.revealed = true;
+      consumed.current = true;
     });
     return () => cancelAnimationFrame(frame);
   }, [
     list,
+    consumed,
     mobile,
     selected,
     plans.query.data,
@@ -64,6 +67,7 @@ export function usePlanReveal(
   return {
     manuallyInteracted: () => {
       pending.current.manual = true;
+      consumed.current = true;
     },
   };
 }

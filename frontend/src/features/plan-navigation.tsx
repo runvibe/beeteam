@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 import type { PlanRevision } from "@/api/types";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ export function PlanNavigation({
   plans,
   current,
   selectedId,
+  revealConsumed,
   onSelect,
   children,
 }: {
@@ -26,6 +28,7 @@ export function PlanNavigation({
   plans: ReturnType<typeof usePlanPages>;
   current: PlanRevision | null | undefined;
   selectedId?: string;
+  revealConsumed: RefObject<boolean>;
   onSelect: (id: string) => void;
   children: ReactNode;
 }) {
@@ -52,7 +55,7 @@ export function PlanNavigation({
     };
   }, [mobile]);
 
-  const reveal = usePlanReveal(list, selectedId, plans, mobile);
+  const reveal = usePlanReveal(list, selectedId, plans, mobile, revealConsumed);
 
   useEffect(() => {
     const media = window.matchMedia?.("(max-width: 1055px)");

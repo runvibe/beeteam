@@ -348,6 +348,7 @@ body:has(.task-page) {
     flex: 1;
     min-height: 0;
     grid-template-rows: minmax(0, 1fr);
+    column-gap: 0;
   }
   .task-detail-primary,
   .task-context {
@@ -357,6 +358,9 @@ body:has(.task-page) {
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
     padding-bottom: 8px;
+  }
+  .task-detail-primary {
+    padding-right: 32px;
   }
   .task-detail-primary > * {
     flex-shrink: 0;
