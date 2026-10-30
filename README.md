@@ -489,3 +489,5 @@ The task executor appears in the context sidebar, without a duplicate in the mai
 Task status leads the context sidebar. The main column displays recorded progress as a full-width accessible bar with a percentage positioned at the fill endpoint and clamped inside the edges at 0% and 100%, without motion or inferred activity.
 
 Mobile breadcrumbs use a 44px back-chevron control with the existing contextual destination and long-title behavior. Task details omit the duplicate content back button; desktop breadcrumb links remain available.
+
+Na aba Planos, o Histórico de alterações permanece aberto abaixo do documento. As revisões chegam em páginas incrementais ao aproximar o fim do conteúdo (scroll principal no desktop e página no mobile), com o indicador de carregamento compartilhado e sem paginação do histórico. A seleção de planos e os links de revisão mantêm seu estado na URL; páginas são isoladas por tarefa/plano/revisão atual, deduplicadas por ID, e erros permitem nova tentativa sem remover os registros já carregados.

@@ -18,10 +18,9 @@ it("shows current first, opens historical Markdown and restores selected revisio
   expect(
     await screen.findByRole("heading", { name: "Plano atual" }),
   ).toBeVisible();
-  expect(screen.queryByRole("button", { name: "Ver revisão 1" })).toBeNull();
-  await userEvent.click(
-    screen.getByRole("button", { name: "Histórico de alterações" }),
-  );
+  expect(
+    screen.queryByRole("button", { name: "Histórico de alterações" }),
+  ).toBeNull();
   await userEvent.click(
     await screen.findByRole("button", { name: "Ver revisão 1" }),
   );
