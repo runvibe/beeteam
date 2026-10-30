@@ -7,7 +7,6 @@ export function TaskProgress({ percent }: { percent: number }) {
       className="task-progress"
       style={{ "--task-progress": `${value}%` } as CSSProperties}
     >
-      <span className="task-progress-label">Progresso registrado</span>
       <div className="task-progress-meter">
         <span className="task-progress-value" aria-hidden="true">
           {value}%

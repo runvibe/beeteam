@@ -491,3 +491,5 @@ Task status leads the context sidebar. The main column displays recorded progres
 Mobile breadcrumbs use a 44px back-chevron control with the existing contextual destination and long-title behavior. Task details omit the duplicate content back button; desktop breadcrumb links remain available.
 
 Na aba Planos, o Histórico de alterações permanece aberto abaixo do documento. As revisões chegam em páginas incrementais ao aproximar o fim do conteúdo (scroll principal no desktop e página no mobile), com o indicador de carregamento compartilhado e sem paginação do histórico. A seleção de planos e os links de revisão mantêm seu estado na URL; páginas são isoladas por tarefa/plano/revisão atual, deduplicadas por ID, e erros permitem nova tentativa sem remover os registros já carregados.
+
+A barra de progresso do detalhe exibe apenas a porcentagem e o preenchimento; "Progresso registrado" permanece como nome acessível, sem rótulo visual ou espaço reservado. O texto de andamento na Visão geral permanece independente.

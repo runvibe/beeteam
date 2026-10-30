@@ -8,4 +8,5 @@ it.each([0, 45, 100])("reports recorded progress %s accessibly", (percent) => {
   expect(bar).toHaveAttribute("aria-valuemin", "0");
   expect(bar).toHaveAttribute("aria-valuemax", "100");
   expect(screen.getByText(`${percent}%`)).toBeVisible();
+  expect(screen.queryByText("Progresso registrado")).toBeNull();
 });

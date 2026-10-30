@@ -369,11 +369,6 @@ body:has(.task-page) {
 .task-detail-state > .task-progress {
   width: 100%;
   flex-basis: 100%;
-  gap: 8px;
-}
-.task-progress-label {
-  font-size: 12px;
-  color: var(--muted-foreground);
 }
 .task-progress-meter {
   position: relative;
