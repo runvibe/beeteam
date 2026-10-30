@@ -85,7 +85,11 @@ body:has(.task-page) {
 }
 .task-overview {
   display: grid;
-  gap: 28px;
+  gap: 14px;
+}
+.task-overview > section + section {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
 }
 .task-overview section {
   display: grid;
