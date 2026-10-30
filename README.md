@@ -473,3 +473,7 @@ Kanban column anchors also survive opening a task and returning, keyed by board,
 Task detail keeps its full-page route and tab query parameters. A visible title and execution state lead into independent reading sections separated by subtle theme-aware dividers and a 300px page-level context sidebar aligned with the top of the detail area, alongside the heading, navigation and content. Narrow content areas stack the context behind an accessible disclosure; small screens select sections through a native select. The autonomy form remains mounted across section/disclosure changes, preserves autosave sessions, and becomes read-only for archived tasks. Task specification and plan Markdown headings are nested below the page heading without changing stored content.
 
 Task detail dividers separate logical document sections, plan history, and execution summary/deliverables/pending blocks. Existing list borders are reused. Markdown section dividers are opt-in, use root-level principal headings, and respect authored thematic breaks; stored Markdown, nested headings, paragraphs and lists are unchanged.
+
+The task detail blocked alert uses a red background, white text and a decorative blocking icon beside the complete message. The alert retains its announcement semantics and wraps long reasons on small screens.
+
+The current work summary retains its horizontal section dividers and spacing without a vertical accent bar.

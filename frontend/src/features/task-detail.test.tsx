@@ -84,3 +84,24 @@ it("keeps execution summary content grouped with complete deliveries and pending
   expect(screen.getByText(/Pontos de entrada inventariados/)).toBeVisible();
   expect(new URLSearchParams(location.search).get("tab")).toBe("summaries");
 });
+
+it("announces a blocked task with its complete reason in one alert", async () => {
+  const seed = makeSeed();
+  seed.tasks[0].block = {
+    ...seed.tasks[0].block,
+    blocked: true,
+    reason: "Aguardando revisão de acessibilidade.",
+  };
+  window.history.replaceState({}, "", `/tasks/${ids.task}`);
+  render(
+    <ApiProvider api={createMockApi({ delay: 0, seed })}>
+      <App />
+    </ApiProvider>,
+  );
+  const alert = await screen.findByRole("alert");
+  expect(within(alert).getByText("Task bloqueada")).toBeVisible();
+  expect(
+    within(alert).getByText("Aguardando revisão de acessibilidade."),
+  ).toBeVisible();
+  expect(alert.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+});

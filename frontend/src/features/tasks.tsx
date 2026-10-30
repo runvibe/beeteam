@@ -7,6 +7,7 @@ import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
 import {
   ArrowUpLeft,
+  Ban,
   Download,
   CheckCircle2,
   Circle,
@@ -98,9 +99,12 @@ function TaskDetail({ id }: { id: string }) {
                 )}
               </div>
               {q.data.block.blocked && (
-                <Alert variant="destructive">
-                  <AlertTitle>Task bloqueada</AlertTitle>
-                  <AlertDescription>{q.data.block.reason}</AlertDescription>
+                <Alert variant="destructive" className="task-blocked-alert">
+                  <Ban className="size-9" aria-hidden="true" />
+                  <div className="task-blocked-message">
+                    <AlertTitle>Task bloqueada</AlertTitle>
+                    <AlertDescription>{q.data.block.reason}</AlertDescription>
+                  </div>
                 </Alert>
               )}
               <Tabs

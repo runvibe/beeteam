@@ -103,7 +103,6 @@ body:has(.task-page) {
   font-weight: 600;
 }
 .task-summary-section {
-  border-left: 2px solid var(--border);
   padding-left: 16px;
 }
 .task-context {
@@ -291,4 +290,34 @@ body:has(.task-page) {
 }
 .task-detail-reading .task-plan-history .record:last-of-type {
   border-bottom: 0;
+}
+
+/* White on red-700 maintains AA text contrast in both themes. */
+.task-page .task-blocked-alert {
+  grid-template-columns: 36px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  padding: 16px;
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+.task-page .task-blocked-alert > svg {
+  width: 36px;
+  height: 36px;
+  grid-row: 1;
+  transform: none;
+  margin-top: 2px;
+}
+.task-blocked-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.task-blocked-message [data-slot="alert-description"] {
+  color: inherit;
+  text-wrap: wrap;
+  line-height: 1.5;
 }
