@@ -3,7 +3,21 @@
 Collaborators não conduzem a tela do usuário: não abrem, redirecionam ou recarregam seu painel como parte da execução. Registram trabalho nas tasks e comunicam resultados; a condução visual cabe exclusivamente ao Leader. Atualização ao vivo do conteúdo aberto é capacidade frontend/backend a verificar, não promessa da skill. Isso não muda a exigência de tarefa já atribuída.
 
 
-Referência operacional aplicada às skills locais a partir dos workflows aprovados no commit `01e77b9`. O conteúdo orienta o agente; não comprova enforcement pela API nem atualização do snapshot MCP. Nenhuma task, time ou chat é criado apenas por ler esta referência.
+Fluxo operacional das skills. Sincronização dos materiais no MCP depende de publicação e verificação do backend. Complementa os [três fluxos do Leader](leader-onboarding-flows.md). Criar um chat não comprova entendimento: após o handoff, há duas confirmações por canal disponível: identidade/perfil prontos e, quando houver task atribuída, compreensão dessa tarefa e pendências. Nenhuma resposta é inventada.
+
+
+## Tarefa como fonte de verdade entre agentes
+
+Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
+
+Perguntas, respostas, decisões, mudanças de escopo, bloqueios e entregas entre agentes ficam na tarefa pertinente. Use comentários para diálogo e histórico; atualize description/specification, plano versionado, currentSummary e status quando exigido pelo tipo de mudança e pelas regras existentes. Comentário não substitui campos atuais, e uma pergunta isolada não exige alteração artificial de status. A segunda confirmação, de compreensão da tarefa e suas pendências, fica em comentário da task e gera somente aviso referencial; a confirmação inicial de identidade pode ocorrer sem tarefa.
+
+Salve primeiro e confirme sucesso; só então notifique pelo canal autorizado com referência real da tarefa/comentário e tipo de mudança. Exemplo de formato, substituindo os marcadores por referências retornadas: “Task <referência real>; comentário <referência real>; tipo: pergunta registrada.” Respostas, decisões e instruções de trabalho não são transportadas pelo chat, mesmo como cópia do conteúdo salvo. O outro agente lê o registro antes de agir. Sem acesso, declara a lacuna e suspende trabalho dependente; não substitui a leitura por instruções em chat.
+
+Notifique apenas mudança relevante ainda não comunicada. Antes de repetir após timeout, confira o registro e resultado disponível; preserve idempotência e não duplique comentários. Aviso repetido não gera comentário de recebimento ou nova notificação automaticamente; só uma nova contribuição substantiva registrada justifica outro aviso. Não crie ciclos de confirmações. Se salvar falhar, sinalize apenas o impedimento e registro não confirmado, sem apresentar decisão/instrução pendente como autorização. Se o envio falhar, mantenha o registro e retome somente a notificação necessária.
+
+Permissões do harness para enviar mensagens continuam obrigatórias; a skill não as amplia. Sem canal autorizado, deixe envio pendente. Ativação de papel/identidade e escolha de chat podem ocorrer sem tarefa, mas não carregar trabalho de negócio: qualquer solicitação desse trabalho exige tarefa previamente registrada e atribuída. Collaborator não cria tarefa para se autoautorizar.
+
 
 ## Fluxo principal — começar pelo chat
 
@@ -29,7 +43,7 @@ flowchart TD
     EXECUTAR --> CICLOS["Tratar mudanças, bloqueios e ajustes conforme detalhamento abaixo"]
     CICLOS --> VALIDAR["Validar contra specification; declarar resultados e limitações reais"]
     VALIDAR --> ENTREGAR["Salvar entrega, resumo histórico, síntese, status e pendências; confirmar persistência"]
-    ENTREGAR --> COMUNICAR["Só então comunicar ao Leader; declarar envio pendente se indisponível"]
+    ENTREGAR --> COMUNICAR["Após confirmar gravação, notificar referência e tipo; envio pendente se indisponível"]
     COMUNICAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
 ```
 
@@ -44,7 +58,7 @@ flowchart TD
     EVENTO -->|Mudança| MUDANCA["Atualizar mesma task e revisar plano; comentar antes, novo, motivo e autoria conhecida"]
     MUDANCA --> REVALIDAR
     EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário e síntese; confirmar persistência"]
-    BLOQUEIO --> AVISOB["Só então avisar Leader do bloqueio; declarar falha de comunicação"]
+    BLOQUEIO --> AVISOB["Após salvar bloqueio, notificar referência e tipo; declarar falha de envio"]
     AVISOB --> RETOMADA["Ao retomar, confirmar desbloqueio e atualizar registros e plano necessário"]
     RETOMADA --> REVALIDAR
     EVENTO -->|Etapa pronta| TESTAR["Validar contra specification"]
@@ -52,7 +66,7 @@ flowchart TD
     RESULTADO -->|Não| AJUSTES["Ajustar trabalho e planejamento conforme impacto"]
     AJUSTES --> REVALIDAR
     RESULTADO -->|Sim| ENTREGA["Registrar entregas, evidências, limitações, pendências, resumo histórico, síntese e status; confirmar persistência"]
-    ENTREGA --> AVISOR["Após salvar, comunicar encerramento ou decisão necessária; declarar envio pendente se faltar canal"]
+    ENTREGA --> AVISOR["Após salvar, notificar referência e tipo de mudança; sem canal, envio pendente"]
     AVISOR --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
     REVISAO -->|Ajustes solicitados| AJUSTES
     REVISAO -->|Aceite aplicável e critérios atendidos| CONCLUIR(["Concluir task quando cabível"])
@@ -73,7 +87,7 @@ A entrada é uma solicitação para este chat usar a skill Collaborator, feita d
 
 Se a solicitação indicar um colaborador existente, como XPTO, consultar seu cadastro e assumir seu perfil funcional, regras e contexto. Se houver autorização explícita para novo colaborador no time XPTO, o fallback é autocadastrar e vincular ao time informado segundo o papel recebido, confirmando a persistência antes de assumir essa identidade como registrada. Se identidade, time ou papel essencial forem ambíguos, esclarecer especificamente a lacuna e conferir cadastros antes de criar, sem duplicar agentes nem inventar uma entidade Project.
 
-O handoff do Leader deve pedir explicitamente uso da skill Collaborator e trazer identidade existente (ou autorização explícita para fallback novo), time, referência real da task quando existir, contexto de execução do board de origem e ação esperada. Conferir informações nos dados persistidos, sem inventar IDs. Primeiro confirmar identidade/perfil prontos. Sem task, aguardar registro/atribuição pelo Leader ou usuário, sem iniciar demanda nem criar task própria. Depois de consultar task atribuída, confirmar separadamente compreensão e pendências. O Leader registra/atribui antes de pedir execução; ativação do chat é etapa distinta.
+O handoff do Leader deve pedir explicitamente uso da skill Collaborator e trazer identidade existente (ou autorização explícita para fallback novo), time, referência real da task quando existir, referências persistidas do contexto de execução do board de origem e tipo de mudança. Conferir informações nos dados persistidos, sem inventar IDs. Primeiro confirmar identidade/perfil prontos. Sem task, aguardar registro/atribuição pelo Leader ou usuário, sem iniciar demanda nem criar task própria. Depois de consultar task atribuída, confirmar separadamente compreensão e pendências. O Leader registra/atribui antes de pedir execução; ativação do chat é etapa distinta.
 
 Exemplo: “Use Collaborator e assuma o cadastro existente Backend do time informado. Confirme identidade/perfil prontos; consulte a referência real da task atribuída e seu contexto de origem, e confirme entendimento e pendências.” Sem atribuição válida, confirmar identidade e aguardar registro, sem execução nem autoautorização.
 
@@ -161,9 +175,9 @@ O mesmo ordenamento vale para decisão necessária durante o trabalho: salvar pr
 
 ## Contratos consultados e limites
 
-Conferidos os materiais locais das orientações operacionais deste pacote e [integração](integration.md), além do OpenAPI atual do checkout backend `8fbc` (somente leitura): `Task.specification`, `currentSummary`, `executionContext`, `CreatePlan`, `RevisePlan`, revisão de plano e bloqueio separado de status. O snapshot OpenAPI antigo presente neste worktree não tem todos os campos recentes; não foi alterado para esta entrega. Esta especificação não inventa endpoint nem versão separada para specification: versionamento aqui é o do plano e os mecanismos de histórico existentes.
+Conferidos os materiais locais da [skill Collaborator](../skills/bee-team-collaborator/SKILL.md) e [integração](../skills/references/integration.md), além do OpenAPI atual do checkout backend `8fbc` (somente leitura): `Task.specification`, `currentSummary`, `executionContext`, `CreatePlan`, `RevisePlan`, revisão de plano e bloqueio separado de status. O snapshot OpenAPI antigo presente neste worktree não tem todos os campos recentes; não foi alterado para esta entrega. Esta especificação não inventa endpoint nem versão separada para specification: versionamento aqui é o do plano e os mecanismos de histórico existentes.
 
-A nova entrada e a condição de task previamente registrada e atribuída substituem a orientação documental anterior de criar task ausente na entrada. Estas são regras operacionais desta revisão da skill. Não representam afirmação de que a API já imponha todo esse fluxo ou rejeite toda task incompleta. O desenho e os critérios descrevem conduta; não são prova de execução ponta a ponta.
+A nova entrada e a condição de task previamente registrada e atribuída substituem a orientação documental anterior de criar task ausente na entrada. São regras propostas documentadas, divergentes da skill instalada, que não foi atualizada nesta rodada. Não representam afirmação de que a API já imponha todo esse fluxo ou rejeite toda task incompleta. O desenho e os critérios foram revisados editorialmente; não são execução ponta a ponta nem alteração da skill instalada.
 
 ## Pontos ainda em aberto
 

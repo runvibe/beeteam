@@ -1,5 +1,6 @@
 import { goBack } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
+import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
 import { useEffect, useRef, useState } from "react";
 import { Plans } from "./plans";
@@ -67,8 +68,8 @@ function TaskDetail({ id }: { id: string }) {
         <ArrowUpLeft />
         Voltar
       </Button>
-      <header className="task-page-heading">
-        {q.data && <TaskPath task={q.data} />}
+      {q.data && <TaskPath task={q.data} />}
+      <header className="sr-only">
         <h1 ref={heading} tabIndex={-1}>
           {q.data?.title ?? "Detalhes da task"}
         </h1>
@@ -264,18 +265,26 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
   return (
     <div className="detail-section">
       {resource === "timeline" && (
-        <Choice
-          label="Eventos"
-          value={includeChildren}
-          onChange={(v) => {
-            setInclude(v);
+        <FilterBar
+          active={includeChildren !== "false"}
+          onClear={() => {
+            setInclude("false");
             setOffset(0);
           }}
-          options={[
-            { value: "false", label: "Somente esta task" },
-            { value: "true", label: "Incluir toda a descendência" },
-          ]}
-        />
+        >
+          <Choice
+            label="Eventos"
+            value={includeChildren}
+            onChange={(v) => {
+              setInclude(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Somente esta task" },
+              { value: "true", label: "Incluir toda a descendência" },
+            ]}
+          />
+        </FilterBar>
       )}
       <QueryState query={q}>
         {q.data && (

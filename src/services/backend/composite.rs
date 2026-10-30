@@ -1,14 +1,14 @@
 use super::*;
 use crate::{
     dto::{backend::*, contracts, mcp},
-    repositories::resources::{ResourceRepository, UnitOfWork},
+    repositories::contracts::{ResourceStore, UnitOfWork},
 };
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use uuid::Uuid;
 
-pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) -> Result<Value> {
+pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -> Result<Value> {
     let definition = mcp::composite_tools()
         .into_iter()
         .find(|t| t["name"] == name)
@@ -16,15 +16,31 @@ pub async fn execute(repository: &ResourceRepository, name: &str, input: Value) 
     let schema = &definition["inputSchema"];
     let validation = contracts::validate_schema(schema, schema, &input);
     let id = body_id(&input, "taskId")?;
-    let mut unit = repository.begin().await?;
+    let mut unit = if name == "prepare_execution" {
+        repository
+            .read(&Command {
+                operation: "getTask".into(),
+                params: BTreeMap::from([("taskId".into(), id.to_string())]),
+                query: BTreeMap::new(),
+                body: Value::Null,
+                actor: None,
+                expected_version: None,
+                idempotency_key: None,
+                upload: None,
+            })
+            .await?
+    } else {
+        repository.begin().await?
+    };
     if name == "prepare_execution" {
         validation?;
         return prepare(
-            &unit,
+            &mut unit,
             id,
             input["offset"].as_u64().unwrap_or(0),
             input["limit"].as_u64().unwrap_or(50),
-        );
+        )
+        .await;
     }
     let actor: Actor = serde_json::from_value(input["actor"].clone())
         .map_err(|_| Failure::new("invalid_actor_context", "Invalid actor"))?;
@@ -116,7 +132,12 @@ fn task_value(unit: &UnitOfWork, id: Uuid) -> Result<Value> {
         &queries::resource(&unit.records, "tasks", id)?,
     ))
 }
-pub(super) fn prepare(unit: &UnitOfWork, id: Uuid, offset: u64, limit: u64) -> Result<Value> {
+pub(super) async fn prepare(
+    unit: &mut UnitOfWork,
+    id: Uuid,
+    offset: u64,
+    limit: u64,
+) -> Result<Value> {
     let task = task_value(unit, id)?;
     let executor = value_id(&task["executorAgentId"])?;
     let ra = &contracts::operation("getAgent")?.document;
@@ -138,7 +159,7 @@ pub(super) fn prepare(unit: &UnitOfWork, id: Uuid, offset: u64, limit: u64) -> R
         upload: None,
     };
     let plans = queries::run(
-        &unit.records,
+        unit,
         &command(
             "listPlans",
             BTreeMap::from([("taskId".into(), id.to_string())]),
@@ -148,9 +169,10 @@ pub(super) fn prepare(unit: &UnitOfWork, id: Uuid, offset: u64, limit: u64) -> R
                 ("sortBy".into(), json!("createdAt")),
             ]),
         ),
-    )?;
+    )
+    .await?;
     let children = queries::run(
-        &unit.records,
+        unit,
         &command(
             "listAllTasks",
             BTreeMap::new(),
@@ -160,7 +182,8 @@ pub(super) fn prepare(unit: &UnitOfWork, id: Uuid, offset: u64, limit: u64) -> R
                 ("limit".into(), json!(limit)),
             ]),
         ),
-    )?;
+    )
+    .await?;
     let summary = if let Some(sid) = unit
         .records
         .get("tasks", id)?

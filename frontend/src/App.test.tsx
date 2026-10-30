@@ -1,3 +1,4 @@
+import { openSearch } from "@/test/filter";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, beforeEach } from "vitest";
@@ -11,6 +12,38 @@ describe("Bee Team interface", () => {
     window.history.replaceState({}, "", "/boards");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
+  it("keeps global controls in the rail and contextual filters in the compact header", async () => {
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    const topbar = document.querySelector(".topbar") as HTMLElement;
+    const rail = document.querySelector(".navigation-footer") as HTMLElement;
+    expect(
+      within(rail).getByRole("button", { name: "Configurações globais" }),
+    ).toBeVisible();
+    expect(
+      within(rail).getByRole("button", { name: /Ativar tema/ }),
+    ).toBeVisible();
+    expect(
+      within(topbar).getByRole("button", { name: "Buscar boards" }),
+    ).toBeVisible();
+    await userEvent.click(
+      await screen.findByRole("link", { name: "Lançamento do produto" }),
+    );
+    expect(
+      await within(topbar).findByRole("button", {
+        name: "Configurações do board",
+      }),
+    ).toBeVisible();
+    expect(
+      screen.queryByText(/Tasks principais · subtasks/),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Atualizações registradas, sem indicação/),
+    ).not.toBeInTheDocument();
+  });
   it("keeps filtered board context while the task breadcrumb follows cross-board ancestry", async () => {
     render(
       <ApiProvider api={createMockApi({ delay: 0 })}>
@@ -20,7 +53,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(
       await screen.findByRole("link", { name: "Lançamento do produto" }),
     );
-    const search = screen.getByRole("searchbox", { name: "Buscar tasks" });
+    const search = await openSearch("Buscar tasks");
     await userEvent.type(search, "Mapear");
     await userEvent.click(
       await screen.findByRole("link", {
@@ -69,9 +102,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
     await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-    expect(
-      await screen.findByRole("searchbox", { name: "Buscar tasks" }),
-    ).toHaveValue("Mapear");
+    expect(await openSearch("Buscar tasks")).toHaveValue("Mapear");
     expect(
       screen.getByRole("heading", { name: "Lançamento do produto" }),
     ).toBeInTheDocument();
@@ -88,7 +119,7 @@ describe("Bee Team interface", () => {
     await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
     const agent = await screen.findByRole("region", { name: "Agente" });
     await userEvent.click(within(agent).getByRole("tab", { name: "Tasks" }));
-    const filter = within(agent).getByRole("searchbox");
+    const filter = await openSearch("Buscar tasks do agente");
     await userEvent.type(filter, "Mapear");
     await userEvent.click(
       await within(agent).findByRole("button", {
@@ -102,7 +133,7 @@ describe("Bee Team interface", () => {
     expect(
       within(restored).getByRole("tab", { name: "Tasks" }),
     ).toHaveAttribute("data-state", "active");
-    expect(within(restored).getByRole("searchbox")).toHaveValue("Mapear");
+    expect(await openSearch("Buscar tasks do agente")).toHaveValue("Mapear");
   });
   it("saves a profile through the adapter without changing organizational bindings", async () => {
     const api = createMockApi({ delay: 0 });
@@ -123,9 +154,7 @@ describe("Bee Team interface", () => {
     const input = within(dialog).getByLabelText("Nome", { exact: true });
     await userEvent.clear(input);
     await userEvent.type(input, "Lia revisada");
-    await userEvent.click(
-      within(dialog).getByRole("button", { name: "Salvar perfil" }),
-    );
+    await userEvent.tab();
     expect(
       await within(dialog).findByRole("heading", { name: "Lia revisada" }),
     ).toBeInTheDocument();

@@ -1,108 +1,18 @@
-use crate::dto::backend::{Failure, Outcome, Result};
-use chrono::{DateTime, Utc};
-use serde_json::{json, Value};
+pub use super::contracts::UnitOfWork;
+use super::contracts::{RepositoryFuture, ResourceStore, TransactionStore};
+pub use super::records::{Record, Records, TABLES};
+use crate::dto::backend::{Command, Failure, Outcome, Result};
+use serde_json::json;
 use sqlx::{PgPool, Postgres, Row, Transaction};
-use std::collections::BTreeMap;
 use uuid::Uuid;
 
-pub const TABLES: &[&str] = &[
-    "agents",
-    "teams",
-    "boards",
-    "statuses",
-    "tasks",
-    "plans",
-    "plan_revisions",
-    "comments",
-    "attachments",
-    "execution_summaries",
-    "events",
-    "chat_references",
-    "images",
-    "memberships",
-    "board_events",
-];
-#[derive(Clone, Debug, PartialEq)]
-pub struct Record {
-    pub table: &'static str,
-    pub id: Uuid,
-    pub data: Value,
-    pub version: i64,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-    pub archived_at: Option<DateTime<Utc>>,
-    pub deleted_at: Option<DateTime<Utc>>,
-}
-impl Record {
-    pub fn new(table: &'static str, data: Value) -> Self {
-        Self {
-            table,
-            id: Uuid::now_v7(),
-            data,
-            version: 1,
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
-            archived_at: None,
-            deleted_at: None,
-        }
-    }
-    pub fn value(&self) -> Value {
-        let mut v = self.data.clone();
-        v["id"] = json!(self.id);
-        v["version"] = json!(self.version);
-        v["createdAt"] = json!(self.created_at);
-        v["updatedAt"] = json!(self.updated_at);
-        v["archivedAt"] = json!(self.archived_at);
-        v["deletedAt"] = json!(self.deleted_at);
-        v
-    }
-    pub fn touch(&mut self) {
-        self.version += 1;
-        self.updated_at = Utc::now();
-    }
-    pub fn reference(&self, key: &str) -> Option<Uuid> {
-        self.data[key]
-            .as_str()
-            .and_then(|s| Uuid::parse_str(s).ok())
-    }
-}
-#[derive(Clone, Default)]
-pub struct Records {
-    pub rows: BTreeMap<(&'static str, Uuid), Record>,
-}
-impl Records {
-    pub fn get(&self, table: &str, id: Uuid) -> Result<&Record> {
-        self.rows
-            .iter()
-            .find(|((t, i), r)| *t == table && *i == id && r.deleted_at.is_none())
-            .map(|(_, r)| r)
-            .ok_or_else(Failure::missing)
-    }
-    pub fn get_mut(&mut self, table: &'static str, id: Uuid) -> Result<&mut Record> {
-        self.rows
-            .get_mut(&(table, id))
-            .filter(|r| r.deleted_at.is_none())
-            .ok_or_else(Failure::missing)
-    }
-    pub fn list(&self, table: &str) -> Vec<&Record> {
-        self.rows
-            .values()
-            .filter(|r| r.table == table && r.deleted_at.is_none())
-            .collect()
-    }
-    pub fn insert(&mut self, r: Record) -> Uuid {
-        let id = r.id;
-        self.rows.insert((r.table, id), r);
-        id
-    }
-}
 pub struct ResourceRepository {
     pool: PgPool,
 }
-pub struct UnitOfWork {
-    pub tx: Transaction<'static, Postgres>,
-    pub records: Records,
+struct PostgresWork {
+    tx: Transaction<'static, Postgres>,
     original: Records,
+    read_only: bool,
 }
 impl ResourceRepository {
     pub fn new(pool: PgPool) -> Self {
@@ -122,41 +32,56 @@ impl ResourceRepository {
         Ok((row.get("id"), row.get("slug")))
     }
     pub async fn begin(&self) -> Result<UnitOfWork> {
+        self.open(None).await
+    }
+    async fn open(&self, command: Option<&Command>) -> Result<UnitOfWork> {
+        let read_only = command.is_some();
         let mut tx = self.pool.begin().await?;
-        // Personal local service: serialize mutations and coherent reads using one DB lock.
+        // Serialize mutations only. Reads use a consistent MVCC snapshot.
         // No in-process mutex: independent HTTP/MCP instances participate in the same lock.
-        sqlx::query("SELECT pg_advisory_xact_lock(1884347301)")
-            .execute(&mut *tx)
-            .await?;
+        if read_only {
+            sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+                .execute(&mut *tx)
+                .await?;
+        } else {
+            sqlx::query("SELECT pg_advisory_xact_lock(1884347301)")
+                .execute(&mut *tx)
+                .await?;
+        }
         let mut records = Records::default();
-        for &table in TABLES {
-            // Identifiers only come from TABLES, never from requests. Values are bound below.
-            let rows = sqlx::query(sqlx::AssertSqlSafe(format!(
+        if let Some(command) = command {
+            records = super::reads::context(&mut tx, command).await?;
+        } else {
+            for &table in TABLES {
+                // Identifiers only come from TABLES, never from requests. Values are bound below.
+                let rows = sqlx::query(sqlx::AssertSqlSafe(format!(
                 "SELECT id,data,version,created_at,updated_at,archived_at,deleted_at FROM {table}"
             )))
-            .fetch_all(&mut *tx)
-            .await?;
-            for row in rows {
-                records.insert(Record {
-                    table,
-                    id: row.get("id"),
-                    data: row.get("data"),
-                    version: row.get("version"),
-                    created_at: row.get("created_at"),
-                    updated_at: row.get("updated_at"),
-                    archived_at: row.get("archived_at"),
-                    deleted_at: row.get("deleted_at"),
-                });
+                .fetch_all(&mut *tx)
+                .await?;
+                for row in rows {
+                    records.insert(Record {
+                        table,
+                        id: row.get("id"),
+                        data: row.get("data"),
+                        version: row.get("version"),
+                        created_at: row.get("created_at"),
+                        updated_at: row.get("updated_at"),
+                        archived_at: row.get("archived_at"),
+                        deleted_at: row.get("deleted_at"),
+                    });
+                }
             }
         }
-        Ok(UnitOfWork {
+        let work = PostgresWork {
             tx,
             original: records.clone(),
-            records,
-        })
+            read_only,
+        };
+        Ok(UnitOfWork::new(records, Box::new(work)))
     }
 }
-impl UnitOfWork {
+impl PostgresWork {
     pub async fn allocate_slug(&mut self, table: &str, label: &str) -> Result<String> {
         Ok(sqlx::query_scalar("SELECT beeteam_allocate_slug($1,$2)")
             .bind(table)
@@ -229,11 +154,17 @@ impl UnitOfWork {
                 .await?,
         )
     }
-    pub async fn commit(mut self) -> Result<()> {
+    pub async fn commit(mut self, records: Records) -> Result<()> {
+        if self.read_only {
+            if records.rows != self.original.rows {
+                return Err(Failure::invalid("Read-only unit cannot write"));
+            }
+            self.tx.commit().await?;
+            return Ok(());
+        }
         // Release old unique role assignments inside the transaction before applying swaps.
         // Historical rows stay present; readers cannot observe this intermediate state.
-        for r in self
-            .records
+        for r in records
             .rows
             .values()
             .filter(|r| matches!(r.table, "teams" | "memberships" | "images" | "statuses"))
@@ -256,8 +187,7 @@ impl UnitOfWork {
         // Write tombstones first, then live rows; all foreign key targets precede dependents.
         for deleted in [true, false] {
             for &table in TABLES {
-                for r in self
-                    .records
+                for r in records
                     .rows
                     .values()
                     .filter(|r| r.table == table && r.deleted_at.is_some() == deleted)
@@ -270,10 +200,83 @@ impl UnitOfWork {
                 }
             }
         }
-        if self.records.rows != self.original.rows {
+        if records.rows != self.original.rows {
             super::changes::notify(&mut self.tx).await?;
         }
         self.tx.commit().await?;
         Ok(())
+    }
+}
+
+impl ResourceStore for ResourceRepository {
+    fn resolve_slug<'a>(
+        &'a self,
+        table: &'static str,
+        slug: &'a str,
+    ) -> RepositoryFuture<'a, (Uuid, String)> {
+        Box::pin(self.resolve_slug(table, slug))
+    }
+    fn begin(&self) -> RepositoryFuture<'_, UnitOfWork> {
+        Box::pin(self.open(None))
+    }
+    fn read<'a>(&'a self, command: &'a Command) -> RepositoryFuture<'a, UnitOfWork> {
+        Box::pin(self.open(Some(command)))
+    }
+}
+impl TransactionStore for PostgresWork {
+    fn select<'a>(
+        &'a mut self,
+        command: &'a Command,
+    ) -> RepositoryFuture<'a, super::records::Selection> {
+        Box::pin(async move {
+            let selected = super::query::select(&mut self.tx, command).await?;
+            if self.read_only {
+                self.original.rows.extend(selected.records.rows.clone());
+            }
+            Ok(selected)
+        })
+    }
+    fn allocate_slug<'a>(
+        &'a mut self,
+        table: &'a str,
+        label: &'a str,
+    ) -> RepositoryFuture<'a, String> {
+        Box::pin(PostgresWork::allocate_slug(self, table, label))
+    }
+    fn replay<'a>(
+        &'a mut self,
+        actor: &'a str,
+        operation: &'a str,
+        key: Uuid,
+        hash: &'a str,
+    ) -> RepositoryFuture<'a, Option<Outcome>> {
+        Box::pin(PostgresWork::replay(self, actor, operation, key, hash))
+    }
+    fn save_replay<'a>(
+        &'a mut self,
+        actor: &'a str,
+        operation: &'a str,
+        key: Uuid,
+        hash: &'a str,
+        result: &'a Outcome,
+    ) -> RepositoryFuture<'a, ()> {
+        Box::pin(PostgresWork::save_replay(
+            self, actor, operation, key, hash, result,
+        ))
+    }
+    fn put_file<'a>(&'a mut self, bytes: &'a [u8]) -> RepositoryFuture<'a, Uuid> {
+        Box::pin(PostgresWork::put_file(self, bytes))
+    }
+    fn file(&mut self, id: Uuid) -> RepositoryFuture<'_, Vec<u8>> {
+        Box::pin(PostgresWork::file(self, id))
+    }
+    fn delete_file(&mut self, id: Uuid) -> RepositoryFuture<'_, ()> {
+        Box::pin(PostgresWork::delete_file(self, id))
+    }
+    fn sequence(&mut self) -> RepositoryFuture<'_, i64> {
+        Box::pin(PostgresWork::sequence(self))
+    }
+    fn commit(self: Box<Self>, records: Records) -> RepositoryFuture<'static, ()> {
+        Box::pin(PostgresWork::commit(*self, records))
     }
 }

@@ -40,7 +40,7 @@ it("refreshes an external edit without replacing a focused draft or URL and reje
   expect(field).toHaveValue("Meu rascunho");
   expect(field).toHaveFocus();
   expect(location.href).toBe(url);
-  await userEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
+  await userEvent.tab();
   await waitFor(() => expect(screen.getByRole("alert")).toBeVisible());
   expect((await api.get("agents", agent.id)).name).toBe("Nome remoto");
   expect(field).toHaveValue("Meu rascunho");

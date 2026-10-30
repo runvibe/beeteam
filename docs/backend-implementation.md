@@ -64,7 +64,7 @@ gravações. Não há endpoint de restauração de `deletedAt`; archive possui r
 ## Frontend
 
 A frente frontend está conectando o transporte real. O preview local usa proxy do Vite de
-`/api` para `http://127.0.0.1:18081` e os contratos publicados; configuração e bootstrap em local-integration.md. Consultas não
+`/api` para `http://127.0.0.1:59865` e os contratos publicados; configuração e bootstrap em local-integration.md. Consultas não
 precisam de headers de identidade. Escritas de configuração usam contexto declarado,
 Idempotency-Key nos POST e If-Match nas mutações versionadas. ETag/Location podem ser
 lidos no mesmo origin ou via CORS com exposição de headers configurada. UI continua

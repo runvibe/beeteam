@@ -13,6 +13,9 @@ export function createTransport(options: HttpOptions = {}) {
     binary = false,
   ): Promise<T> {
     const controller = new AbortController();
+    const cancel = () => controller.abort(init.signal?.reason);
+    if (init.signal?.aborted) cancel();
+    else init.signal?.addEventListener("abort", cancel, { once: true });
     const timeout = setTimeout(
       () => controller.abort(),
       options.timeoutMs ?? 30000,
@@ -49,6 +52,7 @@ export function createTransport(options: HttpOptions = {}) {
         );
       }
     } catch (error) {
+      if (init.signal?.aborted) throw error;
       if (error instanceof ApiError) throw error;
       throw new ApiError(
         0,
@@ -59,6 +63,7 @@ export function createTransport(options: HttpOptions = {}) {
       );
     } finally {
       clearTimeout(timeout);
+      init.signal?.removeEventListener("abort", cancel);
     }
   };
 }

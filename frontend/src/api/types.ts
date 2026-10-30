@@ -96,6 +96,7 @@ export interface BeeApi {
     resource: K,
     scope?: string,
     filters?: Filters,
+    signal?: AbortSignal,
   ): Promise<Page<Resources[K]>>;
   get<K extends keyof Entities>(resource: K, id: string): Promise<Entities[K]>;
   board(id: string, filters?: Filters): Promise<BoardView>;

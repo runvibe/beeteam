@@ -1,7 +1,10 @@
 import { useId, type ReactNode } from "react";
+import { useCompactFilters } from "./filter-context";
+import { InlineFilterSearch } from "./inline-filter-search";
+import { FilterPopover, FilterOptions } from "./filter-controls";
 import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "./ui/empty";
-import { Skeleton } from "./ui/skeleton";
+import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -15,13 +18,7 @@ import { Field, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 import type { Page } from "@/api/types";
 export function Loading() {
-  return (
-    <div role="status" aria-label="Carregando" className="grid gap-3 p-4">
-      <Skeleton className="h-7 w-2/3" />
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
-    </div>
-  );
+  return <LoadingIndicator />;
 }
 export function Failure({
   error,
@@ -128,6 +125,27 @@ export function Choice({
   options: { value: string; label: string }[];
   all?: string;
 }) {
+  const compact = useCompactFilters();
+  if (compact) {
+    const selected =
+      options.find((option) => option.value === value)?.label || all;
+    return (
+      <FilterPopover
+        label={label}
+        summary={selected}
+        onClear={() => onChange(all ? "" : options[0]?.value || "")}
+        active={value !== (all ? "" : options[0]?.value || "")}
+      >
+        <FilterOptions
+          label={label}
+          value={value}
+          onChange={onChange}
+          options={options}
+          all={all}
+        />
+      </FilterPopover>
+    );
+  }
   return (
     <Field className="filter-field">
       <FieldLabel>{label}</FieldLabel>
@@ -162,7 +180,8 @@ export function Search({
   label?: string;
 }) {
   const id = useId();
-  return (
+  const compact = useCompactFilters();
+  const field = (
     <Field className="filter-field grow">
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
       <Input
@@ -174,6 +193,11 @@ export function Search({
         onChange={(e) => onChange(e.target.value)}
       />
     </Field>
+  );
+  return compact ? (
+    <InlineFilterSearch label={label} value={value} onChange={onChange} />
+  ) : (
+    field
   );
 }
 export const formatDate = (value: string) =>

@@ -3,6 +3,7 @@ mod support;
 use axum::{body::Body, http::Request, Router};
 use http_body_util::BodyExt;
 use serde_json::{json, Value};
+use sha2::{Digest, Sha256};
 use support::*;
 use tower::ServiceExt;
 
@@ -59,7 +60,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 60);
+    assert_eq!(tools.len(), 65);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -91,12 +92,52 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert_eq!(read["result"]["contents"][0]["text"], expected);
         assert!(expected.contains("```mermaid"));
     }
+    let provenance: Value =
+        serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     for resource in resources["result"]["resources"].as_array().unwrap() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("e6d6b7f"));
+            .contains("8ab75d1"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
+        let uri = resource["uri"].as_str().unwrap();
+        let path = match uri {
+            "beeteam://skills/leader" => "bee-team-leader/SKILL.md".to_owned(),
+            "beeteam://skills/collaborator" => "bee-team-collaborator/SKILL.md".to_owned(),
+            "beeteam://references/team-examples" => {
+                "bee-team-leader/references/team-examples.md".to_owned()
+            }
+            _ => {
+                let name = uri.rsplit('/').next().unwrap();
+                if [
+                    "task-briefing",
+                    "collaborator-resumption",
+                    "delivery-review",
+                ]
+                .contains(&name)
+                {
+                    format!("prompts/{name}.md")
+                } else {
+                    format!("references/{name}.md")
+                }
+            }
+        };
+        if let Some(expected) = provenance["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|f| f["resourcePath"] == path)
+        {
+            let text = read["result"]["contents"][0]["text"].as_str().unwrap();
+            assert_eq!(
+                Sha256::digest(text.as_bytes())
+                    .iter()
+                    .map(|byte| format!("{byte:02x}"))
+                    .collect::<String>(),
+                expected["bundledSha256"].as_str().unwrap(),
+                "{uri}"
+            );
+        }
         assert!(
             read["result"]["contents"][0]["text"]
                 .as_str()
@@ -310,6 +351,9 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(text.contains("No MCP implementado"));
         assert!(text.contains(name));
         assert!(text.contains("specification"));
+        assert!(text.contains(
+            "Este resultado é contexto de leitura, não mensagem de despacho entre agentes."
+        ));
         assert!(!text.contains("{{taskId}}"));
     }
 }

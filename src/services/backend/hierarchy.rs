@@ -1,6 +1,6 @@
 use crate::{
     dto::backend::{Failure, Result},
-    repositories::resources::Records,
+    repositories::records::Records,
 };
 use serde_json::{json, Value};
 use std::collections::BTreeSet;
@@ -80,20 +80,6 @@ pub(super) fn writable(records: &Records, id: Uuid, restoring: bool) -> Result<(
         }
     }
     Ok(())
-}
-pub(super) fn archived(records: &Records, id: Uuid) -> Result<bool> {
-    for ancestor in chain(records, id)? {
-        let task = records.get("tasks", ancestor)?;
-        if task.archived_at.is_some()
-            || records
-                .get("boards", task.reference("boardId").unwrap())?
-                .archived_at
-                .is_some()
-        {
-            return Ok(true);
-        }
-    }
-    Ok(false)
 }
 #[cfg(test)]
 mod tests {

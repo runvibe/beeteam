@@ -9,6 +9,10 @@ use crate::{config::AppConfig, state::AppState};
 pub mod backend;
 mod changes;
 mod cors;
+mod data_transfer;
+#[cfg(feature = "mcp")]
+mod data_transfer_mcp;
+mod frontend;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
@@ -29,6 +33,17 @@ pub mod system;
 struct ApiDoc;
 
 pub fn create_router(state: AppState, config: &AppConfig) -> Router {
+    create_router_with_frontend(
+        state,
+        config,
+        crate::services::frontend::FrontendMode::default(),
+    )
+}
+pub fn create_router_with_frontend(
+    state: AppState,
+    config: &AppConfig,
+    mode: crate::services::frontend::FrontendMode,
+) -> Router {
     let (api_router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(system::router())
         .split_for_parts();
@@ -51,10 +66,18 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
                         .unwrap()
                         .document
                         .clone(),
+                )
+                .external_url_unchecked(
+                    "/openapi/data-transfer.json",
+                    serde_json::from_str::<serde_json::Value>(include_str!(
+                        "../../docs/data-transfer-openapi.json"
+                    ))
+                    .expect("bundled transfer OpenAPI"),
                 ),
         )
         .merge(backend::router(config.body_limit_bytes))
-        .merge(changes::router());
+        .merge(changes::router())
+        .merge(data_transfer::router(state.clone()));
 
     let api_router = if config.otel_enabled {
         api_router
@@ -68,10 +91,20 @@ pub fn create_router(state: AppState, config: &AppConfig) -> Router {
 
     #[cfg(feature = "mcp")]
     let api_router = if config.mcp.enabled {
-        api_router.merge(mcp::router(&config.mcp, state.clone()))
+        api_router.merge(mcp::router(&config.mcp, state.clone()).layer(
+            axum::middleware::from_fn_with_state(state.clone(), data_transfer::origin),
+        ))
     } else {
         api_router
     };
 
+    let api_router = if mode == crate::services::frontend::FrontendMode::Embedded {
+        let mcp_path = config.mcp.path.clone();
+        api_router.fallback(move |method, uri, headers| {
+            frontend::respond(method, uri, headers, mcp_path.clone())
+        })
+    } else {
+        api_router
+    };
     api_router.with_state(state)
 }

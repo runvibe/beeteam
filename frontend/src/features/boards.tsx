@@ -1,5 +1,16 @@
+import { CardKindMark } from "@/components/card-kind-mark";
+import { KanbanCarousel } from "@/components/kanban-carousel";
+import { useColumnPages } from "@/api/column-pages";
+import { KanbanColumnViewport } from "@/components/kanban-column-viewport";
+import { CardSymbol } from "@/components/card-symbol";
+import { RelativeTime } from "@/components/relative-time";
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { openCardBody, openCardLink } from "@/routing/card-navigation";
 import { FilterBar } from "@/components/filter-bar";
+import { FilterPopover } from "@/components/filter-controls";
 import { EntityFilter } from "@/components/entity-filter";
 import {
   useUrlState,
@@ -15,7 +26,8 @@ import {
   goBack,
 } from "@/routing/location";
 import { useQuery } from "@tanstack/react-query";
-import { Settings2, CheckCheck, LockKeyhole, ArrowUpLeft } from "lucide-react";
+import { Settings, CheckCheck, LockKeyhole, ArrowUpLeft } from "lucide-react";
+import { Tooltip } from "radix-ui";
 import { useApi, useEntity, useList } from "@/api/context";
 import type { BoardView, Filters, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -29,15 +41,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Choice,
-  Search,
-  QueryState,
-  NoData,
-  Pager,
-  formatDate,
-  modeLabels,
-} from "@/components/shared";
+import { Choice, Search, QueryState, NoData } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { BoardSettings } from "./settings";
 export function Boards() {
@@ -56,7 +60,7 @@ function BoardIndex() {
     }),
     [offset, setOffset] = useUrlState<number>("boards.offset", 0);
   const limit = usePageSize("boards", 12);
-  const q = useList("boards", "", {
+  const q = useCardPages("boards", {
     name: name || undefined,
     teamId: teamId || undefined,
     archived: archived === "" ? undefined : archived === "true",
@@ -67,61 +71,62 @@ function BoardIndex() {
   const teams = useList("teams", "", { limit: 100, sortBy: "name" });
   return (
     <>
-      <header className="page-heading">
-        <div>
+      <header className="page-heading listing-heading">
+        <div className="sr-only">
           <h1>Boards</h1>
           <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
         </div>
+        <FilterBar
+          inHeader
+          search={
+            <>
+              <Search
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+                label="Buscar boards"
+              />
+            </>
+          }
+          active={!!(name || teamId || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setTeam("");
+            setArchived("false");
+            setOffset(0);
+          }}
+        >
+          <EntityFilter
+            resource="teams"
+            label="Time gestor"
+            value={teamId}
+            onChange={(v) => {
+              setTeam(v);
+              setOffset(0);
+            }}
+          />
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
       </header>
-      <FilterBar
-        search={
+      <CardListViewport key={q.identity} state={q} label="Lista de boards">
+        {q.items && (
           <>
-            <Search
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-              label="Buscar boards"
-            />
-          </>
-        }
-        active={!!(name || teamId || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setTeam("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <EntityFilter
-          resource="teams"
-          label="Time gestor"
-          value={teamId}
-          onChange={(v) => {
-            setTeam(v);
-            setOffset(0);
-          }}
-        />
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.length ? (
-              <div className="board-grid">
-                {q.data.items.map((b) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="board-grid">
+                {q.items.map((b) => (
                   <a
                     key={b.id}
                     className="board-card-link"
@@ -130,6 +135,7 @@ function BoardIndex() {
                     onClick={openCardLink}
                   >
                     <Card className="board-card">
+                      <CardKindMark kind="board" />
                       <CardHeader>
                         <CardDescription>
                           {teams.data?.items.find((t) => t.id === b.teamId)
@@ -138,20 +144,18 @@ function BoardIndex() {
                         <CardTitle>{b.name}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="muted-copy">{b.description}</p>
+                        <CardExcerpt text={b.description} />
                       </CardContent>
                       <CardFooter className="justify-between gap-2">
-                        <Badge variant="secondary">
-                          {modeLabels[b.autonomyMode]}
-                        </Badge>
+                        <CardSymbol kind={b.autonomyMode} />
                         <span className="small-note">
-                          {formatDate(b.updatedAt)}
+                          <RelativeTime value={b.updatedAt} />
                         </span>
                       </CardFooter>
                     </Card>
                   </a>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -162,10 +166,9 @@ function BoardIndex() {
                 description="Ajuste os filtros para consultar outros boards."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }
@@ -182,7 +185,13 @@ function BoardScreen({ id }: { id: string }) {
       "",
       { validate: validDate },
     ),
-    limit = usePageSize("kanban", 3);
+    limit = Math.max(
+      6,
+      usePageSize(
+        "kanban",
+        Math.max(6, Math.ceil((innerHeight - 140) / 272) + 1),
+      ),
+    );
   const settings = useLocation().split("?")[0].endsWith("/settings");
   const setSettings = (open: boolean) =>
     open
@@ -212,65 +221,102 @@ function BoardScreen({ id }: { id: string }) {
       </Button>
       <QueryState query={entity}>
         {entity.data && (
-          <header className="page-heading">
-            <div>
+          <header className="page-heading listing-heading">
+            <div className="sr-only">
               <h1>{entity.data.name}</h1>
               <p>{entity.data.description}</p>
             </div>
-            <Button variant="outline" onClick={() => setSettings(true)}>
-              <Settings2 data-icon="inline-start" />
-              Configurações
-            </Button>
+            <div className="listing-heading-actions">
+              <FilterBar
+                inHeader
+                trailingAction={
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="filter-icon"
+                        aria-label="Configurações do board"
+                        onClick={() => setSettings(true)}
+                      >
+                        <Settings aria-hidden="true" />
+                      </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Portal>
+                      <Tooltip.Content
+                        className="navigation-tooltip"
+                        sideOffset={6}
+                      >
+                        Configurações do board
+                      </Tooltip.Content>
+                    </Tooltip.Portal>
+                  </Tooltip.Root>
+                }
+                search={
+                  <>
+                    <Search
+                      value={title}
+                      onChange={setTitle}
+                      label="Buscar tasks"
+                    />
+                  </>
+                }
+                active={!!(title || executor || blocked || updatedFrom)}
+                onClear={() => {
+                  setTitle("");
+                  setExecutor("");
+                  setBlocked("");
+                  setUpdatedFrom("");
+                }}
+              >
+                <EntityFilter
+                  resource="agents"
+                  label="Executor"
+                  value={executor}
+                  onChange={setExecutor}
+                />
+                <Choice
+                  label="Bloqueio"
+                  value={blocked}
+                  onChange={setBlocked}
+                  options={[
+                    { value: "true", label: "Bloqueadas" },
+                    { value: "false", label: "Sem bloqueio" },
+                  ]}
+                  all="Todas"
+                />
+                <FilterPopover
+                  label="Atualizadas desde"
+                  active={!!updatedFrom}
+                  summary={updatedFrom}
+                  onClear={() => setUpdatedFrom("")}
+                >
+                  <label className="date-filter">
+                    Atualizadas desde
+                    <input
+                      aria-label="Atualizadas desde"
+                      type="date"
+                      value={updatedFrom}
+                      onChange={(e) => setUpdatedFrom(e.target.value)}
+                    />
+                  </label>
+                </FilterPopover>
+              </FilterBar>
+            </div>
           </header>
         )}
       </QueryState>
-      <FilterBar
-        search={
-          <>
-            <Search value={title} onChange={setTitle} label="Buscar tasks" />
-          </>
-        }
-        active={!!(title || executor || blocked || updatedFrom)}
-        onClear={() => {
-          setTitle("");
-          setExecutor("");
-          setBlocked("");
-          setUpdatedFrom("");
-        }}
-      >
-        <EntityFilter
-          resource="agents"
-          label="Executor"
-          value={executor}
-          onChange={setExecutor}
-        />
-        <Choice
-          label="Bloqueio"
-          value={blocked}
-          onChange={setBlocked}
-          options={[
-            { value: "true", label: "Bloqueadas" },
-            { value: "false", label: "Sem bloqueio" },
-          ]}
-          all="Todas"
-        />
-        <label className="date-filter">
-          Atualizadas desde
-          <input
-            aria-label="Atualizadas desde"
-            type="date"
-            value={updatedFrom}
-            onChange={(e) => setUpdatedFrom(e.target.value)}
-          />
-        </label>
-      </FilterBar>
-      <div className="board-meta">
-        <span>Tasks principais · subtasks no detalhe de cada task</span>
-        <span>Atualizações registradas, sem indicação de execução ao vivo</span>
-      </div>
+
       <QueryState query={q}>
         {q.data && (
-          <div className="kanban" key={JSON.stringify(filters)}>
+          <KanbanCarousel
+            key={JSON.stringify(filters)}
+            columns={q.data.columns.map((c) => ({
+              id: c.status.id,
+              name: c.status.name,
+              total: c.total,
+            }))}
+          >
             {q.data.columns.map((c) => (
               <Column
                 key={c.status.id}
@@ -279,7 +325,7 @@ function BoardScreen({ id }: { id: string }) {
                 filters={filters}
               />
             ))}
-          </div>
+          </KanbanCarousel>
         )}
       </QueryState>
       {entity.data && (
@@ -301,45 +347,7 @@ function Column({
   boardId: string;
   filters: Filters;
 }) {
-  const api = useApi();
-  const [offset, setOffset] = useUrlState<number>(
-    `kanban.${column.status.id}.offset`,
-    0,
-  );
-  const { limitPerColumn, ...continuation } = filters;
-  const q = useQuery({
-    queryKey: [
-      "column",
-      boardId,
-      column.status.id,
-      continuation,
-      offset,
-      limitPerColumn,
-    ],
-    queryFn: () =>
-      api.list("tasks", boardId, {
-        ...continuation,
-        statusId: column.status.id,
-        rootOnly: true,
-        archived: false,
-        sortBy: "position",
-        sortOrder: "asc",
-        offset,
-        limit: limitPerColumn,
-      }),
-    enabled: offset > 0,
-  });
-  const page =
-    offset === 0
-      ? {
-          items: column.tasks,
-          offset: 0,
-          limit: column.limit,
-          total: column.total,
-          hasMore: column.hasMore,
-          nextOffset: column.nextOffset,
-        }
-      : q.data;
+  const page = useColumnPages(boardId, column, filters);
   return (
     <section className="kanban-column" aria-label={column.status.name}>
       <div className="column-heading">
@@ -347,33 +355,35 @@ function Column({
           className={column.status.isDone ? "status-dot done" : "status-dot"}
         />
         <h2>{column.status.name}</h2>
-        <span>{column.total}</span>
+        <span>{page.total}</span>
       </div>
-      {offset > 0 ? (
-        <QueryState query={q}>
-          {page?.items.map((t) => (
-            <TaskCard key={t.id} task={t} />
-          ))}
-        </QueryState>
-      ) : (
-        page?.items.map((t) => <TaskCard key={t.id} task={t} />)
-      )}
-      {page?.items.length === 0 && (
-        <NoData
-          title="Sem tasks"
-          description="Nenhuma task corresponde a esta coluna."
-        />
-      )}
-      {page && (page.hasMore || offset > 0) && (
-        <Pager page={page} onOffset={setOffset} />
-      )}
+      <KanbanColumnViewport
+        storageKey={JSON.stringify([boardId, column.status.id, filters])}
+        state={page}
+        label={column.status.name}
+      >
+        {page.items.map((t) => (
+          <TaskCard key={t.id} task={t} />
+        ))}
+        {page.items.length === 0 && (
+          <NoData
+            title="Sem tasks"
+            description="Nenhuma task corresponde a esta coluna."
+          />
+        )}
+      </KanbanColumnViewport>
     </section>
   );
 }
 export function TaskCard({ task }: { task: Task }) {
   const href = destination(`/tasks/${task.slug}`);
   return (
-    <Card className="task-card" onClick={(event) => openCardBody(event, href)}>
+    <Card
+      className="task-card"
+      data-task-id={task.id}
+      data-blocked={task.block.blocked || undefined}
+      onClick={(event) => openCardBody(event, href)}
+    >
       <a
         className="task-card-main"
         aria-label={task.title}
@@ -384,9 +394,9 @@ export function TaskCard({ task }: { task: Task }) {
           <CardTitle>{task.title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="task-current-summary">
-            {task.currentSummary || "Sem atualização registrada"}
-          </p>
+          <CardExcerpt
+            text={task.currentSummary || "Sem atualização registrada"}
+          />
           {task.block.blocked && (
             <Badge variant="destructive">
               <LockKeyhole />

@@ -19,7 +19,9 @@ export function AgentName({
       onClick={() => open(id)}
     >
       {avatar && q.data && <AgentAvatar agent={q.data} />}
-      {q.data?.name ?? (q.error ? "Agente indisponível" : "Carregando…")}
+      <span className="agent-name-label">
+        {q.data?.name ?? (q.error ? "Agente indisponível" : "Carregando…")}
+      </span>
     </Button>
   ) : (
     <span>Usuário local</span>

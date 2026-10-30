@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CardKindMark } from "@/components/card-kind-mark";
+import { TeamCardLinks } from "@/components/team-card-links";
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { ArrowUpRight } from "lucide-react";
 import { useLocation, navigate, destination } from "@/routing/location";
 import { openCardLink, openCardBody } from "@/routing/card-navigation";
@@ -13,7 +17,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -38,7 +41,10 @@ import {
   TextBlock,
 } from "@/components/shared";
 import { AgentName } from "@/components/names";
-import { SaveFeedback } from "./settings";
+import {
+  useSettingsAutosave,
+  AutosaveFeedback,
+} from "@/components/settings-autosave";
 export function Teams() {
   const [name, setName] = useUrlState<string>("teams.name", ""),
     [offset, setOffset] = useUrlState<number>("teams.offset", 0),
@@ -46,7 +52,7 @@ export function Teams() {
       values: booleanValues,
     });
   const limit = usePageSize("teams", 12);
-  const q = useList("teams", "", {
+  const q = useCardPages("teams", {
     name: name || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
@@ -55,51 +61,52 @@ export function Teams() {
   });
   return (
     <>
-      <header className="page-heading">
-        <div>
+      <header className="page-heading listing-heading">
+        <div className="sr-only">
           <h1>Times</h1>
           <p>Um líder por time. Uma identidade por agente.</p>
         </div>
-      </header>
-      <FilterBar
-        search={
-          <>
-            <Search
-              label="Buscar times"
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-            />
-          </>
-        }
-        active={!!(name || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
+        <FilterBar
+          inHeader
+          search={
+            <>
+              <Search
+                label="Buscar times"
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+              />
+            </>
+          }
+          active={!!(name || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setArchived("false");
             setOffset(0);
           }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
-      <QueryState query={q}>
-        {q.data && (
+        >
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
+      </header>
+      <CardListViewport key={q.identity} state={q} label="Lista de times">
+        {q.items && (
           <>
-            {q.data.items.length ? (
-              <div className="board-grid">
-                {q.data.items.map((t) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="board-grid">
+                {q.items.map((t) => (
                   <Card
                     key={t.id}
                     className="board-card team-card"
@@ -107,6 +114,7 @@ export function Teams() {
                       openCardBody(e, destination(`/teams/${t.slug}`))
                     }
                   >
+                    <CardKindMark kind="team" />
                     <a
                       className="task-card-main"
                       aria-label={t.name}
@@ -115,21 +123,21 @@ export function Teams() {
                     >
                       <CardHeader>
                         <CardTitle>{t.name}</CardTitle>
-                        <CardDescription>{t.purpose}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <TextBlock>{t.context}</TextBlock>
+                        <CardExcerpt
+                          text={[t.purpose, t.context]
+                            .filter(Boolean)
+                            .join("\n\n")}
+                        />
                       </CardContent>
                     </a>
                     <CardFooter className="justify-between">
-                      <AgentName id={t.leaderId} />
-                      <Badge variant="outline">
-                        {t.collaboratorCount} colaboradores
-                      </Badge>
+                      <TeamCardLinks team={t} />
                     </CardFooter>
                   </Card>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -140,10 +148,9 @@ export function Teams() {
                 description="Ajuste os filtros para consultar outros times."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }
@@ -256,28 +263,21 @@ function TeamDetail({ id }: { id: string }) {
   );
 }
 function TeamForm({ team: latest }: { team: Team }) {
-  const [team, setBaseline] = useState(latest);
-  const [name, setName] = useState(team.name),
-    [purpose, setPurpose] = useState(team.purpose),
-    [context, setContext] = useState(team.context);
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: () =>
-      api.patch("teams", team.id, { name, purpose, context }, team.version),
-    onSuccess: (saved) => {
-      setBaseline(saved);
-      return client.invalidateQueries();
-    },
+  const api = useApi();
+  const autosave = useSettingsAutosave({
+    resource: "teams",
+    load: () => api.get("teams", latest.id),
+    latest,
+    values: (team: Team) => ({
+      name: team.name,
+      purpose: team.purpose,
+      context: team.context,
+    }),
+    save: (draft, version) => api.patch("teams", latest.id, draft, version),
   });
+  const { name, purpose, context } = autosave.draft;
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-      className="detail-section"
-    >
+    <form {...autosave.formProps} className="detail-section">
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="team-name">Nome</FieldLabel>
@@ -286,7 +286,7 @@ function TeamForm({ team: latest }: { team: Team }) {
             required
             maxLength={200}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => autosave.change("name", e.target.value)}
           />
         </Field>
         <Field>
@@ -294,7 +294,7 @@ function TeamForm({ team: latest }: { team: Team }) {
           <Textarea
             id="team-purpose"
             value={purpose}
-            onChange={(e) => setPurpose(e.target.value)}
+            onChange={(e) => autosave.change("purpose", e.target.value)}
           />
         </Field>
         <Field>
@@ -302,21 +302,18 @@ function TeamForm({ team: latest }: { team: Team }) {
           <Textarea
             id="team-context"
             value={context}
-            onChange={(e) => setContext(e.target.value)}
+            onChange={(e) => autosave.change("context", e.target.value)}
           />
         </Field>
       </FieldGroup>
-      <Button disabled={mutation.isPending || !!team.archivedAt} type="submit">
-        Salvar metadados
-      </Button>
-      {latest.version > team.version && (
+      {latest.version > autosave.version && (
         <p role="status" className="small-note">
           Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado; feche e reabra a configuração para carregar a versão atual
-          antes de editar novamente.
+          preservado. Use Recarregar formulário após o conflito para descartar o
+          rascunho e carregar a versão atual.
         </p>
       )}
-      <SaveFeedback mutation={mutation} />
+      <AutosaveFeedback state={autosave} />
     </form>
   );
 }

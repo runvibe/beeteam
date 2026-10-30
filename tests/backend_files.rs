@@ -163,6 +163,30 @@ async fn images_copy_independently_and_attachments_keep_tombstones() {
     .await;
     assert_eq!(tombstones["total"], 1);
     assert!(tombstones["items"][0]["deletedAt"].is_string());
+    for size in [100, 20] {
+        let current = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
+        assert_eq!(
+            upload(
+                &app,
+                &format!("/api/v1/tasks/{}/attachments", id(&task)),
+                &vec![b'x'; size],
+                current["version"].as_i64().unwrap()
+            )
+            .await
+            .0,
+            201
+        );
+    }
+    for (direction, offset, expected) in [
+        ("asc", 0, 20),
+        ("asc", 1, 100),
+        ("desc", 0, 100),
+        ("desc", 1, 20),
+    ] {
+        let page = get(&app, &format!("/api/v1/tasks/{}/attachments?sortBy=sizeBytes&sortOrder={direction}&offset={offset}&limit=1", id(&task))).await;
+        assert_eq!(page["total"], 2);
+        assert_eq!(page["items"][0]["sizeBytes"], expected);
+    }
 }
 
 #[tokio::test]

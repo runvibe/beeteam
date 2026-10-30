@@ -1,0 +1,775 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Bee Team portable data transfer",
+    "version": "1.0.0",
+    "description": "Administrative opt-in; actor metadata and preview tokens are not authentication. Imports restore only into empty destinations."
+  },
+  "paths": {
+    "/api/v1/data-transfers": {
+      "get": {
+        "operationId": "transferInfo",
+        "summary": "transferInfo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/exports": {
+      "post": {
+        "operationId": "exportData",
+        "summary": "exportData",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/jobs/{id}": {
+      "get": {
+        "operationId": "getDataTransfer",
+        "summary": "getDataTransfer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/exports/{id}/file": {
+      "get": {
+        "operationId": "downloadDataExport",
+        "summary": "downloadDataExport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/zip": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/imports": {
+      "post": {
+        "operationId": "uploadDataImport",
+        "summary": "uploadDataImport",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-Archive-SHA256",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/imports/{id}/preview": {
+      "get": {
+        "operationId": "previewDataImport",
+        "summary": "previewDataImport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preview"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/imports/{id}/restore": {
+      "post": {
+        "operationId": "restoreDataImport",
+        "summary": "restoreDataImport",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-transfers/jobs/{id}/cancel": {
+      "post": {
+        "operationId": "cancelDataTransfer",
+        "summary": "cancelDataTransfer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Job"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/InvalidRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/TooLarge"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Manifest": {
+        "type": "object",
+        "required": [
+          "formatVersion",
+          "archiveId",
+          "applicationVersion",
+          "sourceDriver",
+          "snapshotAt",
+          "sequenceFloor",
+          "entries"
+        ],
+        "properties": {
+          "formatVersion": {
+            "const": 1
+          },
+          "archiveId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "applicationVersion": {
+            "type": "string"
+          },
+          "sourceDriver": {
+            "type": "string"
+          },
+          "snapshotAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sequenceFloor": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "entries": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": [
+                "bytes",
+                "sha256",
+                "rows"
+              ],
+              "properties": {
+                "bytes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "rows": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "Preview": {
+        "type": "object",
+        "properties": {
+          "manifest": {
+            "$ref": "#/components/schemas/Manifest"
+          },
+          "archiveSha256": {
+            "type": "string"
+          },
+          "destinationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "destinationDriver": {
+            "type": "string"
+          },
+          "destinationEmpty": {
+            "type": "boolean"
+          },
+          "precisionChanges": {
+            "type": "integer"
+          },
+          "confirmationToken": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Job": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "state",
+          "stage",
+          "bytes",
+          "records",
+          "createdAt",
+          "updatedAt",
+          "cancelRequested"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "enum": [
+              "export",
+              "import"
+            ]
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "ready",
+              "restoring",
+              "completed",
+              "failed",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "stage": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "records": {
+            "type": "integer"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "archiveSha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "preview": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Preview"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result": {},
+          "cancelRequested": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestoreRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "confirmationToken",
+          "archiveSha256",
+          "destinationId"
+        ],
+        "properties": {
+          "confirmationToken": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "archiveSha256": {
+            "type": "string"
+          },
+          "destinationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "timestampPolicy": {
+            "type": "string",
+            "enum": [
+              "strict",
+              "truncate_to_microseconds"
+            ],
+            "default": "strict"
+          }
+        }
+      }
+    },
+    "responses": {
+      "InvalidRequest": {
+        "description": "Invalid request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Disabled or forbidden browser origin",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Unknown job",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Busy, idempotency mismatch or nonempty destination",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TooLarge": {
+        "description": "Size limit",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Unprocessable": {
+        "description": "Confirmation or precision policy rejected",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "error": {
+                  "type": "string"
+                },
+                "details": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

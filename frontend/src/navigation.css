@@ -1,0 +1,169 @@
+/* Fixed icon rail shared by desktop and mobile. Surfaces use the page background. */
+.app-shell.icon-navigation {
+  grid-template-columns: 56px minmax(0, 1fr);
+  grid-template-rows: 1fr;
+}
+.navigation-rail {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: minmax(44px, 1fr) auto minmax(16px, 1fr);
+  justify-items: center;
+  padding: 6px;
+  background: transparent;
+  border: 0;
+}
+.navigation-logo {
+  grid-row: 1;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: var(--foreground);
+}
+.navigation-logo svg {
+  width: 26px;
+  height: 26px;
+}
+.navigation-rail nav {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.navigation-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+}
+.navigation-button svg {
+  width: 20px;
+  height: 20px;
+}
+.navigation-tooltip {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.icon-navigation .topbar {
+  background: transparent;
+  border: 0;
+  height: auto;
+  flex-wrap: wrap;
+}
+@media (max-width: 850px) {
+  .app-shell.icon-navigation {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .navigation-rail {
+    padding: 6px;
+  }
+  .icon-navigation .topbar {
+    padding-inline: 8px;
+  }
+  .icon-navigation main {
+    padding-inline: 8px;
+  }
+}
+
+.icon-navigation main,
+.icon-navigation .topbar {
+  padding-inline: 8px;
+}
+
+.navigation-footer {
+  grid-row: 3;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.navigation-footer > button,
+.navigation-footer button.filter-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  color: var(--muted-foreground);
+}
+.navigation-footer button svg {
+  width: 17px;
+  height: 17px;
+}
+.icon-navigation .main-shell > .topbar {
+  min-height: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  padding-block: 2px;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+.icon-navigation main {
+  padding-top: 8px;
+}
+.header-filter-slot {
+  min-width: 0;
+  max-width: 70%;
+}
+.header-filter-slot:empty {
+  display: none;
+}
+.header-filter-slot .compact-filter-bar {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+.filter-controls-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.header-filter-slot .filter-controls-row {
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+.header-filter-slot .filter-controls-row > * {
+  flex-shrink: 0;
+}
+.listing-heading:has(.filter-bar-portaled) {
+  display: contents;
+}
+.listing-heading-actions:has(.filter-bar-portaled) {
+  display: contents;
+}
+.icon-navigation main:has(.kanban) > .task-back {
+  display: none;
+}
+@media (max-width: 850px) {
+  .header-filter-slot {
+    max-width: calc(100% - 104px);
+  }
+  .header-filter-slot .filter-controls-row {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    padding: 2px;
+  }
+  .header-filter-slot .filter-controls-row::-webkit-scrollbar {
+    display: none;
+  }
+  .header-filter-slot .filter-controls-row > * {
+    flex-shrink: 0;
+  }
+  .header-filter-slot .inline-filter-search[data-open="true"] {
+    width: 180px;
+  }
+}
+
+/* Main content reaches its horizontal bounds; component padding is unchanged. */
+.icon-navigation main { padding-left: 0; padding-right: 0; }
+
+.icon-navigation .topbar { padding-left: 0; }

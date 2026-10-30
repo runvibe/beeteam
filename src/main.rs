@@ -1,11 +1,7 @@
 use anyhow::Result;
 use beeteam::{
-    config::AppConfig,
-    db::{init_pool, run_migrations},
-    libs::telemetry,
-    repositories::database::DatabaseRepository,
-    routes::create_router,
-    state::AppState,
+    config::AppConfig, libs::telemetry, repositories::database::DatabaseRepository,
+    routes::create_router_with_frontend, state::AppState,
 };
 use tokio::net::TcpListener;
 
@@ -13,17 +9,40 @@ use tokio::net::TcpListener;
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let config = AppConfig::from_env()?;
+    let frontend_mode = beeteam::services::frontend::FrontendMode::from_env()?;
     let _telemetry = telemetry::init_tracing(config.otel_enabled)?;
-    let pool = init_pool(&config.database_url).await?;
-
-    if let Err(error) = run_migrations(&pool).await {
-        tracing::error!("failed to run database migrations: {error}");
-        return Err(error);
+    let database =
+        DatabaseRepository::connect(config.database_driver, &config.database_url).await?;
+    let transfer_config = beeteam::services::data_transfer::config::TransferConfig::from_env()?;
+    let transfer = if transfer_config.enabled {
+        Some(
+            beeteam::services::data_transfer::service::TransferService::new(
+                database.transfers(),
+                transfer_config,
+            )?,
+        )
+    } else {
+        None
+    };
+    let mut state = AppState::new(database);
+    if let Some(transfer) = transfer {
+        if transfer.recover().await.is_err() {
+            tracing::warn!("transfer recovery pending; background maintenance will retry");
+        }
+        let maintenance = transfer.clone();
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(std::time::Duration::from_secs(60));
+            loop {
+                interval.tick().await;
+                if maintenance.recover().await.is_err() {
+                    tracing::warn!("transfer maintenance will retry");
+                }
+            }
+        });
+        state = state.with_transfers(transfer);
     }
 
-    let state = AppState::new(DatabaseRepository::new(pool));
-
-    let router = create_router(state, &config);
+    let router = create_router_with_frontend(state, &config, frontend_mode);
 
     let addr = config.listen_addr()?;
     let listener = TcpListener::bind(addr).await?;

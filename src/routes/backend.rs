@@ -3,8 +3,6 @@ use crate::{
         backend::*,
         contracts::{self, OPERATIONS},
     },
-    repositories::resources::ResourceRepository,
-    services,
     state::AppState,
 };
 use axum::{
@@ -212,9 +210,7 @@ async fn handle(
         idempotency_key,
         upload,
     };
-    let result =
-        services::backend::execute(&ResourceRepository::new(state.database().pool()), command)
-            .await?;
+    let result = state.backend().execute(command).await?;
     let mut response = if let Some(file) = result.file {
         let mut response = Response::new(Body::from(file.bytes));
         let name: String = file

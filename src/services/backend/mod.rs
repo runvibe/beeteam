@@ -4,17 +4,21 @@ pub mod hierarchy;
 mod kanban;
 mod queries;
 mod ra;
+pub mod service;
 
 use crate::{
     dto::{backend::*, contracts},
-    repositories::resources::{Record, Records, ResourceRepository, UnitOfWork},
+    repositories::{
+        contracts::{ResourceStore, UnitOfWork},
+        records::{Record, Records},
+    },
 };
 use chrono::Utc;
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-pub async fn execute(repository: &ResourceRepository, mut command: Command) -> Result<Outcome> {
+pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Result<Outcome> {
     contracts::validate_envelope(&command)?;
     let validation = contracts::validate(&command);
     if contracts::operation(&command.operation)?.method != "POST" {
@@ -44,7 +48,11 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
     {
         contracts::normalize_ids(&op.document, schema, &mut command.body);
     }
-    let mut unit = repository.begin().await?;
+    let mut unit = if op.method == "GET" {
+        repository.read(&command).await?
+    } else {
+        repository.begin().await?
+    };
     if let Some(actor) = &command.actor {
         if let Some(id) = actor.id {
             if op.method == "GET" {
@@ -102,7 +110,7 @@ pub async fn execute(repository: &ResourceRepository, mut command: Command) -> R
     ) {
         files::run(&mut unit, &command).await?
     } else if op.method == "GET" {
-        Outcome::data(queries::run(&unit.records, &command)?)
+        Outcome::data(queries::run(&mut unit, &command).await?)
     } else if op.path.contains("agents")
         || op.path.contains("teams")
         || command.operation == "changeTeamComposition"

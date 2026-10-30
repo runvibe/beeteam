@@ -1,4 +1,5 @@
-use crate::{dto::changes::Change, repositories::changes::ChangeRepository};
+use crate::{dto::changes::Change, repositories::contracts::ChangeSource};
+use std::sync::Arc;
 use std::time::Duration;
 use tokio::{sync::broadcast, task::JoinHandle};
 pub struct ChangeFeed {
@@ -6,7 +7,7 @@ pub struct ChangeFeed {
     task: JoinHandle<()>,
 }
 impl ChangeFeed {
-    pub fn new(repository: ChangeRepository) -> Self {
+    pub fn new(repository: Arc<dyn ChangeSource>) -> Self {
         let (sender, _) = broadcast::channel(64);
         let output = sender.clone();
         let task = tokio::spawn(async move {

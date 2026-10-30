@@ -60,9 +60,37 @@ impl McpConfig {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum DatabaseDriver {
+    #[default]
+    Postgres,
+    Sqlite,
+}
+impl DatabaseDriver {
+    pub fn parse(driver: &str, url: &str) -> Result<Self> {
+        let normalized = driver.trim().to_ascii_lowercase();
+        let driver = if normalized.is_empty() {
+            "postgres"
+        } else {
+            &normalized
+        };
+        match driver {
+            "postgres" if url.starts_with("postgres://") || url.starts_with("postgresql://") => {
+                Ok(Self::Postgres)
+            }
+            "sqlite" if url.starts_with("sqlite:") => Ok(Self::Sqlite),
+            "postgres" | "sqlite" => Err(anyhow!(
+                "DATABASE_DRIVER and DATABASE_URL scheme do not match"
+            )),
+            _ => Err(anyhow!("DATABASE_DRIVER must be postgres or sqlite")),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct AppConfig {
     pub database_url: String,
+    pub database_driver: DatabaseDriver,
     pub host: IpAddr,
     pub port: u16,
     pub cors: CorsConfig,
@@ -76,6 +104,11 @@ impl AppConfig {
         let database_url = std::env::var("DATABASE_URL")
             .map_err(|_| anyhow!("DATABASE_URL environment variable is required"))?;
 
+        let database_driver = DatabaseDriver::parse(
+            &std::env::var("DATABASE_DRIVER").unwrap_or_else(|_| "postgres".into()),
+            &database_url,
+        )?;
+
         let host = std::env::var("APP_HOST")
             .ok()
             .and_then(|value| value.parse::<IpAddr>().ok())
@@ -84,7 +117,7 @@ impl AppConfig {
         let port = std::env::var("APP_PORT")
             .ok()
             .and_then(|value| value.parse::<u16>().ok())
-            .unwrap_or(8080);
+            .unwrap_or(59865);
 
         let cors = CorsConfig::from_env();
         let body_limit_bytes = std::env::var("APP_BODY_LIMIT_BYTES")
@@ -97,6 +130,7 @@ impl AppConfig {
 
         Ok(Self {
             database_url,
+            database_driver,
             host,
             port,
             cors,
@@ -174,6 +208,66 @@ mod tests {
     use super::{otel_enabled_from_env, AppConfig, CorsConfig, DEFAULT_MCP_PATH};
 
     static ENV_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
+
+    #[test]
+    fn listen_address_defaults_and_explicit_port_feed_mcp_endpoint() {
+        let _guard = ENV_LOCK.lock().unwrap();
+        let _url = EnvVarGuard::set("DATABASE_URL", "postgres://localhost/test");
+        let _driver = EnvVarGuard::unset("DATABASE_DRIVER");
+        let _host = EnvVarGuard::unset("APP_HOST");
+        let _port = EnvVarGuard::unset("APP_PORT");
+        let _mcp = EnvVarGuard::set("MCP_ENABLED", "true");
+        let _path = EnvVarGuard::set("MCP_PATH", "/mcp");
+        let config = AppConfig::from_env().unwrap();
+        assert_eq!(config.listen_addr().unwrap().to_string(), "127.0.0.1:59865");
+        #[cfg(feature = "mcp")]
+        assert_eq!(
+            config.mcp_endpoint_url().as_deref(),
+            Some("http://127.0.0.1:59865/mcp")
+        );
+        let _port = EnvVarGuard::set("APP_PORT", "23456");
+        let config = AppConfig::from_env().unwrap();
+        assert_eq!(config.listen_addr().unwrap().to_string(), "127.0.0.1:23456");
+        #[cfg(feature = "mcp")]
+        assert_eq!(
+            config.mcp_endpoint_url().as_deref(),
+            Some("http://127.0.0.1:23456/mcp")
+        );
+    }
+
+    #[test]
+    fn database_driver_defaults_and_matching_sqlite_are_accepted() {
+        let _guard = ENV_LOCK.lock().unwrap();
+        let _url = EnvVarGuard::set("DATABASE_URL", "postgres://localhost/test");
+        let _driver = EnvVarGuard::unset("DATABASE_DRIVER");
+        assert_eq!(
+            AppConfig::from_env().unwrap().database_driver,
+            super::DatabaseDriver::Postgres
+        );
+        {
+            let _driver = EnvVarGuard::set("DATABASE_DRIVER", " SQLite ");
+            let _url = EnvVarGuard::set("DATABASE_URL", "sqlite::memory:");
+            assert_eq!(
+                AppConfig::from_env().unwrap().database_driver,
+                super::DatabaseDriver::Sqlite
+            );
+        }
+        let _driver = EnvVarGuard::set("DATABASE_DRIVER", "postgres");
+        let _url = EnvVarGuard::set("DATABASE_URL", "sqlite::memory:");
+        assert!(AppConfig::from_env().is_err());
+    }
+
+    #[test]
+    fn rejects_unknown_database_driver_and_mismatched_url() {
+        let _guard = ENV_LOCK.lock().unwrap();
+        let _url = EnvVarGuard::set("DATABASE_URL", "postgres://localhost/test");
+        {
+            let _driver = EnvVarGuard::set("DATABASE_DRIVER", "mysql");
+            assert!(AppConfig::from_env().is_err());
+        }
+        let _driver = EnvVarGuard::set("DATABASE_DRIVER", "sqlite");
+        assert!(AppConfig::from_env().is_err());
+    }
 
     #[test]
     fn otel_is_enabled_by_default() {

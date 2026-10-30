@@ -6,7 +6,6 @@ use crate::{
         backend::*,
         contracts::{self, OPERATIONS},
     },
-    repositories::resources::ResourceRepository,
     services,
     state::AppState,
 };
@@ -105,16 +104,15 @@ pub(super) fn tools() -> Vec<Value> {
         },"required":needed}}));
     }
     tools.extend(crate::dto::mcp::composite_tools());
+    tools.extend(crate::dto::data_transfer_tools::tools());
     tools
 }
 pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Result<Value> {
+    if crate::dto::data_transfer_tools::NAMES.contains(&name) {
+        return super::data_transfer_mcp::call(state, name, arguments).await;
+    }
     if crate::dto::mcp::is_composite(name) {
-        return services::backend::composite::execute(
-            &ResourceRepository::new(state.database().pool()),
-            name,
-            arguments,
-        )
-        .await;
+        return state.backend().execute_compound(name, arguments).await;
     }
     if name == "health_check" {
         return Ok(json!(services::health::health_status()));
@@ -180,9 +178,9 @@ pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Resu
             })
         })
         .transpose()?;
-    let result = services::backend::execute(
-        &ResourceRepository::new(state.database().pool()),
-        Command {
+    let result = state
+        .backend()
+        .execute(Command {
             operation: name.into(),
             params: args.params.clone(),
             query,
@@ -191,9 +189,8 @@ pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Resu
             expected_version: args.expected_version,
             idempotency_key: args.idempotency_key,
             upload,
-        },
-    )
-    .await?;
+        })
+        .await?;
     if result.file.is_some() {
         let mut path = op.path.clone();
         for (k, v) in args.params {

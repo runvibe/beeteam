@@ -51,6 +51,7 @@ async fn setup_router_with_mcp(mcp_enabled: bool) -> Router {
 
     let state = AppState::new(DatabaseRepository::new(pool));
     let config = AppConfig {
+        database_driver: beeteam::config::DatabaseDriver::Postgres,
         database_url,
         host: IpAddr::V4(Ipv4Addr::LOCALHOST),
         port: 0,

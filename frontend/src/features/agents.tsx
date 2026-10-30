@@ -1,3 +1,10 @@
+import { CardKindMark } from "@/components/card-kind-mark";
+import { CardSymbol } from "@/components/card-symbol";
+import { RelativeTime } from "@/components/relative-time";
+import { CardExcerpt } from "@/components/card-excerpt";
+import { useCardPages } from "@/api/card-pages";
+import { CardListViewport } from "@/components/card-list-viewport";
+import { BalancedCardGrid } from "@/components/balanced-card-grid";
 import { DetailPage } from "@/components/detail-page";
 import { openCardLink } from "@/routing/card-navigation";
 import { useLocation, navigate, destination } from "@/routing/location";
@@ -21,7 +28,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -50,7 +56,7 @@ export function Agents() {
     }),
     [offset, setOffset] = useUrlState<number>("agents.offset", 0);
   const limit = usePageSize("agents", 12);
-  const q = useList("agents", "", {
+  const q = useCardPages("agents", {
     name: name || undefined,
     teamId: teamId || undefined,
     role: (role as "leader" | "collaborator") || undefined,
@@ -61,75 +67,76 @@ export function Agents() {
   });
   return (
     <>
-      <header className="page-heading">
-        <div>
+      <header className="page-heading listing-heading">
+        <div className="sr-only">
           <h1>Agentes</h1>
           <p>Perfis, instruções e contexto para continuar de onde parou.</p>
         </div>
+        <FilterBar
+          inHeader
+          search={
+            <>
+              <Search
+                label="Buscar agentes"
+                value={name}
+                onChange={(v) => {
+                  setName(v);
+                  setOffset(0);
+                }}
+              />
+            </>
+          }
+          active={!!(name || teamId || role || archived !== "false")}
+          onClear={() => {
+            setName("");
+            setTeam("");
+            setRole("");
+            setArchived("false");
+            setOffset(0);
+          }}
+        >
+          <EntityFilter
+            resource="teams"
+            label="Time"
+            value={teamId}
+            onChange={(v) => {
+              setTeam(v);
+              setOffset(0);
+            }}
+          />
+          <Choice
+            label="Papel"
+            value={role}
+            onChange={(v) => {
+              setRole(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "leader", label: "Líder" },
+              { value: "collaborator", label: "Colaborador" },
+            ]}
+            all="Todos"
+          />
+          <Choice
+            label="Cadastro"
+            value={archived}
+            onChange={(v) => {
+              setArchived(v);
+              setOffset(0);
+            }}
+            options={[
+              { value: "false", label: "Ativos" },
+              { value: "true", label: "Arquivados" },
+            ]}
+          />
+        </FilterBar>
       </header>
-      <FilterBar
-        search={
+      <CardListViewport key={q.identity} state={q} label="Lista de agentes">
+        {q.items && (
           <>
-            <Search
-              label="Buscar agentes"
-              value={name}
-              onChange={(v) => {
-                setName(v);
-                setOffset(0);
-              }}
-            />
-          </>
-        }
-        active={!!(name || teamId || role || archived !== "false")}
-        onClear={() => {
-          setName("");
-          setTeam("");
-          setRole("");
-          setArchived("false");
-          setOffset(0);
-        }}
-      >
-        <EntityFilter
-          resource="teams"
-          label="Time"
-          value={teamId}
-          onChange={(v) => {
-            setTeam(v);
-            setOffset(0);
-          }}
-        />
-        <Choice
-          label="Papel"
-          value={role}
-          onChange={(v) => {
-            setRole(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "leader", label: "Líder" },
-            { value: "collaborator", label: "Colaborador" },
-          ]}
-          all="Todos"
-        />
-        <Choice
-          label="Cadastro"
-          value={archived}
-          onChange={(v) => {
-            setArchived(v);
-            setOffset(0);
-          }}
-          options={[
-            { value: "false", label: "Ativos" },
-            { value: "true", label: "Arquivados" },
-          ]}
-        />
-      </FilterBar>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.length ? (
-              <div className="agent-grid">
-                {q.data.items.map((a) => (
+            {q.items.length ? (
+              <BalancedCardGrid className="agent-grid">
+                {q.items.map((a) => (
                   <a
                     key={a.id}
                     className="board-card-link"
@@ -138,34 +145,35 @@ export function Agents() {
                     onClick={openCardLink}
                   >
                     <Card className="agent-card board-card">
+                      <CardKindMark kind="agent" />
                       <CardHeader>
                         <AgentAvatar agent={a} />
                         <CardTitle>{a.name}</CardTitle>
-                        <CardDescription>{a.roleDescription}</CardDescription>
                       </CardHeader>
                       <CardContent>
+                        <CardExcerpt text={a.roleDescription} />
+                      </CardContent>
+                      <CardFooter className="justify-between gap-2">
                         <div className="flex flex-wrap gap-2">
                           {a.bindings.leaderTeamId && (
-                            <Badge variant="secondary">Líder</Badge>
+                            <CardSymbol kind="leader" />
                           )}
                           {a.bindings.collaboratorTeamId && (
-                            <Badge variant="outline">Colaborador</Badge>
+                            <CardSymbol kind="collaborator" />
                           )}
                           {!a.bindings.leaderTeamId &&
                             !a.bindings.collaboratorTeamId && (
-                              <Badge variant="outline">Sem vínculo</Badge>
+                              <CardSymbol kind="unbound" />
                             )}
                         </div>
-                      </CardContent>
-                      <CardFooter>
                         <span className="small-note">
-                          Atualizado em {formatDate(a.updatedAt)}
+                          <RelativeTime value={a.updatedAt} />
                         </span>
                       </CardFooter>
                     </Card>
                   </a>
                 ))}
-              </div>
+              </BalancedCardGrid>
             ) : (
               <NoData
                 title={
@@ -176,10 +184,9 @@ export function Agents() {
                 description="Ajuste os filtros para consultar outros agentes."
               />
             )}
-            <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
-      </QueryState>
+      </CardListViewport>
     </>
   );
 }
@@ -444,7 +451,7 @@ function Resume({ agentId }: { agentId: string }) {
               <article className="record" key={t.teamId}>
                 <h3>{t.name}</h3>
                 <TextBlock>{t.purpose}</TextBlock>
-                <TextBlock>{t.context}</TextBlock>
+                <CardExcerpt text={t.context} />
               </article>
             ))}
             <p className="small-note">

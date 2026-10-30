@@ -1,0 +1,74 @@
+.mobile-context-path {
+  display: none;
+}
+@media (max-width: 850px) {
+  .icon-navigation .main-shell > .topbar {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .icon-navigation .topbar > .context-path {
+    display: none;
+  }
+  .icon-navigation .topbar-actions {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+  .mobile-context-path {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+  .mobile-context-path > button {
+    flex-shrink: 0;
+  }
+  .breadcrumb-marquee {
+    display: block;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  .breadcrumb-name {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .breadcrumb-marquee[data-overflow="true"] {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8px,
+      black calc(100% - 8px),
+      transparent
+    );
+  }
+  .breadcrumb-marquee[data-overflow="true"] .breadcrumb-name {
+    animation: breadcrumb-pan var(--breadcrumb-duration) ease-in-out infinite;
+  }
+}
+@keyframes breadcrumb-pan {
+  0%,
+  15%,
+  100% {
+    transform: translateX(0);
+  }
+  45%,
+  60% {
+    transform: translateX(var(--breadcrumb-travel));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb-marquee[data-overflow="true"] {
+    mask-image: none;
+  }
+  .breadcrumb-marquee[data-overflow="true"] .breadcrumb-name {
+    animation: none;
+    transform: none;
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

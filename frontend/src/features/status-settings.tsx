@@ -1,3 +1,7 @@
+import {
+  useSettingsAutosave,
+  AutosaveFeedback,
+} from "@/components/settings-autosave";
 import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUp, ArrowDown, Plus } from "lucide-react";
@@ -134,33 +138,24 @@ function StatusForm({
   status: Status;
   disabled: boolean;
 }) {
-  const [status, setBaseline] = useState(latest);
-  const [name, setName] = useState(status.name),
-    [done, setDone] = useState(status.isDone);
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: () =>
-      api.patch(
-        "statuses",
-        status.id,
-        { name, isDone: done },
-        status.version,
-        status.boardId,
-      ),
-    onSuccess: (saved) => {
-      setBaseline(saved);
-      return client.invalidateQueries();
+  const api = useApi();
+  const autosave = useSettingsAutosave({
+    resource: "statuses",
+    load: async () => {
+      const page = await api.list("statuses", latest.boardId, { limit: 100 });
+      const fresh = page.items.find((item) => item.id === latest.id);
+      if (!fresh) throw new Error("Status indisponível.");
+      return { ...fresh, archivedAt: disabled ? "disabled" : null };
     },
+    latest: { ...latest, archivedAt: disabled ? "disabled" : null },
+    values: (status: Status) => ({ name: status.name, isDone: status.isDone }),
+    save: (draft, version) =>
+      api.patch("statuses", latest.id, draft, version, latest.boardId),
   });
+  const { name, isDone: done } = autosave.draft;
+  const status = latest;
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-      className="status-form"
-    >
+    <form {...autosave.formProps} className="status-form">
       <Field>
         <FieldLabel htmlFor={status.id}>
           Status {status.position + 1}
@@ -171,33 +166,26 @@ function StatusForm({
           required
           maxLength={200}
           disabled={disabled}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => autosave.change("name", e.target.value)}
         />
       </Field>
-      <Button
-        type="submit"
-        variant="outline"
-        disabled={mutation.isPending || disabled}
-      >
-        Salvar
-      </Button>
       <Field orientation="horizontal">
         <Switch
           id={`done-${status.id}`}
           checked={done}
-          onCheckedChange={setDone}
+          onCheckedChange={(value) => autosave.change("isDone", value, true)}
           disabled={disabled}
         />
         <FieldLabel htmlFor={`done-${status.id}`}>Conclusão</FieldLabel>
       </Field>
-      {latest.version > status.version && (
+      {latest.version > autosave.version && (
         <p role="status" className="small-note">
           Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado; feche e reabra a configuração para carregar a versão atual
-          antes de editar novamente.
+          preservado. Use Recarregar formulário após o conflito para descartar o
+          rascunho e carregar a versão atual.
         </p>
       )}
-      {mutation.error && <Failure error={mutation.error} />}
+      <AutosaveFeedback state={autosave} />
     </form>
   );
 }

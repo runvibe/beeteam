@@ -36,8 +36,8 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
   return {
     resolveSlug: (resource, slug) =>
       request(`/${resource}/by-slug/${segment(slug)}`),
-    list: (resource, scope = "", filters = {}) =>
-      request(collection(resource, scope) + query(filters)),
+    list: (resource, scope = "", filters = {}, signal) =>
+      request(collection(resource, scope) + query(filters), { signal }),
     get: (resource, id) => request(`/${resource}/${segment(id)}`),
     board: (id, filters = {}) =>
       request(`/boards/${segment(id)}/view` + query(filters)),

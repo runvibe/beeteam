@@ -1,7 +1,10 @@
 use super::*;
 use crate::{
     dto::backend::*,
-    repositories::resources::{Record, Records, UnitOfWork},
+    repositories::{
+        contracts::UnitOfWork,
+        records::{Record, Records},
+    },
 };
 use chrono::Utc;
 use serde_json::{json, Value};

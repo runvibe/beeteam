@@ -1,5 +1,8 @@
 import { StatusSettings } from "./status-settings";
-import { useState } from "react";
+import {
+  useSettingsAutosave,
+  AutosaveFeedback,
+} from "@/components/settings-autosave";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { Board, Task } from "@/api/types";
@@ -49,57 +52,33 @@ export function BoardSettings({
 function BoardForm({ board }: { board: Board }) {
   const api = useApi(),
     client = useQueryClient();
-  const [name, setName] = useState(board.name),
-    [description, setDescription] = useState(board.description),
-    [mode, setMode] = useState(board.autonomyMode);
-  const [baseline, setBaseline] = useState(board);
-  // Status writes change the board version without editing these fields.
-  // Preserve drafts, but retain the old version if metadata changed elsewhere.
-  const expectedVersion =
-    board.name === baseline.name &&
-    board.description === baseline.description &&
-    board.autonomyMode === baseline.autonomyMode
-      ? board.version
-      : baseline.version;
-  const mutation = useMutation({
-    mutationFn: () =>
-      api.patch(
-        "boards",
-        board.id,
-        { name, description, autonomyMode: mode },
-        expectedVersion,
-      ),
-    onSuccess: (saved) => {
-      setBaseline(saved);
-      return client.invalidateQueries();
-    },
+  const autosave = useSettingsAutosave({
+    resource: "boards",
+    latest: board,
+    values: (value: Board) => ({
+      name: value.name,
+      description: value.description,
+      autonomyMode: value.autonomyMode,
+    }),
+    save: (draft, version) => api.patch("boards", board.id, draft, version),
   });
+  const { name, description, autonomyMode: mode } = autosave.draft;
   const reload = useMutation({
     mutationFn: () => api.get("boards", board.id),
     onSuccess: (fresh) => {
       client.setQueryData(["boards", board.id], fresh);
-      setName(fresh.name);
-      setDescription(fresh.description);
-      setMode(fresh.autonomyMode);
-      setBaseline(fresh);
-      mutation.reset();
+      autosave.reset(fresh);
     },
   });
   return (
-    <form
-      className="detail-section"
-      onSubmit={(e) => {
-        e.preventDefault();
-        mutation.mutate();
-      }}
-    >
+    <form className="detail-section" {...autosave.formProps}>
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="board-name">Nome</FieldLabel>
           <Input
             id="board-name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => autosave.change("name", e.target.value)}
             required
             maxLength={200}
             disabled={!!board.archivedAt}
@@ -110,14 +89,16 @@ function BoardForm({ board }: { board: Board }) {
           <Textarea
             id="board-description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => autosave.change("description", e.target.value)}
             disabled={!!board.archivedAt}
           />
         </Field>
         <Choice
           label="Autonomia do board de origem"
           value={mode}
-          onChange={(v) => setMode(v as Board["autonomyMode"])}
+          onChange={(v) =>
+            autosave.change("autonomyMode", v as Board["autonomyMode"], true)
+          }
           options={Object.entries(modeLabels).map(([value, label]) => ({
             value,
             label,
@@ -132,11 +113,8 @@ function BoardForm({ board }: { board: Board }) {
       <div className="small-note">
         Criador preservado: <AgentName id={board.createdBy.actorId} />
       </div>
-      <Button type="submit" disabled={mutation.isPending || !!board.archivedAt}>
-        {mutation.isPending ? "Salvando…" : "Salvar board"}
-      </Button>
-      <SaveFeedback mutation={mutation} />
-      {mutation.error && (
+      <AutosaveFeedback state={autosave} />
+      {autosave.error && (
         <Button
           type="button"
           variant="outline"
@@ -151,12 +129,12 @@ function BoardForm({ board }: { board: Board }) {
   );
 }
 export function TaskMode({ task }: { task: Task }) {
-  const api = useApi(),
-    client = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (mode: Task["autonomyMode"]) =>
-      api.patch("tasks", task.id, { autonomyMode: mode }, task.version),
-    onSuccess: () => client.invalidateQueries(),
+  const api = useApi();
+  const autosave = useSettingsAutosave({
+    resource: "tasks",
+    latest: task,
+    values: (value: Task) => ({ autonomyMode: value.autonomyMode }),
+    save: (draft, version) => api.patch("tasks", task.id, draft, version),
   });
   return (
     <section className="record">
@@ -181,11 +159,10 @@ export function TaskMode({ task }: { task: Task }) {
       </FieldDescription>
       <Choice
         label="Configuração individual"
-        value={task.autonomyMode}
+        value={autosave.draft.autonomyMode}
         onChange={(v) =>
           !task.archivedAt &&
-          !mutation.isPending &&
-          mutation.mutate(v as Task["autonomyMode"])
+          autosave.change("autonomyMode", v as Task["autonomyMode"], true)
         }
         options={[
           { value: "manual", label: "Manual" },
@@ -195,7 +172,7 @@ export function TaskMode({ task }: { task: Task }) {
       {task.archivedAt && (
         <p className="small-note">Task arquivada: somente leitura.</p>
       )}
-      <SaveFeedback mutation={mutation} />
+      <AutosaveFeedback state={autosave} />
     </section>
   );
 }

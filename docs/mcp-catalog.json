@@ -42,79 +42,79 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator workflow",
       "uri": "beeteam://references/collaborator-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator resumption template",
       "uri": "beeteam://references/collaborator-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit e6d6b7f. Relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 8ab75d1c422c41a1a66ca82166c209063c50d760 plus preserved local SQLite startup guidance (2026-10-29). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -27034,6 +27034,161 @@
         ],
         "type": "object"
       }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "exportData"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "type": "object"
+      },
+      "name": "getDataTransfer"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "type": "object"
+      },
+      "name": "previewDataImport"
+    },
+    {
+      "annotations": {
+        "destructiveHint": true,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "additionalProperties": false,
+            "properties": {
+              "archiveSha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              "confirmationToken": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "destinationId": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "timestampPolicy": {
+                "enum": [
+                  "strict",
+                  "truncate_to_microseconds"
+                ]
+              }
+            },
+            "required": [
+              "confirmationToken",
+              "archiveSha256",
+              "destinationId"
+            ],
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "idempotencyKey",
+          "confirmation"
+        ],
+        "type": "object"
+      },
+      "name": "restoreDataImport"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "jobId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "cancelDataTransfer"
     }
   ]
 }

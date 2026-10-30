@@ -18,6 +18,9 @@
 
 ## Backend / MCP workflow
 
+- Compose `BackendService` and repository adapters in `AppState`; controllers receive services, never pools or concrete repositories. Services depend on `repositories/contracts.rs`, not SQLx or PostgreSQL adapters. Keep transaction handles private and translate SQL driver errors within repositories.
+- Read queries use repository-owned repeatable-read, read-only snapshots with database filtering/order/pagination and targeted context hydration. Do not reintroduce the global write lock or full-resource preload on GET/prepare_execution. Writes retain the existing serialized UnitOfWork until a separately validated concurrency redesign.
+
 - HTTP and MCP adapt the same DTO validation and business services; compound MCP writes must use one database transaction and one idempotency key.
 - The checked-in Kanban/RA OpenAPIs define the current boards/tasks model; never restore workspace or task/team ownership from older notes.
 - Actor context is declared metadata, not authentication. Do not introduce a leader editing restriction while that product policy remains unresolved.
@@ -30,3 +33,10 @@
 - Preserve task `specification` and plan/revision `content` as Markdown text (65536 UTF-8 bytes), without rendering or executing it. Keep requirements, short description, execution plans, and current work synthesis independent; specification-only edits do not require a new work summary.
 
 - Agent/team/task slugs are immutable URL aliases, never internal identifiers. Resolve via the typed by-slug endpoint/tool, then keep UUIDv7 in mutations and prompt arguments. Preserve deleted slug reservations and keep migration/application advisory lock ordering consistent before table access.
+
+- SQLite is explicit opt-in through DATABASE_DRIVER=sqlite and a matching DATABASE_URL; PostgreSQL stays default. Keep independent migrations in migrations/sqlite, WAL/foreign_keys on every connection, serialized BEGIN IMMEDIATE mutations and bounded snapshot reads. ResourceStore/TransactionStore/ChangeSource own normal persistence; TransferDatabase owns portable snapshot/restore integration. Do not convert/reset existing product databases.
+- BEE_TEST_DRIVER=sqlite routes shared HTTP/MCP app() tests to temporary files; app_with_pool and PostgreSQL-specific tests still require isolated PostgreSQL >=18. Set OTEL_ENABLED=false when Jaeger is unavailable. Verify both drivers after persistence changes.
+
+- Portable transfer is administratively opt-in and empty-destination-only. Keep archive, blob, journal and OS lease access in repositories/transfer; HTTP/MCP share the transfer service. Preserve raw domain/replay JSON and Markdown. Typed submicrosecond metadata requires explicit truncation approval for PostgreSQL. A DB commit marker overrides late cancellation; an unknown commit outcome stays restoring until writer-lock-protected reconciliation. Never add force/reset/cutover implicitly. Verify cancellation during stalled uploads and writer-lock waits, plus all four driver pairs, before changing this workflow.
+
+- Single-binary distribution uses `node scripts/build-distribution.mjs` and Cargo `embedded-ui`; frontend dependencies/build output live in isolated `.local/distribution/frontend`. Keep source/output hash verification, production/same-origin build settings, and the repository/service/HTTP split. Never fall back to SPA HTML for API/MCP or missing assets. Preserve API-only/Vite development and do not restart active services to validate packaging.
