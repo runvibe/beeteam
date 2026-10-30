@@ -61,6 +61,12 @@ body:has(.task-page) {
   gap: 32px;
   align-items: start;
 }
+.task-detail-primary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
 .task-detail-reading {
   min-width: 0;
 }

@@ -59,54 +59,56 @@ function TaskDetail({ id }: { id: string }) {
     heading.current?.focus();
   }, [id]);
   return (
-    <>
-      <Button
-        variant="ghost"
-        className="task-back"
-        onClick={() => goBack(q.data ? `/boards/${q.data.boardId}` : "/boards")}
-      >
-        <ArrowUpLeft />
-        Voltar
-      </Button>
-      {q.data && <TaskPath task={q.data} />}
-      <header className="task-detail-heading">
-        <h1 ref={heading} tabIndex={-1}>
-          {q.data?.title ?? "Detalhes da task"}
-        </h1>
-      </header>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            <div className="task-detail-state" aria-label="Estado da tarefa">
-              <div>
-                <span>Status</span>
-                <TaskStatus task={q.data} />
+    <div className="task-detail-columns">
+      <div className="task-detail-primary">
+        <Button
+          variant="ghost"
+          className="task-back"
+          onClick={() =>
+            goBack(q.data ? `/boards/${q.data.boardId}` : "/boards")
+          }
+        >
+          <ArrowUpLeft />
+          Voltar
+        </Button>
+        {q.data && <TaskPath task={q.data} />}
+        <header className="task-detail-heading">
+          <h1 ref={heading} tabIndex={-1}>
+            {q.data?.title ?? "Detalhes da task"}
+          </h1>
+        </header>
+        <QueryState query={q}>
+          {q.data && (
+            <>
+              <div className="task-detail-state" aria-label="Estado da tarefa">
+                <div>
+                  <span>Status</span>
+                  <TaskStatus task={q.data} />
+                </div>
+                <div>
+                  <span>Progresso registrado</span>
+                  <strong>{q.data.progress.percent}%</strong>
+                </div>
+                <div>
+                  <span>Executor</span>
+                  <AgentName id={q.data.executorAgentId} />
+                </div>
+                {q.data.archivedAt && (
+                  <Badge variant="secondary">Arquivada: somente leitura</Badge>
+                )}
               </div>
-              <div>
-                <span>Progresso registrado</span>
-                <strong>{q.data.progress.percent}%</strong>
-              </div>
-              <div>
-                <span>Executor</span>
-                <AgentName id={q.data.executorAgentId} />
-              </div>
-              {q.data.archivedAt && (
-                <Badge variant="secondary">Arquivada: somente leitura</Badge>
+              {q.data.block.blocked && (
+                <Alert variant="destructive">
+                  <AlertTitle>Task bloqueada</AlertTitle>
+                  <AlertDescription>{q.data.block.reason}</AlertDescription>
+                </Alert>
               )}
-            </div>
-            {q.data.block.blocked && (
-              <Alert variant="destructive">
-                <AlertTitle>Task bloqueada</AlertTitle>
-                <AlertDescription>{q.data.block.reason}</AlertDescription>
-              </Alert>
-            )}
-            <Tabs
-              value={tab}
-              onValueChange={setTab}
-              className="task-detail-tabs"
-            >
-              <TaskSections value={tab} onChange={setTab} />
-              <div className="task-detail-columns">
+              <Tabs
+                value={tab}
+                onValueChange={setTab}
+                className="task-detail-tabs"
+              >
+                <TaskSections value={tab} onChange={setTab} />
                 <div className="task-detail-reading">
                   <TabsContent value="overview">
                     <TaskOverview task={q.data} />
@@ -148,13 +150,13 @@ function TaskDetail({ id }: { id: string }) {
                     <Records resource="timeline" task={q.data} />
                   </TabsContent>
                 </div>
-                <TaskContext task={q.data} />
-              </div>
-            </Tabs>
-          </>
-        )}
-      </QueryState>
-    </>
+              </Tabs>
+            </>
+          )}
+        </QueryState>
+      </div>
+      {q.data && <TaskContext task={q.data} />}
+    </div>
   );
 }
 function Children({ task }: { task: Task }) {
