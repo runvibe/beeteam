@@ -200,13 +200,11 @@ export function CardListViewport({
               </div>
             ) : state.hasMore ? (
               <>
-                <LoadingIndicator
-                  label={
-                    state.fetching
-                      ? "Carregando mais registros"
-                      : "Aguardando próximos registros"
-                  }
-                />
+                <div style={{ minHeight: 60 }}>
+                  {state.fetching && (
+                    <LoadingIndicator label="Carregando mais registros" />
+                  )}
+                </div>
                 <Button
                   className="sr-only focus:not-sr-only"
                   disabled={state.fetching}

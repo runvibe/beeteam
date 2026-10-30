@@ -41,6 +41,7 @@ it("prefetches within its own scroll root and preserves cards through loading/er
   );
   try {
     const { rerender } = render(draw());
+    expect(screen.queryByRole("status", { name: /registros/ })).toBeNull();
     expect(options?.root).toBe(screen.getByRole("region", { name: "Cards" }));
     expect(options?.rootMargin).toMatch(/0px 0px \d+px 0px/);
     act(() =>
@@ -60,6 +61,11 @@ it("prefetches within its own scroll root and preserves cards through loading/er
       screen.getByRole("status", { name: "Carregando mais registros" }),
     ).toBeInTheDocument();
     state.fetching = false;
+    rerender(draw());
+    expect(screen.queryByRole("status", { name: /registros/ })).toBeNull();
+    expect(document.querySelector(".card-list-footer > div")).toHaveStyle({
+      minHeight: "60px",
+    });
     state.error = new Error("offline");
     rerender(draw());
     expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -150,7 +156,10 @@ it.each([false, true])(
   (reduced) => {
     window.history.replaceState({}, "", `/teams?to-top=${reduced}`);
     const url = location.href;
-    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: reduced })));
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({ matches: reduced })),
+    );
     const state = {
       items: [{ id: "retained" }],
       hasMore: false,
