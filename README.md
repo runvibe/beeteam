@@ -500,4 +500,6 @@ No detalhe da tarefa, as abas (ou seletor mobile) permanecem sticky durante a le
 
 As atualizações por autosave de boards, status, times, agentes e tasks são silenciosas: não exibem salvando, sucesso ou linha reservada. Erros, retry e avisos de conflito permanecem disponíveis; drafts, coalescing e controle de versão são preservados.
 
+A troca de abas da task reutiliza o fade de páginas (opacidade 0,72→1 em 180ms), somente no painel de conteúdo e sem key de remontagem. Título, tabs sticky e contexto permanecem estáticos; query, filtros e paginação na mesma aba não reiniciam o efeito. Com movimento reduzido, a opacidade é imediatamente 1.
+
 No desktop, a barra de rolagem principal do detalhe fica no limite direito da área de conteúdo, junto à divisória contextual. O respiro de 32px fica entre conteúdo e barra, preservando a largura de 300px da sidebar e sem alterar a rolagem interna dos planos.

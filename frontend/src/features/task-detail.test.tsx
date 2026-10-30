@@ -53,6 +53,7 @@ it("shares section selection with deep links and retains the autonomy form acros
   const autonomy = screen.getByRole("combobox", {
     name: "Configuração individual",
   });
+  const panel = document.querySelector(".task-detail-reading");
   await userEvent.selectOptions(section, "children");
   expect(screen.queryByText(/Filhos diretos em todos os boards/)).toBeNull();
   await userEvent.selectOptions(section, "overview");
@@ -66,6 +67,8 @@ it("shares section selection with deep links and retains the autonomy form acros
   expect(
     screen.getByRole("combobox", { name: "Configuração individual" }),
   ).toBe(autonomy);
+  expect(document.querySelector(".task-detail-reading")).toBe(panel);
+  expect(panel).toHaveAttribute("data-task-section", "overview");
   await userEvent.click(
     screen.getByRole("button", { name: /Detalhes da tarefa/ }),
   );

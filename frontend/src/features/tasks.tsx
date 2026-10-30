@@ -2,6 +2,8 @@ import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { usePageEntrance } from "@/components/motion-settings";
 import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
 import {
@@ -58,6 +60,7 @@ function TaskDetail({ id }: { id: string }) {
       "timeline",
     ],
   });
+  const panelAnimation = usePageEntrance(tab);
   useEffect(() => {
     heading.current?.focus();
   }, [id]);
@@ -100,7 +103,11 @@ function TaskDetail({ id }: { id: string }) {
                 className="task-detail-tabs"
               >
                 <TaskSections value={tab} onChange={setTab} />
-                <div className="task-detail-reading">
+                <motion.div
+                  className="task-detail-reading"
+                  animate={panelAnimation}
+                  data-task-section={tab}
+                >
                   <TabsContent value="overview">
                     <TaskOverview task={q.data} />
                   </TabsContent>
@@ -136,7 +143,7 @@ function TaskDetail({ id }: { id: string }) {
                   <TabsContent value="timeline">
                     <Records resource="timeline" task={q.data} />
                   </TabsContent>
-                </div>
+                </motion.div>
               </Tabs>
             </>
           )}
