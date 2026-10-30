@@ -139,3 +139,16 @@
 .balanced-card-grid .team-card [data-slot="card-footer"] {
   justify-content: flex-end;
 }
+
+.balanced-card-grid .agent-card [data-slot="card-header"] {
+  grid-template-columns: minmax(0, 1fr) 36px;
+}
+.balanced-card-grid .agent-card [data-slot="card-header"] > [data-slot="avatar"] {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+.balanced-card-grid .agent-card [data-slot="card-title"] {
+  grid-column: 1;
+  grid-row: 1;
+}

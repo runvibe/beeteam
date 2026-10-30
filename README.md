@@ -465,3 +465,5 @@ Kanban column scrollbar thumbs follow the card color in dark mode, brighten on h
 On mobile (up to 850px), Kanban uses native horizontal scroll snap with one nearly full-width column and a preview of the next. A 44px previous/next toolbar names the current status and total; navigation stops at the first/last column and honors reduced motion. All columns remain mounted, retaining vertical scroll and fetched pages when moving back and forth. Desktop keeps the multi-column layout. The inner scrollbar retains a small 2px card gap without excessive right padding.
 
 Board, agent and team listing cards include a consistent decorative filled type mark at the top left, with header space reserved to avoid overlap; existing role/autonomy symbols and card height remain separate.
+
+Agent listing cards place the avatar at the right of the header, with the decorative type mark remaining at the top left; task assignee avatars are unchanged.
