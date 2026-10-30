@@ -466,7 +466,7 @@ On mobile (up to 850px), Kanban uses native horizontal scroll snap with one near
 
 Board, agent and team listing cards include a consistent decorative filled type mark at the top left, with header space reserved to avoid overlap; existing role/autonomy symbols and card height remain separate.
 
-Agent listing cards place the avatar at the right of the header, with the decorative type mark remaining at the top left; task assignee avatars are unchanged.
+Agent listing cards use a centered 56px profile avatar above the centered name, with the decorative type mark at the top left. The 272px card height, description fade and footer remain consistent; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
 Na coordenação Bee Team, toda demanda Leader→Collaborator é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
@@ -513,3 +513,37 @@ Final coordinated Skills snapshot: `23b8bdf730802e447b4536c59df7b4ce73ef957d`; 1
 Filtering occurs in the repository snapshot before count/order/limit/offset. The response remains CommentPage: items, total, offset, limit, hasMore, nextOffset. Existing createdAt/id ordering and direction remain unchanged. Each request has its own read snapshot; concurrent writes can still shift offset pages between requests. No comment content, authorship or ID is modified. The same OpenAPI validation generates the HTTP and typed MCP query contracts. Invalid kind, malformed ID, oversized text, NUL characters, repeated or unknown parameters return invalid_request/400.
 
 This source change requires a new runtime artifact and manual activation to become available on an older running server. It does not replace or restart the SQLite 59865 process.
+
+Task detail keeps its full-page route and tab query parameters. A visible title and execution state lead into independent reading sections separated by subtle theme-aware dividers and a 300px page-level context sidebar aligned with the top of the detail area, alongside the heading, navigation and content. Narrow content areas stack the context behind an accessible disclosure; small screens select sections through a native select. The autonomy form remains mounted across section/disclosure changes, preserves autosave sessions, and becomes read-only for archived tasks. Task specification and plan Markdown headings are nested below the page heading without changing stored content.
+
+Task detail dividers separate logical document sections, plan history, and execution summary/deliverables/pending blocks. Existing list borders are reused. Markdown section dividers are opt-in, use root-level principal headings, and respect authored thematic breaks; stored Markdown, nested headings, paragraphs and lists are unchanged.
+
+The task detail blocked alert uses a red background, white text and a decorative blocking icon beside the complete message. The alert retains its announcement semantics and wraps long reasons on small screens.
+
+The current work summary retains its horizontal section dividers and spacing without a vertical accent bar.
+
+On wide task detail screens, the main reading column and context sidebar scroll independently below the global topbar; the sidebar stays in place while reading and remains scrollable when its controls exceed the viewport. Narrow screens retain normal page scrolling and the context disclosure. Timeline filter tags use the shared overlay without reserved height, with reduced filter-to-content spacing. The current summary aligns with its sibling sections without a left inset.
+
+Specification and Subtasks begin directly with their document/list (or existing empty state), without redundant introductory headings or helper copy.
+
+Root task details omit the duplicate board path above their title; the global breadcrumb and nested-task ancestry remain available.
+
+The task executor appears in the context sidebar, without a duplicate in the main status/progress row.
+
+Task status leads the context sidebar. The main column displays recorded progress as a full-width accessible bar with a percentage positioned at the fill endpoint and clamped inside the edges at 0% and 100%, without motion or inferred activity.
+
+Mobile breadcrumbs use a 44px back-chevron control with the existing contextual destination and long-title behavior. Task details omit the duplicate content back button; desktop breadcrumb links remain available.
+
+Na aba Planos, o Histórico de alterações permanece aberto abaixo do documento. As revisões chegam em páginas incrementais ao aproximar o fim do conteúdo (scroll principal no desktop e página no mobile), com o indicador de carregamento compartilhado e sem paginação do histórico. A seleção de planos e os links de revisão mantêm seu estado na URL; páginas são isoladas por tarefa/plano/revisão atual, deduplicadas por ID, e erros permitem nova tentativa sem remover os registros já carregados.
+
+A barra de progresso do detalhe exibe apenas a porcentagem e o preenchimento; "Progresso registrado" permanece como nome acessível, sem rótulo visual ou espaço reservado. O texto de andamento na Visão geral permanece independente.
+
+A aba Planos usa navegação lateral vertical no desktop, com lista incremental e rolagem independente, mantendo o conteúdo e histórico no scroll principal e o contexto da tarefa à direita. No mobile, a lista é substituída por páginas com scroll-snap horizontal e controles anterior/próximo de 44px, sem loop; cada plano conserva sua posição vertical durante a navegação. O histórico usa o scroll vertical da página do plano. O LoadingIndicator compartilhado só mostra o spinner após 100ms contínuos, cancela o timer ao desmontar e reinicia o prazo em cada requisição; os dados e as requisições não aguardam esse prazo. O status acessível permanece disponível e o texto invisível fica contido no indicador, evitando scrollbar externa e variações de largura. Seu marcador de carregamento reserva 60px em todos os estados, inclusive ao terminar; o indicador continua visível durante requests e não participa da ancoragem de scroll. Lotes novos são acrescentados sem substituir os registros existentes. A seleção por URL consulta diretamente a última revisão para abrir o documento. A navegação localiza a posição real por páginas sequenciais limitadas e canceláveis, sem inserir o selecionado artificialmente no topo. Carrega somente até encontrar o plano e obter espaço suficiente abaixo para revelá-lo, ou atingir o fim. A lista o alinha o mais alto possível dentro de scrollHeight-clientHeight, somente na primeira carga da tela (incluindo refresh/link direto); cliques e trocas de seleção posteriores não reposicionam a lista. Refetches em background, inclusive após autosave de autonomia, preservam os itens e não inserem loader na lista; o indicador é reservado à carga inicial e às próximas páginas. Os títulos mantêm o mesmo peso tipográfico e espaçamento nos estados ativo e inativo; o destaque usa fundo e aria-current, sem mudar quebras de linha ou altura. Refresh e retorno do navegador mantêm IDs, ordem e vizinhos reais, inclusive no mobile. Nenhuma edição ou draft é descartado por mutação automática.
+
+No detalhe da tarefa, as abas (ou seletor mobile) permanecem sticky durante a leitura. No desktop, um observador do cabeçalho original mostra título, progresso e bloqueio resumido no topo da sidebar somente após o cabeçalho sair do scroll principal. O resumo é uma repetição visual aria-hidden, mantém o original no fluxo e não remonta formulários; desaparece ao retornar ao topo. A transição respeita prefers-reduced-motion. No mobile, o contexto continua no disclosure e não recebe esse resumo fixo.
+
+As atualizações por autosave de boards, status, times, agentes e tasks são silenciosas: não exibem salvando, sucesso ou linha reservada. Erros, retry e avisos de conflito permanecem disponíveis; drafts, coalescing e controle de versão são preservados.
+
+A troca de abas da task reutiliza o fade de páginas (opacidade 0,72→1 em 180ms), somente no painel de conteúdo e sem key de remontagem. Título, tabs sticky e contexto permanecem estáticos; query, filtros e paginação na mesma aba não reiniciam o efeito. Com movimento reduzido, a opacidade é imediatamente 1.
+
+No desktop, a barra de rolagem principal do detalhe fica no limite direito da área de conteúdo, junto à divisória contextual. O respiro de 32px fica entre conteúdo e barra, preservando a largura de 300px da sidebar e sem alterar a rolagem interna dos planos.

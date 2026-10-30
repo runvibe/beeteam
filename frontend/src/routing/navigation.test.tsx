@@ -41,7 +41,11 @@ it("reconstructs a direct board filter and page size, opens card body, and retur
   ).toHaveAttribute("aria-current", "page");
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   await userEvent.click(screen.getByRole("tab", { name: "Subtasks" }));
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   expect(await openSearch("Buscar tasks")).toHaveValue("Mapear");
   expect(new URLSearchParams(location.search).get("kanban.limit")).toBe("1");
   window.history.forward();
@@ -59,7 +63,11 @@ it("uses a deterministic direct-task fallback and rejects external return URLs",
     "data-state",
     "active",
   );
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));
   expect(safeOrigin("//evil.example")).toBeNull();
 });
@@ -102,7 +110,11 @@ it("preserves the executor action instead of opening the task and exposes settin
   expect(location.pathname).toBe("/agents/lia/settings");
   await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
   expect(screen.queryByRole("dialog")).toBeNull();
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));
   navigate(`/teams/${ids.team}/settings`);
   expect(await screen.findByRole("dialog")).toBeVisible();

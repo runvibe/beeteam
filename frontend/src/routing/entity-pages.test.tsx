@@ -41,7 +41,11 @@ it("opens agent body with keyboard and restores filtered list, then forward/deep
     "data-state",
     "active",
   );
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   expect(await openSearch("Buscar agentes")).toHaveValue("Lia");
   expect(new URLSearchParams(location.search).get("agents.limit")).toBe("1");
 });
@@ -55,7 +59,11 @@ it("keeps team leader action separate and returns from board and settings to the
     await within(card).findByRole("link", { name: "Abrir liderança: Theo" }),
   );
   expect(await screen.findByRole("region", { name: "Agente" })).toBeVisible();
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   await userEvent.click(
     await screen.findByText(
       /Ciclos curtos, decisões documentadas e revisão de entregas\./,
@@ -67,7 +75,11 @@ it("keeps team leader action separate and returns from board and settings to the
     await screen.findByRole("button", { name: "Lançamento do produto" }),
   );
   expect(location.pathname).toBe(`/boards/${ids.board}`);
-  await userEvent.click(await screen.findByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    await within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).findByRole("button", { name: "Voltar" }),
+  );
   expect(await screen.findByRole("region", { name: "Time" })).toBeVisible();
   await userEvent.click(
     screen.getByRole("button", { name: "Editar metadados do time" }),
@@ -77,7 +89,11 @@ it("keeps team leader action separate and returns from board and settings to the
   await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(location.pathname).toBe("/teams/produto-engenharia");
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   expect(await openSearch("Buscar times")).toHaveValue("Produto");
   window.history.forward();
   await waitFor(() =>

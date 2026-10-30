@@ -58,10 +58,11 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
         headers: { "If-Match": `"${version}"` },
       });
     },
-    revisions: (taskId, planId, filters = {}) =>
+    revisions: (taskId, planId, filters = {}, signal) =>
       request(
         `/tasks/${segment(taskId)}/plans/${segment(planId)}/revisions` +
           query(filters),
+        { signal },
       ),
     resume: (id) => request(`/agents/${segment(id)}/resumption-context`),
     createStatus: (boardId, input, key = crypto.randomUUID()) =>

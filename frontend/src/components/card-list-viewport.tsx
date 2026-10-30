@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useInfiniteScroll } from "./use-infinite-scroll";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useLocation } from "@/routing/location";
 import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
@@ -32,6 +27,7 @@ export function CardListViewport({
   children: ReactNode;
   label: string;
   state: {
+    identity?: string;
     items: { id: string }[];
     hasMore: boolean;
     fetching: boolean;
@@ -146,26 +142,17 @@ export function CardListViewport({
     observer.observe(content.current);
     return () => observer.disconnect();
   }, [state.items.length]);
-  useEffect(() => {
-    const node = root.current,
-      target = sentinel.current;
-    if (!node || !target || typeof IntersectionObserver === "undefined") return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting))
-          current.current.loadMore();
-      },
-      { root: node, rootMargin: `0px 0px ${rowHeight}px 0px` },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [
-    rowHeight,
-    state.fetching,
-    state.hasMore,
-    state.items.length,
-    state.error,
-  ]);
+  useInfiniteScroll({
+    identity: state.identity,
+    sentinel,
+    getRoot: () => root.current,
+    progress: state.items.map((item) => item.id).join(","),
+    hasMore: state.hasMore,
+    fetching: state.fetching,
+    error: state.error,
+    margin: rowHeight,
+    loadMore: state.loadMore,
+  });
   return (
     <div className="card-list-frame">
       <div
@@ -200,13 +187,11 @@ export function CardListViewport({
               </div>
             ) : state.hasMore ? (
               <>
-                <LoadingIndicator
-                  label={
-                    state.fetching
-                      ? "Carregando mais registros"
-                      : "Aguardando próximos registros"
-                  }
-                />
+                <div style={{ minHeight: 60 }}>
+                  {state.fetching && (
+                    <LoadingIndicator label="Carregando mais registros" />
+                  )}
+                </div>
                 <Button
                   className="sr-only focus:not-sr-only"
                   disabled={state.fetching}

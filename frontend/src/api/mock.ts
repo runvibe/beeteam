@@ -112,6 +112,8 @@ export function createMockApi(
     let rows = (source as Row[]).filter(
       (r) => !r.deletedAt || (resource === "attachments" && f.includeRemoved),
     );
+    if (resource === "comments" && f.text)
+      rows = rows.filter((row) => String(row.body).includes(f.text!));
     if (resource === "statuses" && !f.includeArchived)
       rows = rows.filter((r) => !r.archivedAt);
     if (resource === "tasks")
@@ -146,6 +148,7 @@ export function createMockApi(
       "executorAgentId",
       "authorAgentId",
       "actorId",
+      "actorKind",
       "harness",
     ] as const)
       if (f[key]) rows = rows.filter((r) => r[key] === f[key]);

@@ -1,0 +1,106 @@
+.task-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  overflow-anchor: none;
+  position: relative;
+}
+.conversation-page-slot {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow-anchor: none;
+  flex-shrink: 0;
+}
+.conversation-message {
+  width: min(88%, 760px);
+  min-width: 0;
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  background: var(--card);
+  overflow-wrap: anywhere;
+}
+.conversation-message[data-side="right"] {
+  align-self: flex-end;
+  background: var(--muted);
+}
+.conversation-message header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.conversation-author {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+.conversation-author button {
+  text-align: left;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.conversation-author button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.conversation-author span,
+.conversation-message time {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.conversation-avatar {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--secondary);
+  flex-shrink: 0;
+}
+.conversation-message .markdown-content {
+  min-width: 0;
+  max-width: 100%;
+}
+.conversation-message pre,
+.conversation-message .markdown-table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.conversation-message img {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 600px) {
+  .conversation-message {
+    width: 96%;
+    padding: 12px;
+  }
+  .conversation-message header {
+    gap: 8px;
+  }
+  .conversation-message time {
+    width: 100%;
+  }
+}
+
+.conversation-page-slot:empty {
+  min-height: 1px;
+}
+.conversation-message th,
+.conversation-message td {
+  min-width: 6rem;
+}
+
+.task-conversation > .conversation-page-slot:first-child:empty {
+  margin-bottom: -20px;
+}

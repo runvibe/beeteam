@@ -1,10 +1,5 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useInfiniteScroll } from "./use-infinite-scroll";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { LoadingIndicator } from "./loading-indicator";
 import { Button } from "./ui/button";
 import "./kanban-column-viewport.css";
@@ -37,38 +32,17 @@ export function KanbanColumnViewport({
       ? (positions.get(storageKey) ?? { inset: 0, top: 0 })
       : { inset: 0, top: 0 },
   );
-  const [fits, setFits] = useState(false);
-  useLayoutEffect(() => {
-    const node = root.current;
-    if (!node) return;
-    const measure = () =>
-      setFits(
-        node.clientHeight > 0 && node.scrollHeight <= node.clientHeight + 1,
-      );
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [state.items]);
-  const filledItems = useRef<State["items"] | null>(null);
-  useEffect(() => {
-    const node = root.current;
-    // Fill only the visible viewport. Once it overflows, subsequent requests
-    // require real scroll progress; exhausted/error/pending queries always stop.
-    if (
-      node &&
-      node.clientHeight > 0 &&
-      node.scrollHeight <= node.clientHeight + 1 &&
-      state.hasMore &&
-      !state.fetching &&
-      !state.error &&
-      filledItems.current !== state.items
-    ) {
-      filledItems.current = state.items;
-      state.loadMore();
-    }
-  }, [fits, state.items, state.fetching, state.hasMore, state.error]);
-  const requestedAt = useRef(-1);
+  const sentinel = useRef<HTMLDivElement>(null);
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () => root.current,
+    identity: storageKey,
+    progress: state.items.map((item) => item.id).join(","),
+    hasMore: state.hasMore,
+    fetching: state.fetching,
+    error: state.error,
+    loadMore: state.loadMore,
+  });
   useLayoutEffect(() => {
     const node = root.current;
     if (!node) return;
@@ -106,23 +80,10 @@ export function KanbanColumnViewport({
           if (positions.size > 256)
             positions.delete(positions.keys().next().value!);
         }
-        // A new scroll position is required for each append: a visible footer must
-        // never recursively drain all pages, including in very tall viewports.
-        if (
-          node.scrollTop > 0 &&
-          node.scrollTop !== requestedAt.current &&
-          node.scrollHeight - node.clientHeight - node.scrollTop < 300 &&
-          state.hasMore &&
-          !state.fetching &&
-          !state.error
-        ) {
-          requestedAt.current = node.scrollTop;
-          state.loadMore();
-        }
       }}
     >
       {children}
-      <div className="kanban-column-end">
+      <div ref={sentinel} className="kanban-column-end">
         {state.fetching && (
           <LoadingIndicator label={`Carregando tarefas: ${label}`} compact />
         )}

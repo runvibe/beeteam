@@ -1,12 +1,14 @@
-import { goBack } from "@/routing/location";
+import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { usePageEntrance } from "@/components/motion-settings";
 import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
 import {
-  ArrowUpLeft,
+  Ban,
   Download,
   CheckCircle2,
   Circle,
@@ -15,7 +17,7 @@ import {
 import { useApi, useEntity, useList } from "@/api/context";
 import type { Resources, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -30,7 +32,10 @@ import {
   safeUrl,
 } from "@/components/shared";
 import { AgentName, BoardName } from "@/components/names";
-import { TaskMode } from "./settings";
+import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
+import "./task-detail.css";
+import { useTaskHeaderVisibility } from "./task-scroll-header";
+import { TaskProgress } from "./task-progress";
 export function TaskPage() {
   const id = useUi((s) => s.taskId);
   return id ? (
@@ -40,9 +45,10 @@ export function TaskPage() {
   ) : null;
 }
 function TaskDetail({ id }: { id: string }) {
-  const q = useEntity("tasks", id),
-    open = useUi((s) => s.openTask);
+  const q = useEntity("tasks", id);
   const heading = useRef<HTMLHeadingElement>(null);
+  const planRevealConsumed = useRef(false);
+  const { primary, hero, pastHeader } = useTaskHeaderVisibility();
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
       "overview",
@@ -55,139 +61,97 @@ function TaskDetail({ id }: { id: string }) {
       "timeline",
     ],
   });
+  const panelAnimation = usePageEntrance(tab);
   useEffect(() => {
     heading.current?.focus();
   }, [id]);
   return (
-    <>
-      <Button
-        variant="ghost"
-        className="task-back"
-        onClick={() => goBack(q.data ? `/boards/${q.data.boardId}` : "/boards")}
-      >
-        <ArrowUpLeft />
-        Voltar
-      </Button>
-      {q.data && <TaskPath task={q.data} />}
-      <header className="sr-only">
-        <h1 ref={heading} tabIndex={-1}>
-          {q.data?.title ?? "Detalhes da task"}
-        </h1>
-        <div className="muted-copy">
-          {q.data ? (
+    <div className="task-detail-columns">
+      <div className="task-detail-primary" data-detail-scroll ref={primary}>
+        <div className="task-detail-hero" ref={hero}>
+          {q.data?.parentId && <TaskPath task={q.data} />}
+          <header className="task-detail-heading">
+            <h1 ref={heading} tabIndex={-1}>
+              {q.data?.title ?? "Detalhes da task"}
+            </h1>
+          </header>
+          {q.data && (
             <>
-              Task {q.data.id.slice(-4).toUpperCase()} ·{" "}
-              <BoardName id={q.data.boardId} /> · Atualizada em{" "}
-              {formatDate(q.data.updatedAt)}
+              <div className="task-detail-state" aria-label="Estado da tarefa">
+                <TaskProgress percent={q.data.progress.percent} />
+                {q.data.archivedAt && (
+                  <Badge variant="secondary">Arquivada: somente leitura</Badge>
+                )}
+              </div>
+              {q.data.block.blocked && (
+                <Alert variant="destructive" className="task-blocked-alert">
+                  <Ban className="size-9" aria-hidden="true" />
+                  <div className="task-blocked-message">
+                    <AlertTitle>Task bloqueada</AlertTitle>
+                    <AlertDescription>{q.data.block.reason}</AlertDescription>
+                  </div>
+                </Alert>
+              )}
             </>
-          ) : (
-            "Carregando registro…"
           )}
         </div>
-      </header>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.parentId && (
-              <Button
-                variant="ghost"
-                className="justify-start"
-                onClick={() => open(q.data!.parentId)}
+        <QueryState query={q}>
+          {q.data && (
+            <>
+              <Tabs
+                value={tab}
+                onValueChange={setTab}
+                className="task-detail-tabs"
               >
-                <ArrowUpLeft data-icon="inline-start" />
-                Task pai
-              </Button>
-            )}
-            <div className="task-facts">
-              <div>
-                <span>Autor</span>
-                <AgentName id={q.data.authorAgentId} />
-              </div>
-              <div>
-                <span>Executor</span>
-                <AgentName id={q.data.executorAgentId} />
-              </div>
-              <div>
-                <span>Progresso registrado</span>
-                <strong>{q.data.progress.percent}%</strong>
-              </div>
-              <div>
-                <span>Status</span>
-                <TaskStatus task={q.data} />
-              </div>
-              <div>
-                <span>Cadastro</span>
-                <Badge variant="secondary">
-                  {q.data.archivedAt ? "Arquivada" : "Ativa"}
-                </Badge>
-              </div>
-            </div>
-            {q.data.block.blocked && (
-              <Alert variant="destructive">
-                <AlertTitle>Task bloqueada</AlertTitle>
-                <AlertDescription>{q.data.block.reason}</AlertDescription>
-              </Alert>
-            )}
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="detail-tabs">
-                <TabsTrigger value="overview">Visão geral</TabsTrigger>
-                <TabsTrigger value="specification">Especificação</TabsTrigger>
-                <TabsTrigger value="children">Subtasks</TabsTrigger>
-                <TabsTrigger value="plans">Planos</TabsTrigger>
-                <TabsTrigger value="comments">Comentários</TabsTrigger>
-                <TabsTrigger value="attachments">Arquivos</TabsTrigger>
-                <TabsTrigger value="summaries">Resumos</TabsTrigger>
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-              </TabsList>
-              <TabsContent value="overview">
-                <div className="detail-section">
-                  <h3>Resumo atual do trabalho</h3>
-                  <TextBlock>
-                    {q.data.currentSummary || "Sem atualização registrada"}
-                  </TextBlock>
-                  <h3>Descrição</h3>
-                  <TextBlock>{q.data.description}</TextBlock>
-                  <h3>Andamento</h3>
-                  <TextBlock>{q.data.progress.note}</TextBlock>
-                  <TaskMode task={q.data} />
-                </div>
-              </TabsContent>
-              <TabsContent value="specification">
-                <div className="detail-section">
-                  <h2>Especificação</h2>
-                  <p className="small-note">
-                    Requisitos, entrega esperada e critérios de aceite.
-                  </p>
-                  {q.data.specification ? (
-                    <Markdown>{q.data.specification}</Markdown>
-                  ) : (
-                    <NoData title="Nenhuma especificação registrada" />
-                  )}
-                </div>
-              </TabsContent>
-              <TabsContent value="children">
-                <Children task={q.data} />
-              </TabsContent>
-              <TabsContent value="plans">
-                <Plans task={q.data} />
-              </TabsContent>
-              <TabsContent value="comments">
-                <Records resource="comments" task={q.data} />
-              </TabsContent>
-              <TabsContent value="attachments">
-                <Records resource="attachments" task={q.data} />
-              </TabsContent>
-              <TabsContent value="summaries">
-                <Records resource="summaries" task={q.data} />
-              </TabsContent>
-              <TabsContent value="timeline">
-                <Records resource="timeline" task={q.data} />
-              </TabsContent>
-            </Tabs>
-          </>
-        )}
-      </QueryState>
-    </>
+                <TaskSections value={tab} onChange={setTab} />
+                <motion.div
+                  className="task-detail-reading"
+                  animate={panelAnimation}
+                  data-task-section={tab}
+                >
+                  <TabsContent value="overview">
+                    <TaskOverview task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="specification">
+                    <div className="detail-section task-specification">
+                      {q.data.specification ? (
+                        <Markdown headingOffset={2} sectionDividers>
+                          {q.data.specification}
+                        </Markdown>
+                      ) : (
+                        <NoData
+                          title="Nenhuma especificação registrada"
+                          description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
+                        />
+                      )}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="children">
+                    <Children task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="plans">
+                    <Plans task={q.data} revealConsumed={planRevealConsumed} />
+                  </TabsContent>
+                  <TabsContent value="comments">
+                    <TaskConversation taskId={q.data.id} />
+                  </TabsContent>
+                  <TabsContent value="attachments">
+                    <Records resource="attachments" task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="summaries">
+                    <Records resource="summaries" task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="timeline">
+                    <Records resource="timeline" task={q.data} />
+                  </TabsContent>
+                </motion.div>
+              </Tabs>
+            </>
+          )}
+        </QueryState>
+      </div>
+      {q.data && <TaskContext task={q.data} compactHeader={pastHeader} />}
+    </div>
   );
 }
 function Children({ task }: { task: Task }) {
@@ -201,17 +165,18 @@ function Children({ task }: { task: Task }) {
   });
   return (
     <div className="detail-section">
-      <p className="muted-copy">
-        Filhos diretos em todos os boards. Abra uma subtask para consultar os
-        próximos níveis.
-      </p>
       <QueryState query={q}>
         {q.data && (
           <>
             {q.data.items.map((child) => (
               <ChildRow key={child.id} task={child} />
             ))}
-            {!q.data.items.length && <NoData title="Sem subtasks" />}
+            {!q.data.items.length && (
+              <NoData
+                title="Sem subtasks"
+                description="Esta tarefa ainda não tem subtasks diretas."
+              />
+            )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
@@ -242,7 +207,7 @@ function ChildRow({ task }: { task: Task }) {
     </div>
   );
 }
-type RecordKind = "comments" | "attachments" | "summaries" | "timeline";
+type RecordKind = "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
   const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0),
     [includeChildren, setInclude] = useUrlState<string>(
@@ -263,7 +228,9 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
       : {}),
   });
   return (
-    <div className="detail-section">
+    <div
+      className={`detail-section${resource === "timeline" ? " task-timeline" : ""}`}
+    >
       {resource === "timeline" && (
         <FilterBar
           active={includeChildren !== "false"}
@@ -293,7 +260,10 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
               <RecordContent key={row.id} kind={resource} row={row} />
             ))}
             {!q.data.items.length && (
-              <NoData title="Nenhum registro nesta seção" />
+              <NoData
+                title="Nenhum registro nesta seção"
+                description="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
+              />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
@@ -311,56 +281,53 @@ function RecordContent({
 }) {
   if (kind === "attachments")
     return <Attachment item={row as Resources["attachments"]} />;
-  if (kind === "comments") {
-    const r = row as Resources["comments"];
-    return (
-      <article className="record">
-        <Author id={r.actorId} date={r.createdAt} />
-        <TextBlock>{r.body}</TextBlock>
-      </article>
-    );
-  }
   if (kind === "summaries") {
     const r = row as Resources["summaries"];
     return (
-      <article className="record">
-        <Author id={r.actorId} date={r.createdAt} />
-        <Badge variant="secondary">
-          {
+      <article className="record task-execution-summary">
+        <section className="task-reading-block">
+          <Author id={r.actorId} date={r.createdAt} />
+          <Badge variant="secondary">
             {
-              progress: "Em progresso",
-              completed: "Concluída",
-              blocked: "Bloqueada",
-            }[r.outcome]
-          }
-        </Badge>
-        <TextBlock>{r.summary}</TextBlock>
-        <h4>Entregas</h4>
-        {r.deliverables.length ? (
-          r.deliverables.map((d, i) => (
-            <div key={i}>
-              {safeUrl(d.url) ? (
-                <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
-                  {d.label} <ExternalLink size={12} />
-                </a>
-              ) : (
-                d.label
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="small-note">Nenhuma entrega registrada.</p>
-        )}
-        <h4>Pendências</h4>
-        {r.pending.length ? (
-          <ul className="list-disc pl-5">
-            {r.pending.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="small-note">Sem pendências registradas.</p>
-        )}
+              {
+                progress: "Em progresso",
+                completed: "Concluída",
+                blocked: "Bloqueada",
+              }[r.outcome]
+            }
+          </Badge>
+          <TextBlock>{r.summary}</TextBlock>
+        </section>
+        <section className="task-reading-block" aria-label="Entregas">
+          <h4>Entregas</h4>
+          {r.deliverables.length ? (
+            r.deliverables.map((d, i) => (
+              <div key={i}>
+                {safeUrl(d.url) ? (
+                  <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
+                    {d.label} <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  d.label
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="small-note">Nenhuma entrega registrada.</p>
+          )}
+        </section>
+        <section className="task-reading-block" aria-label="Pendências">
+          <h4>Pendências</h4>
+          {r.pending.length ? (
+            <ul className="list-disc pl-5">
+              {r.pending.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="small-note">Sem pendências registradas.</p>
+          )}
+        </section>
       </article>
     );
   }
@@ -438,17 +405,5 @@ function Attachment({ item }: { item: Resources["attachments"] }) {
       </Button>
       {error && <Failure error={error} />}
     </article>
-  );
-}
-
-function TaskStatus({ task }: { task: Task }) {
-  const q = useList("statuses", task.boardId, {
-    limit: 100,
-    includeArchived: true,
-  });
-  return (
-    <Badge variant="outline">
-      {q.data?.items.find((s) => s.id === task.statusId)?.name ?? "Carregando…"}
-    </Badge>
   );
 }

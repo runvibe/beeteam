@@ -71,6 +71,7 @@ it("saves text only on blur, skips unchanged/invalid values and saves options im
   await userEvent.click(input);
   await userEvent.tab();
   expect(save).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole("status")).toBeNull();
   await userEvent.click(screen.getByLabelText("Enabled"));
   await waitFor(() => expect(save).toHaveBeenCalledTimes(2));
   expect(save).toHaveBeenLastCalledWith({ name: "Edited", enabled: true }, 2);
@@ -105,7 +106,8 @@ it("serializes and coalesces blurred edits while preserving edits made during a 
   await act(async () =>
     resolvers[1]({ ...initial, name: "Third", version: 3 }),
   );
-  expect(screen.getByText("Alterações salvas.")).toBeVisible();
+  expect(screen.queryByRole("status")).toBeNull();
+  expect(screen.queryByText("Alterações salvas.")).toBeNull();
 });
 it("flushes a focused field on close and retains a failed draft for reopening and retry", async () => {
   const api = createMockApi({ delay: 0 });
@@ -136,7 +138,8 @@ it("flushes a focused field on close and retains a failed draft for reopening an
   await userEvent.click(
     await screen.findByRole("button", { name: "Tentar salvar novamente" }),
   );
-  await screen.findByText("Alterações salvas.");
+  await waitFor(() => expect(screen.queryByText("offline")).toBeNull());
+  expect(screen.queryByRole("status")).toBeNull();
   expect(save).toHaveBeenCalledTimes(2);
 });
 it("does not silently adopt a remote metadata version over a local draft", async () => {

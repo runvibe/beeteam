@@ -99,9 +99,21 @@ describe("Bee Team interface", () => {
         name: "Descrever hipóteses da jornada",
       }),
     ).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
-    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+    await userEvent.click(
+      within(
+        screen.getByRole("navigation", { name: "Caminho compacto" }),
+      ).getByRole("button", { name: "Voltar" }),
+    );
+    await userEvent.click(
+      within(
+        screen.getByRole("navigation", { name: "Caminho compacto" }),
+      ).getByRole("button", { name: "Voltar" }),
+    );
+    await userEvent.click(
+      within(
+        screen.getByRole("navigation", { name: "Caminho compacto" }),
+      ).getByRole("button", { name: "Voltar" }),
+    );
     expect(await openSearch("Buscar tasks")).toHaveValue("Mapear");
     expect(
       screen.getByRole("heading", { name: "Lançamento do produto" }),
@@ -128,7 +140,11 @@ describe("Bee Team interface", () => {
     );
     expect(await screen.findByRole("region", { name: "Task" })).toBeVisible();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+    await userEvent.click(
+      within(
+        screen.getByRole("navigation", { name: "Caminho compacto" }),
+      ).getByRole("button", { name: "Voltar" }),
+    );
     const restored = await screen.findByRole("region", { name: "Agente" });
     expect(
       within(restored).getByRole("tab", { name: "Tasks" }),

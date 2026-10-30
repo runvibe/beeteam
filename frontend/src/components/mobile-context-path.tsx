@@ -1,3 +1,4 @@
+import { ChevronLeft } from "lucide-react";
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { useEntity } from "@/api/context";
 import { useUi } from "@/state/ui";
@@ -35,10 +36,10 @@ export function MobileContextPath() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Voltar ao contexto anterior"
+        aria-label="Voltar"
         onClick={() => goBack(fallback)}
       >
-        …
+        <ChevronLeft aria-hidden="true" />
       </Button>
       <BreadcrumbName key={url.split("?")[0]} text={name ?? "Carregando…"} />
     </nav>

@@ -1,0 +1,81 @@
+.task-plan-workspace {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+  min-width: 0;
+}
+.task-plan-navigation {
+  position: sticky;
+  top: 0;
+  max-height: calc(100dvh - 112px);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-right: 1px solid var(--border);
+  padding-right: 12px;
+}
+.task-plan-navigation > h3 {
+  margin-bottom: 8px;
+}
+.task-plan-navigation > button {
+  height: auto;
+  min-height: 44px;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  padding: 8px;
+  font-weight: 500;
+}
+.task-plan-navigation > button[aria-current="page"] {
+  background: var(--accent);
+}
+.task-plan-content {
+  min-width: 0;
+}
+.task-plan-mobile {
+  min-width: 0;
+}
+.task-plan-mobile-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.task-plan-mobile-controls > button {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+.task-plan-mobile-controls > span {
+  min-width: 0;
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.task-plan-carousel {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.task-plan-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.task-plan-mobile-reading {
+  height: calc(100dvh - 180px);
+  min-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding-right: 4px;
+}

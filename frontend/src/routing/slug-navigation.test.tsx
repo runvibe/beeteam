@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { within, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { it, expect, vi } from "vitest";
 import { App } from "@/App";
@@ -46,7 +46,11 @@ it("canonicalizes old UUID routes and nested origins without adding history entr
     "/agents/lia?agent.tab=activities&activities.offset=1",
   );
   expect(history.length).toBe(length);
-  await userEvent.click(screen.getByRole("button", { name: "Voltar" }));
+  await userEvent.click(
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
+  );
   expect(await screen.findByRole("region", { name: "Agente" })).toBeVisible();
   expect(location.pathname).toBe("/agents/lia");
   expect(location.search).toContain("activities.offset=1");

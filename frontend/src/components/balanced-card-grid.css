@@ -140,15 +140,26 @@
   justify-content: flex-end;
 }
 
-.balanced-card-grid .agent-card [data-slot="card-header"] {
-  grid-template-columns: minmax(0, 1fr) 36px;
+/* Profile layout is scoped to agent listings, preserving task assignees. */
+.balanced-card-grid .agent-card {
+  --card-excerpt-height: 80px;
+}
+.balanced-card-grid .agent-card:has(.card-kind-mark) [data-slot="card-header"] {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  row-gap: 4px;
+  padding-inline: 16px;
+  text-align: center;
 }
 .balanced-card-grid .agent-card [data-slot="card-header"] > [data-slot="avatar"] {
-  grid-column: 2;
+  grid-column: 1;
   grid-row: 1;
-  justify-self: end;
+  justify-self: center;
+  width: 56px;
+  height: 56px;
 }
 .balanced-card-grid .agent-card [data-slot="card-title"] {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 2;
+  width: 100%;
 }
