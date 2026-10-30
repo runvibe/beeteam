@@ -28,6 +28,10 @@ Permissões do harness para enviar mensagens continuam obrigatórias; a skill n�
 - Para conectar MCP, preparar ambiente local e abrir o painel no Codex, leia [conexão e startup](references/codex.md). Em outro harness, descubra seu mecanismo suportado.
 - Ao delegar ou retomar atividade, leia [handoff](references/handoff.md); para divisão de trabalho consulte [exemplos](references/team-examples.md) quando úteis.
 
+## Título da liderança
+
+Ao assumir Leader com identidade confirmada, use no chat atual `👑 <nome do líder>`, preservando complemento útil projeto/time. Consulte título e ferramenta do harness: renomeie só quando suportado e necessário, mantendo uma única coroa sem duplicação na retomada. Na busca/reutilização, normalize prefixo decorativo inicial (coroa/estrela) sem perder contexto; nome/emoji não comprova identidade. Só muda título do chat, nunca agente/time/slug; não se aplica a Collaborators nem a outros chats. Sem ferramenta, prossiga sem alegar renomeação. Exemplos e critérios no workflow completo.
+
 ## Entrada e time
 
 Cumprimente brevemente, verifique/reutilize o ambiente local e abra Teams na rota `/teams` do endereço descoberto. No ambiente observado, painel `http://127.0.0.1:5173`, API `http://127.0.0.1:18081/api/v1`, MCP `http://127.0.0.1:18081/mcp`; confirme instalação/host, sem assumir acesso cloud ao localhost. Pergunte qual time usar ou se quer criar, salvo escolha explícita no contexto. Usuário escolhe na interface e informa no chat; não presuma evento UI recebido.

@@ -1,12 +1,12 @@
 {
-  "sourceCommit": "8ab75d1c422c41a1a66ca82166c209063c50d760",
-  "scope": "Ten refreshed approved materials; remaining allowlisted integration, mcp-content and content-manifest resources unchanged.",
+  "sourceCommit": "98e0428dceec64ea74d86c6a8d4ed27ce3a14f08",
+  "scope": "Leader crown-title update: four materials refreshed; task-authoritative communication and local SQLite overlay preserved; allowlist unchanged.",
   "files": [
     {
       "resourcePath": "bee-team-leader/SKILL.md",
       "sourcePath": "skills/bee-team-leader/SKILL.md",
-      "sourceSha256": "5f5ad649e012e4b1684be59eae1ab1ef21afc298c9460a81eff1366b1820f467",
-      "bundledSha256": "5f5ad649e012e4b1684be59eae1ab1ef21afc298c9460a81eff1366b1820f467",
+      "sourceSha256": "686764e97776d90d4e40e3eeb4bd9b0df956a87da1b2a0cce420f27efe3d25ce",
+      "bundledSha256": "686764e97776d90d4e40e3eeb4bd9b0df956a87da1b2a0cce420f27efe3d25ce",
       "localOverlay": null
     },
     {
@@ -26,15 +26,15 @@
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
-      "sourceSha256": "2a32ed5fd517730e8e1c25c3af3ef69a971551b84b83a3d676339c3e936f192d",
-      "bundledSha256": "6da88424a47c1c6f3a112cfdcea7343f301f78d448cafb76393ed2905f5370bd",
+      "sourceSha256": "3696602f12e6e56622a3197ee00d99b5eb309c1be2685e36c7b3e751f2d1a9b2",
+      "bundledSha256": "687a9dbfc2a6fbe16178097e847d00f4e88fe671737d091c358d5cd300429d64",
       "localOverlay": "Preserve three driver-aware SQLite startup/readiness paragraphs from c1fd823."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
       "sourcePath": "docs/leader-onboarding-flows.md",
-      "sourceSha256": "fd713ad31fee9bc5c8c2bd893b263736ea3c4d38d1f86ce7335f3f099f144f17",
-      "bundledSha256": "fd713ad31fee9bc5c8c2bd893b263736ea3c4d38d1f86ce7335f3f099f144f17",
+      "sourceSha256": "6caccff2ef20e3067e7884533541995f48a74c089d483f62cc7a3723c04f933f",
+      "bundledSha256": "6caccff2ef20e3067e7884533541995f48a74c089d483f62cc7a3723c04f933f",
       "localOverlay": null
     },
     {
@@ -47,8 +47,8 @@
     {
       "resourcePath": "bee-team-leader/references/team-examples.md",
       "sourcePath": "skills/bee-team-leader/references/team-examples.md",
-      "sourceSha256": "f6a1a0303476a43cb89341074ac71bf62410265af178c995b23a1dbd0119d62a",
-      "bundledSha256": "f6a1a0303476a43cb89341074ac71bf62410265af178c995b23a1dbd0119d62a",
+      "sourceSha256": "1ea1c9279ade68c10301cd5ff0027856b560ef4fa7bb075f862b3ea50f566e84",
+      "bundledSha256": "1ea1c9279ade68c10301cd5ff0027856b560ef4fa7bb075f862b3ea50f566e84",
       "localOverlay": null
     },
     {

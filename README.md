@@ -419,3 +419,7 @@ Bundled resources and the three read-only prompt templates incorporate Skills co
 ### Kanban blocked-state presentation
 
 Blocked task cards keep their lock badge and use a soft destructive-color background and accent in both themes. Kanban columns stretch together to fill the available page height, while longer boards and narrow screens retain normal scrolling.
+
+## Leader chat title snapshot — 2026-10-30
+
+Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Collaborator chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
