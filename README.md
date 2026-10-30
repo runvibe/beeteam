@@ -174,4 +174,4 @@ A skill Leader acompanha a conversa no painel (time, board e task em página int
 
 Na coordenação Bee Team, toda demanda Leader→Collaborator é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
 
-A Leader identifica seu chat com `👑 <nome do líder>`, preservando contexto útil e sem duplicar o prefixo na retomada. A regra altera somente título do chat da liderança via harness, não agentes/times nem chats de Collaborators.
+Ao ativar Leader ou Collaborator, o próprio chat recebe respectivamente 👑 ou 🐝, antes mesmo da resolução da identidade. Mudanças de papel substituem a marca inicial sem acumular; nome/contexto útil são preservados. Leader já nomeia novos chats Collaborators autorizados com 🐝. Somente títulos de chat mudam, nunca agentes/times/slugs.

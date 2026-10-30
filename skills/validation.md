@@ -138,3 +138,7 @@ Rust: cargo build --locked passou; cargo test --locked --no-fail-fast executou e
 ## Título da liderança — 2026-10-30
 
 Baseline textual independente constatou ausência de regra para prefixo e idempotência. Reavaliação passou para título simples/com complemento, já prefixado, coroa duplicada, estrela legada, ausência de ferramenta e preservação de Collaborators/outros chats/agentes/times/slugs. Nenhum chat foi renomeado nesta entrega. quick_validate, links internos e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram, nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Instalação autorizada limitada ao pacote Leader; MCP exige sincronização/verificação separada.
+
+## Marcas de ambos os papéis — 2026-10-30
+
+Baseline independente identificou ausência de marca Collaborator, ativação sem identidade e troca de papel. Reavaliação passou nesses cenários, múltiplas marcas, preservação do restante, criação autorizada, falha/ausência de ferramenta e gates de tarefa/UI. Contradição residual sobre formato indefinido e renomear chat alheio foi corrigida: prefixo obrigatório, complemento livre, próprio Collaborator ajusta chat existente. Nenhum chat foi renomeado. quick_validate, links e diff check passaram; build passou, 14 unitários passaram; nove alvos integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Ambos pacotes destinados à instalação com backup/paridade; MCP depende de sincronização separada.

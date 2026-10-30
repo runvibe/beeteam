@@ -3,6 +3,19 @@
 Continuidade após o handoff: [fluxo de trabalho do Collaborator](collaborator-workflow.md), documentado separadamente com Mermaid.
 
 
+## Marca do papel no título do chat
+
+Ao receber/ativar esta skill no próprio chat, aplique imediatamente a marca do papel: `👑` para Leader ou `🐝` para Collaborator, inclusive em chat existente que muda de papel e antes de resolver a identidade. Nesse momento preserve o título atual útil, sem inventar nome. Após identificar o perfil, ajuste a parte do nome para o nome real, preservando complemento útil de projeto/time e demais conteúdo do título, com a mesma marca.
+
+Consulte o título atual e a ferramenta real do harness. Remova somente as marcas de papel iniciais repetidas/misturadas (`👑`, `🐝` e estrela legada usada como marca) e seus espaços, então anteponha uma única marca do papel ativo. Não remova emojis ou conteúdo do restante do título. Se já correto, não renomeie. Mudança de papel substitui a marca anterior, nunca acumula `👑🐝`. Só confirme renomeação após sucesso; ausência ou falha da ferramenta não bloqueia o fluxo de identidade/trabalho autorizado.
+
+Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colaborador>`, preservando contexto útil; o Collaborator garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
+
+A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
+
+Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
+
+
 ## Tarefa como fonte de verdade entre agentes
 
 Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
@@ -89,13 +102,6 @@ A escolha na interface não é recebida automaticamente pelo chat. Squad com com
 
 Referência operacional aplicada às skills locais a partir dos workflows aprovados no commit `01e77b9`. O conteúdo orienta o agente; não comprova enforcement pela API nem atualização do snapshot MCP. Nenhuma task, time ou chat é criado apenas por ler esta referência.
 
-## Título do chat da liderança
-
-Ao inicializar ou assumir uma identidade Leader confirmada, ajuste somente o título do chat em que atua para `👑 <nome do líder>`, preservando complemento útil de projeto/time do título existente. Use o nome real do perfil, não invente identidade. Consulte o título atual e a capacidade de renomear no harness; faça a mudança quando suportada e permitida, sem pedir novamente autorização já concedida. Sem ferramenta, continue a coordenação sem alegar que renomeou.
-
-Mantenha uma única coroa inicial: remova repetições desse prefixo e espaços excedentes antes de montar o título; se o resultado já corresponde ao atual, não renomeie. Para busca/reutilização de chats de liderança, compare nomes sem o prefixo decorativo inicial (coroa ou estrela legada) e seus espaços, mantendo complemento e contexto como evidências de identidade. Ao normalizar título de liderança com estrela legada, substitua apenas o prefixo pela coroa. Nome semelhante ou emoji não prova identidade nem dispensa confirmação de reutilização quando exigida.
-
-A regra vale exclusivamente para o chat da Leader assumida, nunca para chats de Collaborators ou outros chats do usuário. Não altera nome do agente, time, slug ou registros Bee Team. Não faça renomeação em massa. Exemplo: líder Ana em `Ana — Projeto X` passa a `👑 Ana — Projeto X`; esse título permanece igual na retomada; `👑 👑 Ana` passa a `👑 Ana`. O chat Collaborator `Bruno` permanece como está.
 
 ## Entrada comum aos três casos
 
@@ -161,7 +167,7 @@ Após contextualizar um time existente, com ou sem líder anterior, ou formar um
 
 Reunir os candidatos dos colaboradores numa única proposta e perguntar explicitamente ao usuário em quais quer continuar ou se prefere criar novos, evitando perguntas repetitivas por agente. Não reutilizar automaticamente, mesmo em modo automático: essa escolha foi solicitada explicitamente. Não enviar mensagem de tomada de controle ou instruções a um chat ainda não escolhido. Se o usuário aprovar a reutilização, usar o chat escolhido; se preferir outro, criar o novo conforme autorização e fornecer perfil funcional e contexto do colaborador. Se não houver chat, criar conforme autorização aplicável. Uma escolha já respondida não precisa ser perguntada novamente.
 
-O nome do colaborador deve ser a base ou padrão legível do nome do chat; o formato exato permanece indefinido. Se houver ajuste de nome ao escolher a sessão, atualizar somente o nome do chat, não o nome ou a identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar esses registros na tarefa: perfil funcional referenciado, contexto, plano, specification, currentSummary, pendências e limites; notificar somente referências e tipo; não alegar recuperação integral de conversa inexistente.
+Na criação autorizada, Leader usa 🐝 e o nome do colaborador como base legível; o complemento útil tem formato livre. Em chat existente, o próprio Collaborator normaliza o título ao assumir a skill; Leader não renomeia o chat alheio. Somente título do chat muda, não nome ou identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar esses registros na tarefa: perfil funcional referenciado, contexto, plano, specification, currentSummary, pendências e limites; notificar somente referências e tipo; não alegar recuperação integral de conversa inexistente.
 
 Para time novo, a aprovação da composição pode incluir a criação dos chats explicitados na proposta. Para existentes, seguir modo, autorizações vigentes e exigências do harness, sem repetir pedidos já cobertos; isso não elimina a escolha explícita entre continuar no candidato encontrado ou criar outro. Aplicar criação de chats somente dentro da demanda e autorização reais da sessão.
 
@@ -209,7 +215,7 @@ No retorno, o Collaborator salva primeiro na task progresso, currentSummary, com
 | Qualquer caso contextualizado/formado | Procurar chats pelo nome do colaborador e conferir candidatos | Nome é base legível, não prova de identidade; referências disponíveis, existência e acesso são conferidos. |
 | Nenhum chat encontrado ou chat confirmado apagado | Criar conforme autorização vigente | Mesmo agente, autoria e histórico preservados; handoff com perfil, tarefas, plano, specification, currentSummary e pendências; sem persistência adicional do vínculo no Bee Team. |
 | Candidato encontrado, inclusive nome igual ou semelhante | Incluir na proposta conjunta continuar no candidato ou criar outro | Reutilizar somente após escolha explícita, mesmo no automático; consulta permitida pode preceder escolha, mas nenhuma instrução é enviada ao candidato não escolhido. |
-| Nome do chat precisa de ajuste | Usar nome do colaborador como base legível | Somente nome do chat atualizado; identidade do colaborador e registros de tarefa/autoria preservados; formato exato não imposto. |
+| Nome do chat precisa de ajuste | Novo chat autorizado já recebe 🐝; no existente, Collaborator ajusta ao assumir | Marca do papel obrigatória, complemento útil livre; identidade e registros preservados. |
 | Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
 | Contextualização concluída | Apresentar resumo curto antes de agir | Colaboradores, boards, tarefas em andamento, bloqueios e lacunas visíveis ao usuário. |
 | Handoff de inicialização | Confirmar identidade/perfil prontos | Uso de Collaborator e identidade/time explícitos; fallback novo autorizado; não autoriza trabalho sem task. |

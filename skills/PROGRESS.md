@@ -104,3 +104,5 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - 2026-10-29: tarefas/comentários passam a ser fonte de verdade de toda comunicação de trabalho entre agentes; chats só notificam referências/tipo após persistência confirmada. Workflows, exemplos e prompts coerentes; preservadas autorizações, atribuição e condução visual exclusiva Leader.
 
 - 2026-10-30: padrão 👑 no título do chat atual da Leader confirmada, idempotente e preservando contexto; normalização na busca sem inferir identidade. Só pacote Leader instalado nesta entrega, sem renomear chats ou modificar runtime.
+
+- 2026-10-30: generalizado título de papel 👑 Leader / 🐝 Collaborator desde ativação antes da identidade; troca substitui marca sem acumular, criação autorizada já marca Collaborator e busca normaliza prefixos. Ambos pacotes instaláveis, nenhum rename real nesta tarefa.

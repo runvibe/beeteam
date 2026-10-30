@@ -8,6 +8,11 @@ description: Use when a human or Bee Team Leader asks this chat to act as Collab
 Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
 
 
+## Marca do papel no chat
+
+Ao receber/ativar Collaborator, marque o próprio título com `🐝` imediatamente, mesmo antes de resolver identidade: preserve o título útil e ajuste o nome depois para o perfil real, mantendo contexto. Troca de papel substitui marcas iniciais 👑/🐝/estrela legada por uma única marca correta, sem acumular; título já correto não exige escrita. Preserve demais conteúdo/emojis. Use ferramenta real e confirme sucesso; ausência/falha não bloqueia o fluxo nem permite alegar rename. Busca/reuso normaliza marcas iniciais sem dispensar contexto/identidade. Leader cria chats Collaborators autorizados já com 🐝; Collaborator garante ao assumir. Só título do próprio chat ou de novo chat autorizado, nunca agentes/times/slugs ou chats alheios. Consulte workflow para exemplos.
+
+
 ## Tarefa como fonte de verdade entre agentes
 
 Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
