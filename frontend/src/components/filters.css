@@ -17,6 +17,13 @@
   width: max-content;
   max-width: min(320px, calc(100vw - 84px));
   pointer-events: none;
+  opacity: 0.3;
+  transition: opacity 160ms ease;
+}
+.filter-summary:hover,
+.filter-summary:focus-within,
+.filter-summary[data-expanded="true"] {
+  opacity: 1;
 }
 .inline-filter-search {
   width: 36px;
@@ -138,6 +145,7 @@
   .inline-filter-search input {
     transition: none;
   }
+  .filter-summary,
   .filter-summary-list,
   .filter-summary-tag {
     transition: none;
