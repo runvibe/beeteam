@@ -1,3 +1,4 @@
+import { CardKindMark } from "@/components/card-kind-mark";
 import { CardSymbol } from "@/components/card-symbol";
 import { RelativeTime } from "@/components/relative-time";
 import { CardExcerpt } from "@/components/card-excerpt";
@@ -144,6 +145,7 @@ export function Agents() {
                     onClick={openCardLink}
                   >
                     <Card className="agent-card board-card">
+                      <CardKindMark kind="agent" />
                       <CardHeader>
                         <AgentAvatar agent={a} />
                         <CardTitle>{a.name}</CardTitle>

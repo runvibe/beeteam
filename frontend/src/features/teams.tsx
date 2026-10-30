@@ -1,3 +1,4 @@
+import { CardKindMark } from "@/components/card-kind-mark";
 import { TeamCardLinks } from "@/components/team-card-links";
 import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
@@ -113,6 +114,7 @@ export function Teams() {
                       openCardBody(e, destination(`/teams/${t.slug}`))
                     }
                   >
+                    <CardKindMark kind="team" />
                     <a
                       className="task-card-main"
                       aria-label={t.name}

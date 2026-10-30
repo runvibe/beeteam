@@ -68,7 +68,7 @@ main > .kanban {
 .kanban-column-scroll {
   margin-right: -6px;
   margin-left: -2px;
-  padding: 2px 10px 0 2px;
+  padding: 2px 2px 0 2px;
   --column-scrollbar-thumb: color-mix(in srgb, var(--foreground) 22%, transparent);
   --column-scrollbar-thumb-hover: var(--scrollbar-thumb-hover);
   scrollbar-color: var(--column-scrollbar-thumb) transparent;

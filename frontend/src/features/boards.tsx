@@ -1,3 +1,5 @@
+import { CardKindMark } from "@/components/card-kind-mark";
+import { KanbanCarousel } from "@/components/kanban-carousel";
 import { useColumnPages } from "@/api/column-pages";
 import { KanbanColumnViewport } from "@/components/kanban-column-viewport";
 import { CardSymbol } from "@/components/card-symbol";
@@ -133,6 +135,7 @@ function BoardIndex() {
                     onClick={openCardLink}
                   >
                     <Card className="board-card">
+                      <CardKindMark kind="board" />
                       <CardHeader>
                         <CardDescription>
                           {teams.data?.items.find((t) => t.id === b.teamId)
@@ -306,12 +309,13 @@ function BoardScreen({ id }: { id: string }) {
 
       <QueryState query={q}>
         {q.data && (
-          <div
-            className="kanban"
+          <KanbanCarousel
             key={JSON.stringify(filters)}
-            role="region"
-            aria-label="Quadro de tarefas"
-            tabIndex={0}
+            columns={q.data.columns.map((c) => ({
+              id: c.status.id,
+              name: c.status.name,
+              total: c.total,
+            }))}
           >
             {q.data.columns.map((c) => (
               <Column
@@ -321,7 +325,7 @@ function BoardScreen({ id }: { id: string }) {
                 filters={filters}
               />
             ))}
-          </div>
+          </KanbanCarousel>
         )}
       </QueryState>
       {entity.data && (

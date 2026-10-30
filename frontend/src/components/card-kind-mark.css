@@ -1,0 +1,21 @@
+.balanced-card-grid .board-card {
+  position: relative;
+}
+.card-kind-mark {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.18;
+  color: var(--foreground);
+  pointer-events: none;
+}
+.card-kind-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.balanced-card-grid .board-card:has(.card-kind-mark) [data-slot="card-header"] {
+  padding-left: 44px;
+}

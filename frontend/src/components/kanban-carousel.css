@@ -1,0 +1,58 @@
+.kanban-mobile-navigation {
+  display: none;
+}
+.kanban-carousel {
+  position: relative;
+}
+@media (max-width: 850px) {
+  .kanban-mobile-navigation {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+  .kanban-mobile-navigation > button {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+  }
+  .kanban-mobile-navigation > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+    font-size: 12px;
+  }
+  .kanban-current-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .kanban-current-total {
+    flex-shrink: 0;
+    color: var(--muted-foreground);
+  }
+  main > .kanban.kanban-carousel {
+    grid-auto-columns: calc(100% - 20px);
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 8px;
+    overscroll-behavior-x: contain;
+  }
+  .kanban-carousel > .kanban-column {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .kanban-carousel > .kanban-column > .column-heading {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    padding: 0;
+  }
+}
