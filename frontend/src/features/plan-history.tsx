@@ -56,7 +56,9 @@ export function PlanHistory({
             void fetchNextPage({ cancelRefetch: false });
         },
         {
-          root: media.matches ? target.closest("[data-detail-scroll]") : null,
+          root:
+            target.closest("[data-plan-scroll]") ??
+            (media.matches ? target.closest("[data-detail-scroll]") : null),
           rootMargin: "0px 0px 240px 0px",
         },
       );
