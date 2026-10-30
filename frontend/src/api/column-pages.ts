@@ -1,3 +1,4 @@
+import { nextPageOffset } from "@/api/page-continuation";
 import { useMemo } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "./context";
@@ -43,10 +44,8 @@ export function useColumnPages(
       ],
       pageParams: [0],
     },
-    getNextPageParam: (last) =>
-      last.hasMore && last.nextOffset != null && last.nextOffset > last.offset
-        ? last.nextOffset
-        : undefined,
+    getNextPageParam: (last, pages) =>
+      nextPageOffset(last, pages, (item) => item.id),
   });
   const items = useMemo(() => {
     const unique = new Map<string, Task>();

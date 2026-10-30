@@ -111,6 +111,7 @@ export interface BeeApi {
     taskId: string,
     planId: string,
     filters?: Filters,
+    signal?: AbortSignal,
   ): Promise<Page<PlanRevision>>;
   resume(agentId: string): Promise<ResumeContext>;
   createStatus(

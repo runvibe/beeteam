@@ -133,3 +133,5 @@ Configuration forms use `settings-autosave`: text commits on blur, options on ch
 The global header hosts listing/board filters beside the breadcrumb; preferences and the theme toggle sit at the bottom of the icon rail. Empty team searches request five teams by `createdAt desc`; typed searches request at most five name matches across the API.
 
 Card lists show a small bottom-centered return-to-top overlay after scrolling. Its 44px keyboard-accessible target scrolls only the card region, preserves filters and loaded pages, respects reduced motion, and moves above a visible loading/retry footer. It reserves no layout space.
+
+A rolagem incremental de cards, colunas Kanban, navegação de planos e histórico usa o controlador compartilhado `useInfiniteScroll`. Ele reavalia o sentinel após cada página e resize, respeita o scroll root de cada superfície e interrompe em erro, fim ou ausência de progresso. Os adapters mantêm deduplicação e cancelamento via AbortSignal; páginas vazias/repetidas e offsets sem avanço não provocam loops. As âncoras existentes e o loader de 100ms são preservados; refetch de autosave continua silencioso na lista de planos.

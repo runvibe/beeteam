@@ -72,8 +72,18 @@ export function useCardPages<K extends CardResource>(
   const fetching = pages.some((page) => page.isFetching);
   const error = pages.find((page) => page.error)?.error;
   const nextOffset = tail.data?.nextOffset;
+  const previousIds = new Set(
+    pages
+      .slice(0, -1)
+      .flatMap((page) => page.data?.items.map((item) => item.id) ?? []),
+  );
+  const advanced =
+    !!tail.data?.items.length &&
+    (pages.length === 1 ||
+      tail.data.items.some((item) => !previousIds.has(item.id)));
   const hasMore = tail.data
-    ? !!tail.data.hasMore &&
+    ? advanced &&
+      !!tail.data.hasMore &&
       nextOffset != null &&
       nextOffset > blocks[blocks.length - 1].offset
     : blocks.length > 1 && !!pages[pages.length - 2].data?.hasMore;

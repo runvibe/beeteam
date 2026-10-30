@@ -1,4 +1,6 @@
-import { useEffect, useRef } from "react";
+import { nextPageOffset } from "@/api/page-continuation";
+import { useInfiniteScroll } from "@/components/use-infinite-scroll";
+import { useRef } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { PlanRevision } from "@/api/types";
@@ -28,49 +30,35 @@ export function PlanHistory({
       item.revision,
     ],
     initialPageParam: 0,
-    queryFn: ({ pageParam }) =>
-      api.revisions(item.taskId, item.planId, { offset: pageParam, limit }),
-    getNextPageParam: (last) =>
-      last.hasMore && last.nextOffset !== null && last.nextOffset > last.offset
-        ? last.nextOffset
-        : undefined,
+    queryFn: ({ pageParam, signal }) =>
+      api.revisions(
+        item.taskId,
+        item.planId,
+        { offset: pageParam, limit },
+        signal,
+      ),
+    getNextPageParam: (last, pages) =>
+      nextPageOffset(last, pages, (item) => item.id),
   });
   const { hasNextPage, isFetching, error, fetchNextPage } = q;
-  useEffect(() => {
-    const target = sentinel.current;
-    if (
-      !target ||
-      !hasNextPage ||
-      isFetching ||
-      error ||
-      typeof IntersectionObserver === "undefined"
-    )
-      return;
-    const media = window.matchMedia("(min-width: 1056px)");
-    let observer: IntersectionObserver;
-    const observe = () => {
-      observer?.disconnect();
-      observer = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting))
-            void fetchNextPage({ cancelRefetch: false });
-        },
-        {
-          root:
-            target.closest("[data-plan-scroll]") ??
-            (media.matches ? target.closest("[data-detail-scroll]") : null),
-          rootMargin: "0px 0px 240px 0px",
-        },
-      );
-      observer.observe(target);
-    };
-    observe();
-    media.addEventListener("change", observe);
-    return () => {
-      observer.disconnect();
-      media.removeEventListener("change", observe);
-    };
-  }, [hasNextPage, isFetching, error, fetchNextPage]);
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () =>
+      sentinel.current?.closest("[data-plan-scroll]") ??
+      (window.matchMedia?.("(min-width: 1056px)").matches
+        ? (sentinel.current?.closest("[data-detail-scroll]") ?? null)
+        : null),
+    identity: item.planId,
+    progress:
+      q.data?.pages
+        .flatMap((page) => page.items.map((record) => record.id))
+        .join(",") ?? "",
+    hasMore: !!hasNextPage,
+    fetching: isFetching,
+    error,
+    margin: 240,
+    loadMore: () => fetchNextPage({ cancelRefetch: false }),
+  });
   const records = [
     ...new Map(
       q.data?.pages

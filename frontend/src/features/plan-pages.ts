@@ -1,3 +1,4 @@
+import { nextPageOffset } from "@/api/page-continuation";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -21,10 +22,8 @@ export function usePlanPages(
     initialPageParam: 0,
     queryFn: ({ pageParam, signal }) =>
       api.list("plans", taskId, { offset: pageParam, limit }, signal),
-    getNextPageParam: (last) =>
-      last.hasMore && last.nextOffset !== null && last.nextOffset > last.offset
-        ? last.nextOffset
-        : undefined,
+    getNextPageParam: (last, pages) =>
+      nextPageOffset(last, pages, (item) => item.planId),
   });
   const items = [
     ...new Map(

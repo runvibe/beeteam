@@ -1,3 +1,4 @@
+import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import {
   useEffect,
   useLayoutEffect,
@@ -64,39 +65,24 @@ export function PlanNavigation({
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-  useEffect(() => {
-    if (
-      mobile ||
-      plans.locating ||
-      !sentinel.current ||
-      !query.hasNextPage ||
-      query.isFetching ||
-      query.error ||
-      typeof IntersectionObserver === "undefined"
-    )
-      return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting))
-          void query.fetchNextPage({ cancelRefetch: false });
-      },
-      { root: list.current, rootMargin: "0px 0px 160px 0px" },
-    );
-    observer.observe(sentinel.current);
-    return () => observer.disconnect();
-  }, [
-    mobile,
-    plans.locating,
-    query.hasNextPage,
-    query.isFetching,
-    query.error,
-    query.fetchNextPage,
-  ]);
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () => list.current,
+    identity: taskId,
+    progress: plans.items.map((item) => item.planId).join(","),
+    enabled: !mobile && !plans.locating,
+    hasMore: !!query.hasNextPage,
+    fetching: query.isFetching,
+    error: query.error,
+    margin: 160,
+    loadMore: plans.loadMore,
+  });
   const feedback = (
     <>
-      {query.isFetching && (query.isFetchingNextPage || !plans.items.length) && (
-        <LoadingIndicator label="Carregando planos" />
-      )}
+      {query.isFetching &&
+        (query.isFetchingNextPage || !plans.items.length) && (
+          <LoadingIndicator label="Carregando planos" />
+        )}
       {query.error && (
         <Failure error={query.error} retry={() => void plans.retry()} />
       )}
@@ -136,7 +122,7 @@ export function PlanNavigation({
             {item.title}
           </Button>
         ))}
-        <div ref={sentinel} style={{ minHeight: 1 }}>
+        <div ref={sentinel} style={{ minHeight: 60 }}>
           {feedback}
         </div>
       </nav>
