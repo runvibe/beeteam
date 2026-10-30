@@ -357,7 +357,11 @@ function Column({
         <h2>{column.status.name}</h2>
         <span>{page.total}</span>
       </div>
-      <KanbanColumnViewport state={page} label={column.status.name}>
+      <KanbanColumnViewport
+        storageKey={JSON.stringify([boardId, column.status.id, filters])}
+        state={page}
+        label={column.status.name}
+      >
         {page.items.map((t) => (
           <TaskCard key={t.id} task={t} />
         ))}
