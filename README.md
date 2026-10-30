@@ -459,3 +459,5 @@ The first Motion pass animates filter positions with a damped spring, reveals Cl
 Active-filter tags use 30% opacity for the entire stack at rest and 100% on hover, keyboard focus, or touch expansion, with a 160 ms CSS transition disabled for reduced motion. Hit areas and filter-removal behavior stay unchanged.
 
 Kanban columns load at least six root active tasks initially (or all available when fewer), then append another viewport-sized batch when the user scrolls within 300 px of the bottom. Each column keeps an independent native scrollbar and its loaded pages during live refresh; requests consume AbortSignal, deduplicate IDs, and stop on a non-advancing cursor. Filter/board changes reset the column viewport. Errors retain cards and offer retry; exhausted columns end silently with 1rem breathing room. Task assignee avatars are fixed 28px circles; only the name is underlined on hover. Column scrollbar thumbs are subtle, with space from cards; card hover/focus outlines remain inset to avoid clipping.
+
+Kanban column scrollbar thumbs follow the card color in dark mode, brighten on hover, and retain the light-mode and forced-color fallbacks.
