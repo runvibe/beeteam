@@ -1,3 +1,5 @@
+import { useColumnPages } from "@/api/column-pages";
+import { KanbanColumnViewport } from "@/components/kanban-column-viewport";
 import { CardSymbol } from "@/components/card-symbol";
 import { RelativeTime } from "@/components/relative-time";
 import { CardExcerpt } from "@/components/card-excerpt";
@@ -37,7 +39,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Choice, Search, QueryState, NoData, Pager } from "@/components/shared";
+import { Choice, Search, QueryState, NoData } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { BoardSettings } from "./settings";
 export function Boards() {
@@ -180,7 +182,13 @@ function BoardScreen({ id }: { id: string }) {
       "",
       { validate: validDate },
     ),
-    limit = usePageSize("kanban", 3);
+    limit = Math.max(
+      6,
+      usePageSize(
+        "kanban",
+        Math.max(6, Math.ceil((innerHeight - 140) / 272) + 1),
+      ),
+    );
   const settings = useLocation().split("?")[0].endsWith("/settings");
   const setSettings = (open: boolean) =>
     open
@@ -335,45 +343,7 @@ function Column({
   boardId: string;
   filters: Filters;
 }) {
-  const api = useApi();
-  const [offset, setOffset] = useUrlState<number>(
-    `kanban.${column.status.id}.offset`,
-    0,
-  );
-  const { limitPerColumn, ...continuation } = filters;
-  const q = useQuery({
-    queryKey: [
-      "column",
-      boardId,
-      column.status.id,
-      continuation,
-      offset,
-      limitPerColumn,
-    ],
-    queryFn: () =>
-      api.list("tasks", boardId, {
-        ...continuation,
-        statusId: column.status.id,
-        rootOnly: true,
-        archived: false,
-        sortBy: "position",
-        sortOrder: "asc",
-        offset,
-        limit: limitPerColumn,
-      }),
-    enabled: offset > 0,
-  });
-  const page =
-    offset === 0
-      ? {
-          items: column.tasks,
-          offset: 0,
-          limit: column.limit,
-          total: column.total,
-          hasMore: column.hasMore,
-          nextOffset: column.nextOffset,
-        }
-      : q.data;
+  const page = useColumnPages(boardId, column, filters);
   return (
     <section className="kanban-column" aria-label={column.status.name}>
       <div className="column-heading">
@@ -381,26 +351,19 @@ function Column({
           className={column.status.isDone ? "status-dot done" : "status-dot"}
         />
         <h2>{column.status.name}</h2>
-        <span>{column.total}</span>
+        <span>{page.total}</span>
       </div>
-      {offset > 0 ? (
-        <QueryState query={q}>
-          {page?.items.map((t) => (
-            <TaskCard key={t.id} task={t} />
-          ))}
-        </QueryState>
-      ) : (
-        page?.items.map((t) => <TaskCard key={t.id} task={t} />)
-      )}
-      {page?.items.length === 0 && (
-        <NoData
-          title="Sem tasks"
-          description="Nenhuma task corresponde a esta coluna."
-        />
-      )}
-      {page && (page.hasMore || offset > 0) && (
-        <Pager page={page} onOffset={setOffset} />
-      )}
+      <KanbanColumnViewport state={page} label={column.status.name}>
+        {page.items.map((t) => (
+          <TaskCard key={t.id} task={t} />
+        ))}
+        {page.items.length === 0 && (
+          <NoData
+            title="Sem tasks"
+            description="Nenhuma task corresponde a esta coluna."
+          />
+        )}
+      </KanbanColumnViewport>
     </section>
   );
 }
@@ -409,6 +372,7 @@ export function TaskCard({ task }: { task: Task }) {
   return (
     <Card
       className="task-card"
+      data-task-id={task.id}
       data-blocked={task.block.blocked || undefined}
       onClick={(event) => openCardBody(event, href)}
     >
