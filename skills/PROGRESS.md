@@ -100,3 +100,11 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - [x] Revisão independente corrigiu caminho novo time para passar pelo board; links/estrutura/build e 12 unitários passaram, três integrações CreateContainer/NotFound falharam.
 
 - Condução visual natural exclusiva do Leader aplicada em entradas, workflows/Mermaid e referência Codex; alinhamento fast-forward com main fd78b37. Sem alterações de runtime/configuração; snapshot MCP fica para sincronização Backend.
+
+- 2026-10-29: tarefas/comentários passam a ser fonte de verdade de toda comunicação de trabalho entre agentes; chats só notificam referências/tipo após persistência confirmada. Workflows, exemplos e prompts coerentes; preservadas autorizações, atribuição e condução visual exclusiva Leader.
+
+- 2026-10-30: padrão 👑 no título do chat atual da Leader confirmada, idempotente e preservando contexto; normalização na busca sem inferir identidade. Só pacote Leader instalado nesta entrega, sem renomear chats ou modificar runtime.
+
+- 2026-10-30: generalizado título de papel 👑 Leader / 🐝 Collaborator desde ativação antes da identidade; troca substitui marca sem acumular, criação autorizada já marca Collaborator e busca normaliza prefixos. Ambos pacotes instaláveis, nenhum rename real nesta tarefa.
+
+- 2026-10-30: interação via comentário completo obrigatório (inclusive sóstatus), aviso task/áreas/status pertinente/commentID e leitura MCP exata; dúvidas/relatos/pedidos Collaborator via Leader e decisões humanas Leader via comentário/referência sem caixas interativas. Contrato getComment/createdComments confirmado Backend incorporado; somente ativação inicial de novo chat Collaborator dispensa comentário.

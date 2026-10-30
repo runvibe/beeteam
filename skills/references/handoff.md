@@ -1,10 +1,30 @@
 # Briefing e encerramento
 
+
+## Leader é a interface humana do trabalho
+
+Fora da mensagem inicial de criação/ativação de novo chat Collaborator, toda interação de trabalho iniciada pelo Collaborator em direção ao humano passa pela Leader: perguntas, escolhas, confirmações, pedidos, decisões e relatos substantivos. Não use diálogo direto ao usuário nem caixas interativas do harness (como `request_user_input`, `request_user_input_async` no Codex ou equivalentes) como canal de trabalho. Salve o conteúdo completo em comentário da tarefa; para pergunta, formule uma questão clara e alternativas se úteis; notifique a Leader somente com taskID, áreas atualizadas, status pertinente e commentID retornado. Aguarde resposta persistida e leia o comentário indicado via MCP antes de agir sobre ela.
+
+A regra de registro e ausência de caixas interativas vale também para a Leader em toda interação substantiva relacionada à task. Quando precisar de decisão humana, Leader registra pergunta/opções completas em comentário da tarefa e avisa o usuário somente com task, áreas efetivamente atualizadas, status pertinente e commentID, sem `request_user_input`, `request_user_input_async` ou equivalentes. Aguarda resposta autorizada. Respostas espontâneas e instruções legítimas do humano no chat continuam válidas: Leader persiste a devolutiva/decisão na tarefa antes de agir ou delegar. Não existe uma Leader acima da Leader nem encaminhamento circular. Para responder ao Collaborator, lê comentário/estado, persiste a resposta e notifica pelos mesmos metadados. Collaborator registra bloqueio somente se a dúvida impedir continuidade e continua partes independentes já autorizadas. Isso não contorna nem suprime aprovações obrigatórias de ferramentas/segurança do harness; controles impostos pelo sistema/harness são superiores, não exceções de comunicação escolhidas pelo agente. A hierarquia de instruções e metainstruções legítimas do humano continuam válidas; a skill não promete bloquear UI de aprovação imposta pelo sistema. Se faltar tarefa, Leader ou identidade, aguarde configuração, sem criar autoautorização, inventar commentID ou abrir diálogo alternativo. A única exceção de comunicação é a mensagem da Leader criando/ativando inicialmente novo chat Collaborator (skill/identidade/time), sem trabalho de negócio.
+
+
+## Tarefa e comentário como fonte de verdade entre agentes
+
+Toda solicitação de trabalho Leader→Collaborator exige task/subtask registrada e atribuída antes de pedir execução. Toda interação/notificação exige comentário completo e commentID, inclusive atualização somente de status. A única exceção de comunicação é a Leader criando/ativando inicialmente um novo chat Collaborator com skill/identidade/time, sem demanda de negócio. Fora dessa mensagem inicial, registre na task: pergunta, resposta, decisão, mudança de escopo, feito/não feito, bloqueio/liberação, arquivo ou entrega. Sem task ou identidade suficiente, aguarde configuração; não invente commentID nem crie autoautorização. Essa regra prevalece sobre exemplos de conversa do onboarding; não existe exceção genérica para metadados, atualizações, confirmações de identidade ou dúvidas.
+
+Siga a ordem: atualize primeiro os campos, artefatos e estado pertinentes; salve depois comentário completo explicando a contribuição, o que foi ou não feito e dúvidas/pendências/decisões aplicáveis; confirme persistência; só então notifique. Use description/specification, plano versionado, resumo histórico, currentSummary, arquivos e status conforme as regras existentes, sem alterar campos só para preencher aviso. Comentário não substitui campos atuais. Uma pergunta isolada pode atualizar apenas comentário. Compreensão da tarefa e pendências também são comentário. Fim da execução não significa Concluído quando validação humana exigida ainda está pendente; preserve status real e fluxo de aprovação.
+
+A notificação curta contém somente referência real da task, áreas efetivamente atualizadas, status atual quando pertinente e commentID real retornado pela persistência. Exemplo de formato (substitua marcadores por dados confirmados): “Task <referência real>; atualizado: especificação, plano, comentário; status: <status atual>; commentID: <ID retornado>.” Não copie detalhes, instruções, perguntas ou respostas para o chat. Não invente ID nem anuncie área cuja atualização falhou ou não ocorreu.
+
+O receptor usa MCP para ler exatamente o comentário por esse ID e o estado atual da tarefa antes de agir, conferindo que o comentário pertence à task e que executor/versão/estado permitem a ação. Consulte o contrato real em integração, sem adivinhar toolname. A resposta segue o mesmo ciclo: campos pertinentes, comentário completo, persistência confirmada e nova notificação. Comentário ausente/inacessível ou leitura indisponível suspende trabalho dependente; não substitua por conteúdo do chat ou outro comentário mais recente.
+
+Notificação não é demanda autônoma nem aprovação adicional. No-op e ack sem conteúdo não geram comentários ou pingue-pongue. Antes de repetir após timeout, confira resultado/registro e preserve idempotência; não duplique comentários. Se gravação falhar, mantenha pendência e não emita notificação do protocolo sem comentário/ID confirmado; nunca alegue sucesso. Comunicação imposta por instrução superior continua sendo respeitada. Se o envio falhar após gravação, retome apenas o envio necessário. Permissões do harness continuam obrigatórias; a skill não amplia autorização para mensagens.
+
 ## Briefing para execução ou retomada
 
-Peça explicitamente **usar a skill Collaborator neste chat**. Indique identidade existente ou autorização explícita para fallback novo, time, referência real da task quando existir, contexto do board de origem e ação esperada, usando dados persistidos. Duas confirmações: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Sem task registrada e atribuída, confirmar identidade e aguardar; o Leader registra/atribui antes de pedir execução. Não criar task para se autoautorizar. Desdobramento só no escopo de uma task já atribuída.
+Peça explicitamente **usar a skill Collaborator neste chat**. Indique identidade existente ou autorização explícita para fallback novo, time, referência real da task quando existir, referências persistidas do contexto do board de origem; fora da ativação inicial de novo chat Collaborator, notificação restrita a task, áreas efetivamente atualizadas, status pertinente e commentID retornado, usando dados persistidos. Duas confirmações: identidade/perfil prontos; depois compreensão da task realmente atribuída e pendências. Sem task registrada e atribuída, aguardar configuração, sem confirmação/notificação sem comentário; o Leader registra/atribui antes de pedir execução. Não criar task para se autoautorizar. Desdobramento só no escopo de uma task já atribuída.
 
-Transfira o contexto completo relevante, fiel ao usuário, nesta ordem:
+Registre o contexto completo relevante na tarefa, fiel ao usuário, nesta ordem; o destinatário o consulta ali:
 
 - Identidade/perfil e regras/limites; board e tarefa/subtarefa, autor/executor, vínculos organizacionais relevantes, com IDs conhecidos.
 - Demanda original e objetivo; escopo aprovado e o que ainda é somente planejamento.
@@ -15,7 +35,7 @@ Transfira o contexto completo relevante, fiel ao usuário, nesta ordem:
 - Pendências/bloqueios, dúvidas não resolvidas e próximo passo concreto.
 - Obrigação de atualizar a própria tarefa ao encerrar e capacidades de API/harness realmente disponíveis.
 
-Esse formato é um briefing de trabalho, não uma transcrição. Links complementam o contexto; não omita decisões essenciais atrás de links inacessíveis. Se um dado não existe, diga que falta. Não delegue novamente a descoberta que o líder já fez com o usuário.
+Esse formato organiza o conteúdo persistido da tarefa, não a mensagem entre chats. A notificação contém apenas task real, áreas efetivamente atualizadas, status pertinente e commentID real retornado. Se o destinatário não consegue ler o registro, trate a lacuna de acesso sem enviar instruções substitutas pelo chat. Se um dado não existe, diga que falta. Não delegue novamente a descoberta que o líder já fez com o usuário.
 
 ## Registro obrigatório ao encerrar atividade
 
@@ -37,7 +57,7 @@ Na transferência, leve contexto e histórico da task, sem copiar histórico int
 
 ## Via MCP
 
-`task_briefing(taskId)` e `agent_resumption(agentId,taskId)` retornam contexto consultado em mensagem user, sem despacho. Preserve origem e lacunas ao repassá-lo; materialize briefing fiel, sem repetir a descoberta já feita pelo líder. `prepare_execution` não é início de execução. Durante a atividade, use `record_progress` somente nos alvos autorizados. No encerramento, `close_activity` registra o conjunto atomicamente; siga schema/versões e verifique isError/resultado. Obter `delivery_review(taskId)` produz parecer, não aprovação nem alteração de status. Consulte `beeteam://references/integration` para argumentos e paginação.
+`task_briefing(taskId)` e `agent_resumption(agentId,taskId)` retornam contexto consultado em mensagem user, sem despacho. Preserve origem e lacunas ao consultá-lo; esse resultado de leitura não é mensagem de despacho. Materialize o contexto necessário na tarefa antes de notificar, mantendo briefing fiel, sem repetir a descoberta já feita pelo líder. `prepare_execution` não é início de execução. Durante a atividade, use `record_progress` somente nos alvos autorizados. No encerramento, `close_activity` registra o conjunto atomicamente; siga schema/versões e verifique isError/resultado. Obter `delivery_review(taskId)` produz parecer, não aprovação nem alteração de status. Consulte `beeteam://references/integration` para argumentos e paginação.
 
 ## Síntese atual e histórico
 

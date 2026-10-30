@@ -126,3 +126,25 @@ quick_validate UTF-8, links autocontidos e estrutura acíclica do Mermaid princi
 Revisão textual por cenários (sem navegar no chat do usuário ou criar dados): seleção de time leva a Teams/time; board recém-criado só é mostrado após retorno persistido; planejamento usa task em página inteira e slug retornado; ausência de UI mantém gravação e link; edição ativa preserva a superfície; falha de navegação não vira alegação de sincronização; Collaborator atualiza registros sem controlar tela. Gate de atribuição e task própria do Leader preservados. Rotas conferidas em frontend/ROUTES.md; referências Markdown relativas contidas e existentes nos dois pacotes; quick_validate passou em ambos; git diff --check passou. Nenhuma validação live de frontend/backend é reivindicada.
 
 Validação Rust após alinhamento: cargo build --locked passou; cargo test --locked --no-fail-fast falhou em nove alvos de integração, com falha de conexão CreateContainer/HyperLegacyError/NotFound no Testcontainers deste checkout. Não equivale a indisponibilidade global do Docker nem valida o runtime publicado.
+
+## Comunicação referencial entre agentes — 2026-10-29
+
+Baseline independente identificou permissão implícita para decisões/perguntas só no chat, briefing completo no despacho e ausência de proteção específica contra ciclos. Após correção, reavaliação independente passou: mudança de endpoint, pergunta/resposta, entrega, aviso repetido, task inexistente e falha de gravação. Ajuste final explicita compreensão/pendências em comentário da tarefa, preservando ativação de identidade sem tarefa. Prompts continuam leitura, não despacho. Nenhuma entidade de negócio foi criada nem sessão do usuário redirecionada.
+
+quick_validate dos dois pacotes, resolução/containment de links relativos e git diff --check passaram. Cópias globais anteriores conferidas sem drift antes da substituição autorizada. Snapshot MCP é pacote separado e não é declarado atualizado por esta validação.
+
+Rust: cargo build --locked passou; cargo test --locked --no-fail-fast executou e falhou em nove alvos de integração. O log atual exige BEE_TEST_DATABASE_URL apontando para PostgreSQL 18 isolado e informa NotPresent; não foi usado banco de produto como alternativa. Essa limitação não prova falha do runtime ativo; serviços não foram reiniciados.
+
+## Título da liderança — 2026-10-30
+
+Baseline textual independente constatou ausência de regra para prefixo e idempotência. Reavaliação passou para título simples/com complemento, já prefixado, coroa duplicada, estrela legada, ausência de ferramenta e preservação de Collaborators/outros chats/agentes/times/slugs. Nenhum chat foi renomeado nesta entrega. quick_validate, links internos e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram, nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Instalação autorizada limitada ao pacote Leader; MCP exige sincronização/verificação separada.
+
+## Marcas de ambos os papéis — 2026-10-30
+
+Baseline independente identificou ausência de marca Collaborator, ativação sem identidade e troca de papel. Reavaliação passou nesses cenários, múltiplas marcas, preservação do restante, criação autorizada, falha/ausência de ferramenta e gates de tarefa/UI. Contradição residual sobre formato indefinido e renomear chat alheio foi corrigida: prefixo obrigatório, complemento livre, próprio Collaborator ajusta chat existente. Nenhum chat foi renomeado. quick_validate, links e diff check passaram; build passou, 14 unitários passaram; nove alvos integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Ambos pacotes destinados à instalação com backup/paridade; MCP depende de sincronização separada.
+
+## Comentário obrigatório e interface humana — 2026-10-30
+
+Baseline e revisões independentes cobriram comentário completo, atualização sóstatus, pergunta isolada, arquivos/feito/nãofeito, bloqueio/liberação, validação humana pendente, no-op, falha parcial, ID de outra task e canal humano simétrico. Corrigidas tensões de escolha de chats, relatos visuais e avisos locais; comentário/ID sempre exigidos, única exceção de comunicação Leader criando/ativando inicialmente novo chat Collaborator. Controles obrigatórios/metainstruções preservados.
+
+Contrato getComment/createdComments recebido como testado pela frente Backend (SQLite temporário HTTP/MCP); referência integrada sem alegar runtime sincronizado. quick_validate, links, paridade de referências dos dois pacotes e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Nenhum dado de negócio, chat ou serviço foi alterado. Instalação com backup/paridade é separada da publicação MCP.

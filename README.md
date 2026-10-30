@@ -469,3 +469,12 @@ Board, agent and team listing cards include a consistent decorative filled type 
 Agent listing cards place the avatar at the right of the header, with the decorative type mark remaining at the top left; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
+Na coordenação Bee Team, toda demanda Leader→Collaborator é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
+
+Ao ativar Leader ou Collaborator, o próprio chat recebe respectivamente 👑 ou 🐝, antes mesmo da resolução da identidade. Mudanças de papel substituem a marca inicial sem acumular; nome/contexto útil são preservados. Leader já nomeia novos chats Collaborators autorizados com 🐝. Somente títulos de chat mudam, nunca agentes/times/slugs.
+
+Após bootstrap de identidade/time, cada interação substantiva entre agentes atualiza campos pertinentes e salva comentário completo antes da notificação. O aviso contém task, áreas realmente atualizadas, status pertinente e commentID retornado; receptor lê esse comentário por ID via MCP e o estado atual antes de agir. Validação humana pendente não implica tarefa concluída.
+
+A Leader é a interface humana do trabalho: fora da mensagem inicial de criação/ativação de novo chat Collaborator, perguntas, escolhas, pedidos, confirmações e relatos substantivos iniciados pelo Collaborator passam por comentário e notificação à Leader, sem diálogo direto ou caixas interativas ao humano. Isso preserva metainstruções legítimas, aprovações obrigatórias do harness e trabalho independente autorizado.
+
+A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
