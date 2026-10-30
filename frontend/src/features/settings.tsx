@@ -175,7 +175,9 @@ export function TaskMode({ task }: { task: Task }) {
       {task.archivedAt && (
         <p className="small-note">Task arquivada: somente leitura.</p>
       )}
-      <AutosaveFeedback state={autosave} />
+      {(autosave.pending || autosave.dirty || !!autosave.error) && (
+        <AutosaveFeedback state={autosave} />
+      )}
     </section>
   );
 }

@@ -498,4 +498,6 @@ A aba Planos usa navegação lateral vertical no desktop, com lista incremental 
 
 No detalhe da tarefa, as abas (ou seletor mobile) permanecem sticky durante a leitura. No desktop, um observador do cabeçalho original mostra título, progresso e bloqueio resumido no topo da sidebar somente após o cabeçalho sair do scroll principal. O resumo é uma repetição visual aria-hidden, mantém o original no fluxo e não remonta formulários; desaparece ao retornar ao topo. A transição respeita prefers-reduced-motion. No mobile, o contexto continua no disclosure e não recebe esse resumo fixo.
 
+Na autonomia do detalhe da task, o autosave mantém feedback de salvando e erro com retry, sem confirmação visual de sucesso nem linha vazia após salvar.
+
 No desktop, a barra de rolagem principal do detalhe fica no limite direito da área de conteúdo, junto à divisória contextual. O respiro de 32px fica entre conteúdo e barra, preservando a largura de 300px da sidebar e sem alterar a rolagem interna dos planos.
