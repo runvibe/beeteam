@@ -466,6 +466,6 @@ On mobile (up to 850px), Kanban uses native horizontal scroll snap with one near
 
 Board, agent and team listing cards include a consistent decorative filled type mark at the top left, with header space reserved to avoid overlap; existing role/autonomy symbols and card height remain separate.
 
-Agent listing cards place the avatar at the right of the header, with the decorative type mark remaining at the top left; task assignee avatars are unchanged.
+Agent listing cards use a centered 56px profile avatar above the centered name, with the decorative type mark at the top left. The 272px card height, description fade and footer remain consistent; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
