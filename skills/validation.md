@@ -142,3 +142,9 @@ Baseline textual independente constatou ausência de regra para prefixo e idempo
 ## Marcas de ambos os papéis — 2026-10-30
 
 Baseline independente identificou ausência de marca Collaborator, ativação sem identidade e troca de papel. Reavaliação passou nesses cenários, múltiplas marcas, preservação do restante, criação autorizada, falha/ausência de ferramenta e gates de tarefa/UI. Contradição residual sobre formato indefinido e renomear chat alheio foi corrigida: prefixo obrigatório, complemento livre, próprio Collaborator ajusta chat existente. Nenhum chat foi renomeado. quick_validate, links e diff check passaram; build passou, 14 unitários passaram; nove alvos integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Ambos pacotes destinados à instalação com backup/paridade; MCP depende de sincronização separada.
+
+## Comentário obrigatório e interface humana — 2026-10-30
+
+Baseline e revisões independentes cobriram comentário completo, atualização sóstatus, pergunta isolada, arquivos/feito/nãofeito, bloqueio/liberação, validação humana pendente, no-op, falha parcial, ID de outra task e canal humano simétrico. Corrigidas tensões de escolha de chats, relatos visuais e avisos locais; comentário/ID sempre exigidos, única exceção de comunicação Leader criando/ativando inicialmente novo chat Collaborator. Controles obrigatórios/metainstruções preservados.
+
+Contrato getComment/createdComments recebido como testado pela frente Backend (SQLite temporário HTTP/MCP); referência integrada sem alegar runtime sincronizado. quick_validate, links, paridade de referências dos dois pacotes e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Nenhum dado de negócio, chat ou serviço foi alterado. Instalação com backup/paridade é separada da publicação MCP.

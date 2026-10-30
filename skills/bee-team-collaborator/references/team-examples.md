@@ -61,7 +61,8 @@ Candidatos por nome/contexto são evidência, não prova: reunir escolha de reus
 
 ## Exemplo de pergunta, decisão e entrega
 
-As propostas acima são conversas com o usuário; antes de solicitar execução a outro agente, registre e atribua cada task/subtask. Em uma alteração de endpoint, Collaborator salva a pergunta em comentário e notifica apenas task/comentário e tipo “pergunta”. Leader registra a resposta/decisão e atualiza specification/plano conforme impacto antes de notificar tipo “decisão”. Collaborator lê os registros, executa o escopo atribuído e salva evidências, síntese e estado antes do aviso “entrega”. Referências vêm dos retornos reais; não copiar decisão para o chat. Um aviso repetido não gera nova tarefa, comentário ou confirmação automática.
+Na mudança de endpoint, Collaborator salva a pergunta completa em comentário e notifica task, área “comentário” e commentID retornado. Leader lê esse ID via MCP e a task atual; atualiza specification/plano se necessário, salva resposta/decisão completa em novo comentário e notifica somente task, áreas realmente atualizadas, status pertinente e novo commentID. Collaborator lê esse comentário e estado atual, executa o escopo atribuído, salva arquivos/evidências, síntese e estado pertinentes, depois comentário completo de feito/não feito e pendências. Notifica só após confirmar tudo. Validação humana pendente não vira Concluído. Aviso repetido ou ack sem contribuição não gera novo comentário/notificação.
+
 
 ## Marca do papel no título do chat
 
@@ -74,3 +75,9 @@ Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colabo
 A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
 
 Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
+
+## Dúvida de execução
+
+Collaborator precisa decidir comportamento de erro do endpoint: registra a pergunta completa e alternativas no comentário, não abre request_user_input nem pergunta ao humano. Se puder executar testes independentes já autorizados, continua essa parte; só marca bloqueio quando necessário. Leader lê comentário/task e responde ou registra pergunta/opções na tarefa e avisa o humano por referência sem caixa interativa; aguarda resposta autorizada, persiste decisão e devolve notificação taskID/áreas/status pertinente/commentID. Collaborator lê a resposta pelo ID via MCP antes de implementar. Aprovação obrigatória de ferramenta continua sendo respeitada.
+
+Relato de entrega, pedido de confirmação e escolha de alternativa seguem a mesma via: Collaborator registra conteúdo substantivo em comentário e notifica a Leader apenas pelos metadados; não relata nem pede confirmação diretamente ao humano. Quando decisão humana for necessária, Leader registra pergunta/opções em comentário e avisa por referência, sem caixa interativa; aguarda resposta autorizada, persiste a devolutiva e notifica. Metainstrução legítima do usuário ou aprovação obrigatória da ferramenta não é contornada por essa regra.

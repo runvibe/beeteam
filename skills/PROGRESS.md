@@ -106,3 +106,5 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - 2026-10-30: padrão 👑 no título do chat atual da Leader confirmada, idempotente e preservando contexto; normalização na busca sem inferir identidade. Só pacote Leader instalado nesta entrega, sem renomear chats ou modificar runtime.
 
 - 2026-10-30: generalizado título de papel 👑 Leader / 🐝 Collaborator desde ativação antes da identidade; troca substitui marca sem acumular, criação autorizada já marca Collaborator e busca normaliza prefixos. Ambos pacotes instaláveis, nenhum rename real nesta tarefa.
+
+- 2026-10-30: interação via comentário completo obrigatório (inclusive sóstatus), aviso task/áreas/status pertinente/commentID e leitura MCP exata; dúvidas/relatos/pedidos Collaborator via Leader e decisões humanas Leader via comentário/referência sem caixas interativas. Contrato getComment/createdComments confirmado Backend incorporado; somente ativação inicial de novo chat Collaborator dispensa comentário.
