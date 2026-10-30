@@ -60,7 +60,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 65);
+    assert_eq!(tools.len(), 66);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("e73c21b"));
+            .contains("23b8bdf"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -356,4 +356,167 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         ));
         assert!(!text.contains("{{taskId}}"));
     }
+}
+
+#[tokio::test]
+async fn exact_comment_lookup_and_compound_receipts() {
+    let app = app().await;
+    let agent = ok(
+        &app,
+        "POST",
+        "/api/v1/agents",
+        json!({"name":"Comment reader"}),
+        None,
+    )
+    .await;
+    let team = ok(
+        &app,
+        "POST",
+        "/api/v1/teams",
+        json!({"name":"Comments","leaderId":id(&agent),"coordinationContext":manual()}),
+        None,
+    )
+    .await;
+    let board = ok(
+        &app,
+        "POST",
+        "/api/v1/boards",
+        json!({"name":"Comments","teamId":id(&team)}),
+        None,
+    )
+    .await;
+    let mut tasks = Vec::new();
+    for title in ["First", "Other"] {
+        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
+    }
+    let task = &tasks[0];
+    let created = success(&app,"createComment",json!({"params":{"taskId":id(task)},"body":{"body":"Exact **Markdown**"},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4()})).await;
+    let cid = created["createdId"].as_str().unwrap();
+    assert_eq!(created["data"]["id"], cid);
+    let args = json!({"params":{"taskId":id(task),"commentId":cid}});
+    let found = success(&app, "getComment", args.clone()).await;
+    assert_eq!(found["data"], created["data"]);
+    assert_eq!(found["version"], 1);
+    assert!(found["createdId"].is_null());
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/comments/{cid}", id(task))).await,
+        found["data"]
+    );
+    for (tid, missing) in [
+        (id(&tasks[1]).to_owned(), cid.to_owned()),
+        (id(task).to_owned(), uuid::Uuid::now_v7().to_string()),
+        (uuid::Uuid::now_v7().to_string(), cid.to_owned()),
+    ] {
+        assert_eq!(
+            tool(
+                &app,
+                "getComment",
+                json!({"params":{"taskId":tid,"commentId":missing}})
+            )
+            .await["isError"],
+            true
+        );
+        assert_eq!(
+            request(
+                &app,
+                "GET",
+                &format!("/api/v1/tasks/{tid}/comments/{missing}"),
+                json!({}),
+                None
+            )
+            .await
+            .0,
+            404
+        );
+    }
+    assert_eq!(
+        tool(
+            &app,
+            "getComment",
+            json!({"params":{"taskId":id(task),"commentId":"invalid"}})
+        )
+        .await["isError"],
+        true
+    );
+    let parent = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
+    let child = ok(&app, "POST", &format!("/api/v1/boards/{}/tasks", id(&board)), json!({"title":"Child receipt", "parentId":id(task), "authorAgentId":id(&agent), "executorAgentId":id(&agent), "coordinationContext":manual()}), ver(&parent)).await;
+    for name in ["record_progress", "close_activity"] {
+        let live = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
+        let mut input = json!({"taskId":id(task),"expectedVersion":live["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":name});
+        if name == "close_activity" {
+            input["execution"] = json!({"currentSummary":"Stored test summary","summary":"Test only","outcome":"progress","statusId":live["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
+        }
+        if name == "record_progress" {
+            input["subtaskUpdates"] = json!([{"taskId":id(&child),"expectedVersion":child["version"],"comment":"Child receipt"}]);
+        }
+        let result = success(&app, name, input.clone()).await;
+        assert_eq!(
+            result["createdComments"].as_array().unwrap().len(),
+            if name == "record_progress" { 2 } else { 1 }
+        );
+        if name == "record_progress" {
+            let receipt = &result["createdComments"][1];
+            assert_eq!(receipt["taskId"], child["id"]);
+            assert_eq!(
+                success(&app, "getComment", json!({"params":receipt})).await["data"]["body"],
+                "Child receipt"
+            );
+        }
+        let receipt = &result["createdComments"][0];
+        let read = success(&app, "getComment", json!({"params":receipt})).await;
+        assert_eq!(read["data"]["body"], name);
+        assert_eq!(read["data"]["taskId"], task["id"]);
+        assert_eq!(success(&app, name, input).await, result);
+    }
+    assert_eq!(success(&app, "getComment", args).await, found);
+}
+
+#[tokio::test]
+async fn bundled_comment_protocol_catalog_and_hashes() {
+    let app = app().await;
+    let listing = rpc(&app, "tools/list", json!({})).await;
+    let tools = listing["result"]["tools"].as_array().unwrap();
+    assert_eq!(tools.len(), 66);
+    for tool in tools {
+        jsonschema::validator_for(&tool["inputSchema"]).unwrap();
+        if let Some(schema) = tool.get("outputSchema") {
+            jsonschema::validator_for(schema).unwrap();
+        }
+    }
+    let resources = rpc(&app, "resources/list", json!({})).await;
+    assert_eq!(
+        resources["result"]["resources"].as_array().unwrap().len(),
+        13
+    );
+    let provenance: Value =
+        serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
+    assert_eq!(
+        provenance["sourceCommit"],
+        "23b8bdf730802e447b4536c59df7b4ce73ef957d"
+    );
+    for file in provenance["files"].as_array().unwrap() {
+        let path = file["resourcePath"].as_str().unwrap();
+        let uri = match path {
+            "bee-team-leader/SKILL.md" => "beeteam://skills/leader".to_owned(),
+            "bee-team-collaborator/SKILL.md" => "beeteam://skills/collaborator".to_owned(),
+            _ => format!(
+                "beeteam://references/{}",
+                path.rsplit('/').next().unwrap().trim_end_matches(".md")
+            ),
+        };
+        let read = rpc(&app, "resources/read", json!({"uri":uri})).await;
+        let text = read["result"]["contents"][0]["text"].as_str().unwrap();
+        let hash = Sha256::digest(text.as_bytes())
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        assert_eq!(hash, file["bundledSha256"].as_str().unwrap(), "{uri}");
+    }
+    assert_eq!(
+        rpc(&app, "prompts/list", json!({})).await["result"]["prompts"]
+            .as_array()
+            .unwrap()
+            .len(),
+        3
+    );
 }

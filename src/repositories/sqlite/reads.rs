@@ -47,6 +47,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
         ("boardId", "boards"),
         ("taskId", "tasks"),
         ("planId", "plans"),
+        ("commentId", "comments"),
         ("attachmentId", "attachments"),
         ("parentId", "tasks"),
         ("statusId", "statuses"),

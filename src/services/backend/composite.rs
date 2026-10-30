@@ -70,6 +70,7 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
         input["expectedVersion"].as_i64(),
     )?;
     let mut updated = BTreeSet::from([id]);
+    let mut created_comments = Vec::new();
     if name == "record_progress" {
         let descendants = hierarchy::descendants(&unit.records, id)?;
         let updates = input["subtaskUpdates"]
@@ -88,10 +89,18 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
                 update["expectedVersion"].as_i64(),
             )?;
         }
-        let mut changed = update_parts(&mut unit, &actor, key, id, &input).await?;
+        let mut changed =
+            update_parts(&mut unit, &actor, key, id, &input, &mut created_comments).await?;
         for update in updates {
-            changed |=
-                update_parts(&mut unit, &actor, key, body_id(&update, "taskId")?, &update).await?;
+            changed |= update_parts(
+                &mut unit,
+                &actor,
+                key,
+                body_id(&update, "taskId")?,
+                &update,
+                &mut created_comments,
+            )
+            .await?;
         }
         if !changed {
             return Err(Failure::invalid(
@@ -99,7 +108,7 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
             ));
         }
     } else if name == "close_activity" {
-        update_parts(&mut unit, &actor, key, id, &input).await?;
+        update_parts(&mut unit, &actor, key, id, &input, &mut created_comments).await?;
         apply(
             &mut unit,
             &actor,
@@ -112,7 +121,7 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
     } else {
         return Err(Failure::missing());
     }
-    let data = json!({"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. No external execution, approval or chat control performed."});
+    let data = json!({"createdComments":created_comments,"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. No external execution, approval or chat control performed."});
     unit.save_replay(
         &actor.key(),
         &operation,
@@ -204,6 +213,7 @@ async fn update_parts(
     key: Uuid,
     id: Uuid,
     input: &Value,
+    created_comments: &mut Vec<Value>,
 ) -> Result<bool> {
     let mut changed = false;
     let mut patch = serde_json::Map::new();
@@ -222,7 +232,10 @@ async fn update_parts(
                 "comment" => json!({"body":value}),
                 _ => value.clone(),
             };
-            apply(unit, actor, key, id, operation, body).await?;
+            let result = apply(unit, actor, key, id, operation, body).await?;
+            if field == "comment" {
+                created_comments.push(json!({"taskId":id,"commentId":result.created_id}));
+            }
             changed = true;
         }
     }
@@ -235,7 +248,7 @@ async fn apply(
     id: Uuid,
     operation: &str,
     body: Value,
-) -> Result<()> {
+) -> Result<Outcome> {
     let c = Command {
         operation: operation.into(),
         params: BTreeMap::from([("taskId".into(), id.to_string())]),
@@ -247,6 +260,5 @@ async fn apply(
         upload: None,
     };
     contracts::validate(&c)?;
-    kanban::run(unit, &c).await?;
-    Ok(())
+    kanban::run(unit, &c).await
 }
