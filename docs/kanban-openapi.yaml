@@ -1597,6 +1597,40 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/comments/{commentId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getComment
+      summary: Read one comment belonging to the specified task
+      responses:
+        "200":
+          description: Exact stored comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
   /api/v1/tasks/{taskId}/comments:
     parameters:
       - name: taskId
@@ -1616,6 +1650,22 @@ paths:
         desempate id; sem snapshot entre requisições."
       x-contract-status: proposed
       parameters:
+        - name: actorKind
+          in: query
+          required: false
+          description: Tipo de autoria persistida. human inclui comentários sem actorId; combina com os demais filtros por AND.
+          schema:
+            type: string
+            enum: [human, agent]
+        - name: text
+          in: query
+          required: false
+          description: Trecho literal do body Markdown completo, sensível a maiúsculas e acentos, sem normalização ou trim. Percentual, underscore e barra invertida são literais, não wildcards. Vazio equivale a não filtrar. Total e paginação são calculados após os filtros no banco.
+          schema:
+            type: string
+            maxLength: 1024
+            pattern: '^[^\x00]*$'
+            x-maxBytes: 4096
         - name: actorId
           in: query
           required: false

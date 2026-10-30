@@ -96,6 +96,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         "getAgent" => resource(records, "agents", c.id("agentId")?),
         "getTeam" => resource(records, "teams", c.id("teamId")?),
         "getBoard" => resource(records, "boards", c.id("boardId")?),
+        "getComment" => comment(records, c.id("taskId")?, c.id("commentId")?),
         "getTask" => resource(records, "tasks", c.id("taskId")?),
         "getBoardView" => board_view(unit, c).await,
         "getResumptionContext" => resume(records, c),
@@ -193,4 +194,38 @@ async fn activities(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         return Err(Failure::invalid("statusId requires boardId"));
     }
     list(unit, c).await
+}
+
+fn comment(records: &Records, task_id: Uuid, comment_id: Uuid) -> Result<Value> {
+    let comment = records.get("comments", comment_id)?;
+    if comment.reference("taskId") != Some(task_id) {
+        return Err(Failure::missing());
+    }
+    Ok(comment.value())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::repositories::records::Record;
+
+    #[test]
+    fn deleted_or_unrelated_comments_are_not_readable() {
+        let task_id = Uuid::now_v7();
+        let mut records = Records::default();
+        let id = records.insert(Record::new(
+            "comments",
+            json!({"taskId":task_id,"body":"kept"}),
+        ));
+        assert_eq!(comment(&records, task_id, id).unwrap()["body"], "kept");
+        assert_eq!(
+            comment(&records, Uuid::now_v7(), id).unwrap_err().code,
+            "not_found"
+        );
+        records.get_mut("comments", id).unwrap().deleted_at = Some(Utc::now());
+        assert_eq!(
+            comment(&records, task_id, id).unwrap_err().code,
+            "not_found"
+        );
+    }
 }

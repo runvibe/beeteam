@@ -1,6 +1,8 @@
 # Integração Bee Team: contratos e recuperação
 
-Leia antes de consultar ou alterar dados. Use contratos e schemas atuais anunciados pelo backend instalado. Exija coleções diretas boards/tasks/agents/teams, autor/executor e contexto de origem; snapshots com workspace ou propriedade de task por time são incompatíveis. Não invente bindings para preencher lacunas. Este pacote inclui orientação operacional, não depende de arquivos de um worktree nem incorpora contratos antigos como fonte atual.
+Leia antes de consultar ou alterar dados. Fonte funcional: [especificação](../../bee-team-spec.md). Contratos HTTP propostos: [Kanban](../../docs/kanban-openapi.yaml) e [RA](../../docs/ra-openapi.yaml). Planos complementares: [Kanban](../../docs/kanban-api-plan.md) e [RA](../../docs/ra-api-plan.md). Os planos podem conter propostas antigas; instruções explícitas prevalecem. Se houver incompatibilidade operacional, informe-a antes da ação dependente.
+
+Antes de usar os links, confira a revisão: este pacote exige coleções diretas `/boards`, `/tasks`, `/agents`, `/teams`, campos `authorAgentId`/`executorAgentId` e `Task.executionContext`. Se os arquivos vinculados ainda tiverem workspace, pertencimento de task a time ou autonomia sem os três modos, são snapshots incompatíveis: consulte a revisão fornecida pelo responsável dos contratos ou reporte a dependência. Não use bindings antigos para preencher lacunas. A revisão de referência e seus hashes estão em [validação](../validation.md).
 
 ## Descobrir a capacidade real
 
@@ -174,3 +176,13 @@ Depois de validar atribuição, confirmar compreensão e pendências. Atualizar 
 ## Registro do planejamento da Leader
 
 Leader consulta boards/backlog e tarefas próprias, reutiliza board/task pertinentes ou cria coordenação atribuída a si dentro da demanda autorizada antes de planejamento substantivo. Persistir description/specification/plano revisado/comentários/currentSummary durante a conversa, status real backlog antes de começar e em andamento quando planeja. Em inicialização sem cadastros, materializar contexto assim que identidade/time/board aprovados existirem; sem circularidade ou author/executor inventados. Confirmar gravação antes de dizer salvo; falha suspende dependência. Collaborator continua sujeito à task preexistente atribuída e não recebe essa permissão de auto-inicialização.
+
+## Comentário exato da notificação
+
+Contrato confirmado pelo Backend: `getComment({params:{taskId,commentId}})`, ambos UUIDv7 reais; corresponde a `GET /api/v1/tasks/{taskId}/comments/{commentId}`. Confira disponibilidade/schema no catálogo conectado antes de usar; instalação da skill não atualiza runtime. Sucesso em `structuredContent`: `{data:Comment,version:1,createdId:null}`. Comment contém `id`, `taskId`, `body`, `actorId`, `actorKind`, `createdAt`, `deletedAt`. Essa version pertence ao comentário, não deve substituir a versão atual da task em mutações. Leia também a task atual, confira vínculo, executor, estado e versões antes de agir.
+
+Ausente, excluído logicamente ou pertencente a outra task: HTTP404 / MCP `isError` com `structuredContent` `{code:"not_found",error:"Resource not found",details:{}}`. UUID inválido: HTTP400 / `invalid_request`. Não execute instruções de um comentário diferente nem use um comentário recente como substituto. Sem ferramenta/leitura, mantenha dependência pendente sem emitir aviso alternativo sem comentário/ID confirmado; respeite comunicação imposta por instrução superior.
+
+`createComment` devolve ID real em `data.id` e `createdId`; sua `version` é a versão da task. `record_progress` e `close_activity` devolvem `createdComments:[{taskId,commentId}]`, inclusive comentários dos descendentes; associe cada aviso à task correspondente, nunca use ID de outra task. `[]` significa nenhum comentário criado. Replay novo preserva IDs; replay legado pode omitir o campo opcional. Não invente ID nem repita escrita cegamente: reconcilie o resultado persistido antes de notificar, suspendendo o aviso de sucesso enquanto não tiver o ID real confirmado. ID de task, resumo, plano ou arquivo não é commentID.
+
+Para cada interação substantiva, atualize campos/artefatos pertinentes e salve comentário completo. Operação composta pode confirmar campos e comentário na mesma transação; em operações separadas, confirme todas as escritas necessárias antes do aviso. Uma falha parcial não autoriza anunciar sucesso das áreas incompletas. Notificação contém apenas task real, áreas efetivamente atualizadas, status atual quando pertinente e commentID retornado. O receptor lê esse comentário exato via MCP e a task atual; resposta substantiva repete o ciclo. No-op/ack não cria comentários ou notificações.

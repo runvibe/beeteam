@@ -169,6 +169,14 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
                 q.push_bind(expected.clone())
                     .push(" @> jsonb_build_array(value->'type')");
             }
+            "text" if c.operation == "listComments" => {
+                // Literal substring: %, _ and backslash never become SQL wildcards.
+                q.push("strpos(COALESCE(");
+                field(q, "body", true);
+                q.push(",''),")
+                    .push_bind(expected.as_str().unwrap_or("").to_owned())
+                    .push(")>0");
+            }
             "name" | "title" | "label" | "fileName" => {
                 q.push("strpos(lower(COALESCE(");
                 field(

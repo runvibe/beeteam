@@ -141,3 +141,13 @@ it("opens a board card body and restores list query through its breadcrumb", asy
   await userEvent.keyboard("{Enter}");
   expect(location.pathname).toBe(`/boards/${ids.board}`);
 });
+
+it("marks blocked cards while keeping unblocked cards neutral", async () => {
+  setup(`/boards/${ids.board}?kanban.limit=20`);
+  const badges = await screen.findAllByText("Bloqueada");
+  for (const badge of badges) {
+    expect(badge.closest('[data-slot="card"]')).toHaveAttribute("data-blocked", "true");
+  }
+  const normal = await screen.findByRole("link", { name: "Mapear a jornada de primeiro uso" });
+  expect(normal.closest('[data-slot="card"]')).toHaveAttribute("data-blocked", "false");
+});

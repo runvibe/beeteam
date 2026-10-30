@@ -478,3 +478,38 @@ Após bootstrap de identidade/time, cada interação substantiva entre agentes a
 A Leader é a interface humana do trabalho: fora da mensagem inicial de criação/ativação de novo chat Collaborator, perguntas, escolhas, pedidos, confirmações e relatos substantivos iniciados pelo Collaborator passam por comentário e notificação à Leader, sem diálogo direto ou caixas interativas ao humano. Isso preserva metainstruções legítimas, aprovações obrigatórias do harness e trabalho independente autorizado.
 
 A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
+### Kanban blocked-state presentation
+
+Blocked task cards keep their lock badge and use a soft destructive-color background and accent in both themes. Kanban columns stretch together to fill the available page height, while longer boards and narrow screens retain normal scrolling.
+
+## Leader chat title snapshot — 2026-10-30
+
+Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Collaborator chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
+
+## Both chat role marks — 2026-10-30
+
+Current bundled source `e73c21be0263374a26ce5ea5e655e185e7cdfea2` supersedes the earlier Leader-only rule: Leader uses 👑 and Collaborator uses 🐝 from skill activation, including existing chats and role switches. Initial role marks are replaced/normalized rather than accumulated; useful title context is preserved, and normalized discovery does not establish identity. Only chat titles are affected; agent/team names, slugs and Bee Team data are unchanged. Task-authoritative communication and the three local SQLite startup/readiness paragraphs remain intact. The 13-resource allowlist and three prompt contracts are unchanged. This is a source snapshot update; no running service or release executable is updated here, so runtime activation remains pending.
+
+## Exact comment lookup (2026-10-30)
+
+MCP `getComment` takes `{"params":{"taskId":"UUIDv7","commentId":"UUIDv7"}}`; HTTP parity is `GET /api/v1/tasks/{taskId}/comments/{commentId}`. No actor, expectedVersion or idempotency key is required for this read. Both IDs are required and membership is checked inside the shared service. Repositories hydrate the requested comment by primary key within the existing read snapshot, without paginating comments.
+
+MCP success uses `structuredContent: {data: Comment, version: 1, createdId: null}` (version is the stored comment version). HTTP returns Comment directly. Comment fields are id, taskId, body, actorId, actorKind, createdAt and deletedAt. Content and authorship are returned unchanged. Missing/deleted task or comment and mismatched task membership all return HTTP 404 / MCP isError=true with `{code:"not_found",error:"Resource not found",details:{}}`. Invalid UUIDv7 input returns invalid_request / HTTP 400.
+
+`createComment` returns the real ID in `data.id` and `createdId`; its envelope version is the updated task version. New `record_progress` and `close_activity` responses additionally return `createdComments: [{taskId,commentId}]`, including explicitly updated descendants. Empty means no comments were created. Exact idempotent replay preserves these receipts. Older saved replay snapshots may omit createdComments; no IDs are inferred or fabricated. The output schema keeps this field optional for legacy replay compatibility. If an old replay lacks the receipt needed for notification, obtain a separately authorized new comment with its returned ID; do not infer an ID from list order.
+
+Publish the full comment before notifying another chat. Notifications carry task ID, changed areas/relevant status and the actual comment ID. The receiver reads that exact comment and current task before acting. The bundled Skills source remains at its existing provenance commit until the final coordinated Skills snapshot arrives; this backend contract does not claim those resources have been refreshed.
+
+Activation: align and bundle the final Skills snapshot and hashes first, regenerate the MCP catalog, build a new distribution in isolation, then coordinate replacement/restart of the SQLite 59865 server. Refresh client tool discovery and verify read-only getComment against an existing task/comment pair. This change does not restart the server or write product data.
+
+Final coordinated Skills snapshot: `23b8bdf730802e447b4536c59df7b4ce73ef957d`; 11 canonical materials refreshed, with the three established SQLite startup/readiness paragraphs retained in the Codex reference. SHA-256 source/bundled provenance records every file. This supersedes the earlier pending-snapshot note.
+
+## Comment author and literal text filters (2026-10-30)
+
+`GET /api/v1/tasks/{taskId}/comments` and MCP `listComments` accept optional `actorKind=human|agent`, `actorId=UUIDv7`, and `text=substring`. Example MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"actorKind":"agent","actorId":"UUIDv7","text":"Palette","limit":20,"offset":0}}`. Existing date, ordering and pagination options remain available. Distinct filters combine with AND. Humans have null actorId: select them with actorKind=human alone. Combining human with an existing agent actorId returns no results; actorId keeps its existing UUID/existence validation.
+
+`text` matches a literal substring of the complete stored Markdown body, including Markdown punctuation. It is case-sensitive and accent-sensitive, does not trim or normalize, and is limited to 1024 characters / 4096 UTF-8 bytes. Empty text applies no restriction. `%`, `_`, backslash, regex syntax and SQL punctuation are literal characters, not patterns. Bound `strpos` (PostgreSQL) / `instr` (SQLite) predicates provide identical literal matching without LIKE wildcard interpolation or escaping ambiguity. No embeddings, semantic search, Markdown rendering or client-side-only filtering is used.
+
+Filtering occurs in the repository snapshot before count/order/limit/offset. The response remains CommentPage: items, total, offset, limit, hasMore, nextOffset. Existing createdAt/id ordering and direction remain unchanged. Each request has its own read snapshot; concurrent writes can still shift offset pages between requests. No comment content, authorship or ID is modified. The same OpenAPI validation generates the HTTP and typed MCP query contracts. Invalid kind, malformed ID, oversized text, NUL characters, repeated or unknown parameters return invalid_request/400.
+
+This source change requires a new runtime artifact and manual activation to become available on an older running server. It does not replace or restart the SQLite 59865 process.

@@ -1,76 +1,89 @@
 {
-  "sourceCommit": "8ab75d1c422c41a1a66ca82166c209063c50d760",
-  "scope": "Ten refreshed approved materials; remaining allowlisted integration, mcp-content and content-manifest resources unchanged.",
+  "sourceCommit": "23b8bdf730802e447b4536c59df7b4ce73ef957d",
+  "scope": "Final comment-ID communication protocol for both roles, including exact MCP lookup and compound receipts; SQLite startup overlay preserved.",
   "files": [
     {
       "resourcePath": "bee-team-leader/SKILL.md",
       "sourcePath": "skills/bee-team-leader/SKILL.md",
-      "sourceSha256": "5f5ad649e012e4b1684be59eae1ab1ef21afc298c9460a81eff1366b1820f467",
-      "bundledSha256": "5f5ad649e012e4b1684be59eae1ab1ef21afc298c9460a81eff1366b1820f467",
+      "sourceSha256": "8077c3169d63b1ba69f778412605a54f60f10ef311064e64767cdb273e63d15c",
+      "bundledSha256": "8077c3169d63b1ba69f778412605a54f60f10ef311064e64767cdb273e63d15c",
       "localOverlay": null
     },
     {
       "resourcePath": "bee-team-collaborator/SKILL.md",
       "sourcePath": "skills/bee-team-collaborator/SKILL.md",
-      "sourceSha256": "fc7e3130a39f6f6a23305ac75ca3657b8b4b4369254d8b554f565a46365bbc7d",
-      "bundledSha256": "fc7e3130a39f6f6a23305ac75ca3657b8b4b4369254d8b554f565a46365bbc7d",
+      "sourceSha256": "673def031d7c9bc69c2ce4806bf18d13021e378f6757089cc8d482e29834a403",
+      "bundledSha256": "673def031d7c9bc69c2ce4806bf18d13021e378f6757089cc8d482e29834a403",
       "localOverlay": null
     },
     {
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
-      "sourceSha256": "faa85c9e81b29152a01741535add91264f156370f9dc554d94b2c85cc237f7cf",
-      "bundledSha256": "faa85c9e81b29152a01741535add91264f156370f9dc554d94b2c85cc237f7cf",
+      "sourceSha256": "0bf5737549581f4ae0fa10dcba33f4b506e27eeec3be980f00e270e0082e0af9",
+      "bundledSha256": "0bf5737549581f4ae0fa10dcba33f4b506e27eeec3be980f00e270e0082e0af9",
       "localOverlay": null
     },
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
-      "sourceSha256": "2a32ed5fd517730e8e1c25c3af3ef69a971551b84b83a3d676339c3e936f192d",
-      "bundledSha256": "6da88424a47c1c6f3a112cfdcea7343f301f78d448cafb76393ed2905f5370bd",
+      "sourceSha256": "6c3bec69c222bb564043a0c7db0489f39ac477d7b2d9ef947ef7eb0920ed8781",
+      "bundledSha256": "981f1af64c75c2f9c7b75e7b491c3d1652bdcee264647fcb9f31e207a34502b6",
       "localOverlay": "Preserve three driver-aware SQLite startup/readiness paragraphs from c1fd823."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
       "sourcePath": "docs/leader-onboarding-flows.md",
-      "sourceSha256": "fd713ad31fee9bc5c8c2bd893b263736ea3c4d38d1f86ce7335f3f099f144f17",
-      "bundledSha256": "fd713ad31fee9bc5c8c2bd893b263736ea3c4d38d1f86ce7335f3f099f144f17",
+      "sourceSha256": "cf78e3193dd4d747d681b7ce305519d4ec00294c1f0b77849c89c1d698052556",
+      "bundledSha256": "cf78e3193dd4d747d681b7ce305519d4ec00294c1f0b77849c89c1d698052556",
       "localOverlay": null
     },
     {
       "resourcePath": "references/collaborator-workflow.md",
       "sourcePath": "docs/collaborator-workflow.md",
-      "sourceSha256": "c4d15d77a1d163033ca0e8047a8b8156488098be49c839535c791d86fde1668f",
-      "bundledSha256": "c4d15d77a1d163033ca0e8047a8b8156488098be49c839535c791d86fde1668f",
+      "sourceSha256": "f590575bfa549aec397498e26458f209e046d09bfe065ceaae8c2e77adfefb5a",
+      "bundledSha256": "f590575bfa549aec397498e26458f209e046d09bfe065ceaae8c2e77adfefb5a",
       "localOverlay": null
     },
     {
       "resourcePath": "bee-team-leader/references/team-examples.md",
       "sourcePath": "skills/bee-team-leader/references/team-examples.md",
-      "sourceSha256": "f6a1a0303476a43cb89341074ac71bf62410265af178c995b23a1dbd0119d62a",
-      "bundledSha256": "f6a1a0303476a43cb89341074ac71bf62410265af178c995b23a1dbd0119d62a",
+      "sourceSha256": "db14457a656eeae38e431268d3ac0e66215ddd38ad929c943fd4b1ae4ec123ef",
+      "bundledSha256": "db14457a656eeae38e431268d3ac0e66215ddd38ad929c943fd4b1ae4ec123ef",
       "localOverlay": null
     },
     {
       "resourcePath": "prompts/task-briefing.md",
       "sourcePath": "skills/prompts/task-briefing.md",
-      "sourceSha256": "b2a6373d890d4f49d2c962ee3791a5ac67f089cced9bb23f810694b7aa222f59",
-      "bundledSha256": "b2a6373d890d4f49d2c962ee3791a5ac67f089cced9bb23f810694b7aa222f59",
+      "sourceSha256": "b24ef6323861fe8a0e99119f4bd70ed4529caa7d43c98966e837cf0f9b73f157",
+      "bundledSha256": "b24ef6323861fe8a0e99119f4bd70ed4529caa7d43c98966e837cf0f9b73f157",
       "localOverlay": null
     },
     {
       "resourcePath": "prompts/collaborator-resumption.md",
       "sourcePath": "skills/prompts/collaborator-resumption.md",
-      "sourceSha256": "14ece59439b145a10002521c65fdc47b9b338e669e0e17766e3346d122313e27",
-      "bundledSha256": "14ece59439b145a10002521c65fdc47b9b338e669e0e17766e3346d122313e27",
+      "sourceSha256": "a68d8fda626cfe0600157d86239767c0ea2686556f9528a1a4d1e6a251bba715",
+      "bundledSha256": "a68d8fda626cfe0600157d86239767c0ea2686556f9528a1a4d1e6a251bba715",
       "localOverlay": null
     },
     {
       "resourcePath": "prompts/delivery-review.md",
       "sourcePath": "skills/prompts/delivery-review.md",
-      "sourceSha256": "126f9ebd30e73b8df25fab8bb5c679d984666517b59dd1699a9e88d86efbcbef",
-      "bundledSha256": "126f9ebd30e73b8df25fab8bb5c679d984666517b59dd1699a9e88d86efbcbef",
+      "sourceSha256": "068eb95a4c43623a45a5d6b8369964fc29461c9c0ab2b63295cf57937e08d0c7",
+      "bundledSha256": "068eb95a4c43623a45a5d6b8369964fc29461c9c0ab2b63295cf57937e08d0c7",
       "localOverlay": null
+    },
+    {
+      "resourcePath": "references/integration.md",
+      "sourcePath": "skills/references/integration.md",
+      "localOverlay": null,
+      "sourceSha256": "a3009b583c4b3da2d93521a1b5b68e21aad61ce9aff0dc38c51f79ff26bf2f62",
+      "bundledSha256": "a3009b583c4b3da2d93521a1b5b68e21aad61ce9aff0dc38c51f79ff26bf2f62"
     }
-  ]
+  ],
+  "backendContractOverlay": {
+    "date": "2026-10-30",
+    "contract": "getComment and compound createdComments receipts",
+    "documentation": "docs/mcp-catalog.md",
+    "skillsSnapshotStatus": "Final communication snapshot bundled at 23b8bdf730802e447b4536c59df7b4ce73ef957d"
+  }
 }
