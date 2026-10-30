@@ -386,3 +386,5 @@
 }
 
 .team-autocomplete [role="status"]:empty { display: none; }
+
+.motion-filter-item { display: flex; align-items: center; flex-shrink: 0; }

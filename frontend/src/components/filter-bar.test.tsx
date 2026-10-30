@@ -163,3 +163,28 @@ it("renders team purpose and multiparagraph context inside one clipping containe
     );
   }
 });
+
+it("restores focus on Escape and keeps focus in the newer popover after exit", async () => {
+  window.history.replaceState({}, "", "/agents");
+  const user = userEvent.setup();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <App />
+    </ApiProvider>,
+  );
+  const role = screen.getByRole("button", { name: "Papel" });
+  await user.click(role);
+  await user.keyboard("{Escape}");
+  expect(role).toHaveFocus();
+  expect(screen.queryByRole("dialog", { name: "Papel" })).toBeNull();
+  await user.click(role);
+  await user.click(screen.getByRole("button", { name: "Time" }));
+  const search = await screen.findByRole("combobox");
+  await waitFor(() => expect(search).toHaveFocus());
+  await waitFor(() =>
+    expect(
+      document.querySelector('[role="dialog"][aria-hidden="true"]'),
+    ).toBeNull(),
+  );
+  expect(search).toHaveFocus();
+});

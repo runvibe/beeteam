@@ -1,3 +1,8 @@
+import { motion, MotionConfig } from "motion/react";
+import {
+  pageMotionIdentity,
+  usePageEntrance,
+} from "./components/motion-settings";
 import { useRouteEntity } from "./routing/entity-route";
 import { QueryState } from "./components/shared";
 import {
@@ -23,49 +28,58 @@ export function App() {
   const [filterTarget, setFilterTarget] = useState<HTMLDivElement | null>(null);
   useRestorePosition();
   const routeEntity = useRouteEntity();
-  const knownRoute = isKnownRoute(useLocation());
+  const url = useLocation();
+  const knownRoute = isKnownRoute(url);
+  const pageIdentity = pageMotionIdentity(url, routeEntity.data?.id);
+  const pageAnimation = usePageEntrance(pageIdentity);
   const { taskId, agentId, teamId } = useUi();
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
   return (
-    <HeaderFiltersContext.Provider value={filterTarget}>
-      <div className="app-shell icon-navigation">
-        <NavigationRail />
-        <div className="main-shell">
-          <header className="topbar">
-            <AppPath />
-            <MobileContextPath />
-            <div className="header-filter-slot" ref={setFilterTarget} />
-          </header>
-          <main id="main-content">
-            {!knownRoute ? (
-              <div>
-                <h1>Página não encontrada</h1>
-                <Button onClick={() => setArea("boards")}>
-                  Ir para boards
-                </Button>
-              </div>
-            ) : routeEntity.active &&
-              (routeEntity.isPending ||
-                (routeEntity.error && !routeEntity.data)) ? (
-              <QueryState query={routeEntity}>{null}</QueryState>
-            ) : taskId ? (
-              <TaskPage />
-            ) : agentId ? (
-              <AgentPage />
-            ) : teamId ? (
-              <TeamPage />
-            ) : area === "boards" ? (
-              <Boards />
-            ) : area === "agents" ? (
-              <Agents />
-            ) : (
-              <Teams />
-            )}
-          </main>
+    <MotionConfig reducedMotion="user">
+      <HeaderFiltersContext.Provider value={filterTarget}>
+        <div className="app-shell icon-navigation">
+          <NavigationRail />
+          <div className="main-shell">
+            <header className="topbar">
+              <AppPath />
+              <MobileContextPath />
+              <div className="header-filter-slot" ref={setFilterTarget} />
+            </header>
+            <motion.main
+              id="main-content"
+              animate={pageAnimation}
+              data-page-identity={pageIdentity}
+            >
+              {!knownRoute ? (
+                <div>
+                  <h1>Página não encontrada</h1>
+                  <Button onClick={() => setArea("boards")}>
+                    Ir para boards
+                  </Button>
+                </div>
+              ) : routeEntity.active &&
+                (routeEntity.isPending ||
+                  (routeEntity.error && !routeEntity.data)) ? (
+                <QueryState query={routeEntity}>{null}</QueryState>
+              ) : taskId ? (
+                <TaskPage />
+              ) : agentId ? (
+                <AgentPage />
+              ) : teamId ? (
+                <TeamPage />
+              ) : area === "boards" ? (
+                <Boards />
+              ) : area === "agents" ? (
+                <Agents />
+              ) : (
+                <Teams />
+              )}
+            </motion.main>
+          </div>
         </div>
-      </div>
-    </HeaderFiltersContext.Provider>
+      </HeaderFiltersContext.Provider>
+    </MotionConfig>
   );
 }
 export default App;

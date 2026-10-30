@@ -453,3 +453,5 @@ The team autocomplete does not display a recent-teams caption or leave spacing f
 The main content has zero left/right padding on desktop and mobile. The top bar removes only its left padding. Vertical spacing, top bar right padding, and all rail, card, form and popover padding remain unchanged.
 
 The card-list viewport removes only its left padding and retains 8px on the right; measured capacity already subtracts both computed sides independently.
+
+The first Motion pass animates filter positions with a damped spring, reveals Clear after space opens, and gives filter popovers short entrance/exit transitions while Radix retains keyboard and focus handling. Page changes use a 180 ms opacity entrance on the existing main surface; shell, query-string changes, and settings stay stable without retaining or remounting route children. Reduced-motion preferences make these transitions immediate. Search/tag CSS transitions remain independent.

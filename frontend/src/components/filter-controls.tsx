@@ -1,5 +1,14 @@
+import { AnimatePresence } from "motion/react";
+import { AnimatedFilterContent } from "./filter-motion";
 import { useFilterRemoval } from "./use-filter-removal";
-import { useContext, useEffect, useId, type ReactNode } from "react";
+import {
+  useContext,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
 import {
@@ -42,6 +51,8 @@ export function FilterPopover({
   summary?: string;
   onClear?: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
   const remove = useFilterRemoval(onClear);
   const Icon = search ? Search : icons[label] || ListFilter;
   const heading = useId();
@@ -55,11 +66,12 @@ export function FilterPopover({
   }, [register, heading, active, label, summary, remove]);
   const hint = summary ? `${label}: ${summary}` : label;
   return (
-    <Popover.Root>
+    <Popover.Root open={open} onOpenChange={setOpen}>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
           <Popover.Trigger asChild>
             <Button
+              ref={trigger}
               variant={active ? "secondary" : "ghost"}
               size="icon"
               className="filter-icon"
@@ -79,19 +91,21 @@ export function FilterPopover({
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
-      <Popover.Portal>
-        <Popover.Content
-          className="filter-popover"
-          align="end"
-          sideOffset={8}
-          collisionPadding={12}
-          aria-labelledby={heading}
-        >
-          <h2 id={heading} className="filter-popover-title">
-            {label}
-          </h2>
-          {children}
-        </Popover.Content>
+      <Popover.Portal forceMount>
+        <AnimatePresence>
+          {open && (
+            <AnimatedFilterContent
+              key="content"
+              heading={heading}
+              trigger={trigger}
+            >
+              <h2 id={heading} className="filter-popover-title">
+                {label}
+              </h2>
+              {children}
+            </AnimatedFilterContent>
+          )}
+        </AnimatePresence>
       </Popover.Portal>
     </Popover.Root>
   );

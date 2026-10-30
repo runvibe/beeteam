@@ -1,7 +1,12 @@
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useId, useState, type ReactNode } from "react";
 import { Tooltip } from "radix-ui";
-import { FilterX } from "lucide-react";
-import { Button } from "./ui/button";
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from "motion/react";
+import { movingControls, ClearFilterMotion } from "./filter-motion";
 import {
   CompactFilters,
   FilterSummaryContext,
@@ -25,6 +30,8 @@ export function FilterBar({
   trailingAction?: ReactNode;
   inHeader?: boolean;
 }) {
+  const groupId = useId();
+  const reduced = !!useReducedMotion();
   const [summaries, setSummaries] = useState<Record<string, ActiveFilter>>({});
   const register = useCallback((id: string, filter?: ActiveFilter) => {
     setSummaries((current) => {
@@ -51,34 +58,18 @@ export function FilterBar({
               role="group"
               aria-label="Filtros"
             >
-              <div className="filter-controls-row">
-                {search}
-                {children}
-                {active && (
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="filter-icon"
-                        aria-label="Limpar filtros"
-                        onClick={onClear}
-                      >
-                        <FilterX aria-hidden="true" />
-                      </Button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Portal>
-                      <Tooltip.Content
-                        className="navigation-tooltip"
-                        sideOffset={6}
-                      >
-                        Limpar filtros
-                      </Tooltip.Content>
-                    </Tooltip.Portal>
-                  </Tooltip.Root>
-                )}
-                {trailingAction}
-              </div>
+              <LayoutGroup id={groupId}>
+                <motion.div className="filter-controls-row" layoutScroll>
+                  {movingControls(search, "search", active, reduced)}
+                  {movingControls(children, "filter", active, reduced)}
+                  <AnimatePresence initial={false}>
+                    {active && (
+                      <ClearFilterMotion key="clear" onClear={onClear} />
+                    )}
+                  </AnimatePresence>
+                  {movingControls(trailingAction, "action", active, reduced)}
+                </motion.div>
+              </LayoutGroup>
               {Object.keys(summaries).length > 0 && (
                 <FilterSummary filters={Object.values(summaries)} />
               )}
