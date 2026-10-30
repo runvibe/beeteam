@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Failure } from "@/components/shared";
 import type { usePlanPages } from "./plan-pages";
+import { usePlanReveal } from "./plan-reveal";
 import { PlanCarousel } from "./plan-carousel";
 import "./plan-navigation.css";
 
@@ -17,12 +18,14 @@ export function PlanNavigation({
   taskId,
   plans,
   current,
+  selectedId,
   onSelect,
   children,
 }: {
   taskId: string;
   plans: ReturnType<typeof usePlanPages>;
   current: PlanRevision | null | undefined;
+  selectedId?: string;
   onSelect: (id: string) => void;
   children: ReactNode;
 }) {
@@ -49,6 +52,8 @@ export function PlanNavigation({
     };
   }, [mobile]);
 
+  const reveal = usePlanReveal(list, selectedId, plans, mobile);
+
   useEffect(() => {
     const media = window.matchMedia?.("(max-width: 1055px)");
     if (!media) return;
@@ -59,6 +64,7 @@ export function PlanNavigation({
   useEffect(() => {
     if (
       mobile ||
+      plans.locating ||
       !sentinel.current ||
       !query.hasNextPage ||
       query.isFetching ||
@@ -77,6 +83,7 @@ export function PlanNavigation({
     return () => observer.disconnect();
   }, [
     mobile,
+    plans.locating,
     query.hasNextPage,
     query.isFetching,
     query.error,
@@ -107,21 +114,16 @@ export function PlanNavigation({
         className="task-plan-navigation"
         aria-label="Planos disponíveis"
         tabIndex={0}
+        onWheelCapture={reveal.manuallyInteracted}
+        onPointerDownCapture={reveal.manuallyInteracted}
+        onTouchStartCapture={reveal.manuallyInteracted}
+        onKeyDownCapture={reveal.manuallyInteracted}
       >
         <h3>Planos</h3>
-        {current &&
-          !plans.items.some((item) => item.planId === current.planId) && (
-            <Button
-              variant="ghost"
-              aria-current="page"
-              onClick={() => onSelect(current.planId)}
-            >
-              {current.title}
-            </Button>
-          )}
         {plans.items.map((item) => (
           <Button
             key={item.planId}
+            data-plan-id={item.planId}
             variant="ghost"
             aria-current={item.planId === current?.planId ? "page" : undefined}
             onClick={() => onSelect(item.planId)}

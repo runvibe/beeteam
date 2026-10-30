@@ -15,7 +15,6 @@ export function Plans({ task }: { task: Task }) {
     resetOffsets: false,
   });
   const api = useApi();
-  const plans = usePlanPages(task.id);
   const selection = useQuery({
     queryKey: ["selected-plan", task.id, selected],
     queryFn: async () =>
@@ -29,6 +28,7 @@ export function Plans({ task }: { task: Task }) {
       ).items[0] ?? null,
     enabled: !!selected,
   });
+  const plans = usePlanPages(task.id, selected, selection.data != null);
   const current = selected
     ? selection.data === undefined
       ? plans.items.find((item) => item.planId === selected)
@@ -43,6 +43,7 @@ export function Plans({ task }: { task: Task }) {
           taskId={task.id}
           plans={plans}
           current={current}
+          selectedId={selected || current?.planId}
           onSelect={setSelected}
         >
           {selected && (!current || selection.error) && (

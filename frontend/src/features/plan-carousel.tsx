@@ -110,14 +110,6 @@ export function PlanCarousel({
           <ChevronRight aria-hidden="true" />
         </Button>
       </nav>
-      {external && (
-        <Button
-          variant="ghost"
-          onClick={() => onSelect(plans.items[0]?.planId ?? "")}
-        >
-          Ir ao primeiro plano
-        </Button>
-      )}
       <div
         ref={root}
         className="task-plan-carousel"
