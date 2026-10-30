@@ -7,6 +7,7 @@ import { TextBlock, formatDate } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskMode } from "./settings";
+import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
 
 const sections = [
@@ -28,7 +29,7 @@ export function TaskSections({
   onChange: (value: string) => void;
 }) {
   return (
-    <>
+    <div className="task-section-navigation">
       <TabsList className="detail-tabs task-desktop-sections">
         {sections.map(([key, label]) => (
           <TabsTrigger key={key} value={key}>
@@ -50,7 +51,7 @@ export function TaskSections({
           ))}
         </select>
       </label>
-    </>
+    </div>
   );
 }
 
@@ -82,7 +83,13 @@ export function TaskOverview({ task }: { task: Task }) {
   );
 }
 
-export function TaskContext({ task }: { task: Task }) {
+export function TaskContext({
+  task,
+  compactHeader = false,
+}: {
+  task: Task;
+  compactHeader?: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
   const contentId = useId();
   const openTask = useUi((s) => s.openTask);
@@ -93,6 +100,7 @@ export function TaskContext({ task }: { task: Task }) {
       aria-label="Contexto da tarefa"
       data-expanded={expanded}
     >
+      <TaskCompactHeader task={task} visible={compactHeader} />
       <Button
         variant="ghost"
         className="task-context-toggle"

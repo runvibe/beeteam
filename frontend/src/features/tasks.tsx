@@ -31,6 +31,7 @@ import {
 import { AgentName, BoardName } from "@/components/names";
 import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
 import "./task-detail.css";
+import { useTaskHeaderVisibility } from "./task-scroll-header";
 import { TaskProgress } from "./task-progress";
 export function TaskPage() {
   const id = useUi((s) => s.taskId);
@@ -43,6 +44,7 @@ export function TaskPage() {
 function TaskDetail({ id }: { id: string }) {
   const q = useEntity("tasks", id);
   const heading = useRef<HTMLHeadingElement>(null);
+  const { primary, hero, pastHeader } = useTaskHeaderVisibility();
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
       "overview",
@@ -60,14 +62,14 @@ function TaskDetail({ id }: { id: string }) {
   }, [id]);
   return (
     <div className="task-detail-columns">
-      <div className="task-detail-primary" data-detail-scroll>
-        {q.data?.parentId && <TaskPath task={q.data} />}
-        <header className="task-detail-heading">
-          <h1 ref={heading} tabIndex={-1}>
-            {q.data?.title ?? "Detalhes da task"}
-          </h1>
-        </header>
-        <QueryState query={q}>
+      <div className="task-detail-primary" data-detail-scroll ref={primary}>
+        <div className="task-detail-hero" ref={hero}>
+          {q.data?.parentId && <TaskPath task={q.data} />}
+          <header className="task-detail-heading">
+            <h1 ref={heading} tabIndex={-1}>
+              {q.data?.title ?? "Detalhes da task"}
+            </h1>
+          </header>
           {q.data && (
             <>
               <div className="task-detail-state" aria-label="Estado da tarefa">
@@ -85,6 +87,12 @@ function TaskDetail({ id }: { id: string }) {
                   </div>
                 </Alert>
               )}
+            </>
+          )}
+        </div>
+        <QueryState query={q}>
+          {q.data && (
+            <>
               <Tabs
                 value={tab}
                 onValueChange={setTab}
@@ -133,7 +141,7 @@ function TaskDetail({ id }: { id: string }) {
           )}
         </QueryState>
       </div>
-      {q.data && <TaskContext task={q.data} />}
+      {q.data && <TaskContext task={q.data} compactHeader={pastHeader} />}
     </div>
   );
 }
