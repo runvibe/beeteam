@@ -175,25 +175,7 @@ export function TaskMode({ task }: { task: Task }) {
       {task.archivedAt && (
         <p className="small-note">Task arquivada: somente leitura.</p>
       )}
-      {(autosave.pending || autosave.dirty || !!autosave.error) && (
-        <AutosaveFeedback state={autosave} />
-      )}
+      <AutosaveFeedback state={autosave} />
     </section>
-  );
-}
-export function SaveFeedback({
-  mutation,
-}: {
-  mutation: { error: unknown; isSuccess: boolean };
-}) {
-  return (
-    <>
-      {mutation.error && <Failure error={mutation.error} />}{" "}
-      {mutation.isSuccess && (
-        <p role="status" className="small-note">
-          Alterações salvas.
-        </p>
-      )}
-    </>
   );
 }

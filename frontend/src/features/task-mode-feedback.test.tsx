@@ -37,8 +37,10 @@ it("keeps autonomy autosave and retry without a success message or empty status 
   await userEvent.click(
     screen.getByRole("button", { name: "Tentar salvar novamente" }),
   );
-  expect(await screen.findByRole("status")).toHaveTextContent("Salvando…");
-  await waitFor(() => expect(screen.queryByRole("status")).toBeNull());
+  expect(screen.queryByRole("status")).toBeNull();
+  await waitFor(() =>
+    expect(screen.queryByText("Falha ao salvar autonomia")).toBeNull(),
+  );
   expect(patch).toHaveBeenCalledTimes(2);
   expect(screen.queryByText("Alterações salvas.")).toBeNull();
   expect(

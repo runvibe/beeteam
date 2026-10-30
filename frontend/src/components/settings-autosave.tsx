@@ -232,25 +232,14 @@ export function AutosaveFeedback({
   state,
 }: {
   state: {
-    pending: boolean;
     error: unknown;
-    saved: boolean;
-    dirty: boolean;
     request: () => void;
     reload?: () => Promise<void>;
   };
 }) {
+  if (!state.error) return null;
   return (
     <>
-      <p className="small-note" role="status">
-        {state.pending
-          ? "Salvando…"
-          : state.saved && !state.dirty
-            ? "Alterações salvas."
-            : state.dirty && !state.error
-              ? "Alterações ainda não salvas."
-              : ""}
-      </p>
       {state.error && (
         <>
           <Failure error={state.error} />
