@@ -21,7 +21,9 @@ function savePosition(url: string) {
     x: window.scrollX,
     y: window.scrollY,
     column: document.querySelector(".kanban")?.scrollLeft ?? 0,
-    panel: document.querySelector(".detail-scroll")?.scrollTop ?? 0,
+    panel:
+      document.querySelector(".detail-scroll, [data-detail-scroll]")
+        ?.scrollTop ?? 0,
   });
 }
 export function navigate(to: string, replace = false) {
@@ -118,7 +120,9 @@ export function useRestorePosition() {
       window.scrollTo(position?.x ?? 0, position?.y ?? 0);
       const column = document.querySelector(".kanban");
       if (column) column.scrollLeft = position?.column ?? 0;
-      const panel = document.querySelector(".detail-scroll");
+      const panel = document.querySelector(
+        ".detail-scroll, [data-detail-scroll]",
+      );
       if (panel) panel.scrollTop = position?.panel ?? 0;
     });
     return () => {

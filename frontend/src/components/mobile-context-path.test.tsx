@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { within, act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
 import { BreadcrumbName } from "./mobile-context-path";
@@ -47,7 +47,9 @@ it("returns to the filtered origin without requiring existing browser history", 
   );
   await screen.findByRole("region", { name: "Task" });
   await userEvent.click(
-    screen.getByRole("button", { name: "Voltar ao contexto anterior" }),
+    within(
+      screen.getByRole("navigation", { name: "Caminho compacto" }),
+    ).getByRole("button", { name: "Voltar" }),
   );
   await waitFor(() => expect(location.pathname + location.search).toBe(from));
 });
@@ -65,7 +67,9 @@ it("uses a safe parent fallback when a direct task URL has an unsafe origin", as
   await screen.findByRole("region", { name: "Task" });
   await act(async () =>
     userEvent.click(
-      screen.getByRole("button", { name: "Voltar ao contexto anterior" }),
+      within(
+        screen.getByRole("navigation", { name: "Caminho compacto" }),
+      ).getByRole("button", { name: "Voltar" }),
     ),
   );
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));

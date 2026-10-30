@@ -21,9 +21,40 @@ it("shares section selection with deep links and retains the autonomy form acros
   );
   const section = await screen.findByLabelText("Seção da tarefa");
   expect(section).toHaveValue("specification");
+  expect(
+    within(screen.getByRole("region", { name: "Task" })).queryByRole("button", {
+      name: "Voltar",
+    }),
+  ).toBeNull();
+  expect(
+    within(screen.getByLabelText("Estado da tarefa")).queryByText("Status"),
+  ).toBeNull();
+  expect(
+    within(
+      screen.getByRole("complementary", { name: "Contexto da tarefa" }),
+    ).getByRole("heading", { name: "Status" }),
+  ).toBeVisible();
+  expect(
+    within(screen.getByLabelText("Estado da tarefa")).queryByText("Executor"),
+  ).toBeNull();
+  expect(
+    within(
+      screen.getByRole("complementary", { name: "Contexto da tarefa" }),
+    ).getByText("Executor"),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("navigation", { name: "Caminho da task" }),
+  ).toBeNull();
+  expect(screen.getByRole("navigation", { name: "Caminho" })).toBeVisible();
+  expect(screen.queryByRole("heading", { name: "Especificação" })).toBeNull();
+  expect(
+    screen.queryByText("Requisitos, entrega esperada e critérios de aceite."),
+  ).toBeNull();
   const autonomy = screen.getByRole("combobox", {
     name: "Configuração individual",
   });
+  await userEvent.selectOptions(section, "children");
+  expect(screen.queryByText(/Filhos diretos em todos os boards/)).toBeNull();
   await userEvent.selectOptions(section, "overview");
   expect(
     await screen.findByRole("heading", { name: "Resumo atual do trabalho" }),

@@ -7,6 +7,7 @@ import { TextBlock, formatDate } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TaskMode } from "./settings";
+import { TaskStatus } from "./task-status";
 
 const sections = [
   ["overview", "Visão geral"],
@@ -111,6 +112,10 @@ export function TaskContext({ task }: { task: Task }) {
         <ChevronDown aria-hidden="true" />
       </Button>
       <div className="task-context-content" id={contentId}>
+        <section>
+          <h2>Status</h2>
+          <TaskStatus task={task} />
+        </section>
         <section>
           <h2>Responsáveis</h2>
           <dl>

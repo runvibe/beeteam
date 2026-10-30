@@ -477,3 +477,15 @@ Task detail dividers separate logical document sections, plan history, and execu
 The task detail blocked alert uses a red background, white text and a decorative blocking icon beside the complete message. The alert retains its announcement semantics and wraps long reasons on small screens.
 
 The current work summary retains its horizontal section dividers and spacing without a vertical accent bar.
+
+On wide task detail screens, the main reading column and context sidebar scroll independently below the global topbar; the sidebar stays in place while reading and remains scrollable when its controls exceed the viewport. Narrow screens retain normal page scrolling and the context disclosure. Timeline filter tags use the shared overlay without reserved height, with reduced filter-to-content spacing. The current summary aligns with its sibling sections without a left inset.
+
+Specification and Subtasks begin directly with their document/list (or existing empty state), without redundant introductory headings or helper copy.
+
+Root task details omit the duplicate board path above their title; the global breadcrumb and nested-task ancestry remain available.
+
+The task executor appears in the context sidebar, without a duplicate in the main status/progress row.
+
+Task status leads the context sidebar. The main column displays recorded progress as a full-width accessible bar with a percentage positioned at the fill endpoint and clamped inside the edges at 0% and 100%, without motion or inferred activity.
+
+Mobile breadcrumbs use a 44px back-chevron control with the existing contextual destination and long-title behavior. Task details omit the duplicate content back button; desktop breadcrumb links remain available.

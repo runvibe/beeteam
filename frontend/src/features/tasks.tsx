@@ -1,4 +1,3 @@
-import { goBack } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
@@ -6,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
 import {
-  ArrowUpLeft,
   Ban,
   Download,
   CheckCircle2,
@@ -33,6 +31,7 @@ import {
 import { AgentName, BoardName } from "@/components/names";
 import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
 import "./task-detail.css";
+import { TaskProgress } from "./task-progress";
 export function TaskPage() {
   const id = useUi((s) => s.taskId);
   return id ? (
@@ -61,18 +60,8 @@ function TaskDetail({ id }: { id: string }) {
   }, [id]);
   return (
     <div className="task-detail-columns">
-      <div className="task-detail-primary">
-        <Button
-          variant="ghost"
-          className="task-back"
-          onClick={() =>
-            goBack(q.data ? `/boards/${q.data.boardId}` : "/boards")
-          }
-        >
-          <ArrowUpLeft />
-          Voltar
-        </Button>
-        {q.data && <TaskPath task={q.data} />}
+      <div className="task-detail-primary" data-detail-scroll>
+        {q.data?.parentId && <TaskPath task={q.data} />}
         <header className="task-detail-heading">
           <h1 ref={heading} tabIndex={-1}>
             {q.data?.title ?? "Detalhes da task"}
@@ -82,18 +71,7 @@ function TaskDetail({ id }: { id: string }) {
           {q.data && (
             <>
               <div className="task-detail-state" aria-label="Estado da tarefa">
-                <div>
-                  <span>Status</span>
-                  <TaskStatus task={q.data} />
-                </div>
-                <div>
-                  <span>Progresso registrado</span>
-                  <strong>{q.data.progress.percent}%</strong>
-                </div>
-                <div>
-                  <span>Executor</span>
-                  <AgentName id={q.data.executorAgentId} />
-                </div>
+                <TaskProgress percent={q.data.progress.percent} />
                 {q.data.archivedAt && (
                   <Badge variant="secondary">Arquivada: somente leitura</Badge>
                 )}
@@ -119,12 +97,6 @@ function TaskDetail({ id }: { id: string }) {
                   </TabsContent>
                   <TabsContent value="specification">
                     <div className="detail-section task-specification">
-                      <header className="task-reading-block">
-                        <h2>Especificação</h2>
-                        <p className="small-note">
-                          Requisitos, entrega esperada e critérios de aceite.
-                        </p>
-                      </header>
                       {q.data.specification ? (
                         <Markdown headingOffset={2} sectionDividers>
                           {q.data.specification}
@@ -176,10 +148,6 @@ function Children({ task }: { task: Task }) {
   });
   return (
     <div className="detail-section">
-      <p className="muted-copy">
-        Filhos diretos em todos os boards. Abra uma subtask para consultar os
-        próximos níveis.
-      </p>
       <QueryState query={q}>
         {q.data && (
           <>
@@ -243,7 +211,9 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
       : {}),
   });
   return (
-    <div className="detail-section">
+    <div
+      className={`detail-section${resource === "timeline" ? " task-timeline" : ""}`}
+    >
       {resource === "timeline" && (
         <FilterBar
           active={includeChildren !== "false"}
@@ -427,17 +397,5 @@ function Attachment({ item }: { item: Resources["attachments"] }) {
       </Button>
       {error && <Failure error={error} />}
     </article>
-  );
-}
-
-function TaskStatus({ task }: { task: Task }) {
-  const q = useList("statuses", task.boardId, {
-    limit: 100,
-    includeArchived: true,
-  });
-  return (
-    <Badge variant="outline">
-      {q.data?.items.find((s) => s.id === task.statusId)?.name ?? "Carregando…"}
-    </Badge>
   );
 }
