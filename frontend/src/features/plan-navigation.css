@@ -29,10 +29,10 @@
   white-space: normal;
   overflow-wrap: anywhere;
   padding: 8px;
+  font-weight: 500;
 }
 .task-plan-navigation > button[aria-current="page"] {
   background: var(--accent);
-  font-weight: 600;
 }
 .task-plan-content {
   min-width: 0;
