@@ -161,5 +161,5 @@ it("marks blocked cards while keeping unblocked cards neutral", async () => {
     expect(badge.closest('[data-slot="card"]')).toHaveAttribute("data-blocked", "true");
   }
   const normal = await screen.findByRole("link", { name: "Mapear a jornada de primeiro uso" });
-  expect(normal.closest('[data-slot="card"]')).toHaveAttribute("data-blocked", "false");
+  expect(normal.closest('[data-slot="card"]')).not.toHaveAttribute("data-blocked");
 });
