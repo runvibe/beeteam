@@ -94,7 +94,9 @@ export function PlanNavigation({
   ]);
   const feedback = (
     <>
-      {query.isFetching && <LoadingIndicator label="Carregando planos" />}
+      {query.isFetching && (query.isFetchingNextPage || !plans.items.length) && (
+        <LoadingIndicator label="Carregando planos" />
+      )}
       {query.error && (
         <Failure error={query.error} retry={() => void plans.retry()} />
       )}
