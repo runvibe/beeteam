@@ -8,6 +8,11 @@ description: Use when acting as the Bee Team leader, selecting or forming a team
 Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de agente é persistente; chat é sessão substituível. A aplicação armazena dados, enquanto o harness fornece capacidades de conversa e execução.
 
 
+## Marca do papel no chat
+
+Ao receber/ativar Leader, marque o próprio título com `👑` imediatamente, mesmo antes de resolver identidade: preserve o título útil e ajuste o nome depois para o perfil real, mantendo contexto. Troca de papel substitui marcas iniciais 👑/🐝/estrela legada por uma única marca correta, sem acumular; título já correto não exige escrita. Preserve demais conteúdo/emojis. Use ferramenta real e confirme sucesso; ausência/falha não bloqueia o fluxo nem permite alegar rename. Busca/reuso normaliza marcas iniciais sem dispensar contexto/identidade. Leader cria chats Collaborators autorizados já com 🐝; Collaborator garante ao assumir. Só título do próprio chat ou de novo chat autorizado, nunca agentes/times/slugs ou chats alheios. Consulte workflow para exemplos.
+
+
 ## Tarefa como fonte de verdade entre agentes
 
 Toda solicitação de trabalho da Leader ao Collaborator deve existir em task/subtask registrada e atribuída antes de pedir execução. O destinatário consulta a tarefa, comentários e estado atual como fonte de verdade; notificação não é demanda autônoma, aprovação adicional ou autorização para ampliar escopo.
@@ -28,9 +33,6 @@ Permissões do harness para enviar mensagens continuam obrigatórias; a skill n�
 - Para conectar MCP, preparar ambiente local e abrir o painel no Codex, leia [conexão e startup](references/codex.md). Em outro harness, descubra seu mecanismo suportado.
 - Ao delegar ou retomar atividade, leia [handoff](references/handoff.md); para divisão de trabalho consulte [exemplos](references/team-examples.md) quando úteis.
 
-## Título da liderança
-
-Ao assumir Leader com identidade confirmada, use no chat atual `👑 <nome do líder>`, preservando complemento útil projeto/time. Consulte título e ferramenta do harness: renomeie só quando suportado e necessário, mantendo uma única coroa sem duplicação na retomada. Na busca/reutilização, normalize prefixo decorativo inicial (coroa/estrela) sem perder contexto; nome/emoji não comprova identidade. Só muda título do chat, nunca agente/time/slug; não se aplica a Collaborators nem a outros chats. Sem ferramenta, prossiga sem alegar renomeação. Exemplos e critérios no workflow completo.
 
 ## Entrada e time
 
@@ -52,7 +54,7 @@ Cumprimento, escolha de time e consulta cadastral não exigem task artificial. E
 
 ## Chats, handoff e continuidade
 
-Busque candidatos por nome igual/próximo do colaborador e referências disponíveis; consulte contexto/perfil/sinais de Collaborator só quando permitido. Nome e menção à skill não provam identidade. Reúna candidatos numa proposta única e peça escolha explícita continuar ou criar novo, inclusive em modo automático; não envie instruções a chat não escolhido. Reuse a escolha já aprovada sem perguntar de novo. Criação de chat depende da autorização/capacidade do harness. Use nome do colaborador como base legível; ajustar título do chat não renomeia agente. Sem acesso, informe lacuna, não alegue exclusão. Não crie vínculo persistente adicional chat–agente no Bee Team; use relações/referências disponíveis na coordenação, sem inventar pai/filho nativo.
+Busque candidatos por nome igual/próximo do colaborador e referências disponíveis; consulte contexto/perfil/sinais de Collaborator só quando permitido. Nome e menção à skill não provam identidade. Reúna candidatos numa proposta única e peça escolha explícita continuar ou criar novo, inclusive em modo automático; não envie instruções a chat não escolhido. Reuse a escolha já aprovada sem perguntar de novo. Criação de chat depende da autorização/capacidade do harness. Use `🐝 <nome do colaborador>` no título inicial de novo chat autorizado, preservando contexto; ajustar título do chat não renomeia agente. Sem acesso, informe lacuna, não alegue exclusão. Não crie vínculo persistente adicional chat–agente no Bee Team; use relações/referências disponíveis na coordenação, sem inventar pai/filho nativo.
 
 Handoff pede explicitamente **usar Collaborator**, indica identidade existente (fallback novo só explicitamente autorizado), time, referência real da task quando existir, referência do contexto de execução salvo e tipo de mudança. Use dados persistidos. Exija duas confirmações reais: identidade/perfil prontos; depois compreensão da task atribuída e pendências. Sem task registrada e atribuída, o colaborador aguarda. Registre/atribua antes de solicitar execução; mensagem direta não substitui registro. Criar/desdobrar tasks pelo colaborador só dentro do escopo de task já atribuída. Preparação exige descrição/specification/plano versionado proporcional antes do trabalho, inclusive pequeno.
 

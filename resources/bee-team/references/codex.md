@@ -73,6 +73,14 @@ Apenas Leader conduz a superfície visual do usuário. Descubra ferramentas reai
 
 Preserve edição ativa e contexto do usuário; se houver conflito, mantenha a superfície e entregue link correto. Ausência de UI não bloqueia gravação. Navegação autorizada dispensa perguntas repetidas; comunique resultados do trabalho, não uma sequência de cliques. Falha visual não desfaz gravação confirmada: não alegue tela sincronizada e exponha a limitação apenas pelo impacto concreto. Collaborators só registram e comunicam trabalho, sem conduzir o painel. Conteúdo aberto atualizado ao vivo depende de frontend/backend verificados; não prometa esse mecanismo nem force recargas durante edição.
 
-## Título do chat Leader no harness
+## Marca do papel no título do chat
 
-Quando estiver atuando como Leader com identidade confirmada, descubra a capacidade real de ler/renomear o chat atual. Aplique `👑 <nome do líder>` e preserve complemento útil projeto/time; normalize coroa repetida ou estrela inicial legada e não escreva se já correto. Busca/reutilização ignora esse prefixo decorativo na comparação, mas preserva verificação do contexto. Não renomeie chats de Collaborators, outros chats, agentes ou times. Ausência de ferramenta não bloqueia coordenação nem autoriza alegar sucesso.
+Ao receber/ativar esta skill no próprio chat, aplique imediatamente a marca do papel: `👑` para Leader ou `🐝` para Collaborator, inclusive em chat existente que muda de papel e antes de resolver a identidade. Nesse momento preserve o título atual útil, sem inventar nome. Após identificar o perfil, ajuste a parte do nome para o nome real, preservando complemento útil de projeto/time e demais conteúdo do título, com a mesma marca.
+
+Consulte o título atual e a ferramenta real do harness. Remova somente as marcas de papel iniciais repetidas/misturadas (`👑`, `🐝` e estrela legada usada como marca) e seus espaços, então anteponha uma única marca do papel ativo. Não remova emojis ou conteúdo do restante do título. Se já correto, não renomeie. Mudança de papel substitui a marca anterior, nunca acumula `👑🐝`. Só confirme renomeação após sucesso; ausência ou falha da ferramenta não bloqueia o fluxo de identidade/trabalho autorizado.
+
+Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colaborador>`, preservando contexto útil; o Collaborator garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
+
+A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
+
+Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.

@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("98e0428"));
+            .contains("e73c21b"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
