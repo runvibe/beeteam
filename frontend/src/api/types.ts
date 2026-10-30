@@ -78,6 +78,8 @@ export interface Filters {
   includeRemoved?: boolean;
   types?: string;
   actorId?: string;
+  actorKind?: "human" | "agent";
+  text?: string;
   createdFrom?: string;
   createdBefore?: string;
   updatedFrom?: string;

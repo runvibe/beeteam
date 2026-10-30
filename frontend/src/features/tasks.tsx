@@ -1,3 +1,4 @@
+import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
@@ -132,7 +133,7 @@ function TaskDetail({ id }: { id: string }) {
                     <Plans task={q.data} revealConsumed={planRevealConsumed} />
                   </TabsContent>
                   <TabsContent value="comments">
-                    <Records resource="comments" task={q.data} />
+                    <TaskConversation taskId={q.data.id} />
                   </TabsContent>
                   <TabsContent value="attachments">
                     <Records resource="attachments" task={q.data} />
@@ -206,7 +207,7 @@ function ChildRow({ task }: { task: Task }) {
     </div>
   );
 }
-type RecordKind = "comments" | "attachments" | "summaries" | "timeline";
+type RecordKind = "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
   const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0),
     [includeChildren, setInclude] = useUrlState<string>(
@@ -280,15 +281,6 @@ function RecordContent({
 }) {
   if (kind === "attachments")
     return <Attachment item={row as Resources["attachments"]} />;
-  if (kind === "comments") {
-    const r = row as Resources["comments"];
-    return (
-      <article className="record">
-        <Author id={r.actorId} date={r.createdAt} />
-        <TextBlock>{r.body}</TextBlock>
-      </article>
-    );
-  }
   if (kind === "summaries") {
     const r = row as Resources["summaries"];
     return (

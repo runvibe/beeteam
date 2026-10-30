@@ -95,3 +95,47 @@ it("autofills a visible sentinel across pages without another scroll, then stops
   act(() => window.dispatchEvent(new Event("resize")));
   expect(loadMore).toHaveBeenCalledTimes(3);
 });
+
+it("does not fill horizontally clipped roots and resets the request gate when filters change", () => {
+  const root = document.createElement("div"),
+    target = document.createElement("div");
+  let left = 2000;
+  root.getBoundingClientRect = () =>
+    ({
+      top: 0,
+      bottom: 600,
+      height: 600,
+      left,
+      right: left + 300,
+      width: 300,
+    }) as DOMRect;
+  target.getBoundingClientRect = () =>
+    ({
+      top: 100,
+      bottom: 160,
+      height: 60,
+      left,
+      right: left + 300,
+      width: 300,
+    }) as DOMRect;
+  const loadMore = vi.fn();
+  const options = {
+    sentinel: { current: target },
+    getRoot: () => root,
+    identity: "filter-a",
+    progress: "same-first-page",
+    hasMore: true,
+    fetching: false,
+    error: null,
+    loadMore,
+  };
+  const hook = renderHook((props) => useInfiniteScroll(props), {
+    initialProps: options,
+  });
+  expect(loadMore).not.toHaveBeenCalled();
+  left = 0;
+  act(() => window.dispatchEvent(new Event("resize")));
+  expect(loadMore).toHaveBeenCalledTimes(1);
+  hook.rerender({ ...options, identity: "filter-b" });
+  expect(loadMore).toHaveBeenCalledTimes(2);
+});

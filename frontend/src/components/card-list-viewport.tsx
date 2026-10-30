@@ -27,6 +27,7 @@ export function CardListViewport({
   children: ReactNode;
   label: string;
   state: {
+    identity?: string;
     items: { id: string }[];
     hasMore: boolean;
     fetching: boolean;
@@ -142,6 +143,7 @@ export function CardListViewport({
     return () => observer.disconnect();
   }, [state.items.length]);
   useInfiniteScroll({
+    identity: state.identity,
     sentinel,
     getRoot: () => root.current,
     progress: state.items.map((item) => item.id).join(","),

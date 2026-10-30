@@ -15,7 +15,7 @@ const sections = [
   ["specification", "Especificação"],
   ["children", "Subtasks"],
   ["plans", "Planos"],
-  ["comments", "Comentários"],
+  ["comments", "Conversa"],
   ["attachments", "Arquivos"],
   ["summaries", "Resumos"],
   ["timeline", "Timeline"],

@@ -71,3 +71,11 @@ Humanos/desconhecidos à esquerda neutra são a proposta de fallback, não uma i
 ## Critério de revisão deste plano
 
 Documento apenas: nenhum código de produto, comentário, configuração, API/MCP ou dado foi alterado. Antes da execução, fechar as duas políticas acima; depois validar visualmente com o usuário. `PROJECT.md` não foi encontrado na raiz desta worktree durante a auditoria.
+
+## Autorização e decisões posteriores (30/10/2026)
+
+Implementação autorizada pelo usuário via coordenação; não recriar este plano. Fechadas as decisões: papel atual, prioridade Leader quando ambos vínculos, humanos/desconhecidos neutros; janela recente por padrão com offset legado preservado. Autorizados filtro por autor e busca TEXTUAL literal no servidor (não semântica), em combinação AND. Backend alinhou actorId/actorKind/text, case-sensitive, espaços e caracteres %/_ literais, total filtrado e contratos HTTP/MCP. Nenhum embedding/provedor foi introduzido.
+
+Implementação: componentes separados de autoria/apresentação/paginação/âncora, loader compacto100ms, sentinel vazio1px para eliminar vão superior, shared infinite scroll nos dois sentidos. Revisão independente encontrou e corrigiu rebind mobile/desktop, identidade do filtro de cards e clipping horizontal do autofill. Testes de regressão adicionados.
+
+Registro Bee Team pendente por ausência de identidade legítima; execução técnica autorizada explicitamente sem assumir Demo. QA de comentários reais é leitura; fixture temporária em memória para Markdown longo rejeita mutações.

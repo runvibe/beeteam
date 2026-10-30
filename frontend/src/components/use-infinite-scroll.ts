@@ -49,10 +49,19 @@ export function useInfiniteScroll(options: Options) {
       // Hidden tabs and unmeasured elements never trigger eager loading.
       if (rect.height <= 0 || (bounds && bounds.height <= 0)) return;
       if (
+        rect.width > 0 &&
+        (rect.right <= Math.max(0, bounds?.left ?? 0) ||
+          rect.left >=
+            Math.min(window.innerWidth, bounds?.right ?? window.innerWidth))
+      )
+        return;
+      if (bounds && (bounds.bottom <= 0 || bounds.top >= window.innerHeight))
+        return;
+      if (
         rect.top <=
-          (bounds?.bottom ?? window.innerHeight) +
+          Math.min(window.innerHeight, bounds?.bottom ?? window.innerHeight) +
             (latest.current.margin ?? 0) &&
-        rect.bottom >= (bounds?.top ?? 0)
+        rect.bottom >= Math.max(0, bounds?.top ?? 0)
       )
         request();
     };

@@ -21,14 +21,21 @@ it("shows a visual-only sidebar summary after the hero leaves, preserving tabs, 
   vi.stubGlobal(
     "IntersectionObserver",
     class {
+      callback: IntersectionObserverCallback;
+      options: IntersectionObserverInit;
       constructor(
         callback: IntersectionObserverCallback,
         options: IntersectionObserverInit,
       ) {
-        enter = callback;
-        root = options.root;
+        this.callback = callback;
+        this.options = options;
       }
-      observe() {}
+      observe(target: Element) {
+        if (target.classList.contains("task-detail-hero")) {
+          enter = this.callback;
+          root = this.options.root;
+        }
+      }
       disconnect() {}
     },
   );
@@ -75,7 +82,7 @@ it("shows a visual-only sidebar summary after the hero leaves, preserving tabs, 
   expect(screen.getAllByRole("progressbar")).toHaveLength(1);
   expect(screen.getAllByRole("alert")).toHaveLength(1);
   expect(within(summary as HTMLElement).queryByRole("heading")).toBeNull();
-  await userEvent.click(screen.getByRole("tab", { name: "Comentários" }));
+  await userEvent.click(screen.getByRole("tab", { name: "Conversa" }));
   expect(
     screen.getByRole("combobox", { name: "Configuração individual" }),
   ).toBe(form);

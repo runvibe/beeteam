@@ -135,3 +135,11 @@ The global header hosts listing/board filters beside the breadcrumb; preferences
 Card lists show a small bottom-centered return-to-top overlay after scrolling. Its 44px keyboard-accessible target scrolls only the card region, preserves filters and loaded pages, respects reduced motion, and moves above a visible loading/retry footer. It reserves no layout space.
 
 A rolagem incremental de cards, colunas Kanban, navegação de planos e histórico usa o controlador compartilhado `useInfiniteScroll`. Ele reavalia o sentinel após cada página e resize, respeita o scroll root de cada superfície e interrompe em erro, fim ou ausência de progresso. Os adapters mantêm deduplicação e cancelamento via AbortSignal; páginas vazias/repetidas e offsets sem avanço não provocam loops. As âncoras existentes e o loader de 100ms são preservados; refetch de autosave continua silencioso na lista de planos.
+
+## Conversa de tarefas
+
+A aba **Conversa** mantém `tab=comments` e os contratos de comentários. Renderiza Markdown seguro, avatar, nome, data e papel **atual** do agente: Leader à direita (prioritário quando há ambos os vínculos), Collaborator à esquerda; humanos e autores indisponíveis têm tratamento neutro. O contrato não registra o papel histórico.
+
+Abre na janela recente por padrão; `comments.offset` explícito preserva links legados. Páginas anteriores/seguintes usam a base compartilhada de scroll infinito, dedupe por ID, cancelamento por identidade e âncora de leitura; há ações acessíveis por teclado. Não há compositor nem envio de mensagens.
+
+Filtros compactos por agente (`comments.actorId`), tipo (`comments.actorKind`) e texto (`comments.text`) são aplicados pelo servidor à conversa inteira, inclusive contagem e paginação. A busca é substring literal no Markdown completo, sensível a maiúsculas e acentos; `%`/`_` não são curingas. A interface limita entrada a 200 caracteres. Texto e tipo exigem backend com o contrato novo `text`/`actorKind`; erro de versão é exibido, nunca substituído por filtragem local parcial. Mudança de filtro cancela a consulta anterior e reinicia sua janela. Offset entre requisições não oferece snapshot: alterações concorrentes podem deslocar páginas; o cliente revalida e deduplica, sem prometer snapshot transacional.
