@@ -134,3 +134,7 @@ Baseline independente identificou permissão implícita para decisões/perguntas
 quick_validate dos dois pacotes, resolução/containment de links relativos e git diff --check passaram. Cópias globais anteriores conferidas sem drift antes da substituição autorizada. Snapshot MCP é pacote separado e não é declarado atualizado por esta validação.
 
 Rust: cargo build --locked passou; cargo test --locked --no-fail-fast executou e falhou em nove alvos de integração. O log atual exige BEE_TEST_DATABASE_URL apontando para PostgreSQL 18 isolado e informa NotPresent; não foi usado banco de produto como alternativa. Essa limitação não prova falha do runtime ativo; serviços não foram reiniciados.
+
+## Título da liderança — 2026-10-30
+
+Baseline textual independente constatou ausência de regra para prefixo e idempotência. Reavaliação passou para título simples/com complemento, já prefixado, coroa duplicada, estrela legada, ausência de ferramenta e preservação de Collaborators/outros chats/agentes/times/slugs. Nenhum chat foi renomeado nesta entrega. quick_validate, links internos e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram, nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Instalação autorizada limitada ao pacote Leader; MCP exige sincronização/verificação separada.

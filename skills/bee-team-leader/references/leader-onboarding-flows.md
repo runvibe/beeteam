@@ -89,6 +89,14 @@ A escolha na interface não é recebida automaticamente pelo chat. Squad com com
 
 Referência operacional aplicada às skills locais a partir dos workflows aprovados no commit `01e77b9`. O conteúdo orienta o agente; não comprova enforcement pela API nem atualização do snapshot MCP. Nenhuma task, time ou chat é criado apenas por ler esta referência.
 
+## Título do chat da liderança
+
+Ao inicializar ou assumir uma identidade Leader confirmada, ajuste somente o título do chat em que atua para `👑 <nome do líder>`, preservando complemento útil de projeto/time do título existente. Use o nome real do perfil, não invente identidade. Consulte o título atual e a capacidade de renomear no harness; faça a mudança quando suportada e permitida, sem pedir novamente autorização já concedida. Sem ferramenta, continue a coordenação sem alegar que renomeou.
+
+Mantenha uma única coroa inicial: remova repetições desse prefixo e espaços excedentes antes de montar o título; se o resultado já corresponde ao atual, não renomeie. Para busca/reutilização de chats de liderança, compare nomes sem o prefixo decorativo inicial (coroa ou estrela legada) e seus espaços, mantendo complemento e contexto como evidências de identidade. Ao normalizar título de liderança com estrela legada, substitua apenas o prefixo pela coroa. Nome semelhante ou emoji não prova identidade nem dispensa confirmação de reutilização quando exigida.
+
+A regra vale exclusivamente para o chat da Leader assumida, nunca para chats de Collaborators ou outros chats do usuário. Não altera nome do agente, time, slug ou registros Bee Team. Não faça renomeação em massa. Exemplo: líder Ana em `Ana — Projeto X` passa a `👑 Ana — Projeto X`; esse título permanece igual na retomada; `👑 👑 Ana` passa a `👑 Ana`. O chat Collaborator `Bruno` permanece como está.
+
 ## Entrada comum aos três casos
 
 O usuário inicia um chat mencionando a skill Leader. O agente cumprimenta brevemente, verifica ou prepara o acesso local quando necessário, reutilizando serviços saudáveis, e abre o aplicativo na tela **Teams**, rota `/teams`. Descobre o endereço da instalação; no ambiente atual, o endereço esperado é `http://127.0.0.1:5173/teams`, não um endereço universal. A abertura depende do navegador disponível no harness; se não puder abrir, informa a limitação e entrega o link correto, sem alegar que abriu a tela.

@@ -62,3 +62,7 @@ Candidatos por nome/contexto são evidência, não prova: reunir escolha de reus
 ## Exemplo de pergunta, decisão e entrega
 
 As propostas acima são conversas com o usuário; antes de solicitar execução a outro agente, registre e atribua cada task/subtask. Em uma alteração de endpoint, Collaborator salva a pergunta em comentário e notifica apenas task/comentário e tipo “pergunta”. Leader registra a resposta/decisão e atualiza specification/plano conforme impacto antes de notificar tipo “decisão”. Collaborator lê os registros, executa o escopo atribuído e salva evidências, síntese e estado antes do aviso “entrega”. Referências vêm dos retornos reais; não copiar decisão para o chat. Um aviso repetido não gera nova tarefa, comentário ou confirmação automática.
+
+## Título da liderança
+
+Leader Ana, projeto X: `Ana — Projeto X` → `👑 Ana — Projeto X`. Retomar mantém esse título, sem acrescentar coroa; `👑 👑 Ana` normaliza para `👑 Ana`. Busca compara nome/contexto ignorando prefixo decorativo inicial, sem inferir identidade pelo título. Collaborator Bruno não recebe o prefixo. A mudança é só no título do chat atual da Leader via harness suportado, não no cadastro Bee Team.
