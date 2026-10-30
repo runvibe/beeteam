@@ -15,7 +15,7 @@ import {
 import { useApi, useEntity, useList } from "@/api/context";
 import type { Resources, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -30,7 +30,8 @@ import {
   safeUrl,
 } from "@/components/shared";
 import { AgentName, BoardName } from "@/components/names";
-import { TaskMode } from "./settings";
+import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
+import "./task-detail.css";
 export function TaskPage() {
   const id = useUi((s) => s.taskId);
   return id ? (
@@ -40,8 +41,7 @@ export function TaskPage() {
   ) : null;
 }
 function TaskDetail({ id }: { id: string }) {
-  const q = useEntity("tasks", id),
-    open = useUi((s) => s.openTask);
+  const q = useEntity("tasks", id);
   const heading = useRef<HTMLHeadingElement>(null);
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
@@ -69,58 +69,30 @@ function TaskDetail({ id }: { id: string }) {
         Voltar
       </Button>
       {q.data && <TaskPath task={q.data} />}
-      <header className="sr-only">
+      <header className="task-detail-heading">
         <h1 ref={heading} tabIndex={-1}>
           {q.data?.title ?? "Detalhes da task"}
         </h1>
-        <div className="muted-copy">
-          {q.data ? (
-            <>
-              Task {q.data.id.slice(-4).toUpperCase()} ·{" "}
-              <BoardName id={q.data.boardId} /> · Atualizada em{" "}
-              {formatDate(q.data.updatedAt)}
-            </>
-          ) : (
-            "Carregando registro…"
-          )}
-        </div>
       </header>
       <QueryState query={q}>
         {q.data && (
           <>
-            {q.data.parentId && (
-              <Button
-                variant="ghost"
-                className="justify-start"
-                onClick={() => open(q.data!.parentId)}
-              >
-                <ArrowUpLeft data-icon="inline-start" />
-                Task pai
-              </Button>
-            )}
-            <div className="task-facts">
+            <div className="task-detail-state" aria-label="Estado da tarefa">
               <div>
-                <span>Autor</span>
-                <AgentName id={q.data.authorAgentId} />
-              </div>
-              <div>
-                <span>Executor</span>
-                <AgentName id={q.data.executorAgentId} />
+                <span>Status</span>
+                <TaskStatus task={q.data} />
               </div>
               <div>
                 <span>Progresso registrado</span>
                 <strong>{q.data.progress.percent}%</strong>
               </div>
               <div>
-                <span>Status</span>
-                <TaskStatus task={q.data} />
+                <span>Executor</span>
+                <AgentName id={q.data.executorAgentId} />
               </div>
-              <div>
-                <span>Cadastro</span>
-                <Badge variant="secondary">
-                  {q.data.archivedAt ? "Arquivada" : "Ativa"}
-                </Badge>
-              </div>
+              {q.data.archivedAt && (
+                <Badge variant="secondary">Arquivada: somente leitura</Badge>
+              )}
             </div>
             {q.data.block.blocked && (
               <Alert variant="destructive">
@@ -128,61 +100,56 @@ function TaskDetail({ id }: { id: string }) {
                 <AlertDescription>{q.data.block.reason}</AlertDescription>
               </Alert>
             )}
-            <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="detail-tabs">
-                <TabsTrigger value="overview">Visão geral</TabsTrigger>
-                <TabsTrigger value="specification">Especificação</TabsTrigger>
-                <TabsTrigger value="children">Subtasks</TabsTrigger>
-                <TabsTrigger value="plans">Planos</TabsTrigger>
-                <TabsTrigger value="comments">Comentários</TabsTrigger>
-                <TabsTrigger value="attachments">Arquivos</TabsTrigger>
-                <TabsTrigger value="summaries">Resumos</TabsTrigger>
-                <TabsTrigger value="timeline">Timeline</TabsTrigger>
-              </TabsList>
-              <TabsContent value="overview">
-                <div className="detail-section">
-                  <h3>Resumo atual do trabalho</h3>
-                  <TextBlock>
-                    {q.data.currentSummary || "Sem atualização registrada"}
-                  </TextBlock>
-                  <h3>Descrição</h3>
-                  <TextBlock>{q.data.description}</TextBlock>
-                  <h3>Andamento</h3>
-                  <TextBlock>{q.data.progress.note}</TextBlock>
-                  <TaskMode task={q.data} />
+            <Tabs
+              value={tab}
+              onValueChange={setTab}
+              className="task-detail-tabs"
+            >
+              <TaskSections value={tab} onChange={setTab} />
+              <div className="task-detail-columns">
+                <div className="task-detail-reading">
+                  <TabsContent value="overview">
+                    <TaskOverview task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="specification">
+                    <div className="detail-section">
+                      <h2>Especificação</h2>
+                      <p className="small-note">
+                        Requisitos, entrega esperada e critérios de aceite.
+                      </p>
+                      {q.data.specification ? (
+                        <Markdown headingOffset={2}>
+                          {q.data.specification}
+                        </Markdown>
+                      ) : (
+                        <NoData
+                          title="Nenhuma especificação registrada"
+                          description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
+                        />
+                      )}
+                    </div>
+                  </TabsContent>
+                  <TabsContent value="children">
+                    <Children task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="plans">
+                    <Plans task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="comments">
+                    <Records resource="comments" task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="attachments">
+                    <Records resource="attachments" task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="summaries">
+                    <Records resource="summaries" task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="timeline">
+                    <Records resource="timeline" task={q.data} />
+                  </TabsContent>
                 </div>
-              </TabsContent>
-              <TabsContent value="specification">
-                <div className="detail-section">
-                  <h2>Especificação</h2>
-                  <p className="small-note">
-                    Requisitos, entrega esperada e critérios de aceite.
-                  </p>
-                  {q.data.specification ? (
-                    <Markdown>{q.data.specification}</Markdown>
-                  ) : (
-                    <NoData title="Nenhuma especificação registrada" />
-                  )}
-                </div>
-              </TabsContent>
-              <TabsContent value="children">
-                <Children task={q.data} />
-              </TabsContent>
-              <TabsContent value="plans">
-                <Plans task={q.data} />
-              </TabsContent>
-              <TabsContent value="comments">
-                <Records resource="comments" task={q.data} />
-              </TabsContent>
-              <TabsContent value="attachments">
-                <Records resource="attachments" task={q.data} />
-              </TabsContent>
-              <TabsContent value="summaries">
-                <Records resource="summaries" task={q.data} />
-              </TabsContent>
-              <TabsContent value="timeline">
-                <Records resource="timeline" task={q.data} />
-              </TabsContent>
+                <TaskContext task={q.data} />
+              </div>
             </Tabs>
           </>
         )}
@@ -211,7 +178,12 @@ function Children({ task }: { task: Task }) {
             {q.data.items.map((child) => (
               <ChildRow key={child.id} task={child} />
             ))}
-            {!q.data.items.length && <NoData title="Sem subtasks" />}
+            {!q.data.items.length && (
+              <NoData
+                title="Sem subtasks"
+                description="Esta tarefa ainda não tem subtasks diretas."
+              />
+            )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
         )}
@@ -293,7 +265,10 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
               <RecordContent key={row.id} kind={resource} row={row} />
             ))}
             {!q.data.items.length && (
-              <NoData title="Nenhum registro nesta seção" />
+              <NoData
+                title="Nenhum registro nesta seção"
+                description="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
+              />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>

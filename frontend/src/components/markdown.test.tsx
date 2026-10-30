@@ -20,3 +20,35 @@ it("renders semantic Markdown while ignoring raw HTML and unsafe links", () => {
   expect(screen.queryByRole("link", { name: "Inseguro" })).toBeNull();
   expect(container.querySelector("script,img")).toBeNull();
 });
+
+it("nests task document headings below the page and section titles", () => {
+  render(
+    <Markdown headingOffset={2}>
+      {"# Documento\n\n## Requisitos\n\n### Entrega"}
+    </Markdown>,
+  );
+  expect(
+    screen.getByRole("heading", { name: "Documento", level: 3 }),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("heading", { name: "Requisitos", level: 4 }),
+  ).toBeVisible();
+  expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
+});
+
+it("retains task document nodes when its parent refreshes", () => {
+  const view = render(
+    <Markdown headingOffset={2}>
+      {"# Documento\n\n[Referência](https://example.com)"}
+    </Markdown>,
+  );
+  const title = screen.getByRole("heading", { name: "Documento" });
+  const link = screen.getByRole("link", { name: "Referência" });
+  view.rerender(
+    <Markdown headingOffset={2}>
+      {"# Documento\n\n[Referência](https://example.com)"}
+    </Markdown>,
+  );
+  expect(screen.getByRole("heading", { name: "Documento" })).toBe(title);
+  expect(screen.getByRole("link", { name: "Referência" })).toBe(link);
+});

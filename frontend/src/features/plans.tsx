@@ -153,7 +153,7 @@ function Plan({ item }: { item: PlanRevision }) {
           <h3>{displayed.title}</h3>
           <p className="small-note">Revisão {displayed.revision}</p>
           <Metadata item={displayed} />
-          <Markdown>{displayed.content}</Markdown>
+          <Markdown headingOffset={2}>{displayed.content}</Markdown>
           {displayed.changeSummary && (
             <p className="small-note">Alteração: {displayed.changeSummary}</p>
           )}

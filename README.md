@@ -469,3 +469,5 @@ Board, agent and team listing cards include a consistent decorative filled type 
 Agent listing cards use a centered 56px profile avatar above the centered name, with the decorative type mark at the top left. The 272px card height, description fade and footer remain consistent; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
+
+Task detail keeps its full-page route and tab query parameters. A visible title and execution state lead into independent reading sections and a 300px context column. Narrow content areas stack the context behind an accessible disclosure; small screens select sections through a native select. The autonomy form remains mounted across section/disclosure changes, preserves autosave sessions, and becomes read-only for archived tasks. Task specification and plan Markdown headings are nested below the page heading without changing stored content.

@@ -22,9 +22,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Choice, Failure, modeLabels } from "@/components/shared";
-import { AgentName, BoardName } from "@/components/names";
+import { AgentName } from "@/components/names";
 export function BoardSettings({
   board,
   open,
@@ -137,38 +136,42 @@ export function TaskMode({ task }: { task: Task }) {
     save: (draft, version) => api.patch("tasks", task.id, draft, version),
   });
   return (
-    <section className="record">
-      <h3>Autonomia</h3>
-      <p className="muted-copy">
-        Origem da cadeia: <BoardName id={task.executionContext.originBoardId} />
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Badge variant="outline">
-          Origem: {modeLabels[task.executionContext.originBoardMode]}
-        </Badge>
-        <Badge variant="secondary">
-          Efetivo:{" "}
+    <section className="task-autonomy">
+      <h2>Autonomia</h2>
+      <p className="task-effective-mode">
+        Modo efetivo:{" "}
+        <strong>
           {task.executionContext.effectiveMode === "automatic"
             ? "Automático"
             : "Manual"}
-        </Badge>
-      </div>
-      <FieldDescription>
-        Em modo padrão, a flag desta task vale individualmente. A flag do pai e
-        o board de destino não substituem a origem.
-      </FieldDescription>
-      <Choice
-        label="Configuração individual"
-        value={autosave.draft.autonomyMode}
-        onChange={(v) =>
-          !task.archivedAt &&
-          autosave.change("autonomyMode", v as Task["autonomyMode"], true)
-        }
-        options={[
-          { value: "manual", label: "Manual" },
-          { value: "automatic", label: "Automático" },
-        ]}
-      />
+        </strong>
+      </p>
+      <details className="task-autonomy-explanation">
+        <summary>Como a autonomia é definida</summary>
+        <p>
+          Modo da origem: {modeLabels[task.executionContext.originBoardMode]}
+        </p>
+        <p>
+          Em modo padrão, a configuração desta task vale individualmente. A
+          configuração do pai e o board de destino não substituem a origem.
+        </p>
+      </details>
+      {task.archivedAt ? (
+        <p>Configuração individual: {modeLabels[task.autonomyMode]}</p>
+      ) : (
+        <Choice
+          label="Configuração individual"
+          value={autosave.draft.autonomyMode}
+          onChange={(v) =>
+            !task.archivedAt &&
+            autosave.change("autonomyMode", v as Task["autonomyMode"], true)
+          }
+          options={[
+            { value: "manual", label: "Manual" },
+            { value: "automatic", label: "Automático" },
+          ]}
+        />
+      )}
       {task.archivedAt && (
         <p className="small-note">Task arquivada: somente leitura.</p>
       )}
