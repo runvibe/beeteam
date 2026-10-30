@@ -441,3 +441,13 @@ Publish the full comment before notifying another chat. Notifications carry task
 Activation: align and bundle the final Skills snapshot and hashes first, regenerate the MCP catalog, build a new distribution in isolation, then coordinate replacement/restart of the SQLite 59865 server. Refresh client tool discovery and verify read-only getComment against an existing task/comment pair. This change does not restart the server or write product data.
 
 Final coordinated Skills snapshot: `23b8bdf730802e447b4536c59df7b4ce73ef957d`; 11 canonical materials refreshed, with the three established SQLite startup/readiness paragraphs retained in the Codex reference. SHA-256 source/bundled provenance records every file. This supersedes the earlier pending-snapshot note.
+
+## Comment author and literal text filters (2026-10-30)
+
+`GET /api/v1/tasks/{taskId}/comments` and MCP `listComments` accept optional `actorKind=human|agent`, `actorId=UUIDv7`, and `text=substring`. Example MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"actorKind":"agent","actorId":"UUIDv7","text":"Palette","limit":20,"offset":0}}`. Existing date, ordering and pagination options remain available. Distinct filters combine with AND. Humans have null actorId: select them with actorKind=human alone. Combining human with an existing agent actorId returns no results; actorId keeps its existing UUID/existence validation.
+
+`text` matches a literal substring of the complete stored Markdown body, including Markdown punctuation. It is case-sensitive and accent-sensitive, does not trim or normalize, and is limited to 1024 characters / 4096 UTF-8 bytes. Empty text applies no restriction. `%`, `_`, backslash, regex syntax and SQL punctuation are literal characters, not patterns. Bound `strpos` (PostgreSQL) / `instr` (SQLite) predicates provide identical literal matching without LIKE wildcard interpolation or escaping ambiguity. No embeddings, semantic search, Markdown rendering or client-side-only filtering is used.
+
+Filtering occurs in the repository snapshot before count/order/limit/offset. The response remains CommentPage: items, total, offset, limit, hasMore, nextOffset. Existing createdAt/id ordering and direction remain unchanged. Each request has its own read snapshot; concurrent writes can still shift offset pages between requests. No comment content, authorship or ID is modified. The same OpenAPI validation generates the HTTP and typed MCP query contracts. Invalid kind, malformed ID, oversized text, NUL characters, repeated or unknown parameters return invalid_request/400.
+
+This source change requires a new runtime artifact and manual activation to become available on an older running server. It does not replace or restart the SQLite 59865 process.

@@ -7634,6 +7634,13 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "actorKind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ],
+                "type": "string"
+              },
               "createdBefore": {
                 "format": "date-time",
                 "type": "string"
@@ -7668,6 +7675,12 @@
                   "desc"
                 ],
                 "type": "string"
+              },
+              "text": {
+                "maxLength": 1024,
+                "pattern": "^[^\\x00]*$",
+                "type": "string",
+                "x-maxBytes": 4096
               }
             },
             "type": "object"

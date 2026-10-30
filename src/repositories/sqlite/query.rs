@@ -175,6 +175,14 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
                     .push_bind(expected.to_string())
                     .push(") e WHERE e.value=source.value->>'type')");
             }
+            "text" if c.operation == "listComments" => {
+                // Literal substring: %, _ and backslash never become SQL wildcards.
+                q.push("instr(COALESCE(");
+                field(q, "body", true);
+                q.push(",''),")
+                    .push_bind(expected.as_str().unwrap_or("").to_owned())
+                    .push(")>0");
+            }
             "name" | "title" | "label" | "fileName" => {
                 q.push("COALESCE(");
                 field(
