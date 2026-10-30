@@ -114,13 +114,15 @@ function TaskDetail({ id }: { id: string }) {
                     <TaskOverview task={q.data} />
                   </TabsContent>
                   <TabsContent value="specification">
-                    <div className="detail-section">
-                      <h2>Especificação</h2>
-                      <p className="small-note">
-                        Requisitos, entrega esperada e critérios de aceite.
-                      </p>
+                    <div className="detail-section task-specification">
+                      <header className="task-reading-block">
+                        <h2>Especificação</h2>
+                        <p className="small-note">
+                          Requisitos, entrega esperada e critérios de aceite.
+                        </p>
+                      </header>
                       {q.data.specification ? (
-                        <Markdown headingOffset={2}>
+                        <Markdown headingOffset={2} sectionDividers>
                           {q.data.specification}
                         </Markdown>
                       ) : (
@@ -300,44 +302,50 @@ function RecordContent({
   if (kind === "summaries") {
     const r = row as Resources["summaries"];
     return (
-      <article className="record">
-        <Author id={r.actorId} date={r.createdAt} />
-        <Badge variant="secondary">
-          {
+      <article className="record task-execution-summary">
+        <section className="task-reading-block">
+          <Author id={r.actorId} date={r.createdAt} />
+          <Badge variant="secondary">
             {
-              progress: "Em progresso",
-              completed: "Concluída",
-              blocked: "Bloqueada",
-            }[r.outcome]
-          }
-        </Badge>
-        <TextBlock>{r.summary}</TextBlock>
-        <h4>Entregas</h4>
-        {r.deliverables.length ? (
-          r.deliverables.map((d, i) => (
-            <div key={i}>
-              {safeUrl(d.url) ? (
-                <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
-                  {d.label} <ExternalLink size={12} />
-                </a>
-              ) : (
-                d.label
-              )}
-            </div>
-          ))
-        ) : (
-          <p className="small-note">Nenhuma entrega registrada.</p>
-        )}
-        <h4>Pendências</h4>
-        {r.pending.length ? (
-          <ul className="list-disc pl-5">
-            {r.pending.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="small-note">Sem pendências registradas.</p>
-        )}
+              {
+                progress: "Em progresso",
+                completed: "Concluída",
+                blocked: "Bloqueada",
+              }[r.outcome]
+            }
+          </Badge>
+          <TextBlock>{r.summary}</TextBlock>
+        </section>
+        <section className="task-reading-block" aria-label="Entregas">
+          <h4>Entregas</h4>
+          {r.deliverables.length ? (
+            r.deliverables.map((d, i) => (
+              <div key={i}>
+                {safeUrl(d.url) ? (
+                  <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
+                    {d.label} <ExternalLink size={12} />
+                  </a>
+                ) : (
+                  d.label
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="small-note">Nenhuma entrega registrada.</p>
+          )}
+        </section>
+        <section className="task-reading-block" aria-label="Pendências">
+          <h4>Pendências</h4>
+          {r.pending.length ? (
+            <ul className="list-disc pl-5">
+              {r.pending.map((p, i) => (
+                <li key={i}>{p}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="small-note">Sem pendências registradas.</p>
+          )}
+        </section>
       </article>
     );
   }

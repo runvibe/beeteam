@@ -52,3 +52,47 @@ it("retains task document nodes when its parent refreshes", () => {
   expect(screen.getByRole("heading", { name: "Documento" })).toBe(title);
   expect(screen.getByRole("link", { name: "Referência" })).toBe(link);
 });
+
+it("divides principal document sections without splitting nested content or duplicating authored rules", () => {
+  const content =
+    "# Documento\n\nIntrodução.\n\n## Objetivo\n\nTexto.\n\n### Detalhe\n\n- Um\n- Dois\n\n---\n\n## Critérios\n\nTexto final.";
+  const view = render(
+    <Markdown headingOffset={2} sectionDividers>
+      {content}
+    </Markdown>,
+  );
+  expect(screen.getByRole("heading", { name: "Documento" })).not.toHaveClass(
+    "markdown-section-start",
+  );
+  expect(screen.getByRole("heading", { name: "Objetivo" })).toHaveClass(
+    "markdown-section-start",
+  );
+  expect(screen.getByRole("heading", { name: "Detalhe" })).not.toHaveClass(
+    "markdown-section-start",
+  );
+  expect(screen.getByRole("heading", { name: "Critérios" })).not.toHaveClass(
+    "markdown-section-start",
+  );
+  expect(view.container.querySelectorAll("hr")).toHaveLength(1);
+  expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  const heading = screen.getByRole("heading", { name: "Objetivo" });
+  view.rerender(
+    <Markdown headingOffset={2} sectionDividers>
+      {content}
+    </Markdown>,
+  );
+  expect(screen.getByRole("heading", { name: "Objetivo" })).toBe(heading);
+});
+
+it("handles untitled sections and leaves plain Markdown unchanged by default", () => {
+  const content = "### Primeiro\n\nTexto.\n\n### Segundo\n\nOutro texto.";
+  const view = render(<Markdown sectionDividers>{content}</Markdown>);
+  expect(screen.getByRole("heading", { name: "Primeiro" })).not.toHaveClass(
+    "markdown-section-start",
+  );
+  expect(screen.getByRole("heading", { name: "Segundo" })).toHaveClass(
+    "markdown-section-start",
+  );
+  view.rerender(<Markdown>{content}</Markdown>);
+  expect(view.container.querySelector(".markdown-section-start")).toBeNull();
+});

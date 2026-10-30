@@ -248,3 +248,47 @@ body:has(.task-page) {
     padding: 12px 12px 24px;
   }
 }
+
+/* Logical boundaries only; existing record borders remain the single list separator. */
+.task-reading-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.task-detail-reading :is(.record, .record-row) {
+  padding-block: 14px;
+}
+.task-detail-reading .task-execution-summary {
+  gap: 14px;
+}
+.task-detail-reading .compact-filter-bar + .timeline-record,
+.task-execution-summary > section + section,
+.task-specification > header + .markdown-content:not(:has(> hr:first-child)),
+.task-plan-selection + .task-plan,
+.task-plan-document:not(:has(> .markdown-content > hr:first-child)),
+.task-plan-document + .task-plan-history,
+.task-detail-reading .markdown-section-start {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+.task-detail-reading .markdown-section-start {
+  margin-top: 14px;
+}
+.task-plan-history {
+  margin-top: 4px;
+}
+.task-plan-history > button {
+  align-self: flex-start;
+}
+
+.task-plan-document:has(> .markdown-content:last-child > hr:last-child)
+  + .task-plan-history {
+  border-top: 0;
+}
+.task-detail-reading .task-plan-document {
+  margin-top: 4px;
+}
+.task-detail-reading .task-plan-history .record:last-of-type {
+  border-bottom: 0;
+}

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { it, expect } from "vitest";
 import { ApiProvider } from "@/api/context";
@@ -68,4 +68,19 @@ it("keeps an archived task read-only and separates empty work fields", () => {
   expect(
     screen.getByText("Nenhuma nota de andamento registrada"),
   ).toBeVisible();
+});
+
+it("keeps execution summary content grouped with complete deliveries and pending items", async () => {
+  window.history.replaceState({}, "", `/tasks/${ids.task}?tab=summaries`);
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <App />
+    </ApiProvider>,
+  );
+  const deliveries = await screen.findByRole("region", { name: "Entregas" });
+  expect(within(deliveries).getByText("Notas da descoberta")).toBeVisible();
+  const pending = screen.getByRole("region", { name: "Pendências" });
+  expect(within(pending).getAllByRole("listitem")).toHaveLength(2);
+  expect(screen.getByText(/Pontos de entrada inventariados/)).toBeVisible();
+  expect(new URLSearchParams(location.search).get("tab")).toBe("summaries");
 });

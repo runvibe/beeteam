@@ -40,12 +40,12 @@ export function Plans({ task }: { task: Task }) {
   if (current && !options.some((p) => p.planId === current.planId))
     options.push(current);
   return (
-    <div className="detail-section">
+    <div className="detail-section task-plans">
       <QueryState query={q}>
         {q.data && (
           <>
             {q.data.total > 1 && (
-              <>
+              <div className="task-plan-selection task-reading-block">
                 <Choice
                   label="Plano"
                   value={current?.planId ?? ""}
@@ -58,7 +58,7 @@ export function Plans({ task }: { task: Task }) {
                 <p className="small-note">
                   Cada plano tem seu próprio histórico de alterações.
                 </p>
-              </>
+              </div>
             )}
             {selected && (
               <QueryState query={selection}>
@@ -134,7 +134,7 @@ function Plan({ item }: { item: PlanRevision }) {
   });
   const displayed = historical ? revision.data : item;
   return (
-    <article className="record">
+    <article className="record task-plan">
       <h2>
         {historical ? `Versão anterior · Revisão ${selected}` : "Plano atual"}
       </h2>
@@ -150,56 +150,64 @@ function Plan({ item }: { item: PlanRevision }) {
       )}
       {displayed && (
         <>
-          <h3>{displayed.title}</h3>
-          <p className="small-note">Revisão {displayed.revision}</p>
-          <Metadata item={displayed} />
-          <Markdown headingOffset={2}>{displayed.content}</Markdown>
-          {displayed.changeSummary && (
-            <p className="small-note">Alteração: {displayed.changeSummary}</p>
-          )}
+          <header className="task-reading-block">
+            <h3>{displayed.title}</h3>
+            <p className="small-note">Revisão {displayed.revision}</p>
+            <Metadata item={displayed} />
+          </header>
+          <div className="task-plan-document task-reading-block">
+            <Markdown headingOffset={2} sectionDividers>
+              {displayed.content}
+            </Markdown>
+            {displayed.changeSummary && (
+              <p className="small-note">Alteração: {displayed.changeSummary}</p>
+            )}
+          </div>
         </>
       )}
-      <Button
-        variant="outline"
-        aria-expanded={expanded === "true"}
-        onClick={() => setExpanded(expanded === "true" ? "false" : "true")}
-      >
-        Histórico de alterações
-      </Button>
-      {expanded === "true" && (
-        <section aria-label="Histórico de alterações">
-          <QueryState query={q}>
-            {q.data && (
-              <>
-                {q.data.items.map((p) => (
-                  <div className="record" key={p.id}>
-                    <h4>
-                      Revisão {p.revision}
-                      {p.revision === item.revision ? " · atual" : ""}
-                    </h4>
-                    <Metadata item={p} />
-                    {p.changeSummary && <p>{p.changeSummary}</p>}
-                    <Button
-                      variant="ghost"
-                      onClick={() =>
-                        setSelected(
-                          p.revision === item.revision ? 0 : p.revision,
-                        )
-                      }
-                    >
-                      Ver revisão {p.revision}
-                    </Button>
-                  </div>
-                ))}
-                {!q.data.items.length && (
-                  <NoData title="Nenhuma revisão nesta página" />
-                )}
-                <Pager page={q.data} onOffset={setOffset} />
-              </>
-            )}
-          </QueryState>
-        </section>
-      )}
+      <div className="task-plan-history task-reading-block">
+        <Button
+          variant="outline"
+          aria-expanded={expanded === "true"}
+          onClick={() => setExpanded(expanded === "true" ? "false" : "true")}
+        >
+          Histórico de alterações
+        </Button>
+        {expanded === "true" && (
+          <section aria-label="Histórico de alterações">
+            <QueryState query={q}>
+              {q.data && (
+                <>
+                  {q.data.items.map((p) => (
+                    <div className="record" key={p.id}>
+                      <h4>
+                        Revisão {p.revision}
+                        {p.revision === item.revision ? " · atual" : ""}
+                      </h4>
+                      <Metadata item={p} />
+                      {p.changeSummary && <p>{p.changeSummary}</p>}
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setSelected(
+                            p.revision === item.revision ? 0 : p.revision,
+                          )
+                        }
+                      >
+                        Ver revisão {p.revision}
+                      </Button>
+                    </div>
+                  ))}
+                  {!q.data.items.length && (
+                    <NoData title="Nenhuma revisão nesta página" />
+                  )}
+                  <Pager page={q.data} onOffset={setOffset} />
+                </>
+              )}
+            </QueryState>
+          </section>
+        )}
+      </div>
     </article>
   );
 }
