@@ -105,21 +105,21 @@ export function PlanHistory({
       {!q.isPending && !error && !records.length && (
         <NoData title="Nenhuma revisão registrada" />
       )}
-      <div ref={sentinel} data-history-sentinel style={{ minHeight: 1 }}>
+      <div ref={sentinel} data-history-sentinel>
         {isFetching && (
           <LoadingIndicator label="Carregando histórico de alterações" />
         )}
-        {error && (
-          <Failure
-            error={error}
-            retry={() =>
-              void (q.isFetchNextPageError
-                ? fetchNextPage({ cancelRefetch: false })
-                : q.refetch())
-            }
-          />
-        )}
       </div>
+      {error && (
+        <Failure
+          error={error}
+          retry={() =>
+            void (q.isFetchNextPageError
+              ? fetchNextPage({ cancelRefetch: false })
+              : q.refetch())
+          }
+        />
+      )}
     </section>
   );
 }

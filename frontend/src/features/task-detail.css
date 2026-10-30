@@ -273,6 +273,13 @@ body:has(.task-page) {
 .task-plan-history {
   margin-top: 4px;
 }
+.task-plan-history [data-history-sentinel] {
+  height: 60px;
+  flex: 0 0 60px;
+  display: flex;
+  align-items: center;
+  overflow-anchor: none;
+}
 .task-plan-history > button {
   align-self: flex-start;
 }
