@@ -208,4 +208,4 @@ As regras de registro, mudança na mesma task, bloqueio, autonomia e conclusão 
 
 ## Métricas no início e ao inserir resumo
 
-Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, tente consultar dados atuais e anexar métricas opcionais verificáveis; falha de coleta não bloqueia salvar e não exige unavailable. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.
+Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, consulte dados atuais e envie usageReport obrigatório com métricas verificáveis ou unavailable estruturado com motivo/tentativas reais. Não omita o relatório; trate erro de validação/persistência sem anunciar salvamento. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.

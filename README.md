@@ -182,4 +182,4 @@ A Leader é a interface humana do trabalho: fora da mensagem inicial de criaçã
 
 A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
 
-As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Modelos/harnesses/tokens são dados opcionais estruturados, separados do Markdown: falha de coleta não bloqueia o resumo, ausência não é zero e nenhuma declaração unavailable é exigida para salvar.
+As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Cada novo resumo exige usageReport estruturado, separado do Markdown, com modelo/harness/tokens verificados ou unavailable explícito com motivo e tentativas verificáveis. Ausência não é zero; erro de gravação não permite anunciar salvamento. Leituras e replays legados permanecem compatíveis.

@@ -8,9 +8,9 @@ description: Use when a human or Bee Team Leader asks this chat to act as Collab
 Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
 
 
-## Coletar métricas opcionais por resumo
+## Enviar relatório de métricas em cada novo resumo
 
-No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e anexe somente modelo/harness/tokens verificáveis no contrato suportado. A coleta é uma tentativa obrigatória da skill; o relatório é opcional: falha NÃO bloqueia salvar resumo e não exige enviar unavailable. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
+No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e envie usageReport obrigatório com modelo/harness/tokens verificáveis ou indisponibilidade explícita conforme contrato. Quando a coleta falhar, envie unavailable estruturado com motivo e tentativas verificáveis; nunca omita silenciosamente o relatório. Erro de validação/persistência não autoriza anunciar resumo salvo. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
 
 
 ## Leader é a interface humana do trabalho
