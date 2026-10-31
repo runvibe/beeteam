@@ -1,3 +1,4 @@
+import { TaskRecordList } from "./task-record-list";
 import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
@@ -24,7 +25,6 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Choice,
   QueryState,
-  Pager,
   NoData,
   Failure,
   formatDate,
@@ -191,32 +191,19 @@ function TaskDetail({ id }: { id: string }) {
   );
 }
 function Children({ task }: { task: Task }) {
-  const [offset, setOffset] = useUrlState<number>("children.offset", 0);
+  const [offset] = useUrlState<number>("children.offset", 0);
   const limit = usePageSize("children", 10);
-  const q = useList("tasks", "", {
-    parentId: task.id,
-    offset,
-    limit,
-    sortBy: "position",
-  });
   return (
     <div className="detail-section">
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.map((child) => (
-              <ChildRow key={child.id} task={child} />
-            ))}
-            {!q.data.items.length && (
-              <NoData
-                title="Sem subtasks"
-                description="Esta tarefa ainda não tem subtasks diretas."
-              />
-            )}
-            <Pager page={q.data} onOffset={setOffset} />
-          </>
-        )}
-      </QueryState>
+      <TaskRecordList
+        resource="tasks"
+        scope=""
+        filters={{ parentId: task.id, offset, limit, sortBy: "position" }}
+        empty="Sem subtasks"
+        emptyDescription="Esta tarefa ainda não tem subtasks diretas."
+      >
+        {(child) => <ChildRow task={child} />}
+      </TaskRecordList>
     </div>
   );
 }
@@ -252,17 +239,6 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
       { values: booleanValues },
     );
   const limit = usePageSize(resource, 10);
-  const q = useList(resource, task.id, {
-    offset,
-    limit,
-    ...(resource === "timeline"
-      ? {
-          includeChildren: includeChildren === "true",
-          sortBy: "sequence",
-          sortOrder: "desc" as const,
-        }
-      : {}),
-  });
   return (
     <div
       className={`detail-section${resource === "timeline" ? " task-timeline" : ""}`}
@@ -291,22 +267,25 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
           </FilterBar>
         </TaskFilters>
       )}
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.map((row) => (
-              <RecordContent key={row.id} kind={resource} row={row} />
-            ))}
-            {!q.data.items.length && (
-              <NoData
-                title="Nenhum registro nesta seção"
-                description="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
-              />
-            )}
-            <Pager page={q.data} onOffset={setOffset} />
-          </>
-        )}
-      </QueryState>
+      <TaskRecordList
+        resource={resource}
+        scope={task.id}
+        filters={{
+          offset,
+          limit,
+          ...(resource === "timeline"
+            ? {
+                includeChildren: includeChildren === "true",
+                sortBy: "sequence",
+                sortOrder: "desc" as const,
+              }
+            : {}),
+        }}
+        empty="Nenhum registro nesta seção"
+        emptyDescription="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
+      >
+        {(row) => <RecordContent kind={resource} row={row} />}
+      </TaskRecordList>
     </div>
   );
 }
