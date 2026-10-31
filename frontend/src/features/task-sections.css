@@ -22,9 +22,9 @@
   justify-content: flex-start;
   gap: 2px;
   padding: 4px;
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: var(--radius);
-  background: var(--muted);
+  background: transparent;
 }
 .task-section-list [data-slot="tabs-trigger"] {
   flex: 0 0 auto;
@@ -34,11 +34,12 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--muted-foreground);
+  background: transparent;
   transition: none;
 }
 .task-section-list [data-slot="tabs-trigger"][data-state="active"] {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
   border-color: var(--border);
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
 }

@@ -151,7 +151,7 @@ Tooltips de navegação e filtros usam a mesma camada flutuante 50 dos popovers;
 
 ## Navegação e Markdown no detalhe da tarefa
 
-As oito seções usam uma única faixa horizontal Radix em desktop e mobile, com rótulos completos, alvos de 44px e seleção de fundo/contraste sem mudança de peso ou largura. A faixa aceita gesto horizontal e botões de avanço/retorno; os espaços dos controles permanecem reservados. Setas/Home/End movem o foco, Enter/Espaço ativam a aba. Somente a faixa revela a aba selecionada/focada, sem recentralizar em refetch. Os valores de `tab` e os demais parâmetros de URL são preservados.
+As oito seções usam uma única faixa horizontal Radix em desktop e mobile, com rótulos completos, alvos de 44px e seleção de fundo/contraste sem mudança de peso ou largura. A faixa e as abas inativas são transparentes; a aba selecionada usa `secondary` e `secondary-foreground`. A faixa aceita gesto horizontal e botões de avanço/retorno; os espaços dos controles permanecem reservados. Setas/Home/End movem o foco, Enter/Espaço ativam a aba. Somente a faixa revela a aba selecionada/focada, sem recentralizar em refetch. Os valores de `tab` e os demais parâmetros de URL são preservados.
 
 ResizeObserver propaga a altura real das abas para o scroll-padding do documento e do painel, planos e filtros da conversa. Camadas: filtros 19, abas 20, tooltips/popovers 50. A navegação não adiciona animação e funciona com movimento reduzido.
 
