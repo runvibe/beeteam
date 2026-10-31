@@ -3,6 +3,7 @@ mod files;
 pub mod hierarchy;
 mod kanban;
 mod overview;
+mod usage;
 mod queries;
 mod ra;
 pub mod service;
@@ -100,7 +101,9 @@ pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Re
     // Exact saved replays remain valid across additive contract upgrades.
     // New mutations must always satisfy the current full request schema.
     validation?;
-    let mut result = if matches!(
+    let mut result = if command.operation == "reconcileSummaryUsage" {
+        usage::reconcile(&mut unit, &command).await?
+    } else if matches!(
         command.operation.as_str(),
         "uploadAgentImage"
             | "removeAgentImage"

@@ -98,6 +98,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         }
     }
     match c.operation.as_str() {
+        "getTaskUsage" | "listTaskUsageDimensions" => Ok(unit.select(c).await?.items.remove(0)),
         "getAgent" => resource(records, "agents", c.id("agentId")?),
         "getTeam" => resource(records, "teams", c.id("teamId")?),
         "getBoard" => resource(records, "boards", c.id("boardId")?),

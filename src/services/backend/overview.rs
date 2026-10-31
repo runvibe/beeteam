@@ -65,5 +65,9 @@ pub(super) async fn read(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     }
     data["nextStep"] = Value::Null;
     data["decisions"] = json!([]);
+    let mut usage_command=c.clone();
+    usage_command.operation="getTaskUsage".into();
+    usage_command.query=BTreeMap::from([("limit".into(),json!(20)),("offset".into(),json!(0))]);
+    data["usage"]=unit.select(&usage_command).await?.items.remove(0);
     Ok(data)
 }

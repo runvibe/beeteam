@@ -478,6 +478,10 @@ All queries share the repository-owned read-only snapshot. The overview read hyd
 
 ## Usage and model history proposal
 
+The optional summary-checkpoint backend increment is now implemented in source;
+see [summary usage contracts and limits](docs/summary-usage.md). Runtime activation
+is separate. The broader collector/global-ledger proposal below remains future work.
+
 The [token and model ledger plan](docs/superpowers/plans/2026-10-30-token-model-ledger.md)
 researches Codex, GitHub Copilot, Claude Code, Cursor and Kiro. It proposes
 historical actor/task/session/model/harness attribution, honest coverage,
@@ -493,5 +497,6 @@ There is no proposed usage sidebar or default metric presentation in comments.
 Cumulative snapshots and period deltas remain explicit; totals use deduplicated
 ledger evidence. A summary report does not imply a status transition or an exact
 usage timestamp. This visual proposal remains subject to implementation review.
-This is documentation only: no usage collector, migration, Skill change or
-usage dashboard is implemented or enabled by this proposal.
+The broader collector/global-ledger roadmap remains a proposal. The implemented
+summary-checkpoint increment and its limits are documented separately above;
+no external collector is installed or enabled by it.
