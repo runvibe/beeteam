@@ -95,7 +95,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
             records.insert(record("images", &row));
         }
     }
-    hydrate_scoped(tx, &mut records, c.operation != "getTaskOverview").await?;
+    hydrate_scoped(tx, &mut records, !matches!(c.operation.as_str(),"getTaskOverview"|"getTaskUsage"|"listTaskUsageDimensions")).await?;
     Ok(records)
 }
 

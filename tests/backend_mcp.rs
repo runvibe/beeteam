@@ -60,7 +60,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 68);
+    assert_eq!(tools.len(), 71);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -71,7 +71,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let resources = rpc(&app, "resources/list", json!({})).await;
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
-        13
+        14
     );
     for (uri, expected) in [
         (
@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("23b8bdf"));
+            .contains("868ff91"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -352,7 +352,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(text.contains(name));
         assert!(text.contains("specification"));
         assert!(text.contains(
-            "Este resultado é contexto de leitura, não mensagem de despacho entre agentes."
+            "Este resultado Ã© contexto de leitura, nÃ£o mensagem de despacho entre agentes."
         ));
         assert!(!text.contains("{{taskId}}"));
     }
@@ -476,7 +476,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let app = app().await;
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 68);
+    assert_eq!(tools.len(), 71);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"]).unwrap();
         if let Some(schema) = tool.get("outputSchema") {
@@ -486,13 +486,13 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let resources = rpc(&app, "resources/list", json!({})).await;
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
-        13
+        14
     );
     let provenance: Value =
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     assert_eq!(
         provenance["sourceCommit"],
-        "23b8bdf730802e447b4536c59df7b4ce73ef957d"
+        "868ff91e09669ab7a13aa0aef86c8bd6eb695d91"
     );
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();

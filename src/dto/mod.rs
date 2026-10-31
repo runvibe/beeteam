@@ -1,4 +1,5 @@
 pub mod backend;
+pub mod usage;
 pub mod contracts;
 pub mod echo;
 pub mod health;

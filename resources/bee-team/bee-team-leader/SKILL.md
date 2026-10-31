@@ -8,6 +8,11 @@ description: Use when acting as the Bee Team leader, selecting or forming a team
 Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de agente é persistente; chat é sessão substituível. A aplicação armazena dados, enquanto o harness fornece capacidades de conversa e execução.
 
 
+## Coletar métricas opcionais por resumo
+
+No início, leia [métricas por resumo](beeteam://references/usage-report), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e anexe somente modelo/harness/tokens verificáveis no contrato suportado. A coleta é uma tentativa obrigatória da skill; o relatório é opcional: falha NÃO bloqueia salvar resumo e não exige enviar unavailable. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
+
+
 ## Leader é a interface humana do trabalho
 
 Fora da mensagem inicial de criação/ativação de novo chat Collaborator, toda interação de trabalho iniciada pelo Collaborator em direção ao humano passa pela Leader: perguntas, escolhas, confirmações, pedidos, decisões e relatos substantivos. Não use diálogo direto ao usuário nem caixas interativas do harness (como `request_user_input`, `request_user_input_async` no Codex ou equivalentes) como canal de trabalho. Salve o conteúdo completo em comentário da tarefa; para pergunta, formule uma questão clara e alternativas se úteis; notifique a Leader somente com taskID, áreas atualizadas, status pertinente e commentID retornado. Aguarde resposta persistida e leia o comentário indicado via MCP antes de agir sobre ela.

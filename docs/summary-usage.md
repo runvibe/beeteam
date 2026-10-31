@@ -1,0 +1,138 @@
+# Optional usage checkpoints in execution summaries
+
+This increment implements structured, optional usage reports in historical
+execution summaries and task Overview. It does not install collectors, activate
+harnesses, read credentials or write product/demo metrics.
+
+## Writes and compatibility
+
+`createExecutionSummary` and `close_activity.execution` accept an optional
+`usageReport: {entries: [...]}` or null. Omitting it remains valid. The Markdown
+`summary`, cumulative `currentSummary`, execution outcome and explicit status
+remain independent. No summary or status transition is created just to report
+usage. New summaries retain `statusObserved: {id,name,isDone}`; old summaries
+without it remain absent/null in read projections, never inferred from today's
+status name. Reporting actor and each usage actor can differ.
+
+Each entry follows `UsageObservation` in the OpenAPI, including source, harness,
+surface/version, logical session, epoch, stable evidence ID, actor/role, nullable
+provider/model, observation/period times, scope, kind, quality and attribution.
+Unknown model/provider/categories use null. Names are not a hardcoded catalog.
+No raw transcript, prompt, credentials or file content belongs in an observation.
+
+Counters are decimal integer **strings**, or null, bounded by signed 64-bit
+integers. Input and output are inclusive totals; cached input and reasoning
+output are subsets. These subsets are never added again. Zero means observed
+zero. Missing means unknown. A partial input/output measurement can be retained
+without inventing a total. An optional unavailable entry needs null counters and
+factual `discovery: {reason,attempts}`; an unavailable declaration is never required
+to save a summary.
+
+The actor union is human/null or agent/persisted UUIDv7. Actor metadata is
+declared, not authentication. A historical role is captured in each observation
+and does not follow later profile changes.
+
+## Evidence and accounting
+
+- `period_delta` is limited to **request** scope with a stable source request
+  evidence ID and no predecessor. It is already a delta; do not subtract again.
+- `cumulative_snapshot` supports session/session_tree scope. The first sample is
+  a baseline and contributes no inferred historical consumption. A later sample
+  names `previousEvidenceId`, already present in the same source/session/epoch,
+  actor, harness, scope, provider and model, with strictly earlier observedAt.
+- This increment advances the latest checkpoint in each counter scope. A new
+  baseline may mark a gap, but later deltas cannot branch around it. Out-of-order
+  historical snapshots are rejected rather than inserted into an already counted
+  interval. Harness version, quality and attribution must remain comparable;
+  otherwise establish a new baseline instead of labeling an estimated difference
+  as measured.
+- A predecessor can have one successor. Negative deltas, forks, crossing tasks,
+  and mixing request/cumulative or aggregate/per-model counters are rejected.
+  For a session/epoch/actor, choose one canonical source rather than add a log
+  and SDK stream covering the same work. Source identifiers remain client
+  evidence: the server cannot prove that two unrelated external session aliases
+  refer to the same physical execution. Skills must investigate that mapping.
+- Evidence identity is source + sessionId + epoch + evidenceId, independent of
+  the reporting summary/actor/model. Repeating identical evidence in another
+  summary creates a reference (`counted=false`), not more consumption. Reusing
+  the identity with changed content conflicts; allocating it to another task
+  conflicts. An epoch must identify a real counter reset, not a way to bypass
+  deduplication.
+- Only exact, non-tree canonical deltas contribute to task totals. Shared,
+  unallocated and tree measurements stay visible as evidence outside the task
+  total. Measured and estimated totals are separate. Unknown model remains null;
+  a mixed counter must not be relabeled with the last selected model.
+
+Example arithmetic: snapshots input/output 1000/100 then 1300/160 produce a
+known delta 300/60, total360. They never produce total2300 or1460. If coverage
+before the baseline is unknown, the task total is explicitly partial. Multiple
+actors' disjoint known contributions accumulate; the last actor does not replace
+the task total.
+
+## Late evidence
+
+`POST /api/v1/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions`
+and MCP `reconcileSummaryUsage` append entries to an existing summary report.
+The body is `SummaryUsageInput`; HTTP If-Match / MCP expectedVersion is the
+**execution summary version**, not the task version. Actor and idempotency key
+are required by the usual mutation envelope. Summary responses now expose an
+optional version for legacy compatibility.
+
+Reconciliation preserves the Markdown, statusObserved, original report and
+earlier entries. It increments report revision and summary version, adds entry
+reportRevision/reportedAt/reportingActor, and sets reconciledAt for supplements
+to an existing report. It does not touch task version/status/currentSummary or
+create a new summary/comment. Existing saved replay responses remain exact even
+after reconciliation. A failed compound write rolls back comments, summary,
+task changes and usage together.
+
+There are at most32 entries per request and256 per summary including supplements;
+the complete persisted report is capped at65536 UTF-8 bytes. Exhausting that
+bound requires a subsequent genuine work summary, not unlimited supplements.
+
+## Reads
+
+Overview adds `usage: TaskUsage`. The same read model is available through
+`GET /api/v1/tasks/{taskId}/usage` / MCP `getTaskUsage`, with offset/limit for
+summary checkpoints. It contains:
+
+- `knownTotalTokens`: exact measured known total, null if none is known;
+  `estimatedTotalTokens` is separate. `measuredComponents` preserves partially
+  known categories. Totals derive from all canonical evidence, not a page.
+- Coverage counts: total/reported/missing summaries, entries by quality,
+  unavailable, baseline, duplicate and unallocated entries. These are counts of
+  records, not a percentage of actual tokens captured or proof of completeness.
+- Distinct reported `models` and `harnesses`, each capped at100 with total and
+  truncated. `GET /api/v1/tasks/{taskId}/usage/dimensions?kind=model|harness`
+  / MCP `listTaskUsageDimensions` pages through the complete set with offset/limit.
+- Timeline of **all** execution summaries, including ones without metrics,
+  ordered by summary createdAt/id descending. `reportedAt` on a timeline item is
+  the summary registration time, not an asserted time of model consumption.
+  Each item links summaryId, reportingActor, statusObserved and optional report.
+  Entry observedAt/period and later report timestamps are available separately.
+
+The default presentation is summary metadata + Overview total, models/harnesses
+and checkpoint timeline. There is no usage sidebar or default comment telemetry.
+Lists may include a reported model whose usage is unavailable/estimated; this is
+not proof of measured consumption for that model. UI must retain that provenance.
+
+## Persistence boundary
+
+Evidence and derived canonical segments are immutable entries inside the
+existing `execution_summaries.data.usageReport`; late reports append entries.
+Independent PostgreSQL/SQLite migrations add a task-scoped SQL view and partial
+index. This avoids introducing new transfer tables or changing archive format:
+the existing raw-document transfer mechanism retains the fields verbatim.
+No transfer/cancellation/restore workflow is modified.
+
+SQL aggregates and paginated reads execute in one repository-owned read-only
+snapshot. No global read preload or write lock was added. Writes use the existing
+serialized UnitOfWork; source identity checks are service policy under that
+serialization. Changes are composed in services and DTO validation is shared
+between HTTP and MCP.
+
+This is a scoped implementation of the broader plan. Standalone collectors,
+automatic background reconciliation, global usage dashboards, monetary costs,
+general session/binding management and automatic backfill remain outside this
+delivery. A source without enough evidence may be omitted; it is never replaced
+with fabricated historical consumption.

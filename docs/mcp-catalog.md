@@ -297,3 +297,26 @@ The current task progress remains independent of child completion. `progressHist
 `latestDeliverables` aggregates delivery entries across ALL non-deleted summaries and returns the latest 10 (summary creation/id descending, then entry ordinal descending), with summary ID/time/actor and original nested Deliverable; source attachmentId or URL is preserved without fabrication. `latestAttachments` returns the latest 5 non-deleted attachments; `recentEvents` the latest 20 exact-task timeline events. Each collection has items/total/limit/truncated. The dedicated attachment, summary and timeline endpoints remain available for deeper pagination. Empty data is []/null, not synthetic activity.
 
 All queries share the repository-owned read-only snapshot. The overview read hydrates ancestry/context, not all child task bodies; counts and grouping are SQL over the complete direct-child set. Actor metadata is declared, not authentication. No product writes, migrations, new demo data or restart are performed. Frontend drilldowns use GET /tasks with parentId and includeArchived=true plus statusId, blocked or executorAgentId, retaining cross-board children.
+
+## Optional summary usage checkpoints (2026-10-31)
+
+The source catalog now contains 71 tools and 14 bundled resources. Optional
+`RecordExecution.usageReport` is shared by `createExecutionSummary` and
+`close_activity.execution`; omission/null still saves a normal summary.
+`getTaskUsage` reads SQL totals and summary checkpoints, and
+`listTaskUsageDimensions` pages every reported model/harness. Overview includes
+the same usage read model. `reconcileSummaryUsage` appends late evidence using
+the execution summary's expectedVersion, preserving task state and Markdown.
+
+Snapshots are explicit baselines/deltas, never additive raw cumulative totals.
+Stable repeated evidence contributes once; shared/tree/unallocated evidence is
+not counted as exact task consumption. Missing is not zero; estimated totals
+are separate. See [summary usage contracts](summary-usage.md) for the fields,
+coverage, provenance and bounded reconciliation rules.
+
+Bundled Skills source: `868ff91e09669ab7a13aa0aef86c8bd6eb695d91`.
+The new allowlisted resource `beeteam://references/usage-report` requires
+proportional discovery and a fresh collection attempt per genuine summary,
+without blocking summary persistence when collection fails. No resource grants
+arbitrary filesystem access or installs a collector. Runtime activation remains
+a separate operator action.

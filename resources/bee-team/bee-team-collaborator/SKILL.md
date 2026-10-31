@@ -8,6 +8,11 @@ description: Use when a human or Bee Team Leader asks this chat to act as Collab
 Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
 
 
+## Coletar métricas opcionais por resumo
+
+No início, leia [métricas por resumo](beeteam://references/usage-report), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e anexe somente modelo/harness/tokens verificáveis no contrato suportado. A coleta é uma tentativa obrigatória da skill; o relatório é opcional: falha NÃO bloqueia salvar resumo e não exige enviar unavailable. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
+
+
 ## Leader é a interface humana do trabalho
 
 Fora da mensagem inicial de criação/ativação de novo chat Collaborator, toda interação de trabalho iniciada pelo Collaborator em direção ao humano passa pela Leader: perguntas, escolhas, confirmações, pedidos, decisões e relatos substantivos. Não use diálogo direto ao usuário nem caixas interativas do harness (como `request_user_input`, `request_user_input_async` no Codex ou equivalentes) como canal de trabalho. Salve o conteúdo completo em comentário da tarefa; para pergunta, formule uma questão clara e alternativas se úteis; notifique a Leader somente com taskID, áreas atualizadas, status pertinente e commentID retornado. Aguarde resposta persistida e leia o comentário indicado via MCP antes de agir sobre ela.

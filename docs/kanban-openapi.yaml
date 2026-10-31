@@ -2769,6 +2769,12 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/usage: {"get": {"operationId": "getTaskUsage", "summary": "Read known usage totals and summary checkpoints", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskUsage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+
+  /api/v1/tasks/{taskId}/usage/dimensions: {"get": {"operationId": "listTaskUsageDimensions", "summary": "List every reported model or harness with pagination", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "kind", "in": "query", "required": true, "schema": {"type": "string", "enum": ["model", "harness"]}}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UsageDimensionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+
+  /api/v1/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions: {"post": {"operationId": "reconcileSummaryUsage", "summary": "Append late usage evidence without changing task state or summary Markdown", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "summaryId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SummaryUsageInput"}}}}, "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExecutionSummary"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+
 components:
   parameters:
     IfMatch:
@@ -3723,8 +3729,7 @@ components:
       required:
         - body
       additionalProperties: false
-    TaskOverview:
-      {
+    TaskOverview: {
         "type": "object",
         "properties": {
           "task": {
@@ -4119,6 +4124,9 @@ components:
             "items": {
               "type": "string"
             }
+          },
+          "usage": {
+            "$ref": "#/components/schemas/TaskUsage"
           }
         },
         "required": [
@@ -4131,7 +4139,8 @@ components:
           "latestAttachments",
           "recentEvents",
           "nextStep",
-          "decisions"
+          "decisions",
+          "usage"
         ],
         "additionalProperties": false
       }
@@ -4293,6 +4302,10 @@ components:
     RecordExecution:
       type: object
       properties:
+        usageReport:
+          anyOf:
+            - $ref: "#/components/schemas/SummaryUsageInput"
+            - type: "null"
         currentSummary:
           $ref: "#/components/schemas/CurrentSummaryInput"
         summary:
@@ -4341,6 +4354,15 @@ components:
     ExecutionSummary:
       type: object
       properties:
+        usageReport:
+          anyOf:
+            - $ref: "#/components/schemas/SummaryUsageReport"
+            - type: "null"
+        statusObserved:
+          $ref: "#/components/schemas/UsageObservedStatus"
+        version:
+          type: integer
+          minimum: 1
         summary:
           type: string
           minLength: 1
@@ -4992,6 +5014,30 @@ components:
         - occurredAt
         - deletedAt
       additionalProperties: false
+    UsageObservation: {"type": "object", "additionalProperties": false, "properties": {"source": {"type": "string", "minLength": 1, "maxLength": 200}, "harness": {"type": "string", "minLength": 1, "maxLength": 200}, "surface": {"type": "string", "minLength": 1, "maxLength": 200}, "harnessVersion": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "sessionId": {"type": "string", "minLength": 1, "maxLength": 200}, "epoch": {"type": "string", "minLength": 1, "maxLength": 200}, "evidenceId": {"type": "string", "minLength": 1, "maxLength": 200}, "previousEvidenceId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "actor": {"oneOf": [{"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "agent"}, "id": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, "required": ["kind", "id"]}, {"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "human"}, "id": {"type": "null"}}, "required": ["kind", "id"]}]}, "actorRole": {"type": "string", "enum": ["leader", "collaborator", "human", "unknown"]}, "provider": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "modelId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "scope": {"type": "string", "enum": ["request", "session", "session_tree"]}, "reportKind": {"type": "string", "enum": ["cumulative_snapshot", "period_delta", "unavailable"]}, "quality": {"type": "string", "enum": ["measured", "estimated", "unavailable"]}, "attribution": {"type": "string", "enum": ["exact", "shared", "unallocated"]}, "observedAt": {"type": "string", "format": "date-time"}, "periodStart": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "periodEnd": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "inputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "outputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "cachedInputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "reasoningOutputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "discovery": {"anyOf": [{"type": "object", "additionalProperties": false, "properties": {"reason": {"type": "string", "minLength": 1, "maxLength": 2000}, "attempts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "minItems": 1, "maxItems": 12}}, "required": ["reason", "attempts"]}, {"type": "null"}]}}, "required": ["source", "harness", "surface", "harnessVersion", "sessionId", "epoch", "evidenceId", "previousEvidenceId", "actor", "actorRole", "provider", "modelId", "scope", "reportKind", "quality", "attribution", "observedAt", "periodStart", "periodEnd", "inputTokens", "outputTokens", "cachedInputTokens", "reasoningOutputTokens", "discovery"], "description": "Optional evidence. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets."}
+
+    UsageDelta: {"type": "object", "additionalProperties": false, "properties": {"inputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "outputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "cachedInputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "reasoningOutputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "totalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}}, "required": ["inputTokens", "outputTokens", "cachedInputTokens", "reasoningOutputTokens", "totalTokens"]}
+
+    UsageEntry: {"type": "object", "additionalProperties": false, "properties": {"id": {"type": "string", "format": "uuid"}, "reportedAt": {"type": "string", "format": "date-time"}, "reportingActor": {"$ref": "#/components/schemas/DeclaredActor"}, "reportRevision": {"type": "integer", "minimum": 1}, "observation": {"$ref": "#/components/schemas/UsageObservation"}, "evidenceKey": {"type": "string", "minLength": 1, "maxLength": 200}, "canonicalSummaryId": {"type": "string", "format": "uuid"}, "delta": {"anyOf": [{"$ref": "#/components/schemas/UsageDelta"}, {"type": "null"}]}, "counted": {"type": "boolean"}, "coverageReason": {"type": "string", "enum": ["baseline_or_unavailable", "duplicate_reference", "attributed", "shared_or_unallocated"]}}, "required": ["id", "reportedAt", "reportingActor", "reportRevision", "observation", "evidenceKey", "canonicalSummaryId", "delta", "counted", "coverageReason"]}
+
+    UsageObservedStatus: {"type": "object", "additionalProperties": false, "properties": {"id": {"type": "string", "format": "uuid"}, "name": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "isDone": {"anyOf": [{"type": "boolean"}, {"type": "null"}]}}, "required": ["id", "name", "isDone"]}
+
+    SummaryUsageReport: {"type": "object", "additionalProperties": false, "properties": {"reportedAt": {"type": "string", "format": "date-time"}, "statusObserved": {"$ref": "#/components/schemas/UsageObservedStatus"}, "reportingActor": {"$ref": "#/components/schemas/DeclaredActor"}, "revision": {"type": "integer", "minimum": 1}, "entries": {"type": "array", "items": {"$ref": "#/components/schemas/UsageEntry"}, "maxItems": 256}, "reconciledAt": {"type": "string", "format": "date-time"}}, "required": ["reportedAt", "statusObserved", "reportingActor", "revision", "entries"]}
+
+    SummaryUsageInput: {"type": "object", "additionalProperties": false, "properties": {"entries": {"type": "array", "items": {"$ref": "#/components/schemas/UsageObservation"}, "maxItems": 32, "minItems": 1}}, "required": ["entries"]}
+
+    UsageDimension: {"type": "object", "additionalProperties": false, "properties": {"provider": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "modelId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "harness": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}}, "required": ["provider", "modelId", "harness"]}
+
+    UsageDimensionPage: {"type": "object", "additionalProperties": false, "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/UsageDimension"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "truncated": {"type": "boolean"}}, "required": ["items", "total", "offset", "limit", "truncated"]}
+
+    UsageCoverage: {"type": "object", "additionalProperties": false, "properties": {"totalSummaries": {"type": "integer", "minimum": 0}, "reportedSummaries": {"type": "integer", "minimum": 0}, "missingSummaries": {"type": "integer", "minimum": 0}, "entries": {"type": "integer", "minimum": 0}, "measuredEntries": {"type": "integer", "minimum": 0}, "estimatedEntries": {"type": "integer", "minimum": 0}, "unavailableEntries": {"type": "integer", "minimum": 0}, "baselineEntries": {"type": "integer", "minimum": 0}, "duplicateEntries": {"type": "integer", "minimum": 0}, "unallocatedEntries": {"type": "integer", "minimum": 0}}, "required": ["totalSummaries", "reportedSummaries", "missingSummaries", "entries", "measuredEntries", "estimatedEntries", "unavailableEntries", "baselineEntries", "duplicateEntries", "unallocatedEntries"]}
+
+    SummaryUsageTimelineItem: {"type": "object", "additionalProperties": false, "properties": {"summaryId": {"type": "string", "format": "uuid"}, "reportedAt": {"type": "string", "format": "date-time"}, "reportingActor": {"$ref": "#/components/schemas/DeclaredActor"}, "statusObserved": {"anyOf": [{"$ref": "#/components/schemas/UsageObservedStatus"}, {"type": "null"}]}, "usageReport": {"anyOf": [{"$ref": "#/components/schemas/SummaryUsageReport"}, {"type": "null"}]}}, "required": ["summaryId", "reportedAt", "reportingActor", "statusObserved", "usageReport"]}
+
+    TaskUsage: {"type": "object", "additionalProperties": false, "properties": {"knownTotalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "estimatedTotalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "measuredComponents": {"$ref": "#/components/schemas/UsageDelta"}, "coverage": {"$ref": "#/components/schemas/UsageCoverage"}, "models": {"type": "object", "additionalProperties": false, "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/UsageDimension"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "truncated": {"type": "boolean"}}, "required": ["items", "total", "offset", "limit", "truncated"]}, "harnesses": {"type": "object", "additionalProperties": false, "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/UsageDimension"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "truncated": {"type": "boolean"}}, "required": ["items", "total", "offset", "limit", "truncated"]}, "timeline": {"type": "object", "additionalProperties": false, "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/SummaryUsageTimelineItem"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "truncated": {"type": "boolean"}}, "required": ["items", "total", "offset", "limit", "truncated"]}}, "required": ["knownTotalTokens", "estimatedTotalTokens", "measuredComponents", "coverage", "models", "harnesses", "timeline"]}
+
+
+
 x-recursive-task-example:
   - id: 10000000-0000-7000-8000-000000000002
     boardId: 10000000-0000-7000-8000-000000000001

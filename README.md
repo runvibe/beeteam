@@ -589,6 +589,10 @@ All queries share the repository-owned read-only snapshot. The overview read hyd
 
 ## Usage and model history proposal
 
+The optional summary-checkpoint backend increment is now implemented in source;
+see [summary usage contracts and limits](docs/summary-usage.md). Runtime activation
+is separate. The broader collector/global-ledger proposal below remains future work.
+
 The [token and model ledger plan](docs/superpowers/plans/2026-10-30-token-model-ledger.md)
 researches Codex, GitHub Copilot, Claude Code, Cursor and Kiro. It proposes
 historical actor/task/session/model/harness attribution, honest coverage,
@@ -597,11 +601,17 @@ Skills must investigate tools, permitted APIs/local metadata and official
 documentation before reporting unavailability, recording concrete attempts and
 limitations. Direct permitted reads are a first-class path; collectors are
 optional, with capability caching to avoid repeating discovery on every update.
-The proposed task UI places the full usage panel in Overview and a compact
-context summary in other tabs, preserving timestamped model history per actor
-and session. This visual proposal remains subject to implementation review.
-This is documentation only: no usage collector, migration, Skill change or
-usage dashboard is implemented or enabled by this proposal.
+The proposed task UI presents structured usage/model fields in historical
+execution summaries, separate from Markdown. Overview shows known token totals,
+all known models used and a timeline of summary reports with observed status.
+There is no proposed usage sidebar or default metric presentation in comments.
+Cumulative snapshots and period deltas remain explicit; totals use deduplicated
+ledger evidence. A summary report does not imply a status transition or an exact
+usage timestamp. This visual proposal remains subject to implementation review.
+The broader collector/global-ledger roadmap remains a proposal. The implemented
+summary-checkpoint increment and its limits are documented separately above;
+no external collector is installed or enabled by it.
+
 O cabeçalho da tarefa mantém descrição abaixo do título e síntese atual após progresso/bloqueio em todas as abas, com Markdown e proveniência quando disponível. Ao sair do viewport desktop, a sidebar oferece prévias compactas expansíveis por teclado; os formulários permanecem montados e o mobile conserva uma única coluna. A Visão geral mantém gráficos e nota de andamento sem duplicar descrição/síntese.
 
 As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Modelos/harnesses/tokens são dados opcionais estruturados, separados do Markdown: falha de coleta não bloqueia o resumo, ausência não é zero e nenhuma declaração unavailable é exigida para salvar.
