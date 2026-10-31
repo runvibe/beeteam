@@ -1597,6 +1597,37 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/participants:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listTaskParticipants
+      summary: List distinct recorded participants of this exact task
+      description: Current author/executor plus recorded authors of comments, plan revisions, attachments, summaries and timeline events, and historical executors from creation/assignment events. Does not include descendants or unrelated team agents. Independent of comment pagination and text filters. Humans are grouped with null actorId; agent names are current profile metadata, including archived/deleted profiles. Stable actorKind/actorId ordering.
+      parameters:
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Distinct participants page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskParticipantPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
   /api/v1/tasks/{taskId}/comments/{commentId}:
     parameters:
       - name: taskId
@@ -1669,7 +1700,7 @@ paths:
         - name: actorId
           in: query
           required: false
-          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          description: Filtra autoria registrada sem exigir perfil ainda existente. UUID válido sem comentários retorna página vazia; não define identidade do solicitante.
           schema:
             type: string
             format: uuid
@@ -3651,6 +3682,47 @@ components:
           x-maxBytes: 16384
       required:
         - body
+      additionalProperties: false
+    TaskParticipant:
+      type: object
+      properties:
+        actorKind:
+          type: string
+          enum: [human, agent]
+        actorId:
+          type: [string, "null"]
+          format: uuid
+        agentName:
+          type: [string, "null"]
+        agentArchived:
+          type: boolean
+        agentDeleted:
+          type: boolean
+      required: [actorKind, actorId, agentName, agentArchived, agentDeleted]
+      additionalProperties: false
+    TaskParticipantPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskParticipant"
+        total:
+          type: integer
+          minimum: 0
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        hasMore:
+          type: boolean
+        nextOffset:
+          type: [integer, "null"]
+          minimum: 0
+      required: [items, total, offset, limit, hasMore, nextOffset]
       additionalProperties: false
     Comment:
       type: object

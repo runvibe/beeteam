@@ -231,6 +231,9 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
 }
 
 pub(super) async fn select(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Result<Selection> {
+    if c.operation == "listTaskParticipants" {
+        return super::super::participants::sqlite(tx, c).await;
+    }
     let table = table(c)?;
     let mut count = base(c, table)?;
     count.push("SELECT count(*) FROM filtered");
