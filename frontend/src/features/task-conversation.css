@@ -104,3 +104,17 @@
 .task-conversation > .conversation-page-slot:first-child:empty {
   margin-bottom: -20px;
 }
+
+/* The tab strip is layer 20; portalled filter popovers retain their layer 50. */
+.conversation-filters {
+  position: sticky;
+  top: var(--task-sections-height, 48px);
+  z-index: 19;
+  background: var(--background);
+  padding-block: 4px;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+.conversation-filters > .compact-filter-bar {
+  margin-bottom: 0;
+}
