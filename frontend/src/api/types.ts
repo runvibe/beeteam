@@ -97,6 +97,10 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  overview(
+    taskId: string,
+    signal?: AbortSignal,
+  ): Promise<import("./task-overview").TaskOverviewData>;
   participants(
     taskId: string,
     pagination?: Pick<Filters, "offset" | "limit">,

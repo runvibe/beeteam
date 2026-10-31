@@ -1,3 +1,4 @@
+import { TaskOverviewPanel } from "./task-overview-panel";
 import { TaskRecordList } from "./task-record-list";
 import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
@@ -31,7 +32,7 @@ import {
   safeUrl,
 } from "@/components/shared";
 import { AgentName, BoardName } from "@/components/names";
-import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
+import { TaskContext, TaskSections } from "./task-detail-layout";
 import "./task-detail.css";
 import { useTaskHeaderVisibility } from "./task-scroll-header";
 import { TaskProgress } from "./task-progress";
@@ -139,7 +140,7 @@ function TaskDetail({ id }: { id: string }) {
                     data-task-section={tab}
                   >
                     <TabsContent value="overview">
-                      <TaskOverview task={q.data} />
+                      <TaskOverviewPanel task={q.data} onTab={setTab} />
                     </TabsContent>
                     <TabsContent value="specification">
                       <div className="detail-section task-specification">
@@ -193,12 +194,64 @@ function TaskDetail({ id }: { id: string }) {
 function Children({ task }: { task: Task }) {
   const [offset] = useUrlState<number>("children.offset", 0);
   const limit = usePageSize("children", 10);
+  const [statusId, setStatus] = useUrlState<string>("children.statusId", "");
+  const [executorAgentId, setExecutor] = useUrlState<string>(
+    "children.executorAgentId",
+    "",
+  );
+  const [blocked, setBlocked] = useUrlState<string>("children.blocked", "", {
+    values: booleanValues,
+  });
+  const [includeArchived, setArchived] = useUrlState<string>(
+    "children.includeArchived",
+    "false",
+    { values: booleanValues },
+  );
+  const filtered = !!(statusId || executorAgentId || blocked);
+  useEffect(() => {
+    if (filtered)
+      document
+        .querySelector<HTMLElement>('[role="tab"][data-state="active"]')
+        ?.focus({ preventScroll: true });
+  }, [filtered, statusId, executorAgentId, blocked]);
   return (
     <div className="detail-section">
+      {(filtered || includeArchived === "true") && (
+        <div className="overview-child-filters">
+          <p className="small-note">
+            Filhas diretas
+            {includeArchived === "true" ? ", incluindo arquivadas" : ""}
+            {statusId ? " · status selecionado" : ""}
+            {executorAgentId ? " · responsável selecionado" : ""}
+            {blocked === "true" ? " · bloqueadas" : ""}
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setStatus("");
+              setExecutor("");
+              setBlocked("");
+              setArchived("false");
+            }}
+          >
+            Limpar filtros de subtarefas
+          </Button>
+        </div>
+      )}
       <TaskRecordList
         resource="tasks"
         scope=""
-        filters={{ parentId: task.id, offset, limit, sortBy: "position" }}
+        filters={{
+          parentId: task.id,
+          offset,
+          limit,
+          sortBy: "position",
+          statusId: statusId || undefined,
+          executorAgentId: executorAgentId || undefined,
+          blocked: blocked ? blocked === "true" : undefined,
+          includeArchived: includeArchived === "true",
+        }}
         empty="Sem subtasks"
         emptyDescription="Esta tarefa ainda não tem subtasks diretas."
       >

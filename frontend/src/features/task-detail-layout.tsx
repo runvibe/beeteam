@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { ChevronDown, ArrowUpLeft } from "lucide-react";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -11,7 +11,13 @@ import { TaskMode } from "./settings";
 import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
 
-export function TaskOverview({ task }: { task: Task }) {
+export function TaskOverview({
+  task,
+  summaryMeta,
+}: {
+  task: Task;
+  summaryMeta?: ReactNode;
+}) {
   return (
     <div className="task-overview">
       <section
@@ -19,6 +25,7 @@ export function TaskOverview({ task }: { task: Task }) {
         aria-labelledby="task-summary-heading"
       >
         <h2 id="task-summary-heading">Resumo atual do trabalho</h2>
+        {summaryMeta}
         <Markdown headingOffset={2} sectionDividers>
           {task.currentSummary || "Sem atualização registrada"}
         </Markdown>
