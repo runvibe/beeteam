@@ -1,3 +1,4 @@
+import { useConversationToolbar } from "./conversation-toolbar";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
 import { useRef } from "react";
@@ -23,6 +24,7 @@ import "./task-conversation.css";
 
 export function TaskConversation({ taskId }: { taskId: string }) {
   const state = useTaskConversation(taskId);
+  const toolbar = useConversationToolbar();
   const clear = () => {
     state.setActorId("");
     state.setActorKind("");
@@ -30,44 +32,46 @@ export function TaskConversation({ taskId }: { taskId: string }) {
   };
   return (
     <>
-      <FilterBar
-        active={!!(state.actorId || state.actorKind || state.text)}
-        onClear={clear}
-        search={
-          <Search
-            label="Buscar texto na conversa"
-            value={state.text}
-            onChange={state.setText}
-          />
-        }
-      >
-        <Choice
-          all="Todos"
-          label="Tipo de autor"
-          value={state.actorKind}
-          onChange={(value) => {
-            state.setActorKind(value);
-            if (value !== "agent") state.setActorId("");
-          }}
-          options={[
-            { value: "agent", label: "Agentes" },
-            { value: "human", label: "Pessoas" },
-          ]}
-        />
-        {state.actorKind !== "human" && (
-          <EntityFilter
-            resource="agents"
-            label="Autor da fala"
-            value={state.actorId}
+      <div ref={toolbar} className="conversation-filters">
+        <FilterBar
+          active={!!(state.actorId || state.actorKind || state.text)}
+          onClear={clear}
+          search={
+            <Search
+              label="Buscar texto na conversa"
+              value={state.text}
+              onChange={state.setText}
+            />
+          }
+        >
+          <Choice
+            all="Todos"
+            label="Tipo de autor"
+            value={state.actorKind}
             onChange={(value) => {
-              state.setActorId(value);
+              state.setActorKind(value);
+              if (value !== "agent") state.setActorId("");
             }}
+            options={[
+              { value: "agent", label: "Agentes" },
+              { value: "human", label: "Pessoas" },
+            ]}
           />
-        )}
-      </FilterBar>
+          {state.actorKind !== "human" && (
+            <EntityFilter
+              resource="agents"
+              label="Autor da fala"
+              value={state.actorId}
+              onChange={(value) => {
+                state.setActorId(value);
+              }}
+            />
+          )}
+        </FilterBar>
+      </div>
       {!!state.text && (
         <p className="small-note">
-          Trecho literal no texto completo; diferencia mai�sculas e min�sculas.
+          Trecho literal no texto completo; diferencia maiúsculas e minúsculas.
         </p>
       )}
       <ConversationWindow key={state.identity} state={state} />
