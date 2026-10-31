@@ -2984,6 +2984,39 @@
                         "null"
                       ]
                     },
+                    "parentReference": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "slug": {
+                              "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                              "maxLength": 80,
+                              "minLength": 1,
+                              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "slug"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                    },
                     "position": {
                       "description": "Rank opaco gerado pelo servidor.",
                       "type": "string"
@@ -3500,6 +3533,39 @@
                   "null"
                 ]
               },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+              },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
                 "type": "string"
@@ -4012,6 +4078,39 @@
                               "null"
                             ]
                           },
+                          "parentReference": {
+                            "anyOf": [
+                              {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "id": {
+                                    "format": "uuid",
+                                    "type": "string"
+                                  },
+                                  "slug": {
+                                    "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                                    "maxLength": 80,
+                                    "minLength": 1,
+                                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "slug"
+                                ],
+                                "type": "object"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                          },
                           "position": {
                             "description": "Rank opaco gerado pelo servidor.",
                             "type": "string"
@@ -4509,6 +4608,39 @@
                         "string",
                         "null"
                       ]
+                    },
+                    "parentReference": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "slug": {
+                              "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                              "maxLength": 80,
+                              "minLength": 1,
+                              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "slug"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
                     },
                     "position": {
                       "description": "Rank opaco gerado pelo servidor.",
@@ -5073,6 +5205,39 @@
                   "null"
                 ]
               },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+              },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
                 "type": "string"
@@ -5511,6 +5676,39 @@
                   "null"
                 ]
               },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+              },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
                 "type": "string"
@@ -5895,6 +6093,39 @@
                   "string",
                   "null"
                 ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
               },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
@@ -6328,6 +6559,39 @@
                   "string",
                   "null"
                 ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
               },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
@@ -7476,6 +7740,39 @@
                   "string",
                   "null"
                 ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
               },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
@@ -10756,6 +11053,39 @@
                       "null"
                     ]
                   },
+                  "parentReference": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "slug": {
+                            "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                            "maxLength": 80,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "slug"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                  },
                   "position": {
                     "description": "Rank opaco gerado pelo servidor.",
                     "type": "string"
@@ -13695,6 +14025,39 @@
                       "null"
                     ]
                   },
+                  "parentReference": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "slug": {
+                            "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                            "maxLength": 80,
+                            "minLength": 1,
+                            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "slug"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                  },
                   "position": {
                     "description": "Rank opaco gerado pelo servidor.",
                     "type": "string"
@@ -16387,6 +16750,39 @@
                   "string",
                   "null"
                 ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
               },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
@@ -26904,6 +27300,35 @@
                     "null"
                   ]
                 },
+                "parentReference": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "$ref": "#/components/schemas/Slug"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "slug"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                },
                 "position": {
                   "description": "Rank opaco gerado pelo servidor.",
                   "type": "string"
@@ -28540,6 +28965,39 @@
                         "null"
                       ]
                     },
+                    "parentReference": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "format": "uuid",
+                              "type": "string"
+                            },
+                            "slug": {
+                              "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                              "maxLength": 80,
+                              "minLength": 1,
+                              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "slug"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                    },
                     "position": {
                       "description": "Rank opaco gerado pelo servidor.",
                       "type": "string"
@@ -30007,6 +30465,39 @@
                   "string",
                   "null"
                 ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
               },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
@@ -32392,6 +32883,35 @@
                     "null"
                   ]
                 },
+                "parentReference": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "$ref": "#/components/schemas/Slug"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "slug"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                },
                 "position": {
                   "description": "Rank opaco gerado pelo servidor.",
                   "type": "string"
@@ -34239,6 +34759,39 @@
                   "null"
                 ]
               },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+              },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
                 "type": "string"
@@ -34498,6 +35051,39 @@
                     "string",
                     "null"
                   ]
+                },
+                "parentReference": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                          "maxLength": 80,
+                          "minLength": 1,
+                          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "slug"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
                 },
                 "position": {
                   "description": "Rank opaco gerado pelo servidor.",
@@ -36880,6 +37466,35 @@
                     "null"
                   ]
                 },
+                "parentReference": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "$ref": "#/components/schemas/Slug"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "slug"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+                },
                 "position": {
                   "description": "Rank opaco gerado pelo servidor.",
                   "type": "string"
@@ -39061,6 +39676,39 @@
                   "null"
                 ]
               },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
+              },
               "position": {
                 "description": "Rank opaco gerado pelo servidor.",
                 "type": "string"
@@ -39320,6 +39968,39 @@
                     "string",
                     "null"
                   ]
+                },
+                "parentReference": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "slug": {
+                          "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                          "maxLength": 80,
+                          "minLength": 1,
+                          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "slug"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId."
                 },
                 "position": {
                   "description": "Rank opaco gerado pelo servidor.",

@@ -46,6 +46,13 @@ pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value
                         .is_some_and(|s| s.data["isDone"] == true)
                 })
                 .count();
+            value["parentReference"] = match r.reference("parentId") {
+                Some(parent_id) => {
+                    let parent = records.get("tasks", parent_id)?;
+                    json!({"id":parent.id,"title":parent.data["title"],"slug":parent.data["slug"]})
+                }
+                None => Value::Null,
+            };
             value["childSummary"] = json!({"total":children.len(),"done":done});
             value["executionContext"] = hierarchy::context(records, id)?;
         }
@@ -118,6 +125,7 @@ async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         for item in &mut items {
             let id = value_id(&item["id"])?;
             let value = resource(&unit.records, "tasks", id)?;
+            item["parentReference"] = value["parentReference"].clone();
             item["childSummary"] = value["childSummary"].clone();
             item["executionContext"] = value["executionContext"].clone();
         }
@@ -155,7 +163,6 @@ async fn board_view(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         query.query.remove("limitPerColumn");
         query.query.insert("limit".into(), c.q("limitPerColumn"));
         query.query.insert("statusId".into(), json!(status.id));
-        query.query.insert("rootOnly".into(), json!(true));
         query.query.insert("archived".into(), json!(false));
         query.query.insert("sortBy".into(), json!("position"));
         let mut column = list(unit, &query).await?;

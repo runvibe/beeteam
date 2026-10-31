@@ -500,3 +500,23 @@ usage timestamp. This visual proposal remains subject to implementation review.
 The broader collector/global-ledger roadmap remains a proposal. The implemented
 summary-checkpoint increment and its limits are documented separately above;
 no external collector is installed or enabled by it.
+
+## Board columns and subtasks
+
+Board views include all active tasks belonging to the requested board, including
+subtasks at any depth. Descendants in another board are not duplicated or counted.
+Continue a column with the board task list, matching status/filter/sort parameters
+and `archived=false`, without `rootOnly`; general lists retain optional `rootOnly=true`.
+Task read projections include optional nullable `parentReference: {id,title,slug}`
+from existing batched ancestor hydration, so cards can link their mother without
+per-card requests. `parentId` and each task's status remain independent. Moving a
+child between non-final statuses does not change its mother; existing final-status
+summary requirements remain. Positional `beforeTaskId` still targets a sibling
+with the same parent; this change does not redefine ordering across hierarchies.
+
+Validation: the SQLite regression suite passed 7 tests across board subtasks,
+HTTP domain flows, MCP and Overview; one PostgreSQL-only MCP test was excluded.
+The new test covers cross-board ancestry, total/page parity, parent references,
+HTTP/MCP parity, filters, optional rootOnly, independent child status and archive.
+PostgreSQL execution and live UI acceptance remain separate; no product data or
+runtime was changed by this delivery.
