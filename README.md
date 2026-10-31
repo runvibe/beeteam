@@ -504,7 +504,7 @@ A troca de abas da task reutiliza o fade de páginas (opacidade 0,72→1 em 180m
 
 No desktop, a barra de rolagem principal do detalhe fica no limite direito da área de conteúdo, junto à divisória contextual. O respiro de 8px fica entre conteúdo e barra, preservando a largura de 300px da sidebar e sem alterar a rolagem interna dos planos.
 
-O wrapper `.task-page` não adiciona padding em nenhum breakpoint. Os espaçamentos internos dos componentes permanecem; o scroll principal desktop alcança o fundo da janela e conserva 16px internos ao final.
+O wrapper `.task-page` não adiciona padding em nenhum breakpoint. Os espaçamentos internos dos componentes permanecem; no desktop, o scroll principal alcança o fundo da janela e `.task-detail-primary` e `.task-context` não adicionam padding inferior. O comportamento mobile permanece independente.
 
 A faixa `.task-section-navigation` não adiciona padding vertical; os botões mantêm suas alturas e a faixa mantém o comportamento sticky.
 
