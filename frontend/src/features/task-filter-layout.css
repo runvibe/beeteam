@@ -78,9 +78,9 @@
   height: 44px;
 }
 .task-filter-slot[data-docked="true"] .inline-filter-search[data-open="true"] {
-  width: min(260px, calc(100vw - 68px));
+  width: min(260px, calc(100vw - 80px));
   position: fixed;
-  left: 54px;
+  left: 66px;
   top: var(--filter-dock-top);
   background: var(--popover);
   z-index: 50;
@@ -89,14 +89,14 @@
   top: 0;
   left: calc(100% + 8px);
   right: auto;
-  max-width: min(320px, calc(100vw - 76px));
+  max-width: min(320px, calc(100vw - 88px));
   opacity: 1;
 }
 .task-filter-slot[data-docked="true"] .filter-summary-list {
   left: 0;
   right: auto;
   min-width: 100%;
-  max-width: min(320px, calc(100vw - 76px));
+  max-width: min(320px, calc(100vw - 88px));
   max-height: min(240px, calc(var(--filter-dock-height) - 44px));
   padding-left: 0;
 }

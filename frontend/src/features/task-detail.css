@@ -105,7 +105,7 @@ body:has(.task-page) {
 .task-context {
   min-width: 0;
   border-left: 1px solid var(--border);
-  padding-left: 48px;
+  padding-left: 24px;
 }
 .task-context-content {
   display: grid;
@@ -306,7 +306,7 @@ body:has(.task-page) {
 .task-timeline > .compact-filter-bar + .timeline-record {
   padding-top: 8px;
 }
-/* 56px rail + 40px page padding + the 960px two-column content breakpoint. */
+/* Desktop scrollers activate only with room for the rail and two-column context. */
 @media (min-width: 1056px) {
   .app-shell:has(.task-page) {
     height: 100dvh;
@@ -341,13 +341,13 @@ body:has(.task-page) {
     padding-bottom: 0;
   }
   .task-detail-primary {
-    padding-right: 8px;
+    padding-right: 4px;
   }
   .task-detail-primary > * {
     flex-shrink: 0;
   }
   .task-context {
-    padding-right: 8px;
+    padding-right: 4px;
   }
 }
 
