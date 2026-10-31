@@ -629,3 +629,22 @@ A autoria no card reutiliza o ícone UserRound dos agentes/colaboradores; o text
 Resumos históricos podem trazer `usageReport` opcional como metadados separados do Markdown. A interface distingue métricas ausentes de zero, snapshots originais de deltas derivados, qualidade medida/estimada/indisponível e atribuição exata/compartilhada/não atribuída. Proveniência e revisões ficam em detalhes expansíveis; contadores decimais são formatados com BigInt, sem perda de precisão.
 
 A Visão geral mostra `TaskOverview.usage` como agregação autoritativa: total conhecido e estimado separados, componentes medidos, cobertura/lacunas, modelos/harnesses distintos e checkpoints de resumos com horário de reporte e status observado. `GET /tasks/{id}/usage` e `/usage/dimensions` paginam checkpoints/dimensões via Carregar mais, sem somar páginas/snapshots nem substituir o total pelo último reporte. Cache/raciocínio são subconjuntos de entrada/saída. Respostas antigas continuam exibindo ausência de agregação; resumos sem métricas permanecem válidos. Nenhuma coleta, credencial ou métrica de demonstração é criada pelo frontend; o adaptador de demonstração não sintetiza agregações de uso.
+## Board columns and subtasks
+
+Board views include all active tasks belonging to the requested board, including
+subtasks at any depth. Descendants in another board are not duplicated or counted.
+Continue a column with the board task list, matching status/filter/sort parameters
+and `archived=false`, without `rootOnly`; general lists retain optional `rootOnly=true`.
+Task read projections include optional nullable `parentReference: {id,title,slug}`
+from existing batched ancestor hydration, so cards can link their mother without
+per-card requests. `parentId` and each task's status remain independent. Moving a
+child between non-final statuses does not change its mother; existing final-status
+summary requirements remain. Positional `beforeTaskId` still targets a sibling
+with the same parent; this change does not redefine ordering across hierarchies.
+
+Validation: the SQLite regression suite passed 7 tests across board subtasks,
+HTTP domain flows, MCP and Overview; one PostgreSQL-only MCP test was excluded.
+The new test covers cross-board ancestry, total/page parity, parent references,
+HTTP/MCP parity, filters, optional rootOnly, independent child status and archive.
+PostgreSQL execution and live UI acceptance remain separate; no product data or
+runtime was changed by this delivery.
