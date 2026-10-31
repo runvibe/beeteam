@@ -1,5 +1,8 @@
 // Generated from contracts/kanban-openapi.yaml. Do not edit.
 export type ExecutionSummary = {
+  usageReport?: import("./SummaryUsageReport").SummaryUsageReport | null;
+  statusObserved?: import("./UsageObservedStatus").UsageObservedStatus;
+  version?: number;
   /** @description Máximo 16384 bytes UTF-8. */
   summary: string;
   /** @enum {string} */

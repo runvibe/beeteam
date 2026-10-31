@@ -1,0 +1,95 @@
+.task-usage,
+.summary-usage {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.task-usage {
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.task-usage h2,
+.summary-usage h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.usage-totals,
+.usage-components {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+}
+.usage-totals dt,
+.usage-components dt,
+.usage-provenance dt {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.usage-totals dd {
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.usage-components dd,
+.usage-provenance dd {
+  font-size: 13px;
+  margin: 0;
+}
+.usage-entries,
+.usage-checkpoints,
+.usage-dimensions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.usage-entry,
+.usage-checkpoints > li {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  min-width: 0;
+}
+.usage-provenance {
+  display: grid;
+  gap: 8px;
+  margin-block: 12px;
+}
+.task-usage summary,
+.summary-usage summary {
+  cursor: pointer;
+  min-height: 36px;
+  padding-block: 8px;
+}
+.task-usage summary:focus-visible,
+.summary-usage summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.usage-dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.usage-dimension-grid > div {
+  min-width: 0;
+}
+.usage-page {
+  display: grid;
+  gap: 12px;
+}
+.usage-page > button {
+  justify-self: start;
+}
+@media (max-width: 600px) {
+  .usage-dimension-grid {
+    grid-template-columns: 1fr;
+  }
+  .task-usage summary,
+  .summary-usage summary {
+    min-height: 44px;
+  }
+}

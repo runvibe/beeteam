@@ -95,4 +95,5 @@ export type TaskOverview = {
   };
   nextStep: null;
   decisions: string[];
+  usage: import("./TaskUsage").TaskUsage;
 };

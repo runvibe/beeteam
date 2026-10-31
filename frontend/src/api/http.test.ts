@@ -130,3 +130,20 @@ it("reads resolvers and binary content through the transport", async () => {
   expect(fetcher.mock.calls[0][0]).toBe("/api/v1/agents/by-slug/lia");
   expect((await api.image("id")).type).toBe("image/png");
 });
+
+it("requests usage and dimension pages without client-side aggregation", async () => {
+  const fetcher = vi
+    .fn()
+    .mockImplementation(
+      async () => new Response(JSON.stringify({}), { status: 200 }),
+    );
+  const api = createHttpApi({ fetch: fetcher });
+  await api.usage("task", { offset: 20, limit: 20 });
+  await api.usageDimensions("task", "model", { offset: 100, limit: 100 });
+  expect(fetcher.mock.calls[0][0]).toBe(
+    "/api/v1/tasks/task/usage?offset=20&limit=20",
+  );
+  expect(fetcher.mock.calls[1][0]).toBe(
+    "/api/v1/tasks/task/usage/dimensions?offset=100&limit=100&kind=model",
+  );
+});

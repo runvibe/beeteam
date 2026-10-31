@@ -97,6 +97,19 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  usage(
+    taskId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<import("./generated/kanban/TaskUsage").TaskUsage>;
+  usageDimensions(
+    taskId: string,
+    kind: "model" | "harness",
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<
+    import("./generated/kanban/UsageDimensionPage").UsageDimensionPage
+  >;
   overview(
     taskId: string,
     signal?: AbortSignal,

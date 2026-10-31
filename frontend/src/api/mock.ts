@@ -257,6 +257,20 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async usage() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Métricas disponíveis apenas na API conectada.",
+      );
+    },
+    async usageDimensions() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Métricas disponíveis apenas na API conectada.",
+      );
+    },
     async participants(taskId, pagination = {}) {
       await wait();
       return clone(paginate(mockParticipants(db, taskId), pagination));
