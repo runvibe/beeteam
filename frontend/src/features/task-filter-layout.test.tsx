@@ -6,7 +6,7 @@ import {
   TaskFilters,
 } from "./task-filter-layout";
 
-it("docks the same filter DOM only for active mobile filters outside their original area", () => {
+it("docks the same filter DOM when the mobile origin is outside the viewport, even without selected filters", () => {
   let update = () => {};
   let bottom = 200;
   vi.stubGlobal("matchMedia", () => ({
@@ -31,7 +31,7 @@ it("docks the same filter DOM only for active mobile filters outside their origi
         return { bottom: 50 } as DOMRect;
       if (this.tagName === "NAV") return { top: 300 } as DOMRect;
       if (this.classList.contains("task-filter-origin"))
-        return { bottom } as DOMRect;
+        return { bottom, top: bottom - 44 } as DOMRect;
       return { left: 0, height: 44 } as DOMRect;
     });
   function Harness({ active }: { active: boolean }) {
@@ -52,7 +52,7 @@ it("docks the same filter DOM only for active mobile filters outside their origi
     );
   }
   try {
-    const view = render(<Harness active />);
+    const view = render(<Harness active={false} />);
     const control = screen.getByRole("button", { name: "Filter" });
     const host = control.parentElement!;
     expect(host).toHaveAttribute("data-docked", "false");
@@ -70,6 +70,9 @@ it("docks the same filter DOM only for active mobile filters outside their origi
       screen.getByLabelText("Draft").blur();
       update();
     });
+    expect(host).toHaveAttribute("data-docked", "true");
+    bottom = 200;
+    act(update);
     expect(host).toHaveAttribute("data-docked", "false");
     expect(screen.getByRole("button", { name: "Filter" })).toBe(control);
   } finally {
