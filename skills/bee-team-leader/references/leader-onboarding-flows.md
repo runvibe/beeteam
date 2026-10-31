@@ -257,3 +257,7 @@ A tabela registra a evolução em relação ao baseline dfd4e19. Esta skill apli
 ## Escopo de uso da referência
 
 A leitura desta referência não autoriza criar registros ou chats fora da demanda atual. Confirme autorizações, capacidades e persistência reais. Critérios textuais não substituem verificação de resultado.
+
+## Métricas no início e ao inserir resumo
+
+Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, tente consultar dados atuais e anexar métricas opcionais verificáveis; falha de coleta não bloqueia salvar e não exige unavailable. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.

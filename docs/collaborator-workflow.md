@@ -205,3 +205,7 @@ A nova entrada e a condição de task previamente registrada e atribuída substi
 - Mecanismos disponíveis em cada harness para confirmar handoff, comunicar bloqueio/entrega e verificar execução ativa, sem presumir acesso universal.
 
 As regras de registro, mudança na mesma task, bloqueio, autonomia e conclusão acima estão definidas; esses pontos em aberto não dispensam seu cumprimento quando o fluxo for implementado.
+
+## Métricas no início e ao inserir resumo
+
+Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, tente consultar dados atuais e anexar métricas opcionais verificáveis; falha de coleta não bloqueia salvar e não exige unavailable. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.

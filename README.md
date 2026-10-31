@@ -181,3 +181,5 @@ Após bootstrap de identidade/time, cada interação substantiva entre agentes a
 A Leader é a interface humana do trabalho: fora da mensagem inicial de criação/ativação de novo chat Collaborator, perguntas, escolhas, pedidos, confirmações e relatos substantivos iniciados pelo Collaborator passam por comentário e notificação à Leader, sem diálogo direto ou caixas interativas ao humano. Isso preserva metainstruções legítimas, aprovações obrigatórias do harness e trabalho independente autorizado.
 
 A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
+
+As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Modelos/harnesses/tokens são dados opcionais estruturados, separados do Markdown: falha de coleta não bloqueia o resumo, ausência não é zero e nenhuma declaração unavailable é exigida para salvar.
