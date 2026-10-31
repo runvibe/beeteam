@@ -149,7 +149,7 @@ async fn current_summary_is_explicit_persisted_and_independent_of_description() 
     )
     .await;
     assert_eq!(task["currentSummary"], third);
-    let execution = json!({"summary":"Historical activity only","currentSummary":"Done: implementation and testing. Now: review. Next: publish when approved.","outcome":"progress","statusId":id(&next),"deliverables":[],"pending":["Approval"],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
+    let execution = json!({"usageReport":unavailable_usage(),"summary":"Historical activity only","currentSummary":"Done: implementation and testing. Now: review. Next: publish when approved.","outcome":"progress","statusId":id(&next),"deliverables":[],"pending":["Approval"],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
     let mut missing = execution.clone();
     missing.as_object_mut().unwrap().remove("currentSummary");
     assert_eq!(

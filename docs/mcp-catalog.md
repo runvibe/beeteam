@@ -320,3 +320,18 @@ proportional discovery and a fresh collection attempt per genuine summary,
 without blocking summary persistence when collection fails. No resource grants
 arbitrary filesystem access or installs a collector. Runtime activation remains
 a separate operator action.
+
+## Required usage on new summaries — 2026-10-31
+
+This supersedes the optional-write guidance above. `createExecutionSummary.body`
+and `close_activity.execution` require a non-null `usageReport` with 1..32 entries.
+The MCP tool descriptions explain source/session discovery, actual harness/model
+identity, decimal-string counters, inclusive cache/reasoning subsets, request
+deltas, cumulative snapshots/baselines and explicit unavailable evidence. Missing,
+null or empty reports fail with guidance to collect evidence or declare
+`reportKind=quality=unavailable`, null counters and factual nonblank discovery
+reason/attempts. No zero or model/session identity is fabricated.
+
+Historical reads/transfer retain missing metrics. Exact saved legacy HTTP/MCP
+and compound replays remain valid before current schema validation. New keys
+must satisfy the new contract. See [summary usage](summary-usage.md).

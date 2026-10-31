@@ -95,7 +95,7 @@ pub(super) fn tools() -> Vec<Value> {
                 .unwrap_or(json!({}));
             json!({"type":"object","properties":{"data":data,"version":{"type":["integer","null"]},"createdId":{"type":["string","null"],"format":"uuid"}},"required":["data","version","createdId"],"additionalProperties":false})
         };
-        tools.push(json!({"name":op.name,"description":format!("{} {}. {}. Actor is declared, not authenticated.",op.method,op.path,op.definition["summary"].as_str().unwrap_or("")),"annotations":{"readOnlyHint":op.method=="GET","destructiveHint":false,"idempotentHint":op.method=="GET"||op.method=="POST","openWorldHint":false},"outputSchema":output,"inputSchema":{"type":"object","additionalProperties":false,"properties":{
+        tools.push(json!({"name":op.name,"description":format!("{} {}. {}. Actor is declared, not authenticated.",op.method,op.path,if op.name == "createExecutionSummary" { op.definition["description"].as_str().unwrap_or("") } else { op.definition["summary"].as_str().unwrap_or("") }),"annotations":{"readOnlyHint":op.method=="GET","destructiveHint":false,"idempotentHint":op.method=="GET"||op.method=="POST","openWorldHint":false},"outputSchema":output,"inputSchema":{"type":"object","additionalProperties":false,"properties":{
             "params":{"type":"object","properties":paths,"required":required,"additionalProperties":false},
             "query":{"type":"object","properties":query,"additionalProperties":false},"body":body,
             "actor":{"type":"object","properties":{"kind":{"enum":["human","agent"]},"id":{"type":["string","null"],"format":"uuid"}},"required":["kind"],"additionalProperties":false},

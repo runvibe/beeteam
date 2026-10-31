@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("868ff91"));
+            .contains("088f522"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -240,7 +240,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let task = &result["task"];
     let missing=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"progress":{"percent":25,"note":"missing synthesis"}})).await;
     assert_eq!(missing["isError"], true);
-    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
+    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","usageReport":unavailable_usage(),"summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
     assert_eq!(failed["isError"], true);
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}", id(task))).await["currentSummary"],
@@ -250,7 +250,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         get(&app, &format!("/api/v1/tasks/{}/comments", id(task))).await["total"],
         1
     );
-    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
+    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","usageReport":unavailable_usage(),"summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
     assert_eq!(result["task"]["statusId"], task["statusId"]);
     assert_eq!(
         result["task"]["currentSummary"],
@@ -444,7 +444,7 @@ async fn exact_comment_lookup_and_compound_receipts() {
         let live = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
         let mut input = json!({"taskId":id(task),"expectedVersion":live["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":name});
         if name == "close_activity" {
-            input["execution"] = json!({"currentSummary":"Stored test summary","summary":"Test only","outcome":"progress","statusId":live["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
+            input["execution"] = json!({"currentSummary":"Stored test summary","usageReport":unavailable_usage(),"summary":"Test only","outcome":"progress","statusId":live["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
         }
         if name == "record_progress" {
             input["subtaskUpdates"] = json!([{"taskId":id(&child),"expectedVersion":child["version"],"comment":"Child receipt"}]);
@@ -492,7 +492,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     assert_eq!(
         provenance["sourceCommit"],
-        "868ff91e09669ab7a13aa0aef86c8bd6eb695d91"
+        "088f522683a68cde9255f3bcbf31856cee27da29"
     );
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();

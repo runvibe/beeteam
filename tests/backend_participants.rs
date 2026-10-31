@@ -98,7 +98,7 @@ async fn participants_cover_exact_task_history_without_global_or_comment_page_le
     .await;
     let current = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     let attachment=success(&app,"createAttachment",json!({"params":{"taskId":id(&task)},"actor":actor(5),"expectedVersion":current["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":{"description":"Test"},"upload":{"name":"test.txt","mediaType":"text/plain","dataBase64":"dGVzdA=="}})).await;
-    mutation(&app,&task,&actor(6),"createExecutionSummary",json!({"currentSummary":"Test summary","summary":"Recorded report","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}})).await;
+    mutation(&app,&task,&actor(6),"createExecutionSummary",json!({"currentSummary":"Test summary","usageReport":unavailable_usage(),"summary":"Recorded report","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}})).await;
     mutation(
         &app,
         &task,

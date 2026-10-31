@@ -1,13 +1,14 @@
-# Optional usage checkpoints in execution summaries
+# Required usage declarations in new execution summaries
 
-This increment implements structured, optional usage reports in historical
+This increment implements structured usage reports in historical
 execution summaries and task Overview. It does not install collectors, activate
 harnesses, read credentials or write product/demo metrics.
 
 ## Writes and compatibility
 
-`createExecutionSummary` and `close_activity.execution` accept an optional
-`usageReport: {entries: [...]}` or null. Omitting it remains valid. The Markdown
+`createExecutionSummary` and `close_activity.execution` require a non-null
+`usageReport: {entries: [...]}` with 1..32 entries on every new write. Omission,
+null and an empty list fail with an actionable 400 error. The Markdown
 `summary`, cumulative `currentSummary`, execution outcome and explicit status
 remain independent. No summary or status transition is created just to report
 usage. New summaries retain `statusObserved: {id,name,isDone}`; old summaries
@@ -24,9 +25,10 @@ Counters are decimal integer **strings**, or null, bounded by signed 64-bit
 integers. Input and output are inclusive totals; cached input and reasoning
 output are subsets. These subsets are never added again. Zero means observed
 zero. Missing means unknown. A partial input/output measurement can be retained
-without inventing a total. An optional unavailable entry needs null counters and
-factual `discovery: {reason,attempts}`; an unavailable declaration is never required
-to save a summary.
+without inventing a total. An unavailable entry needs all four counters null, quality unavailable and
+factual `discovery: {reason,attempts}` with a nonblank reason and nonblank attempts.
+When collection is impossible, this explicit declaration allows the summary to
+be saved; silently omitting the report does not.
 
 The actor union is human/null or agent/persisted UUIDv7. Actor metadata is
 declared, not authentication. A historical role is captured in each observation
@@ -134,5 +136,23 @@ between HTTP and MCP.
 This is a scoped implementation of the broader plan. Standalone collectors,
 automatic background reconciliation, global usage dashboards, monetary costs,
 general session/binding management and automatic backfill remain outside this
-delivery. A source without enough evidence may be omitted; it is never replaced
-with fabricated historical consumption.
+delivery. A source without enough evidence must be explicitly unavailable; it is never
+replaced with fabricated historical consumption.
+
+## Required-write upgrade (2026-10-31)
+
+Discover permitted sources and the correct session at work start, and refresh
+evidence for each report. Record actual harness/surface and models used, never a
+current global selection substituted for history. Unknown provider/model/version
+remain null. Measured/estimated entries require at least one known input or output
+component; unknown components stay null. When session/epoch cannot be observed,
+use the explicit `unavailable` sentinel and a unique evidenceId identifying the
+reporting attempt (stable on retry), not an invented execution session. Explain
+unknown harness/surface with `unknown` and a factual discovery reason. The server
+validates structure, not the factual truth of client-declared discovery attempts.
+
+Read schemas, stored historical summaries and portable raw transfer stay compatible
+with absent reports. No data migration or backfill is performed. Exact saved
+idempotent responses are looked up before the new required-write validation in
+both ordinary and compound services. A new idempotency key is a new write and
+must satisfy the required report contract.

@@ -70,7 +70,7 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
                 .iter()
                 .find(|s| s["isDone"] == true)
                 .unwrap();
-            mutation(&app,&child,&actor_a,"createExecutionSummary",json!({"currentSummary":"Child done","summary":"Test closure","outcome":"completed","statusId":done["id"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
+            mutation(&app,&child,&actor_a,"createExecutionSummary",json!({"currentSummary":"Child done","usageReport":unavailable_usage(),"summary":"Test closure","outcome":"completed","statusId":done["id"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
         }
         if i >= 10 && i % 10 == 0 {
             mutation(
@@ -102,8 +102,8 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     }
     mutation(&app,&root,&actor_b,"updateTask",json!({"currentSummary":"Explicit final point","progress":{"percent":37,"note":"Recorded 37"}})).await;
     let deliveries:Vec<Value>=(0..12).map(|i|json!({"label":format!("Recorded delivery {i}"),"url":format!("https://example.com/delivery/{i}")})).collect();
-    let earlier=mutation(&app,&root,&actor_a,"createExecutionSummary",json!({"currentSummary":"Prior summary","summary":"Earlier report","outcome":"progress","statusId":root["statusId"],"deliverables":deliveries,"pending":["Earlier pending"],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
-    let latest=mutation(&app,&root,&actor_a,"createExecutionSummary",json!({"currentSummary":"Latest synthesis","summary":"Latest report","outcome":"progress","statusId":root["statusId"],"progress":{"percent":88,"note":"Closure progress not stored in legacy event"},"deliverables":[],"pending":["Recorded pending"],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
+    let earlier=mutation(&app,&root,&actor_a,"createExecutionSummary",json!({"currentSummary":"Prior summary","usageReport":unavailable_usage(),"summary":"Earlier report","outcome":"progress","statusId":root["statusId"],"deliverables":deliveries,"pending":["Earlier pending"],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
+    let latest=mutation(&app,&root,&actor_a,"createExecutionSummary",json!({"currentSummary":"Latest synthesis","usageReport":unavailable_usage(),"summary":"Latest report","outcome":"progress","statusId":root["statusId"],"progress":{"percent":88,"note":"Closure progress not stored in legacy event"},"deliverables":[],"pending":["Recorded pending"],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}})).await;
     mutation(
         &app,
         &root,
