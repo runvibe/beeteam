@@ -482,5 +482,12 @@ The [token and model ledger plan](docs/superpowers/plans/2026-10-30-token-model-
 researches Codex, GitHub Copilot, Claude Code, Cursor and Kiro. It proposes
 historical actor/task/session/model/harness attribution, honest coverage,
 deduplication, atomic reporting and optional separate cost accounting.
+Skills must investigate tools, permitted APIs/local metadata and official
+documentation before reporting unavailability, recording concrete attempts and
+limitations. Direct permitted reads are a first-class path; collectors are
+optional, with capability caching to avoid repeating discovery on every update.
+The proposed task UI places the full usage panel in Overview and a compact
+context summary in other tabs, preserving timestamped model history per actor
+and session. This visual proposal remains subject to implementation review.
 This is documentation only: no usage collector, migration, Skill change or
 usage dashboard is implemented or enabled by this proposal.

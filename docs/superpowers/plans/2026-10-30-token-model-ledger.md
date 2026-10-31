@@ -4,7 +4,7 @@
 
 **Goal:** Registrar consumo verificável e histórico de modelos por tarefa, colaborador (incluindo Leader), sessão e harness, com consultas por período sem duplicação ou falsa precisão.
 
-**Architecture:** Coletores opcionais convertem evidências dos harnesses em observações imutáveis. Serviços normalizam contadores, preservam proveniência e atribuem parcelas a execuções; repositórios PostgreSQL/SQLite mantêm o ledger e calculam agregados em snapshots. HTTP/MCP compartilham DTOs e serviços; Skills consultam evidência disponível ou declaram indisponibilidade.
+**Architecture:** Skills investigam fontes e podem obter evidências diretamente de ferramentas, APIs e arquivos permitidos; coletores/adapters são alternativas opcionais para automatizar essa leitura. Serviços normalizam observações imutáveis, preservam proveniência e atribuem parcelas a execuções; repositórios PostgreSQL/SQLite mantêm o ledger e calculam agregados em snapshots. HTTP/MCP compartilham DTOs e serviços; indisponibilidade exige investigação documentada, nunca apenas ausência de coletor.
 
 **Tech Stack:** Rust, SQLx, PostgreSQL >=18, SQLite, contratos OpenAPI/MCP existentes, coletores locais opcionais, frontend React/TypeScript existente.
 
@@ -18,6 +18,7 @@
 - IDs internos UUIDv7; slugs são aliases imutáveis e nunca chaves de atribuição. Actor declarado não equivale a autenticação.
 - PostgreSQL padrão; SQLite opt-in, migrations independentes, writes serializados, leitura em snapshot. Nenhum arquivo-fonte acima de 1000 linhas.
 - Tokens, ocupação de contexto, créditos, requisições premium e dinheiro têm unidades distintas. Campo ausente é `null`/indisponível, não zero.
+- Investigar e justificar a limitação é obrigatório; obter um número a qualquer custo não é. Coleta direta permitida pelo agente é caminho de primeira classe, sem exigir SDK/exporter instalado.
 - `currentSummary` continua cumulativo e escrito pelo colaborador; métricas não substituem síntese, especificação, plano ou resumo de execução.
 - Mudanças de Skill e contratos exigem atualização do snapshot bundled/proveniência e catálogo, sem sugerir instalação global automática.
 
@@ -96,6 +97,29 @@ Proposta: MVP registra modelo observado/configurado e `tokens: unavailable` até
 
 ## 3. Identidade e estrutura persistida proposta
 
+### 3.0 Descoberta obrigatória antes de declarar indisponibilidade
+
+Revisão solicitada pelo usuário em 31/10/2026. Esta seção rege todos os fallbacks da matriz e das receitas, inclusive Kiro e superfícies sem contrato localizado na pesquisa anterior. “Não sei onde está” e “não existe coletor” iniciam investigação; não são evidência de indisponibilidade. O caso Codex relatado pela coordenação — negativa inicial seguida de descoberta de contadores nos logs — é caso de regressão obrigatório, não prova de que qualquer log seja fonte válida.
+
+Workflow futuro da Skill, antes do primeiro registro e quando a capacidade mudar:
+
+1. **Identificar contexto:** harness, superfície (desktop/CLI/IDE/cloud), versão instalada/exposta, task/actor e sessão lógica correta. Registrar como a sessão foi correlacionada. Não escolher arquivo só por ser o mais recente, pelo título ou por compartilhar diretório.
+2. **Inventariar recursos disponíveis:** ferramentas conectadas, metadados de execução, APIs acessíveis com autorização já existente, comandos de diagnóstico somente leitura e fontes locais pertinentes. Consultar capability cache compatível antes de repetir descoberta. A ausência de uma ferramenta nomeada no plano não encerra a busca.
+3. **Procurar fontes pertinentes:** documentação embarcada/versionada e arquivos de metadados/logs em diretórios do harness identificados por evidência. Enumerar nomes/metadados antes de ler conteúdo; filtrar pelo ID correto. Usar projeção/extração somente de campos de sessão/modelo/uso, sem carregar transcrições inteiras no contexto ou no ledger. Se a leitura seletiva segura não estiver disponível, registrar essa limitação específica.
+4. **Pesquisar o método desconhecido:** consultar documentação oficial/versionada; se o método não estiver estabelecido localmente, pesquisar internet em fontes oficiais. Registrar URL, data, versão/superfície e campos relevantes. Rede indisponível é uma tentativa não executável documentada, não prova de inexistência de tokens. Relatos externos podem indicar uma pista, mas não substituem validação da fonte.
+5. **Reproduzir leitura permitida:** tentar uma consulta/extração mínima da sessão correta usando ferramentas já autorizadas. Confirmar unidade, scope, tipo de contador, cache, subagentes, retomada, timestamp e modelo configurado versus efetivo. Uma fonte interna pode ser usada como experimental/versionada quando a semântica foi validada; não precisa esperar um coletor instalado. Se falta baseline, registrar a amostra e `pending`, em vez de declarar contador inexistente.
+6. **Escolher resultado:** `available` com evidência reproduzível; `partial` com campos/cobertura conhecidos; `pending` aguardando fronteira de contador; ou `unavailable` com tentativas e motivo concreto. Falha de permissão, sessão não identificável e semântica ambígua são motivos distintos. Não somar créditos/contexto como tokens para evitar um fallback.
+
+Registrar `DiscoveryReport { id, harness, surface, harnessVersion?, sessionCorrelation, investigatedAt, capabilityCacheKey, attempts[], outcome, limitationReason?, nextRecheckAt? }`. Cada tentativa contém categoria (tools/api/local_metadata/local_file/docs/web), referência sanitizada, ação somente leitura, resultado ou motivo por que não pôde ocorrer, e semântica confirmada/pendente. Não guardar comando com credencial, caminho com dados pessoais desnecessários, texto de conversa ou resposta integral de API. `unavailableReason` referencia esse relatório; explicação “sem acesso” precisa dizer qual fonte e qual restrição foram observadas. API valida presença/estrutura do relatório, sem alegar que o autorrelato autentica a investigação.
+
+Investigação proporcional: uma passagem por inventário, busca local delimitada, documentação e pesquisa oficial quando necessária, seguida de leitura mínima. Encerrar ao obter fonte suficiente ou esgotar os caminhos pertinentes disponíveis; não varrer todo o home nem insistir em variantes do mesmo acesso negado. Caminhos que não se aplicam recebem justificativa, sem chamadas artificiais para preencher checklist.
+
+Cache de método/capacidade por harness + superfície + versão + schema/parser + contexto de permissões, **sem reutilizar valores ou identidade de outra sessão**. Revalidar identidade e frescor da amostra em cada atualização. Mudança de versão, schema, permissão, fonte, sessão incompatível ou erro de parsing invalida a parte pertinente imediatamente. Proposta: descoberta negativa expira após 24 horas; positiva recebe revisão documental após 7 dias, com validação leve de schema em toda leitura. Cache válido evita repetir pesquisa na internet a cada comentário. Mesmo no cache negativo, detectar nova ferramenta/fonte antes de reutilizar a justificativa; usuário pode solicitar nova investigação a qualquer momento.
+
+Limites: não iniciar sessão paga para diagnóstico, não ler credenciais, não buscar conversa alheia, não burlar permissões e não instalar hook/exporter implicitamente. Um conector autorizado pode acessar API administrativa sem expor sua chave ao agente; a falta de conector não autoriza extrair segredos. Se a investigação exigir nova permissão ou integração, registrar o requisito e continuar o trabalho funcional com a limitação explícita. **Obrigatório investigar e justificar, não obrigatório obter número a qualquer custo.**
+
+### 3.1 Entidades históricas
+
 Não adicionar `model` mutável ao agente como histórico. Perfil atual pode mudar sem reescrever o passado. Manter IDs estáveis e snapshots mínimos no momento da observação. `harness=cursor` não implica `provider=anthropic`; `model=auto` não é modelo concreto. Provider desconhecido continua null, mesmo se o nome parecer reconhecível.
 
 Novas entidades (nomes propostos; não criadas nesta entrega):
@@ -103,6 +127,7 @@ Novas entidades (nomes propostos; não criadas nesta entrega):
 | Tabela | Campos essenciais | Responsabilidade |
 |---|---|---|
 | execution_sessions | id, collectorNamespace, externalSessionKey, parentSessionId?, harness, surface, harnessVersion?, openedAtObserved, closedAtObserved?, capabilityVersion | Identidade lógica, independente do arquivo e da tarefa |
+| usage_discovery_reports | id, sessionId?, capabilityCacheKey, investigatedAt, attemptsSafe, outcome, limitationReason?, nextRecheckAt? | Investigação sanitizada e justificativa do fallback; mesmo limite de payload seguro das observações |
 | execution_bindings | id, sessionId, taskId, actorKind, actorId?, actorRole, actorNameSnapshot?, taskTitleSnapshot?, startsAt, endsAt?, bindingSource, evidenceRef | Quem trabalha em qual tarefa; intervalos explícitos e possivelmente sobrepostos |
 | usage_observations | id, sessionId, sourceEventKey, epoch, sourceSequence?, sourceOccurredAt?, observedAt, scope, counterKind, safePayload, payloadHash, parserVersion, quality, unavailableReason?, supersedesId? | Evidência imutável, valores originais permitidos e cobertura |
 | usage_segments | id, observationStartId?, observationEndId, sessionId, startAt?, endAt, timeBasis, inputTotal?, cacheRead?, cacheWrite?, outputTotal?, reasoning?, total?, provider?, modelId?, modelRaw?, measurementQuality, coverageState, canonical | Consumo normalizado por chamada ou delta de intervalo |
@@ -202,6 +227,12 @@ Agregações no DB sobre ledger canônico, em snapshot read-only; não agregar s
 
 UI futura da tarefa: consumo observado com cobertura e horário, breakdown modelo/harness/ator, série cumulativa com lacunas e estimados separados, histórico de mudança observado, referências auditáveis. Gráfico não desenha consumo zero onde não houve coleta; total conhecido pode ser exibido como acumulado parcial. Sidebar Execução mostra “Último modelo informado” por ator/sessão, fonte e data. Timeline só registra mudança real observada, não heartbeat duplicado.
 
+**Proposta visual revisável, solicitada em 31/10/2026:** na aba **Visão geral**, apresentar o painel completo com total conhecido, cobertura, evolução e distribuição por agente, modelo e harness. Nas outras abas, manter bloco compacto fixo na área de contexto da sidebar direita, com tokens da tarefa, cobertura/horário e agentes com seus últimos modelos informados. Na própria Visão geral, não repetir o mesmo resumo na sidebar; o painel completo é a apresentação principal. Compartilhar dados/cache entre os dois formatos, sem somar novamente valores ao mudar de aba.
+
+Cada linha de ator/sessão mostra “Último modelo informado”, timestamp e, quando houver outros modelos conhecidos, controle **“+N modelos usados”**: N é a quantidade de modelos distintos adicionais ao último exibido, no mesmo escopo ator/sessão; nome acessível explicita a quantidade total e abre o histórico/detalhe acessível. Mudanças não sobrescrevem registros anteriores. Identidades efetivas e seleções configuradas continuam identificadas separadamente; desconhecido não é contado como um modelo conhecido. Se só há seleção Auto, mostrar esse fato, sem inferir provider/modelo efetivo. Várias sessões/atores simultâneos permanecem distinguíveis, sem “modelo atual da tarefa” global fictício.
+
+Histórico mostra fonte, tempo observado e limites de transição; consumo por modelo só aparece quando a atribuição é comprovada. Segmentos mistos/desconhecidos ficam explicitamente em `mixed/unknown`, sem redistribuição silenciosa. A abertura do detalhe deve suportar teclado, foco e leitor de tela, reutilizando o padrão de detalhe responsivo existente no mobile; o bloco fixo não pode cobrir conteúdo ou controles em telas estreitas. Esta proposta não autoriza nova navegação, modal ou dashboard global: o mecanismo visual será revisado na implementação da tarefa6.
+
 Evolução global: consumo por colaborador (Leader incluído), período, tarefa, modelo, harness e qualidade; tabela/drilldown usa os mesmos filtros do agregado. Sem ranking automático de produtividade. Custo opcional mostra moeda, origem, versão de preço e medido/estimado; não converter tokens por tabela presumida nem somar moedas diferentes.
 
 Retenção proposta: não guardar transcrições, prompts, respostas, argumentos, conteúdo de arquivo, tokens de autenticação ou email no ledger. Manter metadados normalizados e hashes enquanto histórico de tarefas for retido; spool local remove itens confirmados após 7 dias, limitado a 50 MiB, sinaliza pressão sem descarte silencioso. Payload seguro detalhado retém 90 dias por padrão proposto; tombstones de dedupe e segmentos permanecem para evitar reimportação. Política é configurável/revisável antes de rollout; não aplicar limpeza agora.
@@ -220,13 +251,14 @@ Todas dependem de autorização de instalação/execução e ambiente de teste, 
 
 ## 9. Plano de execução em fases (não executar nesta entrega)
 
-### Task 1: Capabilities e fixtures sanitizadas
+### Task 1: Descoberta, capabilities e fixtures sanitizadas
 
 **Files:** criar `docs/usage-source-capabilities.md`, `tests/fixtures/usage/{codex,copilot,claude,cursor,kiro}/*.json`, `src/dto/usage/capability.rs`, `tests/usage_capabilities.rs`.
 
-**Interfaces:** `Capability { harness, surface, versionRange, schemaVersion, unit, scope, counterKind, inputSemantics, subagentCoverage }`; `validate_capability(&Capability, &SafeObservation) -> Result<()>`.
+**Interfaces:** `Capability { harness, surface, versionRange, schemaVersion, unit, scope, counterKind, inputSemantics, subagentCoverage }`; `DiscoveryReport` da seção3.0; `validate_capability(&Capability, &SafeObservation) -> Result<()>`. Observação indisponível contém `discoveryReportId`; relatório faz parte do lote de ingestão ou referencia relatório persistido anteriormente.
 
 - [ ] Escrever `reject_context_and_credit_as_tokens`, `unknown_version_returns_unavailable`, `missing_components_remain_null`; exigir unidades distintas e nenhum zero inventado.
+- [ ] Testar `unavailable_requires_discovery_report`, `unknown_method_requires_documented_research_attempt`, `missing_baseline_is_pending` e cache negativo expirado/nova fonte; semântica não validada exige investigação, não fallback automático.
 - [ ] Rodar `cargo test --locked --test usage_capabilities`; confirmar falha por contratos ainda inexistentes.
 - [ ] Implementar DTO/validação e fixtures mínimas com fonte/data/versão e sem conteúdo privado; não instalar coletores.
 - [ ] Rodar o teste e revisar fixtures por allowlist de campos; todos passam, nenhum segredo/email/texto de conversa.
@@ -256,13 +288,16 @@ Todas dependem de autorização de instalação/execução e ambiente de teste, 
 - [ ] Rodar com SQLite temporário e PostgreSQL >=18 isolado: `cargo test --locked --features mcp --test backend_usage --test usage_persistence`; validar snapshots concorrentes e EXPLAIN dos filtros.
 - [ ] Regenerar catálogo com `cargo run --locked --features mcp --example mcp_catalog`, atualizar README e commit `feat: persist and query task usage ledger atomically`.
 
-### Task 4: Coletores com capacidades demonstradas
+### Task 4: Coleta direta e adapters opcionais com capacidades demonstradas
 
 **Files:** criar pacote isolado `integrations/usage-collector/` com `src/{capabilities,spool,bindings}.ts`, `src/adapters/{codex,copilot,claude,cursor,kiro}.ts`, testes `test/*.test.ts`, README de instalação opt-in. Nenhuma dependência de SDK entra no backend Rust para ler máquina do usuário.
+
+Antes do pacote opcional, documentar em `docs/usage-source-capabilities.md` receitas de leitura direta por ferramentas/APIs/arquivos permitidos, com entrada, identidade de sessão, campos extraídos e validação. Elas produzem o mesmo `SafeObservation`/`DiscoveryReport` e usam os contratos da tarefa3; não dependem do `getExecutionContext` de um coletor. A tarefa5 pode usar essas receitas após tarefas1–3, sem bloquear na instalação do pacote.
 
 **Interfaces:** `probe(): Promise<CapabilityReport>`; `collect(cursor: SourceCursor): Promise<ObservationBatch>`; `ack(receipt: UsageReceipt): Promise<void>`; `getExecutionContext(taskId: UUID, actorId: UUID | null): Promise<ExecutionContext>` exposto por ferramenta local opcional do coletor. `ExecutionContext` contém sessionId, bindingId, capability, lastObservationAt, observações pendentes e unavailableReason, sem credenciais. Batch contém novo cursor só persistido depois do ack. Adapter só lê fonte explicitamente configurada.
 
 - [ ] Criar testes por receita da seção8 e `spool_retry_keeps_event_key`, `admin_key_never_leaves_adapter`, `changed_schema_stops_only_source`, `identical_cursor_events_preserve_multiplicity`.
+- [ ] Testar `direct_file_read_without_collector` e `authorized_api_read_without_sdk`: obter mesma observação normalizada, com evidência/versionamento, que o adapter produziria; fixture de sessão errada é recusada.
 - [ ] Rodar testes antes da implementação; implementar primeiro fontes controladas Codex/Copilot/Claude, depois modelo Cursor/Kiro e Admin Cursor opcional.
 - [ ] Confirmar nenhuma ativação automática, nenhum prompt pago de diagnóstico, nenhuma leitura global do home; dados por request/gauge separados.
 - [ ] Executar smoke autorizado de cada superfície elegível e guardar versão/fonte/resultado, distinguindo suportado de unavailable. Sem licença/credencial, manter pendência explícita, nunca alegar validado.
@@ -272,20 +307,23 @@ Todas dependem de autorização de instalação/execução e ambiente de teste, 
 
 **Files:** atualizar fontes versionadas de Leader/Collaborator descobertas via provenance, depois `resources/bee-team/bee-team-{leader,collaborator}/SKILL.md`, referências e `resources/bee-team/provenance.json`; testes de bundle existentes.
 
-**Interfaces:** Skill usa `getExecutionContext` do coletor/configuração e contratos da tarefa3; se ferramenta não existir, envia declaração unavailable no contexto de execução permitido, nunca inventa comando/harness.
+**Interfaces:** Skill executa workflow da seção3.0 e produz `DiscoveryReport` + `SafeObservation` para os contratos da tarefa3. Pode usar diretamente ferramentas/APIs/arquivos permitidos ou `getExecutionContext` opcional. Ausência dessa ferramenta inicia descoberta de alternativas; não gera unavailable automaticamente.
 
-- [ ] Testar exemplos de update com medição disponível, coletor ausente, turn pending e Leader coordenando múltiplas tarefas.
+- [ ] Testar exemplos de update com medição disponível, coletor ausente mas log permitido disponível, método desconhecido resolvido por docs oficiais, turn pending e Leader coordenando múltiplas tarefas. Caso Codex: inventário inicialmente sem contador exposto, busca identifica log da sessão correta e extrai somente metadados; resultado é available/partial conforme cobertura, nunca unavailable por falta de SDK.
+- [ ] Testar sessão ambígua, permissão negada, rede indisponível, formato sem semântica comprovada e busca proporcional esgotada: relatório preserva tentativas/limitação sem inventar número. Testar cache válido sem pesquisa repetida e invalidação por versão/schema/permissão/nova fonte.
 - [ ] Escrever instrução: resolver UUIDs, registrar binding, capturar baseline, consultar evidência a cada atualização, persistir uso/contexto junto com currentSummary, aguardar receipt antes de notificar.
-- [ ] Explicar que carregar Skill não instala hooks/exporters nem concede chave Admin; fallback explícito sem bloquear trabalho.
+- [ ] Exigir investigação e justificativa antes do fallback; carregar Skill não instala hooks/exporters nem concede chave Admin. Leitura direta autorizada é primeira classe; coleta opcional não é pré-requisito universal. Registrar limitação sem bloquear trabalho funcional.
 - [ ] Validar pacote e proveniência, preservar aprovação/autonomia e tarefas Em teste para aceite humano; commit `docs: teach Bee Team skills evidence-backed usage reporting`.
 
 ### Task 6: Leitura e apresentação da tarefa
 
-**Files:** criar `frontend/src/features/task-usage/{UsagePanel,ModelHistory,UsageCoverage}.tsx`, hooks de consulta próximos da feature; atualizar contratos frontend gerados a partir do OpenAPI; testes `task-usage.test.tsx`.
+**Files:** criar `frontend/src/features/task-usage/{UsagePanel,UsageSidebarSummary,ModelHistory,UsageCoverage}.tsx`, hooks de consulta próximos da feature; integrar o painel à Visão geral e o resumo ao contexto lateral existente das demais abas; atualizar contratos frontend gerados a partir do OpenAPI; testes `task-usage.test.tsx`.
 
 **Interfaces:** componentes consomem `UsagePage`/`ModelHistoryPage`, não recalculam total da página nem inferem perfil atual. `onDrilldown(filters: UsageQuery)` conserva ator/modelo/harness/intervalo/qualidade.
 
 - [ ] Testar total parcial, gap, pending, duas sessões simultâneas, modelo configurado sem efetivo, histórico de tarefa concluída e último modelo com data.
+- [ ] Testar painel completo somente na Visão geral, resumo lateral nas outras abas sem duplicação na Overview, cache comum e contagem “+N modelos usados” por ator/sessão; trocar aba não perde histórico nem produz modelo global fictício.
+- [ ] Testar abertura por teclado/foco/nome acessível do histórico, detalhe responsivo mobile sem sobreposição e grupos mixed/unknown sem distribuição de tokens não comprovada.
 - [ ] Implementar painel/serie/histórico acessíveis e responsivos; tabela equivalente ao gráfico, nomes claros para medido/estimado/compartilhado, sem ranking/custo presumido.
 - [ ] Rodar `npm --prefix frontend test` e `npm --prefix frontend run build`; comparar drilldown com agregado completo.
 - [ ] Commit `feat: show task usage coverage and observed model history`; dashboards globais permanecem evolução separada.
@@ -304,6 +342,7 @@ Todas dependem de autorização de instalação/execução e ambiente de teste, 
 ## 10. Critérios de aceite e decisões finais
 
 - Cinco harnesses representados com capacidades honestas; nenhum requisito exige tokens exatos onde fonte não os fornece.
+- Indisponibilidade tem investigação proporcional e razão concreta; ausência de SDK/coletor não basta. Leitura direta permitida e cache de capacidade são exercitados nos testes, inclusive descoberta de logs Codex e rejeição de sessão errada.
 - Ator/Leader, tarefa, sessão, harness, provider/modelo e papel histórico preservados; consultas globais por período não dependem do perfil atual.
 - Replay, retry, resume, reset, troca de modelo e subagente não duplicam consumo; compartilhado aparece uma vez no global.
 - Comentários/status e uso disponível são atômicos; finalização tardia só concilia ledger.
@@ -311,4 +350,4 @@ Todas dependem de autorização de instalação/execução e ambiente de teste, 
 - PostgreSQL/SQLite passam testes equivalentes; nenhum acesso de teste a dados reais.
 - Histórico anterior sem prova fica unavailable; importação opt-in exige sessão exata, sem capturar transcrição inteira.
 
-**Autorrevisão do plano:** requisitos de cinco ambientes, modelo em andamento/concluído, Leader, agregação global, cache/subagente, timestamp/qualidade, custo separado e política de Skills cobertos nas tarefas1–7. Os cinco riscos do Review Focus têm casos de teste explícitos. Fontes documentais não foram tratadas como smoke local. Nenhuma funcionalidade de tokens foi implementada por este documento.
+**Autorrevisão do plano:** requisitos de cinco ambientes, modelo em andamento/concluído, Leader, agregação global, cache/subagente, timestamp/qualidade, custo separado e política de Skills cobertos nas tarefas1–7. A revisão de31/10 exige investigação antes do fallback, leitura direta de primeira classe, relatório persistido e cache/invalidação, com casos de teste nas tarefas1,4,5. Os cinco riscos do Review Focus têm casos de teste explícitos. Fontes documentais não foram tratadas como smoke local. Nenhuma funcionalidade de tokens foi implementada por este documento.
