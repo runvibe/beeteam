@@ -55,18 +55,15 @@ export function TaskFilterSlot() {
       if (!dockedRef.current) setHeight(host.getBoundingClientRect().height);
       const top = (logo?.getBoundingClientRect().bottom ?? 0) + 8;
       const available = (nav?.getBoundingClientRect().top ?? 0) - top - 8;
-      const editing =
-        dockedRef.current &&
-        (host.contains(document.activeElement) ||
-          !!host.querySelector('[aria-expanded="true"]'));
+      const bounds = node.getBoundingClientRect();
       const docked = !!(
-        (active || editing) &&
+        host.childElementCount &&
         media.matches &&
         rail &&
         logo &&
         nav &&
         available >= 44 &&
-        node.getBoundingClientRect().bottom <= 0
+        (bounds.bottom <= 0 || bounds.top >= window.innerHeight)
       );
       dockedRef.current = docked;
       setDock(
