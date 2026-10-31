@@ -149,10 +149,16 @@ Baseline e revisões independentes cobriram comentário completo, atualização 
 
 Contrato getComment/createdComments recebido como testado pela frente Backend (SQLite temporário HTTP/MCP); referência integrada sem alegar runtime sincronizado. quick_validate, links, paridade de referências dos dois pacotes e diff check passaram. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente para PostgreSQL18 isolado. Nenhum dado de negócio, chat ou serviço foi alterado. Instalação com backup/paridade é separada da publicação MCP.
 
-## Métricas opcionais por resumo — 2026-10-31
+## Histórico: métricas opcionais por resumo — 2026-10-31 (regra revogada)
 
 Revisão textual independente aprovada para investigação inicial, reuso da estratégia, consulta fresca, ausência sem bloqueio/unavailable obrigatório, distinção contexto/créditos/consumo, snapshots/reset/replay/atribuição e preservação da comunicação/aprovação. Contrato conferido no OpenAPI da frente Backend: usageReport opcional/null em RecordExecution, entradas 1–32, campos nullable e reconcileSummaryUsage separado de narrativa/status. Exemplo sintético conferido por validador local de campos/tipos/enums/limites/data contra esse schema (biblioteca jsonschema ausente); não enviado a API.
 
 quick_validate dos dois pacotes, links relativos contidos/existentes, paridade da referência usage-report e git diff --check passaram. Referências integration preservam os links adaptados de cada pacote. cargo build --locked passou; cargo test --locked --no-fail-fast: 14 unitários passaram e nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente, sem banco de produto usado. Nenhum coletor, execução paga, dado de negócio ou serviço alterado. Instalação global autorizada usa backup, manifesto e verificação SHA-256; não comprova bundle publicado ou runtime atualizado, sob responsabilidade Backend.
 
 Correção semântica da revisão Backend: actor agent exige UUIDv7 persistido, apesar de o schema estrutural anterior permitir null. Exemplo sintético corrigido para human/id null/role human e regra textual esclarecida, sem autorizar trocar autoria real para contornar validação. Cópias verificadas idênticas; nenhuma requisição enviada.
+
+## Relatório obrigatório por resumo — 2026-10-31
+
+Instrução posterior revoga a opcionalidade histórica acima: cada novo resumo deve conter usageReport, com medição verificável ou unavailable factual, sem omissão silenciosa. Revisão textual independente aprovou a política, preservação do legado/replay e ausência de alegação de salvamento após erro; Contrato final conferido no OpenAPI Backend: RecordExecution exige usageReport não-null, sem alterar shape de observações; leitura legada permanece compatível. Exemplos passaram validador local de schema (incluindo união de ator) e verificações semânticas measured/unavailable; não foi executada chamada de API. Dois exemplos sintéticos cobrem medição e indisponibilidade, sem envio à API. Pacotes passaram quick_validate, links relativos contidos/existentes e paridade das referências/prompts.
+
+Build passou e 14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente. Instalação autorizada somente após essa conferência, com backup e paridade SHA-256; bundle/proveniência/runtime são estados separados sob responsabilidade Backend.

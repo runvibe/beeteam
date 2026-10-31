@@ -8,9 +8,9 @@ description: Use when acting as the Bee Team leader, selecting or forming a team
 Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de agente é persistente; chat é sessão substituível. A aplicação armazena dados, enquanto o harness fornece capacidades de conversa e execução.
 
 
-## Coletar métricas opcionais por resumo
+## Enviar relatório de métricas em cada novo resumo
 
-No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e anexe somente modelo/harness/tokens verificáveis no contrato suportado. A coleta é uma tentativa obrigatória da skill; o relatório é opcional: falha NÃO bloqueia salvar resumo e não exige enviar unavailable. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
+No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e envie usageReport obrigatório com modelo/harness/tokens verificáveis ou indisponibilidade explícita conforme contrato. Quando a coleta falhar, envie unavailable estruturado com motivo e tentativas verificáveis; nunca omita silenciosamente o relatório. Erro de validação/persistência não autoriza anunciar resumo salvo. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
 
 
 ## Leader é a interface humana do trabalho
