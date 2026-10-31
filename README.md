@@ -547,3 +547,5 @@ A sidebar direita de contexto da tarefa usa padding horizontal desktop de 24px �
 O menu global esquerdo usa padding horizontal de 12px por lado (antes 6px) e coluna de 68px (antes 56px), preservando logo/ícones centralizados e alvos de 44px em desktop e mobile. O padding vertical continua 6px.
 
 O cabeçalho da tarefa usa 8 px entre título e descrição e 12 px entre os demais blocos, com padding de 12 px no resumo. O espaçamento interno do Markdown e a apresentação compacta da sidebar são preservados.
+
+O contrato de novos resumos exige `RecordExecution.usageReport` não nulo, com 1 a 32 entradas. A leitura de `ExecutionSummary` mantém o campo opcional/nulo para legado. O frontend atual apenas consulta resumos e atividades: não expõe formulário nem adaptador de criação de resumo ou `close_activity`. Nenhuma declaração de indisponibilidade ou tentativa de coleta é gerada automaticamente.
