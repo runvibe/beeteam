@@ -490,3 +490,52 @@ body:has(.task-page) {
     transition: none;
   }
 }
+
+.task-header-description,
+.task-detail-hero .task-summary-section {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.task-detail-hero .task-summary-section {
+  display: grid;
+  gap: 8px;
+}
+.task-detail-hero .task-summary-section > h2 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.task-detail-hero .markdown-content {
+  max-width: 72ch;
+}
+.task-compact-header {
+  position: relative;
+}
+.task-compact-narrative {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.task-compact-narrative summary {
+  cursor: pointer;
+  padding-block: 6px;
+  font-weight: 600;
+}
+.task-compact-preview {
+  max-height: 4.8em;
+  overflow: hidden;
+}
+.task-compact-narrative:has(details[open]) .task-compact-preview {
+  display: none;
+}
+.task-compact-full {
+  max-height: 35dvh;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 4px;
+}
+.task-compact-narrative .markdown-content :is(h3, h4, h5, h6) {
+  font-size: inherit;
+  line-height: inherit;
+}

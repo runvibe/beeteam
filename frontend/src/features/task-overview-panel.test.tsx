@@ -5,6 +5,8 @@ import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { makeSeed, uuid } from "@/api/seed";
 import { App } from "@/App";
+import { TaskCurrentSummary } from "./task-header-content";
+import { mockOverview } from "@/api/mock-overview";
 import { TaskOverviewPanel } from "./task-overview-panel";
 
 it("drills into actual server-side child filters and includes archived children counted by the chart", async () => {
@@ -63,6 +65,7 @@ it("labels missing summary provenance and omits absent next-step and decisions",
   seed.timeline = [];
   const { container } = render(
     <ApiProvider api={createMockApi({ delay: 0, seed })}>
+      <TaskCurrentSummary task={task} overview={mockOverview(seed, task.id)} />
       <TaskOverviewPanel task={task} onTab={() => {}} />
     </ApiProvider>,
   );

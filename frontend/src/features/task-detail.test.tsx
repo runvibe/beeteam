@@ -1,3 +1,4 @@
+import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { it, expect, vi } from "vitest";
@@ -138,6 +139,8 @@ it("keeps an archived task read-only and separates empty work fields", () => {
   render(
     <ApiProvider api={createMockApi({ delay: 0 })}>
       <TaskMode task={task} />
+      <TaskDescription task={task} />
+      <TaskCurrentSummary task={task} />
       <TaskOverview task={task} />
     </ApiProvider>,
   );

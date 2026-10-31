@@ -595,3 +595,4 @@ historical actor/task/session/model/harness attribution, honest coverage,
 deduplication, atomic reporting and optional separate cost accounting.
 This is documentation only: no usage collector, migration, Skill change or
 usage dashboard is implemented or enabled by this proposal.
+O cabeçalho da tarefa mantém descrição abaixo do título e síntese atual após progresso/bloqueio em todas as abas, com Markdown e proveniência quando disponível. Ao sair do viewport desktop, a sidebar oferece prévias compactas expansíveis por teclado; os formulários permanecem montados e o mobile conserva uma única coluna. A Visão geral mantém gráficos e nota de andamento sem duplicar descrição/síntese.

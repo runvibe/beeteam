@@ -58,23 +58,7 @@ export function TaskOverviewPanel({
       )}
       <div className="overview-reading-grid" data-loaded={!!q.data}>
         <div>
-          <TaskOverview
-            task={snapshot}
-            summaryMeta={
-              snapshot.currentSummary && q.data ? (
-                q.data?.currentSummaryMeta ? (
-                  <OverviewAttribution
-                    actor={q.data.currentSummaryMeta}
-                    date={q.data.currentSummaryMeta.occurredAt}
-                  />
-                ) : (
-                  <p className="small-note">
-                    Autoria e data desta síntese não disponíveis nos registros.
-                  </p>
-                )
-              ) : undefined
-            }
-          />
+          <TaskOverview task={snapshot} />
           {q.data?.nextStep && (
             <section className="overview-next-step">
               <h2>Próximo passo registrado</h2>
