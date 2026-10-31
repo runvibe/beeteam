@@ -1,5 +1,6 @@
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState } from "react";
 import { ChevronDown, ArrowUpLeft } from "lucide-react";
+import type { TaskOverviewData } from "@/api/task-overview";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { AgentName, BoardName } from "@/components/names";
@@ -11,31 +12,9 @@ import { TaskMode } from "./settings";
 import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
 
-export function TaskOverview({
-  task,
-  summaryMeta,
-}: {
-  task: Task;
-  summaryMeta?: ReactNode;
-}) {
+export function TaskOverview({ task }: { task: Task }) {
   return (
     <div className="task-overview">
-      <section
-        className="task-summary-section"
-        aria-labelledby="task-summary-heading"
-      >
-        <h2 id="task-summary-heading">Resumo atual do trabalho</h2>
-        {summaryMeta}
-        <Markdown headingOffset={2} sectionDividers>
-          {task.currentSummary || "Sem atualização registrada"}
-        </Markdown>
-      </section>
-      <section aria-labelledby="task-description-heading">
-        <h2 id="task-description-heading">Descrição</h2>
-        <Markdown headingOffset={2} sectionDividers>
-          {task.description || "Nenhuma descrição registrada"}
-        </Markdown>
-      </section>
       <section aria-labelledby="task-progress-heading">
         <h2 id="task-progress-heading">Andamento registrado</h2>
         <Markdown headingOffset={2} sectionDividers>
@@ -49,9 +28,11 @@ export function TaskOverview({
 export function TaskContext({
   task,
   compactHeader = false,
+  overview,
 }: {
   task: Task;
   compactHeader?: boolean;
+  overview?: TaskOverviewData;
 }) {
   const [expanded, setExpanded] = useState(false);
   const contentId = useId();
@@ -63,7 +44,11 @@ export function TaskContext({
       aria-label="Contexto da tarefa"
       data-expanded={expanded}
     >
-      <TaskCompactHeader task={task} visible={compactHeader} />
+      <TaskCompactHeader
+        task={task}
+        visible={compactHeader}
+        overview={overview}
+      />
       <Button
         variant="ghost"
         className="task-context-toggle"

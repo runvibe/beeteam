@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
 import { TaskOverviewPanel } from "./task-overview-panel";
 import { TaskRecordList } from "./task-record-list";
 import { TaskConversation } from "./task-conversation";
@@ -47,6 +49,12 @@ export function TaskPage() {
 }
 function TaskDetail({ id }: { id: string }) {
   const q = useEntity("tasks", id);
+  const api = useApi();
+  const overview = useQuery({
+    queryKey: ["task-overview", id, q.data?.version],
+    queryFn: ({ signal }) => api.overview(id, signal),
+    enabled: !!q.data,
+  });
   const heading = useRef<HTMLHeadingElement>(null);
   const planRevealConsumed = useRef(false);
   const reading = useRef<HTMLDivElement>(null);
@@ -83,6 +91,7 @@ function TaskDetail({ id }: { id: string }) {
               {q.data?.title ?? "Detalhes da task"}
             </h1>
           </header>
+          {q.data && <TaskDescription task={q.data} />}
           {q.data && (
             <>
               <div className="task-detail-state" aria-label="Estado da tarefa">
@@ -104,6 +113,7 @@ function TaskDetail({ id }: { id: string }) {
                   </div>
                 </Alert>
               )}
+              <TaskCurrentSummary task={q.data} overview={overview.data} />
             </>
           )}
         </div>
@@ -187,7 +197,13 @@ function TaskDetail({ id }: { id: string }) {
           )}
         </QueryState>
       </div>
-      {q.data && <TaskContext task={q.data} compactHeader={pastHeader} />}
+      {q.data && (
+        <TaskContext
+          task={q.data}
+          compactHeader={pastHeader}
+          overview={overview.data}
+        />
+      )}
     </div>
   );
 }

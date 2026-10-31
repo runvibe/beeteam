@@ -4,6 +4,7 @@ import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { makeSeed, ids } from "@/api/seed";
 import { App } from "@/App";
+import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
 import { TaskOverview } from "./task-detail-layout";
 import { TaskCompactHeader } from "./task-scroll-header";
 import { readFileSync } from "node:fs";
@@ -52,7 +53,13 @@ it("renders all overview prose as safe Markdown with nested document headings", 
     "Primeiro parágrafo.\n\nSegundo parágrafo.\n\n| A | B |\n|---|---|\n| C | D |";
   task.progress.note =
     "```js\nconst n = 1\n```\n\n[Seguro](https://example.com)\n\n[Ruim](javascript:alert%281%29)\n\n<script>alert(1)</script>";
-  const { container } = render(<TaskOverview task={task} />);
+  const { container } = render(
+    <>
+      <TaskDescription task={task} />
+      <TaskCurrentSummary task={task} />
+      <TaskOverview task={task} />
+    </>,
+  );
   expect(
     screen.getByRole("heading", { name: "Resultado", level: 3 }),
   ).toBeVisible();
