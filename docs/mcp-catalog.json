@@ -9322,6 +9322,219 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
+      "description": "GET /api/v1/tasks/{taskId}/participants. List distinct recorded participants of this exact task. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "taskId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "taskId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listTaskParticipants",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "hasMore": {
+                "type": "boolean"
+              },
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "actorId": {
+                      "format": "uuid",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "actorKind": {
+                      "enum": [
+                        "human",
+                        "agent"
+                      ],
+                      "type": "string"
+                    },
+                    "agentArchived": {
+                      "type": "boolean"
+                    },
+                    "agentDeleted": {
+                      "type": "boolean"
+                    },
+                    "agentName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "actorKind",
+                    "actorId",
+                    "agentName",
+                    "agentArchived",
+                    "agentDeleted"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "limit": {
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "nextOffset": {
+                "minimum": 0,
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "offset": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "total": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "offset",
+              "limit",
+              "hasMore",
+              "nextOffset"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
       "description": "GET /api/v1/tasks/{taskId}/plans. Listar plans. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
@@ -19827,6 +20040,88 @@
               ],
               "type": "object"
             },
+            "TaskParticipant": {
+              "additionalProperties": false,
+              "properties": {
+                "actorId": {
+                  "format": "uuid",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "actorKind": {
+                  "enum": [
+                    "human",
+                    "agent"
+                  ],
+                  "type": "string"
+                },
+                "agentArchived": {
+                  "type": "boolean"
+                },
+                "agentDeleted": {
+                  "type": "boolean"
+                },
+                "agentName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "actorKind",
+                "actorId",
+                "agentName",
+                "agentArchived",
+                "agentDeleted"
+              ],
+              "type": "object"
+            },
+            "TaskParticipantPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TaskParticipant"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
+                "hasMore",
+                "nextOffset"
+              ],
+              "type": "object"
+            },
             "TaskSpecification": {
               "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
               "type": "string",
@@ -23334,6 +23629,88 @@
               ],
               "type": "object"
             },
+            "TaskParticipant": {
+              "additionalProperties": false,
+              "properties": {
+                "actorId": {
+                  "format": "uuid",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "actorKind": {
+                  "enum": [
+                    "human",
+                    "agent"
+                  ],
+                  "type": "string"
+                },
+                "agentArchived": {
+                  "type": "boolean"
+                },
+                "agentDeleted": {
+                  "type": "boolean"
+                },
+                "agentName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "actorKind",
+                "actorId",
+                "agentName",
+                "agentArchived",
+                "agentDeleted"
+              ],
+              "type": "object"
+            },
+            "TaskParticipantPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TaskParticipant"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
+                "hasMore",
+                "nextOffset"
+              ],
+              "type": "object"
+            },
             "TaskSpecification": {
               "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
               "type": "string",
@@ -26446,6 +26823,88 @@
                 "offset",
                 "limit",
                 "total",
+                "hasMore",
+                "nextOffset"
+              ],
+              "type": "object"
+            },
+            "TaskParticipant": {
+              "additionalProperties": false,
+              "properties": {
+                "actorId": {
+                  "format": "uuid",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "actorKind": {
+                  "enum": [
+                    "human",
+                    "agent"
+                  ],
+                  "type": "string"
+                },
+                "agentArchived": {
+                  "type": "boolean"
+                },
+                "agentDeleted": {
+                  "type": "boolean"
+                },
+                "agentName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "actorKind",
+                "actorId",
+                "agentName",
+                "agentArchived",
+                "agentDeleted"
+              ],
+              "type": "object"
+            },
+            "TaskParticipantPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TaskParticipant"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
                 "hasMore",
                 "nextOffset"
               ],

@@ -78,6 +78,11 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         ("actorId", "agents"),
     ] {
         if let Some(value) = c.query.get(key) {
+            // Historical comment authors remain filterable after profile deletion.
+            // UUID syntax is validated by the shared query DTO; no profile is inferred.
+            if key == "actorId" && c.operation == "listComments" {
+                continue;
+            }
             records.get(table, value_id(value)?)?;
         }
     }

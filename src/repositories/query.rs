@@ -223,6 +223,9 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
 }
 
 pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> Result<Selection> {
+    if c.operation == "listTaskParticipants" {
+        return super::participants::postgres(tx, c).await;
+    }
     let table = table(c)?;
     let mut count = base(c, table)?;
     count.push("SELECT count(*) FROM filtered");
