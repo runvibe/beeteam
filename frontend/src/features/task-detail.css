@@ -105,7 +105,7 @@ body:has(.task-page) {
 .task-context {
   min-width: 0;
   border-left: 1px solid var(--border);
-  padding-left: 24px;
+  padding-left: 48px;
 }
 .task-context-content {
   display: grid;
@@ -347,7 +347,7 @@ body:has(.task-page) {
     flex-shrink: 0;
   }
   .task-context {
-    padding-right: 4px;
+    padding-right: 8px;
   }
 }
 

@@ -541,3 +541,5 @@ O Kanban inclui todas as tarefas ativas do próprio board, inclusive subtarefas 
 O card usa um único link visível “Subtarefa” para abrir a mãe. O nome da mãe fica no tooltip e no rótulo acessível, preservando o contexto de retorno.
 
 A navegação de seções da tarefa não adiciona padding no wrapper, na faixa mobile ou na lista de abas; botões mantêm padding interno e alvos de toque existentes.
+
+A sidebar direita de contexto da tarefa usa padding horizontal desktop de 48px à esquerda e 8px à direita; o espaçamento vertical e o contexto mobile de uma coluna são preservados.
