@@ -608,3 +608,5 @@ As skills investigam no início a fonte de métricas da sessão e tentam consult
 
 
 Descrição e síntese no cabeçalho ocupam toda a largura da coluna principal, com quebra natural e parágrafos Markdown preservados. As prévias da sidebar mantêm seus limites compactos; tabelas e código continuam com rolagem horizontal própria.
+
+A síntese atual no cabeçalho usa card neutro com tokens do tema, padding e cantos arredondados, sem altura fixa ou faixa lateral. Descrição e sidebar compacta mantêm suas apresentações independentes.
