@@ -1,12 +1,52 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { it, expect } from "vitest";
+import { it, expect, vi } from "vitest";
 import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { ids, makeSeed } from "@/api/seed";
 import { App } from "@/App";
 import { TaskMode } from "./settings";
 import { TaskOverview } from "./task-detail-layout";
+
+it("reserves the outgoing panel height until conversation data arrives", async () => {
+  window.history.replaceState({}, "", `/tasks/${ids.task}?tab=overview`);
+  const api = createMockApi({ delay: 0 });
+  let release = () => {};
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const original = api.list.bind(api);
+  vi.spyOn(api, "list").mockImplementation(async (...args) => {
+    if (args[0] === "comments") await gate;
+    return original(...args);
+  });
+  const bounds = vi
+    .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: HTMLElement) {
+      return {
+        top: 0,
+        bottom: 600,
+        height: this.classList.contains("task-detail-reading") ? 600 : 0,
+      } as DOMRect;
+    });
+  try {
+    render(
+      <ApiProvider api={api}>
+        <App />
+      </ApiProvider>,
+    );
+    await screen.findByRole("tab", { name: "Conversa" });
+    await userEvent.click(screen.getByRole("tab", { name: "Conversa" }));
+    const panel = document.querySelector<HTMLElement>(".task-detail-reading")!;
+    expect(panel.style.minHeight).toBe("600px");
+    release();
+    await waitFor(() => expect(panel.style.minHeight).toBe("0px"));
+    expect(document.querySelector("[data-comment-id]")).not.toBeNull();
+  } finally {
+    release();
+    bounds.mockRestore();
+  }
+});
 
 it("shares section selection with deep links and retains the autonomy form across sections", async () => {
   window.history.replaceState(

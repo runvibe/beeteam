@@ -1,13 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, type RefObject } from "react";
 type Anchor = { id?: string; inset: number; top: number; bottom: boolean };
-const positions = new Map<string, Anchor>();
 export function useConversationAnchor(
   list: RefObject<HTMLElement | null>,
   identity: string,
   version: unknown,
-  latest: boolean,
 ) {
-  const anchor = useRef<Anchor | undefined>(positions.get(identity));
+  const anchor = useRef<Anchor | undefined>(undefined);
   const initialized = useRef(false);
   const root = () =>
     list.current?.closest<HTMLElement>("[data-detail-scroll]") ?? null;
@@ -15,7 +13,7 @@ export function useConversationAnchor(
     window.matchMedia?.("(min-width: 1056px)").matches
       ? root()
       : (document.scrollingElement as HTMLElement | null);
-  const capture = () => {
+  const capture = (forceMessage = false) => {
     const node = list.current,
       scroller = scrollRoot();
     if (!node || !scroller) return;
@@ -29,24 +27,37 @@ export function useConversationAnchor(
     const first = rows.find(
       (row) => row.getBoundingClientRect().bottom > bounds,
     );
+    const tabs = node
+      .closest(".task-detail-tabs")
+      ?.querySelector<HTMLElement>(".task-section-navigation");
+    const reading =
+      forceMessage ||
+      node.getBoundingClientRect().top <=
+        bounds + (tabs?.getBoundingClientRect().height ?? 0);
     anchor.current = {
-      id: first?.dataset.commentId,
+      // Autofill below the task header must preserve the header, not pull a row up.
+      id: reading ? first?.dataset.commentId : undefined,
       inset: first ? first.getBoundingClientRect().top - bounds : 0,
       top: scroller.scrollTop,
       bottom:
+        reading &&
         scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop <=
-        48,
+          48,
     };
-    positions.set(identity, anchor.current);
-    if (positions.size > 128) positions.delete(positions.keys().next().value!);
   };
   const restore = () => {
     const node = list.current,
       scroller = scrollRoot();
     if (!node || !scroller || !node.querySelector("[data-comment-id]")) return;
+    // Opening a tab must never reposition its shared task/document scroller.
+    // Anchor only subsequent updates within this mounted conversation.
+    if (!initialized.current) {
+      initialized.current = true;
+      capture();
+      return;
+    }
     const saved = anchor.current;
-    if (saved?.bottom || (!initialized.current && latest && !saved))
-      scroller.scrollTop = scroller.scrollHeight;
+    if (saved?.bottom) scroller.scrollTop = scroller.scrollHeight;
     else if (saved) {
       const row = Array.from(
         node.querySelectorAll<HTMLElement>("[data-comment-id]"),
@@ -67,24 +78,25 @@ export function useConversationAnchor(
   useEffect(() => {
     const node = list.current;
     let scroller = scrollRoot();
-    scroller?.addEventListener("scroll", capture, { passive: true });
+    const onScroll = () => capture();
+    scroller?.addEventListener("scroll", onScroll, { passive: true });
     const rebind = () => {
-      scroller?.removeEventListener("scroll", capture);
+      scroller?.removeEventListener("scroll", onScroll);
       scroller = scrollRoot();
-      scroller?.addEventListener("scroll", capture, { passive: true });
+      scroller?.addEventListener("scroll", onScroll, { passive: true });
       restore();
     };
     window.addEventListener("resize", rebind);
-    window.addEventListener("scroll", capture, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     const resize = new ResizeObserver(restore);
     if (node) resize.observe(node);
     node?.addEventListener("load", restore, true);
     return () => {
       capture();
       resize.disconnect();
-      scroller?.removeEventListener("scroll", capture);
+      scroller?.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", rebind);
-      window.removeEventListener("scroll", capture);
+      window.removeEventListener("scroll", onScroll);
       node?.removeEventListener("load", restore, true);
     };
   }, [identity]);

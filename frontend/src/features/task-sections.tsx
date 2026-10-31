@@ -103,15 +103,6 @@ export function TaskSections({ value }: { value: string }) {
       className="task-section-navigation"
       data-overflow={edges.overflow}
     >
-      <Button
-        className="task-section-arrow"
-        variant="ghost"
-        aria-label="Mostrar abas anteriores"
-        aria-disabled={edges.start}
-        onClick={() => move(-1)}
-      >
-        <ChevronLeft aria-hidden="true" />
-      </Button>
       <div
         className="task-section-viewport"
         ref={viewport}
@@ -129,6 +120,15 @@ export function TaskSections({ value }: { value: string }) {
           ))}
         </TabsList>
       </div>
+      <Button
+        className="task-section-arrow"
+        variant="ghost"
+        aria-label="Mostrar abas anteriores"
+        aria-disabled={edges.start}
+        onClick={() => move(-1)}
+      >
+        <ChevronLeft aria-hidden="true" />
+      </Button>
       <Button
         className="task-section-arrow"
         variant="ghost"
