@@ -10,14 +10,13 @@ export function TaskParentReference({ task }: { task: Task }) {
     task.parentReference?.id === task.parentId ? task.parentReference : null;
   return (
     <div className="task-parent-reference">
-      <span>
-        <CornerUpLeft size={12} aria-hidden="true" /> Subtarefa
-      </span>
       <a
         href={destination(`/tasks/${parent?.slug || task.parentId}`)}
         onClick={openCardLink}
+        title={parent ? `Abrir tarefa mãe: ${parent.title}` : "Abrir tarefa mãe"}
+        aria-label={parent ? `Subtarefa: abrir tarefa mãe ${parent.title}` : "Subtarefa: abrir tarefa mãe"}
       >
-        {parent ? `Mãe: ${parent.title}` : "Tarefa mãe"}
+        <CornerUpLeft size={12} aria-hidden="true" /> Subtarefa
       </a>
     </div>
   );
