@@ -45,6 +45,8 @@
   height: 20px;
 }
 .navigation-tooltip {
+  /* Match the portalled popover layer (50), above sticky navigation (20). */
+  z-index: 50;
   background: var(--popover);
   color: var(--popover-foreground);
   border: 1px solid var(--border);
