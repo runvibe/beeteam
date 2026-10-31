@@ -39,6 +39,67 @@ describe("OpenAPI response conformance", () => {
       ])
         expect(validate(row), JSON.stringify(validate.errors)).toBe(true);
     });
+  it("requires a non-null usage report when recording a new summary", () => {
+    const validate = ajv.getSchema(
+      "kanban#/components/schemas/RecordExecution",
+    )!;
+    const summary = makeSeed().summaries[0];
+    const input = {
+      currentSummary: "Current work synthesis",
+      summary: summary.summary,
+      outcome: summary.outcome,
+      statusId: summary.statusId,
+      deliverables: summary.deliverables,
+      pending: summary.pending,
+      executionContext: summary.executionContext,
+    };
+    expect(validate(input)).toBe(false);
+    expect(validate.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          keyword: "required",
+          params: { missingProperty: "usageReport" },
+        }),
+      ]),
+    );
+    expect(validate({ ...input, usageReport: null })).toBe(false);
+    expect(validate.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          instancePath: "/usageReport",
+          keyword: "type",
+        }),
+      ]),
+    );
+  });
+  it("bounds new usage reports while accepting historical missing reports", () => {
+    const validate = ajv.getSchema(
+      "kanban#/components/schemas/SummaryUsageInput",
+    )!;
+    expect(validate({ entries: [] })).toBe(false);
+    expect(validate.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ keyword: "minItems" }),
+      ]),
+    );
+    expect(validate({ entries: Array.from({ length: 33 }, () => ({})) })).toBe(
+      false,
+    );
+    expect(validate.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ keyword: "maxItems" }),
+      ]),
+    );
+    const legacy = ajv.getSchema(
+      "kanban#/components/schemas/ExecutionSummary",
+    )!;
+    const summary = makeSeed().summaries[0];
+    expect(legacy(summary), JSON.stringify(legacy.errors)).toBe(true);
+    expect(
+      legacy({ ...summary, usageReport: null }),
+      JSON.stringify(legacy.errors),
+    ).toBe(true);
+  });
   it("projections conform after querying", async () => {
     const api = createMockApi({ delay: 0 });
     for (const [schema, value] of [
