@@ -8,11 +8,18 @@ export type UsageObservation = {
   epoch: string;
   evidenceId: string;
   previousEvidenceId: string | null;
-  actor: {
-    /** @enum {string} */
-    kind: "human" | "agent";
-    id: string | null;
-  };
+  actor:
+    | {
+        /** @constant */
+        kind: "agent";
+        /** Format: uuid */
+        id: string;
+      }
+    | {
+        /** @constant */
+        kind: "human";
+        id: null;
+      };
   /** @enum {string} */
   actorRole: "leader" | "collaborator" | "human" | "unknown";
   provider: string | null;
