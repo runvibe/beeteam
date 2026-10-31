@@ -103,6 +103,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         "getBoard" => resource(records, "boards", c.id("boardId")?),
         "getComment" => comment(records, c.id("taskId")?, c.id("commentId")?),
         "getTask" => resource(records, "tasks", c.id("taskId")?),
+        "getTaskOverview" => super::overview::read(unit, c).await,
         "getBoardView" => board_view(unit, c).await,
         "getResumptionContext" => resume(records, c),
         "listAgentActivities" => activities(unit, c).await,

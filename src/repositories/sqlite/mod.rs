@@ -1,7 +1,7 @@
 //! SQLite adapters. Driver details never escape the repository boundary.
 pub mod changes;
 mod query;
-mod reads;
+pub(crate) mod reads;
 mod resources;
 mod slugs;
 use anyhow::{Context, Result};

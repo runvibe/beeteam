@@ -148,6 +148,7 @@ fn validate_bytes(doc: &Value, schema: &Value, value: &Value) -> Result<()> {
     Ok(())
 }
 pub fn query(op: &Operation, raw: Vec<(String, String)>) -> Result<BTreeMap<String, Value>> {
+    let explicit_archived = raw.iter().any(|(key, _)| key == "archived");
     let mut result = BTreeMap::new();
     for (key, value) in raw {
         if result.contains_key(&key) {
@@ -195,6 +196,18 @@ pub fn query(op: &Operation, raw: Vec<(String, String)>) -> Result<BTreeMap<Stri
             (param["name"].as_str(), param["schema"].get("default"))
         {
             result.entry(name.into()).or_insert_with(|| default.clone());
+        }
+    }
+    if matches!(op.name.as_str(), "listTasks" | "listAllTasks")
+        && result.contains_key("includeArchived")
+    {
+        if explicit_archived {
+            return Err(Failure::invalid(
+                "includeArchived and archived are mutually exclusive",
+            ));
+        }
+        if result.get("includeArchived") == Some(&json!(true)) {
+            result.remove("archived");
         }
     }
     for prefix in ["created", "updated", "occurred"] {
