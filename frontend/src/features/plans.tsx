@@ -131,7 +131,10 @@ function Plan({ item }: { item: PlanRevision }) {
               {displayed.content}
             </Markdown>
             {displayed.changeSummary && (
-              <p className="small-note">Alteração: {displayed.changeSummary}</p>
+              <div className="task-plan-change">
+                <span className="small-note">Alteração</span>
+                <Markdown headingOffset={2}>{displayed.changeSummary}</Markdown>
+              </div>
             )}
           </div>
         </>

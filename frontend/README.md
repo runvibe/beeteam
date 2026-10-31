@@ -147,3 +147,14 @@ Filtros compactos por agente (`comments.actorId`), tipo (`comments.actorKind`) e
 Os filtros da Conversa permanecem fixos imediatamente abaixo das abas. O deslocamento acompanha a altura real do menu por ResizeObserver (inclusive mobile/zoom); dropdowns continuam em portal acima das duas barras, sem criar um espaçador no histórico.
 
 Tooltips de navegação e filtros usam a mesma camada flutuante 50 dos popovers; o wrapper portalled do Radix herda essa camada, mantendo dicas de hover/foco acima das abas sticky (20).
+
+
+## Navegação e Markdown no detalhe da tarefa
+
+As oito seções usam uma única faixa horizontal Radix em desktop e mobile, com rótulos completos, alvos de 44px e seleção de fundo/contraste sem mudança de peso ou largura. A faixa aceita gesto horizontal e botões de avanço/retorno; os espaços dos controles permanecem reservados. Setas/Home/End movem o foco, Enter/Espaço ativam a aba. Somente a faixa revela a aba selecionada/focada, sem recentralizar em refetch. Os valores de `tab` e os demais parâmetros de URL são preservados.
+
+ResizeObserver propaga a altura real das abas para o scroll-padding do documento e do painel, planos e filtros da conversa. Camadas: filtros 19, abas 20, tooltips/popovers 50. A navegação não adiciona animação e funciona com movimento reduzido.
+
+Conteúdos descritivos do detalhe são Markdown GFM seguro: `currentSummary`, `description`, `progress.note`, `block.reason`, `specification`, conteúdo e `changeSummary` de planos/revisões, corpo dos comentários, `ExecutionSummary.summary`, cada pendência e descrição de anexos. O componente compartilhado ignora HTML e bloqueia protocolos inseguros; títulos Markdown ficam abaixo do título da página. Tabelas e código têm overflow local. O eco compacto do bloqueio é limitado visualmente e inert, sem links focáveis escondidos. Código/citações mantêm contraste no alerta vermelho em ambos os temas.
+
+Títulos, nomes, status, rótulos das entregas, arquivos, IDs, datas e JSON da Timeline permanecem literais. Entregas não possuem campo descritivo no contrato atual (somente label, attachmentId e URL); não se inventa um campo. Campos não exibidos, como contextos estruturados de revisão, não foram adicionados. Esta alteração afeta apresentação; não transforma o texto armazenado, os limites, os contratos ou a edição. Previews de cards fora do detalhe permanecem no escopo anterior.

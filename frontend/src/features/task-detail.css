@@ -151,8 +151,7 @@ body:has(.task-page) {
 .task-autonomy-explanation p {
   margin-top: 8px;
 }
-.task-page .task-context-toggle,
-.task-page .task-mobile-sections {
+.task-page .task-context-toggle {
   display: none;
 }
 .task-detail-reading .markdown-content .document-heading-1 {
@@ -211,26 +210,6 @@ body:has(.task-page) {
   }
 }
 @container task-detail (max-width: 699px) {
-  .task-page .task-desktop-sections {
-    display: none;
-  }
-  .task-page .task-mobile-sections {
-    display: grid;
-    gap: 6px;
-    font-size: 12px;
-  }
-  .task-mobile-sections select {
-    width: 100%;
-    min-width: 0;
-    min-height: 44px;
-    padding: 8px 12px;
-    border: 1px solid var(--input);
-    border-radius: var(--radius);
-    color: var(--foreground);
-    background: var(--background);
-    font: inherit;
-    font-size: 14px;
-  }
   .task-detail-heading h1 {
     font-size: 20px;
     line-height: 1.4;
@@ -418,7 +397,7 @@ body:has(.task-page) {
   gap: 20px;
 }
 .task-page {
-  --task-sections-height: 48px;
+  --task-sections-height: 70px;
 }
 .task-section-navigation {
   position: sticky;
@@ -477,11 +456,28 @@ body:has(.task-page) {
   flex-shrink: 0;
   margin-top: 2px;
 }
-.task-compact-blocked p {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+.task-compact-reason {
+  max-height: 3.3em;
+  line-height: 1.65;
   overflow: hidden;
+}
+.task-compact-reason .markdown-content :is(h3, h4, h5, h6) {
+  font-size: inherit;
+  line-height: inherit;
+}
+.task-blocked-message .markdown-content a,
+.task-compact-reason .markdown-content a {
+  color: inherit;
+}
+.task-blocked-message .markdown-content pre,
+.task-compact-reason .markdown-content pre {
+  color: var(--foreground);
+  background: var(--muted);
+}
+.task-blocked-message .markdown-content blockquote,
+.task-compact-reason .markdown-content blockquote {
+  color: inherit;
+  border-color: currentColor;
 }
 .task-plan-navigation {
   top: var(--task-sections-height);
@@ -491,12 +487,7 @@ body:has(.task-page) {
     display: none;
   }
   html:has(.task-page) {
-    scroll-padding-top: 84px;
-  }
-}
-@container task-detail (max-width: 699px) {
-  .task-detail-primary {
-    --task-sections-height: 84px;
+    scroll-padding-top: var(--task-sections-height, 70px);
   }
 }
 @media (prefers-reduced-motion: reduce) {

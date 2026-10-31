@@ -3,57 +3,13 @@ import { ChevronDown, ArrowUpLeft } from "lucide-react";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { AgentName, BoardName } from "@/components/names";
-import { TextBlock, formatDate } from "@/components/shared";
+import { formatDate } from "@/components/shared";
 import { Button } from "@/components/ui/button";
-import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Markdown } from "@/components/markdown";
+export { TaskSections } from "./task-sections";
 import { TaskMode } from "./settings";
 import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
-
-const sections = [
-  ["overview", "Visão geral"],
-  ["specification", "Especificação"],
-  ["children", "Subtasks"],
-  ["plans", "Planos"],
-  ["comments", "Conversa"],
-  ["attachments", "Arquivos"],
-  ["summaries", "Resumos"],
-  ["timeline", "Timeline"],
-] as const;
-
-export function TaskSections({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  return (
-    <div className="task-section-navigation">
-      <TabsList className="detail-tabs task-desktop-sections">
-        {sections.map(([key, label]) => (
-          <TabsTrigger key={key} value={key}>
-            {label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      <label className="task-mobile-sections">
-        <span>Seção da tarefa</span>
-        <select
-          aria-label="Seção da tarefa"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        >
-          {sections.map(([key, label]) => (
-            <option key={key} value={key}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </label>
-    </div>
-  );
-}
 
 export function TaskOverview({ task }: { task: Task }) {
   return (
@@ -63,21 +19,21 @@ export function TaskOverview({ task }: { task: Task }) {
         aria-labelledby="task-summary-heading"
       >
         <h2 id="task-summary-heading">Resumo atual do trabalho</h2>
-        <TextBlock>
+        <Markdown headingOffset={2} sectionDividers>
           {task.currentSummary || "Sem atualização registrada"}
-        </TextBlock>
+        </Markdown>
       </section>
       <section aria-labelledby="task-description-heading">
         <h2 id="task-description-heading">Descrição</h2>
-        <TextBlock>
+        <Markdown headingOffset={2} sectionDividers>
           {task.description || "Nenhuma descrição registrada"}
-        </TextBlock>
+        </Markdown>
       </section>
       <section aria-labelledby="task-progress-heading">
         <h2 id="task-progress-heading">Andamento registrado</h2>
-        <TextBlock>
+        <Markdown headingOffset={2} sectionDividers>
           {task.progress.note || "Nenhuma nota de andamento registrada"}
-        </TextBlock>
+        </Markdown>
       </section>
     </div>
   );

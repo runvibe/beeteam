@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Task } from "@/api/types";
 import { Ban } from "lucide-react";
 import { TaskProgress } from "./task-progress";
+import { Markdown } from "@/components/markdown";
 
 export function useTaskHeaderVisibility() {
   const primary = useRef<HTMLDivElement>(null);
@@ -62,7 +63,9 @@ export function TaskCompactHeader({
               <Ban aria-hidden="true" />
               <div>
                 <strong>Task bloqueada</strong>
-                <p>{task.block.reason}</p>
+                <div className="task-compact-reason" inert>
+                  <Markdown headingOffset={2}>{task.block.reason}</Markdown>
+                </div>
               </div>
             </div>
           )}
