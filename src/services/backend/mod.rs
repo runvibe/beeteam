@@ -2,6 +2,7 @@ pub mod composite;
 mod files;
 pub mod hierarchy;
 mod kanban;
+mod overview;
 mod queries;
 mod ra;
 pub mod service;

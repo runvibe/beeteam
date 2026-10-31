@@ -226,6 +226,9 @@ pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> R
     if c.operation == "listTaskParticipants" {
         return super::participants::postgres(tx, c).await;
     }
+    if c.operation == "getTaskOverview" {
+        return super::overview::postgres::select(tx, c).await;
+    }
     let table = table(c)?;
     let mut count = base(c, table)?;
     count.push("SELECT count(*) FROM filtered");

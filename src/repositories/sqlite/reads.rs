@@ -4,7 +4,7 @@ use crate::dto::backend::{Command, Result};
 use sqlx::{sqlite::SqliteRow, Row, Sqlite, Transaction};
 use uuid::Uuid;
 
-pub(super) fn record(table: &'static str, row: &SqliteRow) -> Record {
+pub(crate) fn record(table: &'static str, row: &SqliteRow) -> Record {
     Record {
         table,
         id: Uuid::parse_str(row.get("id")).expect("schema-checked UUID"),
@@ -95,16 +95,23 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
             records.insert(record("images", &row));
         }
     }
-    hydrate(tx, &mut records).await?;
+    hydrate_scoped(tx, &mut records, c.operation != "getTaskOverview").await?;
     Ok(records)
 }
 
 /// Related records needed by domain projections, restricted to the selected resources.
 pub(super) async fn hydrate(tx: &mut Transaction<'_, Sqlite>, records: &mut Records) -> Result<()> {
+    hydrate_scoped(tx, records, true).await
+}
+async fn hydrate_scoped(
+    tx: &mut Transaction<'_, Sqlite>,
+    records: &mut Records,
+    include_children: bool,
+) -> Result<()> {
     let task_ids: Vec<_> = records.list("tasks").iter().map(|r| r.id).collect();
     if !task_ids.is_empty() {
-        let rows = sqlx::query("WITH RECURSIVE ancestors AS (SELECT id,parent_id FROM tasks WHERE id IN (SELECT value FROM json_each($1)) AND deleted_at IS NULL UNION SELECT t.id,t.parent_id FROM tasks t JOIN ancestors a ON t.id=a.parent_id WHERE t.deleted_at IS NULL) SELECT t.* FROM tasks t WHERE t.id IN (SELECT id FROM ancestors) OR (t.parent_id IN (SELECT value FROM json_each($1)) AND t.deleted_at IS NULL)")
-            .bind(serde_json::json!(task_ids).to_string()).fetch_all(&mut **tx).await?;
+        let rows = sqlx::query("WITH RECURSIVE ancestors AS (SELECT id,parent_id FROM tasks WHERE id IN (SELECT value FROM json_each($1)) AND deleted_at IS NULL UNION SELECT t.id,t.parent_id FROM tasks t JOIN ancestors a ON t.id=a.parent_id WHERE t.deleted_at IS NULL) SELECT t.* FROM tasks t WHERE t.id IN (SELECT id FROM ancestors) OR ($2 AND t.parent_id IN (SELECT value FROM json_each($1)) AND t.deleted_at IS NULL)")
+            .bind(serde_json::json!(task_ids).to_string()).bind(include_children).fetch_all(&mut **tx).await?;
         for row in rows {
             records.insert(record("tasks", &row));
         }

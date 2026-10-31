@@ -2692,6 +2692,9 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "includeArchived": {
+                "type": "boolean"
+              },
               "limit": {
                 "default": 50,
                 "maximum": 100,
@@ -4216,6 +4219,9 @@
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
+              },
+              "includeArchived": {
+                "type": "boolean"
               },
               "limit": {
                 "default": 50,
@@ -9297,6 +9303,1136 @@
             "required": [
               "executionSummary",
               "task"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "GET /api/v1/tasks/{taskId}/overview. Read complete direct-child aggregates and bounded recorded history in one snapshot. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "taskId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "taskId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getTaskOverview",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "currentSummaryMeta": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "actorId": {
+                        "format": "uuid",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "actorKind": {
+                        "enum": [
+                          "human",
+                          "agent"
+                        ],
+                        "type": "string"
+                      },
+                      "eventId": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "occurredAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "eventId",
+                      "occurredAt",
+                      "actorKind",
+                      "actorId"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "decisions": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 0,
+                "type": "array"
+              },
+              "directSubtasks": {
+                "additionalProperties": false,
+                "properties": {
+                  "archivedIncluded": {
+                    "const": true,
+                    "type": "boolean"
+                  },
+                  "blocked": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "byExecutor": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "agentName": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "done": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "executorAgentId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "remaining": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "total": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "executorAgentId",
+                        "agentName",
+                        "total",
+                        "done",
+                        "remaining"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "byStatus": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "blocked": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "boardId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "boardName": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "color": {
+                          "type": "null"
+                        },
+                        "isDone": {
+                          "type": "boolean"
+                        },
+                        "statusId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "statusName": {
+                          "type": "string"
+                        },
+                        "total": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "boardId",
+                        "boardName",
+                        "statusId",
+                        "statusName",
+                        "isDone",
+                        "total",
+                        "blocked",
+                        "color"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "done": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "remaining": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "total",
+                  "done",
+                  "remaining",
+                  "blocked",
+                  "archivedIncluded",
+                  "byStatus",
+                  "byExecutor"
+                ],
+                "type": "object"
+              },
+              "latestAttachments": {
+                "additionalProperties": false,
+                "properties": {
+                  "items": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "deletedAt": {
+                          "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
+                          "format": "date-time",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "description": {
+                          "description": "Markdown, máximo 65536 bytes UTF-8.",
+                          "type": "string",
+                          "x-maxBytes": 65536
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "mediaType": {
+                          "type": "string"
+                        },
+                        "originalName": {
+                          "type": "string"
+                        },
+                        "sizeBytes": {
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "taskId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "taskId",
+                        "originalName",
+                        "mediaType",
+                        "sizeBytes",
+                        "description",
+                        "actorId",
+                        "createdAt",
+                        "deletedAt",
+                        "actorKind"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 5,
+                    "type": "array"
+                  },
+                  "limit": {
+                    "const": 5,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "items",
+                  "total",
+                  "limit",
+                  "truncated"
+                ],
+                "type": "object"
+              },
+              "latestDeliverables": {
+                "additionalProperties": false,
+                "properties": {
+                  "items": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "deliverable": {
+                          "additionalProperties": false,
+                          "not": {
+                            "required": [
+                              "attachmentId",
+                              "url"
+                            ]
+                          },
+                          "properties": {
+                            "attachmentId": {
+                              "format": "uuid",
+                              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                              "type": "string"
+                            },
+                            "label": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "url": {
+                              "format": "uri",
+                              "pattern": "^https?://",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "label"
+                          ],
+                          "type": "object"
+                        },
+                        "summaryId": {
+                          "format": "uuid",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "summaryId",
+                        "createdAt",
+                        "actorKind",
+                        "actorId",
+                        "deliverable"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 10,
+                    "type": "array"
+                  },
+                  "limit": {
+                    "const": 10,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "items",
+                  "total",
+                  "limit",
+                  "truncated"
+                ],
+                "type": "object"
+              },
+              "latestExecutionSummary": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "actorId": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "actorKind": {
+                        "enum": [
+                          "human",
+                          "agent"
+                        ],
+                        "type": "string"
+                      },
+                      "createdAt": {
+                        "format": "date-time",
+                        "type": "string"
+                      },
+                      "deletedAt": {
+                        "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
+                        "format": "date-time",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "deliverables": {
+                        "items": {
+                          "additionalProperties": false,
+                          "not": {
+                            "required": [
+                              "attachmentId",
+                              "url"
+                            ]
+                          },
+                          "properties": {
+                            "attachmentId": {
+                              "format": "uuid",
+                              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                              "type": "string"
+                            },
+                            "label": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "url": {
+                              "format": "uri",
+                              "pattern": "^https?://",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "label"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      "executionContext": {
+                        "additionalProperties": false,
+                        "description": "Identifica a origem da cadeia. Persistida/derivada pelo servidor a partir da task principal, nunca substituída pelo board de destino.",
+                        "properties": {
+                          "originBoardId": {
+                            "format": "uuid",
+                            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                            "type": "string"
+                          },
+                          "rootTaskId": {
+                            "format": "uuid",
+                            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "rootTaskId",
+                          "originBoardId"
+                        ],
+                        "type": "object"
+                      },
+                      "id": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      "outcome": {
+                        "enum": [
+                          "progress",
+                          "completed",
+                          "blocked"
+                        ],
+                        "type": "string"
+                      },
+                      "pending": {
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      "reviewContext": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "description": "Orientação de revisão na conversa; não prova consentimento por si só.",
+                            "properties": {
+                              "conversationRef": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "instructionRef": {
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "reviewerType": {
+                                "enum": [
+                                  "user",
+                                  "team_leader"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "reviewerType",
+                              "conversationRef",
+                              "instructionRef"
+                            ],
+                            "type": "object"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "statusId": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      "summary": {
+                        "description": "Máximo 16384 bytes UTF-8.",
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 16384
+                      },
+                      "taskId": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "summary",
+                      "outcome",
+                      "statusId",
+                      "deliverables",
+                      "pending",
+                      "reviewContext",
+                      "id",
+                      "taskId",
+                      "actorId",
+                      "createdAt",
+                      "deletedAt",
+                      "actorKind",
+                      "executionContext"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "nextStep": {
+                "type": "null"
+              },
+              "progressHistory": {
+                "additionalProperties": false,
+                "properties": {
+                  "coverage": {
+                    "const": "explicit_progress_events_only",
+                    "type": "string"
+                  },
+                  "items": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "eventId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "note": {
+                          "type": "string"
+                        },
+                        "occurredAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "percent": {
+                          "maximum": 100,
+                          "minimum": 0,
+                          "type": "integer"
+                        },
+                        "source": {
+                          "const": "task.updated",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "eventId",
+                        "occurredAt",
+                        "actorKind",
+                        "actorId",
+                        "percent",
+                        "note",
+                        "source"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 100,
+                    "type": "array"
+                  },
+                  "limit": {
+                    "const": 100,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "items",
+                  "total",
+                  "limit",
+                  "truncated",
+                  "coverage"
+                ],
+                "type": "object"
+              },
+              "recentEvents": {
+                "additionalProperties": false,
+                "properties": {
+                  "items": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "data": {
+                          "additionalProperties": true,
+                          "description": "Dados relevantes anteriores/novos e IDs relacionados. comment.created traz commentId, sem duplicar corpo.",
+                          "type": "object"
+                        },
+                        "deletedAt": {
+                          "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
+                          "format": "date-time",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "occurredAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "sequence": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "taskId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "type": {
+                          "enum": [
+                            "task.created",
+                            "task.updated",
+                            "assignment.changed",
+                            "position.changed",
+                            "block.changed",
+                            "plan.created",
+                            "plan.revised",
+                            "comment.created",
+                            "attachment.added",
+                            "attachment.removed",
+                            "execution.recorded",
+                            "task.archived",
+                            "task.restored",
+                            "subtask.created"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "sequence",
+                        "taskId",
+                        "type",
+                        "actorId",
+                        "occurredAt",
+                        "data",
+                        "deletedAt",
+                        "actorKind"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 20,
+                    "type": "array"
+                  },
+                  "limit": {
+                    "const": 20,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "truncated": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "items",
+                  "total",
+                  "limit",
+                  "truncated"
+                ],
+                "type": "object"
+              },
+              "task": {
+                "additionalProperties": false,
+                "description": "Task recursiva com autor e executor obrigatórios, ambos agentes. parentId aponta outra Task sem limite fixo de profundidade; board e executor podem diferir do pai. Sem vínculo com time. Autor/histórico preservados após reatribuição/transferência de agente. Checklist é projeção dos filhos.",
+                "properties": {
+                  "archivedAt": {
+                    "format": "date-time",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "authorAgentId": {
+                    "description": "Autor/dono obrigatório e imutável; agente que escreveu a task. Independente do ator declarado que transporta a requisição.",
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "autonomyMode": {
+                    "default": "manual",
+                    "description": "Modo individual da task, usado apenas se o board de origem do contexto estiver em standard.",
+                    "enum": [
+                      "manual",
+                      "automatic"
+                    ],
+                    "type": "string"
+                  },
+                  "block": {
+                    "oneOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blocked": {
+                            "const": true
+                          },
+                          "reason": {
+                            "maxLength": 2000,
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "blocked",
+                          "reason"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blocked": {
+                            "const": false
+                          },
+                          "reason": {
+                            "type": "null"
+                          }
+                        },
+                        "required": [
+                          "blocked",
+                          "reason"
+                        ],
+                        "type": "object"
+                      }
+                    ]
+                  },
+                  "boardId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "childSummary": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "done": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "total": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "total",
+                      "done"
+                    ],
+                    "type": "object"
+                  },
+                  "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "currentSummary": {
+                    "description": "Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.",
+                    "type": "string",
+                    "x-maxBytes": 16384
+                  },
+                  "deletedAt": {
+                    "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos.",
+                    "format": "date-time",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "description": {
+                    "description": "Markdown, máximo 65536 bytes UTF-8.",
+                    "type": "string",
+                    "x-maxBytes": 65536
+                  },
+                  "executionContext": {
+                    "additionalProperties": false,
+                    "description": "Board de origem da task principal governa toda cadeia recursiva, inclusive cross-board. originBoardMode=manual força effectiveMode=manual; automatic força automatic; standard usa somente autonomyMode da task atual. Não herdar flag do pai nem consultar modo do board de destino. Não modificar configurações persistidas. rootTaskId/originBoardId são derivados da cadeia e transportados pelo harness; o servidor não executa tasks.",
+                    "properties": {
+                      "effectiveMode": {
+                        "enum": [
+                          "manual",
+                          "automatic"
+                        ],
+                        "type": "string"
+                      },
+                      "originBoardId": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      "originBoardMode": {
+                        "default": "manual",
+                        "description": "manual = totalmente manual; standard = padrão que respeita flag individual de cada task; automatic = totalmente automático. Default inicial manual, distinto do nome standard.",
+                        "enum": [
+                          "manual",
+                          "standard",
+                          "automatic"
+                        ],
+                        "type": "string"
+                      },
+                      "rootTaskId": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      }
+                    },
+                    "readOnly": true,
+                    "required": [
+                      "rootTaskId",
+                      "originBoardId",
+                      "originBoardMode",
+                      "effectiveMode"
+                    ],
+                    "type": "object"
+                  },
+                  "executorAgentId": {
+                    "description": "Executor obrigatório, reatribuível pelo usuário, sem restrição de time.",
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "id": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "latestExecutionSummaryId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "parentId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "position": {
+                    "description": "Rank opaco gerado pelo servidor.",
+                    "type": "string"
+                  },
+                  "progress": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "note": {
+                        "description": "Markdown, máximo 65536 bytes UTF-8.",
+                        "type": "string",
+                        "x-maxBytes": 65536
+                      },
+                      "percent": {
+                        "maximum": 100,
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "percent",
+                      "note"
+                    ],
+                    "type": "object"
+                  },
+                  "slug": {
+                    "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
+                    "maxLength": 80,
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                    "type": "string"
+                  },
+                  "specification": {
+                    "description": "Markdown textual preservado sem renderização/conversão. Especifica entrega, requisitos, regras e critérios de aceite. Independente da descrição curta, plano de execução e síntese atual. Vazio significa ainda não definido; null não é aceito.",
+                    "type": "string",
+                    "x-maxBytes": 65536
+                  },
+                  "statusId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "title": {
+                    "maxLength": 200,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "version": {
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "slug",
+                  "id",
+                  "boardId",
+                  "parentId",
+                  "title",
+                  "description",
+                  "specification",
+                  "executorAgentId",
+                  "statusId",
+                  "position",
+                  "currentSummary",
+                  "progress",
+                  "block",
+                  "childSummary",
+                  "latestExecutionSummaryId",
+                  "archivedAt",
+                  "version",
+                  "createdAt",
+                  "updatedAt",
+                  "deletedAt",
+                  "autonomyMode",
+                  "executionContext",
+                  "authorAgentId"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "task",
+              "directSubtasks",
+              "progressHistory",
+              "currentSummaryMeta",
+              "latestExecutionSummary",
+              "latestDeliverables",
+              "latestAttachments",
+              "recentEvents",
+              "nextStep",
+              "decisions"
             ],
             "type": "object"
           },
@@ -19990,6 +21126,417 @@
               ],
               "type": "object"
             },
+            "TaskOverview": {
+              "additionalProperties": false,
+              "properties": {
+                "currentSummaryMeta": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "eventId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "occurredAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "eventId",
+                        "occurredAt",
+                        "actorKind",
+                        "actorId"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 0,
+                  "type": "array"
+                },
+                "directSubtasks": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "archivedIncluded": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "blocked": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "byExecutor": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "agentName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "done": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "executorAgentId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "remaining": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "executorAgentId",
+                          "agentName",
+                          "total",
+                          "done",
+                          "remaining"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "byStatus": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blocked": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "boardId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "boardName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "color": {
+                            "type": "null"
+                          },
+                          "isDone": {
+                            "type": "boolean"
+                          },
+                          "statusId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "statusName": {
+                            "type": "string"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "boardId",
+                          "boardName",
+                          "statusId",
+                          "statusName",
+                          "isDone",
+                          "total",
+                          "blocked",
+                          "color"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "done": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "remaining": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "total",
+                    "done",
+                    "remaining",
+                    "blocked",
+                    "archivedIncluded",
+                    "byStatus",
+                    "byExecutor"
+                  ],
+                  "type": "object"
+                },
+                "latestAttachments": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Attachment"
+                      },
+                      "maxItems": 5,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 5,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestDeliverables": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "deliverable": {
+                            "$ref": "#/components/schemas/Deliverable"
+                          },
+                          "summaryId": {
+                            "format": "uuid",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "summaryId",
+                          "createdAt",
+                          "actorKind",
+                          "actorId",
+                          "deliverable"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 10,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 10,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestExecutionSummary": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ExecutionSummary"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "nextStep": {
+                  "type": "null"
+                },
+                "progressHistory": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "coverage": {
+                      "const": "explicit_progress_events_only",
+                      "type": "string"
+                    },
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "eventId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "occurredAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "percent": {
+                            "maximum": 100,
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "source": {
+                            "const": "task.updated",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "eventId",
+                          "occurredAt",
+                          "actorKind",
+                          "actorId",
+                          "percent",
+                          "note",
+                          "source"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 100,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated",
+                    "coverage"
+                  ],
+                  "type": "object"
+                },
+                "recentEvents": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      },
+                      "maxItems": 20,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 20,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "task": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              },
+              "required": [
+                "task",
+                "directSubtasks",
+                "progressHistory",
+                "currentSummaryMeta",
+                "latestExecutionSummary",
+                "latestDeliverables",
+                "latestAttachments",
+                "recentEvents",
+                "nextStep",
+                "decisions"
+              ],
+              "type": "object"
+            },
             "TaskPage": {
               "additionalProperties": false,
               "description": "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot.",
@@ -23579,6 +25126,417 @@
               ],
               "type": "object"
             },
+            "TaskOverview": {
+              "additionalProperties": false,
+              "properties": {
+                "currentSummaryMeta": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "eventId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "occurredAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "eventId",
+                        "occurredAt",
+                        "actorKind",
+                        "actorId"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 0,
+                  "type": "array"
+                },
+                "directSubtasks": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "archivedIncluded": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "blocked": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "byExecutor": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "agentName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "done": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "executorAgentId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "remaining": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "executorAgentId",
+                          "agentName",
+                          "total",
+                          "done",
+                          "remaining"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "byStatus": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blocked": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "boardId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "boardName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "color": {
+                            "type": "null"
+                          },
+                          "isDone": {
+                            "type": "boolean"
+                          },
+                          "statusId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "statusName": {
+                            "type": "string"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "boardId",
+                          "boardName",
+                          "statusId",
+                          "statusName",
+                          "isDone",
+                          "total",
+                          "blocked",
+                          "color"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "done": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "remaining": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "total",
+                    "done",
+                    "remaining",
+                    "blocked",
+                    "archivedIncluded",
+                    "byStatus",
+                    "byExecutor"
+                  ],
+                  "type": "object"
+                },
+                "latestAttachments": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Attachment"
+                      },
+                      "maxItems": 5,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 5,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestDeliverables": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "deliverable": {
+                            "$ref": "#/components/schemas/Deliverable"
+                          },
+                          "summaryId": {
+                            "format": "uuid",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "summaryId",
+                          "createdAt",
+                          "actorKind",
+                          "actorId",
+                          "deliverable"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 10,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 10,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestExecutionSummary": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ExecutionSummary"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "nextStep": {
+                  "type": "null"
+                },
+                "progressHistory": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "coverage": {
+                      "const": "explicit_progress_events_only",
+                      "type": "string"
+                    },
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "eventId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "occurredAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "percent": {
+                            "maximum": 100,
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "source": {
+                            "const": "task.updated",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "eventId",
+                          "occurredAt",
+                          "actorKind",
+                          "actorId",
+                          "percent",
+                          "note",
+                          "source"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 100,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated",
+                    "coverage"
+                  ],
+                  "type": "object"
+                },
+                "recentEvents": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      },
+                      "maxItems": 20,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 20,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "task": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              },
+              "required": [
+                "task",
+                "directSubtasks",
+                "progressHistory",
+                "currentSummaryMeta",
+                "latestExecutionSummary",
+                "latestDeliverables",
+                "latestAttachments",
+                "recentEvents",
+                "nextStep",
+                "decisions"
+              ],
+              "type": "object"
+            },
             "TaskPage": {
               "additionalProperties": false,
               "description": "Offset além do total: items=[], hasMore=false, nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre requisições não há snapshot.",
@@ -26775,6 +28733,417 @@
                 "originBoardId",
                 "originBoardMode",
                 "effectiveMode"
+              ],
+              "type": "object"
+            },
+            "TaskOverview": {
+              "additionalProperties": false,
+              "properties": {
+                "currentSummaryMeta": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "actorId": {
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "actorKind": {
+                          "enum": [
+                            "human",
+                            "agent"
+                          ],
+                          "type": "string"
+                        },
+                        "eventId": {
+                          "format": "uuid",
+                          "type": "string"
+                        },
+                        "occurredAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "eventId",
+                        "occurredAt",
+                        "actorKind",
+                        "actorId"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisions": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 0,
+                  "type": "array"
+                },
+                "directSubtasks": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "archivedIncluded": {
+                      "const": true,
+                      "type": "boolean"
+                    },
+                    "blocked": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "byExecutor": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "agentName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "done": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "executorAgentId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "remaining": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "executorAgentId",
+                          "agentName",
+                          "total",
+                          "done",
+                          "remaining"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "byStatus": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "blocked": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "boardId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "boardName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "color": {
+                            "type": "null"
+                          },
+                          "isDone": {
+                            "type": "boolean"
+                          },
+                          "statusId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "statusName": {
+                            "type": "string"
+                          },
+                          "total": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "boardId",
+                          "boardName",
+                          "statusId",
+                          "statusName",
+                          "isDone",
+                          "total",
+                          "blocked",
+                          "color"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "done": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "remaining": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "total",
+                    "done",
+                    "remaining",
+                    "blocked",
+                    "archivedIncluded",
+                    "byStatus",
+                    "byExecutor"
+                  ],
+                  "type": "object"
+                },
+                "latestAttachments": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Attachment"
+                      },
+                      "maxItems": 5,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 5,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestDeliverables": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "deliverable": {
+                            "$ref": "#/components/schemas/Deliverable"
+                          },
+                          "summaryId": {
+                            "format": "uuid",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "summaryId",
+                          "createdAt",
+                          "actorKind",
+                          "actorId",
+                          "deliverable"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 10,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 10,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "latestExecutionSummary": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ExecutionSummary"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "nextStep": {
+                  "type": "null"
+                },
+                "progressHistory": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "coverage": {
+                      "const": "explicit_progress_events_only",
+                      "type": "string"
+                    },
+                    "items": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "actorId": {
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "actorKind": {
+                            "enum": [
+                              "human",
+                              "agent"
+                            ],
+                            "type": "string"
+                          },
+                          "eventId": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "note": {
+                            "type": "string"
+                          },
+                          "occurredAt": {
+                            "format": "date-time",
+                            "type": "string"
+                          },
+                          "percent": {
+                            "maximum": 100,
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "source": {
+                            "const": "task.updated",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "eventId",
+                          "occurredAt",
+                          "actorKind",
+                          "actorId",
+                          "percent",
+                          "note",
+                          "source"
+                        ],
+                        "type": "object"
+                      },
+                      "maxItems": 100,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 100,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated",
+                    "coverage"
+                  ],
+                  "type": "object"
+                },
+                "recentEvents": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      },
+                      "maxItems": 20,
+                      "type": "array"
+                    },
+                    "limit": {
+                      "const": 20,
+                      "type": "integer"
+                    },
+                    "total": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "truncated": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "total",
+                    "limit",
+                    "truncated"
+                  ],
+                  "type": "object"
+                },
+                "task": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              },
+              "required": [
+                "task",
+                "directSubtasks",
+                "progressHistory",
+                "currentSummaryMeta",
+                "latestExecutionSummary",
+                "latestDeliverables",
+                "latestAttachments",
+                "recentEvents",
+                "nextStep",
+                "decisions"
               ],
               "type": "object"
             },

@@ -825,6 +825,12 @@ paths:
           description: ""
           schema:
             type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: True inclui ativos e arquivados, substituindo o filtro archived=false padrão. False mantém somente ativos. Não pode ser combinado com archived explícito.
+          schema:
+            type: boolean
         - name: archived
           in: query
           required: false
@@ -1597,6 +1603,34 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/overview:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTaskOverview
+      summary: Read complete direct-child aggregates and bounded recorded history in one snapshot
+      description: Includes non-deleted direct children across boards, including archived children. Recorded task progress is independent of child completion. History contains only explicit task.updated progress events; old closure events do not preserve progress and are not reconstructed. Human identity is declared metadata only. No decisions or next step are inferred from prose. Lists have explicit fixed limits and truncation indicators.
+      responses:
+        "200":
+          description: Task overview snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskOverview"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
   /api/v1/tasks/{taskId}/participants:
     parameters:
       - name: taskId
@@ -2638,6 +2672,12 @@ paths:
           in: query
           required: false
           description: ""
+          schema:
+            type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: True inclui ativos e arquivados, substituindo o filtro archived=false padrão. False mantém somente ativos. Não pode ser combinado com archived explícito.
           schema:
             type: boolean
         - name: archived
@@ -3683,6 +3723,418 @@ components:
       required:
         - body
       additionalProperties: false
+    TaskOverview:
+      {
+        "type": "object",
+        "properties": {
+          "task": {
+            "$ref": "#/components/schemas/Task"
+          },
+          "directSubtasks": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "done": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "remaining": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "blocked": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "archivedIncluded": {
+                "type": "boolean",
+                "const": true
+              },
+              "byStatus": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "boardId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "boardName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "statusId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "statusName": {
+                      "type": "string"
+                    },
+                    "isDone": {
+                      "type": "boolean"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "blocked": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "color": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "boardId",
+                    "boardName",
+                    "statusId",
+                    "statusName",
+                    "isDone",
+                    "total",
+                    "blocked",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "byExecutor": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "executorAgentId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "agentName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "done": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "remaining": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "executorAgentId",
+                    "agentName",
+                    "total",
+                    "done",
+                    "remaining"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "total",
+              "done",
+              "remaining",
+              "blocked",
+              "archivedIncluded",
+              "byStatus",
+              "byExecutor"
+            ],
+            "additionalProperties": false
+          },
+          "progressHistory": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "occurredAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "actorKind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "agent"
+                      ]
+                    },
+                    "actorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
+                    "percent": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "note": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string",
+                      "const": "task.updated"
+                    }
+                  },
+                  "required": [
+                    "eventId",
+                    "occurredAt",
+                    "actorKind",
+                    "actorId",
+                    "percent",
+                    "note",
+                    "source"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 100
+              },
+              "truncated": {
+                "type": "boolean"
+              },
+              "coverage": {
+                "type": "string",
+                "const": "explicit_progress_events_only"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated",
+              "coverage"
+            ],
+            "additionalProperties": false
+          },
+          "currentSummaryMeta": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "occurredAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "actorKind": {
+                    "type": "string",
+                    "enum": [
+                      "human",
+                      "agent"
+                    ]
+                  },
+                  "actorId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "eventId",
+                  "occurredAt",
+                  "actorKind",
+                  "actorId"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestExecutionSummary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestDeliverables": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "summaryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "actorKind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "agent"
+                      ]
+                    },
+                    "actorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
+                    "deliverable": {
+                      "$ref": "#/components/schemas/Deliverable"
+                    }
+                  },
+                  "required": [
+                    "summaryId",
+                    "createdAt",
+                    "actorKind",
+                    "actorId",
+                    "deliverable"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 10
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 10
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "latestAttachments": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Attachment"
+                },
+                "maxItems": 5
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 5
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "recentEvents": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Event"
+                },
+                "maxItems": 20
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 20
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "nextStep": {
+            "type": "null"
+          },
+          "decisions": {
+            "type": "array",
+            "maxItems": 0,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "task",
+          "directSubtasks",
+          "progressHistory",
+          "currentSummaryMeta",
+          "latestExecutionSummary",
+          "latestDeliverables",
+          "latestAttachments",
+          "recentEvents",
+          "nextStep",
+          "decisions"
+        ],
+        "additionalProperties": false
+      }
     TaskParticipant:
       type: object
       properties:
