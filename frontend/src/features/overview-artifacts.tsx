@@ -1,6 +1,6 @@
 import { RelativeTime } from "@/components/relative-time";
 import { useState } from "react";
-import { Download, ExternalLink } from "lucide-react";
+import { Download, ExternalLink, UserRound } from "lucide-react";
 import { useApi } from "@/api/context";
 import type { TaskOverviewData, OverviewActor } from "@/api/task-overview";
 import { AgentName } from "@/components/names";
@@ -11,13 +11,17 @@ export function OverviewAttribution({
   actor,
   date,
   relative = false,
+  showActorIcon = false,
 }: {
   actor: OverviewActor;
   date: string;
   relative?: boolean;
+  showActorIcon?: boolean;
 }) {
   return (
     <p className="small-note">
+      {showActorIcon && <UserRound className="summary-author-icon" aria-hidden="true" />}
+      {showActorIcon && actor.actorKind === "agent" && <span className="sr-only">Agente: </span>}
       {actor.actorKind === "human" ? (
         "Pessoa · identidade não informada"
       ) : actor.actorId ? (

@@ -33,6 +33,7 @@ export function TaskCurrentSummary({
         (overview.currentSummaryMeta ? (
           <OverviewAttribution
             relative={relativeDate}
+            showActorIcon={relativeDate}
             actor={overview.currentSummaryMeta}
             date={overview.currentSummaryMeta.occurredAt}
           />

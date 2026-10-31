@@ -571,3 +571,12 @@ body:has(.task-page) {
     grid-column: 1;
   }
 }
+
+.task-detail-hero .summary-author-icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  flex-shrink: 0;
+}
