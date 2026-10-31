@@ -257,3 +257,7 @@ O documento registra intenção aprovada, não comprova que a skill, o frontend 
 ## Escopo desta entrega
 
 Somente esta especificação e uma referência no README. Sem alterações em `SKILL.md`, instalação pessoal, configuração MCP, snapshots do servidor, API/UI, agentes, times, boards, tarefas ou chats reais. Critérios acima são textuais; não representam teste ponta a ponta dos fluxos futuros.
+
+## Métricas no início e ao inserir resumo
+
+Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, tente consultar dados atuais e anexar métricas opcionais verificáveis; falha de coleta não bloqueia salvar e não exige unavailable. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.

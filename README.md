@@ -603,3 +603,5 @@ and session. This visual proposal remains subject to implementation review.
 This is documentation only: no usage collector, migration, Skill change or
 usage dashboard is implemented or enabled by this proposal.
 O cabeçalho da tarefa mantém descrição abaixo do título e síntese atual após progresso/bloqueio em todas as abas, com Markdown e proveniência quando disponível. Ao sair do viewport desktop, a sidebar oferece prévias compactas expansíveis por teclado; os formulários permanecem montados e o mobile conserva uma única coluna. A Visão geral mantém gráficos e nota de andamento sem duplicar descrição/síntese.
+
+As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Modelos/harnesses/tokens são dados opcionais estruturados, separados do Markdown: falha de coleta não bloqueia o resumo, ausência não é zero e nenhuma declaração unavailable é exigida para salvar.
