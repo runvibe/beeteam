@@ -2,6 +2,7 @@ import { patchRecord, addStatus, orderStatuses } from "./configuration";
 import { projectTask, descendantIds } from "./projections";
 import { ApiError } from "./types";
 import { mockParticipants } from "./mock-participants";
+import { mockOverview } from "./mock-overview";
 import type { BeeApi, Resources, Filters, Page, Entities } from "./types";
 import { makeSeed, type Database } from "./seed";
 type Row = Record<string, unknown>;
@@ -62,6 +63,16 @@ export function createMockApi(
     scope: string,
     f: Filters = {},
   ): Resources[K][] {
+    if (
+      resource === "tasks" &&
+      f.includeArchived !== undefined &&
+      f.archived !== undefined
+    )
+      throw new ApiError(
+        400,
+        "invalid_request",
+        "Use archived ou includeArchived, não ambos.",
+      );
     let source: unknown[] = db[resource];
     if (resource === "members")
       source = db.agents.flatMap((a) =>
@@ -177,7 +188,9 @@ export function createMockApi(
       )
     )
       rows = rows.filter(
-        (r) => Boolean(r.archivedAt) === (f.archived ?? false),
+        (r) =>
+          (resource === "tasks" && f.includeArchived === true) ||
+          Boolean(r.archivedAt) === (f.archived ?? false),
       );
     if (f.types)
       rows = rows.filter((r) => f.types!.split(",").includes(String(r.type)));
@@ -247,6 +260,10 @@ export function createMockApi(
     async participants(taskId, pagination = {}) {
       await wait();
       return clone(paginate(mockParticipants(db, taskId), pagination));
+    },
+    async overview(taskId) {
+      await wait();
+      return clone(mockOverview(db, taskId));
     },
     async list<K extends keyof Resources>(
       resource: K,

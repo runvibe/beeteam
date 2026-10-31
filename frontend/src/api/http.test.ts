@@ -5,6 +5,11 @@ const response = (value: unknown, status = 200) =>
     status,
     headers: { "Content-Type": "application/json" },
   });
+it("requests one authoritative task overview snapshot", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({ task: { id: "task" } }));
+  await createHttpApi({ fetch: fetcher }).overview("task");
+  expect(fetcher.mock.calls[0][0]).toBe("/api/v1/tasks/task/overview");
+});
 it("requests task participants with pagination only", async () => {
   const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
   await createHttpApi({ fetch: fetcher }).participants("task", {

@@ -825,6 +825,12 @@ paths:
           description: ""
           schema:
             type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: True inclui ativos e arquivados, substituindo o filtro archived=false padrão. False mantém somente ativos. Não pode ser combinado com archived explícito.
+          schema:
+            type: boolean
         - name: archived
           in: query
           required: false
@@ -1597,6 +1603,99 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePlan"
+  /api/v1/tasks/{taskId}/overview:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTaskOverview
+      summary: Read complete direct-child aggregates and bounded recorded history in one snapshot
+      description: Includes non-deleted direct children across boards, including archived children. Recorded task progress is independent of child completion. History contains only explicit task.updated progress events; old closure events do not preserve progress and are not reconstructed. Human identity is declared metadata only. No decisions or next step are inferred from prose. Lists have explicit fixed limits and truncation indicators.
+      responses:
+        "200":
+          description: Task overview snapshot
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskOverview"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/participants:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: listTaskParticipants
+      summary: List distinct recorded participants of this exact task
+      description: Current author/executor plus recorded authors of comments, plan revisions, attachments, summaries and timeline events, and historical executors from creation/assignment events. Does not include descendants or unrelated team agents. Independent of comment pagination and text filters. Humans are grouped with null actorId; agent names are current profile metadata, including archived/deleted profiles. Stable actorKind/actorId ordering.
+      parameters:
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Distinct participants page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskParticipantPage"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/comments/{commentId}:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+      - name: commentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getComment
+      summary: Read one comment belonging to the specified task
+      responses:
+        "200":
+          description: Exact stored comment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
   /api/v1/tasks/{taskId}/comments:
     parameters:
       - name: taskId
@@ -1616,10 +1715,26 @@ paths:
         desempate id; sem snapshot entre requisições."
       x-contract-status: proposed
       parameters:
+        - name: actorKind
+          in: query
+          required: false
+          description: Tipo de autoria persistida. human inclui comentários sem actorId; combina com os demais filtros por AND.
+          schema:
+            type: string
+            enum: [human, agent]
+        - name: text
+          in: query
+          required: false
+          description: Trecho literal do body Markdown completo, sensível a maiúsculas e acentos, sem normalização ou trim. Percentual, underscore e barra invertida são literais, não wildcards. Vazio equivale a não filtrar. Total e paginação são calculados após os filtros no banco.
+          schema:
+            type: string
+            maxLength: 1024
+            pattern: '^[^\x00]*$'
+            x-maxBytes: 4096
         - name: actorId
           in: query
           required: false
-          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          description: Filtra autoria registrada sem exigir perfil ainda existente. UUID válido sem comentários retorna página vazia; não define identidade do solicitante.
           schema:
             type: string
             format: uuid
@@ -2557,6 +2672,12 @@ paths:
           in: query
           required: false
           description: ""
+          schema:
+            type: boolean
+        - name: includeArchived
+          in: query
+          required: false
+          description: True inclui ativos e arquivados, substituindo o filtro archived=false padrão. False mantém somente ativos. Não pode ser combinado com archived explícito.
           schema:
             type: boolean
         - name: archived
@@ -3601,6 +3722,459 @@ components:
           x-maxBytes: 16384
       required:
         - body
+      additionalProperties: false
+    TaskOverview:
+      {
+        "type": "object",
+        "properties": {
+          "task": {
+            "$ref": "#/components/schemas/Task"
+          },
+          "directSubtasks": {
+            "type": "object",
+            "properties": {
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "done": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "remaining": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "blocked": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "archivedIncluded": {
+                "type": "boolean",
+                "const": true
+              },
+              "byStatus": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "boardId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "boardName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "statusId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "statusName": {
+                      "type": "string"
+                    },
+                    "isDone": {
+                      "type": "boolean"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "blocked": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "color": {
+                      "type": "null"
+                    }
+                  },
+                  "required": [
+                    "boardId",
+                    "boardName",
+                    "statusId",
+                    "statusName",
+                    "isDone",
+                    "total",
+                    "blocked",
+                    "color"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "byExecutor": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "executorAgentId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "agentName": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "done": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "remaining": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "executorAgentId",
+                    "agentName",
+                    "total",
+                    "done",
+                    "remaining"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "total",
+              "done",
+              "remaining",
+              "blocked",
+              "archivedIncluded",
+              "byStatus",
+              "byExecutor"
+            ],
+            "additionalProperties": false
+          },
+          "progressHistory": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "eventId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "occurredAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "actorKind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "agent"
+                      ]
+                    },
+                    "actorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
+                    "percent": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 100
+                    },
+                    "note": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string",
+                      "const": "task.updated"
+                    }
+                  },
+                  "required": [
+                    "eventId",
+                    "occurredAt",
+                    "actorKind",
+                    "actorId",
+                    "percent",
+                    "note",
+                    "source"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 100
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 100
+              },
+              "truncated": {
+                "type": "boolean"
+              },
+              "coverage": {
+                "type": "string",
+                "const": "explicit_progress_events_only"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated",
+              "coverage"
+            ],
+            "additionalProperties": false
+          },
+          "currentSummaryMeta": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "occurredAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "actorKind": {
+                    "type": "string",
+                    "enum": [
+                      "human",
+                      "agent"
+                    ]
+                  },
+                  "actorId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "eventId",
+                  "occurredAt",
+                  "actorKind",
+                  "actorId"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestExecutionSummary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "latestDeliverables": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "summaryId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "actorKind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "agent"
+                      ]
+                    },
+                    "actorId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uuid"
+                    },
+                    "deliverable": {
+                      "$ref": "#/components/schemas/Deliverable"
+                    }
+                  },
+                  "required": [
+                    "summaryId",
+                    "createdAt",
+                    "actorKind",
+                    "actorId",
+                    "deliverable"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 10
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 10
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "latestAttachments": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Attachment"
+                },
+                "maxItems": 5
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 5
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "recentEvents": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Event"
+                },
+                "maxItems": 20
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "limit": {
+                "type": "integer",
+                "const": 20
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "limit",
+              "truncated"
+            ],
+            "additionalProperties": false
+          },
+          "nextStep": {
+            "type": "null"
+          },
+          "decisions": {
+            "type": "array",
+            "maxItems": 0,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "task",
+          "directSubtasks",
+          "progressHistory",
+          "currentSummaryMeta",
+          "latestExecutionSummary",
+          "latestDeliverables",
+          "latestAttachments",
+          "recentEvents",
+          "nextStep",
+          "decisions"
+        ],
+        "additionalProperties": false
+      }
+    TaskParticipant:
+      type: object
+      properties:
+        actorKind:
+          type: string
+          enum: [human, agent]
+        actorId:
+          type: [string, "null"]
+          format: uuid
+        agentName:
+          type: [string, "null"]
+        agentArchived:
+          type: boolean
+        agentDeleted:
+          type: boolean
+      required: [actorKind, actorId, agentName, agentArchived, agentDeleted]
+      additionalProperties: false
+    TaskParticipantPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TaskParticipant"
+        total:
+          type: integer
+          minimum: 0
+        offset:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        hasMore:
+          type: boolean
+        nextOffset:
+          type: [integer, "null"]
+          minimum: 0
+      required: [items, total, offset, limit, hasMore, nextOffset]
       additionalProperties: false
     Comment:
       type: object

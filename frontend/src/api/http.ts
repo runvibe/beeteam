@@ -1,4 +1,5 @@
 import type { BeeApi, Resources, Filters } from "./types";
+import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
 import { createTransport, type HttpOptions } from "./http-transport";
 const segment = encodeURIComponent;
@@ -34,6 +35,8 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    overview: (taskId, signal) =>
+      request<TaskOverview>(`/tasks/${segment(taskId)}/overview`, { signal }),
     participants: (taskId, pagination = {}, signal) =>
       request(`/tasks/${segment(taskId)}/participants` + query(pagination), {
         signal,
