@@ -35,3 +35,20 @@ Catalog generated with `cargo run --locked --features mcp --example mcp_catalog`
 PostgreSQL-specific execution is not claimed: the isolated PostgreSQL test
 instance was unavailable. No product writes, resets or service restarts occurred.
 Frontend visual/runtime acceptance remains with the integrated release operator.
+
+Additional final checks:
+
+- `cargo build --locked --release --features mcp -j 1` passed in the same
+  isolated target. Executable: `.local/distribution/port-target/release/beeteam.exe`.
+  SHA-256: `a0c35446859d3fd42273baf9a604486e481d34d69f43b239e7d8c38dffb1421b`.
+- `cargo test --locked --release --features mcp -j 1 --test backend_mcp`
+  passed `bundled_comment_protocol_catalog_and_hashes` and
+  `exact_comment_lookup_and_compound_receipts`.
+- Its third test, `sdk_tools_resources_prompts_and_atomic_compounds`, failed
+  during fixture setup because `BEE_TEST_DATABASE_URL` was absent; it uses the
+  PostgreSQL-only fixture even with `BEE_TEST_DRIVER=sqlite`. The isolated
+  PostgreSQL port 55481 was independently confirmed unreachable. This is not
+  reported as a fully passing MCP suite.
+
+Total completed passing tests across these commands: 35. The one PostgreSQL
+fixture remains an infrastructure prerequisite for integrated validation.
