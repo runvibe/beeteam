@@ -658,3 +658,5 @@ A navegação de seções da tarefa não adiciona padding no wrapper, na faixa m
 A sidebar direita de contexto da tarefa usa padding horizontal desktop de 24px à esquerda e 4px à direita; o espaçamento vertical e o contexto mobile de uma coluna são preservados.
 
 O menu global esquerdo usa padding horizontal de 12px por lado (antes 6px) e coluna de 68px (antes 56px), preservando logo/ícones centralizados e alvos de 44px em desktop e mobile. O padding vertical continua 6px.
+
+O cabeçalho da tarefa usa 8 px entre título e descrição e 12 px entre os demais blocos, com padding de 12 px no resumo. O espaçamento interno do Markdown e a apresentação compacta da sidebar são preservados.
