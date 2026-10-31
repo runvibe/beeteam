@@ -55,6 +55,13 @@ export interface Page<T> {
   hasMore: boolean;
   nextOffset: number | null;
 }
+export interface TaskParticipant {
+  actorKind: "agent" | "human";
+  actorId: string | null;
+  agentName: string | null;
+  agentArchived: boolean;
+  agentDeleted: boolean;
+}
 export interface Filters {
   offset?: number;
   limit?: number;
@@ -90,6 +97,11 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  participants(
+    taskId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<Page<TaskParticipant>>;
   resolveSlug(
     resource: "agents" | "teams" | "tasks",
     slug: string,

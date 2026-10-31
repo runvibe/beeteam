@@ -1,6 +1,6 @@
-import { useConversationToolbar } from "./conversation-toolbar";
+import { TaskFilters } from "./task-filter-layout";
 import { FilterBar } from "@/components/filter-bar";
-import { EntityFilter } from "@/components/entity-filter";
+import { TaskParticipantFilter } from "./task-participant-filter";
 import { useLayoutEffect, useRef } from "react";
 import { useEntity } from "@/api/context";
 import type { Resources } from "@/api/types";
@@ -34,7 +34,6 @@ export function TaskConversation({
     if (state.query.data || state.query.error || state.metadata.error)
       onReady?.();
   }, [state.query.data, state.query.error, state.metadata.error, onReady]);
-  const toolbar = useConversationToolbar();
   const clear = () => {
     state.setActorId("");
     state.setActorKind("");
@@ -42,7 +41,7 @@ export function TaskConversation({
   };
   return (
     <>
-      <div ref={toolbar} className="conversation-filters">
+      <TaskFilters active={!!(state.actorId || state.actorKind || state.text)}>
         <FilterBar
           active={!!(state.actorId || state.actorKind || state.text)}
           onClear={clear}
@@ -67,18 +66,17 @@ export function TaskConversation({
               { value: "human", label: "Pessoas" },
             ]}
           />
-          {state.actorKind !== "human" && (
-            <EntityFilter
-              resource="agents"
-              label="Autor da fala"
-              value={state.actorId}
-              onChange={(value) => {
-                state.setActorId(value);
-              }}
-            />
-          )}
+          <TaskParticipantFilter
+            taskId={taskId}
+            actorId={state.actorId}
+            actorKind={state.actorKind}
+            onChange={(id, kind) => {
+              state.setActorId(id);
+              state.setActorKind(kind);
+            }}
+          />
         </FilterBar>
-      </div>
+      </TaskFilters>
       {!!state.text && (
         <p className="small-note">
           Trecho literal no texto completo; diferencia maiúsculas e minúsculas.
