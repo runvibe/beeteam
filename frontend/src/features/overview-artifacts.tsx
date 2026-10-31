@@ -1,3 +1,4 @@
+import { RelativeTime } from "@/components/relative-time";
 import { useState } from "react";
 import { Download, ExternalLink } from "lucide-react";
 import { useApi } from "@/api/context";
@@ -9,9 +10,11 @@ import { Failure, formatDate, safeUrl } from "@/components/shared";
 export function OverviewAttribution({
   actor,
   date,
+  relative = false,
 }: {
   actor: OverviewActor;
   date: string;
+  relative?: boolean;
 }) {
   return (
     <p className="small-note">
@@ -22,7 +25,7 @@ export function OverviewAttribution({
       ) : (
         "Agente não identificado"
       )}{" "}
-      · <time dateTime={date}>{formatDate(date)}</time>
+      · {relative ? <RelativeTime value={date} /> : <time dateTime={date}>{formatDate(date)}</time>}
     </p>
   );
 }

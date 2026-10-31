@@ -548,3 +548,26 @@ body:has(.task-page) {
   font-size: inherit;
   line-height: inherit;
 }
+
+/* Summary identity belongs to the card header; compact sidebar keeps its own flow. */
+.task-detail-hero .task-summary-section {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+.task-detail-hero .task-summary-section > .small-note {
+  grid-column: 2;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.task-detail-hero .task-summary-section > .markdown-content {
+  grid-column: 1 / -1;
+}
+@media (max-width: 600px) {
+  .task-detail-hero .task-summary-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .task-detail-hero .task-summary-section > .small-note {
+    grid-column: 1;
+  }
+}

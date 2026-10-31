@@ -114,7 +114,7 @@ function TaskDetail({ id }: { id: string }) {
                   </div>
                 </Alert>
               )}
-              <TaskCurrentSummary task={q.data} overview={overview.data} />
+              <TaskCurrentSummary task={q.data} overview={overview.data} relativeDate />
             </>
           )}
         </div>

@@ -15,9 +15,11 @@ export function TaskDescription({ task }: { task: Task }) {
 export function TaskCurrentSummary({
   task,
   overview,
+  relativeDate = false,
 }: {
   task: Task;
   overview?: TaskOverviewData;
+  relativeDate?: boolean;
 }) {
   return (
     <section
@@ -30,6 +32,7 @@ export function TaskCurrentSummary({
         overview.task.currentSummary === task.currentSummary &&
         (overview.currentSummaryMeta ? (
           <OverviewAttribution
+            relative={relativeDate}
             actor={overview.currentSummaryMeta}
             date={overview.currentSummaryMeta.occurredAt}
           />
