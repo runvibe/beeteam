@@ -1,3 +1,4 @@
+import { SummaryUsage } from "./summary-usage";
 import { useQuery } from "@tanstack/react-query";
 import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
 import { TaskOverviewPanel } from "./task-overview-panel";
@@ -386,6 +387,7 @@ function RecordContent({
             {r.summary}
           </Markdown>
         </section>
+        <SummaryUsage report={r.usageReport} />
         <section className="task-reading-block" aria-label="Entregas">
           <h4>Entregas</h4>
           {r.deliverables.length ? (

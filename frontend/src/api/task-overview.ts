@@ -19,6 +19,7 @@ export type ProgressPoint = OverviewActor & {
   source: string;
 };
 export type TaskOverviewData = {
+  usage?: import("./generated/kanban/TaskUsage").TaskUsage;
   task: Task;
   directSubtasks: {
     archivedIncluded: boolean;

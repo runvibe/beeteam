@@ -1,0 +1,219 @@
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { expect, it, vi } from "vitest";
+import { ApiProvider } from "@/api/context";
+import { createMockApi } from "@/api/mock";
+import type { TaskUsage } from "@/api/generated/kanban/TaskUsage";
+import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
+import { SummaryUsage, tokenCount } from "./summary-usage";
+import { TaskUsagePanel } from "./task-usage";
+const emptyTokens = {
+  inputTokens: null,
+  outputTokens: null,
+  cachedInputTokens: null,
+  reasoningOutputTokens: null,
+  totalTokens: null,
+};
+const actor = { actorKind: "human", actorId: null } as const;
+const page = <T,>(items: T[]) => ({
+  items,
+  total: items.length,
+  offset: 0,
+  limit: 20,
+  truncated: false,
+});
+function usage(): TaskUsage {
+  return {
+    knownTotalTokens: "9007199254740993",
+    estimatedTotalTokens: "12",
+    measuredComponents: { ...emptyTokens, inputTokens: "0" },
+    coverage: {
+      totalSummaries: 2,
+      reportedSummaries: 1,
+      missingSummaries: 1,
+      entries: 2,
+      measuredEntries: 1,
+      estimatedEntries: 1,
+      unavailableEntries: 0,
+      baselineEntries: 1,
+      duplicateEntries: 0,
+      unallocatedEntries: 0,
+    },
+    models: page([{ provider: "Provider", modelId: "Model A", harness: null }]),
+    harnesses: page([{ provider: null, modelId: null, harness: "Harness A" }]),
+    timeline: page([
+      {
+        summaryId: "summary",
+        reportedAt: "2026-10-31T01:00:00Z",
+        reportingActor: actor,
+        statusObserved: null,
+        usageReport: null,
+      },
+    ]),
+  };
+}
+function report(): SummaryUsageReport {
+  return {
+    reportedAt: "2026-10-31T01:00:00Z",
+    reportingActor: actor,
+    statusObserved: { id: "status", name: "Em andamento", isDone: false },
+    revision: 1,
+    entries: [
+      {
+        id: "entry",
+        reportedAt: "2026-10-31T01:00:00Z",
+        reportingActor: actor,
+        reportRevision: 1,
+        evidenceKey: "evidence",
+        canonicalSummaryId: "summary",
+        delta: null,
+        counted: false,
+        coverageReason: "baseline_or_unavailable",
+        observation: {
+          source: "Source",
+          harness: "Harness A",
+          surface: "Desktop",
+          harnessVersion: null,
+          sessionId: "session",
+          epoch: "epoch",
+          evidenceId: "evidence",
+          previousEvidenceId: null,
+          actor: { kind: "human", id: null },
+          actorRole: "human",
+          provider: "Provider",
+          modelId: "Model A",
+          scope: "session",
+          reportKind: "cumulative_snapshot",
+          quality: "measured",
+          attribution: "exact",
+          observedAt: "2026-10-31T00:00:00Z",
+          periodStart: null,
+          periodEnd: null,
+          inputTokens: "999999",
+          outputTokens: "0",
+          cachedInputTokens: null,
+          reasoningOutputTokens: null,
+          discovery: null,
+        },
+      },
+    ],
+  };
+}
+it("preserves precision and distinguishes null from genuine zero", () => {
+  expect(tokenCount(null)).toBe("Não informado");
+  expect(tokenCount("0")).toBe("0");
+  expect(tokenCount("9007199254740993")).toBe("9.007.199.254.740.993");
+});
+it("accepts legacy summaries without fabricated usage", () => {
+  render(<SummaryUsage />);
+  expect(screen.getByText(/Ausência não significa zero/)).toBeVisible();
+});
+it("separates original snapshot from derived delta and safe provenance", async () => {
+  const r = report();
+  r.entries[0].observation.source = "<script>unsafe</script>";
+  const { container } = render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <SummaryUsage report={r} />
+    </ApiProvider>,
+  );
+  expect(screen.getByText(/Não incluído no total/)).toHaveTextContent(
+    "Não informado",
+  );
+  await userEvent.click(screen.getByText("Observação original e proveniência"));
+  expect(screen.getByText("999.999")).toBeVisible();
+  expect(screen.getByText("0")).toBeVisible();
+  expect(screen.getByText("<script>unsafe</script>")).toBeVisible();
+  expect(container.querySelector("script")).toBeNull();
+  expect(screen.getAllByText(/Snapshot acumulado/)).toHaveLength(2);
+});
+it("shows authoritative totals, mixed coverage and legacy checkpoint time without summing snapshots", async () => {
+  const data = usage();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <TaskUsagePanel taskId="task" usage={data} version={1} />
+    </ApiProvider>,
+  );
+  expect(screen.getByText("9.007.199.254.740.993")).toBeVisible();
+  expect(screen.getByText("12")).toBeVisible();
+  expect(screen.getByText(/Qualidade mista/)).toBeVisible();
+  await userEvent.click(screen.getByText("Checkpoints dos resumos (1)"));
+  expect(screen.getByText(/Status observado: Não registrado/)).toBeVisible();
+  expect(screen.getByText(/Ausência não significa zero/)).toBeVisible();
+  expect(screen.getByText(/Não representa horário de consumo/)).toBeVisible();
+});
+it("paginates dimensions and checkpoints from API while keeping total independent", async () => {
+  const data = usage();
+  data.models = { ...data.models, total: 2, limit: 1, truncated: true };
+  data.timeline = { ...data.timeline, total: 2, limit: 1, truncated: true };
+  const api = createMockApi({ delay: 0 });
+  const dims = vi
+    .spyOn(api, "usageDimensions")
+    .mockResolvedValue({
+      ...page([{ provider: "Other", modelId: "Model B", harness: null }]),
+      offset: 1,
+      total: 2,
+    });
+  const next = usage();
+  next.knownTotalTokens = "7";
+  next.timeline = {
+    ...page([{ ...data.timeline.items[0], summaryId: "second" }]),
+    offset: 1,
+    total: 2,
+  };
+  const checkpoints = vi.spyOn(api, "usage").mockResolvedValue(next);
+  render(
+    <ApiProvider api={api}>
+      <TaskUsagePanel taskId="task" usage={data} version={1} />
+    </ApiProvider>,
+  );
+  await userEvent.click(screen.getByText("Modelos registrados (2)"));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Carregar mais modelos" }),
+  );
+  await screen.findByText("Model B · Other");
+  expect(dims).toHaveBeenCalledWith(
+    "task",
+    "model",
+    { offset: 1, limit: 100 },
+    expect.any(AbortSignal),
+  );
+  await userEvent.click(screen.getByText("Checkpoints dos resumos (2)"));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Carregar mais checkpoints" }),
+  );
+  await waitFor(() =>
+    expect(screen.getByText("2 de 2 checkpoints")).toBeVisible(),
+  );
+  expect(checkpoints).toHaveBeenCalledWith(
+    "task",
+    { offset: 1, limit: 20 },
+    expect.any(AbortSignal),
+  );
+  expect(screen.getByText("9.007.199.254.740.993")).toBeVisible();
+});
+it("keeps previous dimensions after a failed next page and allows retry", async () => {
+  const data = usage();
+  data.harnesses = { ...data.harnesses, total: 2, limit: 1, truncated: true };
+  const api = createMockApi({ delay: 0 });
+  vi.spyOn(api, "usageDimensions").mockRejectedValue(
+    new Error("Falha temporária"),
+  );
+  render(
+    <ApiProvider api={api}>
+      <TaskUsagePanel taskId="task" usage={data} version={1} />
+    </ApiProvider>,
+  );
+  await userEvent.click(screen.getByText("Harnesses registrados (2)"));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Carregar mais harnesses" }),
+  );
+  await screen.findByText(/Falha temporária/);
+  expect(screen.getByText("Harness A")).toBeVisible();
+});
+
+it("provides a focusable native disclosure for unavailable collection attempts", async () => {
+ const r=report();const o=r.entries[0].observation;o.quality="unavailable";o.reportKind="unavailable";o.inputTokens=null;o.outputTokens=null;o.discovery={reason:"Fonte sem contadores",attempts:["Consultado relatório de sessão"]};
+ render(<ApiProvider api={createMockApi({delay:0})}><SummaryUsage report={r}/></ApiProvider>);
+ const disclosure=screen.getByText("Observação original e proveniência");disclosure.focus();expect(disclosure).toHaveFocus();await userEvent.click(disclosure);
+ expect(screen.getByText("Fonte sem contadores")).toBeVisible();expect(screen.getByText("Consultado relatório de sessão")).toBeVisible();
+});

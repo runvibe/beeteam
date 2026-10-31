@@ -3,7 +3,7 @@ import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
 import { createTransport, type HttpOptions } from "./http-transport";
 const segment = encodeURIComponent;
-function query(filters: Filters = {}) {
+function query(filters: Filters & { kind?: "model" | "harness" } = {}) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters))
     if (value !== undefined && value !== null && value !== "")
@@ -35,6 +35,16 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    usage: (taskId, pagination = {}, signal) =>
+      request(`/tasks/${segment(taskId)}/usage` + query(pagination), {
+        signal,
+      }),
+    usageDimensions: (taskId, kind, pagination = {}, signal) =>
+      request(
+        `/tasks/${segment(taskId)}/usage/dimensions` +
+          query({ ...pagination, kind }),
+        { signal },
+      ),
     overview: (taskId, signal) =>
       request<TaskOverview>(`/tasks/${segment(taskId)}/overview`, { signal }),
     participants: (taskId, pagination = {}, signal) =>

@@ -1,3 +1,4 @@
+import { TaskUsagePanel } from "./task-usage";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { Task, Filters } from "@/api/types";
@@ -54,6 +55,11 @@ export function TaskOverviewPanel({
             />
           </div>
           <ProgressHistory data={q.data.progressHistory} />
+          <TaskUsagePanel
+            taskId={task.id}
+            version={task.version}
+            usage={q.data.usage}
+          />
         </>
       )}
       <div className="overview-reading-grid" data-loaded={!!q.data}>
