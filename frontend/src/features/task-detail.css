@@ -338,7 +338,7 @@ body:has(.task-page) {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
-    padding-bottom: 16px;
+    padding-bottom: 0;
   }
   .task-detail-primary {
     padding-right: 8px;
