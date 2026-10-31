@@ -486,8 +486,12 @@ Skills must investigate tools, permitted APIs/local metadata and official
 documentation before reporting unavailability, recording concrete attempts and
 limitations. Direct permitted reads are a first-class path; collectors are
 optional, with capability caching to avoid repeating discovery on every update.
-The proposed task UI places the full usage panel in Overview and a compact
-context summary in other tabs, preserving timestamped model history per actor
-and session. This visual proposal remains subject to implementation review.
+The proposed task UI presents structured usage/model fields in historical
+execution summaries, separate from Markdown. Overview shows known token totals,
+all known models used and a timeline of summary reports with observed status.
+There is no proposed usage sidebar or default metric presentation in comments.
+Cumulative snapshots and period deltas remain explicit; totals use deduplicated
+ledger evidence. A summary report does not imply a status transition or an exact
+usage timestamp. This visual proposal remains subject to implementation review.
 This is documentation only: no usage collector, migration, Skill change or
 usage dashboard is implemented or enabled by this proposal.
