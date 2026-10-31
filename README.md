@@ -614,3 +614,5 @@ A síntese atual no cabeçalho usa card neutro com tokens do tema, padding e can
 No card da síntese, título fica à esquerda e autoria/data reais à direita; no mobile, a identificação pode ocupar a linha seguinte, mantendo o conteúdo Markdown completo abaixo.
 
 A autoria do card usa `RelativeTime` (o mesmo de Boards/Agentes), com relógio compartilhado, texto relativo em português e data absoluta no `title`/`datetime`. A sidebar mantém a data absoluta.
+
+A autoria no card reutiliza o ícone UserRound dos agentes/colaboradores; o texto preserva o tipo real (agente ou pessoa), sem criar uma nova ação.
