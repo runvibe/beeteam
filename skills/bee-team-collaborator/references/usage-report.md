@@ -26,7 +26,7 @@ Métricas são opcionais; descrição/specification, plano, resumo histórico, c
 
 Confira o schema do runtime conectado antes de escrever: atualizar a skill não publica ferramentas. `RecordExecution.usageReport` é opcional ou null em `createExecutionSummary` e em `close_activity.execution`. Para salvar sem métricas, omita essa propriedade e mantenha os demais campos de negócio obrigatórios. Quando presente, `SummaryUsageInput` contém `entries` com 1 a 32 observações; não envie array vazio como declaração de ausência.
 
-Cada `UsageObservation` declara todos os campos do exemplo abaixo. `modelId`, `provider`, `harnessVersion`, `previousEvidenceId`, `periodStart`, `periodEnd`, os quatro contadores e `discovery` aceitam null. `source`, `harness`, `surface`, `sessionId`, `epoch` e `evidenceId` precisam ser strings não vazias observadas; não invente esses identificadores para preencher o schema. `actor` contém `kind` (agent/human) e `id` (UUIDv7 real ou null); `actorRole` aceita leader/collaborator/human/unknown. `observedAt` e datas de período usam RFC3339.
+Cada `UsageObservation` declara todos os campos do exemplo abaixo. `modelId`, `provider`, `harnessVersion`, `previousEvidenceId`, `periodStart`, `periodEnd`, os quatro contadores e `discovery` aceitam null. `source`, `harness`, `surface`, `sessionId`, `epoch` e `evidenceId` precisam ser strings não vazias observadas; não invente esses identificadores para preencher o schema. `actor` contém `kind` (agent/human) e `id`: agent exige UUIDv7 de agente persistido; human permite null. Não use human para contornar identificação de um agente real; `actorRole` aceita leader/collaborator/human/unknown. `observedAt` e datas de período usam RFC3339.
 
 Contadores são strings decimais inteiras não negativas ou null: `inputTokens` e `outputTokens` são inclusivos; `cachedInputTokens` e `reasoningOutputTokens` são subconjuntos, nunca somas adicionais. Preserve null para categoria não observada. `quality` aceita measured/estimated/unavailable; `attribution` aceita exact/shared/unallocated. Totais session_tree e atribuições shared/unallocated ficam fora do total da task; não force exact para fazê-los entrar.
 
@@ -43,7 +43,7 @@ Exemplo sintético apenas da propriedade opcional, não de uma requisição comp
       "source": "example-api", "harness": "example-harness", "surface": "api",
       "harnessVersion": null, "sessionId": "example-session", "epoch": "example-epoch",
       "evidenceId": "example-request-1", "previousEvidenceId": null,
-      "actor": {"kind": "agent", "id": null}, "actorRole": "collaborator",
+      "actor": {"kind": "human", "id": null}, "actorRole": "human",
       "provider": null, "modelId": null, "scope": "request",
       "reportKind": "period_delta", "quality": "measured", "attribution": "unallocated",
       "observedAt": "2026-10-31T00:00:00Z", "periodStart": null, "periodEnd": null,
