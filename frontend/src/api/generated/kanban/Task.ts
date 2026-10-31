@@ -5,6 +5,13 @@ export type Task = {
   id: string;
   /** Format: uuid */
   boardId: string;
+  /** @description Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId. */
+  parentReference?: {
+    /** Format: uuid */
+    id: string;
+    title: string;
+    slug: import("./Slug").Slug;
+  } | null;
   /** Format: uuid */
   parentId: string | null;
   title: string;

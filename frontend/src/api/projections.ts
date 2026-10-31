@@ -24,8 +24,12 @@ export function projectTask(task: Task, db: Database): Task {
   const children = db.tasks.filter(
     (t) => t.parentId === task.id && !t.deletedAt,
   );
+  const parent = db.tasks.find((row) => row.id === task.parentId);
   return {
     ...task,
+    parentReference: parent
+      ? { id: parent.id, title: parent.title, slug: parent.slug }
+      : null,
     childSummary: {
       total: children.length,
       done: children.filter(

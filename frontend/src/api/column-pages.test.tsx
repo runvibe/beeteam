@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { ApiProvider } from "./context";
 import { createMockApi } from "./mock";
 import type { BeeApi, BoardView, Task } from "./types";
+import { makeSeed, uuid } from "./seed";
 import { useColumnPages } from "./column-pages";
 
 it("appends, deduplicates and refreshes all loaded pages without dropping earlier tasks", async () => {
@@ -138,4 +139,48 @@ it("aborts obsolete continuation and ignores its late result after a filter chan
   });
   expect(result.current.items.map((t) => t.id)).toEqual(["new"]);
   expect(result.current.hasMore).toBe(false);
+});
+
+it("includes direct and nested children in board pages without importing foreign-board children", async () => {
+  const seed = makeSeed();
+  const parent = seed.tasks[0];
+  seed.tasks = [
+    parent,
+    ...Array.from({ length: 8 }, (_, i) => ({
+      ...parent,
+      id: uuid(900 + i),
+      slug: `child-${i}`,
+      title: `Child ${i}`,
+      position: `z${i}`,
+      parentId: i === 7 ? uuid(900) : parent.id,
+    })),
+    {
+      ...parent,
+      id: uuid(950),
+      slug: "foreign-child",
+      boardId: uuid(951),
+      parentId: parent.id,
+    },
+  ];
+  const api = createMockApi({ delay: 0, seed });
+  const board = await api.board(parent.boardId, { limitPerColumn: 6 });
+  const column = board.columns.find((c) => c.status.id === parent.statusId)!;
+  expect(column.total).toBe(9);
+  expect(column.tasks).toHaveLength(6);
+  const list = vi.spyOn(api, "list");
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <ApiProvider api={api}>{children}</ApiProvider>
+  );
+  const { result } = renderHook(
+    () => useColumnPages(parent.boardId, column, { limitPerColumn: 6 }),
+    { wrapper },
+  );
+  act(() => result.current.loadMore());
+  await waitFor(() => expect(result.current.items).toHaveLength(9));
+  expect(list.mock.calls[0][1]).toBe(parent.boardId);
+  expect(list.mock.calls[0][2]?.rootOnly).toBeUndefined();
+  expect(result.current.items.some((t) => t.id === uuid(950))).toBe(false);
+  expect(result.current.items.find((t) => t.id === uuid(907))?.parentId).toBe(
+    uuid(900),
+  );
 });

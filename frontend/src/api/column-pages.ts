@@ -22,7 +22,6 @@ export function useColumnPages(
         {
           ...continuation,
           statusId: column.status.id,
-          rootOnly: true,
           archived: false,
           sortBy: "position",
           sortOrder: "asc",

@@ -189,7 +189,7 @@ describe("Bee Team interface", () => {
     );
     await userEvent.click(
       await screen.findByRole("link", {
-        name: /Mapear a jornada de primeiro uso/,
+        name: "Mapear a jornada de primeiro uso",
       }),
     );
     const dialog = await screen.findByRole("region", { name: "Task" });
