@@ -8,6 +8,7 @@ import { usePageSize } from "@/routing/query";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Failure, NoData } from "@/components/shared";
 import { Button } from "@/components/ui/button";
+import { Markdown } from "@/components/markdown";
 import { Metadata } from "./plan-metadata";
 
 export function PlanHistory({
@@ -79,7 +80,9 @@ export function PlanHistory({
             {p.revision === item.revision ? " · atual" : ""}
           </h4>
           <Metadata item={p} />
-          {p.changeSummary && <p>{p.changeSummary}</p>}
+          {p.changeSummary && (
+            <Markdown headingOffset={2}>{p.changeSummary}</Markdown>
+          )}
           <Button
             variant="ghost"
             onClick={() =>

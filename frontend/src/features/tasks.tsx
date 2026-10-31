@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Choice,
-  TextBlock,
   QueryState,
   Pager,
   NoData,
@@ -88,7 +87,11 @@ function TaskDetail({ id }: { id: string }) {
                   <Ban className="size-9" aria-hidden="true" />
                   <div className="task-blocked-message">
                     <AlertTitle>Task bloqueada</AlertTitle>
-                    <AlertDescription>{q.data.block.reason}</AlertDescription>
+                    <AlertDescription>
+                      <Markdown headingOffset={2}>
+                        {q.data.block.reason}
+                      </Markdown>
+                    </AlertDescription>
                   </div>
                 </Alert>
               )}
@@ -100,10 +103,11 @@ function TaskDetail({ id }: { id: string }) {
             <>
               <Tabs
                 value={tab}
+                activationMode="manual"
                 onValueChange={setTab}
                 className="task-detail-tabs"
               >
-                <TaskSections value={tab} onChange={setTab} />
+                <TaskSections value={tab} />
                 <motion.div
                   className="task-detail-reading"
                   animate={panelAnimation}
@@ -296,7 +300,9 @@ function RecordContent({
               }[r.outcome]
             }
           </Badge>
-          <TextBlock>{r.summary}</TextBlock>
+          <Markdown headingOffset={2} sectionDividers>
+            {r.summary}
+          </Markdown>
         </section>
         <section className="task-reading-block" aria-label="Entregas">
           <h4>Entregas</h4>
@@ -321,7 +327,9 @@ function RecordContent({
           {r.pending.length ? (
             <ul className="list-disc pl-5">
               {r.pending.map((p, i) => (
-                <li key={i}>{p}</li>
+                <li key={i}>
+                  <Markdown headingOffset={2}>{p}</Markdown>
+                </li>
               ))}
             </ul>
           ) : (
@@ -398,7 +406,9 @@ function Attachment({ item }: { item: Resources["attachments"] }) {
       <p className="small-note">
         {item.mediaType} · {item.sizeBytes} bytes
       </p>
-      <TextBlock>{item.description}</TextBlock>
+      <Markdown headingOffset={2} sectionDividers>
+        {item.description}
+      </Markdown>
       <Button variant="outline" disabled={busy} onClick={() => void download()}>
         <Download data-icon="inline-start" />
         {busy ? "Preparando…" : "Baixar arquivo"}

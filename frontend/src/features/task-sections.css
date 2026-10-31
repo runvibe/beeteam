@@ -1,0 +1,64 @@
+/* Sticky navigation 20; conversation filters 19; portalled overlays 50. */
+.task-section-navigation {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 2px;
+}
+.task-section-viewport {
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.task-section-viewport::-webkit-scrollbar {
+  display: none;
+}
+.task-section-list[data-slot="tabs-list"] {
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  height: auto;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--muted);
+}
+.task-section-list [data-slot="tabs-trigger"] {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  transition: none;
+}
+.task-section-list [data-slot="tabs-trigger"][data-state="active"] {
+  background: var(--background);
+  color: var(--foreground);
+  border-color: var(--border);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+.task-section-list [data-slot="tabs-trigger"]:hover {
+  color: var(--foreground);
+}
+.task-section-list [data-slot="tabs-trigger"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.task-section-arrow[data-slot="button"] {
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+}
+.task-section-arrow[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: default;
+}
+/* Slots remain reserved at both edges, even at the start/end of the strip. */
+.task-section-navigation[data-overflow="false"] .task-section-arrow {
+  visibility: hidden;
+}

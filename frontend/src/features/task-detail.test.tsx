@@ -19,8 +19,11 @@ it("shares section selection with deep links and retains the autonomy form acros
       <App />
     </ApiProvider>,
   );
-  const section = await screen.findByLabelText("Seção da tarefa");
-  expect(section).toHaveValue("specification");
+  await screen.findByRole("tablist", { name: "Seção da tarefa" });
+  expect(screen.getByRole("tab", { name: "Especificação" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   expect(
     within(screen.getByRole("region", { name: "Task" })).queryByRole("button", {
       name: "Voltar",
@@ -54,9 +57,9 @@ it("shares section selection with deep links and retains the autonomy form acros
     name: "Configuração individual",
   });
   const panel = document.querySelector(".task-detail-reading");
-  await userEvent.selectOptions(section, "children");
+  await userEvent.click(screen.getByRole("tab", { name: "Subtasks" }));
   expect(screen.queryByText(/Filhos diretos em todos os boards/)).toBeNull();
-  await userEvent.selectOptions(section, "overview");
+  await userEvent.click(screen.getByRole("tab", { name: "Visão geral" }));
   expect(
     await screen.findByRole("heading", { name: "Resumo atual do trabalho" }),
   ).toBeVisible();
@@ -73,7 +76,12 @@ it("shares section selection with deep links and retains the autonomy form acros
     screen.getByRole("button", { name: /Detalhes da tarefa/ }),
   );
   await userEvent.click(screen.getByRole("tab", { name: "Planos" }));
-  await waitFor(() => expect(section).toHaveValue("plans"));
+  await waitFor(() =>
+    expect(screen.getByRole("tab", { name: "Planos" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    ),
+  );
   expect(
     screen.getByRole("combobox", { name: "Configuração individual" }),
   ).toBe(autonomy);
