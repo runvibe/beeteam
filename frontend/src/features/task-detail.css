@@ -501,10 +501,18 @@ body:has(.task-page) {
 .task-detail-hero .task-summary-section {
   display: grid;
   gap: 8px;
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--muted);
+  color: var(--foreground);
 }
 .task-detail-hero .task-summary-section > h2 {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
+}
+.task-detail-hero .task-summary-section > :is(h2, .small-note) {
+  color: var(--secondary-foreground);
 }
 .task-detail-hero :is(.task-header-description, .task-summary-section) .markdown-content {
   width: 100%;
