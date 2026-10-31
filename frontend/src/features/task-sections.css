@@ -1,7 +1,7 @@
 /* Sticky navigation 20; conversation filters 19; portalled overlays 50. */
 .task-section-navigation {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  grid-template-columns: minmax(0, 1fr) 44px 44px;
   align-items: center;
   gap: 2px;
 }
@@ -59,7 +59,7 @@
   opacity: 0.35;
   cursor: default;
 }
-/* Slots remain reserved at both edges, even at the start/end of the strip. */
+/* Both controls stay at the right; the tab strip aligns with the content start. */
 .task-section-navigation[data-overflow="false"] .task-section-arrow {
   visibility: hidden;
 }

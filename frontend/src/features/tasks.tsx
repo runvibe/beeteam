@@ -2,7 +2,7 @@ import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskPath } from "@/components/context-path";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { usePageEntrance } from "@/components/motion-settings";
 import { Plans } from "./plans";
@@ -47,6 +47,13 @@ function TaskDetail({ id }: { id: string }) {
   const q = useEntity("tasks", id);
   const heading = useRef<HTMLHeadingElement>(null);
   const planRevealConsumed = useRef(false);
+  const reading = useRef<HTMLDivElement>(null);
+  const [conversationPlaceholderHeight, setConversationPlaceholderHeight] =
+    useState(0);
+  const conversationReady = useCallback(
+    () => setConversationPlaceholderHeight(0),
+    [],
+  );
   const { primary, hero, pastHeader } = useTaskHeaderVisibility();
   const [tab, setTab] = useUrlState<string>("tab", "overview", {
     values: [
@@ -104,12 +111,28 @@ function TaskDetail({ id }: { id: string }) {
               <Tabs
                 value={tab}
                 activationMode="manual"
-                onValueChange={setTab}
+                onValueChange={(value) => {
+                  // Keep the outgoing height while comments resolve, so the shared
+                  // scroller cannot clamp to the much shorter loading placeholder.
+                  setConversationPlaceholderHeight(
+                    value === "comments"
+                      ? (reading.current?.getBoundingClientRect().height ?? 0)
+                      : 0,
+                  );
+                  setTab(value);
+                }}
                 className="task-detail-tabs"
               >
                 <TaskSections value={tab} />
                 <motion.div
                   className="task-detail-reading"
+                  ref={reading}
+                  style={{
+                    minHeight:
+                      tab === "comments"
+                        ? conversationPlaceholderHeight
+                        : undefined,
+                  }}
                   animate={panelAnimation}
                   data-task-section={tab}
                 >
@@ -137,7 +160,10 @@ function TaskDetail({ id }: { id: string }) {
                     <Plans task={q.data} revealConsumed={planRevealConsumed} />
                   </TabsContent>
                   <TabsContent value="comments">
-                    <TaskConversation taskId={q.data.id} />
+                    <TaskConversation
+                      taskId={q.data.id}
+                      onReady={conversationReady}
+                    />
                   </TabsContent>
                   <TabsContent value="attachments">
                     <Records resource="attachments" task={q.data} />

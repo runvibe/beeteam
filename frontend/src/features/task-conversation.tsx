@@ -1,7 +1,7 @@
 import { useConversationToolbar } from "./conversation-toolbar";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useEntity } from "@/api/context";
 import type { Resources } from "@/api/types";
 import { AgentAvatar } from "@/components/agent-avatar";
@@ -22,8 +22,18 @@ import { conversationAuthor } from "./task-conversation-author";
 import { useConversationAnchor } from "./conversation-anchor";
 import "./task-conversation.css";
 
-export function TaskConversation({ taskId }: { taskId: string }) {
+export function TaskConversation({
+  taskId,
+  onReady,
+}: {
+  taskId: string;
+  onReady?: () => void;
+}) {
   const state = useTaskConversation(taskId);
+  useLayoutEffect(() => {
+    if (state.query.data || state.query.error || state.metadata.error)
+      onReady?.();
+  }, [state.query.data, state.query.error, state.metadata.error, onReady]);
   const toolbar = useConversationToolbar();
   const clear = () => {
     state.setActorId("");
@@ -87,9 +97,9 @@ function ConversationWindow({
   const list = useRef<HTMLElement>(null),
     before = useRef<HTMLDivElement>(null),
     after = useRef<HTMLDivElement>(null);
-  const anchor = useConversationAnchor(list, identity, query.data, !explicit);
-  const previous = () => {
-    anchor.capture();
+  const anchor = useConversationAnchor(list, identity, query.data);
+  const previous = (explicitRequest = false) => {
+    anchor.capture(explicitRequest);
     return query.fetchPreviousPage({ cancelRefetch: false });
   };
   const next = () => {
@@ -130,7 +140,7 @@ function ConversationWindow({
           <Button
             variant="ghost"
             disabled={query.isFetching}
-            onClick={() => void previous()}
+            onClick={() => void previous(true)}
           >
             Carregar anteriores
           </Button>
