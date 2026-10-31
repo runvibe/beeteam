@@ -15,7 +15,7 @@
   height: auto;
   justify-content: flex-start;
   gap: 2px;
-  padding: 4px;
+  padding: 0;
   border: 1px solid transparent;
   border-radius: var(--radius);
   background: transparent;

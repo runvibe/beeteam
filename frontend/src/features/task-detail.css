@@ -399,7 +399,7 @@ body:has(.task-page) {
   top: 0;
   z-index: 20;
   background: var(--background);
-  padding-block: 0;
+  padding: 0;
   min-width: 0;
 }
 .task-detail-primary {
