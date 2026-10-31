@@ -316,7 +316,6 @@ export function createMockApi(
             filtered("tasks", id, {
               ...f,
               statusId: status.id,
-              rootOnly: true,
               archived: false,
               sortBy: "position",
               sortOrder: "asc",

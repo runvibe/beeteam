@@ -675,10 +675,10 @@ paths:
     get:
       operationId: getBoardView
       summary: Consultar quadro
-      description: Projeção por board, todas as colunas ativas visíveis, cards raiz locais em position,id
-        asc. limitPerColumn default20 max100. Task filha em outro board continua acessível na
+      description: Projeção por board, todas as colunas ativas visíveis, todas as tarefas locais (raizes e subtarefas) em position,id
+        asc. limitPerColumn default20 max100. Tasks de outros boards nao entram nos cards nem totais; continuam acessiveis na
         listagem e checklist global; filtros locais não definem contexto de execução. Cada card traz
-        autor/executor, currentSummary e executionContext. Continuação via listagem do board com statusId/rootOnly e
+        autor/executor, currentSummary, executionContext e parentReference compacto sem consultas por card. Continuacao via listagem do board com statusId, archived=false, sortBy=position, sem rootOnly, e
         mesmos filtros.
       x-contract-status: proposed
       parameters:
@@ -3399,6 +3399,21 @@ components:
           type: string
           format: uuid
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        parentReference:
+          description: Referencia compacta a mae, inclusive de outro board; null para raiz. Campo aditivo de leitura, sem alterar parentId.
+          anyOf:
+            - type: object
+              additionalProperties: false
+              required: [id, title, slug]
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                slug:
+                  $ref: '#/components/schemas/Slug'
+            - type: "null"
         parentId:
           type:
             - string

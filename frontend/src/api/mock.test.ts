@@ -23,7 +23,7 @@ describe("mock contract adapter", () => {
     expect(next.items[0].id).not.toBe(page.items[0].id);
     expect((await api.list("tasks", ids.board, { title: "%" })).total).toBe(0);
   });
-  it("keeps empty board columns and paginates only root active tasks", async () => {
+  it("keeps empty board columns and paginates active board tasks", async () => {
     const board = await createMockApi({ delay: 0 }).board(ids.board, {
       title: "inexistente",
       limitPerColumn: 1,

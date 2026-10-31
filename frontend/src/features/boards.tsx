@@ -1,3 +1,4 @@
+import { TaskParentReference } from "@/components/task-parent-reference";
 import { CardKindMark } from "@/components/card-kind-mark";
 import { KanbanCarousel } from "@/components/kanban-carousel";
 import { useColumnPages } from "@/api/column-pages";
@@ -413,6 +414,7 @@ export function TaskCard({ task }: { task: Task }) {
           </div>
         </CardContent>
       </a>
+      <TaskParentReference task={task} />
       <CardFooter className="justify-between gap-2">
         <AgentName id={task.executorAgentId} avatar />
         {task.childSummary.total > 0 && (

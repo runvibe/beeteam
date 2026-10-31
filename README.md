@@ -535,3 +535,5 @@ No card da síntese, título fica à esquerda e autoria/data reais à direita; n
 A autoria do card usa `RelativeTime` (o mesmo de Boards/Agentes), com relógio compartilhado, texto relativo em português e data absoluta no `title`/`datetime`. A sidebar mantém a data absoluta.
 
 A autoria no card reutiliza o ícone UserRound dos agentes/colaboradores; o texto preserva o tipo real (agente ou pessoa), sem criar uma nova ação.
+
+O Kanban inclui todas as tarefas ativas do próprio board, inclusive subtarefas em qualquer nível. A primeira página e as continuações usam o mesmo escopo; parentId é preservado. Cards de subtarefas identificam o vínculo e permitem abrir a mãe independentemente do status da filha. Filhas em outros boards não são importadas para a coluna da mãe.
