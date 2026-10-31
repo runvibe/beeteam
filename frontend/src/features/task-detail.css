@@ -506,8 +506,9 @@ body:has(.task-page) {
   font-size: 14px;
   font-weight: 600;
 }
-.task-detail-hero .markdown-content {
-  max-width: 72ch;
+.task-detail-hero :is(.task-header-description, .task-summary-section) .markdown-content {
+  width: 100%;
+  max-width: none;
 }
 .task-compact-header {
   position: relative;
