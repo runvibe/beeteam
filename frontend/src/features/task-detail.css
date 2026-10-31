@@ -8,6 +8,7 @@ body:has(.task-page) {
   gap: 20px;
 }
 .task-detail-heading h1 {
+  margin: 0;
   font-size: 24px;
   line-height: 1.35;
   font-weight: 600;
@@ -389,7 +390,11 @@ body:has(.task-page) {
 .task-detail-hero {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
+}
+/* Keep the title attached to its description without changing Markdown rhythm. */
+.task-detail-hero > .task-detail-heading {
+  margin-bottom: -4px;
 }
 .task-page {
   --task-sections-height: 70px;
@@ -500,9 +505,9 @@ body:has(.task-page) {
 }
 .task-detail-hero .task-summary-section {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  padding: 16px;
+  padding: 12px;
   border-radius: var(--radius);
   background: var(--muted);
   color: var(--foreground);
