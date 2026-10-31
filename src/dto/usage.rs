@@ -1,7 +1,20 @@
-//! Transport-independent validation for optional, evidence-backed summary usage.
+//! Transport-independent validation for required new-write, evidence-backed summary usage.
 use super::backend::{value_id, Failure, Result};
 use chrono::DateTime;
 use serde_json::Value;
+
+/// Enforced after replay lookup so historical successful requests stay replayable.
+pub fn require_report(body: &Value) -> Result<()> {
+    if body
+        .get("usageReport")
+        .and_then(|v| v.get("entries"))
+        .and_then(Value::as_array)
+        .is_none_or(Vec::is_empty)
+    {
+        return Err(Failure::invalid("usageReport.entries is required for every new execution summary. Discover the actual harness/model and session usage source; provide measured/estimated evidence, or an explicit unavailable observation with null counters, discovery.reason and factual discovery.attempts. Never invent token counts."));
+    }
+    Ok(())
+}
 
 pub const COMPONENTS: [&str; 4] = [
     "inputTokens",
@@ -78,11 +91,14 @@ pub fn validate_observation(v: &Value) -> Result<()> {
             || v["discovery"]["reason"]
                 .as_str()
                 .is_none_or(|s| s.trim().is_empty())
-            || v["discovery"]["attempts"]
-                .as_array()
-                .is_none_or(Vec::is_empty)
+            || v["discovery"]["attempts"].as_array().is_none_or(|items| {
+                items.is_empty()
+                    || items
+                        .iter()
+                        .any(|v| v.as_str().is_none_or(|s| s.trim().is_empty()))
+            })
         {
-            return Err(Failure::invalid("An optional unavailable observation needs null counters and investigated reason/attempts"));
+            return Err(Failure::invalid("An unavailable observation needs null counters and investigated reason/attempts"));
         }
     } else if v["quality"] == "unavailable" || counts[0].is_none() && counts[1].is_none() {
         return Err(Failure::invalid(

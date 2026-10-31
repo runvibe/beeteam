@@ -64,6 +64,9 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
         fill_legacy_slugs(&mut result.data, &unit.records);
         return Ok(result.data);
     }
+    if name == "close_activity" {
+        crate::dto::usage::require_report(&input["execution"])?;
+    }
     validation?;
     check_version(
         unit.records.get("tasks", id)?,

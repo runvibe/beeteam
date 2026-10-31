@@ -191,3 +191,38 @@ pub async fn legacy_replay(
     .unwrap();
     unit.commit().await.unwrap();
 }
+
+/// Explicit synthetic declaration for test executions; not observed product usage.
+pub fn unavailable_usage() -> Value {
+    json!({"entries":[{"source":"test-fixture","harness":"test-runner","surface":"integration-test","harnessVersion":null,"sessionId":"unavailable","epoch":"unavailable","evidenceId":uuid::Uuid::new_v4(),"previousEvidenceId":null,"actor":{"kind":"human","id":null},"actorRole":"human","provider":null,"modelId":null,"scope":"session","reportKind":"unavailable","quality":"unavailable","attribution":"unallocated","observedAt":"2026-10-31T00:00:00Z","periodStart":null,"periodEnd":null,"inputTokens":null,"outputTokens":null,"cachedInputTokens":null,"reasoningOutputTokens":null,"discovery":{"reason":"Synthetic integration fixture has no model execution.","attempts":["Inspected fixture: no model invocation or usage source exists."]}}]})
+}
+
+/// Isolated fixture access for migration/replay compatibility tests only.
+pub async fn sqlite_app_with_pool() -> (Router, sqlx::SqlitePool) {
+    let url = format!(
+        "sqlite://{}",
+        std::env::temp_dir()
+            .join(format!("bee-legacy-{}.sqlite", uuid::Uuid::new_v4()))
+            .to_string_lossy()
+            .replace('\\', "/")
+    );
+    let database = DatabaseRepository::connect(beeteam::config::DatabaseDriver::Sqlite, &url)
+        .await
+        .unwrap();
+    let pool = beeteam::repositories::sqlite::connect(&url).await.unwrap();
+    let config = AppConfig {
+        database_driver: beeteam::config::DatabaseDriver::Sqlite,
+        database_url: url,
+        host: "127.0.0.1".parse().unwrap(),
+        port: 0,
+        cors: CorsConfig::Permissive,
+        body_limit_bytes: 22 * 1024 * 1024,
+        otel_enabled: false,
+        mcp: McpConfig {
+            enabled: true,
+            path: DEFAULT_MCP_PATH.into(),
+            cors: CorsConfig::Permissive,
+        },
+    };
+    (create_router(AppState::new(database), &config), pool)
+}

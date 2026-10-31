@@ -7,7 +7,9 @@ use support::*;
 use tower::ServiceExt;
 
 async fn setup() -> (Router, Value, Value, Value) {
-    let app = app().await;
+    setup_on(app().await).await
+}
+async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     let agent = ok(
         &app,
         "POST",
@@ -36,7 +38,7 @@ async fn setup() -> (Router, Value, Value, Value) {
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
-    json!({"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
+    json!({"usageReport":unavailable_usage(),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
 }
 async fn tool(app: &Router, name: &str, args: Value) -> Value {
     let r=app.clone().oneshot(Request::builder().method("POST").uri("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":name,"arguments":args}}).to_string())).unwrap()).await.unwrap();
@@ -124,7 +126,7 @@ async fn summary_usage_snapshots_deduplicate_without_status_or_markdown_inferenc
 }
 
 #[tokio::test]
-async fn optional_reports_late_evidence_replay_and_transport_parity() {
+async fn unavailable_reports_late_evidence_replay_and_transport_parity() {
     let (app, agent, board, task) = setup().await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
     let key = uuid::Uuid::new_v4();
@@ -133,11 +135,14 @@ async fn optional_reports_late_evidence_replay_and_transport_parity() {
         request_key(&app, "POST", &route, original.clone(), ver(&task), key).await;
     assert_eq!(status, 201);
     let summary = &first["executionSummary"];
-    assert!(summary.get("usageReport").is_none());
+    assert_eq!(
+        summary["usageReport"]["entries"][0]["observation"]["reportKind"],
+        "unavailable"
+    );
     let before = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     let empty = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
     assert!(empty["knownTotalTokens"].is_null());
-    assert_eq!(empty["coverage"]["missingSummaries"], 1);
+    assert_eq!(empty["coverage"]["missingSummaries"], 0);
     let mut entry = observation(id(&agent), "request-1", None, "20", "5");
     entry["scope"] = json!("request");
     entry["reportKind"] = json!("period_delta");
@@ -156,7 +161,7 @@ async fn optional_reports_late_evidence_replay_and_transport_parity() {
     .await;
     assert_eq!(status, 200, "{late}");
     assert_eq!(late["summary"], summary["summary"]);
-    assert_eq!(late["usageReport"]["revision"], 1);
+    assert_eq!(late["usageReport"]["revision"], 2);
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}", id(&task))).await,
         before
@@ -200,12 +205,12 @@ async fn optional_reports_late_evidence_replay_and_transport_parity() {
         supplemented["usageReport"]["reportedAt"],
         late["usageReport"]["reportedAt"]
     );
-    assert_eq!(supplemented["usageReport"]["revision"], 2);
+    assert_eq!(supplemented["usageReport"]["revision"], 3);
     let data = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
     assert_eq!(data["knownTotalTokens"], "25");
     assert_eq!(data["estimatedTotalTokens"], "25");
     assert_eq!(data["models"]["total"], 2);
-    assert_eq!(data["harnesses"]["total"], 2);
+    assert_eq!(data["harnesses"]["total"], 3);
     assert_eq!(data["timeline"]["total"], 1);
 }
 
@@ -233,6 +238,10 @@ async fn invalid_or_overlapping_evidence_rolls_back_and_unavailable_is_not_zero(
     }
     missing["modelId"] = Value::Null;
     missing["discovery"] = json!({"reason":"Isolated fixture has no harness stream","attempts":["Inspected fixture tool inventory and documented metadata source"]});
+    let mut blank=missing.clone();
+    blank["discovery"]["attempts"]=json!(["   "]);
+    body["usageReport"]=json!({"entries":[blank]});
+    assert_eq!(request(&app,"POST",&route,body.clone(),ver(&task)).await.0,400);
     body["usageReport"] = json!({"entries":[missing]});
     let first = ok(&app, "POST", &route, body, ver(&task)).await;
     let data = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
@@ -345,7 +354,7 @@ async fn close_activity_usage_validation_is_atomic_with_comments_and_status() {
     let success=tool(&app,"close_activity",json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"execution":execution(&task,&board)})).await;
     assert_eq!(
         success["isError"], false,
-        "Optional metadata must not block summary: {success}"
+        "Explicit unavailable must allow summary: {success}"
     );
 }
 
@@ -383,4 +392,133 @@ async fn task_aggregate_overflow_and_parallel_source_overlap_are_rejected() {
         get(&app, &format!("/api/v1/tasks/{}", id(&task))).await,
         first["task"]
     );
+}
+
+#[tokio::test]
+async fn new_summaries_require_explicit_usage_in_http_mcp_and_compound() {
+    let (app, _, board, task) = setup().await;
+    let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
+    for report in [None, Some(Value::Null), Some(json!({"entries":[]}))] {
+        let mut body = execution(&task, &board);
+        body.as_object_mut().unwrap().remove("usageReport");
+        if let Some(report) = report {
+            body["usageReport"] = report;
+        }
+        let (status, error) = request(&app, "POST", &route, body.clone(), ver(&task)).await;
+        assert_eq!(status, 400, "{error}");
+        assert!(error.to_string().contains("usageReport"), "{error}");
+        let args = json!({"params":{"taskId":id(&task)},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":body});
+        let rpc = tool(&app, "createExecutionSummary", args).await;
+        assert_eq!(rpc["isError"], true, "{rpc}");
+        assert!(rpc.to_string().contains("usageReport"));
+        let rpc=tool(&app,"close_activity",json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must not survive missing usage","execution":body})).await;
+        assert_eq!(rpc["isError"], true, "{rpc}");
+        assert!(rpc.to_string().contains("usageReport"));
+    }
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(&task))).await,
+        task
+    );
+    assert_eq!(get(&app, &route).await["total"], 0);
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}/comments", id(&task))).await["total"],
+        0
+    );
+    let rpc=tool(&app,"createExecutionSummary",json!({"params":{"taskId":id(&task)},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":execution(&task,&board)})).await;
+    assert_eq!(rpc["isError"],false,"{rpc}");
+    assert_eq!(rpc["structuredContent"]["data"]["executionSummary"]["usageReport"]["entries"][0]["observation"]["reportKind"],"unavailable");
+
+}
+
+#[tokio::test]
+async fn historical_missing_usage_and_saved_replays_survive_required_write_contract() {
+    use beeteam::dto::backend::Outcome;
+    use beeteam::repositories::sqlite::ResourceRepository;
+    use sha2::{Digest, Sha256};
+    let (app, pool) = sqlite_app_with_pool().await;
+    let (app, _, board, task) = setup_on(app).await;
+    let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
+    let mut legacy = execution(&task, &board);
+    let first = ok(&app, "POST", &route, legacy.clone(), ver(&task)).await;
+    legacy.as_object_mut().unwrap().remove("usageReport");
+    let mut snapshot = first.clone();
+    snapshot["executionSummary"]
+        .as_object_mut()
+        .unwrap()
+        .remove("usageReport");
+    let repo = ResourceRepository::new(pool.clone());
+    let sid = uuid::Uuid::parse_str(id(&first["executionSummary"])).unwrap();
+    let mut unit = repo.begin().await.unwrap();
+    unit.records
+        .get_mut("execution_summaries", sid)
+        .unwrap()
+        .data
+        .as_object_mut()
+        .unwrap()
+        .remove("usageReport");
+    let direct_key = uuid::Uuid::new_v4();
+    let params = json!({"taskId":id(&task)});
+    let hash = |v: &Value| {
+        Sha256::digest(serde_json::to_vec(v).unwrap())
+            .iter()
+            .map(|b| format!("{b:02x}"))
+            .collect::<String>()
+    };
+    unit.save_replay(
+        "human:",
+        &format!("createExecutionSummary:{}", params),
+        direct_key,
+        &hash(&json!([legacy, params, {}])),
+        &Outcome::data(snapshot.clone()),
+    )
+    .await
+    .unwrap();
+    let close_key = uuid::Uuid::new_v4();
+    let close = json!({"taskId":id(&task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":close_key,"execution":legacy});
+    let closed = json!({"task":first["task"],"updatedTasks":[first["task"]],"notice":"Historical response."});
+    unit.save_replay(
+        "human:",
+        &format!("close_activity:{}", id(&task)),
+        close_key,
+        &hash(&close),
+        &Outcome::data(closed.clone()),
+    )
+    .await
+    .unwrap();
+    unit.commit().await.unwrap();
+    let before = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
+    assert_eq!(get(&app, &route).await["items"][0].get("usageReport"), None);
+    let usage = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
+    assert_eq!(usage["coverage"]["missingSummaries"], 1);
+    assert!(usage["knownTotalTokens"].is_null());
+    let (_, replayed) =
+        request_key(&app, "POST", &route, legacy.clone(), ver(&task), direct_key).await;
+    assert_eq!(replayed, snapshot);
+    let rpc=tool(&app,"createExecutionSummary",json!({"params":params,"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":direct_key,"body":legacy})).await;
+    assert_eq!(rpc["isError"], false, "{rpc}");
+    assert_eq!(rpc["structuredContent"]["data"], snapshot);
+    let rpc = tool(&app, "close_activity", close).await;
+    assert_eq!(rpc["isError"], false, "{rpc}");
+    assert_eq!(rpc["structuredContent"], closed);
+    assert_eq!(
+        request(&app, "POST", &route, legacy, ver(&before)).await.0,
+        400
+    );
+    assert_eq!(
+        get(&app, &format!("/api/v1/tasks/{}", id(&task))).await,
+        before
+    );
+    assert_eq!(get(&app, &route).await["total"], 1);
+}
+
+#[test]
+fn summary_mcp_tools_explain_required_evidence_and_honest_fallback() {
+    let catalog=beeteam::routes::mcp::catalog();
+    for name in ["createExecutionSummary","close_activity"] {
+        let tool=catalog["tools"].as_array().unwrap().iter().find(|t|t["name"]==name).unwrap();
+        let description=tool["description"].as_str().unwrap();
+        for term in ["usageReport","session","models","harnesses","decimal","baseline","unavailable","discovery.attempts"] {
+            assert!(description.contains(term),"{name} description missing {term}");
+        }
+    }
 }

@@ -100,6 +100,9 @@ pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Re
     }
     // Exact saved replays remain valid across additive contract upgrades.
     // New mutations must always satisfy the current full request schema.
+    if command.operation == "createExecutionSummary" {
+        crate::dto::usage::require_report(&command.body)?;
+    }
     validation?;
     let mut result = if command.operation == "reconcileSummaryUsage" {
         usage::reconcile(&mut unit, &command).await?

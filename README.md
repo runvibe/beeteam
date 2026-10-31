@@ -478,8 +478,11 @@ All queries share the repository-owned read-only snapshot. The overview read hyd
 
 ## Usage and model history proposal
 
-The optional summary-checkpoint backend increment is now implemented in source;
-see [summary usage contracts and limits](docs/summary-usage.md). Runtime activation
+The summary-checkpoint backend is implemented in source. Every new execution
+summary now requires usageReport, including an explicit factual unavailable
+declaration when measurement is impossible; historical absence and saved replays
+remain compatible.
+See [summary usage contracts and limits](docs/summary-usage.md). Runtime activation
 is separate. The broader collector/global-ledger proposal below remains future work.
 
 The [token and model ledger plan](docs/superpowers/plans/2026-10-30-token-model-ledger.md)
