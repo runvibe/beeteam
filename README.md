@@ -542,4 +542,6 @@ O card usa um único link visível “Subtarefa” para abrir a mãe. O nome da 
 
 A navegação de seções da tarefa não adiciona padding no wrapper, na faixa mobile ou na lista de abas; botões mantêm padding interno e alvos de toque existentes.
 
-A sidebar direita de contexto da tarefa usa padding horizontal desktop de 48px à esquerda e 8px à direita; o espaçamento vertical e o contexto mobile de uma coluna são preservados.
+A sidebar direita de contexto da tarefa usa padding horizontal desktop de 24px à esquerda e 4px à direita; o espaçamento vertical e o contexto mobile de uma coluna são preservados.
+
+O menu global esquerdo usa padding horizontal de 12px por lado (antes 6px) e coluna de 68px (antes 56px), preservando logo/ícones centralizados e alvos de 44px em desktop e mobile. O padding vertical continua 6px.

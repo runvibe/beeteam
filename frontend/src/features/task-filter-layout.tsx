@@ -70,7 +70,7 @@ export function TaskFilterSlot() {
         docked
           ? {
               top,
-              left: rail!.getBoundingClientRect().left + 6,
+              left: rail!.getBoundingClientRect().left + (rail!.getBoundingClientRect().width - 44) / 2,
               height: available,
             }
           : null,
