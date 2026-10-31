@@ -650,3 +650,5 @@ PostgreSQL execution and live UI acceptance remain separate; no product data or
 runtime was changed by this delivery.
 
 O Kanban inclui todas as tarefas ativas do próprio board, inclusive subtarefas em qualquer nível. A primeira página e as continuações usam o mesmo escopo; parentId é preservado. Cards de subtarefas identificam o vínculo e permitem abrir a mãe independentemente do status da filha. Filhas em outros boards não são importadas para a coluna da mãe.
+
+O card usa um único link visível “Subtarefa” para abrir a mãe. O nome da mãe fica no tooltip e no rótulo acessível, preservando o contexto de retorno.
