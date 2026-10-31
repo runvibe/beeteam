@@ -563,4 +563,6 @@ O wrapper `.task-page` não adiciona padding em nenhum breakpoint. Os espaçamen
 
 A faixa `.task-section-navigation` não adiciona padding vertical; os botões mantêm suas alturas e a faixa mantém o comportamento sticky.
 
+Na Conversa, Tipo de autor usa o ícone de classificação e Autor da fala usa o ícone de pessoa, com os mesmos rótulos acessíveis e estados ativos.
+
 O filtro Autor da fala consulta todas as páginas de `GET /api/v1/tasks/{taskId}/participants`, independentemente do texto e da janela de comentários. Mostra participantes da tarefa, incluindo históricos, arquivados e excluídos, e um grupo de pessoas sem inventar identidades. Não consulta o catálogo global como fallback. O endpoint deve estar disponível no backend ativo; falhas exibem erro e nova tentativa. A agregação autoritativa pertence ao backend; o adaptador de demonstração mantém a mesma seleção escopada em memória.

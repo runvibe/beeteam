@@ -29,6 +29,7 @@ const icons: Record<string, LucideIcon> = {
   "Time gestor": Users,
   Time: Users,
   Executor: UserRound,
+  "Autor da fala": UserRound,
   Cadastro: Archive,
   Papel: Briefcase,
   Bloqueio: LockKeyhole,
