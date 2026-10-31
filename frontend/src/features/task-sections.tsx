@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import "./task-sections.css";
+import { TaskFilterSlot } from "./task-filter-layout";
 
 const sections = [
   ["overview", "Visão geral"],
@@ -58,7 +59,7 @@ export function TaskSections({ value }: { value: string }) {
     const oldHtml = html.style.getPropertyValue(property);
     const oldPage = page?.style.getPropertyValue(property) ?? "";
     const resize = () => {
-      const height = `${nav.getBoundingClientRect().height}px`;
+      const height = `${nav.getBoundingClientRect().height || nav.querySelector(".task-section-navigation-strip")?.getBoundingClientRect().height || 0}px`;
       page?.style.setProperty(property, height);
       html.style.setProperty(property, height);
       measure();
@@ -73,6 +74,7 @@ export function TaskSections({ value }: { value: string }) {
     resize();
     const observer = new ResizeObserver(resize);
     observer.observe(nav);
+    if (nav.firstElementChild) observer.observe(nav.firstElementChild);
     observer.observe(node);
     if (node.firstElementChild) observer.observe(node.firstElementChild);
     return () => {
@@ -103,41 +105,44 @@ export function TaskSections({ value }: { value: string }) {
       className="task-section-navigation"
       data-overflow={edges.overflow}
     >
-      <div
-        className="task-section-viewport"
-        ref={viewport}
-        onScroll={measure}
-        onFocusCapture={(event) => {
-          if (viewport.current && event.target.getAttribute("role") === "tab")
-            reveal(viewport.current, event.target);
-        }}
-      >
-        <TabsList className="task-section-list" aria-label="Seção da tarefa">
-          {sections.map(([key, label]) => (
-            <TabsTrigger key={key} value={key}>
-              {label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      <div className="task-section-navigation-strip">
+        <div
+          className="task-section-viewport"
+          ref={viewport}
+          onScroll={measure}
+          onFocusCapture={(event) => {
+            if (viewport.current && event.target.getAttribute("role") === "tab")
+              reveal(viewport.current, event.target);
+          }}
+        >
+          <TabsList className="task-section-list" aria-label="Seção da tarefa">
+            {sections.map(([key, label]) => (
+              <TabsTrigger key={key} value={key}>
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
+        <Button
+          className="task-section-arrow"
+          variant="ghost"
+          aria-label="Mostrar abas anteriores"
+          aria-disabled={edges.start}
+          onClick={() => move(-1)}
+        >
+          <ChevronLeft aria-hidden="true" />
+        </Button>
+        <Button
+          className="task-section-arrow"
+          variant="ghost"
+          aria-label="Mostrar próximas abas"
+          aria-disabled={edges.end}
+          onClick={() => move(1)}
+        >
+          <ChevronRight aria-hidden="true" />
+        </Button>
       </div>
-      <Button
-        className="task-section-arrow"
-        variant="ghost"
-        aria-label="Mostrar abas anteriores"
-        aria-disabled={edges.start}
-        onClick={() => move(-1)}
-      >
-        <ChevronLeft aria-hidden="true" />
-      </Button>
-      <Button
-        className="task-section-arrow"
-        variant="ghost"
-        aria-label="Mostrar próximas abas"
-        aria-disabled={edges.end}
-        onClick={() => move(1)}
-      >
-        <ChevronRight aria-hidden="true" />
-      </Button>
+      <TaskFilterSlot />
     </div>
   );
 }

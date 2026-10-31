@@ -1,5 +1,6 @@
 import {
   Children,
+  useContext,
   Fragment,
   isValidElement,
   useLayoutEffect,
@@ -12,6 +13,7 @@ import { Popover, Tooltip } from "radix-ui";
 import { FilterX } from "lucide-react";
 import { Button } from "./ui/button";
 import { filterSpring } from "./motion-settings";
+import { FilterDirectionContext } from "./filter-context";
 
 // Fragments are common in the search slot; keep each control's stable identity
 // instead of animating one large, stretching wrapper around the whole toolbar.
@@ -97,6 +99,7 @@ export function AnimatedFilterContent({
   heading: string;
   trigger: RefObject<HTMLButtonElement | null>;
 }) {
+  const direction = useContext(FilterDirectionContext);
   const present = useIsPresent(),
     reduced = useReducedMotion();
   const content = useRef<HTMLDivElement>(null);
@@ -108,7 +111,8 @@ export function AnimatedFilterContent({
     <Popover.Content
       forceMount
       asChild
-      align="end"
+      align={direction === "right" ? "start" : "end"}
+      side={direction}
       sideOffset={8}
       collisionPadding={12}
       updatePositionStrategy="always"

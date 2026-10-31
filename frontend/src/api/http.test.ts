@@ -5,6 +5,16 @@ const response = (value: unknown, status = 200) =>
     status,
     headers: { "Content-Type": "application/json" },
   });
+it("requests task participants with pagination only", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
+  await createHttpApi({ fetch: fetcher }).participants("task", {
+    offset: 100,
+    limit: 100,
+  });
+  expect(fetcher.mock.calls[0][0]).toBe(
+    "/api/v1/tasks/task/participants?offset=100&limit=100",
+  );
+});
 it("propagates list cancellation to fetch without reporting a timeout", async () => {
   let transportSignal: AbortSignal | undefined;
   const fetcher = vi.fn(

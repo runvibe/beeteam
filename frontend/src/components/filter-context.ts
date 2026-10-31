@@ -1,5 +1,8 @@
 import { createContext, useContext } from "react";
 export const CompactFilters = createContext(false);
+export const FilterDirectionContext = createContext<"bottom" | "right">(
+  "bottom",
+);
 export const useCompactFilters = () => useContext(CompactFilters);
 export type ActiveFilter = {
   label: string;

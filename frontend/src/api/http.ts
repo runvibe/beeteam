@@ -34,6 +34,10 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    participants: (taskId, pagination = {}, signal) =>
+      request(`/tasks/${segment(taskId)}/participants` + query(pagination), {
+        signal,
+      }),
     resolveSlug: (resource, slug) =>
       request(`/${resource}/by-slug/${segment(slug)}`),
     list: (resource, scope = "", filters = {}, signal) =>

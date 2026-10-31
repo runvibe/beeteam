@@ -1,6 +1,7 @@
 import { patchRecord, addStatus, orderStatuses } from "./configuration";
 import { projectTask, descendantIds } from "./projections";
 import { ApiError } from "./types";
+import { mockParticipants } from "./mock-participants";
 import type { BeeApi, Resources, Filters, Page, Entities } from "./types";
 import { makeSeed, type Database } from "./seed";
 type Row = Record<string, unknown>;
@@ -243,6 +244,10 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async participants(taskId, pagination = {}) {
+      await wait();
+      return clone(paginate(mockParticipants(db, taskId), pagination));
+    },
     async list<K extends keyof Resources>(
       resource: K,
       scope: string = "",

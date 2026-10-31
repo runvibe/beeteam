@@ -117,7 +117,9 @@ it("does not observe a mobile header or introduce a second accessible summary", 
     </ApiProvider>,
   );
   await screen.findByRole("heading", { name: makeSeed().tasks[0].title });
-  expect(observe).not.toHaveBeenCalled();
+  expect(observe).not.toHaveBeenCalledWith(
+    document.querySelector(".task-detail-hero"),
+  );
   expect(document.querySelector(".task-compact-header")).toHaveAttribute(
     "data-visible",
     "false",

@@ -33,7 +33,12 @@ export function useConversationAnchor(
     const reading =
       forceMessage ||
       node.getBoundingClientRect().top <=
-        bounds + (tabs?.getBoundingClientRect().height ?? 0);
+        bounds +
+          (tabs?.getBoundingClientRect().height ||
+            tabs
+              ?.querySelector(".task-section-navigation-strip")
+              ?.getBoundingClientRect().height ||
+            0);
     anchor.current = {
       // Autofill below the task header must preserve the header, not pull a row up.
       id: reading ? first?.dataset.commentId : undefined,

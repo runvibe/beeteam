@@ -4,7 +4,7 @@ body:has(.task-page) {
 }
 .task-page {
   container: task-detail / inline-size;
-  padding: 16px 20px 32px;
+  padding: 0;
   gap: 20px;
 }
 .task-detail-heading h1 {
@@ -218,11 +218,6 @@ body:has(.task-page) {
     gap: 12px 20px;
   }
 }
-@media (max-width: 850px) {
-  .task-page {
-    padding: 12px 12px 24px;
-  }
-}
 
 /* Logical boundaries only; existing record borders remain the single list separator. */
 .task-reading-block {
@@ -343,10 +338,10 @@ body:has(.task-page) {
     overflow-y: auto;
     overscroll-behavior-y: contain;
     scrollbar-gutter: stable;
-    padding-bottom: 8px;
+    padding-bottom: 16px;
   }
   .task-detail-primary {
-    padding-right: 32px;
+    padding-right: 8px;
   }
   .task-detail-primary > * {
     flex-shrink: 0;

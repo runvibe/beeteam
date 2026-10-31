@@ -35,6 +35,7 @@ import { TaskContext, TaskSections, TaskOverview } from "./task-detail-layout";
 import "./task-detail.css";
 import { useTaskHeaderVisibility } from "./task-scroll-header";
 import { TaskProgress } from "./task-progress";
+import { TaskFilterProvider, TaskFilters } from "./task-filter-layout";
 export function TaskPage() {
   const id = useUi((s) => s.taskId);
   return id ? (
@@ -108,74 +109,79 @@ function TaskDetail({ id }: { id: string }) {
         <QueryState query={q}>
           {q.data && (
             <>
-              <Tabs
-                value={tab}
-                activationMode="manual"
-                onValueChange={(value) => {
-                  // Keep the outgoing height while comments resolve, so the shared
-                  // scroller cannot clamp to the much shorter loading placeholder.
-                  setConversationPlaceholderHeight(
-                    value === "comments"
-                      ? (reading.current?.getBoundingClientRect().height ?? 0)
-                      : 0,
-                  );
-                  setTab(value);
-                }}
-                className="task-detail-tabs"
-              >
-                <TaskSections value={tab} />
-                <motion.div
-                  className="task-detail-reading"
-                  ref={reading}
-                  style={{
-                    minHeight:
-                      tab === "comments"
-                        ? conversationPlaceholderHeight
-                        : undefined,
+              <TaskFilterProvider>
+                <Tabs
+                  value={tab}
+                  activationMode="manual"
+                  onValueChange={(value) => {
+                    // Keep the outgoing height while comments resolve, so the shared
+                    // scroller cannot clamp to the much shorter loading placeholder.
+                    setConversationPlaceholderHeight(
+                      value === "comments"
+                        ? (reading.current?.getBoundingClientRect().height ?? 0)
+                        : 0,
+                    );
+                    setTab(value);
                   }}
-                  animate={panelAnimation}
-                  data-task-section={tab}
+                  className="task-detail-tabs"
                 >
-                  <TabsContent value="overview">
-                    <TaskOverview task={q.data} />
-                  </TabsContent>
-                  <TabsContent value="specification">
-                    <div className="detail-section task-specification">
-                      {q.data.specification ? (
-                        <Markdown headingOffset={2} sectionDividers>
-                          {q.data.specification}
-                        </Markdown>
-                      ) : (
-                        <NoData
-                          title="Nenhuma especificação registrada"
-                          description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
-                        />
-                      )}
-                    </div>
-                  </TabsContent>
-                  <TabsContent value="children">
-                    <Children task={q.data} />
-                  </TabsContent>
-                  <TabsContent value="plans">
-                    <Plans task={q.data} revealConsumed={planRevealConsumed} />
-                  </TabsContent>
-                  <TabsContent value="comments">
-                    <TaskConversation
-                      taskId={q.data.id}
-                      onReady={conversationReady}
-                    />
-                  </TabsContent>
-                  <TabsContent value="attachments">
-                    <Records resource="attachments" task={q.data} />
-                  </TabsContent>
-                  <TabsContent value="summaries">
-                    <Records resource="summaries" task={q.data} />
-                  </TabsContent>
-                  <TabsContent value="timeline">
-                    <Records resource="timeline" task={q.data} />
-                  </TabsContent>
-                </motion.div>
-              </Tabs>
+                  <TaskSections value={tab} />
+                  <motion.div
+                    className="task-detail-reading"
+                    ref={reading}
+                    style={{
+                      minHeight:
+                        tab === "comments"
+                          ? conversationPlaceholderHeight
+                          : undefined,
+                    }}
+                    animate={panelAnimation}
+                    data-task-section={tab}
+                  >
+                    <TabsContent value="overview">
+                      <TaskOverview task={q.data} />
+                    </TabsContent>
+                    <TabsContent value="specification">
+                      <div className="detail-section task-specification">
+                        {q.data.specification ? (
+                          <Markdown headingOffset={2} sectionDividers>
+                            {q.data.specification}
+                          </Markdown>
+                        ) : (
+                          <NoData
+                            title="Nenhuma especificação registrada"
+                            description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
+                          />
+                        )}
+                      </div>
+                    </TabsContent>
+                    <TabsContent value="children">
+                      <Children task={q.data} />
+                    </TabsContent>
+                    <TabsContent value="plans">
+                      <Plans
+                        task={q.data}
+                        revealConsumed={planRevealConsumed}
+                      />
+                    </TabsContent>
+                    <TabsContent value="comments">
+                      <TaskConversation
+                        taskId={q.data.id}
+                        onReady={conversationReady}
+                      />
+                    </TabsContent>
+                    <TabsContent value="attachments">
+                      <Records resource="attachments" task={q.data} />
+                    </TabsContent>
+                    <TabsContent value="summaries">
+                      <Records resource="summaries" task={q.data} />
+                    </TabsContent>
+                    <TabsContent value="timeline">
+                      <Records resource="timeline" task={q.data} />
+                    </TabsContent>
+                  </motion.div>
+                </Tabs>
+              </TaskFilterProvider>
             </>
           )}
         </QueryState>
@@ -262,26 +268,28 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
       className={`detail-section${resource === "timeline" ? " task-timeline" : ""}`}
     >
       {resource === "timeline" && (
-        <FilterBar
-          active={includeChildren !== "false"}
-          onClear={() => {
-            setInclude("false");
-            setOffset(0);
-          }}
-        >
-          <Choice
-            label="Eventos"
-            value={includeChildren}
-            onChange={(v) => {
-              setInclude(v);
+        <TaskFilters active={includeChildren !== "false"}>
+          <FilterBar
+            active={includeChildren !== "false"}
+            onClear={() => {
+              setInclude("false");
               setOffset(0);
             }}
-            options={[
-              { value: "false", label: "Somente esta task" },
-              { value: "true", label: "Incluir toda a descendência" },
-            ]}
-          />
-        </FilterBar>
+          >
+            <Choice
+              label="Eventos"
+              value={includeChildren}
+              onChange={(v) => {
+                setInclude(v);
+                setOffset(0);
+              }}
+              options={[
+                { value: "false", label: "Somente esta task" },
+                { value: "true", label: "Incluir toda a descendência" },
+              ]}
+            />
+          </FilterBar>
+        </TaskFilters>
       )}
       <QueryState query={q}>
         {q.data && (
