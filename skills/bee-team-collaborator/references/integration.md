@@ -188,3 +188,7 @@ Para cada interação substantiva, atualize campos/artefatos pertinentes e salve
 ## Relatório obrigatório do resumo
 
 `RecordExecution.usageReport` é obrigatório nas novas gravações de createExecutionSummary e close_activity.execution. Envie modelo/harness/tokens verificados ou unavailable estruturado com motivo/tentativas reais; não omita o relatório nem anuncie salvamento após erro. Investigue a estratégia no início e consulte medições novas a cada resumo histórico; veja [métricas por resumo](usage-report.md) para campos, snapshots, atribuição e exemplo. Não confunda esse relatório com summary/currentSummary. `reconcileSummaryUsage` anexa evidência tardia com taskId/summaryId, SummaryUsageInput e expectedVersion da summary, sem alterar texto/status. Confira disponibilidade/schema no runtime antes de usar; legado sem relatório continua válido.
+
+## Bootstrap de novo Collaborator
+
+Siga [chat antes do cadastro](collaborator-bootstrap.md): Leader cria o chat autorizado; o próprio Collaborator identifica/cria/configura perfil/vínculo e retorna nome real, agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. Somente pedido inicial/retorno de configuração ou impedimento dispensam comentário; não é exceção para trabalho posterior nem autorização adicional do harness.
