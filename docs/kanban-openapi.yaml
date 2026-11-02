@@ -1291,8 +1291,8 @@ paths:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
     put:
       operationId: moveTask
-      summary: Mover ou reordenar tarefa
-      description: Verificação individual para subtarefas; perder atribuição remove escrita.
+      summary: Reordenar tarefa no status atual; mudanças de status exigem execution-summaries
+      description: moveTask somente reordena no mesmo status, inclusive final. Status diferente retorna 409 summary_required, mesmo com currentSummary. Registre createExecutionSummary ou close_activity com execution completo para alterar status atomicamente. Verificação individual para subtarefas; perder atribuição remove escrita.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IfMatch"
@@ -2119,7 +2119,7 @@ paths:
       operationId: createExecutionSummary
       summary: Registrar execution-summaries
       description: >-
-        Every new execution summary requires usageReport.entries (1..32), including close_activity.execution. At work start discover permitted usage sources and the correct session; at reporting time collect fresh evidence for actual models, harnesses, surface/version and actors. Measured/estimated entries require at least one known input or output component. Report decimal-string input/output tokens; cached input and reasoning output are inclusive subsets, never added twice. Unknown model/provider/version or counters are null, not invented. period_delta is request-scoped evidence; cumulative_snapshot is session-scoped, with first snapshot a non-counted baseline and subsequent snapshots referencing the comparable latest predecessor. Never sum cumulative snapshots or duplicate sources. If measurement is impossible, send reportKind/quality unavailable, all counters null, discovery.reason and factual nonblank discovery.attempts. If session/epoch cannot be observed, explicitly use unavailable and a unique evidenceId identifying the reporting attempt; explain unknown harness/surface in discovery. Do not omit the report or fabricate zero. Historical missing reports and exact legacy idempotent replays remain valid.
+        Task status changes are allowed only by registering an execution summary, including close_activity which uses the same atomic service. The server captures immutable statusObserved (id, name, isDone) from the destination status at registration; callers must not supply it. Same-status summaries are allowed. Initial task creation and independent progress updates remain supported. Every new execution summary requires usageReport.entries (1..32), including close_activity.execution. At work start discover permitted usage sources and the correct session; at reporting time collect fresh evidence for actual models, harnesses, surface/version and actors. Measured/estimated entries require at least one known input or output component. Report decimal-string input/output tokens; cached input and reasoning output are inclusive subsets, never added twice. Unknown model/provider/version or counters are null, not invented. period_delta is request-scoped evidence; cumulative_snapshot is session-scoped, with first snapshot a non-counted baseline and subsequent snapshots referencing the comparable latest predecessor. Never sum cumulative snapshots or duplicate sources. If measurement is impossible, send reportKind/quality unavailable, all counters null, discovery.reason and factual nonblank discovery.attempts. If session/epoch cannot be observed, explicitly use unavailable and a unique evidenceId identifying the reporting attempt; explain unknown harness/surface in discovery. Do not omit the report or fabricate zero. Historical missing reports and exact legacy idempotent replays remain valid.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -3627,8 +3627,7 @@ components:
         - statusId
         - beforeTaskId
       additionalProperties: false
-      description: Before deve ser irmão na mesma coluna. Null envia ao fim. Entrar em status final exige
-        execution-summaries; reordenar no mesmo status final é permitido. Mudança de status exige currentSummary não vazio; reordenação no mesmo status preserva a síntese quando omitida.
+      description: Before deve ser irmão na mesma coluna. Null envia ao fim. statusId deve ser o status atual, inclusive final; qualquer mudança retorna 409 summary_required mesmo com currentSummary. Altere status registrando execution-summaries ou close_activity com execution completo. Reordenação no mesmo status preserva a síntese quando omitida.
     Archive:
       type: object
       properties:

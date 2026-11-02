@@ -338,7 +338,7 @@ must satisfy the new contract. See [summary usage](summary-usage.md).
 
 ## Collaborator bootstrap snapshot — 2026-11-02
 
-Current bundle: Skills `5fd5f0b280865609ab7de7a2770fefa092c21fd4`, 13 source
+Bootstrap snapshot: Skills `5fd5f0b280865609ab7de7a2770fefa092c21fd4`, 13 source
 materials tracked in provenance, 15 allowlisted resources and 3 read-only prompts.
 New URI: `beeteam://references/collaborator-bootstrap`. Creation of an authorized
 chat precedes Collaborator self-registration; confirmed name/agentId/teamId and
@@ -354,3 +354,17 @@ The PostgreSQL-only SDK compound test was excluded. Served resource hashes,
 13-file provenance and explicit MCP links were verified. The catalog was regenerated
 with cargo run --locked --features mcp --example mcp_catalog -j 1; git diff --check
 passed. Runtime activation and PostgreSQL execution are not claimed.
+
+## Status-summary contract — 2026-11-02
+
+Current bundle: Skills `4d81ec1d6513fc4d67dc3b0186a6ef9b63e9b367` (13 source
+materials, 15 resources, 3 prompts). Existing startup/bootstrap overlays remain.
+Task status transitions require createExecutionSummary or close_activity with a
+complete execution payload. moveTask only reorders within the current status;
+status changes return summary_required (HTTP 409). updateTask rejects statusId
+(HTTP 400), even unchanged; record_progress also excludes it. Percentage/progress
+updates remain independent. Status initialization on task creation is unchanged.
+Server-owned statusObserved captures the destination status id/name/isDone at
+registration and is never rehydrated from the current status, including on late
+usage reconciliation. Exact saved POST replays retain their historical response;
+PUT position has no persisted replay mechanism and still enforces If-Match.

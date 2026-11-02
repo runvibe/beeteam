@@ -319,16 +319,14 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         }
         "moveTask" => {
             let status = body_id(b, "statusId")?;
-            validate_current_summary(b, old.reference("statusId") != Some(status))?;
             validate_status(&unit.records, board, status)?;
-            if unit.records.get("statuses", status)?.data["isDone"] == true
-                && old.reference("statusId") != Some(status)
-            {
+            if old.reference("statusId") != Some(status) {
                 return Err(Failure::new(
                     "summary_required",
-                    "Entering a final status requires an execution summary",
+                    "Changing task status requires createExecutionSummary (POST execution-summaries) or close_activity with a complete execution summary; moveTask only reorders within the current status",
                 ));
             }
+            validate_current_summary(b, false)?;
             let before = b
                 .get("beforeTaskId")
                 .filter(|v| !v.is_null())

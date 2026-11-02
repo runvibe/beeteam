@@ -88,3 +88,7 @@ Leader pode criar/reutilizar task de coordenação própria dentro da demanda au
 ## Bootstrap de novo Collaborator
 
 Siga [chat antes do cadastro](beeteam://references/collaborator-bootstrap): Leader cria o chat autorizado; o próprio Collaborator identifica/cria/configura perfil/vínculo e retorna nome real, agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. Somente pedido inicial/retorno de configuração ou impedimento dispensam comentário; não é exceção para trabalho posterior nem autorização adicional do harness.
+
+## Transições de status
+
+Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.

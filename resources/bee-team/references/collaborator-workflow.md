@@ -213,3 +213,7 @@ Investigue no início a fonte permitida da sessão e reutilize estratégia/prove
 ## Retorno de bootstrap
 
 Siga [bootstrap do Collaborator](beeteam://references/collaborator-bootstrap): no chat criado antes do novo cadastro, o próprio Collaborator consulta/reutiliza ou cria/configura o perfil e vínculo autorizados. Retorna nome real, agentId/teamId e prontidão confirmada (ou pending com impedimento). A exceção sem comentário cobre somente pedido inicial e retorno cadastral, não execução; Leader verifica antes de atribuir trabalho. Sem task, aguarde sem autoautorização.
+
+## Transições de status
+
+Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
