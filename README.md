@@ -539,3 +539,14 @@ creation. The package contains 15 MCP resources; local SQLite startup guidance i
 preserved, distinguishing standalone defaults from the legacy PostgreSQL script.
 No runtime restart, global installation or business-data mutation is performed by
 this backend bundle synchronization.
+
+## Registered session consumption in Overview
+
+Usage and Overview reads now expose `recordedSessionUsage` globally and on each
+summary timeline item. Measured/estimated session deltas remain separate from
+consumption attributed to the task: shared/unallocated evidence stays that way.
+Baselines and duplicate references never inflate totals; unknown stays null.
+The timeline retains status/author/model/harness/provenance for a per-summary line
+chart without summing pages or raw cumulative snapshots in the client. See
+[usage semantics](docs/summary-usage.md). This read-only addition does not modify
+existing usage reports or claim an unrecorded historical task executor.
