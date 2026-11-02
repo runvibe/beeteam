@@ -115,3 +115,47 @@ it("opens the selected immutable summary through paginated read-only API and pre
     expect.any(AbortSignal),
   );
 });
+
+it("keeps the empty plot and axes without fabricated points or controls", () => {
+  const { container } = render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <UsageCheckpointChart taskId="task" items={[]} />
+    </ApiProvider>,
+  );
+  expect(
+    screen.getByRole("heading", { name: "Evolução dos resumos" }),
+  ).toBeVisible();
+  expect(screen.getByText("Sem resumos disponíveis")).toBeVisible();
+  expect(container.querySelector(".usage-chart-plot svg")).toHaveAttribute(
+    "viewBox",
+    "0 0 480 270",
+  );
+  expect(container.querySelectorAll(".overview-gridline")).toHaveLength(2);
+  expect(
+    container.querySelectorAll(".usage-chart-point, .overview-progress-line"),
+  ).toHaveLength(0);
+  expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Abrir resumo" }),
+  ).not.toBeInTheDocument();
+});
+it("retains baseline-only checkpoints as informational points without zero or a line", () => {
+  const { container } = render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <UsageCheckpointChart
+        taskId="task"
+        items={[point("baseline", 10, null)]}
+      />
+    </ApiProvider>,
+  );
+  expect(container.querySelector(".usage-chart-plot svg")).toHaveAttribute(
+    "viewBox",
+    "0 0 480 270",
+  );
+  expect(
+    screen.getByRole("button", { name: /sem delta medido/ }),
+  ).toHaveAttribute("data-missing", "true");
+  expect(container.querySelectorAll(".overview-progress-line")).toHaveLength(0);
+  expect(screen.getByText(/Referência inicial presente/)).toBeVisible();
+  expect(screen.queryByText("0")).not.toBeInTheDocument();
+});

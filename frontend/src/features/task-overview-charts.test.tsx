@@ -65,7 +65,11 @@ it("does not invent progress points and gives the recorded values a text alterna
       }}
     />,
   );
-  expect(screen.queryByRole("img")).toBeNull();
+  expect(
+    screen.getByRole("img", {
+      name: /Evolução do progresso registrado: 0 registros/,
+    }),
+  ).toBeVisible();
   rerender(
     <ProgressHistory
       data={{
@@ -93,4 +97,66 @@ it("does not invent progress points and gives the recorded values a text alterna
   expect(
     screen.getByRole("cell", { name: "40%", hidden: true }),
   ).toBeInTheDocument();
+});
+
+it("keeps empty distribution tracks without invented status or executor bars", () => {
+  const { container } = render(
+    <SubtaskCharts
+      data={{
+        total: 0,
+        done: 0,
+        remaining: 0,
+        blocked: 0,
+        archivedIncluded: true,
+        byStatus: [],
+        byExecutor: [],
+      }}
+      onFilter={vi.fn()}
+    />,
+  );
+  expect(container.querySelectorAll(".overview-empty-track")).toHaveLength(2);
+  expect(container.querySelectorAll(".overview-empty-track > *")).toHaveLength(
+    0,
+  );
+  expect(screen.queryByRole("button")).not.toBeInTheDocument();
+});
+it("reveals recorded progress and actor without associating tokens by time", async () => {
+  const data: TaskOverviewData["progressHistory"] = {
+    items: [
+      {
+        eventId: "first",
+        occurredAt: "2026-11-02T10:00:00Z",
+        percent: 0,
+        note: "",
+        source: "task.updated",
+        actorKind: "human",
+        actorId: null,
+      },
+      {
+        eventId: "second",
+        occurredAt: "2026-11-02T11:00:00Z",
+        percent: 50,
+        note: "",
+        source: "task.updated",
+        actorKind: "human",
+        actorId: null,
+      },
+    ],
+    total: 2,
+    limit: 100,
+    truncated: false,
+    coverage: "explicit_progress_events_only",
+  };
+  const { container } = render(<ProgressHistory data={data} />);
+  const buttons = screen.getAllByRole("button");
+  await userEvent.tab();
+  expect(buttons[0]).toHaveFocus();
+  expect(screen.getByText("Progresso registrado: 0%")).toBeVisible();
+  await userEvent.click(buttons[1]);
+  expect(screen.getByText("Progresso registrado: 50%")).toBeVisible();
+  expect(screen.getByText(/Pessoa · identidade não informada/)).toBeVisible();
+  expect(screen.getByText(/Tokens neste ponto: não informados/)).toBeVisible();
+  expect(
+    Array.from(container.querySelectorAll("svg g text")).map((el) => el.textContent),
+  ).toEqual(["0", "50", "100"]);
 });

@@ -69,3 +69,14 @@
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+
+.usage-chart-empty {
+  position: absolute;
+  inset: 45px 50px auto;
+  height: 130px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}

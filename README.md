@@ -695,3 +695,7 @@ The timeline retains status/author/model/harness/provenance for a per-summary li
 chart without summing pages or raw cumulative snapshots in the client. See
 [usage semantics](docs/summary-usage.md). This read-only addition does not modify
 existing usage reports or claim an unrecorded historical task executor.
+
+O gráfico de resumos preserva a área visual de 270 px e seus eixos sem checkpoints ou em respostas legadas sem uso agregado. O estado vazio não cria pontos, valores zero ou linhas; referências iniciais existentes permanecem pontos informacionais selecionáveis.
+
+O mesmo padrão vazio vale para distribuição de subtarefas por status/responsável e evolução do progresso (eixo 0/50/100 preservado). Barras de cards, cabeçalho e sidebar usam trilho compartilhado: ausência é Sem dados, sem aria-valuenow nem preenchimento; zero registrado continua 0%. Pontos de progresso revelam data, percentual e ator por mouse/foco/toque. Tokens ficam não informados quando não há vínculo explícito do evento com evidência de consumo; não se usa proximidade temporal. Carregamento e erro continuam estados independentes.

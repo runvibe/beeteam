@@ -1,26 +1,25 @@
+import {
+  RecordedProgress,
+  recordedPercent,
+} from "@/components/recorded-progress";
 import type { CSSProperties } from "react";
 
-export function TaskProgress({ percent }: { percent: number }) {
-  const value = Math.min(100, Math.max(0, percent));
+export function TaskProgress({ percent }: { percent?: number | null }) {
+  const value = recordedPercent(percent);
   return (
     <div
       className="task-progress"
-      style={{ "--task-progress": `${value}%` } as CSSProperties}
+      style={{ "--task-progress": `${value ?? 0}%` } as CSSProperties}
     >
       <div className="task-progress-meter">
         <span className="task-progress-value" aria-hidden="true">
-          {value}%
+          {value === undefined ? "Sem dados" : `${value}%`}
         </span>
-        <div
+        <RecordedProgress
+          percent={value}
+          label="Progresso registrado"
           className="task-progress-track"
-          role="progressbar"
-          aria-label="Progresso registrado"
-          aria-valuenow={value}
-          aria-valuemin={0}
-          aria-valuemax={100}
-        >
-          <div className="task-progress-fill" />
-        </div>
+        />
       </div>
     </div>
   );

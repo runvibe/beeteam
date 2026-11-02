@@ -307,3 +307,21 @@ it("does not derive a session aggregate from legacy checkpoints", () => {
   ).not.toBeInTheDocument();
   expect(screen.getByText("9.007.199.254.740.993")).toBeVisible();
 });
+
+it.each([undefined, { ...usage(), timeline: page([]) }])(
+  "keeps the chart area when usage or checkpoints are absent",
+  (data) => {
+    const { container } = render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <TaskUsagePanel taskId="task" version={1} usage={data} />
+      </ApiProvider>,
+    );
+    expect(
+      screen.getByRole("heading", { name: "Evolução dos resumos" }),
+    ).toBeVisible();
+    expect(
+      container.querySelector(".usage-chart-plot svg"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Sem resumos disponíveis")).toBeVisible();
+  },
+);

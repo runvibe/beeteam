@@ -73,7 +73,7 @@ export function TaskCompactHeader({
             <TaskDescription task={task} />
           </CompactNarrative>
           <div aria-hidden="true">
-            <TaskProgress percent={task.progress.percent} />
+            <TaskProgress percent={task.progress?.percent} />
           </div>
           {task.block.blocked && (
             <div className="task-compact-blocked">
