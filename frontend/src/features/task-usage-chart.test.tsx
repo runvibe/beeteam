@@ -159,3 +159,26 @@ it("retains baseline-only checkpoints as informational points without zero or a 
   expect(screen.getByText(/Referência inicial presente/)).toBeVisible();
   expect(screen.queryByText("0")).not.toBeInTheDocument();
 });
+
+it("uses each summary historical status independently of its token delta", async () => {
+  const first = point("first", 10, "100");
+  first.statusObserved = { id: "old", name: "Em andamento", isDone: false };
+  const second = point("second", 11, "100");
+  second.statusObserved = { id: "new", name: "Em teste", isDone: false };
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <UsageCheckpointChart taskId="task" items={[first, second]} />
+    </ApiProvider>,
+  );
+  expect(
+    screen.getByText("Status no momento do resumo: Em teste"),
+  ).toBeVisible();
+  await userEvent.selectOptions(screen.getByLabelText("Checkpoint"), "first");
+  expect(
+    screen.getByText("Status no momento do resumo: Em andamento"),
+  ).toBeVisible();
+  expect(screen.getByText(/Delta medido: 100/)).toBeVisible();
+  expect(
+    screen.getByText(/não progresso nem valor numérico de status/),
+  ).toBeVisible();
+});

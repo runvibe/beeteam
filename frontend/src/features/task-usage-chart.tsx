@@ -136,9 +136,11 @@ export function UsageCheckpointChart({
     <section ref={host} className="usage-chart" aria-labelledby={id}>
       <h3 id={id}>Evolução dos resumos</h3>
       <p className="small-note">
-        Delta medido de sessão por resumo (tokens). Eixo temporal: horário do
-        resumo, não do consumo. A linha conecta apenas checkpoints consecutivos
-        com valor; lacunas e referências iniciais não são zero.
+        Um ponto por resumo, no horário em que foi registrado. Altura: delta
+        medido de sessão (tokens), não progresso nem valor numérico de status. O
+        detalhe mostra o status histórico daquele resumo. Lacunas e referências
+        iniciais não são zero; a linha conecta apenas pontos consecutivos com
+        valor.
       </p>
       {points.length > 0 &&
         points.every((point) => !point.recordedSessionUsage) && (
@@ -250,7 +252,7 @@ export function UsageCheckpointChart({
               date={selected.reportedAt}
             />
             <p>
-              Status observado:{" "}
+              Status no momento do resumo:{" "}
               {selected.statusObserved?.name ?? "Não registrado"}
             </p>
             <p>
