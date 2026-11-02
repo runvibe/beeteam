@@ -10,6 +10,7 @@
   padding-top: 24px;
 }
 .task-usage h2,
+.task-usage h3,
 .summary-usage h3 {
   font-size: 14px;
   font-weight: 600;

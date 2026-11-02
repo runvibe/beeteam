@@ -681,3 +681,7 @@ creation. The package contains 15 MCP resources; local SQLite startup guidance i
 preserved, distinguishing standalone defaults from the legacy PostgreSQL script.
 No runtime restart, global installation or business-data mutation is performed by
 this backend bundle synchronization.
+
+A Visão geral separa o consumo registrado de sessão (`recordedSessionUsage`, quando fornecido pela API) dos totais atribuídos à tarefa. Exibe deltas medidos/estimados e cobertura de sessões, referências iniciais e duplicadas; não soma snapshots, revisões ou páginas no cliente. Consumo de sessão pode incluir outros trabalhos e não deve ser somado ao total atribuído. Respostas antigas sem esse agregado e modelos não informados continuam sem inferências.
+
+O gráfico de evolução dos resumos usa o horário de cada resumo e o delta medido de sessão projetado pela API para cada checkpoint. Pontos de referência/sem medida ficam numa faixa informacional separada de zero; linhas não atravessam lacunas. Foco, clique/toque e seletor consultam status, autor, modelo/harness e proveniência, com abertura somente de leitura do resumo por UUID. A paginação informa a cobertura carregada, sem alterar totais globais; nenhum executor histórico é inferido.

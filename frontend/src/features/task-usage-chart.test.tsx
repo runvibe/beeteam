@@ -1,0 +1,117 @@
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { expect, it, vi } from "vitest";
+import { ApiProvider } from "@/api/context";
+import { createMockApi } from "@/api/mock";
+import { makeSeed } from "@/api/seed";
+import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsageTimelineItem";
+import { UsageCheckpointChart } from "./task-usage-chart";
+function point(
+  id: string,
+  hour: number,
+  value: string | null,
+): SummaryUsageTimelineItem {
+  return {
+    summaryId: id,
+    reportedAt: `2026-11-02T${hour}:00:00Z`,
+    reportingActor: { actorKind: "human", actorId: null },
+    statusObserved: { id: "status", name: "Em andamento", isDone: false },
+    usageReport: null,
+    recordedSessionUsage: {
+      measuredTotalTokens: value,
+      estimatedTotalTokens: null,
+      coverage: {
+        sessions: 1,
+        baselineEntries: value === null ? 1 : 0,
+        deltaEntries: value === null ? 0 : 1,
+        duplicateEntries: 0,
+      },
+    },
+  };
+}
+it("keeps baseline informational, breaks lines at gaps and selects checkpoints by keyboard and touch", async () => {
+  const user = userEvent.setup();
+  const { container } = render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <UsageCheckpointChart
+        taskId="task"
+        items={[
+          point("a", 10, null),
+          point("b", 11, "0"),
+          point("c", 12, "1186039"),
+          point("d", 13, null),
+          point("e", 14, "340282366920938463463374607431768211455"),
+        ]}
+      />
+    </ApiProvider>,
+  );
+  expect(container.querySelectorAll(".overview-progress-line")).toHaveLength(1);
+  const points = screen.getAllByRole("button", { name: /^Resumo / });
+  expect(points).toHaveLength(5);
+  expect(points[0]).toHaveAttribute("data-missing", "true");
+  expect(points[1]).toHaveAttribute("data-missing", "false");
+  await user.tab();
+  expect(points[0]).toHaveFocus();
+  expect(screen.getByText(/Referência inicial presente/)).toBeVisible();
+  await user.click(points[2]);
+  expect(points[2]).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByText(/Delta medido: 1.186.039/)).toBeVisible();
+  await user.selectOptions(screen.getByLabelText("Checkpoint"), "e");
+  expect(
+    screen.getByText(
+      /Delta medido: 340.282.366.920.938.463.463.374.607.431.768.211.455/,
+    ),
+  ).toBeVisible();
+});
+it("opens the selected immutable summary through paginated read-only API and preserves errors for retry", async () => {
+  const user = userEvent.setup();
+  const api = createMockApi({ delay: 0 });
+  const row = {
+    ...makeSeed().summaries[0],
+    id: "target",
+    summary: "Resumo solicitado",
+  };
+  const list = vi
+    .spyOn(api, "list")
+    .mockRejectedValueOnce(new Error("Falha temporária"))
+    .mockResolvedValueOnce({
+      items: [{ ...row, id: "other" }],
+      offset: 0,
+      limit: 100,
+      total: 2,
+      hasMore: true,
+      nextOffset: 100,
+    })
+    .mockResolvedValueOnce({
+      items: [row],
+      offset: 100,
+      limit: 100,
+      total: 2,
+      hasMore: false,
+      nextOffset: null,
+    });
+  render(
+    <ApiProvider api={api}>
+      <UsageCheckpointChart taskId="task" items={[point("target", 10, "12")]} />
+    </ApiProvider>,
+  );
+  expect(list).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "Abrir resumo" }));
+  await screen.findByText(/Falha temporária/);
+  await user.click(screen.getByRole("button", { name: /Tentar novamente/ }));
+  expect(
+    await within(
+      screen.getByRole("region", { name: "Resumo selecionado" }),
+    ).findByText("Resumo solicitado"),
+  ).toBeVisible();
+  expect(list).toHaveBeenLastCalledWith(
+    "summaries",
+    "task",
+    expect.objectContaining({
+      createdFrom: "2026-11-02T10:00:00Z",
+      offset: 100,
+      sortOrder: "asc",
+    }),
+    expect.any(AbortSignal),
+  );
+});

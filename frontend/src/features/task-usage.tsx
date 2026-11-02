@@ -1,3 +1,4 @@
+import { UsageCheckpointChart } from "./task-usage-chart";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useApi } from "@/api/context";
@@ -22,6 +23,8 @@ function PagedUsage<T>({
   renderItem,
   label,
   itemKey,
+  overview,
+  detailsLabel,
 }: {
   initial: UsagePage<T>;
   queryKey: (string | number)[];
@@ -29,6 +32,8 @@ function PagedUsage<T>({
   renderItem: (item: T) => ReactNode;
   label: string;
   itemKey: (item: T) => string;
+  overview?: (items: T[]) => ReactNode;
+  detailsLabel?: string;
 }) {
   const q = useInfiniteQuery({
     queryKey,
@@ -47,16 +52,33 @@ function PagedUsage<T>({
         .map((item) => [itemKey(item), item]),
     ).values(),
   ];
+  const list = (
+    <ul className="usage-checkpoints">
+      {rows.map((item) => (
+        <li key={itemKey(item)}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
   return (
     <div className="usage-page">
       <p className="small-note">
         {rows.length} de {q.data.pages[0].total} {label}
       </p>
-      <ul className="usage-checkpoints">
-        {rows.map((item) => (
-          <li key={itemKey(item)}>{renderItem(item)}</li>
-        ))}
-      </ul>
+      {overview && q.hasNextPage && (
+        <p className="small-note">
+          Histórico parcial: o gráfico mostra apenas os checkpoints carregados.
+          Os totais acima abrangem o agregado da API.
+        </p>
+      )}
+      {overview?.(rows)}
+      {detailsLabel ? (
+        <details>
+          <summary>{detailsLabel}</summary>
+          {list}
+        </details>
+      ) : (
+        list
+      )}
       {q.error && (
         <Failure
           error={q.error}
@@ -140,9 +162,38 @@ export function TaskUsagePanel({
       </section>
     );
   const c = usage.coverage;
+  const session = usage.recordedSessionUsage;
   return (
     <section className="task-usage" aria-label="Uso registrado">
       <h2>Uso registrado</h2>
+      {session && (
+        <section aria-label="Consumo registrado de sessão">
+          <h3>Consumo registrado de sessão</h3>
+          <dl className="usage-totals">
+            <div>
+              <dt>Medido na sessão (tokens)</dt>
+              <dd>{tokenCount(session.measuredTotalTokens)}</dd>
+            </div>
+            <div>
+              <dt>Estimado na sessão (tokens)</dt>
+              <dd>{tokenCount(session.estimatedTotalTokens)}</dd>
+            </div>
+          </dl>
+          <p className="small-note">
+            Deltas registrados de sessão, calculados pela API. Podem incluir
+            outros trabalhos; não representam consumo exato atribuído à tarefa.
+            Não somar aos totais abaixo.
+          </p>
+          <p className="small-note">
+            {session.coverage.sessions} sessões ·{" "}
+            {session.coverage.deltaEntries} deltas ·{" "}
+            {session.coverage.baselineEntries} referências iniciais ·{" "}
+            {session.coverage.duplicateEntries} duplicadas excluídas. O primeiro
+            snapshot é referência, não consumo somado.
+          </p>
+        </section>
+      )}
+      <h3>Atribuído à tarefa</h3>
       <dl className="usage-totals">
         <div>
           <dt>Total acumulado conhecido (tokens)</dt>
@@ -209,8 +260,7 @@ export function TaskUsagePanel({
           version={version}
         />
       </div>
-      <details>
-        <summary>Checkpoints dos resumos ({usage.timeline.total})</summary>
+      <section aria-label="Histórico de consumo dos resumos">
         <p className="small-note">
           Momento de reporte e status observado em cada resumo. Não representa
           horário de consumo nem mudança inferida de status. Inclui resumos sem
@@ -218,6 +268,10 @@ export function TaskUsagePanel({
         </p>
         <PagedUsage
           initial={usage.timeline}
+          detailsLabel={`Checkpoints dos resumos (${usage.timeline.total})`}
+          overview={(items) => (
+            <UsageCheckpointChart items={items} taskId={taskId} />
+          )}
           queryKey={["task-usage-timeline", taskId, version]}
           fetchPage={async (offset, signal) =>
             (await api.usage(taskId, { offset, limit: 20 }, signal)).timeline
@@ -240,7 +294,7 @@ export function TaskUsagePanel({
             </>
           )}
         />
-      </details>
+      </section>
     </section>
   );
 }
