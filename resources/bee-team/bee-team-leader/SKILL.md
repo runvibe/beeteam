@@ -8,6 +8,10 @@ description: Use when acting as the Bee Team leader, selecting or forming a team
 Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de agente é persistente; chat é sessão substituível. A aplicação armazena dados, enquanto o harness fornece capacidades de conversa e execução.
 
 
+## Status muda pelo registro de resumo
+
+Após a criação com status inicial, altere status somente por createExecutionSummary; close_activity é válido apenas quando registra o mesmo resumo pelo serviço comum na mesma operação. Resumo/status/statusObserved/usageReport são atômicos. Não mude status via updateTask/moveTask/record_progress nem por escritas separadas. Percentual de progresso pode ser atualizado separadamente, com currentSummary quando exigido. Transição de início, retomada, revisão ou conclusão também exige resumo e métricas/indisponibilidade explícita. Em erro, não anuncie mudança nem contorne o registro; preserve comentários/commentID e replays legados. Consulte [integração](references/integration.md).
+
 ## Bootstrap: chat primeiro, cadastro no próprio chat
 
 Para novo Collaborator, Leader cria primeiro o chat autorizado e solicita usar bee-team-collaborator para identificar/criar/configurar o próprio perfil e vínculo no Bee Team. Collaborator reutiliza identidade existente ou cria somente dentro da autorização, confirma persistência e retorna NOME real com agentId/teamId e readiness (ready/pending). Leader aguarda e verifica cadastro/vínculo antes de atribuir trabalho; nome não é chave técnica. Pedido inicial e retorno limitado de configuração/impedimento dispensam comentário; trabalho posterior exige task/commentID. Sem task atribuída, Collaborator aguarda e não cria autoautorização. Leia [bootstrap do Collaborator](beeteam://references/collaborator-bootstrap) para sequência, retorno e falhas; preserve permissões do harness.

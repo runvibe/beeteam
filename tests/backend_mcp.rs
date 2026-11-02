@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("5fd5f0b"));
+            .contains("4d81ec1"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -492,7 +492,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     assert_eq!(
         provenance["sourceCommit"],
-        "5fd5f0b280865609ab7de7a2770fefa092c21fd4"
+        "4d81ec1d6513fc4d67dc3b0186a6ef9b63e9b367"
     );
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();

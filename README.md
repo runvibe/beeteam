@@ -642,7 +642,7 @@ and `archived=false`, without `rootOnly`; general lists retain optional `rootOnl
 Task read projections include optional nullable `parentReference: {id,title,slug}`
 from existing batched ancestor hydration, so cards can link their mother without
 per-card requests. `parentId` and each task's status remain independent. Moving a
-child between non-final statuses does not change its mother; existing final-status
+child through an execution summary does not change its mother; existing final-status
 summary requirements remain. Positional `beforeTaskId` still targets a sibling
 with the same parent; this change does not redefine ordering across hierarchies.
 
@@ -703,3 +703,16 @@ O mesmo padrão vazio vale para distribuição de subtarefas por status/respons�
 Mudanças de status exigem registrar um resumo pela API; criação mantém status inicial e reordenação no mesmo status não é transição. A UI atual não oferece mudança de coluna/status nem criação de resumo: status é somente leitura, filtros e configuração de colunas não mudam o status das tarefas. O adaptador de demonstração rejeita statusId em patch de tarefa. O gráfico Evolução dos resumos usa reportedAt e statusObserved histórico de cada resumo; altura representa delta de tokens de sessão, sem converter status em percentual. O gráfico independente de progresso permanece disponível.
 
 As skills orientam toda mudança de status após a criação exclusivamente pelo registro de resumo, atômico com statusObserved e usageReport obrigatório. close_activity precisa usar o mesmo serviço de resumo; updateTask/moveTask não são atalhos para transição. Atualização isolada de percentual de progresso continua permitida conforme contrato.
+### Task status changes require execution summaries
+
+New status transitions must use `POST /api/v1/tasks/{taskId}/execution-summaries`
+(`createExecutionSummary`) or `close_activity` with a complete execution payload.
+Task status, summary, usage report and the server-owned historical `statusObserved`
+snapshot are committed atomically. A currentSummary string alone is insufficient.
+`moveTask` only reorders within the current status (including final statuses);
+a different status returns HTTP 409 `summary_required`. PATCH/updateTask rejects
+statusId with HTTP 400 `invalid_request`, even if unchanged. Task creation retains
+its initial non-final status, and independent percentage/progress updates remain
+available. Existing historical records and exact saved POST replays are preserved.
+No migration or service restart is required by the source change itself; clients
+and bundled guidance must be aligned before runtime activation.

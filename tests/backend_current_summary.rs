@@ -129,17 +129,17 @@ async fn current_summary_is_explicit_persisted_and_independent_of_description() 
         )
         .await
         .0,
-        400
+        409
     );
     let third = "Done: implementation. Now: testing in Working. Next: review.";
     let task = ok(
         &app,
-        "PUT",
-        &position,
-        json!({"statusId":id(&next),"beforeTaskId":null,"currentSummary":third}),
+        "POST",
+        &format!("{path}/execution-summaries"),
+        json!({"statusId":id(&next),"currentSummary":third,"summary":"Entered working status","outcome":"progress","usageReport":unavailable_usage(),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}}),
         ver(&task),
     )
-    .await;
+    .await["task"].clone();
     let task = ok(
         &app,
         "PUT",
