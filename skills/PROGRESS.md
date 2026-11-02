@@ -114,3 +114,5 @@ Nenhum teste de parada executado no ambiente compartilhado; cenários simulados 
 - 2026-10-31: instrução posterior do usuário revogou a opcionalidade acima. Novos resumos exigem usageReport com medição ou unavailable factual; legado/replay preservado. Fontes alinhadas ao contrato final Backend; instalação global autorizada com backup/paridade, seguida de sincronização do bundle pela frente Backend.
 
 - 2026-11-02: novo Collaborator começa pelo chat autorizado, configura/reutiliza o próprio cadastro/vínculo e retorna nome real, agentId/teamId e readiness. Leader verifica antes de atribuir. Exceção inicial cobre bootstrap/retorno e complemento cadastral limitado; trabalho posterior mantém task/commentID. Instalação pessoal com backup/paridade separada do bundle Backend.
+
+- 2026-11-02: status posterior à criação somente via registro de resumo atômico com statusObserved/usageReport; close_activity usa o mesmo serviço. moveTask só reordena mesmo status; PATCH/record_progress não aceitam statusId. Percentual independente, comentários, legado e idempotência preservados.

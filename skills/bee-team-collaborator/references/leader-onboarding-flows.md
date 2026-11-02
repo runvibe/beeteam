@@ -265,3 +265,7 @@ Investigue no início a fonte permitida da sessão e reutilize estratégia/prove
 ## Bootstrap cadastral no chat criado
 
 Siga [bootstrap do Collaborator](collaborator-bootstrap.md). A ordem para novo colaborador é chat autorizado → configuração pelo próprio Collaborator → retorno nome real/UUIDs/prontidão → conferência pela Leader → registro/atribuição de trabalho → comentário e aviso referencial. Perfil existente é reutilizado; retorno pending não autoriza atribuir nem duplicar. Esta documentação não executa cadastros/chats.
+
+## Transições de status
+
+Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
