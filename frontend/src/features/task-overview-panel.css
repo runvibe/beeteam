@@ -250,3 +250,32 @@
     min-height: 44px;
   }
 }
+
+.overview-empty-track {
+  background: var(--muted);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.overview-progress-plot {
+  position: relative;
+  height: 215px;
+}
+.overview-progress-hit {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.overview-progress-hit:focus-visible,
+.overview-progress-hit[aria-pressed="true"] {
+  outline: 2px solid var(--ring);
+  outline-offset: -6px;
+}
+.overview-progress-detail {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}

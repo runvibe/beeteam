@@ -159,6 +159,7 @@ export function TaskUsagePanel({
           Agregação de uso não disponível nesta resposta. Ausência não significa
           zero.
         </p>
+        <UsageCheckpointChart items={[]} taskId={taskId} />
       </section>
     );
   const c = usage.coverage;

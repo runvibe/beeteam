@@ -10,3 +10,15 @@ it.each([0, 45, 100])("reports recorded progress %s accessibly", (percent) => {
   expect(screen.getByText(`${percent}%`)).toBeVisible();
   expect(screen.queryByText("Progresso registrado")).toBeNull();
 });
+
+it.each([undefined, null, NaN])(
+  "keeps an empty track for missing progress %s",
+  (percent) => {
+    const { container } = render(<TaskProgress percent={percent} />);
+    const bar = screen.getByRole("progressbar");
+    expect(bar).not.toHaveAttribute("aria-valuenow");
+    expect(bar).toHaveAttribute("aria-valuetext", "Sem dados");
+    expect(screen.getByText("Sem dados")).toBeVisible();
+    expect(container.querySelector(".recorded-progress-fill")).toBeNull();
+  },
+);

@@ -96,7 +96,7 @@ function TaskDetail({ id }: { id: string }) {
           {q.data && (
             <>
               <div className="task-detail-state" aria-label="Estado da tarefa">
-                <TaskProgress percent={q.data.progress.percent} />
+                <TaskProgress percent={q.data.progress?.percent} />
                 {q.data.archivedAt && (
                   <Badge variant="secondary">Arquivada: somente leitura</Badge>
                 )}

@@ -1,3 +1,7 @@
+import {
+  RecordedProgress,
+  recordedPercent,
+} from "@/components/recorded-progress";
 import { TaskParentReference } from "@/components/task-parent-reference";
 import { CardKindMark } from "@/components/card-kind-mark";
 import { KanbanCarousel } from "@/components/kanban-carousel";
@@ -405,12 +409,15 @@ export function TaskCard({ task }: { task: Task }) {
             </Badge>
           )}
           <div className="progress-line">
-            <progress
-              max={100}
-              value={task.progress.percent}
-              aria-label={`Progresso de ${task.title}`}
+            <RecordedProgress
+              percent={task.progress?.percent}
+              label={`Progresso de ${task.title}`}
             />
-            <span>{task.progress.percent}%</span>
+            <span>
+              {recordedPercent(task.progress?.percent) === undefined
+                ? "Sem dados"
+                : `${recordedPercent(task.progress?.percent)}%`}
+            </span>
           </div>
         </CardContent>
       </a>
