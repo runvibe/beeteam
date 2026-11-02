@@ -337,3 +337,19 @@ async fn in_memory_database_uses_one_shared_pool_schema() {
     drop(repo);
     pool.close().await;
 }
+
+#[tokio::test]
+async fn nested_database_directory_is_created_and_existing_records_survive_reopen() {
+    let temp=tempfile::tempdir().unwrap();
+    let path=temp.path().join("new-home").join(".beeteam").join("beeteam.sql");
+    let url=format!("sqlite://{}",path.to_string_lossy().replace('\\',"/"));
+    assert!(!path.parent().unwrap().exists());
+    let pool=sqlite::connect(&url).await.unwrap();
+    let repo=ResourceRepository::new(pool.clone());
+    let id=add(&repo,"Preserved existing agent").await;
+    pool.close().await;
+    let reopened=sqlite::connect(&url).await.unwrap();
+    let repo=ResourceRepository::new(reopened.clone());
+    assert_eq!(repo.resolve_slug("agents","preserved-existing-agent").await.unwrap().0,id);
+    reopened.close().await;
+}

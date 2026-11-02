@@ -35,7 +35,7 @@ pub struct McpConfig {
 
 impl McpConfig {
     fn from_env() -> Self {
-        let enabled = cfg!(feature = "mcp") && parse_env_bool("MCP_ENABLED").unwrap_or(false);
+        let enabled = cfg!(feature = "mcp") && parse_env_bool("MCP_ENABLED").unwrap_or(true);
         let path = std::env::var("MCP_PATH")
             .ok()
             .map(|value| normalize_path(&value))
@@ -62,15 +62,15 @@ impl McpConfig {
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum DatabaseDriver {
-    #[default]
     Postgres,
+    #[default]
     Sqlite,
 }
 impl DatabaseDriver {
     pub fn parse(driver: &str, url: &str) -> Result<Self> {
         let normalized = driver.trim().to_ascii_lowercase();
         let driver = if normalized.is_empty() {
-            "postgres"
+            "sqlite"
         } else {
             &normalized
         };
@@ -101,13 +101,35 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn from_env() -> Result<Self> {
-        let database_url = std::env::var("DATABASE_URL")
-            .map_err(|_| anyhow!("DATABASE_URL environment variable is required"))?;
-
-        let database_driver = DatabaseDriver::parse(
-            &std::env::var("DATABASE_DRIVER").unwrap_or_else(|_| "postgres".into()),
-            &database_url,
-        )?;
+        let explicit_url = std::env::var("DATABASE_URL").ok();
+        let configured_driver = std::env::var("DATABASE_DRIVER").ok();
+        let driver = configured_driver
+            .as_deref()
+            .filter(|s| !s.trim().is_empty())
+            .unwrap_or_else(|| {
+                if explicit_url.as_deref().is_some_and(|url| {
+                    url.starts_with("postgres://") || url.starts_with("postgresql://")
+                }) {
+                    "postgres"
+                } else {
+                    "sqlite"
+                }
+            });
+        let database_url = match explicit_url {
+            Some(url) => url,
+            None if driver.trim().eq_ignore_ascii_case("sqlite") => {
+                let home = std::env::home_dir().ok_or_else(|| {
+                    anyhow!("Cannot resolve user home; set DATABASE_URL explicitly")
+                })?;
+                default_sqlite_url(&home)?
+            }
+            None => {
+                return Err(anyhow!(
+                    "DATABASE_URL is required for an explicit non-SQLite driver"
+                ))
+            }
+        };
+        let database_driver = DatabaseDriver::parse(driver, &database_url)?;
 
         let host = std::env::var("APP_HOST")
             .ok()
@@ -159,8 +181,23 @@ impl AppConfig {
     }
 }
 
+/// Resolve only: creating directories belongs to the persistence adapter.
+fn default_sqlite_url(home: &std::path::Path) -> Result<String> {
+    let path = home.join(".beeteam").join("beeteam.sql");
+    let file = url::Url::from_file_path(&path)
+        .map_err(|_| anyhow!("User home must be an absolute filesystem path"))?;
+    let encoded = if let Some(host) = file.host_str() {
+        format!("//{host}{}", file.path())
+    } else if cfg!(windows) {
+        file.path().trim_start_matches('/').to_string()
+    } else {
+        file.path().to_string()
+    };
+    Ok(format!("sqlite://{encoded}"))
+}
+
 pub fn otel_enabled_from_env() -> bool {
-    parse_env_bool("OTEL_ENABLED").unwrap_or(true)
+    parse_env_bool("OTEL_ENABLED").unwrap_or(false)
 }
 
 fn parse_env_bool(key: &str) -> Option<bool> {
@@ -270,11 +307,11 @@ mod tests {
     }
 
     #[test]
-    fn otel_is_enabled_by_default() {
+    fn otel_is_disabled_by_default() {
         let _guard = ENV_LOCK.lock().expect("env lock");
         let _env_guard = EnvVarGuard::unset("OTEL_ENABLED");
 
-        assert!(otel_enabled_from_env());
+        assert!(!otel_enabled_from_env());
     }
 
     #[test]
@@ -286,11 +323,11 @@ mod tests {
     }
 
     #[test]
-    fn invalid_enable_value_keeps_otel_enabled() {
+    fn invalid_enable_value_keeps_otel_disabled() {
         let _guard = ENV_LOCK.lock().expect("env lock");
         let _env_guard = EnvVarGuard::set("OTEL_ENABLED", "maybe");
 
-        assert!(otel_enabled_from_env());
+        assert!(!otel_enabled_from_env());
     }
 
     #[test]
@@ -304,7 +341,7 @@ mod tests {
 
         let config = AppConfig::from_env().expect("config should parse");
 
-        assert!(!config.mcp.enabled);
+        assert_eq!(config.mcp.enabled, cfg!(feature = "mcp"));
         assert_eq!(config.mcp.path, DEFAULT_MCP_PATH);
         assert!(matches!(config.mcp.cors, CorsConfig::Permissive));
     }
@@ -376,6 +413,70 @@ mod tests {
             config.mcp_endpoint_url().as_deref(),
             Some("http://0.0.0.0:3000/custom-mcp")
         );
+    }
+
+    #[test]
+    fn sqlite_driver_default_and_explicit_runtime_overrides() {
+        let _guard = ENV_LOCK.lock().unwrap();
+        assert_eq!(
+            super::DatabaseDriver::default(),
+            super::DatabaseDriver::Sqlite
+        );
+        assert_eq!(
+            super::DatabaseDriver::parse("", "sqlite::memory:").unwrap(),
+            super::DatabaseDriver::Sqlite
+        );
+        let _url = EnvVarGuard::set("DATABASE_URL", "sqlite::memory:");
+        let _driver = EnvVarGuard::unset("DATABASE_DRIVER");
+        let _mcp = EnvVarGuard::set("MCP_ENABLED", "false");
+        let _otel = EnvVarGuard::set("OTEL_ENABLED", "true");
+        let _host = EnvVarGuard::set("APP_HOST", "0.0.0.0");
+        let _port = EnvVarGuard::set("APP_PORT", "23456");
+        let config = AppConfig::from_env().unwrap();
+        assert_eq!(config.database_driver, super::DatabaseDriver::Sqlite);
+        assert_eq!(config.database_url, "sqlite::memory:");
+        assert!(!config.mcp.enabled);
+        assert!(config.otel_enabled);
+        assert_eq!(config.listen_addr().unwrap().to_string(), "0.0.0.0:23456");
+    }
+
+    #[test]
+    fn no_environment_uses_home_database_without_creating_files() {
+        let _guard = ENV_LOCK.lock().unwrap();
+        let home = tempfile::tempdir().unwrap();
+        let home_path = home.path().join("space ? # ü");
+        let home_text = home_path.to_str().unwrap();
+        let _home = EnvVarGuard::set(
+            if cfg!(windows) { "USERPROFILE" } else { "HOME" },
+            home_text,
+        );
+        let _vars: Vec<_> = [
+            "DATABASE_URL",
+            "DATABASE_DRIVER",
+            "APP_HOST",
+            "APP_PORT",
+            "MCP_ENABLED",
+            "OTEL_ENABLED",
+        ]
+        .into_iter()
+        .map(EnvVarGuard::unset)
+        .collect();
+        let config = AppConfig::from_env().unwrap();
+        assert_eq!(config.database_driver, super::DatabaseDriver::Sqlite);
+        assert_eq!(config.listen_addr().unwrap().to_string(), "127.0.0.1:59865");
+        assert!(!config.otel_enabled);
+        assert_eq!(config.mcp.enabled, cfg!(feature = "mcp"));
+        let options: sqlx::sqlite::SqliteConnectOptions = config.database_url.parse().unwrap();
+        assert_eq!(
+            options.get_filename(),
+            home_path.join(".beeteam").join("beeteam.sql")
+        );
+        assert!(!home_path.exists());
+        let _driver = EnvVarGuard::set("DATABASE_DRIVER", "postgres");
+        assert!(AppConfig::from_env()
+            .unwrap_err()
+            .to_string()
+            .contains("DATABASE_URL"));
     }
 
     struct EnvVarGuard {

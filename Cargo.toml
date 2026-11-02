@@ -6,7 +6,7 @@ rust-version = "1.94"
 authors = ["Philippe Assis <codephilippe@gmail.com>"]
 
 [features]
-default = []
+default = ["mcp"]
 mcp = ["dep:rmcp", "dep:schemars"]
 embedded-ui = []
 
