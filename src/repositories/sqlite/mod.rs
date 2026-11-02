@@ -23,6 +23,9 @@ pub async fn connect(url: &str) -> Result<SqlitePool> {
         .collation("beeteam_nocase", |a, b| {
             a.to_lowercase().cmp(&b.to_lowercase())
         });
+    if let Some(parent) = options.get_filename().parent().filter(|p| !p.as_os_str().is_empty()) {
+        std::fs::create_dir_all(parent).context("failed to create SQLite database directory")?;
+    }
     let pool = SqlitePoolOptions::new()
         .max_connections(16)
         .connect_with(options)

@@ -38,6 +38,7 @@ mod tests {
     use super::*;
     #[test]
     fn modes_are_explicit() {
+        assert_eq!(FrontendMode::default(), if cfg!(feature = "embedded-ui") { FrontendMode::Embedded } else { FrontendMode::Disabled });
         assert!(FrontendMode::parse("invalid").is_err());
         assert_eq!(
             FrontendMode::parse("disabled").unwrap(),

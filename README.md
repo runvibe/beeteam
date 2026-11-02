@@ -4,17 +4,25 @@ Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harnes
 
 ## Executar
 
-Requer Rust >=1.94. PostgreSQL >=18 is the default; SQLite is available through explicit environment selection. A migration recusa versões anteriores. O `docker-compose.yaml` existente utiliza PostgreSQL 18; use um banco dedicado e preserve volumes existentes.
+O binário de distribuição inicia sem variáveis: SQLite em `~/.beeteam/beeteam.sql`,
+`APP_HOST=127.0.0.1`, `APP_PORT=59865`, `MCP_ENABLED=true`, `OTEL_ENABLED=false` e UI
+embutida habilitada. A home é resolvida pelo sistema; `.beeteam` só é criada ao
+abrir a persistência. Nenhum banco anterior é movido, convertido ou resetado.
 
-```powershell
-docker compose up -d postgres
-$env:DATABASE_URL="postgres://postgres:postgres@127.0.0.1:5453/postgres"
-$env:OTEL_ENABLED="false"
-$env:MCP_ENABLED="true"
-cargo run --features mcp
-```
+Para produzir o executável completo, use `node scripts/build-distribution.mjs`
+(Rust >=1.94, Node/npm no build). Ele compila **mcp e embedded-ui** e verifica os
+assets antes de embuti-los. Execute o binário copiado sem Node/Vite em runtime.
+`cargo build`/`cargo run` comuns incluem MCP, mas são builds de desenvolvimento
+sem UI; `--no-default-features` permite o build API-only sem MCP. A variável de
+ambiente não pode habilitar uma feature ausente do binário.
 
-Por padrão escuta em `127.0.0.1:59865`. `APP_HOST`, `APP_PORT`, `APP_CORS_ALLOW_ORIGINS`, `APP_BODY_LIMIT_BYTES`, `MCP_PATH` e `MCP_ALLOWED_ORIGINS` continuam configuráveis. Migrations rodam no startup. Sem `--features mcp` ou sem `MCP_ENABLED=true`, `/mcp` não é montado.
+Overrides e `.env` existente continuam válidos. `DATABASE_URL` explícita é usada
+sem alteração; se o driver for omitido, uma URL PostgreSQL seleciona PostgreSQL
+para preservar instalações existentes. `DATABASE_DRIVER=postgres` requer URL
+explícita e PostgreSQL >=18. Driver e esquema divergentes falham. Use
+`MCP_ENABLED=false` e/ou `BEE_FRONTEND_MODE=disabled` para desabilitar componentes,
+ou `OTEL_ENABLED=true` para habilitar telemetria. Host, porta, CORS, limite de corpo
+e caminhos MCP continuam configuráveis. Migrations rodam no startup.
 
 Não há workspace, autenticação, login ou tokens. Escritas declaram `X-Actor-Kind: human`; agentes declaram `X-Actor-Kind: agent` e `X-Actor-Id` UUIDv7 cadastrado. Isso é auditoria declarada, não identidade verificada. Política de edição pelo líder via executor gerido continua pendente e não foi transformada em bloqueio presumido.
 
@@ -162,8 +170,8 @@ and report failures without starting competing processes. See the
 [Windows/Codex procedure](skills/references/codex.md) and
 [readiness checks](skills/references/integration.md). Startup does not run preview
 bootstrap automatically or reset storage. Tool-policy rejection requires a clear
-manual handoff, not an alternative launcher. PostgreSQL 18 remains the supported
-default path in this workflow; SQLite is an explicit opt-in described below. Data conversion is outside its scope.
+manual handoff, not an alternative launcher. PostgreSQL 18 remains supported through explicit configuration; SQLite is now
+the default described below. Data conversion is outside its scope.
 
 
 ## Bee Team frontend
@@ -196,7 +204,7 @@ Gravações ainda usam o snapshot completo de recursos e o advisory lock global
 dentro do repository. Essa escolha preserva as invariantes entre recursos e a
 atomicidade dos comandos compostos; não é uma otimização de concorrência das
 escritas. O `UnitOfWork` não expõe a transação SQL e confirma notificações apenas
-após commit. SQLite is an explicit opt-in; see below.
+após commit. SQLite is the default standalone store; see below.
 
 `tests/repository_boundaries.rs` verifica isolamento de camadas, leituras durante
 gravações, ausência de leitura de tabelas alheias, estabilidade do snapshot,
@@ -204,9 +212,9 @@ proteção contra gravação em leitura e paginação. Rode os testes com
 `BEE_TEST_DATABASE_URL` apontando para PostgreSQL 18 isolado, nunca para dados do produto.
 
 
-## SQLite environment opt-in
+## SQLite defaults and database overrides
 
-PostgreSQL stays the default when `DATABASE_DRIVER` is absent or empty. Set
+SQLite at `~/.beeteam/beeteam.sql` is the default without overrides. Set
 `DATABASE_DRIVER=postgres|sqlite` and a matching `DATABASE_URL`; unknown drivers
 and mismatched URL schemes fail startup before a connection is opened. There is
 no fallback to another driver. Selecting a new SQLite file starts an independent
@@ -282,17 +290,10 @@ The output is `target/release/beeteam.exe` on Windows, or
 `target/release/beeteam` on Unix. Copy that executable to the runtime machine.
 There is no Node/Vite, `frontend/dist`, source checkout or npm dependency at
 runtime. The selected database and its persistent data remain external to the
-executable; PostgreSQL stays the default and SQLite remains explicit opt-in.
+executable; the default is SQLite at `~/.beeteam/beeteam.sql`.
 
 ```powershell
-# Run the copied executable from a writable application directory.
-$env:DATABASE_DRIVER="sqlite"
-$env:DATABASE_URL="sqlite://./beeteam.sqlite"
-$env:APP_HOST="127.0.0.1"
-$env:APP_PORT="59865"
-$env:OTEL_ENABLED="false"
-$env:MCP_ENABLED="true"
-$env:BEE_FRONTEND_MODE="embedded"
+# No environment variables are needed for the distribution defaults.
 ./beeteam.exe
 ```
 
