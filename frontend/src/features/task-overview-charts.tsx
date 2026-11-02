@@ -1,3 +1,4 @@
+import { ChartPointPopover } from "./chart-point-popover";
 import { OverviewAttribution } from "./overview-artifacts";
 import {
   useId,
@@ -288,21 +289,42 @@ export function ProgressHistory({
             )}
           </svg>
           {positions.map((position, index) => (
-            <button
+            <ChartPointPopover
               key={points[index].eventId}
-              type="button"
+              pointId={points[index].eventId}
+              position={position}
+              hitWidth={Math.max(
+                1,
+                Math.min(
+                  44,
+                  index > 0
+                    ? Math.abs(position.x - positions[index - 1].x)
+                    : 44,
+                  index < positions.length - 1
+                    ? Math.abs(positions[index + 1].x - position.x)
+                    : 44,
+                ),
+              )}
               className="overview-progress-hit"
-              style={{ left: position.x, top: position.y }}
-              aria-label={`${formatDate(points[index].occurredAt)}: ${points[index].percent}%`}
-              aria-pressed={selected?.eventId === points[index].eventId}
-              aria-controls={`${description}-detail`}
-              onFocus={() => setSelected(points[index].eventId)}
-              onClick={() => setSelected(points[index].eventId)}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse")
-                  setSelected(points[index].eventId);
-              }}
-            />
+              label={`${formatDate(points[index].occurredAt)}: ${points[index].percent}%`}
+              dialogLabel="Detalhes do progresso neste ponto"
+              selected={selected?.eventId === points[index].eventId}
+              detailId={`${description}-detail`}
+              onSelect={() => setSelected(points[index].eventId)}
+            >
+              <strong>Progresso registrado: {points[index].percent}%</strong>
+              <OverviewAttribution
+                actor={points[index]}
+                date={points[index].occurredAt}
+              />
+              <p>Status no momento do registro: não registrado.</p>
+              <p>Tokens neste ponto: não informados.</p>
+              <p className="small-note">
+                Este evento de progresso não tem vínculo explícito com um resumo
+                ou evidência de consumo.
+              </p>
+              {points[index].note && <p>{points[index].note}</p>}
+            </ChartPointPopover>
           ))}
         </div>
         {selected && (

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
 import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
@@ -134,7 +134,7 @@ it("reveals recorded progress and actor without associating tokens by time", asy
       },
       {
         eventId: "second",
-        occurredAt: "2026-11-02T11:00:00Z",
+        occurredAt: "2026-11-02T10:01:00Z",
         percent: 50,
         note: "",
         source: "task.updated",
@@ -142,21 +142,70 @@ it("reveals recorded progress and actor without associating tokens by time", asy
         actorId: null,
       },
     ],
-    total: 2,
+    total: 3,
     limit: 100,
     truncated: false,
     coverage: "explicit_progress_events_only",
   };
+  data.items.push({
+    ...data.items[1],
+    eventId: "last",
+    occurredAt: "2026-11-02T11:00:00Z",
+    percent: 90,
+  });
   const { container } = render(<ProgressHistory data={data} />);
   const buttons = screen.getAllByRole("button");
+  expect(Number.parseFloat(buttons[1].style.width)).toBeLessThan(44);
   await userEvent.tab();
   expect(buttons[0]).toHaveFocus();
-  expect(screen.getByText("Progresso registrado: 0%")).toBeVisible();
-  await userEvent.click(buttons[1]);
-  expect(screen.getByText("Progresso registrado: 50%")).toBeVisible();
-  expect(screen.getByText(/Pessoa · identidade não informada/)).toBeVisible();
-  expect(screen.getByText(/Tokens neste ponto: não informados/)).toBeVisible();
   expect(
-    Array.from(container.querySelectorAll("svg g text")).map((el) => el.textContent),
+    within(screen.getByRole("dialog")).getByText("Progresso registrado: 0%"),
+  ).toBeVisible();
+  await userEvent.click(buttons[1]);
+  expect(
+    within(screen.getByRole("dialog")).getByText("Progresso registrado: 50%"),
+  ).toBeVisible();
+  expect(
+    within(screen.getByRole("dialog")).getByText(
+      /Pessoa · identidade não informada/,
+    ),
+  ).toBeVisible();
+  expect(
+    within(screen.getByRole("dialog")).getByText(
+      /Tokens neste ponto: não informados/,
+    ),
+  ).toBeVisible();
+  const popup = screen.getByRole("dialog", {
+    name: "Detalhes do progresso neste ponto",
+  });
+  expect(
+    within(popup).getByText(/Status no momento do registro: não registrado/),
+  ).toBeVisible();
+  expect(popup.querySelector("time")).toHaveAttribute(
+    "datetime",
+    data.items[1].occurredAt,
+  );
+  expect(
+    container.querySelector(".overview-progress-plot")?.contains(popup),
+  ).toBe(false);
+  await userEvent.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog")).toBeNull();
+  await userEvent.hover(buttons[0]);
+  expect(await screen.findByRole("dialog")).toBeVisible();
+  await userEvent.unhover(buttons[0]);
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  await userEvent.pointer([
+    { keys: "[TouchA>]", target: buttons[1] },
+    { keys: "[/TouchA]", target: buttons[1] },
+  ]);
+  expect(await screen.findByRole("dialog")).toBeVisible();
+  await userEvent.click(
+    screen.getByRole("heading", { name: "Evolução do progresso registrado" }),
+  );
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(
+    Array.from(container.querySelectorAll("svg g text")).map(
+      (el) => el.textContent,
+    ),
   ).toEqual(["0", "50", "100"]);
 });

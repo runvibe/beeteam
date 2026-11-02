@@ -717,3 +717,12 @@ available. Existing historical records and exact saved POST replays are preserve
 No migration or service restart is required by the source change itself; clients
 and bundled guidance must be aligned before runtime activation.
 Os pontos de Evolução dos resumos abrem um popover ancorado com autor, data, status histórico e deltas medido/estimado. Hover, foco e toque são suportados; Escape, saída do mouse e clique externo fecham. O portal evita corte por overflow/sticky; o detalhe abaixo permanece como alternativa.
+
+
+Os pontos de **Evolução do progresso registrado** abrem um popover ancorado por
+mouse, foco de teclado ou toque, com data, autoria, percentual e nota do evento.
+Escape, saída do mouse ou clique fora fecham o detalhe. Esses eventos não possuem
+vínculo explícito com resumos: status histórico e tokens permanecem não informados.
+Nos resumos com baseline de sessão, o detalhe também exibe o snapshot acumulado
+registrado (entrada + saída), sem somar cache/raciocínio novamente. Essa referência
+não é atribuída à tarefa, não altera totais nem substitui o delta ausente.

@@ -1,3 +1,4 @@
+import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it } from "vitest";
@@ -106,4 +107,125 @@ it("opens on keyboard focus and touch, dismisses outside and keeps unknown data 
   expect(await screen.findByRole("dialog")).toBeVisible();
   await user.click(screen.getByRole("button", { name: "Fora do gráfico" }));
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+});
+
+function report(): SummaryUsageReport {
+  return {
+    reportedAt: "2026-10-31T01:00:00Z",
+    reportingActor: { actorKind: "human", actorId: null },
+    statusObserved: { id: "status", name: "Em andamento", isDone: false },
+    revision: 1,
+    entries: [
+      {
+        id: "entry",
+        reportedAt: "2026-10-31T01:00:00Z",
+        reportingActor: { actorKind: "human", actorId: null },
+        reportRevision: 1,
+        evidenceKey: "evidence",
+        canonicalSummaryId: "summary",
+        delta: null,
+        counted: false,
+        coverageReason: "baseline_or_unavailable",
+        observation: {
+          source: "Source",
+          harness: "Harness A",
+          surface: "Desktop",
+          harnessVersion: null,
+          sessionId: "session",
+          epoch: "epoch",
+          evidenceId: "evidence",
+          previousEvidenceId: null,
+          actor: { kind: "human", id: null },
+          actorRole: "human",
+          provider: "Provider",
+          modelId: "Model A",
+          scope: "session",
+          reportKind: "cumulative_snapshot",
+          quality: "measured",
+          attribution: "exact",
+          observedAt: "2026-10-31T00:00:00Z",
+          periodStart: null,
+          periodEnd: null,
+          inputTokens: "999999",
+          outputTokens: "0",
+          cachedInputTokens: null,
+          reasoningOutputTokens: null,
+          discovery: null,
+        },
+      },
+    ],
+  };
+}
+it("shows a session baseline snapshot without fabricating a delta or double-counting cached/reasoning tokens", async () => {
+  const baseline = report();
+  Object.assign(baseline.entries[0].observation, {
+    inputTokens: "30732075",
+    outputTokens: "106883",
+    cachedInputTokens: "30407552",
+    reasoningOutputTokens: "21969",
+    attribution: "shared",
+  });
+  const { rerender } = render(
+    <UsageCheckpointPoint
+      point={{
+        ...point,
+        reportingActor: { actorKind: "human", actorId: null },
+        recordedSessionUsage: undefined,
+        usageReport: baseline,
+      }}
+      position={{ x: 40, y: 80 }}
+      selected={false}
+      detailId="baseline"
+      onSelect={() => {}}
+    />,
+  );
+  await userEvent.hover(screen.getByRole("button", { name: /Resumo / }));
+  const popup = screen.getByRole("dialog");
+  expect(
+    within(popup).getByText(
+      "Acumulado registrado de sessão (medido): 30.838.958 tokens",
+    ),
+  ).toBeVisible();
+  expect(
+    within(popup).getByText(
+      /Não atribuído à tarefa nem somado ao total ou ao delta/,
+    ),
+  ).toBeVisible();
+  expect(
+    within(popup).getByText("Delta medido de sessão: Não informado tokens"),
+  ).toBeVisible();
+  baseline.entries[0].observation.outputTokens = null;
+  rerender(
+    <UsageCheckpointPoint
+      point={{
+        ...point,
+        reportingActor: { actorKind: "human", actorId: null },
+        usageReport: baseline,
+      }}
+      position={{ x: 40, y: 80 }}
+      selected={false}
+      detailId="baseline"
+      onSelect={() => {}}
+    />,
+  );
+  expect(
+    within(popup).getByText(
+      "Acumulado registrado de sessão (medido): Não informado tokens",
+    ),
+  ).toBeVisible();
+  baseline.entries[0].observation.scope = "session_tree";
+  rerender(
+    <UsageCheckpointPoint
+      point={{
+        ...point,
+        reportingActor: { actorKind: "human", actorId: null },
+        usageReport: baseline,
+      }}
+      position={{ x: 40, y: 80 }}
+      selected={false}
+      detailId="baseline"
+      onSelect={() => {}}
+    />,
+  );
+  expect(within(popup).queryByText(/Acumulado registrado/)).toBeNull();
 });
