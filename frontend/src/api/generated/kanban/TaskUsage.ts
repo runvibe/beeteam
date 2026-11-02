@@ -25,4 +25,5 @@ export type TaskUsage = {
     limit: number;
     truncated: boolean;
   };
+  recordedSessionUsage?: import("./RecordedSessionUsage").RecordedSessionUsage;
 };

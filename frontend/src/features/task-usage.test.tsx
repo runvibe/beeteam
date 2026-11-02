@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
 import { ApiProvider } from "@/api/context";
@@ -137,24 +137,46 @@ it("shows authoritative totals, mixed coverage and legacy checkpoint time withou
   expect(screen.getByText("12")).toBeVisible();
   expect(screen.getByText(/Qualidade mista/)).toBeVisible();
   await userEvent.click(screen.getByText("Checkpoints dos resumos (1)"));
-  expect(screen.getByText(/Status observado: Não registrado/)).toBeVisible();
-  expect(screen.getByText(/Ausência não significa zero/)).toBeVisible();
+  expect(
+    screen.getAllByText(/Status observado: Não registrado/).some((el) => !!el),
+  ).toBe(true);
+  expect(
+    screen.getAllByText(/Ausência não significa zero/).length,
+  ).toBeGreaterThan(0);
   expect(screen.getByText(/Não representa horário de consumo/)).toBeVisible();
 });
 it("paginates dimensions and checkpoints from API while keeping total independent", async () => {
   const data = usage();
+  data.recordedSessionUsage = {
+    measuredTotalTokens: "1186039",
+    estimatedTotalTokens: null,
+    coverage: {
+      sessions: 1,
+      baselineEntries: 1,
+      deltaEntries: 1,
+      duplicateEntries: 0,
+    },
+  };
   data.models = { ...data.models, total: 2, limit: 1, truncated: true };
   data.timeline = { ...data.timeline, total: 2, limit: 1, truncated: true };
   const api = createMockApi({ delay: 0 });
-  const dims = vi
-    .spyOn(api, "usageDimensions")
-    .mockResolvedValue({
-      ...page([{ provider: "Other", modelId: "Model B", harness: null }]),
-      offset: 1,
-      total: 2,
-    });
+  const dims = vi.spyOn(api, "usageDimensions").mockResolvedValue({
+    ...page([{ provider: "Other", modelId: "Model B", harness: null }]),
+    offset: 1,
+    total: 2,
+  });
   const next = usage();
   next.knownTotalTokens = "7";
+  next.recordedSessionUsage = {
+    measuredTotalTokens: "999",
+    estimatedTotalTokens: null,
+    coverage: {
+      sessions: 1,
+      baselineEntries: 1,
+      deltaEntries: 1,
+      duplicateEntries: 0,
+    },
+  };
   next.timeline = {
     ...page([{ ...data.timeline.items[0], summaryId: "second" }]),
     offset: 1,
@@ -184,6 +206,8 @@ it("paginates dimensions and checkpoints from API while keeping total independen
   await waitFor(() =>
     expect(screen.getByText("2 de 2 checkpoints")).toBeVisible(),
   );
+  expect(screen.getByText("1.186.039")).toBeVisible();
+  expect(screen.queryByText("999")).not.toBeInTheDocument();
   expect(checkpoints).toHaveBeenCalledWith(
     "task",
     { offset: 1, limit: 20 },
@@ -212,8 +236,74 @@ it("keeps previous dimensions after a failed next page and allows retry", async 
 });
 
 it("provides a focusable native disclosure for unavailable collection attempts", async () => {
- const r=report();const o=r.entries[0].observation;o.quality="unavailable";o.reportKind="unavailable";o.inputTokens=null;o.outputTokens=null;o.discovery={reason:"Fonte sem contadores",attempts:["Consultado relatório de sessão"]};
- render(<ApiProvider api={createMockApi({delay:0})}><SummaryUsage report={r}/></ApiProvider>);
- const disclosure=screen.getByText("Observação original e proveniência");disclosure.focus();expect(disclosure).toHaveFocus();await userEvent.click(disclosure);
- expect(screen.getByText("Fonte sem contadores")).toBeVisible();expect(screen.getByText("Consultado relatório de sessão")).toBeVisible();
+  const r = report();
+  const o = r.entries[0].observation;
+  o.quality = "unavailable";
+  o.reportKind = "unavailable";
+  o.inputTokens = null;
+  o.outputTokens = null;
+  o.discovery = {
+    reason: "Fonte sem contadores",
+    attempts: ["Consultado relatório de sessão"],
+  };
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <SummaryUsage report={r} />
+    </ApiProvider>,
+  );
+  const disclosure = screen.getByText("Observação original e proveniência");
+  disclosure.focus();
+  expect(disclosure).toHaveFocus();
+  await userEvent.click(disclosure);
+  expect(screen.getByText("Fonte sem contadores")).toBeVisible();
+  expect(screen.getByText("Consultado relatório de sessão")).toBeVisible();
+});
+
+it("shows recorded session deltas independently from unallocated task totals and unknown models", async () => {
+  const data = usage();
+  data.knownTotalTokens = null;
+  data.estimatedTotalTokens = null;
+  data.recordedSessionUsage = {
+    measuredTotalTokens: "1186039",
+    estimatedTotalTokens: null,
+    coverage: {
+      sessions: 1,
+      baselineEntries: 1,
+      deltaEntries: 1,
+      duplicateEntries: 0,
+    },
+  };
+  data.models = page([{ provider: null, modelId: null, harness: null }]);
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <TaskUsagePanel taskId="task" usage={data} version={1} />
+    </ApiProvider>,
+  );
+  const session = screen.getByRole("region", {
+    name: "Consumo registrado de sessão",
+  });
+  expect(within(session).getByText("1.186.039")).toBeVisible();
+  expect(
+    within(session).getByText(/não representam consumo exato atribuído/),
+  ).toBeVisible();
+  expect(
+    screen.getByText("Total acumulado conhecido (tokens)").parentElement,
+  ).toHaveTextContent("Não informado");
+  await userEvent.click(screen.getByText("Modelos registrados (1)"));
+  expect(
+    screen.getByText("Modelo não informado · Provedor não informado"),
+  ).toBeVisible();
+});
+it("does not derive a session aggregate from legacy checkpoints", () => {
+  const data = usage();
+  data.timeline.items[0].usageReport = report();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <TaskUsagePanel taskId="task" usage={data} version={1} />
+    </ApiProvider>,
+  );
+  expect(
+    screen.queryByRole("region", { name: "Consumo registrado de sessão" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByText("9.007.199.254.740.993")).toBeVisible();
 });

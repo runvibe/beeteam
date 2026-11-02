@@ -7,4 +7,5 @@ export type SummaryUsageTimelineItem = {
   reportingActor: import("./DeclaredActor").DeclaredActor;
   statusObserved: import("./UsageObservedStatus").UsageObservedStatus | null;
   usageReport: import("./SummaryUsageReport").SummaryUsageReport | null;
+  recordedSessionUsage?: import("./RecordedSessionUsage").RecordedSessionUsage;
 };
