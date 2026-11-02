@@ -1,3 +1,4 @@
+import { UsageCheckpointPoint } from "./usage-checkpoint-point";
 import { useId, useState, useRef, useLayoutEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsageTimelineItem";
@@ -203,20 +204,13 @@ export function UsageCheckpointChart({
             <p className="usage-chart-empty">Sem resumos disponíveis</p>
           )}
           {points.map((point, i) => (
-            <button
+            <UsageCheckpointPoint
               key={point.summaryId}
-              type="button"
-              className="usage-chart-point"
-              data-missing={values[i] === null}
-              aria-pressed={selected?.summaryId === point.summaryId}
-              aria-label={`Resumo ${formatDate(point.reportedAt)}: ${values[i] === null ? "sem delta medido" : tokenCount(values[i]) + " tokens"}; status ${point.statusObserved?.name ?? "não registrado"}`}
-              style={{ left: positions[i].x, top: positions[i].y }}
-              aria-controls={`${id}-detail`}
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") setSelected(point.summaryId);
-              }}
-              onFocus={() => setSelected(point.summaryId)}
-              onClick={() => setSelected(point.summaryId)}
+              point={point}
+              position={positions[i]}
+              selected={selected?.summaryId === point.summaryId}
+              detailId={`${id}-detail`}
+              onSelect={() => setSelected(point.summaryId)}
             />
           ))}
         </div>
