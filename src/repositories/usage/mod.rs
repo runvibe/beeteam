@@ -1,14 +1,20 @@
 //! Complete SQL aggregates and paged summary checkpoints. No business inference.
 pub(super) mod postgres;
 pub(super) mod sqlite;
+mod recorded_sessions;
 use serde_json::{json, Value};
 
 fn page(items: Vec<Value>, total: i64, offset: usize, limit: usize) -> Value {
     json!({"truncated":offset+items.len()<(total as usize),"items":items,"total":total,"offset":offset,"limit":limit})
 }
-fn timeline(value: Value) -> Value {
-    json!({"summaryId":value["id"],"reportedAt":value["createdAt"],"reportingActor":{"actorKind":value["actorKind"],"actorId":value["actorId"]},"statusObserved":value.get("statusObserved").cloned().unwrap_or(Value::Null),"usageReport":value.get("usageReport").cloned().unwrap_or(Value::Null)})
+fn timeline(value: Value) -> crate::dto::backend::Result<Value> {
+    let mut recorded = recorded_sessions::RecordedSessions::default();
+    if let Some(entries) = value["usageReport"]["entries"].as_array() {
+        for entry in entries { recorded.push_entry(entry)?; }
+    }
+    Ok(json!({"summaryId":value["id"],"reportedAt":value["createdAt"],"reportingActor":{"actorKind":value["actorKind"],"actorId":value["actorId"]},"statusObserved":value.get("statusObserved").cloned().unwrap_or(Value::Null),"usageReport":value.get("usageReport").cloned().unwrap_or(Value::Null),"recordedSessionUsage":recorded.value()}))
 }
+
 fn dimension_sql(kind: &str) -> String {
     let fields = if kind == "model" {
         "entry->'observation'->>'provider' AS provider, entry->'observation'->>'modelId' AS model_id, NULL AS harness"

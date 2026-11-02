@@ -156,3 +156,48 @@ with absent reports. No data migration or backfill is performed. Exact saved
 idempotent responses are looked up before the new required-write validation in
 both ordinary and compound services. A new idempotency key is a new write and
 must satisfy the required report contract.
+
+## Recorded session consumption (additive read model)
+
+`TaskUsage.recordedSessionUsage` exposes measuredTotalTokens and
+estimatedTotalTokens separately from task-attributed knownTotalTokens and
+estimatedTotalTokens. It sums only already stored canonical deltas for
+cumulative_snapshot with scope=session, including shared/unallocated evidence.
+It never changes attribution, adds raw snapshots, or includes request/session_tree
+counters. It overlaps task-attributed session evidence and MUST NOT be added to
+the existing attributed totals. Null means no complete known delta total; a
+measured zero remains the string "0". Numeric strings retain 128-bit aggregate
+precision, including totals beyond int64. Original per-entry bounds are unchanged.
+
+Coverage gives distinct source/sessionId pairs among canonical entries in sessions, canonical baselineEntries
+and deltaEntries, and excluded duplicateEntries. Epoch resets can add baselines
+within one session. Duplicate evidence keys/references and appended repeated
+observations never add consumption. Sources/session aliases are declared provenance;
+the API cannot prove that two different external IDs cover the same physical work.
+
+Every SummaryUsageTimelineItem also includes recordedSessionUsage calculated from
+that summary's current report entries. The frontend can draw one delta point per
+summary without implementing accounting rules. Baselines and duplicate-only summaries
+have null totals and retain their informational snapshots in usageReport.entries.
+Missing legacy reports yield null totals/empty coverage, never fabricated zero.
+Both fields are optional in schema for legacy responses and present in current reads.
+
+The global aggregate covers all pages in the same read snapshot; per-summary
+aggregates cover only their report, including later supplements. Timeline reportedAt
+is the summary registration time, not necessarily when evidence was observed or
+reconciled. Entry observedAt, reportRevision, reportingActor and reconciledAt retain
+that distinction. statusObserved is historical; reportingActor and observation.actor
+identify authors/evidence actors. No historical task executor is inferred from the
+current executor. Graphs must preserve gaps and expose evidence provenance.
+
+Repositories stream task-filtered stored session entries inside the existing read
+snapshot; no global resource preload, write, migration or backfill is introduced.
+
+## Recorded session verification — 2026-11-02
+
+- `BEE_TEST_DRIVER=sqlite OTEL_ENABLED=false cargo test --locked --lib --test backend_usage --test backend_overview --test backend_mcp -j1 -- --skip sdk_tools_resources_prompts_and_atomic_compounds`: 40 passed (26 library, 10 usage, 2 overview, 2 MCP).
+- Isolated regression reproduces measured delta 1186039 while task-attributed total stays null; covers baseline pagination, repeated observations/revisions, a second estimated session, Overview and HTTP/MCP parity.
+- Unit coverage checks aggregates beyond int64, canonical evidence deduplication, excluded scopes, unknown totals and observed zero.
+- `cargo build --locked --features mcp -j1` passed; MCP catalog regenerated with the documented command.
+- PostgreSQL runtime tests remain pending: no isolated BEE_TEST_DATABASE_URL configured; the PostgreSQL-only MCP SDK test was explicitly filtered out. Both repository adapters compiled.
+- No product database changes, backfill, service restart or runtime activation were performed.

@@ -685,3 +685,13 @@ this backend bundle synchronization.
 A Visão geral separa o consumo registrado de sessão (`recordedSessionUsage`, quando fornecido pela API) dos totais atribuídos à tarefa. Exibe deltas medidos/estimados e cobertura de sessões, referências iniciais e duplicadas; não soma snapshots, revisões ou páginas no cliente. Consumo de sessão pode incluir outros trabalhos e não deve ser somado ao total atribuído. Respostas antigas sem esse agregado e modelos não informados continuam sem inferências.
 
 O gráfico de evolução dos resumos usa o horário de cada resumo e o delta medido de sessão projetado pela API para cada checkpoint. Pontos de referência/sem medida ficam numa faixa informacional separada de zero; linhas não atravessam lacunas. Foco, clique/toque e seletor consultam status, autor, modelo/harness e proveniência, com abertura somente de leitura do resumo por UUID. A paginação informa a cobertura carregada, sem alterar totais globais; nenhum executor histórico é inferido.
+## Registered session consumption in Overview
+
+Usage and Overview reads now expose `recordedSessionUsage` globally and on each
+summary timeline item. Measured/estimated session deltas remain separate from
+consumption attributed to the task: shared/unallocated evidence stays that way.
+Baselines and duplicate references never inflate totals; unknown stays null.
+The timeline retains status/author/model/harness/provenance for a per-summary line
+chart without summing pages or raw cumulative snapshots in the client. See
+[usage semantics](docs/summary-usage.md). This read-only addition does not modify
+existing usage reports or claim an unrecorded historical task executor.

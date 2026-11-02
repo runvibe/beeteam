@@ -1,3 +1,5 @@
+use super::recorded_sessions::{RecordedSessions, SQL as SESSION_SQL};
+use futures_util::TryStreamExt;
 use super::{dimension_sql, page, stats_sql, timeline};
 use crate::{
     dto::backend::{Command, Result},
@@ -37,10 +39,17 @@ pub(crate) async fn select(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Res
         .map(|r| {
             timeline(crate::repositories::sqlite::reads::record("execution_summaries", r).value())
         })
-        .collect();
+        .collect::<Result<Vec<_>>>()?;
     let models = dimensions(tx, &id, "model", 0, 100).await?;
     let harnesses = dimensions(tx, &id, "harness", 0, 100).await?;
-    let data = json!({"knownTotalTokens":known,"estimatedTotalTokens":row.get::<Option<String>,_>("estimated"),
+    let mut recorded = RecordedSessions::default();
+    {
+        let mut rows = sqlx::query(SESSION_SQL).bind(id.clone()).fetch(&mut **tx);
+        while let Some(row) = rows.try_next().await? {
+            recorded.push(&row.get::<String,_>("entry_json"))?;
+        }
+    }
+    let data = json!({"recordedSessionUsage":recorded.value(),"knownTotalTokens":known,"estimatedTotalTokens":row.get::<Option<String>,_>("estimated"),
         "measuredComponents":{"inputTokens":row.get::<Option<String>,_>("input"),"outputTokens":row.get::<Option<String>,_>("output"),"cachedInputTokens":row.get::<Option<String>,_>("cached"),"reasoningOutputTokens":row.get::<Option<String>,_>("reasoning"),"totalTokens":known},
         "coverage":{"totalSummaries":total,"reportedSummaries":reported,"missingSummaries":total-reported,
             "entries":row.get::<i64,_>("entries"),"measuredEntries":row.get::<i64,_>("measured"),"estimatedEntries":row.get::<i64,_>("estimated_count"),"unavailableEntries":row.get::<i64,_>("unavailable"),"baselineEntries":row.get::<i64,_>("baseline"),"duplicateEntries":row.get::<i64,_>("duplicates"),"unallocatedEntries":row.get::<i64,_>("unallocated")},

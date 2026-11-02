@@ -522,3 +522,44 @@ fn summary_mcp_tools_explain_required_evidence_and_honest_fallback() {
         }
     }
 }
+
+#[tokio::test]
+async fn unallocated_session_delta_is_visible_without_task_attribution() {
+    let (app,agent,board,mut task)=setup().await;
+    let route=format!("/api/v1/tasks/{}/execution-summaries",id(&task));
+    let mut baseline=observation(id(&agent),"session-baseline",None,"1069755","4036");
+    baseline["attribution"]=json!("unallocated");baseline["modelId"]=Value::Null;
+    let mut checkpoint=baseline.clone();checkpoint["evidenceId"]=json!("session-checkpoint");checkpoint["previousEvidenceId"]=json!("session-baseline");checkpoint["inputTokens"]=json!("2251066");checkpoint["outputTokens"]=json!("8764");checkpoint["observedAt"]=json!("2026-10-31T01:00:00Z");
+    for entry in [baseline,checkpoint.clone()] {
+        let mut body=execution(&task,&board);body["usageReport"]=json!({"entries":[entry]});
+        task=ok(&app,"POST",&route,body,ver(&task)).await["task"].clone();
+    }
+    let path=format!("/api/v1/tasks/{}/usage?limit=1",id(&task));
+    let data=get(&app,&path).await;
+    assert!(data["knownTotalTokens"].is_null());
+    assert_eq!(data["recordedSessionUsage"]["measuredTotalTokens"],"1186039");
+    assert_eq!(data["timeline"]["items"][0]["recordedSessionUsage"]["measuredTotalTokens"],"1186039");
+    assert!(data["recordedSessionUsage"]["estimatedTotalTokens"].is_null());
+    assert_eq!(data["recordedSessionUsage"]["coverage"],json!({"sessions":1,"baselineEntries":1,"deltaEntries":1,"duplicateEntries":0}));
+    assert_eq!(get(&app,&format!("/api/v1/tasks/{}/overview",id(&task))).await["usage"]["recordedSessionUsage"],data["recordedSessionUsage"]);
+    let baseline_page=get(&app,&format!("/api/v1/tasks/{}/usage?limit=1&offset=1",id(&task))).await;
+    assert!(baseline_page["timeline"]["items"][0]["recordedSessionUsage"]["measuredTotalTokens"].is_null());
+    assert_eq!(baseline_page["timeline"]["items"][0]["recordedSessionUsage"]["coverage"]["baselineEntries"],1);
+    assert_eq!(baseline_page["recordedSessionUsage"],data["recordedSessionUsage"]);
+    let mut body=execution(&task,&board);body["usageReport"]=json!({"entries":[checkpoint.clone()]});
+    let duplicate=ok(&app,"POST",&route,body,ver(&task)).await;
+    task=duplicate["task"].clone();
+    ok(&app,"POST",&format!("{}/{}/usage-revisions",route,id(&duplicate["executionSummary"])),json!({"entries":[checkpoint]}),Some(1)).await;
+    let mut other=observation(id(&agent),"other-baseline",None,"100","10");
+    other["sessionId"]=json!("another-session");other["attribution"]=json!("shared");other["quality"]=json!("estimated");
+    let mut next=other.clone();next["evidenceId"]=json!("other-next");next["previousEvidenceId"]=json!("other-baseline");next["inputTokens"]=json!("120");next["outputTokens"]=json!("15");next["observedAt"]=json!("2026-10-31T01:00:00Z");
+    let mut body=execution(&task,&board);body["usageReport"]=json!({"entries":[other,next]});
+    ok(&app,"POST",&route,body,ver(&task)).await;
+    let data=get(&app,&path).await;
+    assert!(data["knownTotalTokens"].is_null());assert!(data["estimatedTotalTokens"].is_null());
+    assert_eq!(data["recordedSessionUsage"]["measuredTotalTokens"],"1186039");
+    assert_eq!(data["recordedSessionUsage"]["estimatedTotalTokens"],"25");
+    assert_eq!(data["recordedSessionUsage"]["coverage"],json!({"sessions":2,"baselineEntries":2,"deltaEntries":2,"duplicateEntries":2}));
+    let rpc=tool(&app,"getTaskUsage",json!({"params":{"taskId":id(&task)},"query":{"limit":1}})).await;
+    assert_eq!(rpc["structuredContent"]["data"],data);
+}

@@ -14447,6 +14447,60 @@
                     ],
                     "type": "object"
                   },
+                  "recordedSessionUsage": {
+                    "additionalProperties": false,
+                    "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+                    "properties": {
+                      "coverage": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "baselineEntries": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "deltaEntries": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "duplicateEntries": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "sessions": {
+                            "minimum": 0,
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "sessions",
+                          "baselineEntries",
+                          "deltaEntries",
+                          "duplicateEntries"
+                        ],
+                        "type": "object"
+                      },
+                      "estimatedTotalTokens": {
+                        "pattern": "^(0|[1-9][0-9]{0,38})$",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "measuredTotalTokens": {
+                        "pattern": "^(0|[1-9][0-9]{0,38})$",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "measuredTotalTokens",
+                      "estimatedTotalTokens",
+                      "coverage"
+                    ],
+                    "type": "object"
+                  },
                   "timeline": {
                     "additionalProperties": false,
                     "properties": {
@@ -14454,6 +14508,60 @@
                         "items": {
                           "additionalProperties": false,
                           "properties": {
+                            "recordedSessionUsage": {
+                              "additionalProperties": false,
+                              "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+                              "properties": {
+                                "coverage": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "baselineEntries": {
+                                      "minimum": 0,
+                                      "type": "integer"
+                                    },
+                                    "deltaEntries": {
+                                      "minimum": 0,
+                                      "type": "integer"
+                                    },
+                                    "duplicateEntries": {
+                                      "minimum": 0,
+                                      "type": "integer"
+                                    },
+                                    "sessions": {
+                                      "minimum": 0,
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "sessions",
+                                    "baselineEntries",
+                                    "deltaEntries",
+                                    "duplicateEntries"
+                                  ],
+                                  "type": "object"
+                                },
+                                "estimatedTotalTokens": {
+                                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "measuredTotalTokens": {
+                                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "measuredTotalTokens",
+                                "estimatedTotalTokens",
+                                "coverage"
+                              ],
+                              "type": "object"
+                            },
                             "reportedAt": {
                               "format": "date-time",
                               "type": "string"
@@ -17625,6 +17733,60 @@
                 ],
                 "type": "object"
               },
+              "recordedSessionUsage": {
+                "additionalProperties": false,
+                "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+                "properties": {
+                  "coverage": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "baselineEntries": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "deltaEntries": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "duplicateEntries": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "sessions": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "sessions",
+                      "baselineEntries",
+                      "deltaEntries",
+                      "duplicateEntries"
+                    ],
+                    "type": "object"
+                  },
+                  "estimatedTotalTokens": {
+                    "pattern": "^(0|[1-9][0-9]{0,38})$",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "measuredTotalTokens": {
+                    "pattern": "^(0|[1-9][0-9]{0,38})$",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "measuredTotalTokens",
+                  "estimatedTotalTokens",
+                  "coverage"
+                ],
+                "type": "object"
+              },
               "timeline": {
                 "additionalProperties": false,
                 "properties": {
@@ -17632,6 +17794,60 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "recordedSessionUsage": {
+                          "additionalProperties": false,
+                          "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+                          "properties": {
+                            "coverage": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "baselineEntries": {
+                                  "minimum": 0,
+                                  "type": "integer"
+                                },
+                                "deltaEntries": {
+                                  "minimum": 0,
+                                  "type": "integer"
+                                },
+                                "duplicateEntries": {
+                                  "minimum": 0,
+                                  "type": "integer"
+                                },
+                                "sessions": {
+                                  "minimum": 0,
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "sessions",
+                                "baselineEntries",
+                                "deltaEntries",
+                                "duplicateEntries"
+                              ],
+                              "type": "object"
+                            },
+                            "estimatedTotalTokens": {
+                              "pattern": "^(0|[1-9][0-9]{0,38})$",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "measuredTotalTokens": {
+                              "pattern": "^(0|[1-9][0-9]{0,38})$",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "measuredTotalTokens",
+                            "estimatedTotalTokens",
+                            "coverage"
+                          ],
+                          "type": "object"
+                        },
                         "reportedAt": {
                           "format": "date-time",
                           "type": "string"
@@ -26855,6 +27071,60 @@
               ],
               "type": "object"
             },
+            "RecordedSessionUsage": {
+              "additionalProperties": false,
+              "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+              "properties": {
+                "coverage": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "baselineEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "deltaEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "duplicateEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "sessions": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "sessions",
+                    "baselineEntries",
+                    "deltaEntries",
+                    "duplicateEntries"
+                  ],
+                  "type": "object"
+                },
+                "estimatedTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "measuredTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "measuredTotalTokens",
+                "estimatedTotalTokens",
+                "coverage"
+              ],
+              "type": "object"
+            },
             "ReviewContext": {
               "additionalProperties": false,
               "description": "Orientação de revisão na conversa; não prova consentimento por si só.",
@@ -27157,6 +27427,9 @@
             "SummaryUsageTimelineItem": {
               "additionalProperties": false,
               "properties": {
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
+                },
                 "reportedAt": {
                   "format": "date-time",
                   "type": "string"
@@ -28075,6 +28348,9 @@
                     "truncated"
                   ],
                   "type": "object"
+                },
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
                 },
                 "timeline": {
                   "additionalProperties": false,
@@ -32432,6 +32708,60 @@
               ],
               "type": "object"
             },
+            "RecordedSessionUsage": {
+              "additionalProperties": false,
+              "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+              "properties": {
+                "coverage": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "baselineEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "deltaEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "duplicateEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "sessions": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "sessions",
+                    "baselineEntries",
+                    "deltaEntries",
+                    "duplicateEntries"
+                  ],
+                  "type": "object"
+                },
+                "estimatedTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "measuredTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "measuredTotalTokens",
+                "estimatedTotalTokens",
+                "coverage"
+              ],
+              "type": "object"
+            },
             "ReviewContext": {
               "additionalProperties": false,
               "description": "Orientação de revisão na conversa; não prova consentimento por si só.",
@@ -32734,6 +33064,9 @@
             "SummaryUsageTimelineItem": {
               "additionalProperties": false,
               "properties": {
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
+                },
                 "reportedAt": {
                   "format": "date-time",
                   "type": "string"
@@ -33652,6 +33985,9 @@
                     "truncated"
                   ],
                   "type": "object"
+                },
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
                 },
                 "timeline": {
                   "additionalProperties": false,
@@ -37009,6 +37345,60 @@
               ],
               "type": "object"
             },
+            "RecordedSessionUsage": {
+              "additionalProperties": false,
+              "description": "Stored canonical deltas from cumulative session checkpoints, irrespective of task attribution. Not an additional task total; never add to knownTotalTokens. Baselines and duplicate references contribute no tokens; missing totals remain null. Sessions count distinct source/sessionId pairs. Excludes request and session_tree scopes. Totals are decimal strings, computed across all pages with up to 128-bit precision.",
+              "properties": {
+                "coverage": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "baselineEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "deltaEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "duplicateEntries": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "sessions": {
+                      "minimum": 0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "sessions",
+                    "baselineEntries",
+                    "deltaEntries",
+                    "duplicateEntries"
+                  ],
+                  "type": "object"
+                },
+                "estimatedTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "measuredTotalTokens": {
+                  "pattern": "^(0|[1-9][0-9]{0,38})$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "measuredTotalTokens",
+                "estimatedTotalTokens",
+                "coverage"
+              ],
+              "type": "object"
+            },
             "ReviewContext": {
               "additionalProperties": false,
               "description": "Orientação de revisão na conversa; não prova consentimento por si só.",
@@ -37311,6 +37701,9 @@
             "SummaryUsageTimelineItem": {
               "additionalProperties": false,
               "properties": {
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
+                },
                 "reportedAt": {
                   "format": "date-time",
                   "type": "string"
@@ -38229,6 +38622,9 @@
                     "truncated"
                   ],
                   "type": "object"
+                },
+                "recordedSessionUsage": {
+                  "$ref": "#/components/schemas/RecordedSessionUsage"
                 },
                 "timeline": {
                   "additionalProperties": false,
