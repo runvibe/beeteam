@@ -335,3 +335,22 @@ reason/attempts. No zero or model/session identity is fabricated.
 Historical reads/transfer retain missing metrics. Exact saved legacy HTTP/MCP
 and compound replays remain valid before current schema validation. New keys
 must satisfy the new contract. See [summary usage](summary-usage.md).
+
+## Collaborator bootstrap snapshot — 2026-11-02
+
+Current bundle: Skills `5fd5f0b280865609ab7de7a2770fefa092c21fd4`, 13 source
+materials tracked in provenance, 15 allowlisted resources and 3 read-only prompts.
+New URI: `beeteam://references/collaborator-bootstrap`. Creation of an authorized
+chat precedes Collaborator self-registration; confirmed name/agentId/teamId and
+ready/pending precede Leader verification and task assignment. Bootstrap-only
+communication exemptions do not authorize business work or bypass harness policy.
+Existing required usage declarations and local driver-aware startup overlays remain.
+The standalone SQLite default is explicitly distinguished from the legacy local
+startup script. Links for the new reference resolve through the MCP allowlist.
+
+Validation: cargo build --locked --features mcp -j 1 passed; 24 unit tests and
+2 SQLite MCP tests passed with BEE_TEST_DRIVER=sqlite and OTEL_ENABLED=false.
+The PostgreSQL-only SDK compound test was excluded. Served resource hashes,
+13-file provenance and explicit MCP links were verified. The catalog was regenerated
+with cargo run --locked --features mcp --example mcp_catalog -j 1; git diff --check
+passed. Runtime activation and PostgreSQL execution are not claimed.

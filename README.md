@@ -524,3 +524,18 @@ The new test covers cross-board ancestry, total/page parity, parent references,
 HTTP/MCP parity, filters, optional rootOnly, independent child status and archive.
 PostgreSQL execution and live UI acceptance remain separate; no product data or
 runtime was changed by this delivery.
+
+## Collaborator bootstrap bundle — 2026-11-02
+
+Bundled Skills source `5fd5f0b280865609ab7de7a2770fefa092c21fd4` adds
+`beeteam://references/collaborator-bootstrap`. The Leader first creates an authorized
+Collaborator chat; that chat confirms/reuses or creates/configures its own profile
+and team binding, then returns the real name, agentId/teamId and ready/pending.
+The Leader verifies persisted identity/binding before assigning business work.
+Only initial bootstrap, its readiness/blocker reply and strictly necessary registry
+follow-up omit task/commentID; subsequent work retains the task/comment protocol.
+This adds read-only guidance, not a new bootstrap API or automatic chat/profile
+creation. The package contains 15 MCP resources; local SQLite startup guidance is
+preserved, distinguishing standalone defaults from the legacy PostgreSQL script.
+No runtime restart, global installation or business-data mutation is performed by
+this backend bundle synchronization.
