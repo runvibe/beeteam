@@ -716,3 +716,4 @@ its initial non-final status, and independent percentage/progress updates remain
 available. Existing historical records and exact saved POST replays are preserved.
 No migration or service restart is required by the source change itself; clients
 and bundled guidance must be aligned before runtime activation.
+Os pontos de Evolução dos resumos abrem um popover ancorado com autor, data, status histórico e deltas medido/estimado. Hover, foco e toque são suportados; Escape, saída do mouse e clique externo fecham. O portal evita corte por overflow/sticky; o detalhe abaixo permanece como alternativa.

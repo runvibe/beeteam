@@ -80,3 +80,37 @@
   font-size: 12px;
   color: var(--muted-foreground);
 }
+
+.usage-point-popover {
+  z-index: 80;
+  width: min(320px, calc(100vw - 32px));
+  max-height: var(--radix-popover-content-available-height);
+  overflow-y: auto;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.usage-point-popover .agent-name {
+  white-space: normal;
+  height: auto;
+}
+.usage-point-close {
+  justify-self: end;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.usage-point-close:focus-visible {
+  outline: 2px solid var(--ring);
+}
+.usage-point-arrow {
+  fill: var(--popover);
+}
