@@ -3,8 +3,13 @@ use serde_json::{json, Value};
 
 pub const MATERIALS: &[(&str, &str, &str)] = &[
     (
+        "beeteam://references/collaborator-bootstrap",
+        "Collaborator chat-first bootstrap",
+        include_str!("../../resources/bee-team/references/collaborator-bootstrap.md"),
+    ),
+    (
         "beeteam://references/usage-report",
-        "Optional execution usage reporting",
+        "Required execution usage reporting",
         include_str!("../../resources/bee-team/references/usage-report.md"),
     ),
     (
@@ -74,7 +79,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 088f522683a68cde9255f3bcbf31856cee27da29 plus preserved local SQLite startup guidance (2026-10-30). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 5fd5f0b280865609ab7de7a2770fefa092c21fd4 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS

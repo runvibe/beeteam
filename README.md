@@ -667,3 +667,17 @@ O cabeçalho da tarefa usa 8 px entre título e descrição e 12 px entre os dem
 
 O contrato de novos resumos exige `RecordExecution.usageReport` não nulo, com 1 a 32 entradas. A leitura de `ExecutionSummary` mantém o campo opcional/nulo para legado. O frontend atual apenas consulta resumos e atividades: não expõe formulário nem adaptador de criação de resumo ou `close_activity`. Nenhuma declaração de indisponibilidade ou tentativa de coleta é gerada automaticamente.
 Novo Collaborator é configurado no próprio chat: Leader cria primeiro o chat autorizado e solicita sua skill; ele identifica/reutiliza ou cria o perfil e vínculo aprovados, confirma persistência e retorna nome real com agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. A exceção inicial sem comentário cobre somente pedido/retorno de bootstrap; trabalho posterior mantém task/commentID e permissões do harness.
+## Collaborator bootstrap bundle — 2026-11-02
+
+Bundled Skills source `5fd5f0b280865609ab7de7a2770fefa092c21fd4` adds
+`beeteam://references/collaborator-bootstrap`. The Leader first creates an authorized
+Collaborator chat; that chat confirms/reuses or creates/configures its own profile
+and team binding, then returns the real name, agentId/teamId and ready/pending.
+The Leader verifies persisted identity/binding before assigning business work.
+Only initial bootstrap, its readiness/blocker reply and strictly necessary registry
+follow-up omit task/commentID; subsequent work retains the task/comment protocol.
+This adds read-only guidance, not a new bootstrap API or automatic chat/profile
+creation. The package contains 15 MCP resources; local SQLite startup guidance is
+preserved, distinguishing standalone defaults from the legacy PostgreSQL script.
+No runtime restart, global installation or business-data mutation is performed by
+this backend bundle synchronization.
