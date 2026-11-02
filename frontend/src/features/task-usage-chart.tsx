@@ -1,3 +1,4 @@
+import { SessionBaseline } from "./session-baseline";
 import { UsageCheckpointPoint } from "./usage-checkpoint-point";
 import { useId, useState, useRef, useLayoutEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -138,10 +139,10 @@ export function UsageCheckpointChart({
       <h3 id={id}>Evolução dos resumos</h3>
       <p className="small-note">
         Um ponto por resumo, no horário em que foi registrado. Altura: delta
-        medido de sessão (tokens), não progresso nem valor numérico de status. O
-        detalhe mostra o status histórico daquele resumo. Lacunas e referências
-        iniciais não são zero; a linha conecta apenas pontos consecutivos com
-        valor.
+        medido de sessão (tokens), não progresso nem valor numérico de
+        status. O detalhe mostra o status histórico daquele resumo. Lacunas e
+        referências iniciais não são zero; a linha conecta apenas pontos
+        consecutivos com valor.
       </p>
       {points.length > 0 &&
         points.every((point) => !point.recordedSessionUsage) && (
@@ -250,16 +251,17 @@ export function UsageCheckpointChart({
               {selected.statusObserved?.name ?? "Não registrado"}
             </p>
             <p>
-              Delta medido: {tokenCount(session?.measuredTotalTokens ?? null)} ·
-              Estimado: {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
+              Delta medido: {tokenCount(session?.measuredTotalTokens ?? null)}{" "}
+              · Estimado: {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
               tokens
             </p>
             {!!session?.coverage.baselineEntries && (
               <p className="small-note">
-                Referência inicial presente: snapshot informacional, excluído do
-                delta.
+                Referência inicial presente: snapshot informacional, excluído
+                do delta.
               </p>
             )}
+            <SessionBaseline report={selected.usageReport} />
             <p className="small-note">
               Executor histórico da tarefa: não registrado.
             </p>

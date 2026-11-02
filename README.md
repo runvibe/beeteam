@@ -561,3 +561,12 @@ O mesmo padrão vazio vale para distribuição de subtarefas por status/respons�
 Mudanças de status exigem registrar um resumo pela API; criação mantém status inicial e reordenação no mesmo status não é transição. A UI atual não oferece mudança de coluna/status nem criação de resumo: status é somente leitura, filtros e configuração de colunas não mudam o status das tarefas. O adaptador de demonstração rejeita statusId em patch de tarefa. O gráfico Evolução dos resumos usa reportedAt e statusObserved histórico de cada resumo; altura representa delta de tokens de sessão, sem converter status em percentual. O gráfico independente de progresso permanece disponível.
 
 Os pontos de Evolução dos resumos abrem um popover ancorado com autor, data, status histórico e deltas medido/estimado. Hover, foco e toque são suportados; Escape, saída do mouse e clique externo fecham. O portal evita corte por overflow/sticky; o detalhe abaixo permanece como alternativa.
+
+
+Os pontos de **Evolução do progresso registrado** abrem um popover ancorado por
+mouse, foco de teclado ou toque, com data, autoria, percentual e nota do evento.
+Escape, saída do mouse ou clique fora fecham o detalhe. Esses eventos não possuem
+vínculo explícito com resumos: status histórico e tokens permanecem não informados.
+Nos resumos com baseline de sessão, o detalhe também exibe o snapshot acumulado
+registrado (entrada + saída), sem somar cache/raciocínio novamente. Essa referência
+não é atribuída à tarefa, não altera totais nem substitui o delta ausente.
