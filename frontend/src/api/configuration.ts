@@ -26,6 +26,12 @@ export function patchRecord<K extends keyof Patches>(
   body: Patches[K],
   version: number,
 ): PatchResults[K] {
+  if (resource === "tasks" && "statusId" in body)
+    throw new ApiError(
+      400,
+      "invalid_request",
+      "Status só pode ser alterado ao registrar um resumo de execução.",
+    );
   if ("slug" in body)
     throw new ApiError(400, "invalid_request", "Slug é somente leitura.");
   const row = db[resource].find((r) => r.id === id && !r.deletedAt);
