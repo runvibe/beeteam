@@ -414,3 +414,7 @@ Final validation: 52 tests passed before bundle refresh; both SQLite MCP tests p
 RecordExecution accepts optional executionTracking. Six read operations expose executions, intervals, explicit events, prior calculations, task totals and cross-task open recovery; reconcileTaskExecutionInterval provides versioned correction. close_activity returns executionSummary as an additive field, with unchanged historical replay behavior. See [contract](task-session-intervals-contract.md) and [verification](task-session-intervals-verification.md).
 
 Catalog regenerated: 78 tools, 16 resources, 3 prompts. Bundled source631072a1da56265c0f1b1d062e20b61db732cda0 adds beeteam://references/execution-intervals; all14source/bundle hashes verified, existing SQLite/bootstrap overlays retained. 132distinct Rust tests passed plus10interval scenarios repeated on PostgreSQL; MCP build passed. Runtime unchanged.
+
+### Structured repository evidence (2026-11-03)
+
+Task workScope is optional; new createExecutionSummary/close_activity writes require commitReport with an explicit boolean and consistent reference list. The shared service snapshots repository metadata, validates branch/hash/link evidence and preserves absent legacy fields and saved replay responses. See [contract](summary-repository-contract.md). Catalog: 78 tools, 17 resources, 3 prompts. Skills bundle source 562c53ebb4559efe73cacc7efb490808b5c6d1b0 adds beeteam://references/repository-evidence; 15 source/bundle hashes are recorded, SQLite overlays retained. Product runtime is not changed by this bundle refresh.

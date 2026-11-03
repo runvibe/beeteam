@@ -69,7 +69,7 @@ fn payload(
             tr["intervalId"] = old["intervalId"].clone();
         }
     }
-    json!({"usageReport":usage,"executionTracking":tr,"summary":action,"currentSummary":format!("Current {action}"),"statusId":task["statusId"],"outcome":"progress","deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
+    json!({"commitReport":{"hasCommits":false,"commits":[]},"usageReport":usage,"executionTracking":tr,"summary":action,"currentSummary":format!("Current {action}"),"statusId":task["statusId"],"outcome":"progress","deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
 }
 async fn step(app: &Router, task: &mut Value, body: Value) -> Value {
     let v = ok(

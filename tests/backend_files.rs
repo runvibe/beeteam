@@ -177,6 +177,29 @@ async fn images_copy_independently_and_attachments_keep_tombstones() {
             201
         );
     }
+    // Existing filters combine before count/pagination; deleted files stay explicit.
+    for (query,total,count) in [
+        ("fileName=IMAGE&mediaType=IMAGE%2FPNG&limit=1",2,1),
+        ("fileName=IMAGE&mediaType=IMAGE%2FPNG&includeRemoved=true&offset=2&limit=1",3,1),
+        ("fileName=does-not-exist&includeRemoved=true",0,0),
+        ("fileName=image&mediaType=text%2Fplain&includeRemoved=true",0,0),
+        ("fileName=%25&includeRemoved=true",0,0),
+    ] {
+        let page=get(&app,&format!("/api/v1/tasks/{}/attachments?{query}",id(&task))).await;
+        assert_eq!(page["total"],total,"{query}");
+        assert_eq!(page["items"].as_array().unwrap().len(),count,"{query}");
+        #[cfg(feature="mcp")]
+        {
+            let mut params=serde_json::Map::new();
+            for (key,value) in url::form_urlencoded::parse(query.as_bytes()) {
+                params.insert(key.to_string(),match key.as_ref(){"includeRemoved"=>json!(value=="true"),"offset"|"limit"=>json!(value.parse::<u64>().unwrap()),_=>json!(value)});
+            }
+            let response=app.clone().oneshot(Request::post("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"listAttachments","arguments":{"params":{"taskId":id(&task)},"query":params}}}).to_string())).unwrap()).await.unwrap();
+            let rpc:Value=serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+            assert_eq!(rpc["result"]["isError"],false,"{rpc}");
+            assert_eq!(rpc["result"]["structuredContent"]["data"],page);
+        }
+    }
     for (direction, offset, expected) in [
         ("asc", 0, 20),
         ("asc", 1, 100),

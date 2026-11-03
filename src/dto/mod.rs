@@ -11,3 +11,5 @@ pub mod changes;
 pub mod data_transfer;
 pub mod data_transfer_tools;
 pub mod frontend;
+
+pub mod work_scope;

@@ -66,6 +66,7 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
     }
     if name == "close_activity" {
         crate::dto::usage::require_report(&input["execution"])?;
+        crate::dto::work_scope::require_commit_report(&input["execution"])?;
     }
     validation?;
     check_version(

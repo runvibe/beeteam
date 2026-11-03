@@ -2127,7 +2127,7 @@ paths:
       operationId: createExecutionSummary
       summary: Registrar execution-summaries
       description: >-
-        Explicit executionTracking optionally records start/checkpoint/pause/resume/finish atomically with this summary. Start before work, save returned IDs, query listOpenExecutionIntervals before recovery; pause/finish before switching tasks. evidenceIds select supplied usage observations; start declares counterMode and coverageRootSessionId. Never infer boundaries from status or timestamps. Conflicting source/root returns 409 with active interval IDs. Missing evidence requires a comment, not fabricated tokens. Task status changes require an execution summary, including close_activity using the same atomic service. statusObserved is a server-owned historical snapshot. Every new summary requires usageReport.entries with measured cumulative_snapshot session/session_tree usage, identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens equal to inclusive inputTokens + outputTokens; never add cached input or reasoning output again. The total is the source session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption or a required delta. A first real snapshot is accepted as a baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest evidenceId; preserve reset/gap baselines honestly. Repeated evidence keeps its identity and is not counted twice. Keep multiple disjoint sessions/models separate; do not sum cumulative checkpoints or overlapping tree and child totals, or label mixed-model totals with the last selected model. Collect actual session counters from permitted Codex App Server/exec streams, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel, or authorized Cursor usage exports; check surface/version and documented counter semantics. Kiro credits/context are not token measurements. No unavailable, estimated, model null, missing total or fabricated zero can substitute in a new summary. If collection fails, record the impediment in a comment without changing status or claiming a saved summary. Legacy reads, late-evidence schemas and exact saved idempotent replays remain compatible.
+        Explicit executionTracking optionally records start/checkpoint/pause/resume/finish atomically with this summary. Start before work, save returned IDs, query listOpenExecutionIntervals before recovery; pause/finish before switching tasks. evidenceIds select supplied usage observations; start declares counterMode and coverageRootSessionId. Never infer boundaries from status or timestamps. Conflicting source/root returns 409 with active interval IDs. Missing evidence requires a comment, not fabricated tokens. Task status changes require an execution summary, including close_activity using the same atomic service. statusObserved is a server-owned historical snapshot. Every new summary requires usageReport.entries with measured cumulative_snapshot session/session_tree usage, identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens equal to inclusive inputTokens + outputTokens; never add cached input or reasoning output again. The total is the source session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption or a required delta. A first real snapshot is accepted as a baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest evidenceId; preserve reset/gap baselines honestly. Repeated evidence keeps its identity and is not counted twice. Keep multiple disjoint sessions/models separate; do not sum cumulative checkpoints or overlapping tree and child totals, or label mixed-model totals with the last selected model. Collect actual session counters from permitted Codex App Server/exec streams, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel, or authorized Cursor usage exports; check surface/version and documented counter semantics. Kiro credits/context are not token measurements. No unavailable, estimated, model null, missing total or fabricated zero can substitute in a new summary. If collection fails, record the impediment in a comment without changing status or claiming a saved summary. Legacy reads, late-evidence schemas and exact saved idempotent replays remain compatible. Every new summary also requires commitReport: hasCommits=false with commits=[] or hasCommits=true with repositoryKey, explicit named/detached/unknown branch, full hash and availability per reference. Resolve repositories from task.workScope. Never fabricate a commit. Local/unknown commits have no remote link; published links require remoteVerifiedAt and explicit GitHub/GitLab webUrl matching the hash. Legacy omission is not false; exact saved replays remain valid. See beeteam://references/repository-evidence.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -2177,6 +2177,7 @@ paths:
             schema:
               $ref: "#/components/schemas/RecordExecution"
             example:
+              commitReport: {hasCommits: false, commits: []}
               usageReport: {"entries": [{"source": "documentation-example", "harness": "example-harness", "surface": "api", "harnessVersion": null, "sessionId": "example-session", "epoch": "example-epoch", "evidenceId": "example-snapshot-1", "previousEvidenceId": null, "actor": {"kind": "agent", "id": "10000000-0000-7000-8000-000000000010"}, "actorRole": "collaborator", "provider": null, "modelId": "example-observed-model", "scope": "session", "reportKind": "cumulative_snapshot", "quality": "measured", "attribution": "unallocated", "observedAt": "2026-10-31T00:00:00Z", "periodStart": null, "periodEnd": null, "inputTokens": "100", "outputTokens": "20", "cachedInputTokens": null, "reasoningOutputTokens": null, "discovery": null, "totalTokens": "120"}]}
               currentSummary: Implementação realizada; validação em andamento; revisão pendente.
               summary: Atividade concluída
@@ -3406,6 +3407,8 @@ components:
     Task:
       type: object
       properties:
+        workScope:
+          $ref: "#/components/schemas/TaskWorkScope"
         slug:
           $ref: '#/components/schemas/Slug'
         id:
@@ -3546,6 +3549,8 @@ components:
     CreateTask:
       type: object
       properties:
+        workScope:
+          $ref: "#/components/schemas/TaskWorkScope"
         title:
           type: string
           minLength: 1
@@ -3586,6 +3591,8 @@ components:
     PatchTask:
       type: object
       properties:
+        workScope:
+          $ref: "#/components/schemas/TaskWorkScope"
         title:
           type: string
           minLength: 1
@@ -4334,6 +4341,8 @@ components:
     RecordExecution:
       type: object
       properties:
+        commitReport:
+          $ref: "#/components/schemas/CommitReportInput"
         executionTracking:
           $ref: "#/components/schemas/ExecutionTrackingInput"
         usageReport:
@@ -4371,6 +4380,7 @@ components:
         executionContext:
           $ref: "#/components/schemas/ExecutionContextRef"
       required:
+        - commitReport
         - usageReport
         - currentSummary
         - summary
@@ -4387,6 +4397,8 @@ components:
     ExecutionSummary:
       type: object
       properties:
+        commitReport:
+          $ref: "#/components/schemas/CommitReport"
         executionTracking:
           $ref: "#/components/schemas/ExecutionTrackingResult"
         usageReport:
@@ -5095,6 +5107,15 @@ components:
     TaskExecutionIntervalPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TaskExecutionInterval"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     TaskExecutionTrackingEventPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TaskExecutionTrackingEvent"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     TaskExecutionIntervalRevisionPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TaskExecutionIntervalRevision"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
+
+    WorkProject: {"type": "object", "properties": {"key": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "name": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S"}, "rootPath": {"type": "string", "minLength": 1, "maxLength": 4096}}, "required": ["key", "name", "rootPath"], "additionalProperties": false}
+    WorkRepository: {"type": "object", "properties": {"key": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "name": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S"}, "remoteUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}, "webUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}, "provider": {"enum": ["github", "gitlab", "other"]}, "projectKeys": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "maxItems": 100, "minItems": 1, "uniqueItems": true}}, "required": ["key", "name", "remoteUrl", "webUrl", "provider", "projectKeys"], "additionalProperties": false}
+    TaskWorkScope: {"type": "object", "properties": {"status": {"enum": ["identified", "to_identify", "not_applicable"]}, "projects": {"type": "array", "items": {"$ref": "#/components/schemas/WorkProject"}, "maxItems": 100}, "repositories": {"type": "array", "items": {"$ref": "#/components/schemas/WorkRepository"}, "maxItems": 100}}, "required": ["status", "projects", "repositories"], "additionalProperties": false}
+    CommitBranch: {"type": "object", "properties": {"state": {"enum": ["named", "detached", "unknown"]}, "name": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 1024, "pattern": "\\S"}, {"type": "null"}]}}, "required": ["state", "name"], "additionalProperties": false}
+    CommitReferenceInput: {"type": "object", "properties": {"repositoryKey": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "branch": {"$ref": "#/components/schemas/CommitBranch"}, "hash": {"type": "string", "pattern": "^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$"}, "availability": {"enum": ["local", "published", "unknown"]}, "remoteVerifiedAt": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "commitUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}}, "required": ["repositoryKey", "branch", "hash", "availability", "remoteVerifiedAt", "commitUrl"], "additionalProperties": false}
+    CommitReference: {"type": "object", "properties": {"repositoryKey": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "branch": {"$ref": "#/components/schemas/CommitBranch"}, "hash": {"type": "string", "pattern": "^([0-9a-fA-F]{40}|[0-9a-fA-F]{64})$"}, "availability": {"enum": ["local", "published", "unknown"]}, "remoteVerifiedAt": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "commitUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}, "repository": {"$ref": "#/components/schemas/WorkRepository"}}, "required": ["repositoryKey", "branch", "hash", "availability", "remoteVerifiedAt", "commitUrl", "repository"], "additionalProperties": false}
+    CommitReportInput: {"type": "object", "properties": {"hasCommits": {"type": "boolean"}, "commits": {"type": "array", "items": {"$ref": "#/components/schemas/CommitReferenceInput"}, "maxItems": 100}}, "required": ["hasCommits", "commits"], "additionalProperties": false, "allOf": [{"if": {"properties": {"hasCommits": {"const": true}}}, "then": {"properties": {"commits": {"minItems": 1}}}, "else": {"properties": {"commits": {"maxItems": 0}}}}]}
+    CommitReport: {"type": "object", "properties": {"hasCommits": {"type": "boolean"}, "commits": {"type": "array", "items": {"$ref": "#/components/schemas/CommitReference"}, "maxItems": 100}}, "required": ["hasCommits", "commits"], "additionalProperties": false, "allOf": [{"if": {"properties": {"hasCommits": {"const": true}}}, "then": {"properties": {"commits": {"minItems": 1}}}, "else": {"properties": {"commits": {"maxItems": 0}}}}]}
 
 x-recursive-task-example:
   - id: 10000000-0000-7000-8000-000000000002

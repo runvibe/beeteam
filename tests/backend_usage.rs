@@ -38,7 +38,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
-    json!({"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
+    json!({"commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
 }
 async fn tool(app: &Router, name: &str, args: Value) -> Value {
     let r=app.clone().oneshot(Request::builder().method("POST").uri("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":name,"arguments":args}}).to_string())).unwrap()).await.unwrap();
@@ -91,7 +91,7 @@ async fn summary_usage_snapshots_deduplicate_without_status_or_markdown_inferenc
     .await;
     let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
-    let body = |entries: Vec<Value>| json!({"summary":"Markdown remains separate","currentSummary":"Fixture work synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)},"usageReport":{"entries":entries}});
+    let body = |entries: Vec<Value>| json!({"summary":"Markdown remains separate","currentSummary":"Fixture work synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)},"commitReport":{"hasCommits":false,"commits":[]},"usageReport":{"entries":entries}});
     let first = observation(id(&agent), "sample-1", None, "1000", "100");
     let r1 = ok(&app, "POST", &route, body(vec![first.clone()]), ver(&task)).await;
     assert!(r1["executionSummary"]["usageReport"]["entries"][0]["delta"].is_null());
@@ -422,7 +422,9 @@ async fn historical_missing_usage_and_saved_replays_survive_required_write_contr
     let mut legacy = execution(&task, &board);
     let first = ok(&app, "POST", &route, legacy.clone(), ver(&task)).await;
     legacy.as_object_mut().unwrap().remove("usageReport");
+    legacy.as_object_mut().unwrap().remove("commitReport");
     let mut snapshot = first.clone();
+    snapshot["executionSummary"].as_object_mut().unwrap().remove("commitReport");
     snapshot["executionSummary"]
         .as_object_mut()
         .unwrap()
@@ -437,6 +439,7 @@ async fn historical_missing_usage_and_saved_replays_survive_required_write_contr
         .as_object_mut()
         .unwrap()
         .remove("usageReport");
+    unit.records.get_mut("execution_summaries", sid).unwrap().data.as_object_mut().unwrap().remove("commitReport");
     let direct_key = uuid::Uuid::new_v4();
     let params = json!({"taskId":id(&task)});
     let hash = |v: &Value| {
@@ -469,6 +472,7 @@ async fn historical_missing_usage_and_saved_replays_survive_required_write_contr
     unit.commit().await.unwrap();
     let before = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     assert_eq!(get(&app, &route).await["items"][0].get("usageReport"), None);
+    assert_eq!(get(&app, &route).await["items"][0].get("commitReport"), None);
     let usage = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
     assert_eq!(usage["coverage"]["missingSummaries"], 1);
     assert!(usage["knownTotalTokens"].is_null());
