@@ -943,4 +943,4 @@ As abas da tarefa seguem: Visão geral, Especificação, Planos, Subtasks, Conve
 
 O bloco de consumo na Visão geral não usa divisórias horizontais e mantém espaçamento compacto até a evolução do progresso.
 
-O filtro MIME em Arquivos oferece atalhos com ícones dos tipos presentes em todas as páginas e aplica a digitação válida automaticamente após 300 ms.
+O filtro MIME em Arquivos oferece atalhos com ícones e extensões dos tipos presentes em todas as páginas e aplica a digitação válida automaticamente após 300 ms.

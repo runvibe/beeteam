@@ -136,9 +136,9 @@ function MediaTypeInput({
       {!!types.data?.length && <div className="flex flex-wrap gap-2" role="group" aria-label="Tipos presentes nos arquivos">
         {types.data.map(([mime, name]) => {
           const Icon = categories[attachmentCategory(mime, name)].icon;
-          return <Button key={mime} type="button" size="icon" variant={value === mime ? "secondary" : "outline"}
+          return <Button key={mime} type="button" size="sm" variant={value === mime ? "secondary" : "outline"}
             aria-label={`Filtrar ${mime}`} title={mime} aria-pressed={value === mime}
-            onClick={() => { setDraft(mime); onApply(mime); }}><Icon aria-hidden="true" /></Button>;
+            onClick={() => { setDraft(mime); onApply(mime); }}><Icon aria-hidden="true" /><span>{name.includes(".") ? name.split(".").at(-1)!.toUpperCase() : mime.split("/").at(-1)}</span></Button>;
         })}
       </div>}
       {types.isPending && <span role="status">Carregando tipos…</span>}
