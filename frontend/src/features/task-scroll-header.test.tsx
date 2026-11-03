@@ -86,7 +86,7 @@ it("shows an expandable sidebar summary after the hero leaves, preserving tabs, 
   );
   expect(summary.querySelector("details")).toHaveAttribute("open");
   expect(summary.textContent).toContain("Aguardando decisão");
-  expect(screen.getAllByRole("progressbar", { name: "Progresso registrado", exact: true })).toHaveLength(1);
+  expect(screen.getAllByRole("progressbar", { name: /^Progresso registrado$/ })).toHaveLength(1);
   expect(screen.getAllByRole("alert")).toHaveLength(1);
 
   await userEvent.click(screen.getByRole("tab", { name: "Conversa" }));
