@@ -3,9 +3,7 @@ import { expect, it } from "vitest";
 import { IntervalMetrics } from "./interval-metrics";
 it("separates authoritative complete and partial totals, duration semantics and missing coverage", () => {
   const { rerender } = render(<IntervalMetrics />);
-  expect(
-    screen.getByText(/Métricas de intervalos não disponíveis/),
-  ).toBeVisible();
+  expect(screen.getAllByRole("img", {name: "Não informado"})).toHaveLength(4);
   expect(screen.queryByText("0")).toBeNull();
   rerender(
     <IntervalMetrics
@@ -25,7 +23,7 @@ it("separates authoritative complete and partial totals, duration semantics and 
   expect(screen.getByText("0")).toBeVisible();
   expect(screen.getByText("2 min")).toBeVisible();
   expect(screen.getByText("1 min 30 s")).toBeVisible();
-  expect(screen.getByText(/2 Abertos/)).toBeVisible();
-  expect(screen.getByText(/1 Incompletos/)).toBeVisible();
-  expect(screen.getByText(/não representam tempo de CPU/)).toBeVisible();
+  expect(screen.getByText(/Abertos/)).toBeVisible();
+  expect(screen.getByText(/Incompletos/)).toBeVisible();
+  expect(screen.queryByText(/não representam tempo de CPU/)).toBeNull();
 });

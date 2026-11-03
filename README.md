@@ -813,3 +813,5 @@ A Visão geral termina no consumo por intervalos: mantém evolução do progress
 A evolução do progresso apresenta gráfico à esquerda e registros sempre visíveis em card à direita no desktop, ambos com 215 px de altura; a tabela tem rolagem interna e cabeçalho fixo. Em telas menores os blocos ficam empilhados.
 
 O gráfico de progresso mantém detalhes somente nos pontos, sem repetir o registro selecionado nem explicações abaixo do gráfico e da tabela.
+
+O consumo por intervalos usa indicadores compactos e etiquetas de cobertura, sem parágrafos explicativos. Valores ausentes aparecem como traço acessível; zero medido continua exibido como zero.
