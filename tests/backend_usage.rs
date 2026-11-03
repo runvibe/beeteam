@@ -34,7 +34,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
@@ -89,7 +89,7 @@ async fn summary_usage_snapshots_deduplicate_without_status_or_markdown_inferenc
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
     let body = |entries: Vec<Value>| json!({"summary":"Markdown remains separate","currentSummary":"Fixture work synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)},"commitReport":{"hasCommits":false,"commits":[]},"usageReport":{"entries":entries}});
     let first = observation(id(&agent), "sample-1", None, "1000", "100");

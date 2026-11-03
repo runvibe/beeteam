@@ -84,9 +84,9 @@ async fn full_http_domain_cross_board_recursion_transfer_and_history() {
         None,
     )
     .await;
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","authorAgentId":id(&a),"executorAgentId":id(&c),"coordinationContext":automatic()}),None).await;
-    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&dest)),json!({"title":"Child","parentId":id(&root),"authorAgentId":id(&b),"executorAgentId":id(&a),"autonomyMode":"manual","coordinationContext":automatic()}),ver(&root)).await;
-    let grandchild=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Grandchild","parentId":id(&child),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":automatic()}),ver(&child)).await;
+    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&c),"coordinationContext":automatic()}),None).await;
+    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&dest)),json!({"title":"Child","parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&b),"executorAgentId":id(&a),"autonomyMode":"manual","coordinationContext":automatic()}),ver(&root)).await;
+    let grandchild=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Grandchild","parentId":id(&child),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":automatic()}),ver(&child)).await;
     assert_eq!(grandchild["executionContext"]["rootTaskId"], root["id"]);
     assert_eq!(grandchild["executionContext"]["originBoardId"], board["id"]);
     assert_eq!(grandchild["executionContext"]["effectiveMode"], "automatic");

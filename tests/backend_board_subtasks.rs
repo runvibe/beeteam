@@ -38,7 +38,7 @@ async fn board_columns_include_local_descendants_with_independent_status_and_pag
             .await,
         );
     }
-    let create = |title: &str, parent: Value| json!({"title":title,"parentId":parent,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()});
+    let create = |title: &str, parent: Value| json!({"title":title,"parentId":parent,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()});
     let local = format!("/api/v1/boards/{}", id(&boards[0]));
     let other = format!("/api/v1/boards/{}", id(&boards[1]));
     let root = ok(

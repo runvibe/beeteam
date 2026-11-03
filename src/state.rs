@@ -15,9 +15,18 @@ struct SharedState {
 
 impl AppState {
     pub fn new(database: DatabaseRepository) -> Self {
+        Self::with_project_discovery(
+            database,
+            Arc::new(crate::repositories::local_git::LocalGitDiscovery::default()),
+        )
+    }
+    pub fn with_project_discovery(
+        database: DatabaseRepository,
+        discovery: Arc<dyn crate::repositories::contracts::ProjectDiscovery>,
+    ) -> Self {
         let (resources, source) = database.stores();
         let changes = crate::services::changes::ChangeFeed::new(source);
-        let backend = crate::services::backend::service::BackendService::new(resources);
+        let backend = crate::services::backend::service::BackendService::new(resources, discovery);
         let inner = SharedState { backend, changes };
         Self {
             inner: Arc::new(inner),

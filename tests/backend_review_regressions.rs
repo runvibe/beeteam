@@ -51,7 +51,7 @@ async fn cannot_archive_executor_with_unfinished_task_even_without_role_bindings
         None,
     )
     .await;
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
+    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
     let status = request(
         &app,
         "PUT",
@@ -104,8 +104,8 @@ async fn activity_archive_filters_include_inherited_cross_board_archive() {
         None,
     )
     .await;
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&destination)),json!({"title":"Child","parentId":id(&root),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&root)).await;
+    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
+    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&destination)),json!({"title":"Child","parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&root)).await;
     let root = get(&app, &format!("/api/v1/tasks/{}", id(&root))).await;
     ok(
         &app,
@@ -160,7 +160,7 @@ async fn uppercase_uuid_paths_and_filters_match_lowercase_records() {
         None,
     )
     .await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
+    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
     assert_eq!(
         get(
             &app,

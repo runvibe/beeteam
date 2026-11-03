@@ -29,7 +29,7 @@ async fn current_summary_is_explicit_persisted_and_independent_of_description() 
         None,
     )
     .await;
-    let task = ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","description":"Original scope","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task = ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","description":"Original scope","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     assert_eq!(task["currentSummary"], "");
     assert_eq!(task["specification"], "");
     let path = format!("/api/v1/tasks/{}", id(&task));

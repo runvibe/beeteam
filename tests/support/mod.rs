@@ -231,3 +231,10 @@ pub async fn sqlite_app_with_pool() -> (Router, sqlx::SqlitePool) {
     };
     (create_router(AppState::new(database), &config), pool)
 }
+
+/// Explicit inaccessible fixture root: exercises successful registration without touching product paths.
+pub fn test_project_scope() -> Value {
+    json!({"projects":[{"key":"fixture","name":"Isolated fixture","rootPath":std::env::temp_dir().join(format!("bee-missing-project-{}",uuid::Uuid::new_v4())).to_string_lossy()}]})
+}
+
+pub mod local_git;

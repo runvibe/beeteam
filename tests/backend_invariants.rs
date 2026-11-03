@@ -87,10 +87,10 @@ async fn deep_cross_board_chain_uses_current_origin_and_invalidates_versions() {
         None,
     )
     .await;
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&origin)),json!({"title":"Root","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":automatic()}),None).await;
+    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&origin)),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":automatic()}),None).await;
     let mut parent = root.clone();
     for depth in 1..=32 {
-        parent=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",if depth%2==0{id(&origin)}else{id(&destination)}),json!({"title":format!("Level {depth}"),"parentId":id(&parent),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"autonomyMode":"manual","coordinationContext":automatic()}),ver(&parent)).await;
+        parent=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",if depth%2==0{id(&origin)}else{id(&destination)}),json!({"title":format!("Level {depth}"),"parentId":id(&parent),"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"autonomyMode":"manual","coordinationContext":automatic()}),ver(&parent)).await;
     }
     assert_eq!(parent["executionContext"]["rootTaskId"], root["id"]);
     let before = parent["version"].as_i64().unwrap();

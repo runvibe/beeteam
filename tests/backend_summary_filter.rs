@@ -96,7 +96,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
     .await;
     let mut tasks = Vec::new();
     for name in ["A", "B"] {
-        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":name,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
+        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":name,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
     }
     let mut task = tasks.remove(0);
     let other = tasks.remove(0);

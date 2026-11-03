@@ -42,103 +42,103 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Structured projects and commit evidence",
       "uri": "beeteam://references/repository-evidence"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Explicit task session intervals",
       "uri": "beeteam://references/execution-intervals"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator chat-first bootstrap",
       "uri": "beeteam://references/collaborator-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator workflow",
       "uri": "beeteam://references/collaborator-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator resumption template",
       "uri": "beeteam://references/collaborator-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 562c53ebb4559efe73cacc7efb490808b5c6d1b0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -3096,6 +3096,142 @@
                           "items": {
                             "additionalProperties": false,
                             "properties": {
+                              "discovery": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "branch": {
+                                    "anyOf": [
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "name": {
+                                            "anyOf": [
+                                              {
+                                                "maxLength": 1024,
+                                                "minLength": 1,
+                                                "pattern": "\\S",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "state": {
+                                            "enum": [
+                                              "named",
+                                              "detached",
+                                              "unknown"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "state",
+                                          "name"
+                                        ],
+                                        "type": "object"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "checkedAt": {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  "checkoutRoot": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "commonDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "gitDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "headHash": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "isWorktree": {
+                                    "type": [
+                                      "boolean",
+                                      "null"
+                                    ]
+                                  },
+                                  "reason": {
+                                    "enum": [
+                                      null,
+                                      "path_unavailable",
+                                      "git_unavailable",
+                                      "timeout",
+                                      "output_limit",
+                                      "inspection_failed"
+                                    ]
+                                  },
+                                  "remotes": {
+                                    "items": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "url"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "maxItems": 100,
+                                    "type": "array"
+                                  },
+                                  "repositoryKey": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "status": {
+                                    "enum": [
+                                      "detected",
+                                      "not_git",
+                                      "unavailable"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "reason",
+                                  "checkedAt",
+                                  "checkoutRoot",
+                                  "gitDirectory",
+                                  "commonDirectory",
+                                  "isWorktree",
+                                  "branch",
+                                  "headHash",
+                                  "repositoryKey",
+                                  "remotes"
+                                ],
+                                "type": "object"
+                              },
                               "key": {
                                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                                 "type": "string"
@@ -3446,94 +3582,18 @@
                       "type": "object"
                     },
                     "maxItems": 100,
+                    "minItems": 1,
                     "type": "array"
-                  },
-                  "repositories": {
-                    "items": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "key": {
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
-                          "type": "string"
-                        },
-                        "name": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "pattern": "\\S",
-                          "type": "string"
-                        },
-                        "projectKeys": {
-                          "items": {
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
-                            "type": "string"
-                          },
-                          "maxItems": 100,
-                          "minItems": 1,
-                          "type": "array",
-                          "uniqueItems": true
-                        },
-                        "provider": {
-                          "enum": [
-                            "github",
-                            "gitlab",
-                            "other"
-                          ]
-                        },
-                        "remoteUrl": {
-                          "anyOf": [
-                            {
-                              "maxLength": 2048,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "webUrl": {
-                          "anyOf": [
-                            {
-                              "maxLength": 2048,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        }
-                      },
-                      "required": [
-                        "key",
-                        "name",
-                        "remoteUrl",
-                        "webUrl",
-                        "provider",
-                        "projectKeys"
-                      ],
-                      "type": "object"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "status": {
-                    "enum": [
-                      "identified",
-                      "to_identify",
-                      "not_applicable"
-                    ]
                   }
                 },
                 "required": [
-                  "status",
-                  "projects",
-                  "repositories"
+                  "projects"
                 ],
                 "type": "object"
               }
             },
             "required": [
+              "workScope",
               "title",
               "coordinationContext",
               "authorAgentId",
@@ -3879,6 +3939,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -4541,6 +4737,142 @@
                                 "items": {
                                   "additionalProperties": false,
                                   "properties": {
+                                    "discovery": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "branch": {
+                                          "anyOf": [
+                                            {
+                                              "additionalProperties": false,
+                                              "properties": {
+                                                "name": {
+                                                  "anyOf": [
+                                                    {
+                                                      "maxLength": 1024,
+                                                      "minLength": 1,
+                                                      "pattern": "\\S",
+                                                      "type": "string"
+                                                    },
+                                                    {
+                                                      "type": "null"
+                                                    }
+                                                  ]
+                                                },
+                                                "state": {
+                                                  "enum": [
+                                                    "named",
+                                                    "detached",
+                                                    "unknown"
+                                                  ]
+                                                }
+                                              },
+                                              "required": [
+                                                "state",
+                                                "name"
+                                              ],
+                                              "type": "object"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "checkedAt": {
+                                          "format": "date-time",
+                                          "type": "string"
+                                        },
+                                        "checkoutRoot": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "commonDirectory": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "gitDirectory": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "headHash": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "isWorktree": {
+                                          "type": [
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "reason": {
+                                          "enum": [
+                                            null,
+                                            "path_unavailable",
+                                            "git_unavailable",
+                                            "timeout",
+                                            "output_limit",
+                                            "inspection_failed"
+                                          ]
+                                        },
+                                        "remotes": {
+                                          "items": {
+                                            "additionalProperties": false,
+                                            "properties": {
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "url": {
+                                                "type": [
+                                                  "string",
+                                                  "null"
+                                                ]
+                                              }
+                                            },
+                                            "required": [
+                                              "name",
+                                              "url"
+                                            ],
+                                            "type": "object"
+                                          },
+                                          "maxItems": 100,
+                                          "type": "array"
+                                        },
+                                        "repositoryKey": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "status": {
+                                          "enum": [
+                                            "detected",
+                                            "not_git",
+                                            "unavailable"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "status",
+                                        "reason",
+                                        "checkedAt",
+                                        "checkoutRoot",
+                                        "gitDirectory",
+                                        "commonDirectory",
+                                        "isWorktree",
+                                        "branch",
+                                        "headHash",
+                                        "repositoryKey",
+                                        "remotes"
+                                      ],
+                                      "type": "object"
+                                    },
                                     "key": {
                                       "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                                       "type": "string"
@@ -6669,6 +7001,142 @@
                           "items": {
                             "additionalProperties": false,
                             "properties": {
+                              "discovery": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "branch": {
+                                    "anyOf": [
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "name": {
+                                            "anyOf": [
+                                              {
+                                                "maxLength": 1024,
+                                                "minLength": 1,
+                                                "pattern": "\\S",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "state": {
+                                            "enum": [
+                                              "named",
+                                              "detached",
+                                              "unknown"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "state",
+                                          "name"
+                                        ],
+                                        "type": "object"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "checkedAt": {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  "checkoutRoot": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "commonDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "gitDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "headHash": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "isWorktree": {
+                                    "type": [
+                                      "boolean",
+                                      "null"
+                                    ]
+                                  },
+                                  "reason": {
+                                    "enum": [
+                                      null,
+                                      "path_unavailable",
+                                      "git_unavailable",
+                                      "timeout",
+                                      "output_limit",
+                                      "inspection_failed"
+                                    ]
+                                  },
+                                  "remotes": {
+                                    "items": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "url"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "maxItems": 100,
+                                    "type": "array"
+                                  },
+                                  "repositoryKey": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "status": {
+                                    "enum": [
+                                      "detected",
+                                      "not_git",
+                                      "unavailable"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "reason",
+                                  "checkedAt",
+                                  "checkoutRoot",
+                                  "gitDirectory",
+                                  "commonDirectory",
+                                  "isWorktree",
+                                  "branch",
+                                  "headHash",
+                                  "repositoryKey",
+                                  "remotes"
+                                ],
+                                "type": "object"
+                              },
                               "key": {
                                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                                 "type": "string"
@@ -7382,6 +7850,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -7660,89 +8264,12 @@
                       "type": "object"
                     },
                     "maxItems": 100,
+                    "minItems": 1,
                     "type": "array"
-                  },
-                  "repositories": {
-                    "items": {
-                      "additionalProperties": false,
-                      "properties": {
-                        "key": {
-                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
-                          "type": "string"
-                        },
-                        "name": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "pattern": "\\S",
-                          "type": "string"
-                        },
-                        "projectKeys": {
-                          "items": {
-                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
-                            "type": "string"
-                          },
-                          "maxItems": 100,
-                          "minItems": 1,
-                          "type": "array",
-                          "uniqueItems": true
-                        },
-                        "provider": {
-                          "enum": [
-                            "github",
-                            "gitlab",
-                            "other"
-                          ]
-                        },
-                        "remoteUrl": {
-                          "anyOf": [
-                            {
-                              "maxLength": 2048,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "webUrl": {
-                          "anyOf": [
-                            {
-                              "maxLength": 2048,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        }
-                      },
-                      "required": [
-                        "key",
-                        "name",
-                        "remoteUrl",
-                        "webUrl",
-                        "provider",
-                        "projectKeys"
-                      ],
-                      "type": "object"
-                    },
-                    "maxItems": 100,
-                    "type": "array"
-                  },
-                  "status": {
-                    "enum": [
-                      "identified",
-                      "to_identify",
-                      "not_applicable"
-                    ]
                   }
                 },
                 "required": [
-                  "status",
-                  "projects",
-                  "repositories"
+                  "projects"
                 ],
                 "type": "object"
               }
@@ -8087,6 +8614,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -8622,6 +9285,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -9205,6 +10004,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -10503,6 +11438,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -19479,6 +20550,142 @@
                         "items": {
                           "additionalProperties": false,
                           "properties": {
+                            "discovery": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "branch": {
+                                  "anyOf": [
+                                    {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "name": {
+                                          "anyOf": [
+                                            {
+                                              "maxLength": 1024,
+                                              "minLength": 1,
+                                              "pattern": "\\S",
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "state": {
+                                          "enum": [
+                                            "named",
+                                            "detached",
+                                            "unknown"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "state",
+                                        "name"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "checkedAt": {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                "checkoutRoot": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "commonDirectory": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "gitDirectory": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "headHash": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "isWorktree": {
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ]
+                                },
+                                "reason": {
+                                  "enum": [
+                                    null,
+                                    "path_unavailable",
+                                    "git_unavailable",
+                                    "timeout",
+                                    "output_limit",
+                                    "inspection_failed"
+                                  ]
+                                },
+                                "remotes": {
+                                  "items": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "url"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "maxItems": 100,
+                                  "type": "array"
+                                },
+                                "repositoryKey": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "status": {
+                                  "enum": [
+                                    "detected",
+                                    "not_git",
+                                    "unavailable"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "status",
+                                "reason",
+                                "checkedAt",
+                                "checkoutRoot",
+                                "gitDirectory",
+                                "commonDirectory",
+                                "isWorktree",
+                                "branch",
+                                "headHash",
+                                "repositoryKey",
+                                "remotes"
+                              ],
+                              "type": "object"
+                            },
                             "key": {
                               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                               "type": "string"
@@ -24285,6 +25492,142 @@
                         "items": {
                           "additionalProperties": false,
                           "properties": {
+                            "discovery": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "branch": {
+                                  "anyOf": [
+                                    {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "name": {
+                                          "anyOf": [
+                                            {
+                                              "maxLength": 1024,
+                                              "minLength": 1,
+                                              "pattern": "\\S",
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "state": {
+                                          "enum": [
+                                            "named",
+                                            "detached",
+                                            "unknown"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "state",
+                                        "name"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "checkedAt": {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                "checkoutRoot": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "commonDirectory": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "gitDirectory": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "headHash": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "isWorktree": {
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ]
+                                },
+                                "reason": {
+                                  "enum": [
+                                    null,
+                                    "path_unavailable",
+                                    "git_unavailable",
+                                    "timeout",
+                                    "output_limit",
+                                    "inspection_failed"
+                                  ]
+                                },
+                                "remotes": {
+                                  "items": {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "url": {
+                                        "type": [
+                                          "string",
+                                          "null"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "name",
+                                      "url"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  "maxItems": 100,
+                                  "type": "array"
+                                },
+                                "repositoryKey": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "status": {
+                                  "enum": [
+                                    "detected",
+                                    "not_git",
+                                    "unavailable"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "status",
+                                "reason",
+                                "checkedAt",
+                                "checkoutRoot",
+                                "gitDirectory",
+                                "commonDirectory",
+                                "isWorktree",
+                                "branch",
+                                "headHash",
+                                "repositoryKey",
+                                "remotes"
+                              ],
+                              "type": "object"
+                            },
                             "key": {
                               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                               "type": "string"
@@ -27248,6 +28591,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -36925,10 +38404,11 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [
+                "workScope",
                 "title",
                 "coordinationContext",
                 "authorAgentId",
@@ -37704,7 +39184,7 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [],
@@ -37885,6 +39365,115 @@
               "required": [
                 "percent",
                 "note"
+              ],
+              "type": "object"
+            },
+            "ProjectGitDiscovery": {
+              "additionalProperties": false,
+              "properties": {
+                "branch": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CommitBranch"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "checkedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "checkoutRoot": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commonDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "gitDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "headHash": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "isWorktree": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "reason": {
+                  "enum": [
+                    null,
+                    "path_unavailable",
+                    "git_unavailable",
+                    "timeout",
+                    "output_limit",
+                    "inspection_failed"
+                  ]
+                },
+                "remotes": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "url"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "repositoryKey": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "detected",
+                    "not_git",
+                    "unavailable"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "reason",
+                "checkedAt",
+                "checkoutRoot",
+                "gitDirectory",
+                "commonDirectory",
+                "isWorktree",
+                "branch",
+                "headHash",
+                "repositoryKey",
+                "remotes"
               ],
               "type": "object"
             },
@@ -40308,6 +41897,23 @@
               ],
               "type": "object"
             },
+            "TaskWorkScopeInput": {
+              "additionalProperties": false,
+              "properties": {
+                "projects": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkProjectInput"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "projects"
+              ],
+              "type": "object"
+            },
             "UploadAttachment": {
               "additionalProperties": false,
               "properties": {
@@ -40946,6 +42552,35 @@
             "WorkProject": {
               "additionalProperties": false,
               "properties": {
+                "discovery": {
+                  "$ref": "#/components/schemas/ProjectGitDiscovery"
+                },
+                "key": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                  "type": "string"
+                },
+                "name": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "rootPath": {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "name",
+                "rootPath"
+              ],
+              "type": "object"
+            },
+            "WorkProjectInput": {
+              "additionalProperties": false,
+              "properties": {
                 "key": {
                   "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                   "type": "string"
@@ -41342,6 +42977,142 @@
                           "items": {
                             "additionalProperties": false,
                             "properties": {
+                              "discovery": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "branch": {
+                                    "anyOf": [
+                                      {
+                                        "additionalProperties": false,
+                                        "properties": {
+                                          "name": {
+                                            "anyOf": [
+                                              {
+                                                "maxLength": 1024,
+                                                "minLength": 1,
+                                                "pattern": "\\S",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ]
+                                          },
+                                          "state": {
+                                            "enum": [
+                                              "named",
+                                              "detached",
+                                              "unknown"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "state",
+                                          "name"
+                                        ],
+                                        "type": "object"
+                                      },
+                                      {
+                                        "type": "null"
+                                      }
+                                    ]
+                                  },
+                                  "checkedAt": {
+                                    "format": "date-time",
+                                    "type": "string"
+                                  },
+                                  "checkoutRoot": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "commonDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "gitDirectory": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "headHash": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "isWorktree": {
+                                    "type": [
+                                      "boolean",
+                                      "null"
+                                    ]
+                                  },
+                                  "reason": {
+                                    "enum": [
+                                      null,
+                                      "path_unavailable",
+                                      "git_unavailable",
+                                      "timeout",
+                                      "output_limit",
+                                      "inspection_failed"
+                                    ]
+                                  },
+                                  "remotes": {
+                                    "items": {
+                                      "additionalProperties": false,
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "url"
+                                      ],
+                                      "type": "object"
+                                    },
+                                    "maxItems": 100,
+                                    "type": "array"
+                                  },
+                                  "repositoryKey": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  },
+                                  "status": {
+                                    "enum": [
+                                      "detected",
+                                      "not_git",
+                                      "unavailable"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "reason",
+                                  "checkedAt",
+                                  "checkoutRoot",
+                                  "gitDirectory",
+                                  "commonDirectory",
+                                  "isWorktree",
+                                  "branch",
+                                  "headHash",
+                                  "repositoryKey",
+                                  "remotes"
+                                ],
+                                "type": "object"
+                              },
                               "key": {
                                 "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                                 "type": "string"
@@ -43221,6 +44992,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -44646,10 +46553,11 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [
+                "workScope",
                 "title",
                 "coordinationContext",
                 "authorAgentId",
@@ -45425,7 +47333,7 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [],
@@ -45606,6 +47514,115 @@
               "required": [
                 "percent",
                 "note"
+              ],
+              "type": "object"
+            },
+            "ProjectGitDiscovery": {
+              "additionalProperties": false,
+              "properties": {
+                "branch": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CommitBranch"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "checkedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "checkoutRoot": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commonDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "gitDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "headHash": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "isWorktree": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "reason": {
+                  "enum": [
+                    null,
+                    "path_unavailable",
+                    "git_unavailable",
+                    "timeout",
+                    "output_limit",
+                    "inspection_failed"
+                  ]
+                },
+                "remotes": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "url"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "repositoryKey": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "detected",
+                    "not_git",
+                    "unavailable"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "reason",
+                "checkedAt",
+                "checkoutRoot",
+                "gitDirectory",
+                "commonDirectory",
+                "isWorktree",
+                "branch",
+                "headHash",
+                "repositoryKey",
+                "remotes"
               ],
               "type": "object"
             },
@@ -48029,6 +50046,23 @@
               ],
               "type": "object"
             },
+            "TaskWorkScopeInput": {
+              "additionalProperties": false,
+              "properties": {
+                "projects": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkProjectInput"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "projects"
+              ],
+              "type": "object"
+            },
             "UploadAttachment": {
               "additionalProperties": false,
               "properties": {
@@ -48665,6 +50699,35 @@
               "type": "object"
             },
             "WorkProject": {
+              "additionalProperties": false,
+              "properties": {
+                "discovery": {
+                  "$ref": "#/components/schemas/ProjectGitDiscovery"
+                },
+                "key": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                  "type": "string"
+                },
+                "name": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "rootPath": {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "name",
+                "rootPath"
+              ],
+              "type": "object"
+            },
+            "WorkProjectInput": {
               "additionalProperties": false,
               "properties": {
                 "key": {
@@ -50317,6 +52380,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -50727,6 +52926,142 @@
                       "items": {
                         "additionalProperties": false,
                         "properties": {
+                          "discovery": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "branch": {
+                                "anyOf": [
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "name": {
+                                        "anyOf": [
+                                          {
+                                            "maxLength": 1024,
+                                            "minLength": 1,
+                                            "pattern": "\\S",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "state": {
+                                        "enum": [
+                                          "named",
+                                          "detached",
+                                          "unknown"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "state",
+                                      "name"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "checkedAt": {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              "checkoutRoot": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "commonDirectory": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "gitDirectory": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "headHash": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "isWorktree": {
+                                "type": [
+                                  "boolean",
+                                  "null"
+                                ]
+                              },
+                              "reason": {
+                                "enum": [
+                                  null,
+                                  "path_unavailable",
+                                  "git_unavailable",
+                                  "timeout",
+                                  "output_limit",
+                                  "inspection_failed"
+                                ]
+                              },
+                              "remotes": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "url"
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 100,
+                                "type": "array"
+                              },
+                              "repositoryKey": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "status": {
+                                "enum": [
+                                  "detected",
+                                  "not_git",
+                                  "unavailable"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "status",
+                              "reason",
+                              "checkedAt",
+                              "checkoutRoot",
+                              "gitDirectory",
+                              "commonDirectory",
+                              "isWorktree",
+                              "branch",
+                              "headHash",
+                              "repositoryKey",
+                              "remotes"
+                            ],
+                            "type": "object"
+                          },
                           "key": {
                             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                             "type": "string"
@@ -52149,10 +54484,11 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [
+                "workScope",
                 "title",
                 "coordinationContext",
                 "authorAgentId",
@@ -52928,7 +55264,7 @@
                   "type": "string"
                 },
                 "workScope": {
-                  "$ref": "#/components/schemas/TaskWorkScope"
+                  "$ref": "#/components/schemas/TaskWorkScopeInput"
                 }
               },
               "required": [],
@@ -53109,6 +55445,115 @@
               "required": [
                 "percent",
                 "note"
+              ],
+              "type": "object"
+            },
+            "ProjectGitDiscovery": {
+              "additionalProperties": false,
+              "properties": {
+                "branch": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CommitBranch"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "checkedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "checkoutRoot": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commonDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "gitDirectory": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "headHash": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "isWorktree": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "reason": {
+                  "enum": [
+                    null,
+                    "path_unavailable",
+                    "git_unavailable",
+                    "timeout",
+                    "output_limit",
+                    "inspection_failed"
+                  ]
+                },
+                "remotes": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "url": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "url"
+                    ],
+                    "type": "object"
+                  },
+                  "maxItems": 100,
+                  "type": "array"
+                },
+                "repositoryKey": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "detected",
+                    "not_git",
+                    "unavailable"
+                  ]
+                }
+              },
+              "required": [
+                "status",
+                "reason",
+                "checkedAt",
+                "checkoutRoot",
+                "gitDirectory",
+                "commonDirectory",
+                "isWorktree",
+                "branch",
+                "headHash",
+                "repositoryKey",
+                "remotes"
               ],
               "type": "object"
             },
@@ -55532,6 +57977,23 @@
               ],
               "type": "object"
             },
+            "TaskWorkScopeInput": {
+              "additionalProperties": false,
+              "properties": {
+                "projects": {
+                  "items": {
+                    "$ref": "#/components/schemas/WorkProjectInput"
+                  },
+                  "maxItems": 100,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "projects"
+              ],
+              "type": "object"
+            },
             "UploadAttachment": {
               "additionalProperties": false,
               "properties": {
@@ -56168,6 +58630,35 @@
               "type": "object"
             },
             "WorkProject": {
+              "additionalProperties": false,
+              "properties": {
+                "discovery": {
+                  "$ref": "#/components/schemas/ProjectGitDiscovery"
+                },
+                "key": {
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                  "type": "string"
+                },
+                "name": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "pattern": "\\S",
+                  "type": "string"
+                },
+                "rootPath": {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "name",
+                "rootPath"
+              ],
+              "type": "object"
+            },
+            "WorkProjectInput": {
               "additionalProperties": false,
               "properties": {
                 "key": {
@@ -58401,6 +60892,142 @@
                     "items": {
                       "additionalProperties": false,
                       "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
                         "key": {
                           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                           "type": "string"
@@ -58811,6 +61438,142 @@
                       "items": {
                         "additionalProperties": false,
                         "properties": {
+                          "discovery": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "branch": {
+                                "anyOf": [
+                                  {
+                                    "additionalProperties": false,
+                                    "properties": {
+                                      "name": {
+                                        "anyOf": [
+                                          {
+                                            "maxLength": 1024,
+                                            "minLength": 1,
+                                            "pattern": "\\S",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "state": {
+                                        "enum": [
+                                          "named",
+                                          "detached",
+                                          "unknown"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "state",
+                                      "name"
+                                    ],
+                                    "type": "object"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "checkedAt": {
+                                "format": "date-time",
+                                "type": "string"
+                              },
+                              "checkoutRoot": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "commonDirectory": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "gitDirectory": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "headHash": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "isWorktree": {
+                                "type": [
+                                  "boolean",
+                                  "null"
+                                ]
+                              },
+                              "reason": {
+                                "enum": [
+                                  null,
+                                  "path_unavailable",
+                                  "git_unavailable",
+                                  "timeout",
+                                  "output_limit",
+                                  "inspection_failed"
+                                ]
+                              },
+                              "remotes": {
+                                "items": {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "name",
+                                    "url"
+                                  ],
+                                  "type": "object"
+                                },
+                                "maxItems": 100,
+                                "type": "array"
+                              },
+                              "repositoryKey": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "status": {
+                                "enum": [
+                                  "detected",
+                                  "not_git",
+                                  "unavailable"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "status",
+                              "reason",
+                              "checkedAt",
+                              "checkoutRoot",
+                              "gitDirectory",
+                              "commonDirectory",
+                              "isWorktree",
+                              "branch",
+                              "headHash",
+                              "repositoryKey",
+                              "remotes"
+                            ],
+                            "type": "object"
+                          },
                           "key": {
                             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
                             "type": "string"

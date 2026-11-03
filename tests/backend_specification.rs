@@ -30,7 +30,7 @@ async fn markdown_specification_and_plan_revisions_preserve_independent_text() {
     )
     .await;
     let markdown="# Entrega\r\n\r\n- [ ] Aceite **verificado**\r\n\r\n```rust\r\nlet x = \"ação\";\r\n```\r\n\r\n<script>not executed</script>\r\n";
-    let mut task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","description":"Short presentation","specification":markdown,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let mut task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Task","description":"Short presentation","specification":markdown,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     let path = format!("/api/v1/tasks/{}", id(&task));
     assert_eq!(task["specification"], markdown);
     assert_eq!(task["currentSummary"], "");

@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("562c53e"));
+            .contains("3265680"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -171,8 +171,8 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","specification":"# Requirements\r\n- **Acceptance**\r\n","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
-    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","specification":"## Child requirements\n- [ ] Acceptance","parentId":id(&task),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"MCP task","specification":"# Requirements\r\n- **Acceptance**\r\n","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","specification":"## Child requirements\n- [ ] Acceptance","parentId":id(&task),"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&task)).await;
     let task = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     for (name, entity) in [
         ("resolveAgentSlug", &agent),
@@ -326,7 +326,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         before
     );
     let spec_markdown = "# Delivery\r\n- [ ] **Acceptance**\r\n```text\r\nliteral\r\n```";
-    let spec_task=success(&app,"createTask",json!({"params":{"boardId":id(&board)},"body":{"title":"Specification task","specification":spec_markdown,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await["data"].clone();
+    let spec_task=success(&app,"createTask",json!({"params":{"boardId":id(&board)},"body":{"title":"Specification task","specification":spec_markdown,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await["data"].clone();
     assert_eq!(spec_task["specification"], spec_markdown);
     let updated=success(&app,"updateTask",json!({"params":{"taskId":id(&spec_task)},"body":{"specification":"## Revised requirements\n- Rule"},"actor":{"kind":"human"},"expectedVersion":spec_task["version"]})).await["data"].clone();
     assert_eq!(updated["currentSummary"], "");
@@ -387,7 +387,7 @@ async fn exact_comment_lookup_and_compound_receipts() {
     .await;
     let mut tasks = Vec::new();
     for title in ["First", "Other"] {
-        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
+        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
     }
     let task = &tasks[0];
     let created = success(&app,"createComment",json!({"params":{"taskId":id(task)},"body":{"body":"Exact **Markdown**"},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4()})).await;
@@ -439,7 +439,7 @@ async fn exact_comment_lookup_and_compound_receipts() {
         true
     );
     let parent = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
-    let child = ok(&app, "POST", &format!("/api/v1/boards/{}/tasks", id(&board)), json!({"title":"Child receipt", "parentId":id(task), "authorAgentId":id(&agent), "executorAgentId":id(&agent), "coordinationContext":manual()}), ver(&parent)).await;
+    let child = ok(&app, "POST", &format!("/api/v1/boards/{}/tasks", id(&board)), json!({"title":"Child receipt", "parentId":id(task), "workScope":test_project_scope(),"authorAgentId":id(&agent), "executorAgentId":id(&agent), "coordinationContext":manual()}), ver(&parent)).await;
     for name in ["record_progress", "close_activity"] {
         let live = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
         let mut input = json!({"taskId":id(task),"expectedVersion":live["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":name});
@@ -492,7 +492,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     assert_eq!(
         provenance["sourceCommit"],
-        "562c53ebb4559efe73cacc7efb490808b5c6d1b0"
+        "3265680f383f4645827b341fd95104fc97b00853"
     );
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();

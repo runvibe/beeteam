@@ -418,3 +418,7 @@ Catalog regenerated: 78 tools, 16 resources, 3 prompts. Bundled source631072a1da
 ### Structured repository evidence (2026-11-03)
 
 Task workScope is optional; new createExecutionSummary/close_activity writes require commitReport with an explicit boolean and consistent reference list. The shared service snapshots repository metadata, validates branch/hash/link evidence and preserves absent legacy fields and saved replay responses. See [contract](summary-repository-contract.md). Catalog: 78 tools, 17 resources, 3 prompts. Skills bundle source 562c53ebb4559efe73cacc7efb490808b5c6d1b0 adds beeteam://references/repository-evidence; 15 source/bundle hashes are recorded, SQLite overlays retained. Product runtime is not changed by this bundle refresh.
+
+### Mandatory project roots and Git discovery (2026-11-03)
+
+CreateTask requires projects-only workScope; updateTask refreshes discovery when the explicit list is resubmitted with If-Match. Legacy specification edits require a project if absent; unrelated edits/read/replays are preserved. No-Git and unavailable folders remain valid projects. See [contract](project-discovery-contract.md). Bundled Skills source3265680f383f4645827b341fd95104fc97b00853. No product runtime restart.

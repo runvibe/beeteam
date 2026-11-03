@@ -40,9 +40,9 @@ async fn slugs_are_stable_concurrent_unique_and_resolve_without_type_ambiguity()
     )
     .await;
     assert!(board.get("slug").is_none());
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Équipe Ágil","authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Équipe Ágil","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
     assert_eq!(task["slug"], "equipe-agil");
-    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Équipe Ágil","parentId":id(&task),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&task)).await;
+    let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Équipe Ágil","parentId":id(&task),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&task)).await;
     assert_eq!(child["slug"], "equipe-agil-2");
     for (kind, entity, field) in [
         ("agents", a.clone(), "name"),

@@ -49,7 +49,7 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
         );
         boards.push(board);
     }
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Root","authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
+    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
     let path = format!("/api/v1/tasks/{}/overview", id(&root));
     let empty = get(&app, &path).await;
     assert_eq!(empty["directSubtasks"]["total"], 0);
@@ -62,7 +62,7 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     for i in 0..55 {
         let board_index = i % 2;
         let current = get(&app, &format!("/api/v1/tasks/{}", id(&root))).await;
-        let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[board_index])),json!({"title":format!("Child {i}"),"parentId":id(&root),"authorAgentId":id(&a),"executorAgentId":if board_index==0{id(&a)}else{id(&b)},"coordinationContext":manual()}),ver(&current)).await;
+        let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[board_index])),json!({"title":format!("Child {i}"),"parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":if board_index==0{id(&a)}else{id(&b)},"coordinationContext":manual()}),ver(&current)).await;
         if i < 5 {
             let done = statuses[board_index]
                 .as_array()
@@ -95,8 +95,8 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
         children.push(child);
     }
     let parent = get(&app, &format!("/api/v1/tasks/{}", id(&children[6]))).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Grandchild excluded","parentId":id(&parent),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&parent)).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Unrelated excluded","authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
+    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Grandchild excluded","parentId":id(&parent),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&parent)).await;
+    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Unrelated excluded","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
     for i in 0..102 {
         mutation(&app,&root,&actor_b,"updateTask",json!({"currentSummary":format!("Explicit synthesis {i}"),"progress":{"percent":i%101,"note":format!("Point {i}")}})).await;
     }
@@ -285,7 +285,7 @@ async fn overview_sql_aggregates_keep_one_snapshot_without_hydrating_children() 
             .await
             .unwrap();
     let (repository, _) = database.stores();
-    let service = BackendService::new(repository.clone());
+    let service = BackendService::new(repository.clone(), std::sync::Arc::new(beeteam::repositories::local_git::LocalGitDiscovery::default()));
     let command = |operation: &str,
                    params: BTreeMap<String, String>,
                    body: Value,
@@ -332,7 +332,7 @@ async fn overview_sql_aggregates_keep_one_snapshot_without_hydrating_children() 
         .await
         .unwrap()
         .data;
-    let root=service.execute(command("createTask",BTreeMap::from([("boardId".into(),id(&board).into())]),json!({"title":"Root","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None)).await.unwrap().data;
+    let root=service.execute(command("createTask",BTreeMap::from([("boardId".into(),id(&board).into())]),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None)).await.unwrap().data;
     let read = command(
         "getTaskOverview",
         BTreeMap::from([("taskId".into(), id(&root).into())]),
@@ -340,7 +340,7 @@ async fn overview_sql_aggregates_keep_one_snapshot_without_hydrating_children() 
         None,
     );
     let mut snapshot = repository.read(&read).await.unwrap();
-    service.execute(command("createTask",BTreeMap::from([("boardId".into(),id(&board).into())]),json!({"title":"Concurrent child","parentId":id(&root),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&root))).await.unwrap();
+    service.execute(command("createTask",BTreeMap::from([("boardId".into(),id(&board).into())]),json!({"title":"Concurrent child","parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),ver(&root))).await.unwrap();
     assert_eq!(snapshot.records.list("tasks").len(), 1);
     assert_eq!(
         snapshot.select(&read).await.unwrap().items[0]["directSubtasks"]["total"],

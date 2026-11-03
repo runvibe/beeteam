@@ -59,7 +59,7 @@ async fn participants_cover_exact_task_history_without_global_or_comment_page_le
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Main","authorAgentId":id(&agents[0]),"executorAgentId":id(&agents[1]),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Main","workScope":test_project_scope(),"authorAgentId":id(&agents[0]),"executorAgentId":id(&agents[1]),"coordinationContext":manual()}),None).await;
     let human = json!({"kind":"human"});
     let actor = |index: usize| json!({"kind":"agent","id":id(&agents[index])});
     mutation(
@@ -107,7 +107,7 @@ async fn participants_cover_exact_task_history_without_global_or_comment_page_le
         json!({"title":"Renamed"}),
     )
     .await;
-    let other=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Other","authorAgentId":id(&agents[8]),"executorAgentId":id(&agents[8]),"coordinationContext":manual()}),None).await;
+    let other=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Other","workScope":test_project_scope(),"authorAgentId":id(&agents[8]),"executorAgentId":id(&agents[8]),"coordinationContext":manual()}),None).await;
     mutation(
         &app,
         &other,
@@ -117,7 +117,7 @@ async fn participants_cover_exact_task_history_without_global_or_comment_page_le
     )
     .await;
     let current = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","parentId":id(&task),"authorAgentId":id(&agents[9]),"executorAgentId":id(&agents[9]),"coordinationContext":manual()}),ver(&current)).await;
+    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Child","parentId":id(&task),"workScope":test_project_scope(),"authorAgentId":id(&agents[9]),"executorAgentId":id(&agents[9]),"coordinationContext":manual()}),ver(&current)).await;
     // Removed attachments retain their author's participation via the upload event.
     let current = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     success(&app,"removeAttachment",json!({"params":{"taskId":id(&task),"attachmentId":attachment["data"]["id"]},"actor":human,"expectedVersion":current["version"]})).await;

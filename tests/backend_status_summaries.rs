@@ -34,7 +34,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Status task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Status task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
@@ -106,7 +106,7 @@ async fn initial_status_reordering_and_progress_remain_independent() {
         .iter()
         .find(|s| s["id"] != first["statusId"] && s["isDone"] == false)
         .unwrap();
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Explicit initial status","statusId":next["id"],"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Explicit initial status","statusId":next["id"],"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     assert_eq!(task["statusId"], next["id"]);
     let path = format!("/api/v1/tasks/{}", id(&task));
     let task = ok(

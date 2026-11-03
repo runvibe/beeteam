@@ -54,6 +54,7 @@ pub trait TransactionStore: Send + Sync {
     fn file(&mut self, id: Uuid) -> RepositoryFuture<'_, Vec<u8>>;
     fn delete_file(&mut self, id: Uuid) -> RepositoryFuture<'_, ()>;
     fn sequence(&mut self) -> RepositoryFuture<'_, i64>;
+    fn rollback(self: Box<Self>) -> RepositoryFuture<'static, ()>;
     fn commit(self: Box<Self>, records: Records) -> RepositoryFuture<'static, ()>;
 }
 
@@ -110,7 +111,19 @@ impl UnitOfWork {
     pub async fn sequence(&mut self) -> Result<i64> {
         self.transaction.sequence().await
     }
+    pub async fn rollback(self) -> Result<()> {
+        self.transaction.rollback().await
+    }
     pub async fn commit(self) -> Result<()> {
         self.transaction.commit(self.records).await
     }
+}
+
+/// Read-only inspection of only the explicitly supplied folders. Failures are observations.
+pub use super::project_discovery::{GitBranch, GitInspection, GitRemote};
+pub trait ProjectDiscovery: Send + Sync {
+    fn discover<'a>(
+        &'a self,
+        roots: &'a [String],
+    ) -> Pin<Box<dyn Future<Output = Vec<GitInspection>> + Send + 'a>>;
 }

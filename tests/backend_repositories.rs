@@ -6,7 +6,15 @@ use serde_json::{json, Value};
 use support::*;
 use tower::ServiceExt;
 async fn setup() -> (Router, Value, Value, Value) {
-    setup_on(app().await).await
+    // Legacy manually declared repositories remain usable by new summaries.
+    let (app,pool)=sqlite_app_with_pool().await;
+    let (app,agent,board,task)=setup_on(app).await;
+    let repo=beeteam::repositories::sqlite::ResourceRepository::new(pool);
+    let mut unit=repo.begin().await.unwrap();
+    unit.records.get_mut("tasks",uuid::Uuid::parse_str(id(&task)).unwrap()).unwrap().data["workScope"]=scope();
+    unit.commit().await.unwrap();
+    let task=get(&app,&format!("/api/v1/tasks/{}",id(&task))).await;
+    (app,agent,board,task)
 }
 async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     let agent = ok(
@@ -33,7 +41,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Usage task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     (app, agent, board, task)
 }
 
@@ -53,89 +61,22 @@ async fn rpc(app: &Router, name: &str, args: Value) -> Value {
         .clone()
 }
 #[tokio::test]
-async fn scope_is_optional_atomic_and_independent_from_markdown() {
-    let (app, agent, board, task) = setup().await;
-    assert!(task.get("workScope").is_none());
-    let path = format!("/api/v1/tasks/{}", id(&task));
-    let task = ok(
-        &app,
-        "PATCH",
-        &path,
-        json!({"workScope":scope(),"specification":"# Literal specification"}),
-        ver(&task),
-    )
-    .await;
-    assert_eq!(task["workScope"], scope());
-    let stored_task = get(&app, &path).await;
-    for invalid in [
-        json!({"status":"not_applicable","projects":scope()["projects"],"repositories":[]}),
-        json!({"status":"identified","projects":[],"repositories":[]}),
-    ] {
-        assert_eq!(
-            request(
-                &app,
-                "PATCH",
-                &path,
-                json!({"workScope":invalid,"specification":"Should rollback"}),
-                ver(&task)
-            )
-            .await
-            .0,
-            400
-        );
-        assert_eq!(get(&app, &path).await, stored_task);
-    }
-    for (kind, field, value) in [
-        ("projects", "rootPath", json!("relative/path")),
-        ("repositories", "projectKeys", json!(["missing"])),
-        (
-            "repositories",
-            "remoteUrl",
-            json!("https://secret@host/repo"),
-        ),
-        ("repositories", "webUrl", json!("javascript:alert(1)")),
-    ] {
-        let mut invalid = scope();
-        invalid[kind][0][field] = value;
-        assert_eq!(
-            request(
-                &app,
-                "PATCH",
-                &path,
-                json!({"workScope":invalid}),
-                ver(&task)
-            )
-            .await
-            .0,
-            400
-        );
-        assert_eq!(get(&app, &path).await, stored_task);
-    }
-    let created=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Structured","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual(),"workScope":scope()}),None).await;
-    assert_eq!(created["workScope"], scope());
-    let updated = ok(
-        &app,
-        "PATCH",
-        &path,
-        json!({"workScope":{"status":"not_applicable","projects":[],"repositories":[]}}),
-        ver(&task),
-    )
-    .await;
-    assert_eq!(updated["specification"], task["specification"]);
-    assert_eq!(updated["currentSummary"], task["currentSummary"]);
+async fn legacy_manual_scope_is_readable_but_new_input_is_projects_only() {
+ let (app,_,_,task)=setup().await;
+ let path=format!("/api/v1/tasks/{}",id(&task));
+ assert_eq!(task["workScope"],scope());
+ assert_eq!(request(&app,"PATCH",&path,json!({"workScope":scope()}),ver(&task)).await.0,400);
+ assert_eq!(get(&app,&path).await,task);
+ let input=test_project_scope();
+ let updated=ok(&app,"PATCH",&path,json!({"workScope":input,"specification":"# Literal specification"}),ver(&task)).await;
+ assert_eq!(updated["workScope"]["projects"][0]["rootPath"],input["projects"][0]["rootPath"]);
+ assert_eq!(updated["workScope"]["repositories"],json!([]));
+ assert_eq!(updated["specification"],"# Literal specification");
 }
 #[tokio::test]
 async fn invalid_reports_have_http_mcp_parity_and_rollback_compound_writes() {
     let (app, _, board, task) = setup().await;
     let path = format!("/api/v1/tasks/{}", id(&task));
-    let task = ok(
-        &app,
-        "PATCH",
-        &path,
-        json!({"workScope":scope()}),
-        ver(&task),
-    )
-    .await;
     let route = format!("{path}/execution-summaries");
     let timeline = get(&app, &format!("{path}/timeline")).await;
     let stored_task = get(&app, &path).await;
@@ -193,14 +134,6 @@ async fn invalid_reports_have_http_mcp_parity_and_rollback_compound_writes() {
 async fn references_snapshot_multiple_repos_branches_and_survive_scope_edits_and_replay() {
     let (app, _, board, task) = setup().await;
     let path = format!("/api/v1/tasks/{}", id(&task));
-    let task = ok(
-        &app,
-        "PATCH",
-        &path,
-        json!({"workScope":scope()}),
-        ver(&task),
-    )
-    .await;
     let route = format!("{path}/execution-summaries");
     let key = uuid::Uuid::new_v4();
     let mut detached = reference();
@@ -228,9 +161,7 @@ async fn references_snapshot_multiple_repos_branches_and_survive_scope_edits_and
         "b".repeat(64)
     );
     let stored_summary = get(&app, &route).await["items"][0].clone();
-    let mut changed = scope();
-    changed["repositories"][0]["name"] = json!("Renamed");
-    changed["repositories"][0]["webUrl"] = json!("https://other.example/new");
+    let changed = test_project_scope();
     let task2 = ok(
         &app,
         "PATCH",
