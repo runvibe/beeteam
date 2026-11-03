@@ -8,6 +8,10 @@ description: Use when a human or Bee Team Leader asks this chat to act as Collab
 Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
 
 
+## Projetos, repositórios e commits reais
+
+Leia [evidências de repositório](references/repository-evidence.md). Inspecione o checkout Git real, raiz inclusive worktree, branch/HEAD e remotes saneados sem credenciais; preserve escopo estruturado independente de specification. Cada novo resumo declara se houve commit no trabalho relatado: false com lista vazia é legítimo, true exige repo/branch contextual/hash completo reais conforme contrato. Não crie commits para preencher formulário, não atribua HEAD preexistente automaticamente e não confunda local com publicado. Detached HEAD/sem remote exigem representação do contrato, nunca valor inventado. Preserve legado, idempotência e notificação task/commentID; não antecipe campos/API.
+
 ## Registrar intervalos antes de executar
 
 Leia [execuções e intervalos](references/execution-intervals.md). Consulte intervalo ativo ao retomar, antes de criar outro. Colete acumulados e registre início antes do trabalho; confirme taskId/executionId/intervalId retornados e preserve-os. Checkpoint mantém início; pausa antes da troca de task fecha intervalo; resume abre outro na mesma execução; finish independe de aceite/status final. Não infira pares por texto/horário, não some checkpoints e não abra intervalos sobrepostos da mesma fonte. Sem coleta, registre impedimento/comentário e notifique sem fingir fechamento. Use somente contrato HTTP/MCP confirmado, sem APIs ou IDs inventados.
@@ -90,3 +94,5 @@ Valide contra specification, ajuste quando falhar e informe testes realmente exe
 `prepare_execution` e prompts são leitura, não início ou atribuição. Use `record_progress`/`close_activity` somente em alvos autorizados, conforme schema anunciado. Se consumir apenas MCP e referências do workflow não estiverem disponíveis, informe a lacuna, sem inventar URI/capacidade. Instalação local não atualiza snapshots do servidor.
 
 Use usageReport.entries com totalTokens em cada observação, string decimal igual inputTokens + outputTokens inclusivos. Não crie tokenUsage na raiz. Novos resumos exigem cumulative_snapshot, session/session_tree, measured, modelId identificado e actor agent com UUIDv7 persistido; confira o catálogo conectado antes de escrever. O obrigatório é acumulado real da sessão até cada resumo: aceite o primeiro snapshot sem predecessor/delta obrigatório, não some snapshots nem os atribua à tarefa. Não use unavailable/modelo desconhecido como substituto.
+
+No contrato confirmado, task.workScope é o escopo estruturado; novo resumo exige commitReport com hasCommits e commits. false exige lista vazia; true exige repositoryKey resolvido, branch {state,name}, hash completo, availability, remoteVerifiedAt e commitUrl conforme validação. detached/unknown usam name null; local/unknown usam data/link null. Instalação da skill não significa API ativa atualizada.

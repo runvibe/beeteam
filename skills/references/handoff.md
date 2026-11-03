@@ -96,3 +96,7 @@ Status inicial é definido na criação. Toda mudança posterior de status (incl
 ## Intervalos explícitos da execução
 
 Siga [execuções e intervalos](execution-intervals.md): ler intervalo ativo na retomada, registrar início antes do trabalho, checkpoint sem fechar, pausa antes da troca, resume em novo intervalo e finish independente do aceite/status final. Conservar taskId/executionId/intervalId retornados; não inferir fronteiras por texto/horário nem somar snapshots/checkpoints. Contrato de payload e leituras precisa ser confirmado antes de uso; evidência de sessão e consumo por intervalo são distintos.
+
+## Escopo e commits do trabalho relatado
+
+Consultar [evidências de repositório](repository-evidence.md). Projetos/repos são metadados estruturados independentes de specification; raiz é do checkout, não lista de arquivos alterados. Novo resumo declara booleanamente se houve commit, com lista vazia quando false ou repo/branch contextual/hash completo quando true, conforme schema final. Não fabricar commits, links publicados ou valores de detached HEAD; sanear credenciais. Legado ausente não é false e replay não duplica referências.

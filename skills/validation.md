@@ -194,3 +194,9 @@ Especificação principal task-session-intervals-spec.md lida integralmente e co
 Erro de estrutura YAML detectado e corrigido pela frente Backend antes da validação. Após yaml.safe_load passar, sete exemplos sintéticos (RecordExecution start completo e seis fragmentos tracking) passaram verificador local contra RecordExecution/ExecutionTrackingInput com refs/uniões/required/formatos e regras semânticas das ações. Não foram enviados à API. quick_validate, links contidos/existentes, paridade das referências/prompts e diff check passaram.
 
 Build e 14 unitários passaram neste checkout; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente. PostgreSQL isolado da integração final fica com a coordenação; não se reivindica execução local desses testes PG. Nenhum chat, perfil ou dado BeeTeam criado. Instalações Codex com backup/manifesto/hash não comprovam bundle/runtime sincronizado.
+
+## Projetos, repositórios e commits por resumo — 2026-11-03
+
+Spec principal projects-repositories-summary-commits.md, contrato summary-repository-contract.md, OpenAPI e src/dto/work_scope.rs da frente Backend conferidos. Cinco exemplos sintéticos de escopo/report passaram verificador local do schema (incluindo if/then/else); seis cenários inválidos de declaração, branch, link local, repo ausente e duplicata foram rejeitados pelas verificações condicionais/semânticas. RecordExecution do exemplo de início foi atualizado com commitReport false/lista vazia e validado contra schema completo. Nenhum exemplo enviado a API.
+
+Quick_validate, links contidos/existentes, paridade de referências/prompts e diff check passaram. Build e 14 unitários passaram; nove alvos de integração deste checkout falharam por BEE_TEST_DATABASE_URL ausente. Instalação Codex autorizada após estabilidade do contrato, com backup/manifesto/hash; não significa atualização da API ativa, bundle ou runtime. Nenhum dado BeeTeam, commit de demonstração, perfil ou credencial criado/exposto.
