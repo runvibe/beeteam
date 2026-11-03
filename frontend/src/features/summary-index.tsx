@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
@@ -7,7 +7,7 @@ import type { ProgressPoint } from "@/api/task-overview";
 import { useUrlState } from "@/routing/query";
 import { Choice, Failure, NoData, formatDate } from "@/components/shared";
 import { FilterBar } from "@/components/filter-bar";
-import { Button } from "@/components/ui/button";
+import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import {
   RecordedProgress,
@@ -41,6 +41,8 @@ export function SummaryBrowser({
   children: ReactNode;
 }) {
   const api = useApi();
+  const root = useRef<HTMLDivElement>(null);
+  const sentinel = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useUrlState<string>("summaries.selected", "");
   const query = useInfiniteQuery({
     queryKey: ["summaries", taskId, "index"],
@@ -57,6 +59,16 @@ export function SummaryBrowser({
         .map((row) => [row.id, row]) ?? [],
     ).values(),
   ];
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () => root.current,
+    identity: taskId,
+    progress: `${query.dataUpdatedAt}:${rows.map((row) => row.id).join(",")}`,
+    hasMore: !!query.hasNextPage,
+    fetching: query.isFetching,
+    error: query.error,
+    loadMore: () => query.fetchNextPage({ cancelRefetch: false }),
+  });
   const options = rows.map((row) => ({
     value: row.id,
     label: summaryTitle(row),
@@ -84,7 +96,7 @@ export function SummaryBrowser({
       </TaskFilters>
       <div className="summary-index-layout">
         <aside className="summary-index" aria-label="Índice dos resumos">
-          <div className="summary-index-items">
+          <div className="summary-index-items" ref={root}>
             {rows.map((row) => {
               const percent = recordedPercent(percents.get(row.id));
               return (
@@ -110,9 +122,11 @@ export function SummaryBrowser({
                 </button>
               );
             })}
-            {query.isPending && (
-              <LoadingIndicator label="Carregando índice de resumos" />
-            )}
+            <div ref={sentinel} className="summary-index-sentinel">
+              {(query.isPending || query.isFetchingNextPage) && (
+                <LoadingIndicator label="Carregando índice de resumos" />
+              )}
+            </div>
             {!query.isPending && !query.error && !rows.length && (
               <NoData title="Nenhum resumo registrado" />
             )}
@@ -121,21 +135,10 @@ export function SummaryBrowser({
                 error={query.error}
                 retry={() =>
                   void (query.isFetchNextPageError
-                    ? query.fetchNextPage()
+                    ? query.fetchNextPage({ cancelRefetch: false })
                     : query.refetch())
                 }
               />
-            )}
-            {query.hasNextPage && !query.error && (
-              <Button
-                variant="ghost"
-                disabled={query.isFetching}
-                onClick={() => void query.fetchNextPage()}
-              >
-                {query.isFetchingNextPage
-                  ? "Carregando resumos…"
-                  : "Carregar mais resumos"}
-              </Button>
             )}
           </div>
         </aside>

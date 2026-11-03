@@ -46,3 +46,7 @@
     max-height: min(600px, 65dvh);
   }
 }
+
+.summary-index-sentinel {
+  min-height: 1px;
+}
