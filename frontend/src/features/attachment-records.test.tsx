@@ -196,4 +196,9 @@ it("offers MIME shortcuts beyond the first page and applies a click", async () =
   await userEvent.click(await screen.findByRole("button", { name: "Filtrar application/pdf" }));
   await waitFor(() => expect(new URLSearchParams(location.search).get("attachments.mediaType")).toBe("application/pdf"));
   expect(screen.getByLabelText("Tipo MIME exato")).toHaveValue("application/pdf");
+  await userEvent.click(screen.getByRole("button", { name: "Filtrar text/plain" }));
+  expect(screen.getByLabelText("Tipo MIME exato")).toHaveValue("application/pdf, text/plain");
+  expect(screen.getByRole("button", { name: "Filtrar application/pdf" })).toHaveAttribute("aria-pressed", "true");
+  await userEvent.click(screen.getByRole("button", { name: "Filtrar application/pdf" }));
+  expect(screen.getByLabelText("Tipo MIME exato")).toHaveValue("text/plain");
 });

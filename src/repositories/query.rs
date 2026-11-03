@@ -198,11 +198,14 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
                     .push("))>0");
             }
             "mediaType" => {
-                q.push("lower(");
-                field(q, key, true);
-                q.push(")=lower(")
-                    .push_bind(expected.as_str().unwrap_or("").to_owned())
-                    .push(")");
+                q.push("(");
+                for (index, mime) in expected.as_str().unwrap_or("").split(',').enumerate() {
+                    if index > 0 { q.push(" OR "); }
+                    q.push("lower(");
+                    field(q, key, true);
+                    q.push(")=lower(").push_bind(mime.trim().to_owned()).push(")");
+                }
+                q.push(")");
             }
             _ if key.ends_with("From") || key.ends_with("Before") => {
                 let prefix = key.trim_end_matches("From").trim_end_matches("Before");

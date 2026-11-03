@@ -1886,12 +1886,12 @@ paths:
         - name: mediaType
           in: query
           required: false
-          description: Correspondência exata case-insensitive do media type armazenado, sem parâmetros.
+          description: Um ou mais tipos MIME separados por vírgula (OR), com correspondência exata case-insensitive, sem parâmetros.
           schema:
             type: string
             minLength: 1
             maxLength: 200
-            pattern: ^[^\s/;]+/[^\s/;]+$
+            pattern: ^[^\s/,;]+/[^\s/,;]+(\s*,\s*[^\s/,;]+/[^\s/,;]+)*$
         - name: includeRemoved
           in: query
           required: false

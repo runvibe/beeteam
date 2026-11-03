@@ -121,7 +121,7 @@ function MediaTypeInput({
   useEffect(() => setDraft(value), [value]);
   useEffect(() => {
     const next = draft.trim();
-    if (next === value || (next && !/^[^\s/;]+\/[^\s/;]+$/.test(next))) return;
+    if (next === value || (next && !next.split(",").every(mime => /^[^\s/,;]+\/[^\s/,;]+$/.test(mime.trim())))) return;
     const timer = setTimeout(() => onApply(next), 300);
     return () => clearTimeout(timer);
   }, [draft, value, onApply]);
@@ -136,9 +136,9 @@ function MediaTypeInput({
       {!!types.data?.length && <div className="flex flex-wrap gap-2" role="group" aria-label="Tipos presentes nos arquivos">
         {types.data.map(([mime, name]) => {
           const Icon = categories[attachmentCategory(mime, name)].icon;
-          return <Button key={mime} type="button" size="sm" variant={value === mime ? "secondary" : "outline"}
-            aria-label={`Filtrar ${mime}`} title={mime} aria-pressed={value === mime}
-            onClick={() => { setDraft(mime); onApply(mime); }}><Icon aria-hidden="true" /><span>{name.includes(".") ? name.split(".").at(-1)!.toUpperCase() : mime.split("/").at(-1)}</span></Button>;
+          return <Button key={mime} type="button" size="sm" variant={value.split(",").map(v => v.trim().toLowerCase()).includes(mime.toLowerCase()) ? "secondary" : "outline"}
+            aria-label={`Filtrar ${mime}`} title={mime} aria-pressed={value.split(",").map(v => v.trim().toLowerCase()).includes(mime.toLowerCase())}
+            onClick={() => { const selected = value.split(",").map(v => v.trim()).filter(Boolean); const next = selected.some(v => v.toLowerCase() === mime.toLowerCase()) ? selected.filter(v => v.toLowerCase() !== mime.toLowerCase()) : [...selected, mime]; const text = next.join(", "); setDraft(text); onApply(text); }}><Icon aria-hidden="true" /><span>{name.includes(".") ? name.split(".").at(-1)!.toUpperCase() : mime.split("/").at(-1)}</span></Button>;
         })}
       </div>}
       {types.isPending && <span role="status">Carregando tipos…</span>}
@@ -150,11 +150,11 @@ function MediaTypeInput({
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           maxLength={200}
-          pattern={String.raw`[^\s\/;]+/[^\s\/;]+`}
+          pattern={String.raw`[^\s\/,;]+/[^\s\/,;]+(\s*,\s*[^\s\/,;]+/[^\s\/,;]+)*`}
           placeholder="application/pdf"
         />
         <FieldDescription>
-          Use o tipo completo, por exemplo application/pdf ou image/png.
+          Separe os tipos por vírgula, por exemplo application/pdf, image/png.
         </FieldDescription>
       </Field>
     </form>

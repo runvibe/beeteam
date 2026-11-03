@@ -1,3 +1,4 @@
+import { TimelineExecutionDisclosure } from "./timeline-execution-detail";
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
 import { Attachment } from "./attachment-item";
@@ -455,6 +456,7 @@ function RecordContent({
       <p className="small-note">
         Task {r.taskId.slice(-4)} · evento {r.sequence}
       </p>
+      {r.type === "execution.recorded" && typeof r.data.executionSummaryId === "string" && <TimelineExecutionDisclosure taskId={r.taskId} summaryId={r.data.executionSummaryId} />}
       <details>
         <summary>Dados do evento</summary>
         <pre>{JSON.stringify(r.data, null, 2)}</pre>

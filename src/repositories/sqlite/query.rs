@@ -205,9 +205,13 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
                 ));
             }
             "mediaType" => {
-                field(q, key, true);
-                q.push(" COLLATE beeteam_nocase = ")
-                    .push_bind(expected.as_str().unwrap_or("").to_owned());
+                q.push("(");
+                for (index, mime) in expected.as_str().unwrap_or("").split(',').enumerate() {
+                    if index > 0 { q.push(" OR "); }
+                    field(q, key, true);
+                    q.push(" COLLATE beeteam_nocase = ").push_bind(mime.trim().to_owned());
+                }
+                q.push(")");
             }
             _ if key.ends_with("From") || key.ends_with("Before") => {
                 let prefix = key.trim_end_matches("From").trim_end_matches("Before");

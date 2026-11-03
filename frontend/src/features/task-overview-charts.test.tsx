@@ -178,15 +178,15 @@ it("reveals recorded progress and actor without associating tokens by time", asy
   ).toBeVisible();
   expect(
     within(screen.getByRole("dialog")).getByText(
-      /Tokens neste ponto: não informados/,
+      /Sem resumo vinculado/,
     ),
   ).toBeVisible();
   const popup = screen.getByRole("dialog", {
     name: "Detalhes do progresso neste ponto",
   });
   expect(
-    within(popup).getByText(/Status no momento do registro: não registrado/),
-  ).toBeVisible();
+    within(popup).queryByText(/Status no momento do registro/),
+  ).toBeNull();
   expect(popup.querySelector("time")).toHaveAttribute(
     "datetime",
     data.items[1].occurredAt,

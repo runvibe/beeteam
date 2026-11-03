@@ -48,9 +48,8 @@ it("opens explicit events with keyboard, mouse and touch while preserving equal 
   expect(screen.getAllByRole("button", { name: /Início|Pausa/ })).toHaveLength(
     2,
   );
-  await user.click(
-    screen.getByRole("button", { name: "Fechar detalhes do ponto" }),
-  );
+  expect(screen.queryByRole("button", { name: "Fechar detalhes do ponto" })).toBeNull();
+  await user.keyboard("{Escape}");
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 

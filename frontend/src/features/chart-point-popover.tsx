@@ -15,6 +15,7 @@ export function ChartPointPopover({
   label,
   dialogLabel,
   children,
+  showClose = true,
 }: {
   pointId: string;
   position: { x: number | string; y: number };
@@ -27,6 +28,7 @@ export function ChartPointPopover({
   label: string;
   dialogLabel: string;
   children: ReactNode;
+  showClose?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -106,12 +108,12 @@ export function ChartPointPopover({
           }}
         >
           {children}
-          <Popover.Close
+          {showClose && <Popover.Close
             className="usage-point-close"
             aria-label="Fechar detalhes do ponto"
           >
             Fechar
-          </Popover.Close>
+          </Popover.Close>}
           <Popover.Arrow className="usage-point-arrow" />
         </Popover.Content>
       </Popover.Portal>

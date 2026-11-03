@@ -1,5 +1,4 @@
 import { SubtaskStatusPie } from "./subtask-status-pie";
-import { ProgressSummary } from "./progress-summary";
 import { currentUrl, navigate } from "@/routing/location";
 import { ChartPointPopover } from "./chart-point-popover";
 import { OverviewAttribution } from "./overview-artifacts";
@@ -294,6 +293,7 @@ export function ProgressHistory({
                 <ChartPointPopover
                   key={points[index].eventId}
                   pointId={points[index].eventId}
+                  showClose={false}
                   position={position}
                   hitWidth={Math.max(
                     1,
@@ -322,17 +322,15 @@ export function ProgressHistory({
                     date={points[index].occurredAt}
                   />
                   {taskId && points[index].summaryId ? (
-                    <ProgressSummary taskId={taskId} summaryId={points[index].summaryId!} />
-                  ) : <>
-                    <p>Status no momento do registro: não registrado.</p>
-                    <p>Tokens neste ponto: não informados.</p>
-                  </>}
-                  <p className="small-note">
-                    {points[index].summaryId
-                      ? "Resumo vinculado disponível na tabela de registros."
-                      : "Este evento de progresso não tem vínculo explícito com um resumo ou evidência de consumo."}
-                  </p>
-                  {points[index].note && <p>{points[index].note}</p>}
+                    <Button variant="outline" onClick={() => {
+                      const [path, search] = currentUrl().split("?");
+                      const query = new URLSearchParams(search);
+                      query.set("tab", "summaries");
+                      query.set("summaries.selected", points[index].summaryId!);
+                      navigate(`${path}?${query}`);
+                    }}>Ver resumo</Button>
+                  ) : <p>Sem resumo vinculado.</p>}
+
                 </ChartPointPopover>
               ))}
             </div>

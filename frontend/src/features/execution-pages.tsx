@@ -14,11 +14,13 @@ export function ExecutionPages<T extends { id: string }>({
   queryKey,
   fetchPage,
   label,
+  showCount = true,
   children,
 }: {
   queryKey: (string | number)[];
   fetchPage: (offset: number, signal: AbortSignal) => Promise<Page<T>>;
   label: string;
+  showCount?: boolean;
   children: (rows: T[], loading: boolean, failed: boolean) => ReactNode;
 }) {
   const q = useInfiniteQuery({
@@ -52,7 +54,7 @@ export function ExecutionPages<T extends { id: string }>({
             }
           />
         ))}
-      {q.data && (
+      {showCount && q.data && (
         <p className="small-note">
           {rows.length} de {q.data.pages[0].total} {label}
         </p>

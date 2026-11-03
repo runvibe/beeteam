@@ -340,3 +340,5 @@
 .subtask-status-pie { width: min(100%, 220px); height: auto; aspect-ratio: 1; display: block; margin: 12px auto; overflow: visible; }
 .subtask-status-pie [role="button"] { cursor: pointer; stroke: var(--background); stroke-width: 2px; }
 .subtask-status-pie [role="button"]:focus-visible { outline: none; stroke: var(--foreground); stroke-width: 4px; }
+
+[data-task-section="summaries"] .overview-progress-history { border-top: 0; }

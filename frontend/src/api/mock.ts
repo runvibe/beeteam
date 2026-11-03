@@ -131,7 +131,7 @@ export function createMockApi(
         (row) =>
           matches(row.originalName, f.fileName) &&
           (!f.mediaType ||
-            String(row.mediaType).toLowerCase() === f.mediaType.toLowerCase()),
+            f.mediaType.split(",").some(mime => String(row.mediaType).toLowerCase() === mime.trim().toLowerCase())),
       );
     }
     if (resource === "comments" && f.text)

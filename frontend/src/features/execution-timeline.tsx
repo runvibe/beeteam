@@ -58,6 +58,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
               </span>
               <ChartPointPopover
                 pointId={event.id}
+                showClose={false}
                 position={{ x: `${((index + 0.5) / events.length) * 100}%`, y: 80 }}
                 className="execution-timeline-point"
                 selected={selected?.id === event.id}

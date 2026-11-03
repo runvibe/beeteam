@@ -944,3 +944,9 @@ As abas da tarefa seguem: Visão geral, Especificação, Planos, Subtasks, Conve
 O bloco de consumo na Visão geral não usa divisórias horizontais e mantém espaçamento compacto até a evolução do progresso.
 
 O filtro MIME em Arquivos oferece atalhos com ícones e extensões dos tipos presentes em todas as páginas e aplica a digitação válida automaticamente após 300 ms.
+
+O filtro MIME permite seleção múltipla nos atalhos ou tipos separados por vírgula; os resultados incluem qualquer tipo selecionado, mantendo os demais filtros e a paginação.
+
+Na timeline, o tooltip traz apenas ação, agente e status. O item do histórico oferece Detalhes da execução, com resumo, evidências e intervalo consultados pelo ID do resumo quando expandido.
+
+Os tooltips de progresso e execução são compactos, sem botão Fechar; Ver resumo aplica o filtro pelo ID, e Ver evento abre o detalhe completo em um painel de diálogo.

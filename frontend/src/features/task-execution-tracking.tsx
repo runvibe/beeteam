@@ -1,5 +1,9 @@
-import { ApiError } from "@/api/types";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { TimelineExecutionDetail } from "./timeline-execution-detail";
+import { AgentName } from "@/components/names";
+import { ApiError } from "@/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { Failure } from "@/components/shared";
@@ -7,12 +11,8 @@ import { IntervalMetrics } from "./interval-metrics";
 import { ExecutionTimeline } from "./execution-timeline";
 import { ExecutionPages } from "./execution-pages";
 import {
-  ExecutionEventDetail,
   executionAction,
 } from "./execution-event-detail";
-import {
-  ExecutionIntervalLookup,
-} from "./execution-interval-record";
 import "./task-execution-tracking.css";
 const coverageLabels = {
   totalIntervals: "intervalos",
@@ -73,7 +73,7 @@ export function TaskExecutionTimeline({
   version: number;
 }) {
   const api = useApi();
-  const [selectedInterval, setSelectedInterval] = useState<string>();
+  const [summary, setSummary] = useState<string>();
   return (
     <section className="task-execution-timeline">
       <ExecutionPages
@@ -82,6 +82,7 @@ export function TaskExecutionTimeline({
           api.executionTrackingEvents(taskId, { offset, limit: 20 }, signal)
         }
         label="transições"
+        showCount={false}
       >
         {(rows, loading, failed) => (
           <ExecutionTimeline
@@ -98,22 +99,22 @@ export function TaskExecutionTimeline({
                   : undefined
             }
             renderDetail={(event) => (
-              <ExecutionEventDetail
-                event={event}
-                onInterval={setSelectedInterval}
-              />
+              <div className="execution-event-detail">
+                <strong>{executionAction(event.action)}</strong>
+                <AgentName id={event.agentId} />
+                <span>{event.statusObserved.name || "Status não registrado"}</span>
+                <Button variant="outline" onClick={() => setSummary(event.summaryId)}>Ver evento</Button>
+              </div>
             )}
           />
         )}
       </ExecutionPages>
-      {selectedInterval && (
-        <ExecutionIntervalLookup
-          key={selectedInterval}
-          taskId={taskId}
-          intervalId={selectedInterval}
-          version={version}
-        />
-      )}
+      <Dialog open={!!summary} onOpenChange={open => { if (!open) setSummary(undefined); }}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Detalhes da execução</DialogTitle></DialogHeader>
+          {summary && <TimelineExecutionDetail taskId={taskId} summaryId={summary} />}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

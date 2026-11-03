@@ -181,6 +181,8 @@ async fn images_copy_independently_and_attachments_keep_tombstones() {
     for (query,total,count) in [
         ("fileName=IMAGE&mediaType=IMAGE%2FPNG&limit=1",2,1),
         ("fileName=IMAGE&mediaType=IMAGE%2FPNG&includeRemoved=true&offset=2&limit=1",3,1),
+        ("mediaType=text%2Fplain%2C%20IMAGE%2FPNG&limit=1",2,1),
+        ("mediaType=IMAGE%2FPNG%2Cimage%2Fpng&includeRemoved=true",3,3),
         ("fileName=does-not-exist&includeRemoved=true",0,0),
         ("fileName=image&mediaType=text%2Fplain&includeRemoved=true",0,0),
         ("fileName=%25&includeRemoved=true",0,0),
