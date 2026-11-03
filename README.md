@@ -811,3 +811,5 @@ See [contract and limitations](docs/task-session-intervals-contract.md) and [val
 A Visão geral termina no consumo por intervalos: mantém evolução do progresso e distribuições, sem repetir os blocos textuais e históricos das demais abas. Os percentuais vinculados explicitamente a resumos abrem a aba Resumos e carregam até o ID selecionado, preservando eventos antigos sem associação.
 
 A evolução do progresso apresenta gráfico à esquerda e registros sempre visíveis em card à direita no desktop, ambos com 215 px de altura; a tabela tem rolagem interna e cabeçalho fixo. Em telas menores os blocos ficam empilhados.
+
+O gráfico de progresso mantém detalhes somente nos pontos, sem repetir o registro selecionado nem explicações abaixo do gráfico e da tabela.

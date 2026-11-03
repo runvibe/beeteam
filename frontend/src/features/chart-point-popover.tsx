@@ -55,7 +55,7 @@ export function ChartPointPopover({
           aria-pressed={selected}
           aria-expanded={open}
           aria-haspopup="dialog"
-          aria-controls={open ? `${detailId}-popover-${pointId}` : detailId}
+          aria-controls={open ? `${detailId}-popover-${pointId}` : undefined}
           aria-label={label}
           style={{ left: position.x, top: position.y, width: hitWidth }}
           onPointerEnter={(event) => {

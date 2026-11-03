@@ -334,7 +334,7 @@ export function ProgressHistory({
             className="overview-history-table"
             aria-label="Registros de progresso"
           >
-            <h3>{points.length} registros</h3>
+            <h3>{data.truncated ? `${points.length} de ${data.total} registros` : `${points.length} registros`}</h3>
             <div
               className="overview-table-scroll"
               tabIndex={0}
@@ -393,31 +393,6 @@ export function ProgressHistory({
             </div>
           </section>
         </div>
-        {selected && (
-          <div
-            id={`${description}-detail`}
-            className="overview-progress-detail"
-            aria-live="polite"
-          >
-            <OverviewAttribution actor={selected} date={selected.occurredAt} />
-            <p>Progresso registrado: {selected.percent}%</p>
-            <p className="small-note">
-              Tokens neste ponto: não informados. Sem vínculo explícito com uma
-              evidência de consumo.
-            </p>
-          </div>
-        )}
-        {points.length > 0 && (
-          <>
-            <p className="small-note">
-              A linha apenas conecta registros; não estima trabalho nos
-              intervalos.
-              {data.truncated
-                ? ` Exibindo os ${points.length} registros mais recentes de ${data.total}.`
-                : ""}
-            </p>
-          </>
-        )}
       </>
     </section>
   );
