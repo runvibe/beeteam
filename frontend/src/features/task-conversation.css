@@ -30,12 +30,23 @@
   background: var(--muted);
 }
 .conversation-message header {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
   min-width: 0;
-  flex-wrap: wrap;
+}
+.conversation-timestamp {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-self: end;
+  text-align: right;
+  cursor: pointer;
+}
+.conversation-timestamp:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }
 .conversation-author {
   display: flex;
@@ -87,9 +98,6 @@
   }
   .conversation-message header {
     gap: 8px;
-  }
-  .conversation-message time {
-    width: 100%;
   }
 }
 

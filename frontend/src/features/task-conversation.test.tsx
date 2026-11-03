@@ -52,6 +52,19 @@ it("opens latest comments, prepends previous pages and renders safe Markdown wit
     "left",
   );
   expect(screen.getByText("Leader · papel atual")).toBeInTheDocument();
+  const message = screen.getByText("Mensagem 4").closest("article")!;
+  const timestamp = message.querySelector<HTMLButtonElement>(
+    ".conversation-timestamp",
+  );
+  expect(timestamp).toBeTruthy();
+  expect(timestamp?.querySelector("time")?.textContent).toMatch(/há|agora|em /);
+  fireEvent.focus(timestamp!);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent("30/10/2026");
+  fireEvent.click(timestamp!);
+  expect(
+    await screen.findByRole("dialog", { name: "Data e hora da mensagem" }),
+  ).toBeInTheDocument();
+  fireEvent.keyDown(document.activeElement!, { key: "Escape" });
   fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));
   await screen.findByText("Mensagem 1");
   fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));

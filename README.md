@@ -868,6 +868,11 @@ lotes de 10. Metadados removidos são identificados; seu botão de download fica
 Os controles usam ícones distintos de busca, tipo de arquivo e lixeira, mantendo tooltip,
 nome acessível e indicação de filtro ativo tanto no desktop quanto no mobile.
 
+Na Conversa, cada mensagem mostra tempo relativo no canto superior direito, acima da
+identidade do autor. Reutiliza o relógio compartilhado de `RelativeTime`; hover/foco
+revela a data e hora exatas em tooltip, e clique/toque abre o mesmo dado em popover.
+Nomes longos quebram linha sem sobrepor a data; ordenação e ancoragem de scroll são preservadas.
+
 ### Projetos, repositórios e commits de execução
 
 Tarefas aceitam `workScope` opcional com projetos, raízes absolutas de checkout e repositórios relacionados explicitamente. Cada novo resumo exige `commitReport`: `hasCommits: false` com lista vazia ou `true` com referências completas. Branches nomeadas, detached HEAD e estado desconhecido permanecem distintos; os nomes e URLs dos repositórios são copiados para o histórico. Links exigem publicação declarada com verificação remota, provedor e URL web explícitos e hash completo correspondente. O servidor não acessa Git nem confirma publicação. Registros antigos sem declaração continuam ausentes; replays salvos são preservados. Contrato e exemplos em [summary-repository-contract.md](docs/summary-repository-contract.md).

@@ -10,7 +10,6 @@ import { LoadingIndicator } from "@/components/loading-indicator";
 import {
   Failure,
   NoData,
-  formatDate,
   Search,
   Choice,
 } from "@/components/shared";
@@ -20,6 +19,7 @@ import { useUi } from "@/state/ui";
 import { useTaskConversation } from "./use-task-conversation";
 import { conversationAuthor } from "./task-conversation-author";
 import { useConversationAnchor } from "./conversation-anchor";
+import { ConversationTimestamp } from "./conversation-timestamp";
 import "./task-conversation.css";
 
 export function TaskConversation({
@@ -229,9 +229,7 @@ function ConversationMessage({ item }: { item: Resources["comments"] }) {
           )}
           <span>{author.role}</span>
         </div>
-        <time dateTime={item.createdAt} title={formatDate(item.createdAt)}>
-          {formatDate(item.createdAt)}
-        </time>
+        <ConversationTimestamp value={item.createdAt} />
       </header>
       <Markdown headingOffset={2}>{item.body}</Markdown>
     </article>
