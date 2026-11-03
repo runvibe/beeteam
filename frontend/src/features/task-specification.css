@@ -1,0 +1,43 @@
+.detail-section.specification-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.specification-layout > *,
+.specification-scope > * {
+  min-width: 0;
+}
+.specification-scope {
+  display: grid;
+  gap: 16px;
+}
+.scope-records {
+  display: grid;
+  gap: 20px;
+}
+.scope-records li {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.scope-records code {
+  white-space: pre-wrap;
+  font-size: 12px;
+}
+.scope-records a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (min-width: 1056px) {
+  .detail-section.specification-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
+  }
+  .specification-scope {
+    position: sticky;
+    top: 80px;
+    max-height: calc(100dvh - 120px);
+    overflow-y: auto;
+  }
+}

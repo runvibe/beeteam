@@ -126,6 +126,14 @@ export function createMockApi(
     );
     if (resource === "summaries" && f.id)
       rows = rows.filter((row) => row.id === f.id);
+    if (resource === "attachments") {
+      rows = rows.filter(
+        (row) =>
+          matches(row.originalName, f.fileName) &&
+          (!f.mediaType ||
+            String(row.mediaType).toLowerCase() === f.mediaType.toLowerCase()),
+      );
+    }
     if (resource === "comments" && f.text)
       rows = rows.filter((row) => String(row.body).includes(f.text!));
     if (resource === "statuses" && !f.includeArchived)

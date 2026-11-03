@@ -1,3 +1,6 @@
+import { TaskSpecification } from "./task-specification";
+import { SummaryCommits } from "./summary-commits";
+import { AttachmentRecords } from "./attachment-records";
 import { SummaryBrowser } from "./summary-index";
 import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
 import { ChildRow } from "./subtask-row";
@@ -29,7 +32,6 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Choice,
   QueryState,
-  NoData,
   Failure,
   formatDate,
   safeUrl,
@@ -158,18 +160,10 @@ function TaskDetail({ id }: { id: string }) {
                       <TaskOverviewPanel task={q.data} onTab={setTab} />
                     </TabsContent>
                     <TabsContent value="specification">
-                      <div className="detail-section task-specification">
-                        {q.data.specification ? (
-                          <Markdown headingOffset={2} sectionDividers>
-                            {q.data.specification}
-                          </Markdown>
-                        ) : (
-                          <NoData
-                            title="Nenhuma especificação registrada"
-                            description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
-                          />
-                        )}
-                      </div>
+                      <TaskSpecification
+                        specification={q.data.specification}
+                        scope={q.data.workScope}
+                      />
                     </TabsContent>
                     <TabsContent value="children">
                       <Children task={q.data} />
@@ -187,7 +181,9 @@ function TaskDetail({ id }: { id: string }) {
                       />
                     </TabsContent>
                     <TabsContent value="attachments">
-                      <Records resource="attachments" task={q.data} />
+                      <AttachmentRecords taskId={q.data.id}>
+                        {(item) => <Attachment item={item} />}
+                      </AttachmentRecords>
                     </TabsContent>
                     <TabsContent value="summaries">
                       {overview.data && (
@@ -196,7 +192,10 @@ function TaskDetail({ id }: { id: string }) {
                           mode="chart"
                         />
                       )}
-                      <SummaryBrowser taskId={q.data.id} progress={overview.data?.progressHistory.items ?? []}>
+                      <SummaryBrowser
+                        taskId={q.data.id}
+                        progress={overview.data?.progressHistory.items ?? []}
+                      >
                         <Records resource="summaries" task={q.data} />
                       </SummaryBrowser>
                     </TabsContent>
@@ -408,6 +407,7 @@ function RecordContent({
               {r.summary}
             </Markdown>
           </section>
+          <SummaryCommits report={r.commitReport} />
           <SummaryUsage report={r.usageReport} />
           <section className="task-reading-block" aria-label="Entregas">
             <h4>Entregas</h4>
@@ -509,13 +509,22 @@ function Attachment({ item }: { item: Resources["attachments"] }) {
     <article className="record">
       <Author id={item.actorId} date={item.createdAt} />
       <h3>{item.originalName}</h3>
+      {item.deletedAt && (
+        <Badge variant="secondary">
+          Removido em {formatDate(item.deletedAt)}
+        </Badge>
+      )}
       <p className="small-note">
         {item.mediaType} · {item.sizeBytes} bytes
       </p>
       <Markdown headingOffset={2} sectionDividers>
         {item.description}
       </Markdown>
-      <Button variant="outline" disabled={busy} onClick={() => void download()}>
+      <Button
+        variant="outline"
+        disabled={busy || !!item.deletedAt}
+        onClick={() => void download()}
+      >
         <Download data-icon="inline-start" />
         {busy ? "Preparando…" : "Baixar arquivo"}
       </Button>

@@ -134,6 +134,7 @@ describe("OpenAPI response conformance", () => {
     const row = makeSeed().summaries[0];
     const input = {
       currentSummary: "Work",
+      commitReport: { hasCommits: false, commits: [] },
       summary: row.summary,
       outcome: row.outcome,
       statusId: row.statusId,
@@ -143,6 +144,8 @@ describe("OpenAPI response conformance", () => {
       usageReport: { entries: [observation] },
     };
     expect(validate(input), JSON.stringify(validate.errors)).toBe(true);
+    expect(validate({ ...input, commitReport: undefined })).toBe(false);
+    expect(validate({ ...input, commitReport: { hasCommits: true, commits: [] } })).toBe(false);
     for (const patch of [
       { totalTokens: undefined },
       { totalTokens: null },

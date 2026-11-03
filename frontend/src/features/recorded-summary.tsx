@@ -1,3 +1,4 @@
+import { SummaryCommits } from "./summary-commits";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -66,6 +67,7 @@ export function RecordedSummary({
           {query.data && (
             <>
               <Markdown headingOffset={2}>{query.data.summary}</Markdown>
+              <SummaryCommits report={query.data.commitReport} />
               <SummaryUsage report={query.data.usageReport} />
             </>
           )}

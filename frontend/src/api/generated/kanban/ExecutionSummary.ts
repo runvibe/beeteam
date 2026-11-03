@@ -1,5 +1,6 @@
 // Generated from contracts/kanban-openapi.yaml. Do not edit.
 export type ExecutionSummary = {
+  commitReport?: import("./CommitReport").CommitReport;
   executionTracking?: import("./ExecutionTrackingResult").ExecutionTrackingResult;
   usageReport?: import("./SummaryUsageReport").SummaryUsageReport | null;
   statusObserved?: import("./UsageObservedStatus").UsageObservedStatus;

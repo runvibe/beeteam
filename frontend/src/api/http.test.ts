@@ -159,3 +159,23 @@ it("requests exact summary ID within the task collection", async () => {
     "/api/v1/tasks/task/execution-summaries?id=summary&offset=0&limit=10",
   );
 });
+
+it("encodes attachment filename literally and combines exact MIME and removed filters", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
+  await createHttpApi({ fetch: fetcher }).list("attachments", "task", {
+    fileName: "100%_a\\b",
+    mediaType: "application/pdf",
+    includeRemoved: true,
+    limit: 10,
+    offset: 10,
+  });
+  const url = new URL(fetcher.mock.calls[0][0], "http://localhost");
+  expect(url.pathname).toBe("/api/v1/tasks/task/attachments");
+  expect(Object.fromEntries(url.searchParams)).toEqual({
+    fileName: "100%_a\\b",
+    mediaType: "application/pdf",
+    includeRemoved: "true",
+    limit: "10",
+    offset: "10",
+  });
+});

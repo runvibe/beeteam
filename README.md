@@ -848,3 +848,20 @@ ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.
 
 No mobile, o índice lateral de Resumos fica oculto. O filtro padrão mantém suas opções com scroll infinito próprio, compartilhando o cache do índice e buscando páginas apenas conforme a área visível exige. Seleção pela URL, tags removíveis e docking continuam disponíveis.
 As skills orientam escopo estruturado de projetos/repositórios separado da especificação Markdown e coleta Git real para evidências de commits por resumo. Investigação sem commit é válida; nunca criar commit apenas para preencher declaração. Raiz do checkout, remotes sem credenciais, branch histórica, hash completo e publicação confirmada permanecem fatos distintos, sujeitos ao contrato Backend.
+
+A aba Especificação apresenta `Task.workScope` em cards Projetos (nome/pasta raiz) e
+Repositórios (nome/link web e relações explícitas com projetos), ao lado do Markdown no
+desktop e empilhados no mobile. Estado legado ausente, a identificar e não aplicável
+continuam distintos; nenhum vínculo é extraído do texto ou aberto no filesystem.
+
+Resumos com `commitReport.hasCommits=true` mostram o snapshot histórico de repositório,
+branch nomeada/detached/desconhecida, hash curto e campo somente leitura com hash completo.
+Links exigem publicação declarada com data, URL HTTP(S) sem credenciais/query/fragmento e
+caminho exato GitHub/GitLab para o hash, incluindo hosts explicitamente declarados.
+Referências locais/desconhecidas permanecem texto; declarações false e legados não criam
+uma seção vazia. Não há formulário de gravação de resumos no frontend.
+
+Arquivos oferece busca literal por nome, tipo MIME exato aplicado ao confirmar e inclusão
+de removidos, usando parâmetros reais `fileName`, `mediaType`, `includeRemoved`, combinados
+na URL e no filtro padrão com tags/limpar/docking. A lista reutiliza o scroll infinito em
+lotes de 10. Metadados removidos são identificados; seu botão de download fica desabilitado.

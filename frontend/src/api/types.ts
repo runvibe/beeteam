@@ -84,6 +84,8 @@ export interface Filters {
   harness?: string;
   includeChildren?: boolean;
   includeRemoved?: boolean;
+  fileName?: string;
+  mediaType?: string;
   types?: string;
   actorId?: string;
   actorKind?: "human" | "agent";
