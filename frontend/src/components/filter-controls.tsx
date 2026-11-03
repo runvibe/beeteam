@@ -13,6 +13,8 @@ import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
 import {
   Search,
+  CircleDot,
+  Ban,
   Users,
   UserRound,
   Archive,
@@ -26,6 +28,10 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 const icons: Record<string, LucideIcon> = {
+  "Status da subtarefa": CircleDot,
+  "Responsável da subtarefa": UserRound,
+  "Bloqueio das subtarefas": Ban,
+  "Subtarefas arquivadas": Archive,
   "Time gestor": Users,
   Time: Users,
   Executor: UserRound,
