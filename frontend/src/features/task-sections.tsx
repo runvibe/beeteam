@@ -8,11 +8,11 @@ import { TaskFilterSlot } from "./task-filter-layout";
 const sections = [
   ["overview", "Visão geral"],
   ["specification", "Especificação"],
-  ["children", "Subtasks"],
   ["plans", "Planos"],
+  ["children", "Subtasks"],
   ["comments", "Conversa"],
-  ["attachments", "Arquivos"],
   ["summaries", "Resumos"],
+  ["attachments", "Arquivos"],
   ["timeline", "Timeline"],
 ] as const;
 
