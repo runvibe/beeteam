@@ -136,7 +136,7 @@ async fn current_summary_is_explicit_persisted_and_independent_of_description() 
         &app,
         "POST",
         &format!("{path}/execution-summaries"),
-        json!({"statusId":id(&next),"currentSummary":third,"summary":"Entered working status","outcome":"progress","usageReport":unavailable_usage(),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}}),
+        json!({"statusId":id(&next),"currentSummary":third,"summary":"Entered working status","outcome":"progress","usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}}),
         ver(&task),
     )
     .await["task"].clone();
@@ -149,7 +149,7 @@ async fn current_summary_is_explicit_persisted_and_independent_of_description() 
     )
     .await;
     assert_eq!(task["currentSummary"], third);
-    let execution = json!({"usageReport":unavailable_usage(),"summary":"Historical activity only","currentSummary":"Done: implementation and testing. Now: review. Next: publish when approved.","outcome":"progress","statusId":id(&next),"deliverables":[],"pending":["Approval"],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
+    let execution = json!({"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Historical activity only","currentSummary":"Done: implementation and testing. Now: review. Next: publish when approved.","outcome":"progress","statusId":id(&next),"deliverables":[],"pending":["Approval"],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
     let mut missing = execution.clone();
     missing.as_object_mut().unwrap().remove("currentSummary");
     assert_eq!(

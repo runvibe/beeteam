@@ -38,7 +38,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
-    json!({"usageReport":unavailable_usage(),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
+    json!({"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
 }
 async fn tool(app: &Router, name: &str, args: Value) -> Value {
     let r=app.clone().oneshot(Request::builder().method("POST").uri("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":name,"arguments":args}}).to_string())).unwrap()).await.unwrap();
@@ -59,7 +59,7 @@ fn observation(
         "actor":{"kind":"agent","id":actor},"actorRole":"collaborator","provider":"openai","modelId":"fixture-model",
         "scope":"session","reportKind":"cumulative_snapshot","quality":"measured","attribution":"exact",
         "observedAt":"2026-10-31T00:00:00Z","periodStart":null,"periodEnd":null,
-        "inputTokens":input,"outputTokens":output,"cachedInputTokens":null,"reasoningOutputTokens":null,"discovery":null})
+        "inputTokens":input,"outputTokens":output,"totalTokens":(input.parse::<i64>().unwrap()+output.parse::<i64>().unwrap()).to_string(),"cachedInputTokens":null,"reasoningOutputTokens":null,"discovery":null})
 }
 
 #[tokio::test]
@@ -126,7 +126,7 @@ async fn summary_usage_snapshots_deduplicate_without_status_or_markdown_inferenc
 }
 
 #[tokio::test]
-async fn unavailable_reports_late_evidence_replay_and_transport_parity() {
+async fn baseline_reports_late_evidence_replay_and_transport_parity() {
     let (app, agent, board, task) = setup().await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
     let key = uuid::Uuid::new_v4();
@@ -137,7 +137,7 @@ async fn unavailable_reports_late_evidence_replay_and_transport_parity() {
     let summary = &first["executionSummary"];
     assert_eq!(
         summary["usageReport"]["entries"][0]["observation"]["reportKind"],
-        "unavailable"
+        "cumulative_snapshot"
     );
     let before = get(&app, &format!("/api/v1/tasks/{}", id(&task))).await;
     let empty = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
@@ -243,11 +243,11 @@ async fn invalid_or_overlapping_evidence_rolls_back_and_unavailable_is_not_zero(
     body["usageReport"]=json!({"entries":[blank]});
     assert_eq!(request(&app,"POST",&route,body.clone(),ver(&task)).await.0,400);
     body["usageReport"] = json!({"entries":[missing]});
-    let first = ok(&app, "POST", &route, body, ver(&task)).await;
-    let data = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
+    assert_eq!(request(&app,"POST",&route,body,ver(&task)).await.0,400);
+    let first = ok(&app,"POST",&route,execution(&task,&board),ver(&task)).await;
+    let data=get(&app,&format!("/api/v1/tasks/{}/usage",id(&task))).await;
     assert!(data["knownTotalTokens"].is_null());
-    assert_eq!(data["coverage"]["unavailableEntries"], 1);
-    assert_eq!(data["models"]["total"], 0);
+    assert_eq!(data["coverage"]["unavailableEntries"],0);
     let mut body = execution(&task, &board);
     let a = observation(id(&agent), "a", None, "100", "10");
     body["usageReport"] = json!({"entries":[a]});
@@ -261,12 +261,12 @@ async fn invalid_or_overlapping_evidence_rolls_back_and_unavailable_is_not_zero(
             .0,
         400
     );
-    b["inputTokens"] = json!("150");
+    b["inputTokens"] = json!("150"); b["totalTokens"] = json!("161");
     body["usageReport"] = json!({"entries":[b.clone()]});
     let second = ok(&app, "POST", &route, body.clone(), ver(&baseline["task"])).await;
     let mut fork = b.clone();
     fork["evidenceId"] = json!("fork");
-    fork["inputTokens"] = json!("160");
+    fork["inputTokens"] = json!("160"); fork["totalTokens"] = json!("171");
     body["usageReport"] = json!({"entries":[fork]});
     assert_eq!(
         request(&app, "POST", &route, body, ver(&second["task"]))
@@ -274,7 +274,7 @@ async fn invalid_or_overlapping_evidence_rolls_back_and_unavailable_is_not_zero(
             .0,
         400
     );
-    b["inputTokens"] = json!("151");
+    b["inputTokens"] = json!("151"); b["totalTokens"] = json!("162");
     let mut changed = execution(&task, &board);
     changed["usageReport"] = json!({"entries":[b]});
     assert_eq!(
@@ -293,15 +293,15 @@ async fn sql_totals_and_dimensions_cover_more_than_one_page() {
     let (app, agent, board, task) = setup().await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
     let mut current = task.clone();
-    for batch in 0..4 {
+    for batch in 0..7 {
         let mut entries = Vec::new();
-        for i in batch * 32..((batch + 1) * 32).min(105) {
+        for i in batch * 16..((batch + 1) * 16).min(105) {
             let mut e = observation(id(&agent), &format!("request-{i}"), None, "1", "1");
-            e["scope"] = json!("request");
-            e["reportKind"] = json!("period_delta");
             e["modelId"] = json!(format!("model-{i:03}"));
             e["sessionId"] = json!(format!("session-{i}"));
-            entries.push(e);
+            let mut base=e.clone();base["evidenceId"]=json!(format!("base-{i}"));base["inputTokens"]=json!("0");base["outputTokens"]=json!("0");base["totalTokens"]=json!("0");
+            e["previousEvidenceId"]=base["evidenceId"].clone();e["observedAt"]=json!("2026-10-31T01:00:00Z");
+            entries.push(base);entries.push(e);
         }
         let mut body = execution(&task, &board);
         body["usageReport"] = json!({"entries":entries});
@@ -312,7 +312,7 @@ async fn sql_totals_and_dimensions_cover_more_than_one_page() {
     assert_eq!(data["models"]["total"], 105);
     assert_eq!(data["models"]["items"].as_array().unwrap().len(), 100);
     assert_eq!(data["models"]["truncated"], true);
-    assert_eq!(data["timeline"]["total"], 4);
+    assert_eq!(data["timeline"]["total"], 7);
     assert_eq!(data["timeline"]["items"].as_array().unwrap().len(), 1);
     let page = get(
         &app,
@@ -354,7 +354,7 @@ async fn close_activity_usage_validation_is_atomic_with_comments_and_status() {
     let success=tool(&app,"close_activity",json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"execution":execution(&task,&board)})).await;
     assert_eq!(
         success["isError"], false,
-        "Explicit unavailable must allow summary: {success}"
+        "Measured initial snapshot must allow summary: {success}"
     );
 }
 
@@ -362,36 +362,17 @@ async fn close_activity_usage_validation_is_atomic_with_comments_and_status() {
 async fn task_aggregate_overflow_and_parallel_source_overlap_are_rejected() {
     let (app, agent, board, task) = setup().await;
     let route = format!("/api/v1/tasks/{}/execution-summaries", id(&task));
-    let mut e = observation(id(&agent), "max", None, &i64::MAX.to_string(), "0");
-    e["scope"] = json!("request");
-    e["reportKind"] = json!("period_delta");
-    let mut body = execution(&task, &board);
-    body["usageReport"] = json!({"entries":[e.clone()]});
-    let first = ok(&app, "POST", &route, body.clone(), ver(&task)).await;
-    let data = get(&app, &format!("/api/v1/tasks/{}/usage", id(&task))).await;
-    assert_eq!(data["knownTotalTokens"], i64::MAX.to_string());
-    e["inputTokens"] = json!("1");
-    e["evidenceId"] = json!("over");
-    body["usageReport"] = json!({"entries":[e.clone()]});
-    assert_eq!(
-        request(&app, "POST", &route, body.clone(), ver(&first["task"]))
-            .await
-            .0,
-        400
-    );
-    e["inputTokens"] = json!("0");
-    e["source"] = json!("overlapping-sdk");
-    body["usageReport"] = json!({"entries":[e]});
-    assert_eq!(
-        request(&app, "POST", &route, body, ver(&first["task"]))
-            .await
-            .0,
-        400
-    );
-    assert_eq!(
-        get(&app, &format!("/api/v1/tasks/{}", id(&task))).await,
-        first["task"]
-    );
+    let first=ok(&app,"POST",&route,execution(&task,&board),ver(&task)).await;
+    let late=format!("{}/{}/usage-revisions",route,id(&first["executionSummary"]));
+    let mut e=observation(id(&agent),"max",None,&i64::MAX.to_string(),"0");
+    e["scope"]=json!("request");e["reportKind"]=json!("period_delta");
+    let revised=ok(&app,"POST",&late,json!({"entries":[e.clone()]}),Some(1)).await;
+    assert_eq!(get(&app,&format!("/api/v1/tasks/{}/usage",id(&task))).await["knownTotalTokens"],i64::MAX.to_string());
+    e["inputTokens"]=json!("1");e["totalTokens"]=json!("1");e["evidenceId"]=json!("over");
+    assert_eq!(request(&app,"POST",&late,json!({"entries":[e.clone()]}),ver(&revised)).await.0,400);
+    e["inputTokens"]=json!("0");e["totalTokens"]=json!("0");e["source"]=json!("overlapping-sdk");
+    assert_eq!(request(&app,"POST",&late,json!({"entries":[e]}),ver(&revised)).await.0,400);
+    assert_eq!(get(&app,&format!("/api/v1/tasks/{}",id(&task))).await,first["task"]);
 }
 
 #[tokio::test]
@@ -426,7 +407,7 @@ async fn new_summaries_require_explicit_usage_in_http_mcp_and_compound() {
     );
     let rpc=tool(&app,"createExecutionSummary",json!({"params":{"taskId":id(&task)},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":execution(&task,&board)})).await;
     assert_eq!(rpc["isError"],false,"{rpc}");
-    assert_eq!(rpc["structuredContent"]["data"]["executionSummary"]["usageReport"]["entries"][0]["observation"]["reportKind"],"unavailable");
+    assert_eq!(rpc["structuredContent"]["data"]["executionSummary"]["usageReport"]["entries"][0]["observation"]["reportKind"],"cumulative_snapshot");
 
 }
 
@@ -512,15 +493,109 @@ async fn historical_missing_usage_and_saved_replays_survive_required_write_contr
 }
 
 #[test]
-fn summary_mcp_tools_explain_required_evidence_and_honest_fallback() {
+fn summary_mcp_tools_explain_required_snapshot_and_collection_failure() {
     let catalog=beeteam::routes::mcp::catalog();
     for name in ["createExecutionSummary","close_activity"] {
         let tool=catalog["tools"].as_array().unwrap().iter().find(|t|t["name"]==name).unwrap();
         let description=tool["description"].as_str().unwrap();
-        for term in ["usageReport","session","models","harnesses","decimal","baseline","unavailable","discovery.attempts"] {
+        for term in ["usageReport","totalTokens","modelId","actor.kind","session","baseline","Codex","Copilot","Claude","Cursor","Kiro","unavailable"] {
             assert!(description.contains(term),"{name} description missing {term}");
         }
     }
+}
+
+#[tokio::test]
+async fn required_session_snapshot_contract_has_http_mcp_parity_and_no_partial_writes() {
+    let (app,agent,board,task)=setup().await;
+    let path=format!("/api/v1/tasks/{}",id(&task));
+    let route=format!("{path}/execution-summaries");
+    let valid=execution(&task,&board);
+    let history=get(&app,&format!("{path}/timeline")).await;
+    let mut invalid_reports=vec![unavailable_usage()];
+    for (field,value) in [
+        ("totalTokens",Value::Null),("totalTokens",json!(120)),("totalTokens",json!("155")),
+        ("inputTokens",Value::Null),("outputTokens",Value::Null),("modelId",Value::Null),
+        ("modelId",json!("  ")),("quality",json!("estimated")),("scope",json!("request")),
+        ("reportKind",json!("period_delta")),("actor",json!({"kind":"human","id":null})),
+    ] {
+        let mut report=valid["usageReport"].clone();report["entries"][0][field]=value;
+        invalid_reports.push(report);
+    }
+    let mut omitted=valid["usageReport"].clone();omitted["entries"][0].as_object_mut().unwrap().remove("totalTokens");invalid_reports.push(omitted);
+    for report in invalid_reports {
+        let mut body=valid.clone();body["usageReport"]=report;
+        let (status,error)=request(&app,"POST",&route,body.clone(),ver(&task)).await;
+        assert_eq!(status,400,"{error}");assert!(error.to_string().contains("totalTokens"),"{error}");
+        let args=json!({"params":{"taskId":id(&task)},"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":body});
+        let rpc=tool(&app,"createExecutionSummary",args).await;
+        assert_eq!(rpc["isError"],true,"{rpc}");
+        let rpc=tool(&app,"close_activity",json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must roll back","block":{"blocked":true,"reason":"Fixture"},"execution":body})).await;
+        assert_eq!(rpc["isError"],true,"{rpc}");
+    }
+    assert_eq!(get(&app,&path).await,task);
+    assert_eq!(get(&app,&format!("{path}/timeline")).await,history);
+    assert_eq!(get(&app,&route).await["total"],0);
+    assert_eq!(get(&app,&format!("{path}/comments")).await["total"],0);
+    let mut unknown=valid.clone();unknown["usageReport"]["entries"][0]["actor"]["id"]=json!(uuid::Uuid::now_v7());
+    assert_eq!(request(&app,"POST",&route,unknown,ver(&task)).await.0,404);
+    let mut valid=valid;
+    // Two disjoint models of one real session retain separate source counters.
+    let mut second=valid["usageReport"]["entries"][0].clone();second["modelId"]=json!("second-model");second["evidenceId"]=json!(uuid::Uuid::new_v4());
+    valid["usageReport"]["entries"].as_array_mut().unwrap().push(second);
+    let first=ok(&app,"POST",&route,valid,ver(&task)).await;
+    for entry in first["executionSummary"]["usageReport"]["entries"].as_array().unwrap() {
+        assert_eq!(entry["observation"]["totalTokens"],"120");
+        assert_eq!(entry["observation"]["actor"]["id"],agent["id"]);
+        assert!(entry["delta"].is_null());
+    }
+    let usage=get(&app,&format!("{path}/usage")).await;
+    assert!(usage["knownTotalTokens"].is_null());
+    assert!(usage["recordedSessionUsage"]["measuredTotalTokens"].is_null());
+    let mut tree=execution(&first["task"],&board);tree["usageReport"]["entries"][0]["scope"]=json!("session_tree");
+    tree["usageReport"]["entries"][0]["inputTokens"]=json!("0");tree["usageReport"]["entries"][0]["outputTokens"]=json!("0");tree["usageReport"]["entries"][0]["totalTokens"]=json!("0");tree["usageReport"]["entries"][0]["cachedInputTokens"]=json!("0");tree["usageReport"]["entries"][0]["reasoningOutputTokens"]=json!("0");
+    let rpc=tool(&app,"createExecutionSummary",json!({"params":{"taskId":id(&task)},"actor":{"kind":"human"},"expectedVersion":first["task"]["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":tree})).await;
+    assert_eq!(rpc["isError"],false,"{rpc}");
+    assert_eq!(rpc["structuredContent"]["data"]["executionSummary"]["usageReport"]["entries"][0]["observation"]["totalTokens"],"0");
+}
+
+#[tokio::test]
+async fn legacy_partial_unavailable_and_missing_totals_remain_readable_and_replayable() {
+    use beeteam::dto::backend::Outcome;
+    use beeteam::repositories::sqlite::ResourceRepository;
+    use sha2::{Digest,Sha256};
+    let (app,pool)=sqlite_app_with_pool().await;
+    let (app,_,board,task)=setup_on(app).await;
+    let route=format!("/api/v1/tasks/{}/execution-summaries",id(&task));
+    let original=execution(&task,&board);
+    let first=ok(&app,"POST",&route,original.clone(),ver(&task)).await;
+    for kind in ["missing_total","unknown_model","unavailable"] {
+        let mut legacy=original.clone();
+        match kind {
+            "missing_total"=>{legacy["usageReport"]["entries"][0].as_object_mut().unwrap().remove("totalTokens");},
+            "unknown_model"=>{legacy["usageReport"]["entries"][0]["modelId"]=Value::Null;},
+            _=>{legacy["usageReport"]=unavailable_usage();},
+        }
+        let mut snapshot=first.clone();
+        snapshot["executionSummary"]["usageReport"]["entries"][0]["observation"]=legacy["usageReport"]["entries"][0].clone();
+        let repo=ResourceRepository::new(pool.clone());let mut unit=repo.begin().await.unwrap();
+        let sid=uuid::Uuid::parse_str(id(&first["executionSummary"])).unwrap();
+        unit.records.get_mut("execution_summaries",sid).unwrap().data["usageReport"]=snapshot["executionSummary"]["usageReport"].clone();
+        let key=uuid::Uuid::new_v4();let params=json!({"taskId":id(&task)});
+        let hash=|v:&Value|Sha256::digest(serde_json::to_vec(v).unwrap()).iter().map(|b|format!("{b:02x}")).collect::<String>();
+        unit.save_replay("human:",&format!("createExecutionSummary:{params}"),key,&hash(&json!([legacy,params,{}])),&Outcome::data(snapshot.clone())).await.unwrap();
+        let close=json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"execution":legacy});
+        let closed=json!({"task":first["task"],"updatedTasks":[first["task"]],"notice":"Historical fixture."});
+        unit.save_replay("human:",&format!("close_activity:{}",id(&task)),uuid::Uuid::parse_str(close["idempotencyKey"].as_str().unwrap()).unwrap(),&hash(&close),&Outcome::data(closed.clone())).await.unwrap();
+        unit.commit().await.unwrap();
+        assert_eq!(get(&app,&route).await["items"][0]["usageReport"],snapshot["executionSummary"]["usageReport"]);
+        assert_eq!(request_key(&app,"POST",&route,legacy.clone(),ver(&task),key).await.1,snapshot);
+        let rpc=tool(&app,"createExecutionSummary",json!({"params":params,"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":key,"body":legacy})).await;
+        assert_eq!(rpc["structuredContent"]["data"],snapshot);
+        assert_eq!(tool(&app,"close_activity",close).await["structuredContent"],closed);
+        assert_eq!(request(&app,"POST",&route,legacy,ver(&first["task"])).await.0,400);
+    }
+    assert_eq!(get(&app,&route).await["total"],1);
+    assert_eq!(get(&app,&format!("/api/v1/tasks/{}",id(&task))).await,first["task"]);
 }
 
 #[tokio::test]
@@ -528,8 +603,8 @@ async fn unallocated_session_delta_is_visible_without_task_attribution() {
     let (app,agent,board,mut task)=setup().await;
     let route=format!("/api/v1/tasks/{}/execution-summaries",id(&task));
     let mut baseline=observation(id(&agent),"session-baseline",None,"1069755","4036");
-    baseline["attribution"]=json!("unallocated");baseline["modelId"]=Value::Null;
-    let mut checkpoint=baseline.clone();checkpoint["evidenceId"]=json!("session-checkpoint");checkpoint["previousEvidenceId"]=json!("session-baseline");checkpoint["inputTokens"]=json!("2251066");checkpoint["outputTokens"]=json!("8764");checkpoint["observedAt"]=json!("2026-10-31T01:00:00Z");
+    baseline["attribution"]=json!("unallocated");
+    let mut checkpoint=baseline.clone();checkpoint["evidenceId"]=json!("session-checkpoint");checkpoint["previousEvidenceId"]=json!("session-baseline");checkpoint["inputTokens"]=json!("2251066");checkpoint["outputTokens"]=json!("8764");checkpoint["totalTokens"]=json!("2259830");checkpoint["observedAt"]=json!("2026-10-31T01:00:00Z");
     for entry in [baseline,checkpoint.clone()] {
         let mut body=execution(&task,&board);body["usageReport"]=json!({"entries":[entry]});
         task=ok(&app,"POST",&route,body,ver(&task)).await["task"].clone();
@@ -552,9 +627,8 @@ async fn unallocated_session_delta_is_visible_without_task_attribution() {
     ok(&app,"POST",&format!("{}/{}/usage-revisions",route,id(&duplicate["executionSummary"])),json!({"entries":[checkpoint]}),Some(1)).await;
     let mut other=observation(id(&agent),"other-baseline",None,"100","10");
     other["sessionId"]=json!("another-session");other["attribution"]=json!("shared");other["quality"]=json!("estimated");
-    let mut next=other.clone();next["evidenceId"]=json!("other-next");next["previousEvidenceId"]=json!("other-baseline");next["inputTokens"]=json!("120");next["outputTokens"]=json!("15");next["observedAt"]=json!("2026-10-31T01:00:00Z");
-    let mut body=execution(&task,&board);body["usageReport"]=json!({"entries":[other,next]});
-    ok(&app,"POST",&route,body,ver(&task)).await;
+    let mut next=other.clone();next["evidenceId"]=json!("other-next");next["previousEvidenceId"]=json!("other-baseline");next["inputTokens"]=json!("120");next["outputTokens"]=json!("15");next["totalTokens"]=json!("135");next["observedAt"]=json!("2026-10-31T01:00:00Z");
+    ok(&app,"POST",&format!("{}/{}/usage-revisions",route,id(&duplicate["executionSummary"])),json!({"entries":[other,next]}),Some(2)).await;
     let data=get(&app,&path).await;
     assert!(data["knownTotalTokens"].is_null());assert!(data["estimatedTotalTokens"].is_null());
     assert_eq!(data["recordedSessionUsage"]["measuredTotalTokens"],"1186039");

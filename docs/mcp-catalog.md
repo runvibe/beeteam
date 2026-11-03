@@ -370,7 +370,7 @@ usage reconciliation. Exact saved POST replays retain their historical response;
 PUT position has no persisted replay mechanism and still enforces If-Match.
 
 
-### Real usage guidance bundle — 2026-11-02
+### Earlier real usage guidance bundle — 2026-11-02
 
 Bundled Skills source `88f3a44f6ad0c9dc07db817604144d7b176e3e10` requires actual
 model/harness/agent/token/source evidence before a new summary, using the current
@@ -386,3 +386,24 @@ PostgreSQL-only SDK test was explicitly excluded (no isolated database configure
 Cargo build with mcp passed. Catalog regenerated (71 tools/15 resources/3 prompts),
 13 source/bundle SHA256 pairs verified. No runtime restart, product data mutation
 or global skill installation was performed by the backend bundle update.
+
+
+## Current cumulative session requirement — 2026-11-02
+
+The user chose actual cumulative session usage. createExecutionSummary and
+close_activity.execution now use SessionUsageInput: each observation is measured,
+cumulative_snapshot, scope session/session_tree, identified modelId and persisted
+agent actor, with non-null totalTokens/inputTokens/outputTokens decimal integer
+strings. totalTokens must equal inclusive input+output within int64; cache and
+reasoning are subsets. First snapshot is accepted without a predecessor/delta.
+The total describes source/session/epoch/actor/model through observedAt, not
+exclusive task consumption. Separate disjoint counters; never add checkpoints
+or duplicate tree/model/child coverage. General UsageObservation and late evidence
+retain optional totals and legacy variants. Saved POST replays precede new-write
+validation. Missing/unavailable/estimated evidence is not an alternative for a new
+summary; explain collection failure in a comment. MCP descriptions include source
+families and point collectors to version/surface-appropriate real telemetry.
+
+Current bundled Skills source: `388415e855004317b367fe55f6df47d5d6993299`, aligned with the required cumulative session contract. Existing SQLite/bootstrap overlays are retained. See [verification](required-session-total-verification.md).
+
+Final validation: 52 tests passed before bundle refresh; both SQLite MCP tests passed again after refresh. Cargo build with MCP passed. Regenerated catalog contains 71 tools, 15 resources and 3 prompts; all 13 source/bundle SHA256 pairs verified. PostgreSQL tests excluded as agreed; runtime unchanged.

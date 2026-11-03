@@ -38,7 +38,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
-    json!({"usageReport":unavailable_usage(),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
+    json!({"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Historical Markdown","currentSummary":"Current synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(board)}})
 }
 
 fn args(task: &Value, body: Value) -> Value {

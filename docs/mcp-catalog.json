@@ -42,91 +42,91 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator chat-first bootstrap",
       "uri": "beeteam://references/collaborator-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator workflow",
       "uri": "beeteam://references/collaborator-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator resumption template",
       "uri": "beeteam://references/collaborator-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled Skills commit 88f3a44f6ad0c9dc07db817604144d7b176e3e10 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -9001,7 +9001,7 @@
                                   },
                                   "observation": {
                                     "additionalProperties": false,
-                                    "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                    "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                     "properties": {
                                       "actor": {
                                         "oneOf": [
@@ -9261,6 +9261,18 @@
                                         "maxLength": 200,
                                         "minLength": 1,
                                         "type": "string"
+                                      },
+                                      "totalTokens": {
+                                        "anyOf": [
+                                          {
+                                            "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                            "type": "string"
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ],
+                                        "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                       }
                                     },
                                     "required": [
@@ -9541,7 +9553,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/execution-summaries. Task status changes are allowed only by registering an execution summary, including close_activity which uses the same atomic service. The server captures immutable statusObserved (id, name, isDone) from the destination status at registration; callers must not supply it. Same-status summaries are allowed. Initial task creation and independent progress updates remain supported. Every new execution summary requires usageReport.entries (1..32), including close_activity.execution. At work start discover permitted usage sources and the correct session; at reporting time collect fresh evidence for actual models, harnesses, surface/version and actors. Measured/estimated entries require at least one known input or output component. Report decimal-string input/output tokens; cached input and reasoning output are inclusive subsets, never added twice. Unknown model/provider/version or counters are null, not invented. period_delta is request-scoped evidence; cumulative_snapshot is session-scoped, with first snapshot a non-counted baseline and subsequent snapshots referencing the comparable latest predecessor. Never sum cumulative snapshots or duplicate sources. If measurement is impossible, send reportKind/quality unavailable, all counters null, discovery.reason and factual nonblank discovery.attempts. If session/epoch cannot be observed, explicitly use unavailable and a unique evidenceId identifying the reporting attempt; explain unknown harness/surface in discovery. Do not omit the report or fabricate zero. Historical missing reports and exact legacy idempotent replays remain valid.. Actor is declared, not authenticated.",
+      "description": "POST /api/v1/tasks/{taskId}/execution-summaries. Task status changes require an execution summary, including close_activity using the same atomic service. statusObserved is a server-owned historical snapshot. Every new summary requires usageReport.entries with measured cumulative_snapshot session/session_tree usage, identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens equal to inclusive inputTokens + outputTokens; never add cached input or reasoning output again. The total is the source session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption or a required delta. A first real snapshot is accepted as a baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest evidenceId; preserve reset/gap baselines honestly. Repeated evidence keeps its identity and is not counted twice. Keep multiple disjoint sessions/models separate; do not sum cumulative checkpoints or overlapping tree and child totals, or label mixed-model totals with the last selected model. Collect actual session counters from permitted Codex App Server/exec streams, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel, or authorized Cursor usage exports; check surface/version and documented counter semantics. Kiro credits/context are not token measurements. No unavailable, estimated, model null, missing total or fabricated zero can substitute in a new summary. If collection fails, record the impediment in a comment without changing status or claiming a saved summary. Legacy reads, late-evidence schemas and exact saved idempotent replays remain compatible.. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -9710,12 +9722,314 @@
                 "properties": {
                   "entries": {
                     "items": {
-                      "additionalProperties": false,
-                      "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
-                      "properties": {
-                        "actor": {
-                          "oneOf": [
-                            {
+                      "allOf": [
+                        {
+                          "additionalProperties": false,
+                          "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
+                          "properties": {
+                            "actor": {
+                              "oneOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "id": {
+                                      "format": "uuid",
+                                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                                      "type": "string"
+                                    },
+                                    "kind": {
+                                      "const": "agent"
+                                    }
+                                  },
+                                  "required": [
+                                    "kind",
+                                    "id"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "id": {
+                                      "type": "null"
+                                    },
+                                    "kind": {
+                                      "const": "human"
+                                    }
+                                  },
+                                  "required": [
+                                    "kind",
+                                    "id"
+                                  ],
+                                  "type": "object"
+                                }
+                              ]
+                            },
+                            "actorRole": {
+                              "enum": [
+                                "leader",
+                                "collaborator",
+                                "human",
+                                "unknown"
+                              ],
+                              "type": "string"
+                            },
+                            "attribution": {
+                              "enum": [
+                                "exact",
+                                "shared",
+                                "unallocated"
+                              ],
+                              "type": "string"
+                            },
+                            "cachedInputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "discovery": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "attempts": {
+                                      "items": {
+                                        "maxLength": 1000,
+                                        "minLength": 1,
+                                        "type": "string"
+                                      },
+                                      "maxItems": 12,
+                                      "minItems": 1,
+                                      "type": "array"
+                                    },
+                                    "reason": {
+                                      "maxLength": 2000,
+                                      "minLength": 1,
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "reason",
+                                    "attempts"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "epoch": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "evidenceId": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "harness": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "harnessVersion": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "inputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "modelId": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "observedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "outputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "periodEnd": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "periodStart": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "previousEvidenceId": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "provider": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "quality": {
+                              "enum": [
+                                "measured",
+                                "estimated",
+                                "unavailable"
+                              ],
+                              "type": "string"
+                            },
+                            "reasoningOutputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "reportKind": {
+                              "enum": [
+                                "cumulative_snapshot",
+                                "period_delta",
+                                "unavailable"
+                              ],
+                              "type": "string"
+                            },
+                            "scope": {
+                              "enum": [
+                                "request",
+                                "session",
+                                "session_tree"
+                              ],
+                              "type": "string"
+                            },
+                            "sessionId": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "source": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "surface": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "totalTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ],
+                              "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "harness",
+                            "surface",
+                            "harnessVersion",
+                            "sessionId",
+                            "epoch",
+                            "evidenceId",
+                            "previousEvidenceId",
+                            "actor",
+                            "actorRole",
+                            "provider",
+                            "modelId",
+                            "scope",
+                            "reportKind",
+                            "quality",
+                            "attribution",
+                            "observedAt",
+                            "periodStart",
+                            "periodEnd",
+                            "inputTokens",
+                            "outputTokens",
+                            "cachedInputTokens",
+                            "reasoningOutputTokens",
+                            "discovery"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "properties": {
+                            "actor": {
                               "additionalProperties": false,
                               "properties": {
                                 "id": {
@@ -9733,273 +10047,44 @@
                               ],
                               "type": "object"
                             },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "id": {
-                                  "type": "null"
-                                },
-                                "kind": {
-                                  "const": "human"
-                                }
-                              },
-                              "required": [
-                                "kind",
-                                "id"
-                              ],
-                              "type": "object"
-                            }
-                          ]
-                        },
-                        "actorRole": {
-                          "enum": [
-                            "leader",
-                            "collaborator",
-                            "human",
-                            "unknown"
-                          ],
-                          "type": "string"
-                        },
-                        "attribution": {
-                          "enum": [
-                            "exact",
-                            "shared",
-                            "unallocated"
-                          ],
-                          "type": "string"
-                        },
-                        "cachedInputTokens": {
-                          "anyOf": [
-                            {
+                            "inputTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "discovery": {
-                          "anyOf": [
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "attempts": {
-                                  "items": {
-                                    "maxLength": 1000,
-                                    "minLength": 1,
-                                    "type": "string"
-                                  },
-                                  "maxItems": 12,
-                                  "minItems": 1,
-                                  "type": "array"
-                                },
-                                "reason": {
-                                  "maxLength": 2000,
-                                  "minLength": 1,
-                                  "type": "string"
-                                }
-                              },
-                              "required": [
-                                "reason",
-                                "attempts"
-                              ],
-                              "type": "object"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "epoch": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "evidenceId": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "harness": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "harnessVersion": {
-                          "anyOf": [
-                            {
+                            "modelId": {
                               "maxLength": 200,
                               "minLength": 1,
+                              "pattern": "\\S",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "inputTokens": {
-                          "anyOf": [
-                            {
+                            "outputTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "modelId": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
+                            "quality": {
+                              "const": "measured"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "observedAt": {
-                          "format": "date-time",
-                          "type": "string"
-                        },
-                        "outputTokens": {
-                          "anyOf": [
-                            {
+                            "reportKind": {
+                              "const": "cumulative_snapshot"
+                            },
+                            "scope": {
+                              "enum": [
+                                "session",
+                                "session_tree"
+                              ]
+                            },
+                            "totalTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
-                            },
-                            {
-                              "type": "null"
                             }
-                          ]
-                        },
-                        "periodEnd": {
-                          "anyOf": [
-                            {
-                              "format": "date-time",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "periodStart": {
-                          "anyOf": [
-                            {
-                              "format": "date-time",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "previousEvidenceId": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "provider": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "quality": {
-                          "enum": [
-                            "measured",
-                            "estimated",
-                            "unavailable"
+                          },
+                          "required": [
+                            "totalTokens"
                           ],
-                          "type": "string"
-                        },
-                        "reasoningOutputTokens": {
-                          "anyOf": [
-                            {
-                              "pattern": "^(0|[1-9][0-9]{0,18})$",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "reportKind": {
-                          "enum": [
-                            "cumulative_snapshot",
-                            "period_delta",
-                            "unavailable"
-                          ],
-                          "type": "string"
-                        },
-                        "scope": {
-                          "enum": [
-                            "request",
-                            "session",
-                            "session_tree"
-                          ],
-                          "type": "string"
-                        },
-                        "sessionId": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "source": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "surface": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
+                          "type": "object"
                         }
-                      },
-                      "required": [
-                        "source",
-                        "harness",
-                        "surface",
-                        "harnessVersion",
-                        "sessionId",
-                        "epoch",
-                        "evidenceId",
-                        "previousEvidenceId",
-                        "actor",
-                        "actorRole",
-                        "provider",
-                        "modelId",
-                        "scope",
-                        "reportKind",
-                        "quality",
-                        "attribution",
-                        "observedAt",
-                        "periodStart",
-                        "periodEnd",
-                        "inputTokens",
-                        "outputTokens",
-                        "cachedInputTokens",
-                        "reasoningOutputTokens",
-                        "discovery"
                       ],
-                      "type": "object"
+                      "description": "New-summary measured cumulative usage through observedAt for the declared session/epoch/model/actor. First snapshot is accepted with previousEvidenceId null and no delta. Total must equal inclusive input+output. Not exclusive task consumption. Multiple disjoint counters remain separate; never sum checkpoints or overlapping tree/child/model totals."
                     },
                     "maxItems": 32,
                     "minItems": 1,
@@ -10396,7 +10481,7 @@
                                 },
                                 "observation": {
                                   "additionalProperties": false,
-                                  "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                  "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                   "properties": {
                                     "actor": {
                                       "oneOf": [
@@ -10656,6 +10741,18 @@
                                       "maxLength": 200,
                                       "minLength": 1,
                                       "type": "string"
+                                    },
+                                    "totalTokens": {
+                                      "anyOf": [
+                                        {
+                                          "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ],
+                                      "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                     }
                                   },
                                   "required": [
@@ -11229,7 +11326,7 @@
               "entries": {
                 "items": {
                   "additionalProperties": false,
-                  "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                  "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                   "properties": {
                     "actor": {
                       "oneOf": [
@@ -11489,6 +11586,18 @@
                       "maxLength": 200,
                       "minLength": 1,
                       "type": "string"
+                    },
+                    "totalTokens": {
+                      "anyOf": [
+                        {
+                          "pattern": "^(0|[1-9][0-9]{0,18})$",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                     }
                   },
                   "required": [
@@ -11902,7 +12011,7 @@
                             },
                             "observation": {
                               "additionalProperties": false,
-                              "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                              "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                               "properties": {
                                 "actor": {
                                   "oneOf": [
@@ -12162,6 +12271,18 @@
                                   "maxLength": 200,
                                   "minLength": 1,
                                   "type": "string"
+                                },
+                                "totalTokens": {
+                                  "anyOf": [
+                                    {
+                                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                      "type": "string"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ],
+                                  "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                 }
                               },
                               "required": [
@@ -13170,7 +13291,7 @@
                                     },
                                     "observation": {
                                       "additionalProperties": false,
-                                      "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                      "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                       "properties": {
                                         "actor": {
                                           "oneOf": [
@@ -13430,6 +13551,18 @@
                                           "maxLength": 200,
                                           "minLength": 1,
                                           "type": "string"
+                                        },
+                                        "totalTokens": {
+                                          "anyOf": [
+                                            {
+                                              "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ],
+                                          "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                         }
                                       },
                                       "required": [
@@ -14764,7 +14897,7 @@
                                           },
                                           "observation": {
                                             "additionalProperties": false,
-                                            "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                            "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                             "properties": {
                                               "actor": {
                                                 "oneOf": [
@@ -15024,6 +15157,18 @@
                                                 "maxLength": 200,
                                                 "minLength": 1,
                                                 "type": "string"
+                                              },
+                                              "totalTokens": {
+                                                "anyOf": [
+                                                  {
+                                                    "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                                    "type": "string"
+                                                  },
+                                                  {
+                                                    "type": "null"
+                                                  }
+                                                ],
+                                                "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                               }
                                             },
                                             "required": [
@@ -18050,7 +18195,7 @@
                                       },
                                       "observation": {
                                         "additionalProperties": false,
-                                        "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                        "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                         "properties": {
                                           "actor": {
                                             "oneOf": [
@@ -18310,6 +18455,18 @@
                                             "maxLength": 200,
                                             "minLength": 1,
                                             "type": "string"
+                                          },
+                                          "totalTokens": {
+                                            "anyOf": [
+                                              {
+                                                "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                                "type": "string"
+                                              },
+                                              {
+                                                "type": "null"
+                                              }
+                                            ],
+                                            "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                           }
                                         },
                                         "required": [
@@ -27056,7 +27213,7 @@
                   "x-maxBytes": 16384
                 },
                 "usageReport": {
-                  "$ref": "#/components/schemas/SummaryUsageInput"
+                  "$ref": "#/components/schemas/SessionUsageInput"
                 }
               },
               "required": [
@@ -27177,6 +27334,87 @@
                 "baseRevision"
               ],
               "type": "object"
+            },
+            "SessionUsageInput": {
+              "additionalProperties": false,
+              "properties": {
+                "entries": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionUsageObservation"
+                  },
+                  "maxItems": 32,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "entries"
+              ],
+              "type": "object"
+            },
+            "SessionUsageObservation": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/UsageObservation"
+                },
+                {
+                  "properties": {
+                    "actor": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "agent"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "type": "object"
+                    },
+                    "inputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "modelId": {
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "outputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "quality": {
+                      "const": "measured"
+                    },
+                    "reportKind": {
+                      "const": "cumulative_snapshot"
+                    },
+                    "scope": {
+                      "enum": [
+                        "session",
+                        "session_tree"
+                      ]
+                    },
+                    "totalTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "totalTokens"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "description": "New-summary measured cumulative usage through observedAt for the declared session/epoch/model/actor. First snapshot is accepted with previousEvidenceId null and no delta. Total must equal inclusive input+output. Not exclusive task consumption. Multiple disjoint counters remain separate; never sum checkpoints or overlapping tree/child/model totals."
             },
             "Slug": {
               "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
@@ -28694,7 +28932,7 @@
             },
             "UsageObservation": {
               "additionalProperties": false,
-              "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+              "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
               "properties": {
                 "actor": {
                   "oneOf": [
@@ -28954,6 +29192,18 @@
                   "maxLength": 200,
                   "minLength": 1,
                   "type": "string"
+                },
+                "totalTokens": {
+                  "anyOf": [
+                    {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                 }
               },
               "required": [
@@ -29937,7 +30187,7 @@
                                 },
                                 "observation": {
                                   "additionalProperties": false,
-                                  "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+                                  "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
                                   "properties": {
                                     "actor": {
                                       "oneOf": [
@@ -30197,6 +30447,18 @@
                                       "maxLength": 200,
                                       "minLength": 1,
                                       "type": "string"
+                                    },
+                                    "totalTokens": {
+                                      "anyOf": [
+                                        {
+                                          "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ],
+                                      "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                                     }
                                   },
                                   "required": [
@@ -32693,7 +32955,7 @@
                   "x-maxBytes": 16384
                 },
                 "usageReport": {
-                  "$ref": "#/components/schemas/SummaryUsageInput"
+                  "$ref": "#/components/schemas/SessionUsageInput"
                 }
               },
               "required": [
@@ -32814,6 +33076,87 @@
                 "baseRevision"
               ],
               "type": "object"
+            },
+            "SessionUsageInput": {
+              "additionalProperties": false,
+              "properties": {
+                "entries": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionUsageObservation"
+                  },
+                  "maxItems": 32,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "entries"
+              ],
+              "type": "object"
+            },
+            "SessionUsageObservation": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/UsageObservation"
+                },
+                {
+                  "properties": {
+                    "actor": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "agent"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "type": "object"
+                    },
+                    "inputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "modelId": {
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "outputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "quality": {
+                      "const": "measured"
+                    },
+                    "reportKind": {
+                      "const": "cumulative_snapshot"
+                    },
+                    "scope": {
+                      "enum": [
+                        "session",
+                        "session_tree"
+                      ]
+                    },
+                    "totalTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "totalTokens"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "description": "New-summary measured cumulative usage through observedAt for the declared session/epoch/model/actor. First snapshot is accepted with previousEvidenceId null and no delta. Total must equal inclusive input+output. Not exclusive task consumption. Multiple disjoint counters remain separate; never sum checkpoints or overlapping tree/child/model totals."
             },
             "Slug": {
               "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
@@ -34331,7 +34674,7 @@
             },
             "UsageObservation": {
               "additionalProperties": false,
-              "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+              "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
               "properties": {
                 "actor": {
                   "oneOf": [
@@ -34591,6 +34934,18 @@
                   "maxLength": 200,
                   "minLength": 1,
                   "type": "string"
+                },
+                "totalTokens": {
+                  "anyOf": [
+                    {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                 }
               },
               "required": [
@@ -35509,7 +35864,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "Atomically record optional block/comment and cumulative execution.currentSummary and historical execution summary, deliverables, pending work, status and optional review. Does not require task completion. Task status changes require this execution summary or createExecutionSummary; moveTask only reorders within the current status. statusObserved is a server-owned historical snapshot captured atomically. Every new execution summary requires usageReport.entries (1..32), including close_activity.execution. At work start discover permitted usage sources and the correct session; at reporting time collect fresh evidence for actual models, harnesses, surface/version and actors. Measured/estimated entries require at least one known input or output component. Report decimal-string input/output tokens; cached input and reasoning output are inclusive subsets, never added twice. Unknown model/provider/version or counters are null, not invented. period_delta is request-scoped evidence; cumulative_snapshot is session-scoped, with first snapshot a non-counted baseline and subsequent snapshots referencing the comparable latest predecessor. Never sum cumulative snapshots or duplicate sources. If measurement is impossible, send reportKind/quality unavailable, all counters null, discovery.reason and factual nonblank discovery.attempts. If session/epoch cannot be observed, explicitly use unavailable and a unique evidenceId identifying the reporting attempt; explain unknown harness/surface in discovery. Do not omit the report or fabricate zero. Historical missing reports and exact legacy idempotent replays remain valid.",
+      "description": "Atomically record optional block/comment and cumulative execution.currentSummary and historical execution summary, deliverables, pending work, status and optional review. Does not require task completion. Task status changes require this summary or createExecutionSummary. Every new execution requires usageReport.entries measured cumulative_snapshot session/session_tree evidence with identified modelId, actor.kind=agent and persisted UUIDv7, and non-null decimal-string totalTokens equal to inclusive inputTokens+outputTokens. Cache/reasoning are subsets, never added again. This is the session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption. First real snapshot is an accepted baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest checkpoint; repeated evidence is deduplicated. Never sum snapshots or overlapping tree/child totals. Collect fresh counters from actual permitted harnesses: Codex App Server/exec, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel or authorized Cursor usage exports; verify models and surface/version semantics. Kiro credits/context do not establish tokens. No unavailable, estimated, null model or fabricated zero for new summaries; use a comment to report collection failure. Historical records, late evidence and exact legacy replays remain valid. statusObserved is server-owned. unknown metadata and discovery.attempts cannot replace the required measurement.",
       "inputSchema": {
         "additionalProperties": false,
         "components": {
@@ -37330,7 +37685,7 @@
                   "x-maxBytes": 16384
                 },
                 "usageReport": {
-                  "$ref": "#/components/schemas/SummaryUsageInput"
+                  "$ref": "#/components/schemas/SessionUsageInput"
                 }
               },
               "required": [
@@ -37451,6 +37806,87 @@
                 "baseRevision"
               ],
               "type": "object"
+            },
+            "SessionUsageInput": {
+              "additionalProperties": false,
+              "properties": {
+                "entries": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionUsageObservation"
+                  },
+                  "maxItems": 32,
+                  "minItems": 1,
+                  "type": "array"
+                }
+              },
+              "required": [
+                "entries"
+              ],
+              "type": "object"
+            },
+            "SessionUsageObservation": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/UsageObservation"
+                },
+                {
+                  "properties": {
+                    "actor": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "const": "agent"
+                        }
+                      },
+                      "required": [
+                        "kind",
+                        "id"
+                      ],
+                      "type": "object"
+                    },
+                    "inputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "modelId": {
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "pattern": "\\S",
+                      "type": "string"
+                    },
+                    "outputTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    "quality": {
+                      "const": "measured"
+                    },
+                    "reportKind": {
+                      "const": "cumulative_snapshot"
+                    },
+                    "scope": {
+                      "enum": [
+                        "session",
+                        "session_tree"
+                      ]
+                    },
+                    "totalTokens": {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "totalTokens"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "description": "New-summary measured cumulative usage through observedAt for the declared session/epoch/model/actor. First snapshot is accepted with previousEvidenceId null and no delta. Total must equal inclusive input+output. Not exclusive task consumption. Multiple disjoint counters remain separate; never sum checkpoints or overlapping tree/child/model totals."
             },
             "Slug": {
               "description": "Identificador de URL gerado, ASCII lowercase, estável ao renomear, único por tipo inclusive excluídos. Colisões usam -2/-3; não aceita escrita pelo cliente.",
@@ -38968,7 +39404,7 @@
             },
             "UsageObservation": {
               "additionalProperties": false,
-              "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
+              "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
               "properties": {
                 "actor": {
                   "oneOf": [
@@ -39228,6 +39664,18 @@
                   "maxLength": 200,
                   "minLength": 1,
                   "type": "string"
+                },
+                "totalTokens": {
+                  "anyOf": [
+                    {
+                      "pattern": "^(0|[1-9][0-9]{0,18})$",
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
                 }
               },
               "required": [
@@ -39506,12 +39954,314 @@
                 "properties": {
                   "entries": {
                     "items": {
-                      "additionalProperties": false,
-                      "description": "Required new-summary evidence or explicit unavailable declaration. Input/output are inclusive totals; cache/reasoning are subsets, never added twice. evidenceId must identify a stable source observation/request. Session snapshots need an explicit earlier predecessor; first snapshot is baseline. No transcripts or secrets.",
-                      "properties": {
-                        "actor": {
-                          "oneOf": [
-                            {
+                      "allOf": [
+                        {
+                          "additionalProperties": false,
+                          "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets.",
+                          "properties": {
+                            "actor": {
+                              "oneOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "id": {
+                                      "format": "uuid",
+                                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                                      "type": "string"
+                                    },
+                                    "kind": {
+                                      "const": "agent"
+                                    }
+                                  },
+                                  "required": [
+                                    "kind",
+                                    "id"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "id": {
+                                      "type": "null"
+                                    },
+                                    "kind": {
+                                      "const": "human"
+                                    }
+                                  },
+                                  "required": [
+                                    "kind",
+                                    "id"
+                                  ],
+                                  "type": "object"
+                                }
+                              ]
+                            },
+                            "actorRole": {
+                              "enum": [
+                                "leader",
+                                "collaborator",
+                                "human",
+                                "unknown"
+                              ],
+                              "type": "string"
+                            },
+                            "attribution": {
+                              "enum": [
+                                "exact",
+                                "shared",
+                                "unallocated"
+                              ],
+                              "type": "string"
+                            },
+                            "cachedInputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "discovery": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "attempts": {
+                                      "items": {
+                                        "maxLength": 1000,
+                                        "minLength": 1,
+                                        "type": "string"
+                                      },
+                                      "maxItems": 12,
+                                      "minItems": 1,
+                                      "type": "array"
+                                    },
+                                    "reason": {
+                                      "maxLength": 2000,
+                                      "minLength": 1,
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "reason",
+                                    "attempts"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "epoch": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "evidenceId": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "harness": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "harnessVersion": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "inputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "modelId": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "observedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "outputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "periodEnd": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "periodStart": {
+                              "anyOf": [
+                                {
+                                  "format": "date-time",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "previousEvidenceId": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "provider": {
+                              "anyOf": [
+                                {
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "quality": {
+                              "enum": [
+                                "measured",
+                                "estimated",
+                                "unavailable"
+                              ],
+                              "type": "string"
+                            },
+                            "reasoningOutputTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "reportKind": {
+                              "enum": [
+                                "cumulative_snapshot",
+                                "period_delta",
+                                "unavailable"
+                              ],
+                              "type": "string"
+                            },
+                            "scope": {
+                              "enum": [
+                                "request",
+                                "session",
+                                "session_tree"
+                              ],
+                              "type": "string"
+                            },
+                            "sessionId": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "source": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "surface": {
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "totalTokens": {
+                              "anyOf": [
+                                {
+                                  "pattern": "^(0|[1-9][0-9]{0,18})$",
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ],
+                              "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "harness",
+                            "surface",
+                            "harnessVersion",
+                            "sessionId",
+                            "epoch",
+                            "evidenceId",
+                            "previousEvidenceId",
+                            "actor",
+                            "actorRole",
+                            "provider",
+                            "modelId",
+                            "scope",
+                            "reportKind",
+                            "quality",
+                            "attribution",
+                            "observedAt",
+                            "periodStart",
+                            "periodEnd",
+                            "inputTokens",
+                            "outputTokens",
+                            "cachedInputTokens",
+                            "reasoningOutputTokens",
+                            "discovery"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "properties": {
+                            "actor": {
                               "additionalProperties": false,
                               "properties": {
                                 "id": {
@@ -39529,273 +40279,44 @@
                               ],
                               "type": "object"
                             },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "id": {
-                                  "type": "null"
-                                },
-                                "kind": {
-                                  "const": "human"
-                                }
-                              },
-                              "required": [
-                                "kind",
-                                "id"
-                              ],
-                              "type": "object"
-                            }
-                          ]
-                        },
-                        "actorRole": {
-                          "enum": [
-                            "leader",
-                            "collaborator",
-                            "human",
-                            "unknown"
-                          ],
-                          "type": "string"
-                        },
-                        "attribution": {
-                          "enum": [
-                            "exact",
-                            "shared",
-                            "unallocated"
-                          ],
-                          "type": "string"
-                        },
-                        "cachedInputTokens": {
-                          "anyOf": [
-                            {
+                            "inputTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "discovery": {
-                          "anyOf": [
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "attempts": {
-                                  "items": {
-                                    "maxLength": 1000,
-                                    "minLength": 1,
-                                    "type": "string"
-                                  },
-                                  "maxItems": 12,
-                                  "minItems": 1,
-                                  "type": "array"
-                                },
-                                "reason": {
-                                  "maxLength": 2000,
-                                  "minLength": 1,
-                                  "type": "string"
-                                }
-                              },
-                              "required": [
-                                "reason",
-                                "attempts"
-                              ],
-                              "type": "object"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "epoch": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "evidenceId": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "harness": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "harnessVersion": {
-                          "anyOf": [
-                            {
+                            "modelId": {
                               "maxLength": 200,
                               "minLength": 1,
+                              "pattern": "\\S",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "inputTokens": {
-                          "anyOf": [
-                            {
+                            "outputTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "modelId": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
+                            "quality": {
+                              "const": "measured"
                             },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "observedAt": {
-                          "format": "date-time",
-                          "type": "string"
-                        },
-                        "outputTokens": {
-                          "anyOf": [
-                            {
+                            "reportKind": {
+                              "const": "cumulative_snapshot"
+                            },
+                            "scope": {
+                              "enum": [
+                                "session",
+                                "session_tree"
+                              ]
+                            },
+                            "totalTokens": {
                               "pattern": "^(0|[1-9][0-9]{0,18})$",
                               "type": "string"
-                            },
-                            {
-                              "type": "null"
                             }
-                          ]
-                        },
-                        "periodEnd": {
-                          "anyOf": [
-                            {
-                              "format": "date-time",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "periodStart": {
-                          "anyOf": [
-                            {
-                              "format": "date-time",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "previousEvidenceId": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "provider": {
-                          "anyOf": [
-                            {
-                              "maxLength": 200,
-                              "minLength": 1,
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "quality": {
-                          "enum": [
-                            "measured",
-                            "estimated",
-                            "unavailable"
+                          },
+                          "required": [
+                            "totalTokens"
                           ],
-                          "type": "string"
-                        },
-                        "reasoningOutputTokens": {
-                          "anyOf": [
-                            {
-                              "pattern": "^(0|[1-9][0-9]{0,18})$",
-                              "type": "string"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "reportKind": {
-                          "enum": [
-                            "cumulative_snapshot",
-                            "period_delta",
-                            "unavailable"
-                          ],
-                          "type": "string"
-                        },
-                        "scope": {
-                          "enum": [
-                            "request",
-                            "session",
-                            "session_tree"
-                          ],
-                          "type": "string"
-                        },
-                        "sessionId": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "source": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "surface": {
-                          "maxLength": 200,
-                          "minLength": 1,
-                          "type": "string"
+                          "type": "object"
                         }
-                      },
-                      "required": [
-                        "source",
-                        "harness",
-                        "surface",
-                        "harnessVersion",
-                        "sessionId",
-                        "epoch",
-                        "evidenceId",
-                        "previousEvidenceId",
-                        "actor",
-                        "actorRole",
-                        "provider",
-                        "modelId",
-                        "scope",
-                        "reportKind",
-                        "quality",
-                        "attribution",
-                        "observedAt",
-                        "periodStart",
-                        "periodEnd",
-                        "inputTokens",
-                        "outputTokens",
-                        "cachedInputTokens",
-                        "reasoningOutputTokens",
-                        "discovery"
                       ],
-                      "type": "object"
+                      "description": "New-summary measured cumulative usage through observedAt for the declared session/epoch/model/actor. First snapshot is accepted with previousEvidenceId null and no delta. Total must equal inclusive input+output. Not exclusive task consumption. Multiple disjoint counters remain separate; never sum checkpoints or overlapping tree/child/model totals."
                     },
                     "maxItems": 32,
                     "minItems": 1,

@@ -4,6 +4,55 @@ This increment implements structured usage reports in historical
 execution summaries and task Overview. It does not install collectors, activate
 harnesses, read credentials or write product/demo metrics.
 
+## Current new-summary contract — 2026-11-02
+
+The user chose the **real cumulative session total**, not mandatory task-exclusive
+delta consumption. Every new RecordExecution.usageReport.entries observation must
+be measured cumulative_snapshot with scope session/session_tree, an identified
+nonblank modelId and actor kind agent with a persisted UUIDv7. inputTokens,
+outputTokens and the new totalTokens are non-null canonical decimal integer strings
+bounded by signed int64; totalTokens must equal inclusive inputTokens + outputTokens.
+Cache/reasoning are subsets, never added again. A measured zero is valid, an absent
+measurement is not zero. Unknown model, unavailable, estimated or request-only usage
+cannot satisfy a new summary. Collection failure returns actionable invalid_request
+(HTTP400) and rolls back the summary/status/compound changes. Use a comment for the
+impediment without inventing telemetry or claiming summary persistence.
+
+The total is a snapshot of its source/session/epoch/actor/model counter through
+observedAt, from that counter's real reset/start. periodStart/periodEnd can remain
+null when the source does not provide wall-clock boundaries; never fabricate them.
+A valid first snapshot has previousEvidenceId null and delta null and **is accepted**.
+It records the supplied cumulative total without creating inferred historical task
+consumption. Comparable later snapshots use the latest predecessor; intentional
+reset/gap baselines remain explicit. Repeated identical evidence is a reference,
+not extra consumption. Adding totalTokens to an already recorded observation changes
+its content: do not reuse the same evidence identity with different content; exact
+saved request replays remain unchanged.
+
+Multiple sessions/models are separate disjoint counter observations. Never label a
+mixed-model counter with the last selected model, sum successive snapshots, mix a
+whole-tree counter with its children, or add model totals to the same aggregate.
+If the source cannot establish the model/counter scope, collection is insufficient.
+Session and session_tree are distinct; tree evidence never becomes exact task use.
+Attribution exact/shared/unallocated remains declared evidence, not inferred from
+this new numeric field. The server checks syntax, actor existence, sums and ledger
+consistency; it cannot attest that client-reported telemetry came from a provider.
+
+Reads and late-evidence reconciliation retain the general UsageObservation schema,
+where totalTokens is optional for historical data. RecordExecution uses the stricter
+SessionUsageInput/SessionUsageObservation. Existing report/delta/revision semantics
+below are unchanged. No backfill, migration, or reinterpretation of old reports.
+Saved HTTP/MCP/close_activity POST replays run before new-write validation.
+
+Collector capabilities and limits are documented in [harness sources](harness-token-sources.md).
+This change does not install collectors, access private logs or restart services.
+
+## Earlier contract and ledger semantics (superseded for new-write eligibility)
+
+The following sections describe the original report representation and ledger.
+Statements allowing unavailable/partial-only new summaries are superseded by the
+current contract above; they still explain historical and late-evidence reads.
+
 ## Writes and compatibility
 
 `createExecutionSummary` and `close_activity.execution` require a non-null

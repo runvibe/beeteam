@@ -390,3 +390,10 @@ Não fabricar zero nem deduzir consumo pelo texto/contexto/créditos. A pesquisa
 foi renovada em [fontes por harness](../../harness-token-sources.md), separando fonte
 existente de integração/coletor efetivamente instalado. O contrato definitivo de
 novas gravações será documentado junto à validação compartilhada HTTP/MCP.
+
+
+Decisão posterior confirmada: total obrigatório é o acumulado real da sessão.
+Primeiro snapshot válido aceito, sem requisito de delta/task exclusiva. Novas
+observações de resumo incluem totalTokens=inputTokens+outputTokens, modelo e
+agente identificados. Ver contrato corrente em ../../summary-usage.md; nenhuma
+soma de snapshots/cache/raciocínio nem backfill histórico é autorizada.

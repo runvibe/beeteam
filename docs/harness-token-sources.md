@@ -91,3 +91,11 @@ cobertura ou estabilidade. Só usar adapter opt-in versionado com fixture valida
 não varrer pastas de conversas nem ler credenciais como fallback. CLI, desktop, IDE,
 cloud e SDK precisam de evidências independentes. Sem acesso permitido à fonte da
 sessão correta, registrar impedimento por comentário, sem fabricar resumo/métricas.
+
+
+## Decisão de escopo confirmada
+
+O usuário confirmou em 2026-11-02 o acumulado real da sessão como total obrigatório.
+O primeiro snapshot é aceito sem delta; o contrato atual está em summary-usage.md.
+As fontes acima continuam sujeitas à superfície, versão, acesso e normalização;
+um contador misto sem modelo identificável não autoriza atribuição inventada.
