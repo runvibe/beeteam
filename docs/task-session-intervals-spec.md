@@ -1,6 +1,6 @@
 # Consumo por tarefa a partir de intervalos da sessão
 
-Data: 2026-11-03. Estado: especificação proposta; não implementada.
+Data: 2026-11-03. Estado: implementada na branch de integração; ativação depende de executar a API atualizada. Consulte o [contrato final](task-session-intervals-contract.md) e as [verificações de integração](task-session-intervals-implementation.md).
 
 ## Objetivo
 
@@ -36,15 +36,15 @@ O consumo atribuído corresponde ao intervalo declarado. A exclusividade do trab
 
 O registro de fim cobre o consumo até a coleta final. A geração ou chamada de ferramentas posterior a esse instante não deve ser apresentada como coberta; a mesma limitação vale para a mensagem usada para registrar o início. Não prometer precisão por chamada quando a fonte só oferece snapshots.
 
-## Contrato proposto
+## Contrato
 
-Manter a operação existente de resumo e acrescentar `executionTracking` ao corpo. Os nomes abaixo são propostos e deverão constar nos contratos HTTP/MCP antes da implementação.
+Manter a operação existente de resumo e acrescentar `executionTracking` ao corpo. Os campos abaixo resumem o fluxo; o contrato final documenta também o modo do contador, a raiz de cobertura e a recuperação de lacunas. A API mantém o campo opcional no rollout aditivo, enquanto as skills orientam seu uso.
 
 | Campo | Regra |
 | --- | --- |
 | `action` | `start`, `checkpoint`, `pause`, `resume` ou `finish` |
 | `executionId` | Gerado pelo servidor no início; obrigatório nas ações seguintes |
-| `intervalId` | Gerado em início/retomada; obrigatório em checkpoint/pausa/fim |
+| `intervalId` | Gerado em início/retomada; obrigatório em checkpoint/pausa/fim ativo; omitido no fim pausado |
 | `evidenceIds` | Referências explícitas às entradas de `usageReport` usadas como fronteira |
 
 O `taskId` continua no caminho HTTP ou em `params.taskId` no MCP; não duplicá-lo no texto como vínculo técnico. Agente, sessão e contador vêm das evidências referenciadas e devem corresponder à execução. `statusId`, `currentSummary` e demais campos de resumo mantêm suas regras atuais.
@@ -53,7 +53,7 @@ O `taskId` continua no caminho HTTP ou em `params.taskId` no MCP; não duplicá-
 
 Cada chamada deve salvar resumo, mudança de status, evidências e transição do intervalo na mesma transação e sob a mesma chave de idempotência. A resposta inclui o resumo e os identificadores/estado resultantes. Erros não podem deixar status, resumo ou intervalo parcialmente persistidos.
 
-## Modelo de persistência proposto
+## Modelo de persistência
 
 Criar estruturas relacionais próprias, mantendo os resumos e evidências existentes:
 
@@ -139,4 +139,4 @@ Resumos históricos permanecem legíveis sem execução/intervalo. Replays antig
 
 ## Fora do escopo
 
-Cobrança financeira, preços por provedor, atribuição retroativa sem evidências, monitoramento automático do harness, divisão arbitrária de tokens entre tarefas e execução desta especificação.
+Cobrança financeira, preços por provedor, atribuição retroativa sem evidências, monitoramento automático do harness e divisão arbitrária de tokens entre tarefas.

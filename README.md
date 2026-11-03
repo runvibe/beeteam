@@ -763,7 +763,7 @@ consumption. Missing source/total/model/agent fails clearly; unavailable is not 
 substitute for a new summary. Old reports and exact saved replays stay valid.
 See [current contract](docs/summary-usage.md) and [official source survey](docs/harness-token-sources.md).
 
-Current bundled Skills source: `388415e855004317b367fe55f6df47d5d6993299`, aligned with the required cumulative session contract. Existing SQLite/bootstrap overlays are retained. See [verification](docs/required-session-total-verification.md).
+The required cumulative session contract remains in effect; see its [verification](docs/required-session-total-verification.md). The current bundled Skills source is documented under explicit task execution intervals below, with SQLite/bootstrap overlays retained.
 
 Novos resumos exigem observações medidas com acumulado `totalTokens`, modelo e
 agente identificado, em escopo de sessão ou sessão e descendentes. O frontend
@@ -774,7 +774,7 @@ criação de resumo. Detalhes, checkpoints e popovers mostram cada snapshot até
 entrada + saída é exibida como cálculo legado somente quando ambos existem.
 O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.
 
-Especificação proposta, ainda não implementada: [consumo por tarefa com intervalos de sessão](docs/task-session-intervals-spec.md).
+Implementação de [consumo por tarefa com intervalos de sessão](docs/task-session-intervals-spec.md), com [verificação de integração](docs/task-session-intervals-implementation.md). A ativação local requer executar a API atualizada; dados antigos não recebem fronteiras inferidas.
 
 As skills passam a orientar intervalos explícitos de trabalho: início salvo antes de executar, checkpoint, pausa antes de trocar tarefa, retomada em novo intervalo e encerramento independente do aceite/status final. IDs retornados e evidências vinculam as fronteiras; texto, status e proximidade temporal não substituem os vínculos. Payload/leituras dependem do contrato Backend e não são inventados pela skill.
 
