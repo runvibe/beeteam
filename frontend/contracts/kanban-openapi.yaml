@@ -930,7 +930,7 @@ paths:
         outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
         rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
         pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
-        nesta revisão.
+        nesta revisão. New tasks require workScope.projects with at least one named absolute folder; repositories and discovery are server-owned. Local Git inspection is bounded and read-only, never fetches or enumerates other worktrees. No Git or inaccessible paths still register the project with discovery status. Exact legacy replays retain their original response. See beeteam://references/repository-evidence.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -1015,6 +1015,7 @@ paths:
               $ref: "#/components/schemas/CreateTask"
             example:
               title: Subtask em outro board
+              workScope: {projects: [{key: app, name: Application, rootPath: /projects/app}]}
               authorAgentId: 10000000-0000-7000-8000-000000000010
               executorAgentId: 10000000-0000-7000-8000-000000000011
               parentId: 10000000-0000-7000-8000-000000000002
@@ -1104,7 +1105,7 @@ paths:
       summary: Atualizar conteúdo e progresso
       description: Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida.
         Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
-        efetivo usa o board da origem da cadeia.
+        efetivo usa o board da origem da cadeia. workScope input contains only projects; resubmit the same list with If-Match to refresh Git discovery. A specification edit on a legacy task without projects must supply workScope in the same request. Other legacy edits remain permitted. Repository metadata is derived outside the database transaction and saved only after version recheck.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IfMatch"
