@@ -32,3 +32,12 @@ Test normal Git, linked worktrees, detached/unborn HEAD, multiple explicitly dec
 - `cargo build --locked --features mcp -j 1` passed. Catalog regenerated: 78 tools, 17 resources, 3 prompts. All 15 source and bundle hashes verified against Skills commit 3265680f383f4645827b341fd95104fc97b00853; source Skills files were not copied, and SQLite bootstrap overlays were retained.
 - Existing repository/commit tests now explicitly exercise historical manually-declared scopes: readable and usable by summaries, while new requests accept only projects. Historical summaries/replays are not rewritten.
 - Runtime API, global product databases and unrelated worktrees were not modified. Only disposable Git fixture folders and isolated databases were used for tests. Runtime rollout and human acceptance are separate.
+
+## Integration verification
+
+The integration checkout combines discovery, installed Skills, the specification cards, attachment presentation/filter icons, conversation relative timestamps and responsive overflow fixes. The frontend and backend OpenAPI component schemas match; operation descriptions were synchronized.
+
+- Frontend: all 357 tests in 90 files passed with `npm test -- --maxWorkers=2`, followed by a successful production build. The initial unrestricted run had three timing/navigation failures; the affected two files passed all ten tests alone before the bounded full-suite rerun. No test assertions or timeouts were relaxed.
+- Backend integration: 36 library tests, four discovery HTTP/MCP tests and two native Git fixture tests passed with isolated SQLite, followed by a successful Cargo build.
+- Responsive verification by the frontend collaborator covers desktop and 390 px mobile, long names, relative timestamp tooltip/focus/touch, attachment categories/removal/download, and filter/subtask widths without horizontal overflow. The final timestamp remains on the same header row as avatar and author.
+- The running product API was not restarted. Activating the new discovery contract requires rebuilding/restarting that API with the existing database configuration; real task data was not modified for acceptance.
