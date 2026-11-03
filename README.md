@@ -727,7 +727,7 @@ Nos resumos com baseline de sessão, o detalhe também exibe o snapshot acumulad
 registrado (entrada + saída), sem somar cache/raciocínio novamente. Essa referência
 não é atribuída à tarefa, não altera totais nem substitui o delta ausente.
 
-### Harness token source survey
+### Harness token source survey (before scope decision)
 
 [Verified harness sources](docs/harness-token-sources.md) records official Codex,
 Copilot CLI/SDK/VS Code, Claude Code, Cursor and Kiro telemetry capabilities checked
@@ -738,7 +738,7 @@ and responsible-agent write contract is pending the user's scope decision
 runtime validation has not been changed by this documentation-only update.
 
 
-### Real usage guidance bundle — 2026-11-02
+### Earlier real usage guidance bundle — 2026-11-02
 
 Bundled Skills source `88f3a44f6ad0c9dc07db817604144d7b176e3e10` requires actual
 model/harness/agent/token/source evidence before a new summary, using the current
@@ -748,3 +748,19 @@ rejected merely for being initial. The user's decision on session cumulative
 versus task-separated total remains pending. When reliable evidence is absent,
 record the impediment through a comment rather than inventing usage or reporting
 successful summary persistence. Existing SQLite startup/bootstrap overlays remain.
+
+
+### Required cumulative session total — 2026-11-02
+
+The scope decision is resolved: new summaries require the real **session cumulative**
+usage through the observation time, including the first snapshot (no prior baseline
+or delta required). Send `usageReport.entries[].totalTokens` as a decimal integer
+string equal to inclusive `inputTokens + outputTokens`, with both components,
+`quality: measured`, `reportKind: cumulative_snapshot`, session/session_tree scope,
+an identified `modelId` and `actor: {kind: agent, id: <persisted UUIDv7>}`.
+Do not add cache/reasoning subsets, sum snapshots, or label this as exclusive task
+consumption. Missing source/total/model/agent fails clearly; unavailable is not a
+substitute for a new summary. Old reports and exact saved replays stay valid.
+See [current contract](docs/summary-usage.md) and [official source survey](docs/harness-token-sources.md).
+
+Current bundled Skills source: `388415e855004317b367fe55f6df47d5d6993299`, aligned with the required cumulative session contract. Existing SQLite/bootstrap overlays are retained. See [verification](docs/required-session-total-verification.md).

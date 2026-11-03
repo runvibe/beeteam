@@ -5,15 +5,39 @@ use serde_json::Value;
 
 /// Enforced after replay lookup so historical successful requests stay replayable.
 pub fn require_report(body: &Value) -> Result<()> {
-    if body
+    let entries = body
         .get("usageReport")
         .and_then(|v| v.get("entries"))
         .and_then(Value::as_array)
-        .is_none_or(Vec::is_empty)
-    {
-        return Err(Failure::invalid("usageReport.entries is required for every new execution summary. Discover the actual harness/model and session usage source; provide measured/estimated evidence, or an explicit unavailable observation with null counters, discovery.reason and factual discovery.attempts. Never invent token counts."));
+        .filter(|entries| !entries.is_empty())
+        .ok_or_else(|| Failure::invalid(NEW_SUMMARY_USAGE))?;
+    for entry in entries {
+        if entry["reportKind"] != "cumulative_snapshot"
+            || !matches!(entry["scope"].as_str(), Some("session" | "session_tree"))
+            || entry["quality"] != "measured"
+            || entry["actor"]["kind"] != "agent"
+            || entry["modelId"]
+                .as_str()
+                .is_none_or(|model| model.trim().is_empty())
+        {
+            return Err(Failure::invalid(NEW_SUMMARY_USAGE));
+        }
+        value_id(&entry["actor"]["id"]).map_err(|_| Failure::invalid(NEW_SUMMARY_USAGE))?;
+        validate_total(entry).map_err(|_| Failure::invalid(NEW_SUMMARY_USAGE))?;
     }
     Ok(())
+}
+
+pub const NEW_SUMMARY_USAGE: &str = "Every new summary requires usageReport.entries with measured cumulative_snapshot usage for session/session_tree, an identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens=inputTokens+outputTokens (inclusive); never add cache/reasoning twice. A first real snapshot is accepted without a predecessor or delta. Collect from the actual session's permitted harness API/stream/export; no unavailable, estimated, missing counters or fabricated zero. If collection fails, report the impediment in a comment; do not change status or claim the summary was saved. Historical records and exact saved replays remain valid.";
+
+fn validate_total(entry: &Value) -> Result<()> {
+    let input = counter(&entry["inputTokens"])?;
+    let output = counter(&entry["outputTokens"])?;
+    let total = counter(&entry["totalTokens"])?;
+    match (input,output,total) {
+        (Some(input),Some(output),Some(total)) if input.checked_add(output)==Some(total)=>Ok(()),
+        _=>Err(Failure::invalid("totalTokens must equal inclusive inputTokens + outputTokens without adding cache/reasoning subsets")),
+    }
 }
 
 pub const COMPONENTS: [&str; 4] = [
@@ -44,6 +68,10 @@ pub fn counter(value: &Value) -> Result<Option<i64>> {
 }
 
 pub fn validate_observation(v: &Value) -> Result<()> {
+    if !v["totalTokens"].is_null() {
+        validate_total(v)?;
+    }
+
     if v["actor"]["kind"] == "agent" {
         value_id(&v["actor"]["id"])?;
     } else if !v["actor"]["id"].is_null() {
@@ -98,7 +126,9 @@ pub fn validate_observation(v: &Value) -> Result<()> {
                         .any(|v| v.as_str().is_none_or(|s| s.trim().is_empty()))
             })
         {
-            return Err(Failure::invalid("An unavailable observation needs null counters and investigated reason/attempts"));
+            return Err(Failure::invalid(
+                "An unavailable observation needs null counters and investigated reason/attempts",
+            ));
         }
     } else if v["quality"] == "unavailable" || counts[0].is_none() && counts[1].is_none() {
         return Err(Failure::invalid(
@@ -124,6 +154,41 @@ pub fn validate_observation(v: &Value) -> Result<()> {
 mod tests {
     use super::*;
     use serde_json::json;
+    #[test]
+    fn new_summary_requires_real_session_total_model_and_agent() {
+        let entry = json!({"reportKind":"cumulative_snapshot","scope":"session","quality":"measured","actor":{"kind":"agent","id":"10000000-0000-7000-8000-000000000002"},"modelId":"observed-model","inputTokens":"100","outputTokens":"20","totalTokens":"120","previousEvidenceId":null});
+        assert!(require_report(&json!({"usageReport":{"entries":[entry.clone()]}})).is_ok());
+        for (field, value) in [
+            ("totalTokens", Value::Null),
+            ("totalTokens", json!(120)),
+            ("totalTokens", json!("130")),
+            ("inputTokens", Value::Null),
+            ("outputTokens", Value::Null),
+            ("modelId", Value::Null),
+            ("modelId", json!("  ")),
+            ("quality", json!("estimated")),
+            ("reportKind", json!("unavailable")),
+            ("reportKind", json!("period_delta")),
+            ("scope", json!("request")),
+            ("actor", json!({"kind":"human","id":null})),
+        ] {
+            let mut invalid = entry.clone();
+            invalid[field] = value;
+            assert!(
+                require_report(&json!({"usageReport":{"entries":[invalid]}})).is_err(),
+                "accepted invalid {field}"
+            );
+        }
+        let mut wide = entry.clone();
+        wide["inputTokens"] = json!("9007199254740993");
+        wide["outputTokens"] = json!("0");
+        wide["totalTokens"] = json!("9007199254740993");
+        assert!(require_report(&json!({"usageReport":{"entries":[wide.clone()]}})).is_ok());
+        wide["inputTokens"] = json!(i64::MAX.to_string());
+        wide["outputTokens"] = json!("1");
+        wide["totalTokens"] = json!("9223372036854775808");
+        assert!(require_report(&json!({"usageReport":{"entries":[wide]}})).is_err());
+    }
     #[test]
     fn token_strings_preserve_large_integers_and_missing_values() {
         assert_eq!(
