@@ -823,3 +823,5 @@ A lista de subtarefas mostra a barra e o percentual registrado em cada tarefa. A
 A Visão geral inclui uma lista compacta de subtarefas com rolagem infinita interna, responsável, status e progresso. A aba Subtarefas permite combinar filtros de status, responsável, bloqueio e arquivamento; as opções de status e responsável vêm dos agregados completos da tarefa, inclusive subtarefas ainda não carregadas.
 
 Os filtros compactos de subtarefas têm ícones distintos para status, responsável, bloqueio e arquivamento, preservando nomes acessíveis e tooltips.
+
+Na Visão geral, a lista de subtarefas é apresentada diretamente na página, sem card nem rolagem interna: total, nome e progresso em linhas compactas. Carrega os demais itens pela rolagem da página e inclui arquivadas, acompanhando o total dos gráficos.

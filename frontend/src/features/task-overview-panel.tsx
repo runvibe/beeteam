@@ -46,7 +46,7 @@ export function TaskOverviewPanel({
               onFilter={openOverviewChildren}
             />
           </div>
-          <OverviewSubtasks task={task} onOpen={() => onTab("children")} />
+          <OverviewSubtasks total={q.data.directSubtasks.total} task={task} onOpen={() => onTab("children")} />
           <TaskExecutionTracking
             key={task.id}
             taskId={task.id}
