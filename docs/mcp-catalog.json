@@ -21555,8 +21555,19 @@
                           "type": "integer"
                         },
                         "source": {
-                          "const": "task.updated",
+                          "enum": [
+                            "task.updated",
+                            "execution.recorded"
+                          ],
                           "type": "string"
+                        },
+                        "summaryId": {
+                          "description": "Explicit execution summary reference; absent for legacy standalone progress.",
+                          "format": "uuid",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         }
                       },
                       "required": [
@@ -37094,8 +37105,19 @@
                             "type": "integer"
                           },
                           "source": {
-                            "const": "task.updated",
+                            "enum": [
+                              "task.updated",
+                              "execution.recorded"
+                            ],
                             "type": "string"
+                          },
+                          "summaryId": {
+                            "description": "Explicit execution summary reference; absent for legacy standalone progress.",
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "required": [
@@ -44007,8 +44029,19 @@
                             "type": "integer"
                           },
                           "source": {
-                            "const": "task.updated",
+                            "enum": [
+                              "task.updated",
+                              "execution.recorded"
+                            ],
                             "type": "string"
+                          },
+                          "summaryId": {
+                            "description": "Explicit execution summary reference; absent for legacy standalone progress.",
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "required": [
@@ -50702,8 +50735,19 @@
                             "type": "integer"
                           },
                           "source": {
-                            "const": "task.updated",
+                            "enum": [
+                              "task.updated",
+                              "execution.recorded"
+                            ],
                             "type": "string"
+                          },
+                          "summaryId": {
+                            "description": "Explicit execution summary reference; absent for legacy standalone progress.",
+                            "format": "uuid",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "required": [

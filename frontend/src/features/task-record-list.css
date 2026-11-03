@@ -6,3 +6,10 @@
   place-items: center;
   overflow-anchor: none;
 }
+
+.task-record-selected {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+  scroll-margin-block: 100px;
+  border-radius: 8px;
+}

@@ -2,7 +2,7 @@ import { ApiError } from "@/api/types";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
-import { Failure, formatDate } from "@/components/shared";
+import { Failure } from "@/components/shared";
 import { IntervalMetrics } from "./interval-metrics";
 import { ExecutionTimeline } from "./execution-timeline";
 import { ExecutionPages } from "./execution-pages";
@@ -12,9 +12,7 @@ import {
 } from "./execution-event-detail";
 import {
   ExecutionIntervalLookup,
-  ExecutionIntervalRecord,
 } from "./execution-interval-record";
-import { intervalState } from "./execution-interval-detail";
 import "./task-execution-tracking.css";
 const coverageLabels = {
   totalIntervals: "intervalos",
@@ -64,49 +62,6 @@ export function TaskExecutionTracking({
             : undefined
         }
       />
-      {data ? (
-        <>
-          <TaskExecutionTimeline taskId={taskId} version={version} />
-          <h3>Intervalos registrados</h3>
-          <ExecutionPages
-            queryKey={["execution-intervals", taskId, version]}
-            fetchPage={(offset, signal) =>
-              api.executionIntervals(taskId, { offset, limit: 20 }, signal)
-            }
-            label="intervalos"
-          >
-            {(rows, loading, failed) => (
-              <>
-                {!loading && !failed && !rows.length && (
-                  <p>
-                    Nenhum intervalo registrado. Não reconstruímos intervalos a
-                    partir dos resumos antigos.
-                  </p>
-                )}
-                {rows.map((row, index) => (
-                  <details key={row.id}>
-                    <summary>
-                      Intervalo {index + 1} · {intervalState(row.state)} ·{" "}
-                      {formatDate(row.startObservedAt)}
-                    </summary>
-                    <ExecutionIntervalRecord interval={row} />
-                  </details>
-                ))}
-              </>
-            )}
-          </ExecutionPages>
-        </>
-      ) : (
-        <ExecutionTimeline
-          events={[]}
-          emptyMessage={
-            q.isPending
-              ? "Carregando transições…"
-              : "Histórico de execução indisponível."
-          }
-          renderDetail={() => null}
-        />
-      )}
     </section>
   );
 }

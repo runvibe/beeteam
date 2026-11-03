@@ -214,3 +214,36 @@ it("reveals recorded progress and actor without associating tokens by time", asy
     ),
   ).toEqual(["0", "50", "100"]);
 });
+
+it("opens the exact summary from a linked progress row", async () => {
+  window.history.replaceState({}, "", "/tasks/example?tab=overview");
+  render(
+    <ProgressHistory
+      data={{
+        items: [
+          {
+            eventId: "e",
+            summaryId: "exact-summary",
+            occurredAt: "2026-11-03T12:00:00Z",
+            percent: 42,
+            note: "",
+            source: "execution.recorded",
+            actorKind: "human",
+            actorId: null,
+          },
+        ],
+        total: 1,
+        limit: 100,
+        truncated: false,
+        coverage: "explicit_progress_events_only",
+      }}
+    />,
+  );
+  await userEvent.click(screen.getByText("Ver 1 registros em tabela"));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Abrir resumo do progresso 42%" }),
+  );
+  const query = new URLSearchParams(location.search);
+  expect(query.get("tab")).toBe("summaries");
+  expect(query.get("summaries.selected")).toBe("exact-summary");
+});

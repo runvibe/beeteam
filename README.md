@@ -702,6 +702,8 @@ O mesmo padrão vazio vale para distribuição de subtarefas por status/respons�
 
 O anel de seleção/foco dos pontos de progresso mantém formato circular mesmo entre registros próximos; a área clicável pode estreitar sem deformar o anel ou bloquear os pontos vizinhos.
 
+Na Visão geral, a evolução do progresso é o primeiro gráfico abaixo das abas, seguida pelas distribuições de subtarefas por status e responsável.
+
 Mudanças de status exigem registrar um resumo pela API; criação mantém status inicial e reordenação no mesmo status não é transição. A UI atual não oferece mudança de coluna/status nem criação de resumo: status é somente leitura, filtros e configuração de colunas não mudam o status das tarefas. O adaptador de demonstração rejeita statusId em patch de tarefa. O gráfico Evolução dos resumos usa reportedAt e statusObserved histórico de cada resumo; altura representa delta de tokens de sessão, sem converter status em percentual. O gráfico independente de progresso permanece disponível.
 
 As skills orientam toda mudança de status após a criação exclusivamente pelo registro de resumo, atômico com statusObserved e usageReport obrigatório. close_activity precisa usar o mesmo serviço de resumo; updateTask/moveTask não são atalhos para transição. Atualização isolada de percentual de progresso continua permitida conforme contrato.
@@ -805,3 +807,5 @@ Execution summaries optionally accept `executionTracking` (`start`, `checkpoint`
 The API exposes paginated executions, intervals, events, immutable prior calculations, open-interval recovery across tasks, and complete task totals with coverage, summed observed duration and elapsed duration. Source/root and source/session exclusivity excludes agent/model/epoch from locks and checks closed ranges during corrections. Counter/root metadata is an explicit declaration, not authentication or proof that a harness exclusively worked on the task. New interval tables use independent additive SQLite/PostgreSQL migrations; legacy summaries/replays remain intact and tracking is not yet mandatory for old clients.
 
 See [contract and limitations](docs/task-session-intervals-contract.md) and [validation](docs/task-session-intervals-verification.md). Bundled MCP Skills source is `631072a1da56265c0f1b1d062e20b61db732cda0`, including `beeteam://references/execution-intervals`. Portable archives include the five relational groups; archives predating them may omit all five, interpreted as empty without creating historical attribution. Existing empty-destination, cancellation, timestamp and commit-marker rules are unchanged.
+
+A Visão geral termina no consumo por intervalos: mantém evolução do progresso e distribuições, sem repetir os blocos textuais e históricos das demais abas. Os percentuais vinculados explicitamente a resumos abrem a aba Resumos e carregam até o ID selecionado, preservando eventos antigos sem associação.

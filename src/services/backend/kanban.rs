@@ -519,7 +519,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             created = Some(("execution_summaries", sid));
             (
                 "execution.recorded",
-                json!({"executionSummaryId":sid,"previousStatusId":old.data["statusId"],"statusId":status,"previousCurrentSummary":old.data["currentSummary"],"currentSummary":b["currentSummary"]}),
+                json!({"executionSummaryId":sid,"progress":unit.records.get("tasks",id)?.data["progress"],"previousStatusId":old.data["statusId"],"statusId":status,"previousCurrentSummary":old.data["currentSummary"],"currentSummary":b["currentSummary"]}),
             )
         }
         _ => return Err(Failure::missing()),

@@ -196,19 +196,23 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     assert_eq!(view["task"]["progress"]["percent"], 88);
     assert_eq!(view["task"]["childSummary"], json!({"total":55,"done":5}));
     let history = &view["progressHistory"];
-    assert_eq!(history["total"], 103);
+    assert_eq!(history["total"], 105);
     assert_eq!(history["items"].as_array().unwrap().len(), 100);
     assert_eq!(history["truncated"], true);
-    assert_eq!(history["items"][99]["percent"], 37);
-    assert_eq!(history["items"][0]["note"], "Point 3");
+    assert_eq!(history["items"][99]["summaryId"], latest["data"]["executionSummary"]["id"]);
+    assert_eq!(history["items"][98]["summaryId"], earlier["data"]["executionSummary"]["id"]);
+    assert!(history["items"][0]["summaryId"].is_null());
+    assert_eq!(history["items"][99]["percent"], 88);
+    assert_eq!(history["items"][0]["note"], "Point 5");
     assert!(history["items"][0]["occurredAt"].is_string());
     assert_eq!(history["items"][0]["actorId"], b["id"]);
     assert_eq!(view["currentSummaryMeta"]["actorId"], a["id"]);
     assert!(view["currentSummaryMeta"]["eventId"].is_string());
-    assert_eq!(
-        view["latestExecutionSummary"],
-        latest["data"]["executionSummary"]
-    );
+    // Compare persisted reads: PostgreSQL timestamps have microsecond precision.
+    let persisted = get(&app, &format!("/api/v1/tasks/{}/execution-summaries", id(&root))).await;
+    let latest_persisted = persisted["items"].as_array().unwrap().iter()
+        .find(|row| row["id"] == latest["data"]["executionSummary"]["id"]).unwrap();
+    assert_eq!(&view["latestExecutionSummary"], latest_persisted);
     assert_eq!(
         view["latestExecutionSummary"]["pending"],
         json!(["Recorded pending"])

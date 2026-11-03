@@ -31,6 +31,11 @@ export type TaskOverview = {
   };
   progressHistory: {
     items: {
+      /**
+       * Format: uuid
+       * @description Explicit execution summary reference; absent for legacy standalone progress.
+       */
+      summaryId?: string | null;
       /** Format: uuid */
       eventId: string;
       /** Format: date-time */
@@ -41,8 +46,8 @@ export type TaskOverview = {
       actorId: string | null;
       percent: number;
       note: string;
-      /** @constant */
-      source: "task.updated";
+      /** @enum {string} */
+      source: "task.updated" | "execution.recorded";
     }[];
     total: number;
     /** @constant */

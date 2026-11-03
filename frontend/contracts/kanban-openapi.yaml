@@ -3889,6 +3889,7 @@ components:
                 "items": {
                   "type": "object",
                   "properties": {
+                    "summaryId": {"type": ["string", "null"], "format": "uuid", "description": "Explicit execution summary reference; absent for legacy standalone progress."},
                     "eventId": {
                       "type": "string",
                       "format": "uuid"
@@ -3921,7 +3922,7 @@ components:
                     },
                     "source": {
                       "type": "string",
-                      "const": "task.updated"
+                      "enum": ["task.updated", "execution.recorded"]
                     }
                   },
                   "required": [

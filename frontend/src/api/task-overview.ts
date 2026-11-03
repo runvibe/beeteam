@@ -12,6 +12,7 @@ export type OverviewFeed<T> = {
   truncated: boolean;
 };
 export type ProgressPoint = OverviewActor & {
+  summaryId?: string | null;
   eventId: string;
   occurredAt: string;
   percent: number;

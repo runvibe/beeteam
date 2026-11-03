@@ -1,4 +1,5 @@
-import { useRef, type ReactNode } from "react";
+import { useUrlState } from "@/routing/query";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
@@ -26,6 +27,9 @@ export function TaskRecordList<
   children: (row: Resources[K]) => ReactNode;
 }) {
   const api = useApi();
+  const [selected] = useUrlState("summaries.selected", "");
+  const revealed = useRef("");
+  const root = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const identity = JSON.stringify([resource, scope, filters]);
   const query = useInfiniteQuery({
@@ -44,6 +48,33 @@ export function TaskRecordList<
         .map((row) => [row.id, row]) ?? [],
     ).values(),
   ];
+  const target = resource === "summaries" ? selected : "";
+  useEffect(() => {
+    if (
+      !target ||
+      revealed.current === target ||
+      query.isPending ||
+      query.error
+    )
+      return;
+    const node = Array.from(
+      root.current?.querySelectorAll<HTMLElement>("[data-task-list-row]") ?? [],
+    ).find((element) => element.dataset.taskListRow === target);
+    if (node) {
+      revealed.current = target;
+      node.scrollIntoView({ block: "center", behavior: "instant" });
+      node.focus({ preventScroll: true });
+    } else if (query.hasNextPage && !query.isFetching) {
+      void query.fetchNextPage({ cancelRefetch: false });
+    }
+  }, [
+    target,
+    query.dataUpdatedAt,
+    query.isFetching,
+    query.hasNextPage,
+    query.isPending,
+    query.error,
+  ]);
   useInfiniteScroll({
     sentinel,
     getRoot: () =>
@@ -58,12 +89,25 @@ export function TaskRecordList<
     loadMore: () => query.fetchNextPage({ cancelRefetch: false }),
   });
   return (
-    <>
+    <div ref={root}>
       {rows.map((row) => (
-        <div key={row.id} data-task-list-row={row.id}>
+        <div
+          key={row.id}
+          id={`${resource}-${row.id}`}
+          tabIndex={-1}
+          data-task-list-row={row.id}
+          className={target === row.id ? "task-record-selected" : undefined}
+        >
           {children(row)}
         </div>
       ))}
+      {target &&
+        !query.isPending &&
+        !query.error &&
+        !query.hasNextPage &&
+        !rows.some((row) => row.id === target) && (
+          <p role="status">Resumo não encontrado nesta tarefa.</p>
+        )}
       {!query.isPending && !query.error && !rows.length && (
         <NoData title={empty} description={emptyDescription} />
       )}
@@ -86,6 +130,6 @@ export function TaskRecordList<
           }
         />
       )}
-    </>
+    </div>
   );
 }

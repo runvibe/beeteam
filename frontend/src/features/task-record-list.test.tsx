@@ -265,3 +265,50 @@ it("resumes visible autofill after live refresh cancels an in-flight next page",
     bounds.mockRestore();
   }
 });
+
+it("loads older pages to reveal and focus the selected summary", async () => {
+  window.history.replaceState(
+    {},
+    "",
+    "/tasks/example?tab=summaries&summaries.selected=older",
+  );
+  const api = createMockApi({ delay: 0 });
+  const scroll = vi.fn();
+  HTMLElement.prototype.scrollIntoView = scroll;
+  vi.spyOn(api, "list").mockImplementation(
+    async (_resource, _scope, filters) =>
+      ({
+        items: [
+          {
+            ...makeSeed().summaries[0],
+            id: filters?.offset ? "older" : "newer",
+          },
+        ],
+        offset: filters?.offset ?? 0,
+        limit: 1,
+        total: 2,
+        hasMore: !filters?.offset,
+        nextOffset: filters?.offset ? null : 1,
+      }) as never,
+  );
+  render(
+    <ApiProvider api={api}>
+      <TaskRecordList
+        resource="summaries"
+        scope="task"
+        filters={{ limit: 1 }}
+        empty="Empty"
+      >
+        {(row) => <p>{row.id}</p>}
+      </TaskRecordList>
+    </ApiProvider>,
+  );
+  await waitFor(() =>
+    expect(document.activeElement?.getAttribute("data-task-list-row")).toBe(
+      "older",
+    ),
+  );
+  expect(scroll).toHaveBeenCalledWith({ block: "center", behavior: "instant" });
+  expect(document.activeElement).toHaveClass("task-record-selected");
+  window.history.replaceState({}, "", "/");
+});

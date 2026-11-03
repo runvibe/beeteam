@@ -1,3 +1,4 @@
+import { currentUrl, navigate } from "@/routing/location";
 import { ChartPointPopover } from "./chart-point-popover";
 import { OverviewAttribution } from "./overview-artifacts";
 import {
@@ -320,8 +321,9 @@ export function ProgressHistory({
               <p>Status no momento do registro: não registrado.</p>
               <p>Tokens neste ponto: não informados.</p>
               <p className="small-note">
-                Este evento de progresso não tem vínculo explícito com um resumo
-                ou evidência de consumo.
+                {points[index].summaryId
+                  ? "Resumo vinculado disponível na tabela abaixo."
+                  : "Este evento de progresso não tem vínculo explícito com um resumo ou evidência de consumo."}
               </p>
               {points[index].note && <p>{points[index].note}</p>}
             </ChartPointPopover>
@@ -372,7 +374,29 @@ export function ProgressHistory({
                             {formatDate(point.occurredAt)}
                           </time>
                         </td>
-                        <td>{point.percent}%</td>
+                        <td>
+                          {point.summaryId ? (
+                            <button
+                              type="button"
+                              className="underline"
+                              onClick={() => {
+                                const [path, search] = currentUrl().split("?");
+                                const query = new URLSearchParams(search);
+                                query.set("tab", "summaries");
+                                query.set(
+                                  "summaries.selected",
+                                  point.summaryId!,
+                                );
+                                navigate(`${path}?${query}`);
+                              }}
+                              aria-label={`Abrir resumo do progresso ${point.percent}%`}
+                            >
+                              {point.percent}%
+                            </button>
+                          ) : (
+                            `${point.percent}%`
+                          )}
+                        </td>
                         <td>{point.note || "Sem nota"}</td>
                       </tr>
                     ))}
