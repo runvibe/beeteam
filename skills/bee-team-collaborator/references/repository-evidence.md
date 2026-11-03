@@ -1,20 +1,22 @@
 # Projetos, repositórios e evidências de commits
 
-## Escopo estruturado independente do Markdown
+## Projeto obrigatório, repositórios descobertos pelo Bee Team
 
-Leader e Collaborator consultam o escopo real da task e os checkouts disponíveis antes de registrar projetos/repositórios. A especificação Markdown continua descrevendo requisitos/entrega/aceite; não extraia vínculos automaticamente do texto nem substitua specification pelos metadados estruturados.
+Leader e Collaborator identificam os projetos realmente envolvidos no trabalho e informam nome e pasta raiz absoluta. Projeto é obrigatório; não substitua por indicação genérica de não se aplica ou por raiz fictícia. A especificação Markdown continua descrevendo requisitos/entrega/aceite, independente dos metadados estruturados. Não extraia vínculos automaticamente do texto.
 
-Projeto registra nome e pasta raiz local de trabalho, inclusive worktree cujo .git seja arquivo; não liste arquivos/pastas modificados como projetos. Repositório registra nome, remote e URL web segura quando disponível, relacionado explicitamente aos projetos. Vários projetos/repos são possíveis. Preserve a distinção identificado, a identificar e não se aplica conforme contrato: investigação sem checkout confirmado não inventa raiz; trabalho sem Git não recebe repo fictício. Ausência legada não é declaração nova de não se aplica.
+Informe somente as pastas de projeto e worktrees usadas na demanda. Não enumere nem cadastre todas as worktrees de um repositório apenas porque compartilham objetos Git. A raiz é a pasta concreta de trabalho; não é lista de arquivos alterados nem diretório comum de metadados Git. Worktree com .git como arquivo é válida. Confirme o caminho absoluto disponível e a relação com a tarefa; ambiguidade ou falta de raiz deve ser resolvida antes de preencher o projeto, sem inventar diretório.
 
-Consulte o escopo salvo antes de atualizar, confirme versões e preserve relações existentes. Só declare escopo identificado com evidência; ambiguidade real deve ficar explícita. Não crie registro de projeto/repositório ou campos JSON fora do contrato efetivamente exposto. Não derive IDs, URLs ou relações pelo nome.
+O agente NÃO informa repositórios, remotes, provider, URL web ou branch como entrada do escopo. Bee Team descobre Git/remotes/branch/worktree por inspeção local da raiz informada. Leia o resultado e os identificadores retornados antes de usar repositório em evidência de commit; não fabrique repositoryKey nem substitua a descoberta por descrição manual. Não confunda acesso do harness à pasta com acesso do processo Bee Team: hosts/contêineres podem enxergar caminhos diferentes. Não troque a raiz por outra para esconder falha de acesso.
 
-## Inspecionar Git sem divulgar credenciais
+Pasta de projeto sem Git é legítima; não inicialize Git nem crie remote para satisfazer cadastro. Pasta inacessível não prova ausência de Git: trate descoberta como pendente/indisponível conforme resultado real, registrando a limitação. Leia discovery.status: not_git indica inspeção bem-sucedida sem Git; unavailable indica impossibilidade de inspeção, nunca ausência comprovada de Git. Preserve nomes/raízes e registros existentes; não migre escopo legado por inferência.
 
-No diretório autorizado, confirme se há Git e determine a raiz de trabalho com git rev-parse --show-toplevel; não exija que .git seja diretório e não use diretório comum de metadados como raiz do projeto. Inspecione status, histórico e estado de HEAD para distinguir alterações não comitadas de commits existentes. Worktrees compartilham objetos, mas podem ter raízes e branches diferentes: relate o checkout efetivamente usado.
+## Inspeção do trabalho e proteção de credenciais
 
-Descubra remotes sem imprimir a configuração bruta. URLs podem conter usuário/senha/token; leia e saneie localmente antes de mostrar ou persistir, sem incluir credenciais em ferramentas, comentários, logs, arquivos ou links. Não faça git remote -v indiscriminadamente em saída visível. Não exponha querystrings sensíveis, esquemas executáveis ou dados locais não necessários. Nome de remote (por exemplo origin) sozinho não prova qual repositório é o correto; confirme a relação com o trabalho.
+É permitido consultar o checkout autorizado para confirmar raiz e evidências do trabalho, por exemplo git rev-parse --show-toplevel quando houver Git. Isso não transfere ao agente a responsabilidade de preencher entrada de repositórios. Não exija .git diretório; não use git-common-dir como raiz de projeto nem varra pastas/worktrees alheias.
 
-Confirme branch do checkout e hash completo dos commits por Git. Em detached HEAD use branch.state detached/name null; branch não identificável usa unknown/name null; sem remote use remoteUrl null. Preserve a condição; nunca invente branch/main ou URL para preencher validação. Não altere checkout, branch ou configuração só para obter um valor exigido. URL SSH não vira URL web por substituição cega; use host reconhecido/configurado e validação segura.
+URLs de remote podem conter segredos. Não imprima configuração bruta nem faça git remote -v indiscriminadamente em saída visível. Antes de mostrar qualquer diagnóstico, saneie credenciais localmente; não copie usuário/senha/token HTTP, querystrings sensíveis ou esquemas executáveis para ferramentas, comentários, logs, arquivos ou links. Resultado de descoberta não autoriza divulgar segredos. URL SSH não vira URL web por substituição cega.
+
+Para evidência de commit, confira branch/HEAD e hash completo reais. Detached HEAD e branch desconhecida usam representação explícita do contrato, nunca nome fabricado. Não altere checkout/configuração, crie commits ou faça push só para preencher campos. Repositório descoberto sem remote continua legítimo; disponibilidade remota não é inferida da existência do objeto local.
 
 ## Declaração em cada novo resumo
 
@@ -26,7 +28,7 @@ Hash identifica o commit; branch é contexto histórico, não posição mutável
 
 ## Local, publicado e links
 
-Separe commit criado localmente, push confirmado e disponibilidade remota efetivamente verificada. Um objeto local, remote configurado ou branch de acompanhamento não comprovam publicação atual. Se só local, registre referência sem anunciar link remoto disponível. Links de commit são opcionais e só usam URL web segura, host suportado/configurado e disponibilidade confirmada. Não faça push apenas para produzir link. Preserve GitHub/GitLab e hosts próprios quando reconhecidos, sem adivinhar roteamento do host.
+Separe commit criado localmente, push confirmado e disponibilidade remota efetivamente verificada. Um objeto local, remote configurado ou branch de acompanhamento não comprovam publicação atual. Se só local, registre referência sem anunciar link remoto disponível. Links de commit são opcionais e só usam URL web segura, host suportado/configurado e disponibilidade confirmada. Não faça push apenas para produzir link. A descoberta reconhece github.com/gitlab.com; host próprio/desconhecido retorna provider other e webUrl null, ainda que remoteUrl seguro exista. Nesse caso não invente link; publicação realmente verificada pode ser declarada com commitUrl null.
 
 A declaração é evidência fornecida pelo agente, não autenticação ou verificação remota automática pelo Bee Team. Não prometa que o servidor conferiu conteúdo, autoria, pertencimento atual à branch ou push. Não exponha credenciais em URLs persistidas mesmo que a API rejeite formatos inseguros.
 
@@ -36,131 +38,44 @@ A declaração e suas referências integram a gravação atômica do resumo/stat
 
 Legado sem declaração permanece ausência, não false; não invente commits retroativos ou reescreva resumos antigos a partir do checkout atual. Comentários e avisos continuam pelo protocolo task/commentID; hash de commit, executionId e intervalId não substituem commentID. Falha de coleta/configuração é limitação factual, não permissão para IDs/paths/branches fictícios.
 
-## Contrato confirmado
+## Entrada de projetos e atualização explícita
 
-Task/CreateTask/PatchTask.workScope é opcional e contém status, projects e repositories (TaskWorkScope). status aceita identified/to_identify/not_applicable. Projeto é {key,name,rootPath}; rootPath é raiz absoluta literal do checkout, nunca executada/aberta pelo servidor. Repositório é {key,name,remoteUrl,webUrl,provider,projectKeys}; URLs aceitam null, provider é github/gitlab/other e projectKeys referencia explicitamente keys dos projetos nessa mesma declaração. Keys são identificadores locais fornecidos pelo chamador (letras/dígitos/ponto/hífen/underscore, até80 caracteres, começando alfanumérico), não UUIDs de entidades. Não confundir com IDs persistidos de task/agente.
+CreateTask exige workScope com somente projects: de 1 a 100 entradas {key,name,rootPath}. key é identificador local estável escolhido pelo chamador, não UUID de entidade; name não vazio e rootPath absoluto. Não envie status, repositories ou discovery. PATCH substitui workScope pelo mesmo formato. Edição de specification em tarefa legada sem projeto válido exige workScope no mesmo PATCH; outras edições legadas continuam permitidas. Projeto válido já existente satisfaz essa exigência. Não preencha legado retroativamente por inferência.
 
-identified exige ao menos um projeto; to_identify permite lista parcial; not_applicable exige ambas listas vazias. Até100 projetos e100 repositórios, keys distintas por lista. Substitua o workScope completo atomicamente via updateTask/PATCH com a versão da task, preservando relações não alteradas. Não derive metadados do Markdown. Escopo legado ausente continua ausente; não invente preenchimento retroativo.
-
-Todo novo RecordExecution exige commitReport (CommitReportInput) em createExecutionSummary e close_activity.execution: {hasCommits:boolean,commits:[]}. false exige lista vazia; true exige1..100 referências, sem duplicata repositoryKey/hash. Cada referência declara repositoryKey, branch, hash, availability, remoteVerifiedAt e commitUrl. repositoryKey deve resolver no workScope atual da task: prepare/confirme o escopo antes de registrar commit; não envie snapshot de repository no input. O servidor acrescenta esse snapshot completo na resposta histórica, preservando-o mesmo após editar o escopo.
-
-branch é {state,name}: named exige nome não vazio; detached e unknown exigem name null. Não usar nome de branch encontrado hoje como substituto do contexto histórico informado na gravação. hash é hexadecimal completo de40 ou64 dígitos. availability aceita local/published/unknown. published exige remoteVerifiedAt RFC3339 de verificação real; local/unknown exigem remoteVerifiedAt e commitUrl null. Um commit publicado pode ter commitUrl null. A declaração não causa verificação remota automática pelo servidor.
-
-Se commitUrl for fornecida, precisa de provider reconhecido e webUrl explícita: github usa webUrl/commit/hash; gitlab usa webUrl/-/commit/hash, inclusive host próprio configurado. O hash completo do link corresponde ao campo hash; não invente disponibilidade para habilitar link. URLs web/HTTP remotas rejeitam userinfo, query e fragmento; links só HTTP(S). Remote SSH aceita login SSH sem senha (não é token HTTP); não imprimir configuração bruta nem transformar SSH em web automaticamente. Remote local sem URL suportada usa null, não file:// ou comando ext::.
-
-Ausência de commitReport em legado não vira false. Replay POST/composto salvo precede validação nova e conserva resposta; nova gravação não usa a exceção legada. Campos, status, resumo, evidências de commit/uso e tracking opcional são atômicos na operação. Erro não autoriza anunciar áreas parcialmente salvas nem alterar status por outro caminho. API ativa pode ainda estar na versão anterior: instalar esta skill não publica o contrato no servidor; confira catálogo e sinalize divergência sem alegar atualização de runtime.
-
-## Exemplos sintéticos, não executar
-
-Os exemplos abaixo são fragmentos de corpo: workScope para CreateTask/PatchTask e commitReport para RecordExecution. Não são envelopes completos de tool/HTTP e não autorizam mutações. Nomes, raízes, hashes, URLs e verificação remota são fictícios; substituir por evidências reais, nunca enviar estes valores de demonstração. Nos exemplos true, repositoryKey core refere-se ao escopo de exemplo identificado.
-
-Escopo identificado:
+Fragmento sintético de criação (demais campos obrigatórios da task omitidos):
 
 ```json
-{
-  "workScope": {
-    "status": "identified",
-    "projects": [
-      {
-        "key": "app",
-        "name": "Aplicação de exemplo",
-        "rootPath": "C:/work/example-checkout"
-      }
-    ],
-    "repositories": [
-      {
-        "key": "core",
-        "name": "Core de exemplo",
-        "remoteUrl": "git@git.example:group/core.git",
-        "webUrl": "https://git.example/group/core",
-        "provider": "gitlab",
-        "projectKeys": [
-          "app"
-        ]
-      }
-    ]
-  }
-}
+{"workScope":{"projects":[{"key":"app","name":"Aplicação","rootPath":"C:/projects/app"}]}}
 ```
 
-A identificar, sem checkout confirmado:
+Fragmento sintético de PATCH de specification legada, enviado com If-Match da versão atual:
 
 ```json
-{
-  "workScope": {
-    "status": "to_identify",
-    "projects": [],
-    "repositories": []
-  }
-}
+{"specification":"# Requisitos\nEntrega e critérios de aceite.","workScope":{"projects":[{"key":"app","name":"Aplicação","rootPath":"C:/projects/app"},{"key":"docs","name":"Documentação envolvida","rootPath":"C:/projects/docs"}]}}
 ```
 
-Trabalho sem projetos/repos aplicáveis:
+Use caminhos reais autorizados no lugar destes exemplos; declare a segunda pasta somente se realmente envolvida. Para repetir a descoberta, reenvie a lista de projetos em PATCH com If-Match atual. Isso substitui o resultado atomicamente e incrementa a versão. Ler task ou editar outro campo não atualiza descoberta. Raiz inacessível/sem Git pode ser salva; raiz relativa/vazia ou lista vazia é inválida. Replay POST exato preserva resposta original e não repete descoberta.
+
+## Resultado descoberto e evidência
+
+Task.workScope permanece opcional no legado. Novas gravações retornam status identified porque os projetos foram declarados, mesmo se discovery falhar. Cada projeto mantém key/name/rootPath e recebe discovery: status detected/not_git/unavailable, reason, checkedAt, checkoutRoot, gitDirectory, commonDirectory, isWorktree, branch, headHash, repositoryKey e remotes. reason pode ser null, path_unavailable, git_unavailable, timeout, output_limit ou inspection_failed. Não exponha erros brutos nem segredos.
+
+rootPath é a pasta declarada; checkoutRoot é o checkout Git que a contém e pode ser diferente. Repositórios são derivados dos projetos detected e agrupados pelo commonDirectory canônico; somente os projetos declarados entram em projectKeys. Use a key retornada, nunca reproduza seu algoritmo. Cada repositório retorna key/name/remoteUrl/webUrl/provider/projectKeys. Sem remote continua válido com URLs null; origin tem preferência, seguido do primeiro remote nomeado. Remotes inseguros podem ter URL null. Descoberta não faz fetch nem verifica publicação.
+
+Todo novo RecordExecution exige commitReport. Sem commit no trabalho relatado:
 
 ```json
-{
-  "workScope": {
-    "status": "not_applicable",
-    "projects": [],
-    "repositories": []
-  }
-}
+{"commitReport":{"hasCommits":false,"commits":[]}}
 ```
 
-Resumo sem commit (investigação/checkpoint):
+Formato ilustrativo de commit local; substitua repositoryKey e hash pelas evidências reais retornadas/verificadas, nunca envie estes marcadores:
 
 ```json
-{
-  "commitReport": {
-    "hasCommits": false,
-    "commits": []
-  }
-}
+{"commitReport":{"hasCommits":true,"commits":[{"repositoryKey":"CHAVE_RETORNADA","branch":{"state":"named","name":"codex/exemplo"},"hash":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","availability":"local","remoteVerifiedAt":null,"commitUrl":null}]}}
 ```
 
-Resumo com commits: branch named publicada, detached local e branch/ disponibilidade desconhecidas:
+true exige 1..100 referências; hash completo hexadecimal de 40 ou 64 caracteres; sem duplicata repositoryKey/hash. named exige nome, detached/unknown usam name null. local/unknown exigem remoteVerifiedAt e commitUrl null; published exige verificação remota real com data RFC3339 e permite link opcional coerente com webUrl/provider. Snapshot repository é acrescentado pelo servidor, não é entrada. Escopo posterior não reescreve snapshots históricos.
 
-```json
-{
-  "commitReport": {
-    "hasCommits": true,
-    "commits": [
-      {
-        "repositoryKey": "core",
-        "branch": {
-          "state": "named",
-          "name": "feature/example"
-        },
-        "hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "availability": "published",
-        "remoteVerifiedAt": "2026-11-03T12:00:00Z",
-        "commitUrl": "https://git.example/group/core/-/commit/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      },
-      {
-        "repositoryKey": "core",
-        "branch": {
-          "state": "detached",
-          "name": null
-        },
-        "hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "availability": "local",
-        "remoteVerifiedAt": null,
-        "commitUrl": null
-      },
-      {
-        "repositoryKey": "core",
-        "branch": {
-          "state": "unknown",
-          "name": null
-        },
-        "hash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-        "availability": "unknown",
-        "remoteVerifiedAt": null,
-        "commitUrl": null
-      }
-    ]
-  }
-}
-```
+Se commit conhecido não puder ser relacionado a repositório descoberto por falha de acesso, registre impedimento e reconcilie a descoberta; não declare false para contornar validação, não cadastre repo manualmente nem invente referência. Preserve também usageReport acumulado real e executionTracking quando aplicável.
 
-Prompts continuam somente leitura: consultar escopo/evidências e indicar lacunas não grava declaração, não faz commit/push e não preenche legado.
+Prompts continuam somente leitura: consultam escopo/descoberta e indicam lacunas; não gravam projetos, não comitam/fazem push nem produzem evidência artificial por serem obtidos. Instalar a skill não atualiza a API ativa.

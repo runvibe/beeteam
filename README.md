@@ -847,7 +847,7 @@ usam somente vínculos explícitos `summaryId` no histórico disponível: ausên
 ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.
 
 No mobile, o índice lateral de Resumos fica oculto. O filtro padrão mantém suas opções com scroll infinito próprio, compartilhando o cache do índice e buscando páginas apenas conforme a área visível exige. Seleção pela URL, tags removíveis e docking continuam disponíveis.
-As skills orientam escopo estruturado de projetos/repositórios separado da especificação Markdown e coleta Git real para evidências de commits por resumo. Investigação sem commit é válida; nunca criar commit apenas para preencher declaração. Raiz do checkout, remotes sem credenciais, branch histórica, hash completo e publicação confirmada permanecem fatos distintos, sujeitos ao contrato Backend.
+As skills orientam projeto obrigatório com nome/raiz absoluta separado da especificação Markdown, somente nas pastas/worktrees envolvidas. Repositórios são descobertos pelo Bee Team, não informados pelo agente; coleta Git real sustenta evidências de commits por resumo. Investigação sem commit é válida; nunca criar commit apenas para preencher declaração. Raiz do checkout, remotes sem credenciais, branch histórica, hash completo e publicação confirmada permanecem fatos distintos, sujeitos ao contrato Backend.
 
 A aba Especificação apresenta `Task.workScope` em cards Projetos (nome/pasta raiz) e
 Repositórios (nome/link web e relações explícitas com projetos), ao lado do Markdown no
