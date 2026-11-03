@@ -68,7 +68,7 @@ it("combines URL filters literally, includes removed metadata and clears standar
   expect(location.search).not.toContain("attachments.");
 });
 
-it("applies an arbitrary exact MIME only on submit and keeps filename search in the URL", async () => {
+it("applies an arbitrary exact MIME automatically when valid and keeps filename search in the URL", async () => {
   window.history.replaceState({}, "", "/tasks/example?tab=attachments");
   const seed = makeSeed();
   const api = createMockApi({ delay: 0, seed });
@@ -86,13 +86,13 @@ it("applies an arbitrary exact MIME only on submit and keeps filename search in 
   const input = screen.getByLabelText("Tipo MIME exato");
   await userEvent.type(input, "pdf");
   expect(input).toBeInvalid();
-  await userEvent.click(screen.getByRole("button", { name: "Aplicar tipo" }));
+  expect(screen.queryByRole("button", { name: "Aplicar tipo" })).toBeNull();
   expect(list.mock.calls.every((call) => !call[2]?.mediaType)).toBe(true);
   await userEvent.clear(input);
   await userEvent.type(input, "application/vnd.custom+json");
   expect(list.mock.calls.every((call) => !call[2]?.mediaType)).toBe(true);
   expect(input).toBeValid();
-  await userEvent.click(screen.getByRole("button", { name: "Aplicar tipo" }));
+  expect(screen.queryByRole("button", { name: "Aplicar tipo" })).toBeNull();
   await waitFor(() =>
     expect(list.mock.calls.at(-1)?.[2]?.mediaType).toBe(
       "application/vnd.custom+json",
@@ -184,3 +184,16 @@ it.each([true, false])(
     ).toHaveLength(25);
   },
 );
+
+it("offers MIME shortcuts beyond the first page and applies a click", async () => {
+  window.history.replaceState({}, "", "/tasks/example?tab=attachments");
+  const seed = makeSeed();
+  const row = seed.attachments[0];
+  seed.attachments = Array.from({ length: 105 }, (_, i) => ({ ...row, id: uuid(15000 + i), originalName: `File ${i}`, mediaType: i === 104 ? "application/pdf" : "text/plain" }));
+  const api = createMockApi({ delay: 0, seed });
+  render(<ApiProvider api={api}><AttachmentRecords taskId={row.taskId}>{r => <p>{r.originalName}</p>}</AttachmentRecords></ApiProvider>);
+  await userEvent.click(screen.getByRole("button", { name: "Tipo de arquivo" }));
+  await userEvent.click(await screen.findByRole("button", { name: "Filtrar application/pdf" }));
+  await waitFor(() => expect(new URLSearchParams(location.search).get("attachments.mediaType")).toBe("application/pdf"));
+  expect(screen.getByLabelText("Tipo MIME exato")).toHaveValue("application/pdf");
+});

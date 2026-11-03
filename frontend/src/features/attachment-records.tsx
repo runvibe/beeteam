@@ -1,4 +1,9 @@
-import { useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useApi } from "@/api/context";
+import { nextPageOffset } from "@/api/page-continuation";
+import { categories } from "./attachment-item";
+import { attachmentCategory } from "./attachment-presentation";
 import type { Resources } from "@/api/types";
 import { useUrlState, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
@@ -50,7 +55,8 @@ export function AttachmentRecords({
             onClear={() => setType("")}
           >
             <MediaTypeInput
-              key={mediaType}
+              taskId={taskId}
+              includeRemoved={includeRemoved === "true"}
               value={mediaType}
               onApply={setType}
             />
@@ -84,14 +90,41 @@ export function AttachmentRecords({
   );
 }
 function MediaTypeInput({
+  taskId,
+  includeRemoved,
   value,
   onApply,
 }: {
+  taskId: string;
+  includeRemoved: boolean;
   value: string;
   onApply: (value: string) => void;
 }) {
   const id = useId();
   const [draft, setDraft] = useState(value);
+  const api = useApi();
+  const types = useQuery({
+    queryKey: ["attachments", taskId, "mime-choices", includeRemoved],
+    queryFn: async ({ signal }) => {
+      const pages = [];
+      const found = new Map<string, string>();
+      let offset: number | undefined = 0;
+      while (offset !== undefined) {
+        const page = await api.list("attachments", taskId, { offset, limit: 100, includeRemoved }, signal);
+        pages.push(page);
+        for (const row of page.items) found.set(row.mediaType, row.originalName);
+        offset = nextPageOffset(page, pages, row => row.id);
+      }
+      return [...found].sort(([a], [b]) => a.localeCompare(b));
+    },
+  });
+  useEffect(() => setDraft(value), [value]);
+  useEffect(() => {
+    const next = draft.trim();
+    if (next === value || (next && !/^[^\s/;]+\/[^\s/;]+$/.test(next))) return;
+    const timer = setTimeout(() => onApply(next), 300);
+    return () => clearTimeout(timer);
+  }, [draft, value, onApply]);
   return (
     <form
       className="flex flex-col gap-3"
@@ -100,6 +133,16 @@ function MediaTypeInput({
         onApply(draft.trim());
       }}
     >
+      {!!types.data?.length && <div className="flex flex-wrap gap-2" role="group" aria-label="Tipos presentes nos arquivos">
+        {types.data.map(([mime, name]) => {
+          const Icon = categories[attachmentCategory(mime, name)].icon;
+          return <Button key={mime} type="button" size="icon" variant={value === mime ? "secondary" : "outline"}
+            aria-label={`Filtrar ${mime}`} title={mime} aria-pressed={value === mime}
+            onClick={() => { setDraft(mime); onApply(mime); }}><Icon aria-hidden="true" /></Button>;
+        })}
+      </div>}
+      {types.isPending && <span role="status">Carregando tipos…</span>}
+      {types.isError && <span role="status">Não foi possível carregar os tipos. Digite o MIME abaixo.</span>}
       <Field>
         <FieldLabel htmlFor={id}>Tipo MIME exato</FieldLabel>
         <Input
@@ -114,9 +157,6 @@ function MediaTypeInput({
           Use o tipo completo, por exemplo application/pdf ou image/png.
         </FieldDescription>
       </Field>
-      <Button type="submit" variant="outline">
-        Aplicar tipo
-      </Button>
     </form>
   );
 }

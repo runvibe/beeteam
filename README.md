@@ -942,3 +942,5 @@ Os eventos da timeline se distribuem proporcionalmente por toda a largura dispon
 As abas da tarefa seguem: Visão geral, Especificação, Planos, Subtasks, Conversa, Resumos, Arquivos e Timeline.
 
 O bloco de consumo na Visão geral não usa divisórias horizontais e mantém espaçamento compacto até a evolução do progresso.
+
+O filtro MIME em Arquivos oferece atalhos com ícones dos tipos presentes em todas as páginas e aplica a digitação válida automaticamente após 300 ms.

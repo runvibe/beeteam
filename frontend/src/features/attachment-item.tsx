@@ -26,7 +26,7 @@ import {
 } from "./attachment-presentation";
 import "./attachment-item.css";
 
-const categories: Record<
+export const categories: Record<
   AttachmentCategory,
   { icon: LucideIcon; label: string }
 > = {
