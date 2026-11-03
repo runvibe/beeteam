@@ -257,6 +257,34 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async executionIntervalUsage() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Intervalos disponíveis apenas na API conectada.",
+      );
+    },
+    async executionIntervals() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Intervalos disponíveis apenas na API conectada.",
+      );
+    },
+    async executionTrackingEvents() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Intervalos disponíveis apenas na API conectada.",
+      );
+    },
+    async executionIntervalRevisions() {
+      throw new ApiError(
+        501,
+        "unavailable",
+        "Intervalos disponíveis apenas na API conectada.",
+      );
+    },
     async usage() {
       throw new ApiError(
         501,

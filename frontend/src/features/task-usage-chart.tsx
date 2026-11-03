@@ -1,83 +1,12 @@
+import { RecordedSummary } from "./recorded-summary";
 import { SessionSnapshots } from "./session-snapshots";
 import { UsageCheckpointPoint } from "./usage-checkpoint-point";
 import { useId, useState, useRef, useLayoutEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsageTimelineItem";
-import { useApi } from "@/api/context";
-import { Button } from "@/components/ui/button";
-import { Failure, formatDate } from "@/components/shared";
-import { Markdown } from "@/components/markdown";
+import { formatDate } from "@/components/shared";
 import { OverviewAttribution } from "./overview-artifacts";
 import { SummaryUsage, tokenCount } from "./summary-usage";
 import "./task-usage-chart.css";
-
-function CheckpointSummary({
-  taskId,
-  item,
-}: {
-  taskId: string;
-  item: SummaryUsageTimelineItem;
-}) {
-  const api = useApi();
-  const [open, setOpen] = useState(false);
-  const query = useQuery({
-    queryKey: ["usage-checkpoint-summary", taskId, item.summaryId],
-    enabled: open,
-    queryFn: async ({ signal }) => {
-      let offset = 0;
-      // Same timestamp may contain several summaries; resolve by immutable ID.
-      for (;;) {
-        const page = await api.list(
-          "summaries",
-          taskId,
-          {
-            createdFrom: item.reportedAt,
-            sortBy: "createdAt",
-            sortOrder: "asc",
-            limit: 100,
-            offset,
-          },
-          signal,
-        );
-        const match = page.items.find((row) => row.id === item.summaryId);
-        if (match) return match;
-        if (
-          !page.hasMore ||
-          page.nextOffset === null ||
-          page.nextOffset <= offset
-        )
-          break;
-        offset = page.nextOffset;
-      }
-      throw new Error("Resumo não encontrado nos registros disponíveis.");
-    },
-  });
-  return (
-    <div>
-      <Button
-        variant="outline"
-        aria-expanded={open}
-        onClick={() => setOpen(!open)}
-      >
-        {open ? "Fechar resumo" : "Abrir resumo"}
-      </Button>
-      {open && (
-        <section aria-label="Resumo selecionado">
-          {query.isPending && <p role="status">Carregando resumo…</p>}
-          {query.error && (
-            <Failure error={query.error} retry={() => void query.refetch()} />
-          )}
-          {query.data && (
-            <>
-              <Markdown headingOffset={2}>{query.data.summary}</Markdown>
-              <SummaryUsage report={query.data.usageReport} />
-            </>
-          )}
-        </section>
-      )}
-    </div>
-  );
-}
 
 export function UsageCheckpointChart({
   items,
@@ -139,10 +68,10 @@ export function UsageCheckpointChart({
       <h3 id={id}>Evolução dos resumos</h3>
       <p className="small-note">
         Um ponto por resumo, no horário em que foi registrado. Altura: delta
-        medido de sessão (tokens), não progresso nem valor numérico de
-        status. O detalhe mostra o status histórico daquele resumo. Lacunas e
-        referências iniciais não são zero; a linha conecta apenas pontos
-        consecutivos com valor.
+        medido de sessão (tokens), não progresso nem valor numérico de status. O
+        detalhe mostra o status histórico daquele resumo. Lacunas e referências
+        iniciais não são zero; a linha conecta apenas pontos consecutivos com
+        valor.
       </p>
       {points.length > 0 &&
         points.every((point) => !point.recordedSessionUsage) && (
@@ -251,14 +180,14 @@ export function UsageCheckpointChart({
               {selected.statusObserved?.name ?? "Não registrado"}
             </p>
             <p>
-              Delta medido: {tokenCount(session?.measuredTotalTokens ?? null)}{" "}
-              · Estimado: {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
+              Delta medido: {tokenCount(session?.measuredTotalTokens ?? null)} ·
+              Estimado: {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
               tokens
             </p>
             {!!session?.coverage.baselineEntries && (
               <p className="small-note">
-                Referência inicial presente: snapshot informacional, excluído
-                do delta.
+                Referência inicial presente: snapshot informacional, excluído do
+                delta.
               </p>
             )}
             <SessionSnapshots report={selected.usageReport} />
@@ -282,10 +211,11 @@ export function UsageCheckpointChart({
             <summary>Evidências deste checkpoint</summary>
             <SummaryUsage report={selected.usageReport} />
           </details>
-          <CheckpointSummary
+          <RecordedSummary
             key={selected.summaryId}
             taskId={taskId}
-            item={selected}
+            summaryId={selected.summaryId}
+            reportedAt={selected.reportedAt}
           />
         </>
       )}

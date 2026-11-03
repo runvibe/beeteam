@@ -1,0 +1,63 @@
+.execution-timeline {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.execution-timeline-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.execution-timeline-plot {
+  height: 180px;
+  position: relative;
+}
+.execution-timeline-axis {
+  position: absolute;
+  top: 80px;
+  left: 24px;
+  right: 24px;
+  border-top: 1px solid var(--border);
+}
+.execution-timeline-empty {
+  position: absolute;
+  inset: 100px 16px auto;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.execution-timeline-label {
+  position: absolute;
+  top: 108px;
+  width: 150px;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.execution-timeline-point {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.execution-timeline-point::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 17px;
+  left: 17px;
+  background: var(--chart-2);
+}
+.execution-timeline-point:focus-visible,
+.execution-timeline-point[aria-pressed="true"] {
+  outline: 2px solid var(--ring);
+  outline-offset: -5px;
+}
+.execution-timeline-detail {
+  display: grid;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}

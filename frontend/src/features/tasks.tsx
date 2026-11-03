@@ -1,3 +1,4 @@
+import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { SummaryUsage } from "./summary-usage";
 import { useQuery } from "@tanstack/react-query";
 import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
@@ -189,6 +190,11 @@ function TaskDetail({ id }: { id: string }) {
                       <Records resource="summaries" task={q.data} />
                     </TabsContent>
                     <TabsContent value="timeline">
+                      <TaskExecutionTimeline
+                        key={q.data.id}
+                        taskId={q.data.id}
+                        version={q.data.version}
+                      />
                       <Records resource="timeline" task={q.data} />
                     </TabsContent>
                   </motion.div>

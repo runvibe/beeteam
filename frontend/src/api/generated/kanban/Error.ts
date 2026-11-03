@@ -21,6 +21,7 @@ export type Error = {
     | "internal_error"
     | "storage_unavailable"
     | "invalid_actor_context"
+    | "usage_attribution_conflict"
     | "usage_policy_conflict"
     | "parent_cycle"
     | "execution_context_mismatch";

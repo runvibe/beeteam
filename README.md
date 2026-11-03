@@ -580,3 +580,22 @@ criação de resumo. Detalhes, checkpoints e popovers mostram cada snapshot até
 árvores e subagentes. `totalTokens` é autoritativo; no histórico sem esse campo,
 entrada + saída é exibida como cálculo legado somente quando ambos existem.
 O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.
+
+
+A visão geral inclui **Consumo por intervalos da tarefa**, alimentado pelas leituras
+`execution-interval-usage`, `execution-intervals` e `execution-tracking-events`.
+Totais globais vêm da API, independentemente das páginas carregadas: intervalos
+válidos, parcelas parciais, cobertura e durações observada somada/decorrida permanecem
+separados dos acumulados de sessão. A linha do tempo mostra início, checkpoint,
+pausa, retomada e fim com status histórico, autor, modelos, fonte, coleta e resumo
+explicitamente referenciado. Pontos suportam mouse, teclado e toque; o espaçamento
+visual separa registros e não representa duração. A seleção também fica disponível
+abaixo do gráfico, que permanece visível sem dados.
+
+O detalhe de intervalo mostra fronteiras observadas e recebidas, evidências,
+segmentos e diferenças calculadas pelo servidor. Resumos e intervalos são resolvidos
+por UUID, nunca por proximidade de horário. Revisões anteriores podem ser consultadas
+sem substituir o cálculo atual. Estados abertos/incompletos/ausentes não viram zero,
+e encerramento enquanto pausado não cria nova coleta. O frontend não abre, encerra,
+reconcilia nem preenche intervalos legados automaticamente. Rollout depende da API
+com esses endpoints; falhas e indisponibilidade são exibidas com tentativa novamente.
