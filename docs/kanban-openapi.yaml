@@ -2031,6 +2031,14 @@ paths:
         desempate id; sem snapshot entre requisições."
       x-contract-status: proposed
       parameters:
+        - name: id
+          in: query
+          required: false
+          description: UUIDv7 exato do resumo, combinado com taskId e demais filtros antes de count e paginação. Inexistente, excluído ou pertencente a outra tarefa retorna página vazia.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
         - name: actorId
           in: query
           required: false
