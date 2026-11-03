@@ -102,7 +102,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
     let other = tasks.remove(0);
     let mut summaries = Vec::new();
     for n in 0..4 {
-        let body = json!({"usageReport":session_usage(id(&agent)),"summary":format!("Summary {n}"),"currentSummary":"Cumulative fixture synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
+        let body = json!({"commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(id(&agent)),"summary":format!("Summary {n}"),"currentSummary":"Cumulative fixture synthesis","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&task),"originBoardId":id(&board)}});
         let result = ok(
             &app,
             "POST",

@@ -260,11 +260,11 @@ Somente esta especificação e uma referência no README. Sem alterações em `S
 
 ## Métricas no início e ao inserir resumo
 
-Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, consulte dados atuais e envie usageReport obrigatório com acumulado real de tokens da sessão até o resumo, modelo identificado, harness, agente e fonte verificáveis; unavailable não substitui medição. Sem fonte, registre impedimento por comentário e notifique sem alegar resumo salvo. Não omita o relatório; trate erro de validação/persistência sem anunciar salvamento. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](beeteam://references/usage-report); preserve campos, comentário/ID, status e aprovação existentes.
+Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, consulte dados atuais e envie usageReport obrigatório com acumulado real de tokens da sessão até o resumo, modelo identificado, harness, agente e fonte verificáveis; unavailable não substitui medição. Sem fonte, registre impedimento por comentário e notifique sem alegar resumo salvo. Não omita o relatório; trate erro de validação/persistência sem anunciar salvamento. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.
 
 ## Bootstrap cadastral no chat criado
 
-Siga [bootstrap do Collaborator](beeteam://references/collaborator-bootstrap). A ordem para novo colaborador é chat autorizado → configuração pelo próprio Collaborator → retorno nome real/UUIDs/prontidão → conferência pela Leader → registro/atribuição de trabalho → comentário e aviso referencial. Perfil existente é reutilizado; retorno pending não autoriza atribuir nem duplicar. Esta documentação não executa cadastros/chats.
+Siga [bootstrap do Collaborator](../skills/references/collaborator-bootstrap.md). A ordem para novo colaborador é chat autorizado → configuração pelo próprio Collaborator → retorno nome real/UUIDs/prontidão → conferência pela Leader → registro/atribuição de trabalho → comentário e aviso referencial. Perfil existente é reutilizado; retorno pending não autoriza atribuir nem duplicar. Esta documentação não executa cadastros/chats.
 
 ## Transições de status
 
@@ -272,4 +272,8 @@ Status inicial é definido na criação. Toda mudança posterior de status (incl
 
 ## Fronteiras explícitas do trabalho
 
-Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](beeteam://references/execution-intervals). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.
+Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](../skills/references/execution-intervals.md). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.
+
+## Identificar checkout e evidência de commits
+
+Siga [projetos/repos/commits](../skills/references/repository-evidence.md): confirme raízes e remotes saneados do trabalho, estado identificado/a identificar/não se aplica conforme contrato e relação explícita de projetos/repos. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.

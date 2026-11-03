@@ -238,6 +238,9 @@ async fn create_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         .filter(|v| !v.is_null())
         .map(value_id)
         .transpose()?;
+    if let Some(scope) = b.get("workScope") {
+        crate::dto::work_scope::scope(scope)?;
+    }
     let mut data = defaults(b, &["description", "specification"]);
     data.as_object_mut().unwrap().remove("coordinationContext");
     data["boardId"] = json!(board);
@@ -292,6 +295,9 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     let mut created: Option<(&str, Uuid)> = None;
     let (kind, audit) = match c.operation.as_str() {
         "updateTask" => {
+            if let Some(scope) = b.get("workScope") {
+                crate::dto::work_scope::scope(scope)?;
+            }
             validate_current_summary(b, b.get("progress").is_some())?;
             patch(
                 unit.records.get_mut("tasks", id)?,
@@ -300,6 +306,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                     "title",
                     "description",
                     "specification",
+                    "workScope",
                     "progress",
                     "currentSummary",
                     "autonomyMode",
@@ -489,6 +496,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 }
             }
             let mut data = b.clone();
+            data["commitReport"] = super::commit_report::snapshot(&old.data, b)?;
             data["taskId"] = json!(id);
             data["actorId"] = json!(c.actor()?.id);
             data["actorKind"] = json!(c.actor()?.kind);
@@ -496,15 +504,25 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             data["executionContext"] = context;
             data.as_object_mut().unwrap().remove("progress");
             data.as_object_mut().unwrap().remove("currentSummary");
-            let status_record=unit.records.get("statuses",status)?;
-            let status_observed=json!({"id":status,"name":status_record.data["name"],"isDone":done});
-            data["statusObserved"]=status_observed.clone();
+            let status_record = unit.records.get("statuses", status)?;
+            let status_observed =
+                json!({"id":status,"name":status_record.data["name"],"isDone":done});
+            data["statusObserved"] = status_observed.clone();
             data.as_object_mut().unwrap().remove("usageReport");
-            let mut summary_record=Record::new("execution_summaries",data);
+            let mut summary_record = Record::new("execution_summaries", data);
             crate::dto::usage::require_report(b)?;
-            summary_record.data["usageReport"]=super::usage::report(&unit.records,id,summary_record.id,c.actor()?,status_observed,&b["usageReport"],None,b.get("executionTracking").is_some())?;
-            super::tracking::apply(&mut unit.records,&mut summary_record,c)?;
-            let sid=unit.records.insert(summary_record);
+            summary_record.data["usageReport"] = super::usage::report(
+                &unit.records,
+                id,
+                summary_record.id,
+                c.actor()?,
+                status_observed,
+                &b["usageReport"],
+                None,
+                b.get("executionTracking").is_some(),
+            )?;
+            super::tracking::apply(&mut unit.records, &mut summary_record, c)?;
+            let sid = unit.records.insert(summary_record);
             let task = unit.records.get_mut("tasks", id)?;
             task.data["currentSummary"] = b["currentSummary"].clone();
             task.data["statusId"] = json!(status);

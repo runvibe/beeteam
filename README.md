@@ -806,7 +806,7 @@ Execution summaries optionally accept `executionTracking` (`start`, `checkpoint`
 
 The API exposes paginated executions, intervals, events, immutable prior calculations, open-interval recovery across tasks, and complete task totals with coverage, summed observed duration and elapsed duration. Source/root and source/session exclusivity excludes agent/model/epoch from locks and checks closed ranges during corrections. Counter/root metadata is an explicit declaration, not authentication or proof that a harness exclusively worked on the task. New interval tables use independent additive SQLite/PostgreSQL migrations; legacy summaries/replays remain intact and tracking is not yet mandatory for old clients.
 
-See [contract and limitations](docs/task-session-intervals-contract.md) and [validation](docs/task-session-intervals-verification.md). Bundled MCP Skills source is `631072a1da56265c0f1b1d062e20b61db732cda0`, including `beeteam://references/execution-intervals`. Portable archives include the five relational groups; archives predating them may omit all five, interpreted as empty without creating historical attribution. Existing empty-destination, cancellation, timestamp and commit-marker rules are unchanged.
+See [contract and limitations](docs/task-session-intervals-contract.md) and [validation](docs/task-session-intervals-verification.md). Bundled MCP Skills source is `562c53ebb4559efe73cacc7efb490808b5c6d1b0`, including `beeteam://references/execution-intervals`. Portable archives include the five relational groups; archives predating them may omit all five, interpreted as empty without creating historical attribution. Existing empty-destination, cancellation, timestamp and commit-marker rules are unchanged.
 
 A Visão geral termina no consumo por intervalos: mantém evolução do progresso e distribuições, sem repetir os blocos textuais e históricos das demais abas. Os percentuais vinculados explicitamente a resumos abrem a aba Resumos e carregam até o ID selecionado, preservando eventos antigos sem associação.
 
@@ -865,3 +865,7 @@ Arquivos oferece busca literal por nome, tipo MIME exato aplicado ao confirmar e
 de removidos, usando parâmetros reais `fileName`, `mediaType`, `includeRemoved`, combinados
 na URL e no filtro padrão com tags/limpar/docking. A lista reutiliza o scroll infinito em
 lotes de 10. Metadados removidos são identificados; seu botão de download fica desabilitado.
+
+### Projetos, repositórios e commits de execução
+
+Tarefas aceitam `workScope` opcional com projetos, raízes absolutas de checkout e repositórios relacionados explicitamente. Cada novo resumo exige `commitReport`: `hasCommits: false` com lista vazia ou `true` com referências completas. Branches nomeadas, detached HEAD e estado desconhecido permanecem distintos; os nomes e URLs dos repositórios são copiados para o histórico. Links exigem publicação declarada com verificação remota, provedor e URL web explícitos e hash completo correspondente. O servidor não acessa Git nem confirma publicação. Registros antigos sem declaração continuam ausentes; replays salvos são preservados. Contrato e exemplos em [summary-repository-contract.md](docs/summary-repository-contract.md).

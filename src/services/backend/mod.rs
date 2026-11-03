@@ -4,6 +4,7 @@ pub mod hierarchy;
 mod kanban;
 mod overview;
 mod usage;
+mod commit_report;
 mod tracking;
 mod queries;
 mod ra;
@@ -103,6 +104,7 @@ pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Re
     // New mutations must always satisfy the current full request schema.
     if command.operation == "createExecutionSummary" {
         crate::dto::usage::require_report(&command.body)?;
+        crate::dto::work_scope::require_commit_report(&command.body)?;
     }
     validation?;
     let mut result = if command.operation == "reconcileTaskExecutionInterval" {

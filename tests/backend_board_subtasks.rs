@@ -154,7 +154,7 @@ async fn board_columns_include_local_descendants_with_independent_status_and_pag
         .find(|s| s["id"] != root["statusId"] && s["isDone"] == false)
         .unwrap();
     let child = get(&app, &format!("/api/v1/tasks/{}", id(&child))).await;
-    let moved=ok(&app,"POST",&format!("/api/v1/tasks/{}/execution-summaries",id(&child)),json!({"statusId":target["id"],"currentSummary":"Moved child to its own active status.","summary":"Child status transition","outcome":"progress","usageReport":session_usage(child["executorAgentId"].as_str().unwrap()),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}}),ver(&child)).await["task"].clone();
+    let moved=ok(&app,"POST",&format!("/api/v1/tasks/{}/execution-summaries",id(&child)),json!({"statusId":target["id"],"currentSummary":"Moved child to its own active status.","summary":"Child status transition","outcome":"progress","commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(child["executorAgentId"].as_str().unwrap()),"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&root),"originBoardId":id(&boards[0])}}),ver(&child)).await["task"].clone();
     assert_eq!(moved["parentId"], root["id"]);
     assert_eq!(moved["statusId"], target["id"]);
     assert_eq!(

@@ -71,7 +71,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let resources = rpc(&app, "resources/list", json!({})).await;
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
-        16
+        17
     );
     for (uri, expected) in [
         (
@@ -98,7 +98,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("631072a"));
+            .contains("562c53e"));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
@@ -240,7 +240,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let task = &result["task"];
     let missing=tool(&app,"record_progress",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"progress":{"percent":25,"note":"missing synthesis"}})).await;
     assert_eq!(missing["isError"], true);
-    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
+    let failed=tool(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":"Must rollback too","execution":{"currentSummary":"Must roll back this synthesis.","commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Wrong context","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(&child),"originBoardId":id(&board)}}})).await;
     assert_eq!(failed["isError"], true);
     assert_eq!(
         get(&app, &format!("/api/v1/tasks/{}", id(task))).await["currentSummary"],
@@ -250,7 +250,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         get(&app, &format!("/api/v1/tasks/{}/comments", id(task))).await["total"],
         1
     );
-    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
+    let result=success(&app,"close_activity",json!({"taskId":id(task),"expectedVersion":task["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"execution":{"currentSummary":"Root: implementation done; validation underway; review next.","commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Partial work","outcome":"progress","statusId":task["statusId"],"deliverables":[],"pending":["Next step"],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}}})).await;
     assert_eq!(result["task"]["statusId"], task["statusId"]);
     assert_eq!(
         result["task"]["currentSummary"],
@@ -444,7 +444,7 @@ async fn exact_comment_lookup_and_compound_receipts() {
         let live = get(&app, &format!("/api/v1/tasks/{}", id(task))).await;
         let mut input = json!({"taskId":id(task),"expectedVersion":live["version"],"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4(),"comment":name});
         if name == "close_activity" {
-            input["execution"] = json!({"currentSummary":"Stored test summary","usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Test only","outcome":"progress","statusId":live["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
+            input["execution"] = json!({"currentSummary":"Stored test summary","commitReport":{"hasCommits":false,"commits":[]},"usageReport":session_usage(task["executorAgentId"].as_str().unwrap()),"summary":"Test only","outcome":"progress","statusId":live["statusId"],"deliverables":[],"pending":[],"executionContext":{"rootTaskId":id(task),"originBoardId":id(&board)}});
         }
         if name == "record_progress" {
             input["subtaskUpdates"] = json!([{"taskId":id(&child),"expectedVersion":child["version"],"comment":"Child receipt"}]);
@@ -486,13 +486,13 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let resources = rpc(&app, "resources/list", json!({})).await;
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
-        16
+        17
     );
     let provenance: Value =
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
     assert_eq!(
         provenance["sourceCommit"],
-        "631072a1da56265c0f1b1d062e20b61db732cda0"
+        "562c53ebb4559efe73cacc7efb490808b5c6d1b0"
     );
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();
