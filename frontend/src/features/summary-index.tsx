@@ -1,3 +1,4 @@
+import { FilterPopover, FilterOptions } from "@/components/filter-controls";
 import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -5,7 +6,7 @@ import { nextPageOffset } from "@/api/page-continuation";
 import type { Resources } from "@/api/types";
 import type { ProgressPoint } from "@/api/task-overview";
 import { useUrlState } from "@/routing/query";
-import { Choice, Failure, NoData, formatDate } from "@/components/shared";
+import { Failure, NoData, formatDate } from "@/components/shared";
 import { FilterBar } from "@/components/filter-bar";
 import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import { LoadingIndicator } from "@/components/loading-indicator";
@@ -31,6 +32,18 @@ export function summaryTitle(
     : `Resumo de ${formatDate(row.createdAt)}`;
 }
 
+function useSummaryPages(taskId: string) {
+  const api = useApi();
+  return useInfiniteQuery({
+    queryKey: ["summaries", taskId, "index"],
+    initialPageParam: 0,
+    queryFn: ({ pageParam, signal }) =>
+      api.list("summaries", taskId, { offset: pageParam, limit: 20 }, signal),
+    getNextPageParam: (last, pages) =>
+      nextPageOffset(last, pages, (row) => row.id),
+  });
+}
+
 export function SummaryBrowser({
   taskId,
   progress,
@@ -40,18 +53,10 @@ export function SummaryBrowser({
   progress: Pick<ProgressPoint, "summaryId" | "percent">[];
   children: ReactNode;
 }) {
-  const api = useApi();
   const root = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useUrlState<string>("summaries.selected", "");
-  const query = useInfiniteQuery({
-    queryKey: ["summaries", taskId, "index"],
-    initialPageParam: 0,
-    queryFn: ({ pageParam, signal }) =>
-      api.list("summaries", taskId, { offset: pageParam, limit: 20 }, signal),
-    getNextPageParam: (last, pages) =>
-      nextPageOffset(last, pages, (row) => row.id),
-  });
+  const query = useSummaryPages(taskId);
   const rows = [
     ...new Map(
       query.data?.pages
@@ -85,13 +90,22 @@ export function SummaryBrowser({
     <>
       <TaskFilters active={!!selected}>
         <FilterBar active={!!selected} onClear={() => setSelected("")}>
-          <Choice
+          <FilterPopover
             label="Resumo"
-            value={selected}
-            onChange={setSelected}
-            all="Todos os resumos"
-            options={options}
-          />
+            active={!!selected}
+            summary={
+              options.find((option) => option.value === selected)?.label ??
+              "Todos os resumos"
+            }
+            onClear={() => setSelected("")}
+          >
+            <SummaryFilterOptions
+              taskId={taskId}
+              selected={selected}
+              onSelect={setSelected}
+              options={options}
+            />
+          </FilterPopover>
         </FilterBar>
       </TaskFilters>
       <div className="summary-index-layout">
@@ -145,5 +159,57 @@ export function SummaryBrowser({
         {children}
       </div>
     </>
+  );
+}
+
+function SummaryFilterOptions({
+  taskId,
+  selected,
+  onSelect,
+  options,
+}: {
+  taskId: string;
+  selected: string;
+  onSelect: (value: string) => void;
+  options: { value: string; label: string }[];
+}) {
+  const query = useSummaryPages(taskId);
+  const root = useRef<HTMLDivElement>(null);
+  const sentinel = useRef<HTMLDivElement>(null);
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () => root.current,
+    identity: taskId,
+    progress: `${query.dataUpdatedAt}:${options.map((option) => option.value).join(",")}`,
+    hasMore: !!query.hasNextPage,
+    fetching: query.isFetching,
+    error: query.error,
+    loadMore: () => query.fetchNextPage({ cancelRefetch: false }),
+  });
+  return (
+    <div className="summary-filter-options" ref={root}>
+      <FilterOptions
+        label="Resumo"
+        value={selected}
+        onChange={onSelect}
+        options={options}
+        all="Todos os resumos"
+      />
+      <div ref={sentinel} className="summary-index-sentinel">
+        {(query.isPending || query.isFetchingNextPage) && (
+          <LoadingIndicator label="Carregando resumos" />
+        )}
+      </div>
+      {query.error && (
+        <Failure
+          error={query.error}
+          retry={() =>
+            void (query.isFetchNextPageError
+              ? query.fetchNextPage({ cancelRefetch: false })
+              : query.refetch())
+          }
+        />
+      )}
+    </div>
   );
 }

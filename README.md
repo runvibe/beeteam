@@ -845,3 +845,5 @@ avançar restauram a seleção pela URL. Requer a API com suporte ao filtro `id`
 Os títulos são trechos da primeira linha não vazia, exibidos como texto simples. As barras
 usam somente vínculos explícitos `summaryId` no histórico disponível: ausência de vínculo
 ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.
+
+No mobile, o índice lateral de Resumos fica oculto. O filtro padrão mantém suas opções com scroll infinito próprio, compartilhando o cache do índice e buscando páginas apenas conforme a área visível exige. Seleção pela URL, tags removíveis e docking continuam disponíveis.

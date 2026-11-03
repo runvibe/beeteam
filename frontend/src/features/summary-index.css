@@ -50,3 +50,14 @@
 .summary-index-sentinel {
   min-height: 1px;
 }
+
+.summary-filter-options {
+  min-height: 0;
+  max-height: min(304px, 50dvh);
+  overflow-y: auto;
+}
+@media (max-width: 1055px) {
+  .summary-index {
+    display: none;
+  }
+}

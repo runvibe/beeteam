@@ -246,16 +246,108 @@ it("uses the internal root, stops at errors and retries without duplicating rows
 });
 
 it("cancels the index request on task change without replacing the new index", async () => {
- const api=createMockApi({delay:0}); const row=makeSeed().summaries[0];
- let signal: AbortSignal | undefined; let finish!: (value:unknown)=>void;
- vi.spyOn(api,"list").mockImplementation(async (_r,scope,_f,abort)=>{
-   if(scope==="old") { signal=abort; return await new Promise(resolve=>{finish=resolve;}) as never; }
-   return {items:[{...row,id:"new",summary:"Novo índice"}],offset:0,limit:20,total:1,hasMore:false,nextOffset:null} as never;
- });
- const draw=(taskId:string)=><ApiProvider api={api}><SummaryBrowser taskId={taskId} progress={[]}><p>Cards</p></SummaryBrowser></ApiProvider>;
- const view=render(draw("old")); await waitFor(()=>expect(signal).toBeDefined());
- view.rerender(draw("new")); await screen.findByRole("button",{name:/Novo índice/});
- expect(signal?.aborted).toBe(true);
- await act(async()=>finish({items:[{...row,summary:"Índice antigo"}],offset:0,limit:20,total:1,hasMore:false,nextOffset:null}));
- expect(screen.queryByRole("button",{name:/Índice antigo/})).toBeNull();
+  const api = createMockApi({ delay: 0 });
+  const row = makeSeed().summaries[0];
+  let signal: AbortSignal | undefined;
+  let finish!: (value: unknown) => void;
+  vi.spyOn(api, "list").mockImplementation(async (_r, scope, _f, abort) => {
+    if (scope === "old") {
+      signal = abort;
+      return (await new Promise((resolve) => {
+        finish = resolve;
+      })) as never;
+    }
+    return {
+      items: [{ ...row, id: "new", summary: "Novo índice" }],
+      offset: 0,
+      limit: 20,
+      total: 1,
+      hasMore: false,
+      nextOffset: null,
+    } as never;
+  });
+  const draw = (taskId: string) => (
+    <ApiProvider api={api}>
+      <SummaryBrowser taskId={taskId} progress={[]}>
+        <p>Cards</p>
+      </SummaryBrowser>
+    </ApiProvider>
+  );
+  const view = render(draw("old"));
+  await waitFor(() => expect(signal).toBeDefined());
+  view.rerender(draw("new"));
+  await screen.findByRole("button", { name: /Novo índice/ });
+  expect(signal?.aborted).toBe(true);
+  await act(async () =>
+    finish({
+      items: [{ ...row, summary: "Índice antigo" }],
+      offset: 0,
+      limit: 20,
+      total: 1,
+      hasMore: false,
+      nextOffset: null,
+    }),
+  );
+  expect(screen.queryByRole("button", { name: /Índice antigo/ })).toBeNull();
+});
+
+it("pages visible filter options independently of the hidden mobile index", async () => {
+  window.history.replaceState({}, "", "/tasks/example?tab=summaries");
+  const seed = makeSeed();
+  seed.summaries = Array.from({ length: 45 }, (_, i) => ({
+    ...seed.summaries[0],
+    id: uuid(800 + i),
+    summary: `Opção ${i}`,
+    taskId: seed.tasks[0].id,
+  }));
+  const api = createMockApi({ delay: 0, seed });
+  const list = vi.spyOn(api, "list");
+  let intersectFilter = () => {};
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      constructor(
+        callback: IntersectionObserverCallback,
+        options: IntersectionObserverInit,
+      ) {
+        if (
+          (options.root as Element)?.classList.contains(
+            "summary-filter-options",
+          )
+        )
+          intersectFilter = () =>
+            callback(
+              [{ isIntersecting: true }] as IntersectionObserverEntry[],
+              {} as IntersectionObserver,
+            );
+      }
+      observe() {}
+      disconnect() {}
+    },
+  );
+  render(
+    <ApiProvider api={api}>
+      <SummaryBrowser taskId={seed.tasks[0].id} progress={[]}>
+        <p>Cards</p>
+      </SummaryBrowser>
+    </ApiProvider>,
+  );
+  await waitFor(() => expect(list).toHaveBeenCalledTimes(1));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Resumo" }),
+  );
+  await screen.findByRole("radio", { name: "Opção 19" });
+  expect(
+    screen.queryByRole("radio", { name: "Opção 21" }),
+  ).toBeNull();
+  act(() => intersectFilter());
+  const option = await screen.findByRole("radio", {
+    name: "Opção 21",
+  });
+  expect(list.mock.calls.map((call) => call[2]?.offset)).toEqual([0, 20]);
+  await userEvent.click(option);
+  expect(new URLSearchParams(location.search).get("summaries.selected")).toBe(
+    seed.summaries[21].id,
+  );
+  expect(list).toHaveBeenCalledTimes(2);
 });
