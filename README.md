@@ -764,3 +764,12 @@ substitute for a new summary. Old reports and exact saved replays stay valid.
 See [current contract](docs/summary-usage.md) and [official source survey](docs/harness-token-sources.md).
 
 Current bundled Skills source: `388415e855004317b367fe55f6df47d5d6993299`, aligned with the required cumulative session contract. Existing SQLite/bootstrap overlays are retained. See [verification](docs/required-session-total-verification.md).
+
+Novos resumos exigem observações medidas com acumulado `totalTokens`, modelo e
+agente identificado, em escopo de sessão ou sessão e descendentes. O frontend
+sincroniza `RecordExecution` com `SessionUsageInput`; não oferece formulário de
+criação de resumo. Detalhes, checkpoints e popovers mostram cada snapshot até
+`observedAt`, incluindo os posteriores ao baseline, sem somar checkpoints ou
+árvores e subagentes. `totalTokens` é autoritativo; no histórico sem esse campo,
+entrada + saída é exibida como cálculo legado somente quando ambos existem.
+O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.

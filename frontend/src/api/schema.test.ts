@@ -100,6 +100,80 @@ describe("OpenAPI response conformance", () => {
       JSON.stringify(legacy.errors),
     ).toBe(true);
   });
+  it("requires measured cumulative session/model/agent/total for new summaries while preserving legacy reads", () => {
+    const observation = {
+      source: "codex",
+      harness: "codex",
+      surface: "desktop",
+      harnessVersion: null,
+      sessionId: "session",
+      epoch: "epoch",
+      evidenceId: "first",
+      previousEvidenceId: null,
+      actor: { kind: "agent", id: makeSeed().agents[0].id },
+      actorRole: "collaborator",
+      provider: null,
+      modelId: "model",
+      scope: "session",
+      reportKind: "cumulative_snapshot",
+      quality: "measured",
+      attribution: "shared",
+      observedAt: "2026-11-02T20:00:00Z",
+      periodStart: null,
+      periodEnd: null,
+      inputTokens: "100",
+      outputTokens: "20",
+      cachedInputTokens: "50",
+      reasoningOutputTokens: "10",
+      totalTokens: "120",
+      discovery: null,
+    };
+    const validate = ajv.getSchema(
+      "kanban#/components/schemas/RecordExecution",
+    )!;
+    const row = makeSeed().summaries[0];
+    const input = {
+      currentSummary: "Work",
+      summary: row.summary,
+      outcome: row.outcome,
+      statusId: row.statusId,
+      deliverables: row.deliverables,
+      pending: row.pending,
+      executionContext: row.executionContext,
+      usageReport: { entries: [observation] },
+    };
+    expect(validate(input), JSON.stringify(validate.errors)).toBe(true);
+    for (const patch of [
+      { totalTokens: undefined },
+      { totalTokens: null },
+      { modelId: null },
+      { modelId: "" },
+      { actor: { kind: "human", id: null } },
+      { quality: "estimated" },
+      { scope: "request" },
+      { reportKind: "period_delta" },
+    ]) {
+      expect(
+        validate({
+          ...input,
+          usageReport: { entries: [{ ...observation, ...patch }] },
+        }),
+      ).toBe(false);
+    }
+    expect(
+      validate({
+        ...input,
+        usageReport: { entries: [{ ...observation, scope: "session_tree" }] },
+      }),
+    ).toBe(true);
+    const legacy = ajv.getSchema(
+      "kanban#/components/schemas/UsageObservation",
+    )!;
+    const { totalTokens, ...old } = observation;
+    expect(
+      legacy({ ...old, modelId: null, actor: { kind: "human", id: null } }),
+    ).toBe(true);
+  });
   it("projections conform after querying", async () => {
     const api = createMockApi({ delay: 0 });
     for (const [schema, value] of [
