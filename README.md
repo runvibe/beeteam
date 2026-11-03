@@ -726,3 +726,13 @@ vínculo explícito com resumos: status histórico e tokens permanecem não info
 Nos resumos com baseline de sessão, o detalhe também exibe o snapshot acumulado
 registrado (entrada + saída), sem somar cache/raciocínio novamente. Essa referência
 não é atribuída à tarefa, não altera totais nem substitui o delta ausente.
+
+### Harness token source survey
+
+[Verified harness sources](docs/harness-token-sources.md) records official Codex,
+Copilot CLI/SDK/VS Code, Claude Code, Cursor and Kiro telemetry capabilities checked
+on 2026-11-02, including endpoint/export paths and surface limitations. This is
+capability research, not an installed collector. The new required numeric-total
+and responsible-agent write contract is pending the user's scope decision
+(session cumulative consumption versus task-separated consumption); the current
+runtime validation has not been changed by this documentation-only update.
