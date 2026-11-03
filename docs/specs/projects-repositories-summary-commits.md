@@ -1,6 +1,6 @@
 # Projetos, repositórios e commits por resumo
 
-Estado: especificação solicitada pelo usuário; implementação ainda não autorizada nesta etapa.
+Estado: implementação autorizada pelo usuário em 03/11/2026 após revisão da especificação, incluindo filtros em Arquivos. Backend e Frontend responsáveis nos chats existentes.
 
 ## Escopo da tarefa
 A especificação Markdown permanece independente. A tarefa terá metadados estruturados de projetos envolvidos e repositórios relacionados, sem extrair vínculos automaticamente do texto.
@@ -36,4 +36,4 @@ Mostrar repositório, branch e hash curto; preservar hash completo para copiar/i
 7. Testes isolados de compatibilidade, validação, links, desktop/mobile e acessibilidade. Não alterar dados reais.
 
 ## Pendência posterior: Arquivos
-Usuário pediu anotar filtros na aba Arquivos e carregamento infinito pelo controlador compartilhado. A aba já usa TaskRecordList; validar root, lotes e continuidade antes de afirmar uma implementação nova. Definir filtros úteis com base nos metadados/contrato existentes, preservar combinações/limpar/URL e padrão mobile. Este item é backlog, não execução autorizada nesta etapa.
+Usuário pediu anotar filtros na aba Arquivos e carregamento infinito pelo controlador compartilhado. A aba já usa TaskRecordList; validar root, lotes e continuidade antes de afirmar uma implementação nova. Definir filtros úteis com base nos metadados/contrato existentes, preservar combinações/limpar/URL e padrão mobile. Implementação autorizada junto com projetos, repositórios e commits.
