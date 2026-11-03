@@ -209,3 +209,7 @@ Percentual de progresso continua podendo ser atualizado separadamente pelos cami
 - `createExecutionSummary`/POST execution-summaries registra a transição e o resumo. `close_activity` exige execution completo e usa esse mesmo serviço na mesma transação: erro desfaz comentário, block, status e resumo da operação. Não anuncie efeitos parciais.
 - `statusObserved` é snapshot do servidor com id/name/isDone do status de destino no momento do resumo. Não envie esse campo no payload e não reconstrua históricos a partir de renomeação/status atual. Ausência legada continua ausente.
 - Criação aceita status inicial não final explícito ou default, sem resumo artificial. Replays POST legados são resolvidos antes da validação atual; preserve chave/conteúdo original, sem acrescentar campos fictícios para repetir resposta salva.
+
+## Intervalos explícitos da execução
+
+Siga [execuções e intervalos](execution-intervals.md): ler intervalo ativo na retomada, registrar início antes do trabalho, checkpoint sem fechar, pausa antes da troca, resume em novo intervalo e finish independente do aceite/status final. Conservar taskId/executionId/intervalId retornados; não inferir fronteiras por texto/horário nem somar snapshots/checkpoints. Contrato de payload e leituras precisa ser confirmado antes de uso; evidência de sessão e consumo por intervalo são distintos.

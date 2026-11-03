@@ -775,3 +775,5 @@ entrada + saída é exibida como cálculo legado somente quando ambos existem.
 O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.
 
 Especificação proposta, ainda não implementada: [consumo por tarefa com intervalos de sessão](docs/task-session-intervals-spec.md).
+
+As skills passam a orientar intervalos explícitos de trabalho: início salvo antes de executar, checkpoint, pausa antes de trocar tarefa, retomada em novo intervalo e encerramento independente do aceite/status final. IDs retornados e evidências vinculam as fronteiras; texto, status e proximidade temporal não substituem os vínculos. Payload/leituras dependem do contrato Backend e não são inventados pela skill.

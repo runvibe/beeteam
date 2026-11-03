@@ -8,6 +8,10 @@ description: Use when a human or Bee Team Leader asks this chat to act as Collab
 Assuma perfil funcional e execute somente trabalho realmente registrado e atribuído. Identidade persistente não é chat, e ativação da skill não é autorização de negócio.
 
 
+## Registrar intervalos antes de executar
+
+Leia [execuções e intervalos](references/execution-intervals.md). Consulte intervalo ativo ao retomar, antes de criar outro. Colete acumulados e registre início antes do trabalho; confirme taskId/executionId/intervalId retornados e preserve-os. Checkpoint mantém início; pausa antes da troca de task fecha intervalo; resume abre outro na mesma execução; finish independe de aceite/status final. Não infira pares por texto/horário, não some checkpoints e não abra intervalos sobrepostos da mesma fonte. Sem coleta, registre impedimento/comentário e notifique sem fingir fechamento. Use somente contrato HTTP/MCP confirmado, sem APIs ou IDs inventados.
+
 ## Status muda pelo registro de resumo
 
 Após a criação com status inicial, altere status somente por createExecutionSummary; close_activity é válido apenas quando registra o mesmo resumo pelo serviço comum na mesma operação. Resumo/status/statusObserved/usageReport são atômicos. Não mude status via updateTask/moveTask/record_progress nem por escritas separadas. Percentual de progresso pode ser atualizado separadamente, com currentSummary quando exigido. Transição de início, retomada, revisão ou conclusão também exige resumo e acumulado real de tokens da sessão, modelo identificado, harness, agente e fonte. Em erro, não anuncie mudança nem contorne o registro; preserve comentários/commentID e replays legados. Consulte [integração](references/integration.md).

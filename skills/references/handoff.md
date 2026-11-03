@@ -92,3 +92,7 @@ Siga [chat antes do cadastro](collaborator-bootstrap.md): Leader cria o chat aut
 ## Transições de status
 
 Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
+
+## Intervalos explícitos da execução
+
+Siga [execuções e intervalos](execution-intervals.md): ler intervalo ativo na retomada, registrar início antes do trabalho, checkpoint sem fechar, pausa antes da troca, resume em novo intervalo e finish independente do aceite/status final. Conservar taskId/executionId/intervalId retornados; não inferir fronteiras por texto/horário nem somar snapshots/checkpoints. Contrato de payload e leituras precisa ser confirmado antes de uso; evidência de sessão e consumo por intervalo são distintos.
