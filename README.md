@@ -700,6 +700,8 @@ O gráfico de resumos preserva a área visual de 270 px e seus eixos sem checkpo
 
 O mesmo padrão vazio vale para distribuição de subtarefas por status/responsável e evolução do progresso (eixo 0/50/100 preservado). Barras de cards, cabeçalho e sidebar usam trilho compartilhado: ausência é Sem dados, sem aria-valuenow nem preenchimento; zero registrado continua 0%. Pontos de progresso revelam data, percentual e ator por mouse/foco/toque. Tokens ficam não informados quando não há vínculo explícito do evento com evidência de consumo; não se usa proximidade temporal. Carregamento e erro continuam estados independentes.
 
+O anel de seleção/foco dos pontos de progresso mantém formato circular mesmo entre registros próximos; a área clicável pode estreitar sem deformar o anel ou bloquear os pontos vizinhos.
+
 Mudanças de status exigem registrar um resumo pela API; criação mantém status inicial e reordenação no mesmo status não é transição. A UI atual não oferece mudança de coluna/status nem criação de resumo: status é somente leitura, filtros e configuração de colunas não mudam o status das tarefas. O adaptador de demonstração rejeita statusId em patch de tarefa. O gráfico Evolução dos resumos usa reportedAt e statusObserved histórico de cada resumo; altura representa delta de tokens de sessão, sem converter status em percentual. O gráfico independente de progresso permanece disponível.
 
 As skills orientam toda mudança de status após a criação exclusivamente pelo registro de resumo, atômico com statusObserved e usageReport obrigatório. close_activity precisa usar o mesmo serviço de resumo; updateTask/moveTask não são atalhos para transição. Atualização isolada de percentual de progresso continua permitida conforme contrato.

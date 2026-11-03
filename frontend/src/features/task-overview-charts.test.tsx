@@ -156,12 +156,17 @@ it("reveals recorded progress and actor without associating tokens by time", asy
   const { container } = render(<ProgressHistory data={data} />);
   const buttons = screen.getAllByRole("button");
   expect(Number.parseFloat(buttons[1].style.width)).toBeLessThan(44);
+  const narrowHitWidth = buttons[1].style.width;
   await userEvent.tab();
   expect(buttons[0]).toHaveFocus();
   expect(
     within(screen.getByRole("dialog")).getByText("Progresso registrado: 0%"),
   ).toBeVisible();
   await userEvent.click(buttons[1]);
+  // Selection must not enlarge a dense hit target and cover its neighbours.
+  expect(buttons[1].style.width).toBe(narrowHitWidth);
+  expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
+  expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
   expect(
     within(screen.getByRole("dialog")).getByText("Progresso registrado: 50%"),
   ).toBeVisible();
