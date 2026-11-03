@@ -936,3 +936,5 @@ Os botões de abertura de projetos usam apenas ícones com nomes acessíveis, se
 A timeline de execução mantém a rolagem horizontal dentro do próprio gráfico em telas estreitas, sem o seletor e o bloco de detalhes repetidos abaixo. Detalhes nos pontos e histórico de revisões continuam disponíveis.
 
 Os pontos selecionados ou em foco nos gráficos e na timeline usam o mesmo hexágono SVG da marca, mantendo o ponto central e a área de interação.
+
+Os eventos da timeline se distribuem proporcionalmente por toda a largura disponível; muitos registros preservam o espaçamento mínimo com rolagem interna.

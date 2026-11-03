@@ -47,7 +47,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
             <div key={event.id}>
               <span
                 className="execution-timeline-label"
-                style={{ left: index * 160 + 80 }}
+                style={{ left: `${((index + 0.5) / events.length) * 100}%` }}
                 aria-hidden="true"
               >
                 {event.label}
@@ -58,7 +58,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
               </span>
               <ChartPointPopover
                 pointId={event.id}
-                position={{ x: index * 160 + 80, y: 80 }}
+                position={{ x: `${((index + 0.5) / events.length) * 100}%`, y: 80 }}
                 className="execution-timeline-point"
                 selected={selected?.id === event.id}
                 detailId={`${id}-detail`}

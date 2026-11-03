@@ -17,7 +17,7 @@ export function ChartPointPopover({
   children,
 }: {
   pointId: string;
-  position: { x: number; y: number };
+  position: { x: number | string; y: number };
   hitWidth?: number;
   selected: boolean;
   detailId: string;

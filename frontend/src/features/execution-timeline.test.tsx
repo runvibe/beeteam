@@ -53,3 +53,12 @@ it("opens explicit events with keyboard, mouse and touch while preserving equal 
   );
   expect(screen.queryByRole("dialog")).toBeNull();
 });
+
+it("distributes points across the available plot width", () => {
+  render(<ExecutionTimeline events={[
+    { id: "a", label: "Início", occurredAt: null },
+    { id: "b", label: "Fim", occurredAt: null },
+  ]} renderDetail={() => null} />);
+  expect(screen.getByRole("button", { name: /Início/ })).toHaveStyle({ left: "25%" });
+  expect(screen.getByRole("button", { name: /Fim/ })).toHaveStyle({ left: "75%" });
+});
