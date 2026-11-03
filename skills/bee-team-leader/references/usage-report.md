@@ -8,97 +8,80 @@ Uma skill não recebe telemetria por estar instalada. Confira a capacidade efeti
 
 ## Consultar a cada novo resumo
 
-Antes de inserir cada novo resumo histórico de execução, consulte dados atualizados pela estratégia validada e envie o usageReport obrigatório conforme o contrato real, com medições verificadas ou indisponibilidade explícita. Preserve múltiplos modelos/harnesses/atores/períodos quando observados, com proveniência verificável. Mantenha o relatório estruturado separado de summary/currentSummary em Markdown; não use comentários ou sidebar como armazenamento de telemetria. Comentário, percentual de progresso isolado ou leitura de prompt não exigem resumo artificial; toda mudança de status, porém, exige registrar resumo atomicamente com statusObserved e usageReport, inclusive início/retomada/revisão.
+Antes de inserir cada novo resumo histórico de execução, consulte dados atualizados pela estratégia validada e envie o usageReport obrigatório conforme o contrato real, com tokens reais, modelo identificado, harness, agente e fonte verificáveis. Preserve múltiplos modelos/harnesses/atores/períodos quando observados, com proveniência verificável. Mantenha o relatório estruturado separado de summary/currentSummary em Markdown; não use comentários ou sidebar como armazenamento de telemetria. Comentário, percentual de progresso isolado ou leitura de prompt não exigem resumo artificial; toda mudança de status, porém, exige registrar resumo atomicamente com statusObserved e usageReport, inclusive início/retomada/revisão.
 
-Todo novo resumo precisa de usageReport. Se a coleta falhar ou não produzir os dados exigidos, envie unavailable estruturado com motivo e tentativas verificáveis; não omita silenciosamente o relatório. Ausência não é zero. Nunca invente números, modelo efetivo, IDs de evidência ou investigação não realizada. Se nem a indisponibilidade puder ser representada validamente, mantenha o registro pendente, exponha a limitação pelo protocolo vigente e não anuncie salvamento. Em erro de validação/persistência, corrija ou reconcilie antes de tentar novamente, sem contornar o requisito.
+Esta skill exige tokens reais, modelo identificado, harness, agente e fonte antes de cada novo resumo, usando o usageReport atual. unavailable, justificativa e número inventado não substituem a coleta. Ausência não é zero. Se não houver fonte confiável ou não for possível identificar modelo/harness/agente/escopo, mantenha o registro e a transição pendentes; salve explicação e tentativas reais em comentário, confirme persistência e notifique com commentID. Bloqueio efetivo pode ser registrado como flag separada conforme contrato, sem mudar status por atalho. Não anuncie resumo salvo. Falha também no comentário exige reconciliação, sem fabricar ID ou aviso de sucesso.
 
 ## Semântica antes de contabilizar
 
 Diferencie consumo reportado de estimativa, ocupação de contexto, créditos e custo. Não converta contexto percentual ou créditos em tokens exatos. Preserve categorias input/output/cache e escopo request/turn/session/tree conforme fonte; não some categorias sobrepostas. Modelo configurado não vira modelo observado por inferência.
 
-Contadores cumulativos são snapshots: guarde baseline/época apropriados e só derive delta de medidas comparáveis da mesma fonte/sessão/escopo. Reset, rotação, compaction, troca de modelo, retomada e retry podem invalidar comparação; revalide em vez de produzir delta negativo, somar snapshots ou contar replay duas vezes. Não atribua consumo de sessão compartilhada a uma task/ator sem evidência. Não some totais de árvore com os mesmos subagentes novamente. Use apenas variantes e regras aceitas no contrato abaixo; se não puder atribuir com confiança, preserve a limitação na atribuição/indisponibilidade estruturada, sem omitir o relatório nem fabricar precisão.
+Contadores cumulativos são snapshots: guarde baseline/época apropriados e só derive delta de medidas comparáveis da mesma fonte/sessão/escopo. Reset, rotação, compaction, troca de modelo, retomada e retry podem invalidar comparação; revalide em vez de produzir delta negativo, somar snapshots ou contar replay duas vezes. Não atribua consumo de sessão compartilhada a uma task/ator sem evidência. Não some totais de árvore com os mesmos subagentes novamente. Use apenas variantes e regras aceitas no contrato abaixo; preserve o escopo comprovado sem forçar atribuição exata à task. Falta de delta inicial não invalida, por si só, um snapshot real.
 
 ## Persistir o trabalho continua obrigatório
 
 O relatório obrigatório não substitui os demais registros: descrição/specification, plano, resumo histórico, currentSummary, status e aprovação continuam distintos. Encerrar execução não significa Concluído se validação humana exigida estiver pendente. Depois de confirmar persistência do resumo e relatório válido, siga o protocolo de comentário completo, confirmação de persistência e notificação com commentID; não transporte detalhes/métricas em chat. Leituras e replays legados sem relatório permanecem válidos e não são retropreenchidos por suposição.
 
-## Contrato estruturado confirmado com o Backend
+## Contrato atual e obrigação da skill
 
-Confira o schema do runtime conectado antes de escrever: atualizar a skill não publica ferramentas. Nas novas gravações, `RecordExecution.usageReport` é obrigatório em `createExecutionSummary` e em `close_activity.execution`; ausência/null não substituem um relatório válido. `SummaryUsageInput` contém `entries` com 1 a 32 observações; array vazio não declara indisponibilidade. Preserve os demais campos de negócio obrigatórios. Leituras antigas e replay idempotente de gravações legadas não exigem inventar ou retropreencher dados.
+Use `RecordExecution.usageReport: {entries: [...]}` em createExecutionSummary ou close_activity.execution, com 1 a 32 entradas por chamada. Não adicione tokenUsage, totalTokens ou qualquer campo novo ao payload. As instruções de coleta desta skill são mais exigentes que a validação atual do servidor: o schema existente ainda contempla campos anuláveis, medições parciais, human/null e unavailable. Isso não autoriza esta skill a inventar dados ou usar justificativa para substituir a medição solicitada. Compatibilidade histórica/replay permanece responsabilidade do serviço; não use formato legado como atalho de nova gravação.
 
-Cada `UsageObservation` declara todos os campos do exemplo abaixo. `modelId`, `provider`, `harnessVersion`, `previousEvidenceId`, `periodStart`, `periodEnd`, os quatro contadores e `discovery` aceitam null. `source`, `harness`, `surface`, `sessionId`, `epoch` e `evidenceId` precisam ser strings não vazias. Para medições, use identificadores observados; indisponibilidade usa os marcadores explícitos descritos abaixo, sem fingir que são IDs de execução. `actor` contém `kind` (agent/human) e `id`: agent exige UUIDv7 de agente persistido; human permite null. Não use human para contornar identificação de um agente real; `actorRole` aceita leader/collaborator/human/unknown. `observedAt` e datas de período usam RFC3339.
+Os contadores atuais são strings decimais inteiras não negativas até 9223372036854775807, não números JSON: inputTokens/outputTokens são inclusivos, cachedInputTokens/reasoningOutputTokens são subconjuntos. Quando ambos os totais inclusivos forem conhecidos, input + output informa o total daquele escopo sem somar cache/raciocínio novamente. Não preencha componente desconhecido com zero nem invente decomposição para um total isolado. Use somente o que a fonte e o contrato conseguem representar; explique lacunas por comentário. O eventual campo novo de total ainda não está definido.
 
-Contadores são strings decimais inteiras entre 0 e 9223372036854775807 ou null: `inputTokens` e `outputTokens` são inclusivos; `cachedInputTokens` e `reasoningOutputTokens` são subconjuntos, nunca somas adicionais. Em measured/estimated, ao menos inputTokens OU outputTokens deve ser conhecido; preserve null para categoria não observada. modelId/provider/harnessVersion desconhecidos permanecem null, sem inferir modelo efetivo de configuração. `quality` aceita measured/estimated/unavailable; `attribution` aceita exact/shared/unallocated. Totais session_tree e atribuições shared/unallocated ficam fora do total da task; não force exact para fazê-los entrar.
+Cada observação declara source, harness, surface, harnessVersion, sessionId, epoch, evidenceId, previousEvidenceId, actor, actorRole, provider, modelId, scope, reportKind, quality, attribution, observedAt, periodStart, periodEnd, os quatro contadores e discovery. Para o agente atuante, actor é kind agent com UUIDv7 persistido e actorRole leader/collaborator conforme papel real; não use human/null para contornar identificação. modelId identifica modelo observado; harness/source/surface/session/epoch/evidenceId vêm de evidência real. Provider/versão/períodos/subcategorias desconhecidos podem permanecer null conforme schema, sem transformar configuração em observação. observedAt e períodos usam RFC3339.
 
-`reportKind: period_delta` só aceita `scope: request`, com evidenceId estável e previousEvidenceId null. `cumulative_snapshot` só aceita session/session_tree: o primeiro snapshot estabelece baseline com delta null. A referência previousEvidenceId precisa existir para a mesma fonte/sessão/época/ator/modelo/harness, ser anterior e não criar fork ou sobreposição. Avance o último checkpoint comparável, sem contornar baseline mais recente; scope/provider, harnessVersion, quality e attribution também precisam ser comparáveis. Modelo diferente ou mudança de comparabilidade precisa de baseline próprio. Use nova época real após reset; não reinicie arbitrariamente a cadeia para reutilizar consumo. A identidade global da evidência é source + sessionId + epoch + evidenceId: conteúdo alterado retorna 409; referência repetida não soma de novo. Não derive delta local incompatível com essas regras.
+`period_delta` exige scope request e previousEvidenceId null. `cumulative_snapshot` aceita session/session_tree: o primeiro snapshot real é baseline com delta null, sem consumo histórico inferido. Não o rejeite apenas por ser inicial. A decisão de exigir consumo exclusivo da task versus aceitar acumulado por escopo ainda está pendente; não a resolva por suposição nem transforme baseline em delta de tarefa. Preserve explicitamente scope e attribution reais (exact/shared/unallocated); árvore, shared e unallocated ficam fora do total exato da task. Um baseline pode ser evidência válida sem contribuir para o total da tarefa.
 
-Quando não houver medição válida, envie `reportKind: unavailable`, quatro contadores null, quality unavailable e discovery com reason e attempts factuais (ao menos uma tentativa). Não use essa alternativa sem investigar e tentar coletar; falha não autoriza omitir usageReport. A coleta real pode ser indisponível, mas a declaração explícita precisa atender ao contrato. Quando a sessão/época não forem observáveis, use sessionId e epoch iguais a "unavailable"; evidenceId identifica unicamente a tentativa de coleta, não uma execução fabricada, e permanece estável no retry da mesma tentativa. Use harness/surface efetivos quando conhecidos; "unknown" somente com explicação em discovery. source identifica a fonte/tentativa de descoberta. Modelo/provider/versão desconhecidos ficam null. Cada item de attempts precisa ser factual e não vazio; não use arrays vazios ou texto em branco. Falha de coleta não impede enviar esse relato explícito.
+Snapshots seguintes avançam o último checkpoint comparável, com previousEvidenceId existente, tempo anterior e mesma fonte/sessão/época/ator/harness/escopo/provider/modelo, além de versão/qualidade/atribuição compatíveis. Mudança exige baseline apropriado; não crie fork, delta negativo ou época fictícia. Evidência usa source + sessionId + epoch + evidenceId: retry preserva identidade/conteúdo, replay não soma; alteração conflita. Relatório persistido tem limite de 65536 bytes e 256 entradas com suplementos. Não fabrique resumos para contornar limites.
 
-Exemplo sintético apenas da propriedade usageReport, não de uma requisição completa nem de dados reais; nunca copie os identificadores/valores para um registro de trabalho:
+`reconcileSummaryUsage` anexa evidências com taskId/summaryId reais, SummaryUsageInput e expectedVersion da summary (não da task), preservando narrativa/status. statusObserved é snapshot gerado pelo servidor, nunca campo enviado pelo agente.
 
-```json
-{
-  "usageReport": {
-    "entries": [{
-      "source": "example-api", "harness": "example-harness", "surface": "api",
-      "harnessVersion": null, "sessionId": "example-session", "epoch": "example-epoch",
-      "evidenceId": "example-request-1", "previousEvidenceId": null,
-      "actor": {"kind": "human", "id": null}, "actorRole": "human",
-      "provider": null, "modelId": null, "scope": "request",
-      "reportKind": "period_delta", "quality": "measured", "attribution": "unallocated",
-      "observedAt": "2026-10-31T00:00:00Z", "periodStart": null, "periodEnd": null,
-      "inputTokens": "100", "outputTokens": "20",
-      "cachedInputTokens": null, "reasoningOutputTokens": null, "discovery": null
-    }]
-  }
-}
-```
+## Exemplos sintéticos do formato atual
 
-Exemplo sintético de indisponibilidade, também sem enviar a API. Substitua motivo/tentativas por observações reais; não copie a investigação fictícia:
+Não executar nem copiar os IDs/valores como evidência real. O exemplo de request abaixo supõe fonte que de fato mediu input/output e modelo e agente persistido confirmado; o total desse request seria 120, sem campo adicional no payload.
 
 ```json
 {
   "usageReport": {
     "entries": [
       {
-        "source": "example-discovery",
+        "source": "example-api",
         "harness": "example-harness",
         "surface": "api",
         "harnessVersion": null,
-        "sessionId": "unavailable",
-        "epoch": "unavailable",
-        "evidenceId": "example-collection-attempt-1",
+        "sessionId": "example-session",
+        "epoch": "example-epoch",
+        "evidenceId": "example-request-1",
         "previousEvidenceId": null,
         "actor": {
-          "kind": "human",
-          "id": null
+          "kind": "agent",
+          "id": "10000000-0000-7000-8000-000000000002"
         },
-        "actorRole": "human",
-        "provider": null,
-        "modelId": null,
-        "scope": "session",
-        "reportKind": "unavailable",
-        "quality": "unavailable",
-        "attribution": "unallocated",
-        "observedAt": "2026-10-31T00:00:00Z",
+        "actorRole": "collaborator",
+        "provider": "example-provider",
+        "modelId": "example-observed-model",
+        "scope": "request",
+        "reportKind": "period_delta",
+        "quality": "measured",
+        "attribution": "exact",
+        "observedAt": "2026-11-02T20:00:00Z",
         "periodStart": null,
         "periodEnd": null,
-        "inputTokens": null,
-        "outputTokens": null,
+        "inputTokens": "100",
+        "outputTokens": "20",
         "cachedInputTokens": null,
         "reasoningOutputTokens": null,
-        "discovery": {
-          "reason": "Exemplo sintético: superfície consultada não expõe sessão nem consumo.",
-          "attempts": [
-            "Exemplo sintético: consulta das capacidades expostas retornou ausência de telemetria."
-          ]
-        }
+        "discovery": null
       }
     ]
   }
 }
 ```
 
-Evidência posterior pode ser anexada via `reconcileSummaryUsage`, com taskId e summaryId reais, corpo SummaryUsageInput e expectedVersion da própria summary (If-Match no HTTP), além de ator/idempotência conforme catálogo. HTTP: POST `/api/v1/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions`. Isso não altera status nem texto narrativo; não crie novo resumo artificial ou reenvie encerramento para preencher métricas. Reconcile versão/conflito antes de retry e preserve o protocolo de comentário/notificação quando houver comunicação substantiva de trabalho.
+Para um primeiro snapshot real da sessão, preserve os valores observados e use scope session, reportKind cumulative_snapshot, previousEvidenceId null e attribution conforme evidência (por exemplo shared se abranger várias tarefas). Isso registra baseline, não 120 tokens exatos da task por inferência. Não altere escopo/atribuição para aumentar o total exibido.
 
-O relatório persistido completo aceita até 65536 bytes UTF-8 e 256 entradas incluindo suplementos (32 por requisição). Não crie resumo artificial nem descarte evidência para contornar limites; trate a falha e registre a limitação.
+## Origem e escopo da medição
+
+Registre a estratégia/proveniência permitida com fonte real, sessão, agente, período, escopo e semântica dos contadores. Colete novamente antes de cada resumo; uma leitura antiga ou configuração de modelo não prova consumo atual. Um acumulado da sessão não é consumo exato da task: compare apenas checkpoints compatíveis com cobertura e atribuição demonstradas, sem cruzar reset, modelo, qualidade ou autoria. Se a fonte abranger várias tasks, preserve esse escopo e sua limitação, sem rotular o total como consumo exato da tarefa. Se nem sessão/ator/modelo ou a medição forem confiáveis, registre o impedimento por comentário. A exclusividade por tarefa ainda depende da decisão do usuário.
+
+Contadores de cache e raciocínio podem ser subconjuntos de input/output; não some categorias sobrepostas, snapshots cumulativos, replays ou total de árvore com seus próprios subagentes. Zero só é válido quando observado de fato na fonte. Não converta contexto percentual, créditos ou custo em tokens exatos. Não copie transcrições/segredos, não consulte sessões alheias nem instale coletores ou faça chamadas pagas para produzir um número.

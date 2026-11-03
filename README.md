@@ -618,7 +618,7 @@ no external collector is installed or enabled by it.
 
 O cabeçalho da tarefa mantém descrição abaixo do título e síntese atual após progresso/bloqueio em todas as abas, com Markdown e proveniência quando disponível. Ao sair do viewport desktop, a sidebar oferece prévias compactas expansíveis por teclado; os formulários permanecem montados e o mobile conserva uma única coluna. A Visão geral mantém gráficos e nota de andamento sem duplicar descrição/síntese.
 
-As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Cada novo resumo exige usageReport estruturado, separado do Markdown, com modelo/harness/tokens verificados ou unavailable explícito com motivo e tentativas verificáveis. Ausência não é zero; erro de gravação não permite anunciar salvamento. Leituras e replays legados permanecem compatíveis.
+As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Cada novo resumo exige usageReport estruturado, separado do Markdown, com tokens reais, modelo identificado, harness, agente e fonte verificáveis. Ausência não é zero; erro de gravação não permite anunciar salvamento. Leituras e replays legados permanecem compatíveis.
 
 
 Descrição e síntese no cabeçalho ocupam toda a largura da coluna principal, com quebra natural e parágrafos Markdown preservados. As prévias da sidebar mantêm seus limites compactos; tabelas e código continuam com rolagem horizontal própria.

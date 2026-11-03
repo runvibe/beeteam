@@ -10,7 +10,7 @@ Conduza a conversa e coordene trabalho a partir de registros reais. Perfil de ag
 
 ## Status muda pelo registro de resumo
 
-Após a criação com status inicial, altere status somente por createExecutionSummary; close_activity é válido apenas quando registra o mesmo resumo pelo serviço comum na mesma operação. Resumo/status/statusObserved/usageReport são atômicos. Não mude status via updateTask/moveTask/record_progress nem por escritas separadas. Percentual de progresso pode ser atualizado separadamente, com currentSummary quando exigido. Transição de início, retomada, revisão ou conclusão também exige resumo e métricas/indisponibilidade explícita. Em erro, não anuncie mudança nem contorne o registro; preserve comentários/commentID e replays legados. Consulte [integração](references/integration.md).
+Após a criação com status inicial, altere status somente por createExecutionSummary; close_activity é válido apenas quando registra o mesmo resumo pelo serviço comum na mesma operação. Resumo/status/statusObserved/usageReport são atômicos. Não mude status via updateTask/moveTask/record_progress nem por escritas separadas. Percentual de progresso pode ser atualizado separadamente, com currentSummary quando exigido. Transição de início, retomada, revisão ou conclusão também exige resumo e tokens reais, modelo identificado, harness, agente e fonte. Em erro, não anuncie mudança nem contorne o registro; preserve comentários/commentID e replays legados. Consulte [integração](references/integration.md).
 
 ## Bootstrap: chat primeiro, cadastro no próprio chat
 
@@ -18,7 +18,7 @@ Para novo Collaborator, Leader cria primeiro o chat autorizado e solicita usar b
 
 ## Enviar relatório de métricas em cada novo resumo
 
-No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e envie usageReport obrigatório com modelo/harness/tokens verificáveis ou indisponibilidade explícita conforme contrato. Quando a coleta falhar, envie unavailable estruturado com motivo e tentativas verificáveis; nunca omita silenciosamente o relatório. Erro de validação/persistência não autoriza anunciar resumo salvo. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
+No início, leia [métricas por resumo](references/usage-report.md), investigue fonte permitida da sessão correta e registre estratégia/proveniência para reuso até mudanças relevantes. Antes de cada novo resumo histórico, consulte dados atualizados e envie usageReport obrigatório com tokens reais, modelo identificado, harness, agente e fonte verificáveis conforme contrato. unavailable ou justificativa não substituem medição. Sem fonte confiável, registre impedimento e tentativas reais por comentário e notifique com commentID, sem afirmar que resumo/status foram salvos; não invente zero nem IDs. Erro de validação/persistência não autoriza anunciar resumo salvo. Ausência não é zero. Preserve distinção modelo efetivo/configurado, consumo/contexto/créditos e snapshots/deltas sem duplicação. Não instale coletores nem execute chamadas pagas para medir.
 
 
 ## Leader é a interface humana do trabalho
@@ -90,3 +90,5 @@ Colaborador salva progresso/síntese/comentários/resultado pertinentes e confir
 ## Recursos MCP e limites
 
 Use resources/prompts só se anunciados. `prepare_execution`/prompts são leitura, não execução nem atribuição; `record_progress`/`close_activity` escrevem apenas conforme autorização/schema. Leia esta referência local completa antes de operar; se consumir apenas MCP e o workflow não estiver disponível, informe a lacuna e solicite conteúdo equivalente, sem inventar URI ou explorar filesystem. Instalar esta skill não atualiza snapshots compilados do servidor.
+
+Use usageReport atual, sem tokenUsage ou campo novo. A exigência de coleta é instrução da skill, não alegação de validação equivalente no servidor. Preserve snapshot/baseline real com escopo correto, sem rejeitá-lo apenas por ser inicial nem inferir consumo exato da task; a decisão acumulado por sessão versus exclusivo da tarefa permanece pendente.
