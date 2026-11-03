@@ -940,3 +940,5 @@ Os pontos selecionados ou em foco nos gráficos e na timeline usam o mesmo hexá
 Os eventos da timeline se distribuem proporcionalmente por toda a largura disponível; muitos registros preservam o espaçamento mínimo com rolagem interna.
 
 As abas da tarefa seguem: Visão geral, Especificação, Planos, Subtasks, Conversa, Resumos, Arquivos e Timeline.
+
+O bloco de consumo na Visão geral não usa divisórias horizontais e mantém espaçamento compacto até a evolução do progresso.

@@ -1,6 +1,6 @@
 .overview-insights {
   display: grid;
-  gap: 28px;
+  gap: 16px;
   min-width: 0;
   padding-bottom: 16px;
 }

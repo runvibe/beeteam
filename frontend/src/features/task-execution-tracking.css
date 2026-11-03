@@ -2,8 +2,7 @@
   display: grid;
   gap: 20px;
   min-width: 0;
-  padding-block: 24px;
-  border-block: 1px solid var(--border);
+  padding-block: 8px;
 }
 .task-execution-tracking h2,
 .task-execution-tracking h3,
