@@ -2,7 +2,6 @@ import { tokenCount } from "./usage-format";
 import { observedDuration } from "./interval-format";
 export type IntervalMetricsData = {
   tokens: string | null;
-  partialTokens: string | null;
   observedMs: string | number | null;
   elapsedMs: string | number | null;
   coverage: { label: string; count: number }[];
@@ -16,7 +15,6 @@ export function IntervalMetrics({ data }: { data?: IntervalMetricsData }) {
       <h2>Consumo por intervalos da tarefa</h2>
       <dl className="usage-totals">
         <div><dt>Tokens válidos</dt><dd>{data?.tokens == null ? <MissingMetric /> : tokenCount(data.tokens)}</dd></div>
-        <div><dt>Tokens parciais</dt><dd>{data?.partialTokens == null ? <MissingMetric /> : tokenCount(data.partialTokens)}</dd></div>
         <div><dt>Duração somada</dt><dd>{data?.observedMs == null ? <MissingMetric /> : observedDuration(data.observedMs)}</dd></div>
         <div><dt>Tempo decorrido</dt><dd>{data?.elapsedMs == null ? <MissingMetric /> : observedDuration(data.elapsedMs)}</dd></div>
       </dl>

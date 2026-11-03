@@ -49,7 +49,6 @@ export function TaskExecutionTracking({
           data
             ? {
                 tokens: data.validTotalTokens,
-                partialTokens: data.partialTotalTokens,
                 observedMs: data.observedDurationMs,
                 elapsedMs: data.elapsedDurationMs,
                 coverage: Object.entries(coverageLabels).map(
