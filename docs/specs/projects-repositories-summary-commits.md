@@ -2,6 +2,19 @@
 
 Estado: implementação autorizada pelo usuário em 03/11/2026 após revisão da especificação, incluindo filtros em Arquivos. Backend e Frontend responsáveis nos chats existentes.
 
+## Revisão autorizada: descoberta local de Git
+
+Esta revisão substitui a entrada manual de repositórios descrita abaixo. Novas tarefas devem declarar ao menos um projeto com nome e caminho absoluto da pasta raiz. O chamador informa somente os projetos efetivamente envolvidos; repositórios são resultados da descoberta feita pelo Bee Team na máquina do servidor.
+
+- Inspecionar cada pasta declarada em modo somente leitura para identificar checkout, branch, worktree e remotes. Reconhecer `.git` como arquivo e diretório. Não incluir outras worktrees automaticamente como envolvidas.
+- Projeto sem Git é válido. Pasta inacessível ou inspeção indisponível preserva o cadastro e expõe a condição de descoberta; não equivale a ausência de Git.
+- Não executar fetch, hooks ou comandos construídos por shell. Limitar tempo e saída da inspeção, remover credenciais dos remotes e manter acesso ao sistema de arquivos/Git em um adapter de repositório. A descoberta não deve prender a transação de gravação.
+- O card de Projetos identifica as pastas/worktrees usadas. O card de Repositórios aparece somente quando houver repositórios identificados. Condições de descoberta ficam junto do projeto.
+- Preservar dados antigos, respostas idempotentes e snapshots dos commits já registrados. Atualizações não relacionadas de tarefas antigas não devem forçar preenchimento retroativo. O contrato final deve explicitar atualização de escopo e nova descoberta.
+- Skills orientam declarar as raízes reais utilizadas e consultar os identificadores de repositório retornados antes de registrar commits. Não enviar remotes ou repositórios como entrada do escopo.
+
+Implementação: Backend define entrada/saída e descoberta local; Frontend adapta apresentação e contratos; skills recebem exemplos somente após estabilizar os campos. Validação inclui Git comum, worktree, ausência de Git, pasta inacessível, múltiplos projetos, legado, idempotência e paridade HTTP/MCP, além do layout desktop/mobile. A revisão não autoriza alterar bancos reais ou reiniciar serviços para testes.
+
 ## Escopo da tarefa
 A especificação Markdown permanece independente. A tarefa terá metadados estruturados de projetos envolvidos e repositórios relacionados, sem extrair vínculos automaticamente do texto.
 
