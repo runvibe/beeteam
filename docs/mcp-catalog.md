@@ -407,3 +407,10 @@ families and point collectors to version/surface-appropriate real telemetry.
 Current bundled Skills source: `388415e855004317b367fe55f6df47d5d6993299`, aligned with the required cumulative session contract. Existing SQLite/bootstrap overlays are retained. See [verification](required-session-total-verification.md).
 
 Final validation: 52 tests passed before bundle refresh; both SQLite MCP tests passed again after refresh. Cargo build with MCP passed. Regenerated catalog contains 71 tools, 15 resources and 3 prompts; all 13 source/bundle SHA256 pairs verified. PostgreSQL tests excluded as agreed; runtime unchanged.
+
+
+## Explicit execution intervals — 2026-11-03
+
+RecordExecution accepts optional executionTracking. Six read operations expose executions, intervals, explicit events, prior calculations, task totals and cross-task open recovery; reconcileTaskExecutionInterval provides versioned correction. close_activity returns executionSummary as an additive field, with unchanged historical replay behavior. See [contract](task-session-intervals-contract.md) and [verification](task-session-intervals-verification.md).
+
+Catalog regenerated: 78 tools, 16 resources, 3 prompts. Bundled source631072a1da56265c0f1b1d062e20b61db732cda0 adds beeteam://references/execution-intervals; all14source/bundle hashes verified, existing SQLite/bootstrap overlays retained. 132distinct Rust tests passed plus10interval scenarios repeated on PostgreSQL; MCP build passed. Runtime unchanged.

@@ -48,6 +48,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
         ("taskId", "tasks"),
         ("planId", "plans"),
         ("commentId", "comments"),
+        ("intervalId", "task_execution_intervals"),
         ("attachmentId", "attachments"),
         ("parentId", "tasks"),
         ("statusId", "statuses"),

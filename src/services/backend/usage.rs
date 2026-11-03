@@ -90,6 +90,7 @@ pub(super) fn report(
     status: Value,
     input: &Value,
     existing: Option<Value>,
+    tracked: bool,
 ) -> Result<Value> {
     let mut report=existing.unwrap_or_else(|| json!({"reportedAt":Utc::now(),"statusObserved":status,"reportingActor":actor.value(),"revision":0,"entries":[]}));
     let mut known = all_entries(records);
@@ -120,7 +121,7 @@ pub(super) fn report(
                     "Evidence identity was already recorded with different content",
                 ));
             }
-            if *owner != task {
+            if *owner != task && !(tracked && observation["attribution"] == "unallocated") {
                 return Err(Failure::new(
                     "usage_attribution_conflict",
                     "Evidence already belongs to another task; cannot duplicate its allocation",
@@ -169,7 +170,7 @@ pub(super) fn report(
                             "Previous evidence must already exist in the identical counter scope",
                         )
                     })?;
-                if *owner != task {
+                if *owner != task && !(tracked && observation["attribution"] == "unallocated") {
                     return Err(Failure::invalid("Cannot attribute a cumulative interval crossing tasks; start a new baseline"));
                 }
                 let p = &entry["observation"];
@@ -294,6 +295,7 @@ pub(super) async fn reconcile(unit: &mut UnitOfWork, c: &Command) -> Result<Outc
         status,
         &c.body,
         existing,
+        false,
     )?;
     let r = unit.records.get_mut("execution_summaries", sid)?;
     r.data["usageReport"] = updated;

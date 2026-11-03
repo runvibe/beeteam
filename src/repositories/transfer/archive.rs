@@ -43,6 +43,8 @@ pub struct ArchiveStore {
     root: PathBuf,
     pub limits: Limits,
 }
+// Archives predating explicit execution tracking contain none of these groups.
+const INTERVAL_GROUPS: &[&str] = &["task_executions","task_execution_intervals","task_execution_interval_counters","task_execution_tracking_events","task_execution_interval_revisions"];
 pub fn groups() -> Vec<&'static str> {
     TABLES
         .iter()
@@ -374,7 +376,9 @@ impl ArchiveStore {
             .collect();
         ensure!(seen == expected, "inventory_mismatch");
         self.ensure_space(total)?;
+        let legacy_intervals = INTERVAL_GROUPS.iter().all(|t| !manifest.entries.contains_key(&format!("records/{t}.jsonl")));
         for t in groups() {
+            if legacy_intervals && INTERVAL_GROUPS.contains(&t) { continue; }
             ensure!(
                 manifest.entries.contains_key(&format!("records/{t}.jsonl")),
                 "missing_group"
@@ -383,6 +387,11 @@ impl ArchiveStore {
         let dir = self.directory(id).join("verified");
         fs::create_dir_all(dir.join("records"))?;
         fs::create_dir_all(dir.join("blobs"))?;
+        // Normalize only absent additive groups to empty staging files. No rows,
+        // evidence, manifest entries or archive bytes are fabricated or rewritten.
+        if legacy_intervals {
+            for t in INTERVAL_GROUPS { File::create(dir.join(format!("records/{t}.jsonl")))?; }
+        }
         let mut actual_total = manifest_bytes.len() as u64;
         for (name, entry) in &manifest.entries {
             ensure!(allowed(name), "invalid_entry");

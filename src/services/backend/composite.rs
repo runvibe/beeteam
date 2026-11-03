@@ -124,7 +124,12 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
     } else {
         return Err(Failure::missing());
     }
-    let data = json!({"createdComments":created_comments,"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. No external execution, approval or chat control performed."});
+    let mut data = json!({"createdComments":created_comments,"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. No external execution, approval or chat control performed."});
+    if name=="close_activity" {
+        let sid=value_id(&unit.records.get("tasks",id)?.data["latestExecutionSummaryId"])?;
+        let doc=&contracts::operation("createExecutionSummary")?.document;
+        data["executionSummary"]=project(doc,&doc["components"]["schemas"]["ExecutionSummary"],&queries::resource(&unit.records,"execution_summaries",sid)?);
+    }
     unit.save_replay(
         &actor.key(),
         &operation,

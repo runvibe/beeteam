@@ -1,90 +1,90 @@
 {
-  "sourceCommit": "388415e855004317b367fe55f6df47d5d6993299",
-  "scope": "New summaries require measured cumulative session/session_tree totalTokens=inputTokens+outputTokens, identified model and persisted agent. Legacy observations and exact replays preserved; bootstrap and SQLite overlays retained.",
+  "sourceCommit": "631072a1da56265c0f1b1d062e20b61db732cda0",
+  "scope": "Explicit task session intervals, additive rollout; measured cumulative session evidence remains mandatory on new summaries. SQLite/bootstrap overlays retained.",
   "files": [
     {
       "resourcePath": "bee-team-leader/SKILL.md",
       "sourcePath": "skills/bee-team-leader/SKILL.md",
-      "sourceSha256": "1b43ce04438c2d16dc59477908a634365af21745087d0d08c009e763ee41104d",
-      "bundledSha256": "8f595e4a6c335806f5a4f021100d75129de2b709cd0b6d4ddfdde3eea69fdc13",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "sourceSha256": "4bf4b6785ede5e10705cd6ed25cb9acdb63ac5e79f2a56145c469f5e53b83ecd",
+      "bundledSha256": "96f352ebbc38c69d60439e9a2704457fc317365728e2f03c6409b5f0886a721a",
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "bee-team-collaborator/SKILL.md",
       "sourcePath": "skills/bee-team-collaborator/SKILL.md",
-      "sourceSha256": "0c1f326c49dfbfa992cfecfaadbc017a559458bf27149de00c247780280053d1",
-      "bundledSha256": "87e95b1678328742baab7a09c6a6cbff97f85dd2f4889edeeb78848a7fdb994f",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "sourceSha256": "8e50afd17ea2b17286f4f54ae33b67ff2f2f903ce416b66fce71cf1a59b1c4c5",
+      "bundledSha256": "8d0ee4dce344ab4da0864495a1607674892357d5081b0bcb238824abaf25d1bc",
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
-      "sourceSha256": "1e8a9395c05ea205d02ab70dfe97f65e2f12bc127c5c60e3b6fb44d77b2dffdd",
-      "bundledSha256": "a5728522d417f0f22f4da59a20cddda4765260416fd5b5841dea63bc98d242f8",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "sourceSha256": "7d166e22fe386a69fb3a0500e86ae7c1a182599967a76b114518347298b88bfc",
+      "bundledSha256": "1a6b31d58b86835444087ced77ce7ed51ec368b28987a89d13cb5f6375011ed4",
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
       "sourceSha256": "e4485ec83048e1a04854507969e1c057c180ed962efd864866dfc4b84a304ba1",
       "bundledSha256": "c05157636492496bccd3b984bf5cd4787a8f3905372f3fc162cfb3418ae8e0b3",
-      "localOverlay": "Preserve three driver-aware SQLite startup/readiness paragraphs; distinguish standalone SQLite defaults from the legacy PostgreSQL startup script. Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "localOverlay": "Preserve three driver-aware SQLite startup/readiness paragraphs; distinguish standalone SQLite defaults from the legacy PostgreSQL startup script. Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
       "sourcePath": "docs/leader-onboarding-flows.md",
-      "sourceSha256": "cd615ffd96efff330e6928024e74e8b7e90ae8ec5304876438c82ec9e62a88cd",
-      "bundledSha256": "b097f597de5a8a70746fe954f6ac0a0d54a9b3cf6f8c4841d1e54a86800e67b6",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "sourceSha256": "372633679036af33d11d67626547efd22c54700d4daff24792814f27e2acad7f",
+      "bundledSha256": "3329b0108599b763d29a1c68cd3b37ce2b97f4da83bdb15045dced6f64b53fae",
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "references/collaborator-workflow.md",
       "sourcePath": "docs/collaborator-workflow.md",
-      "sourceSha256": "5b7da8141402ccfa64d241182104b076cb5386eb08c1ebdfcee641124798a5b2",
-      "bundledSha256": "1ba74a8ed0d698cdd9c451aa08356337451a61e9eae9f30078618417e0972893",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "sourceSha256": "8340164101ff08b482af42135a0120b7cae38d63b9f168de7f7839eae7e5a531",
+      "bundledSha256": "a85150ac5dec6f058785adcabf98a14c73bbd02464d1eccd0ea5f2b17abb5710",
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "bee-team-leader/references/team-examples.md",
       "sourcePath": "skills/bee-team-leader/references/team-examples.md",
       "sourceSha256": "e7ff60c33183e093852d55171ff512f0af403d40116169a900adc4bf914fbc3c",
       "bundledSha256": "baa6dedd6ff539200deb327937ae0667256390cc0963bbf23507fd8a2969ca85",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs."
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI."
     },
     {
       "resourcePath": "prompts/task-briefing.md",
       "sourcePath": "skills/prompts/task-briefing.md",
-      "sourceSha256": "a127f4e6b601d81cef9194e5de45a20bfd1539384b700f0210e4e8136b6fe2db",
-      "bundledSha256": "a127f4e6b601d81cef9194e5de45a20bfd1539384b700f0210e4e8136b6fe2db",
+      "sourceSha256": "02b560ebad37a175987bb3cb7411b1749b63cc971826fefe169d0f87ace2024c",
+      "bundledSha256": "02b560ebad37a175987bb3cb7411b1749b63cc971826fefe169d0f87ace2024c",
       "localOverlay": null
     },
     {
       "resourcePath": "prompts/collaborator-resumption.md",
       "sourcePath": "skills/prompts/collaborator-resumption.md",
-      "sourceSha256": "47c43b437b50a69ff03f2d6924cdee4ea58f152a43b5d1513c48f3467df0be17",
-      "bundledSha256": "47c43b437b50a69ff03f2d6924cdee4ea58f152a43b5d1513c48f3467df0be17",
+      "sourceSha256": "0d26669421d24a89ccfe68f58346a16878d2185e4ea4ec1f71ea1aac560622b6",
+      "bundledSha256": "0d26669421d24a89ccfe68f58346a16878d2185e4ea4ec1f71ea1aac560622b6",
       "localOverlay": null
     },
     {
       "resourcePath": "prompts/delivery-review.md",
       "sourcePath": "skills/prompts/delivery-review.md",
-      "sourceSha256": "2754b9dd2c448f2ae26fc7806e56f6fa57f11a2e64480578f737c192815544e5",
-      "bundledSha256": "2754b9dd2c448f2ae26fc7806e56f6fa57f11a2e64480578f737c192815544e5",
+      "sourceSha256": "3743cd3450f152b3425f4ccca224874136970bd8ecd741312d5e37e9b60e9c4c",
+      "bundledSha256": "3743cd3450f152b3425f4ccca224874136970bd8ecd741312d5e37e9b60e9c4c",
       "localOverlay": null
     },
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
-      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs.",
-      "sourceSha256": "5ac681d7b85e586af662b743f6b1163d83a44c373d0d41bf7afd3ab3e4e0287c",
-      "bundledSha256": "d65c5e5573d447b9a9583b29f80974fcf643533aa903ef3f38645a20b050de9f"
+      "localOverlay": "Map usage-report and collaborator-bootstrap links to bundled MCP allowlist URIs. Map execution-intervals reference to bundled MCP URI.",
+      "sourceSha256": "1664e780bc47fe307cdb8f7829dfcf18c7e8710d2cdacce8253d1876dade0304",
+      "bundledSha256": "d877b48c14b0b503d47df924451ec9511a2d353713687398c1814c083cfe3298"
     },
     {
       "resourcePath": "references/usage-report.md",
       "sourcePath": "skills/references/usage-report.md",
-      "localOverlay": null,
-      "sourceSha256": "5d56288fc1135dba0343693ded8972767cb73fc6871d126c50519b36ac155308",
-      "bundledSha256": "5d56288fc1135dba0343693ded8972767cb73fc6871d126c50519b36ac155308"
+      "localOverlay": " Map execution-intervals reference to bundled MCP URI.",
+      "sourceSha256": "77ed04dbd53ece1d06ff48606836e21c1152658a9f607b6612ea143192b2e492",
+      "bundledSha256": "f3cbb468ecf4848a41709f3b6c481cd8249cf716f573325125a038b3fa4bc36b"
     },
     {
       "resourcePath": "references/collaborator-bootstrap.md",
@@ -92,12 +92,19 @@
       "sourceSha256": "ddbf84a208a5f33219574aee1b9956ac4bd964fedc2efe6f58390c2f8d92ff8f",
       "bundledSha256": "ddbf84a208a5f33219574aee1b9956ac4bd964fedc2efe6f58390c2f8d92ff8f",
       "localOverlay": null
+    },
+    {
+      "sourcePath": "skills/references/execution-intervals.md",
+      "resourcePath": "references/execution-intervals.md",
+      "sourceSha256": "f45aebd8ce269d09c1cf35d1adea9ea6ddaad629da1a873f2540785536cf3167",
+      "bundledSha256": "f45aebd8ce269d09c1cf35d1adea9ea6ddaad629da1a873f2540785536cf3167",
+      "localOverlay": "Map bundled metric/bootstrap/interval reference links to MCP allowlist URIs."
     }
   ],
   "backendContractOverlay": {
-    "date": "2026-11-02",
+    "date": "2026-11-03",
     "contract": "Required summary-only task status transitions and usageReport; recorded session read aggregates",
     "documentation": "docs/mcp-catalog.md",
-    "skillsSnapshotStatus": "Bundled sources at 388415e855004317b367fe55f6df47d5d6993299; aligned with SessionUsageInput and SessionUsageObservation."
+    "skillsSnapshotStatus": "Bundled 631072a1da56265c0f1b1d062e20b61db732cda0; explicit interval lifecycle and recovery guidance."
   }
 }

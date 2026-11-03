@@ -177,3 +177,16 @@ fn cancelled_validation_stops_before_inspecting_records() {
             .contains("cancel")
     );
 }
+
+#[test]
+fn legacy_archives_omit_all_interval_groups_but_partial_sets_fail() {
+    use std::io::{Read,Write};
+    for partial in [false,true] {
+        let dir=tempfile::tempdir().unwrap();let store=ArchiveStore::new(dir.path().into(),Limits::default()).unwrap();let id=uuid::Uuid::now_v7();store.create_stage(id).unwrap();store.seal(id,"sqlite",0).unwrap();
+        let path=store.archive_path(id);let mut archive=zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();let mut entries=Vec::new();
+        let omit=|name:&str|name.starts_with("records/task_execution") && (!partial || name!="records/task_executions.jsonl");
+        for i in 0..archive.len(){let mut f=archive.by_index(i).unwrap();let name=f.name().to_owned();if omit(&name){continue;}let mut bytes=Vec::new();f.read_to_end(&mut bytes).unwrap();if name=="manifest.json" {let mut v:serde_json::Value=serde_json::from_slice(&bytes).unwrap();v["entries"].as_object_mut().unwrap().retain(|k,_|!omit(k));bytes=serde_json::to_vec(&v).unwrap();}entries.push((name,bytes));}
+        drop(archive);let mut zip=zip::ZipWriter::new(std::fs::File::create(&path).unwrap());for(name,bytes)in entries{zip.start_file(name,zip::write::SimpleFileOptions::default()).unwrap();zip.write_all(&bytes).unwrap();}zip.finish().unwrap();
+        if partial{assert!(store.validate_archive(id).is_err());}else{let m=store.validate_archive(id).unwrap();assert!(!m.entries.contains_key("records/task_executions.jsonl"));assert!(store.rows(id,"task_execution_intervals").unwrap().is_empty());}
+    }
+}
