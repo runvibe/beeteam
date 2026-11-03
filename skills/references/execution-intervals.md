@@ -71,7 +71,7 @@ Cenário conceitual, sem chamada de API: A inicia em1000 e pausa em1300; B usa a
 
 ## Exemplos sintéticos de corpo e fragmentos
 
-Não executar estes exemplos nem copiar IDs, nomes, contadores ou fontes para registros reais. O primeiro JSON é somente RecordExecution (corpo de createExecutionSummary ou valor execution em close_activity), não o envelope de ator/versão/idempotência. taskId continua no caminho/params; executionContext preserva a raiz/origem real. Os demais JSONs mostram somente a propriedade executionTracking: completar o restante do resumo e usageReport válido, com cada evidenceId selecionado presente naquela chamada. UUIDs de execution/interval devem vir da resposta real, nunca destes marcadores sintéticos.
+Não executar estes exemplos nem copiar IDs, nomes, contadores ou fontes para registros reais. O primeiro JSON declara false/lista vazia porque o exemplo de início não relata commit; não copiar essa declaração se houve commit no trabalho real. O primeiro JSON é somente RecordExecution (corpo de createExecutionSummary ou valor execution em close_activity), não o envelope de ator/versão/idempotência. taskId continua no caminho/params; executionContext preserva a raiz/origem real. Os demais JSONs mostram somente a propriedade executionTracking: completar o restante do resumo e usageReport válido, com cada evidenceId selecionado presente naquela chamada. UUIDs de execution/interval devem vir da resposta real, nunca destes marcadores sintéticos.
 
 ```json
 {
@@ -128,6 +128,10 @@ Não executar estes exemplos nem copiar IDs, nomes, contadores ou fontes para re
     ],
     "counterMode": "global",
     "coverageRootSessionId": "example-session"
+  },
+  "commitReport": {
+    "hasCommits": false,
+    "commits": []
   }
 }
 ```
