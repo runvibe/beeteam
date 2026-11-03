@@ -1,5 +1,22 @@
 # Motion coherence: review scenarios
 
+## Integration verification (2026-11-03)
+
+- Integrated Motion and local project actions into the preview checkout.
+- Restarted the API with its original explicit SQLite configuration; verified
+  the same task/version before and after, without modifying or replacing storage.
+- Clicked both project actions through the preview on port 5176: Windows showed
+  the registered project directory in Explorer and the project in Visual Studio Code.
+- Verified the compact project card at 390px and restored the normal viewport.
+- Search text survived Escape in its URL filter; Escape restored the search toggle.
+- Opened agent settings, closed with Escape, and verified focus returned to Configurar.
+- Overview showed three real progress points and one closed valid execution interval.
+- Frontend production build and Rust build passed; 49 focused Rust tests passed
+  against isolated SQLite. PostgreSQL validation is excluded from this delivery.
+- Integration exposed a test race: navigation asserted visibility before Motion's
+  first animation frame. It now waits for visibility rather than only DOM presence;
+  all 18 focused navigation/project/dialog/preset tests passed without timeout changes.
+
 Task: `01a189de-f0fd-7e10-92d1-5bc61be7cfba`.
 
 The interaction changes reuse existing controls and data. Motion owns filter

@@ -117,7 +117,7 @@ it("preserves the executor action instead of opening the task and exposes settin
   );
   await waitFor(() => expect(location.pathname).toBe(`/boards/${ids.board}`));
   navigate(`/teams/${ids.team}/settings`);
-  expect(await screen.findByRole("dialog")).toBeVisible();
+  await waitFor(() => expect(screen.getByRole("dialog")).toBeVisible());
 });
 
 it("opens a board card body and restores list query through its breadcrumb", async () => {
