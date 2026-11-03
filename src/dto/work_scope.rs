@@ -261,3 +261,9 @@ mod tests {
         assert!(commit(&c, &repo).is_ok());
     }
 }
+
+/// Input-only project requirement; existing output may contain discovery metadata.
+pub fn require_projects(value:&Value)->Result<()> {
+ let projects=value.get("projects").and_then(Value::as_array).filter(|p|!p.is_empty()).ok_or_else(||invalid("At least one project with name and absolute rootPath is required"))?;
+ scope(&serde_json::json!({"status":"identified","projects":projects,"repositories":[]}))
+}

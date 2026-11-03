@@ -127,7 +127,7 @@ async fn images_copy_independently_and_attachments_keep_tombstones() {
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Files","authorAgentId":id(&leader),"executorAgentId":id(copy),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Files","workScope":test_project_scope(),"authorAgentId":id(&leader),"executorAgentId":id(copy),"coordinationContext":manual()}),None).await;
     let (status, file) = upload(
         &app,
         &format!("/api/v1/tasks/{}/attachments", id(&task)),
@@ -302,7 +302,7 @@ async fn statuses_versions_archives_and_replays() {
         ver(&status),
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Archive","authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Archive","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     let p = format!("/api/v1/tasks/{}", id(&task));
     assert_eq!(
         request(&app, "PATCH", &p, json!({"title":"Missing version"}), None)

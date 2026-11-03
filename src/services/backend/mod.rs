@@ -5,6 +5,7 @@ mod kanban;
 mod overview;
 mod usage;
 mod commit_report;
+mod project_discovery;
 mod tracking;
 mod queries;
 mod ra;
@@ -13,7 +14,7 @@ pub mod service;
 use crate::{
     dto::{backend::*, contracts},
     repositories::{
-        contracts::{ResourceStore, UnitOfWork},
+        contracts::{ResourceStore, UnitOfWork, ProjectDiscovery},
         records::{Record, Records},
     },
 };
@@ -22,7 +23,11 @@ use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
-pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Result<Outcome> {
+pub async fn execute(
+    repository: &dyn ResourceStore,
+    discovery: &dyn ProjectDiscovery,
+    mut command: Command,
+) -> Result<Outcome> {
     contracts::validate_envelope(&command)?;
     let validation = contracts::validate(&command);
     if contracts::operation(&command.operation)?.method != "POST" {
@@ -107,6 +112,38 @@ pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Re
         crate::dto::work_scope::require_commit_report(&command.body)?;
     }
     validation?;
+    if matches!(command.operation.as_str(), "createTask" | "updateTask") {
+        if command.operation == "updateTask" {
+            let task = unit.records.get("tasks", command.id("taskId")?)?;
+            check_version(task, command.expected_version)?;
+            if command.body.get("specification").is_some() {
+                crate::dto::work_scope::require_projects(
+                    command.body.get("workScope").unwrap_or(&task.data["workScope"]),
+                )?;
+            }
+        }
+        if let Some(input) = command.body.get("workScope").cloned() {
+            crate::dto::work_scope::require_projects(&input)?;
+            // Explicit rollback completes release of the writer lock before any local IO.
+            unit.rollback().await?;
+            let scope = project_discovery::scope(discovery, &input).await?;
+            unit = repository.begin().await?;
+            if let Some(actor_id) = command.actor.as_ref().and_then(|a| a.id) {
+                active(&unit.records, "agents", actor_id)?;
+            }
+            if op.method == "POST" {
+                if let Some(mut replay) = unit
+                    .replay(&actor_key, &operation_key, command.idempotency_key.unwrap(), &hash)
+                    .await?
+                {
+                    fill_legacy_task_fields(&mut replay.data);
+                    fill_legacy_slugs(&mut replay.data, &unit.records);
+                    return Ok(replay);
+                }
+            }
+            command.body["workScope"] = scope;
+        }
+    }
     let mut result = if command.operation == "reconcileTaskExecutionInterval" {
         tracking::reconcile(&mut unit, &command).await?
     } else if command.operation == "reconcileSummaryUsage" {

@@ -303,6 +303,9 @@ impl TransactionStore for SqliteWork {
     fn sequence(&mut self) -> RepositoryFuture<'_, i64> {
         Box::pin(SqliteWork::sequence(self))
     }
+    fn rollback(self: Box<Self>) -> RepositoryFuture<'static, ()> {
+        Box::pin(async move { self.tx.rollback().await?; Ok(()) })
+    }
     fn commit(self: Box<Self>, records: Records) -> RepositoryFuture<'static, ()> {
         Box::pin(SqliteWork::commit(*self, records))
     }

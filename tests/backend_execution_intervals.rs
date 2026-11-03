@@ -33,7 +33,7 @@ async fn setup() -> (Router, Value, Value, Value, Value) {
     .await;
     let mut tasks = Vec::new();
     for title in ["A", "B"] {
-        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
+        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
     }
     (app, agent, board, tasks.remove(0), tasks.remove(0))
 }

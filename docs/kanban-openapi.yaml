@@ -930,7 +930,7 @@ paths:
         outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
         rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
         pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
-        nesta revisão.
+        nesta revisão. New tasks require workScope.projects with at least one named absolute folder; repositories and discovery are server-owned. Local Git inspection is bounded and read-only, never fetches or enumerates other worktrees. No Git or inaccessible paths still register the project with discovery status. Exact legacy replays retain their original response. See beeteam://references/repository-evidence.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -1015,6 +1015,7 @@ paths:
               $ref: "#/components/schemas/CreateTask"
             example:
               title: Subtask em outro board
+              workScope: {projects: [{key: app, name: Application, rootPath: /projects/app}]}
               authorAgentId: 10000000-0000-7000-8000-000000000010
               executorAgentId: 10000000-0000-7000-8000-000000000011
               parentId: 10000000-0000-7000-8000-000000000002
@@ -1104,7 +1105,7 @@ paths:
       summary: Atualizar conteúdo e progresso
       description: Edita conteúdo/progresso, currentSummary e modo individual, sem alterar authorAgentId/boardId/parentId. Progress exige currentSummary não vazio na mesma chamada; alterações administrativas preservam a síntese quando omitida.
         Reatribuição usa Assignment. Modos manual/automatic não se propagam aos filhos; o modo
-        efetivo usa o board da origem da cadeia.
+        efetivo usa o board da origem da cadeia. workScope input contains only projects; resubmit the same list with If-Match to refresh Git discovery. A specification edit on a legacy task without projects must supply workScope in the same request. Other legacy edits remain permitted. Repository metadata is derived outside the database transaction and saved only after version recheck.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IfMatch"
@@ -3550,7 +3551,7 @@ components:
       type: object
       properties:
         workScope:
-          $ref: "#/components/schemas/TaskWorkScope"
+          $ref: "#/components/schemas/TaskWorkScopeInput"
         title:
           type: string
           minLength: 1
@@ -3578,6 +3579,7 @@ components:
           $ref: "#/components/schemas/TaskAutonomyMode"
         authorAgentId: *a1
       required:
+        - workScope
         - title
         - coordinationContext
         - authorAgentId
@@ -3592,7 +3594,7 @@ components:
       type: object
       properties:
         workScope:
-          $ref: "#/components/schemas/TaskWorkScope"
+          $ref: "#/components/schemas/TaskWorkScopeInput"
         title:
           type: string
           minLength: 1
@@ -5108,7 +5110,8 @@ components:
     TaskExecutionTrackingEventPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TaskExecutionTrackingEvent"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     TaskExecutionIntervalRevisionPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TaskExecutionIntervalRevision"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"anyOf": [{"type": "integer", "minimum": 0}, {"type": "null"}]}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
 
-    WorkProject: {"type": "object", "properties": {"key": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "name": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S"}, "rootPath": {"type": "string", "minLength": 1, "maxLength": 4096}}, "required": ["key", "name", "rootPath"], "additionalProperties": false}
+    WorkProject: {"type":"object","properties":{"key":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"},"name":{"type":"string","minLength":1,"maxLength":200,"pattern":"\\S"},"rootPath":{"type":"string","minLength":1,"maxLength":4096},"discovery":{"$ref":"#/components/schemas/ProjectGitDiscovery"}},"required":["key","name","rootPath"],"additionalProperties":false}
+    WorkProjectInput: {"type":"object","properties":{"key":{"type":"string","pattern":"^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"},"name":{"type":"string","minLength":1,"maxLength":200,"pattern":"\\S"},"rootPath":{"type":"string","minLength":1,"maxLength":4096}},"required":["key","name","rootPath"],"additionalProperties":false}
     WorkRepository: {"type": "object", "properties": {"key": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "name": {"type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S"}, "remoteUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}, "webUrl": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 2048}, {"type": "null"}]}, "provider": {"enum": ["github", "gitlab", "other"]}, "projectKeys": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$"}, "maxItems": 100, "minItems": 1, "uniqueItems": true}}, "required": ["key", "name", "remoteUrl", "webUrl", "provider", "projectKeys"], "additionalProperties": false}
     TaskWorkScope: {"type": "object", "properties": {"status": {"enum": ["identified", "to_identify", "not_applicable"]}, "projects": {"type": "array", "items": {"$ref": "#/components/schemas/WorkProject"}, "maxItems": 100}, "repositories": {"type": "array", "items": {"$ref": "#/components/schemas/WorkRepository"}, "maxItems": 100}}, "required": ["status", "projects", "repositories"], "additionalProperties": false}
     CommitBranch: {"type": "object", "properties": {"state": {"enum": ["named", "detached", "unknown"]}, "name": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 1024, "pattern": "\\S"}, {"type": "null"}]}}, "required": ["state", "name"], "additionalProperties": false}
@@ -5117,6 +5120,8 @@ components:
     CommitReportInput: {"type": "object", "properties": {"hasCommits": {"type": "boolean"}, "commits": {"type": "array", "items": {"$ref": "#/components/schemas/CommitReferenceInput"}, "maxItems": 100}}, "required": ["hasCommits", "commits"], "additionalProperties": false, "allOf": [{"if": {"properties": {"hasCommits": {"const": true}}}, "then": {"properties": {"commits": {"minItems": 1}}}, "else": {"properties": {"commits": {"maxItems": 0}}}}]}
     CommitReport: {"type": "object", "properties": {"hasCommits": {"type": "boolean"}, "commits": {"type": "array", "items": {"$ref": "#/components/schemas/CommitReference"}, "maxItems": 100}}, "required": ["hasCommits", "commits"], "additionalProperties": false, "allOf": [{"if": {"properties": {"hasCommits": {"const": true}}}, "then": {"properties": {"commits": {"minItems": 1}}}, "else": {"properties": {"commits": {"maxItems": 0}}}}]}
 
+    TaskWorkScopeInput: {"type":"object","properties":{"projects":{"type":"array","minItems":1,"maxItems":100,"items":{"$ref":"#/components/schemas/WorkProjectInput"}}},"required":["projects"],"additionalProperties":false}
+    ProjectGitDiscovery: {"type":"object","properties":{"status":{"enum":["detected","not_git","unavailable"]},"reason":{"enum":[null,"path_unavailable","git_unavailable","timeout","output_limit","inspection_failed"]},"checkedAt":{"type":"string","format":"date-time"},"checkoutRoot":{"type":["string","null"]},"gitDirectory":{"type":["string","null"]},"commonDirectory":{"type":["string","null"]},"isWorktree":{"type":["boolean","null"]},"branch":{"anyOf":[{"$ref":"#/components/schemas/CommitBranch"},{"type":"null"}]},"headHash":{"type":["string","null"]},"repositoryKey":{"type":["string","null"]},"remotes":{"type":"array","maxItems":100,"items":{"type":"object","properties":{"name":{"type":"string"},"url":{"type":["string","null"]}},"required":["name","url"],"additionalProperties":false}}},"required":["status","reason","checkedAt","checkoutRoot","gitDirectory","commonDirectory","isWorktree","branch","headHash","repositoryKey","remotes"],"additionalProperties":false}
 x-recursive-task-example:
   - id: 10000000-0000-7000-8000-000000000002
     boardId: 10000000-0000-7000-8000-000000000001

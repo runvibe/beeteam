@@ -23,3 +23,6 @@ mod overview;
 mod usage;
 
 mod tracking;
+
+pub mod project_discovery;
+pub mod local_git;

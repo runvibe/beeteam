@@ -2,6 +2,8 @@
 
 Authorized implementation plan (2026-11-03): extend the existing JSON resource contracts and shared DTO/service validation; persist task scope and historical commit snapshots in the existing transactional resource payloads on SQLite/PostgreSQL. No schema migration or inferred backfill. Add focused atomicity, replay, compatibility and URL tests; verify existing attachment filters; regenerate MCP catalog, build and commit. Product data/runtime remain untouched.
 
+The task-scope INPUT contract below is historical and superseded by [project-discovery-contract.md](project-discovery-contract.md): new tasks require named absolute project folders, repositories are discovered by the server. Commit declarations and historical snapshots below remain current.
+
 ## Task scope
 
 Optional Task/CreateTask/PatchTask.workScope = {status, projects, repositories}. Status: identified|to_identify|not_applicable. Projects: {key,name,rootPath}; absolute rootPath is literal checkout metadata, never opened/executed. Repositories: {key,name,remoteUrl,webUrl,provider,projectKeys}; remoteUrl/webUrl nullable, provider github|gitlab|other, projectKeys explicitly reference project keys in the same declaration. Keys are caller-supplied local identifiers, not server entity UUIDs. Replace the scope atomically through task PATCH. identified needs at least one project; to_identify may carry a partial list; not_applicable requires both lists empty. Legacy absent scope remains absent. Markdown specification stays independent.

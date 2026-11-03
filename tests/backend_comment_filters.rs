@@ -84,7 +84,7 @@ async fn comment_filters_are_literal_combined_and_paginated_in_http_and_mcp() {
     .await;
     let mut tasks = Vec::new();
     for title in ["Main", "Other"] {
-        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await);
+        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":title,"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await);
     }
     let human = json!({"kind":"human"});
     let agent_a = json!({"kind":"agent","id":id(&a)});
