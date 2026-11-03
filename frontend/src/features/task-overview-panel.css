@@ -157,13 +157,49 @@
   stroke: var(--background);
   stroke-width: 1.5;
 }
-.overview-history-table summary {
-  cursor: pointer;
-  font-size: 13px;
-  padding: 8px 0;
+.overview-progress-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
 }
-.overview-table-scroll {
-  overflow-x: auto;
+.overview-progress-layout > * {
+  min-width: 0;
+}
+.overview-history-table {
+  height: 215px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card);
+}
+.overview-history-table h3 {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.overview-history-table .overview-table-scroll {
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  flex: 1;
+}
+.overview-history-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 1;
+}
+.overview-history-table td {
+  overflow-wrap: anywhere;
+}
+@media (min-width: 1056px) {
+  .overview-progress-layout {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
 }
 .overview-history-table table {
   border-collapse: collapse;

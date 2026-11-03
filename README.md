@@ -809,3 +809,5 @@ The API exposes paginated executions, intervals, events, immutable prior calcula
 See [contract and limitations](docs/task-session-intervals-contract.md) and [validation](docs/task-session-intervals-verification.md). Bundled MCP Skills source is `631072a1da56265c0f1b1d062e20b61db732cda0`, including `beeteam://references/execution-intervals`. Portable archives include the five relational groups; archives predating them may omit all five, interpreted as empty without creating historical attribution. Existing empty-destination, cancellation, timestamp and commit-marker rules are unchanged.
 
 A Visão geral termina no consumo por intervalos: mantém evolução do progresso e distribuições, sem repetir os blocos textuais e históricos das demais abas. Os percentuais vinculados explicitamente a resumos abrem a aba Resumos e carregam até o ID selecionado, preservando eventos antigos sem associação.
+
+A evolução do progresso apresenta gráfico à esquerda e registros sempre visíveis em card à direita no desktop, ambos com 215 px de altura; a tabela tem rolagem interna e cabeçalho fixo. Em telas menores os blocos ficam empilhados.

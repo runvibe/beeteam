@@ -239,7 +239,7 @@ it("opens the exact summary from a linked progress row", async () => {
       }}
     />,
   );
-  await userEvent.click(screen.getByText("Ver 1 registros em tabela"));
+  expect(screen.getByRole("table", {name: "Valores de progresso registrados"})).toBeVisible();
   await userEvent.click(
     screen.getByRole("button", { name: "Abrir resumo do progresso 42%" }),
   );
