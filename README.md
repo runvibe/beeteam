@@ -773,3 +773,5 @@ criação de resumo. Detalhes, checkpoints e popovers mostram cada snapshot até
 árvores e subagentes. `totalTokens` é autoritativo; no histórico sem esse campo,
 entrada + saída é exibida como cálculo legado somente quando ambos existem.
 O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.
+
+Especificação proposta, ainda não implementada: [consumo por tarefa com intervalos de sessão](docs/task-session-intervals-spec.md).
