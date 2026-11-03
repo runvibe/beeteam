@@ -182,7 +182,7 @@ A Leader é a interface humana do trabalho: fora do bootstrap inicial de novo ch
 
 A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
 
-As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Cada novo resumo exige usageReport estruturado, separado do Markdown, com tokens reais, modelo identificado, harness, agente e fonte verificáveis. Ausência não é zero; erro de gravação não permite anunciar salvamento. Leituras e replays legados permanecem compatíveis.
+As skills investigam no início a fonte de métricas da sessão e tentam consultá-la a cada novo resumo histórico. Cada novo resumo exige usageReport estruturado, separado do Markdown, com acumulado real de tokens da sessão até o resumo, modelo identificado, harness, agente e fonte verificáveis. Ausência não é zero; erro de gravação não permite anunciar salvamento. Leituras e replays legados permanecem compatíveis.
 
 Novo Collaborator é configurado no próprio chat: Leader cria primeiro o chat autorizado e solicita sua skill; ele identifica/reutiliza ou cria o perfil e vínculo aprovados, confirma persistência e retorna nome real com agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. A exceção inicial sem comentário cobre somente pedido/retorno de bootstrap; trabalho posterior mantém task/commentID e permissões do harness.
 

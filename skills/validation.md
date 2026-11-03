@@ -180,3 +180,9 @@ Exemplo sintético close_activity corrigido com usageReport; JSON parseado e cam
 Autorização posterior permite instalação imediata compatível com usageReport atual, distinguindo instrução da skill da validação mais ampla do servidor. Exemplo sintético request usa modelo observado, harness/fonte e actor agent UUIDv7, input/output conhecidos em strings decimais; validado com verificador local contra SummaryUsageInput/UsageObservation do contrato versionado 027a2ef, incluindo união de ator. Não enviado a API. Snapshot inicial real permanece baseline com delta null, sem impor delta-only nem atribuição exata da sessão à task. A decisão de escopo obrigatório continua com o usuário.
 
 quick_validate, links contidos/existentes, paridade de referências/prompts e diff check passaram. Sem coleta real, criação de dados, instalação de coletores ou runtime alterado. Instalação Codex é separada de bundle/proveniência e enforcement servidor.
+
+## Acumulado obrigatório da sessão — 2026-11-02
+
+Contrato final conferido no OpenAPI Backend: SessionUsageInput/SessionUsageObservation. Exemplo sintético baseline com totalTokens1200=input1000+output200, actor agent UUIDv7, modelo identificado, session/cumulative_snapshot/measured/shared e previousEvidenceId null passou validador local de schema incluindo allOf/oneOf e aritmética int64. Nenhuma chamada de mutação foi feita. Revisão textual independente aprovada: sem inferir executor, somar snapshots ou árvore/subagentes, nem exigir delta inicial ou consumo exclusivo de task. Falta de fonte/modelo vira comentário de impedimento, não resumo fictício.
+
+quick_validate, links contidos/existentes, paridade e diff check passaram. Build/14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente. Instalações globais com backup/manifestos/hashes não comprovam publicação do bundle nem atualização do runtime.
