@@ -22,6 +22,9 @@
 - Runtime review found a separate progress-tooltip defect: linked summaries were
   still shown with hardcoded missing-status/tokens text. This was returned for
   correction before final acceptance; the interval total itself was correct.
+- The tooltip correction is integrated and verified on the real 90% point: author,
+  historical status, model, session cumulative count and summary delta now appear.
+  Fifteen affected chart/summary/navigation tests passed after integration.
 
 Task: `01a189de-f0fd-7e10-92d1-5bc61be7cfba`.
 
