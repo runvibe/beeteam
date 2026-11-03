@@ -502,7 +502,8 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             data.as_object_mut().unwrap().remove("usageReport");
             let mut summary_record=Record::new("execution_summaries",data);
             crate::dto::usage::require_report(b)?;
-            summary_record.data["usageReport"]=super::usage::report(&unit.records,id,summary_record.id,c.actor()?,status_observed,&b["usageReport"],None)?;
+            summary_record.data["usageReport"]=super::usage::report(&unit.records,id,summary_record.id,c.actor()?,status_observed,&b["usageReport"],None,b.get("executionTracking").is_some())?;
+            super::tracking::apply(&mut unit.records,&mut summary_record,c)?;
             let sid=unit.records.insert(summary_record);
             let task = unit.records.get_mut("tasks", id)?;
             task.data["currentSummary"] = b["currentSummary"].clone();

@@ -26,6 +26,10 @@ pub fn timestamp(v: &Value) -> Result<Option<chrono::DateTime<chrono::Utc>>> {
 }
 fn refs(table: &str) -> Vec<(&'static str, &'static str, bool)> {
     match table {
+        "task_executions" => vec![("taskId","tasks",false),("agentId","agents",false),("startSummaryId","execution_summaries",false),("endSummaryId","execution_summaries",true)],
+        "task_execution_intervals" => vec![("taskId","tasks",false),("executionId","task_executions",false),("startSummaryId","execution_summaries",false),("endSummaryId","execution_summaries",true)],
+        "task_execution_interval_counters" | "task_execution_interval_revisions" => vec![("taskId","tasks",false),("intervalId","task_execution_intervals",false)],
+        "task_execution_tracking_events" => vec![("taskId","tasks",false),("executionId","task_executions",false),("summaryId","execution_summaries",false),("intervalId","task_execution_intervals",true)],
         "teams" => vec![("leaderId", "agents", false)],
         "memberships" => vec![("teamId", "teams", false), ("agentId", "agents", false)],
         "boards" => vec![("teamId", "teams", false)],

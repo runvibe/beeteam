@@ -795,3 +795,11 @@ sem substituir o cálculo atual. Estados abertos/incompletos/ausentes não viram
 e encerramento enquanto pausado não cria nova coleta. O frontend não abre, encerra,
 reconcilia nem preenche intervalos legados automaticamente. Rollout depende da API
 com esses endpoints; falhas e indisponibilidade são exibidas com tentativa novamente.
+
+### Explicit task execution intervals
+
+Execution summaries optionally accept `executionTracking` (`start`, `checkpoint`, `pause`, `resume`, `finish`) in the same HTTP/MCP transaction as status and measured session usage. Start before work, retain the returned execution/interval UUIDs, and pause/finish before switching tasks. Checkpoints expose partial consumption; task totals use final valid intervals, never a sum of snapshots. Pauses, resets, missing model-series boundaries and declared recovery gaps are not fabricated as work. Session usage remains a separate metric.
+
+The API exposes paginated executions, intervals, events, immutable prior calculations, open-interval recovery across tasks, and complete task totals with coverage, summed observed duration and elapsed duration. Source/root and source/session exclusivity excludes agent/model/epoch from locks and checks closed ranges during corrections. Counter/root metadata is an explicit declaration, not authentication or proof that a harness exclusively worked on the task. New interval tables use independent additive SQLite/PostgreSQL migrations; legacy summaries/replays remain intact and tracking is not yet mandatory for old clients.
+
+See [contract and limitations](docs/task-session-intervals-contract.md) and [validation](docs/task-session-intervals-verification.md). Bundled MCP Skills source is `631072a1da56265c0f1b1d062e20b61db732cda0`, including `beeteam://references/execution-intervals`. Portable archives include the five relational groups; archives predating them may omit all five, interpreted as empty without creating historical attribution. Existing empty-destination, cancellation, timestamp and commit-marker rules are unchanged.

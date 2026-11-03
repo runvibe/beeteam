@@ -58,10 +58,11 @@ flowchart TD
     PREPARAR --> SALVO{"Preparação persistida e sem impedimento essencial?"}
     SALVO -->|Não| PENDENTE["Registrar ou comunicar impedimento; suspender execução dependente; recuperar sem duplicar"]
     SALVO -->|Sim| AUTONOMIA["Aplicar autonomia do board de origem e autorizações vigentes"]
-    AUTONOMIA --> EXECUTAR["Executar; registrar progresso real, evidências e currentSummary"]
+    AUTONOMIA --> INICIAR["Consultar intervalo ativo; salvar início com acumulados e obter executionId/intervalId antes de trabalhar"]
+    INICIAR --> EXECUTAR["Executar após confirmação; registrar checkpoints, progresso, evidências e currentSummary"]
     EXECUTAR --> CICLOS["Tratar mudanças, bloqueios e ajustes conforme detalhamento abaixo"]
     CICLOS --> VALIDAR["Validar contra specification; declarar resultados e limitações reais"]
-    VALIDAR --> ENTREGAR["Salvar entrega, resumo histórico, síntese, status e pendências; confirmar persistência"]
+    VALIDAR --> ENTREGAR["Coletar fronteira final; salvar finish/entrega/resumo/síntese/status e pendências atomicamente; confirmar sem impor status final"]
     ENTREGAR --> COMUNICAR["Após confirmar gravação, notificar task, áreas atualizadas, status pertinente e commentID; envio pendente se indisponível"]
     COMUNICAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
 ```
@@ -78,7 +79,7 @@ flowchart TD
     MUDANCA --> REVALIDAR
     EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário e síntese; confirmar persistência"]
     BLOQUEIO --> AVISOB["Após salvar bloqueio, notificar task, áreas atualizadas, status pertinente e commentID; declarar falha de envio"]
-    AVISOB --> RETOMADA["Ao retomar, confirmar desbloqueio e atualizar registros e plano necessário"]
+    AVISOB --> RETOMADA["Ao retomar, consultar execução/intervalo ativo; confirmar desbloqueio; se pausada, resume abre novo intervalo antes de trabalhar"]
     RETOMADA --> REVALIDAR
     EVENTO -->|Etapa pronta| TESTAR["Validar contra specification"]
     TESTAR --> RESULTADO{"Atende aos critérios?"}
@@ -89,11 +90,11 @@ flowchart TD
     AVISOR --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
     REVISAO -->|Ajustes solicitados| AJUSTES
     REVISAO -->|Aceite aplicável e critérios atendidos| CONCLUIR(["Concluir task quando cabível"])
-    ENTREGA -->|Etapa parcial| PARCIAL["Fechar atividade sem concluir task; preservar próximo passo"]
+    ENTREGA -->|Etapa parcial| PARCIAL["Salvar pause/finish com fronteira antes de trocar task, sem impor conclusão; preservar IDs e próximo passo"]
     PARCIAL -->|Retomada| REVALIDAR
     FALHA["Falha em qualquer gravação obrigatória: comunicar e suspender execução dependente"] --> RECUPERAR["Consultar estado real e reconciliar somente etapa faltante, sem duplicar"]
     RECUPERAR --> REVALIDAR
-    REVALIDAR["Reler identidade, atribuição, versão, estado e registros; não duplicar execução ativa nem reexecutar concluída"] --> PRONTO{"Task atribuída, preparada, persistida e liberada?"}
+    REVALIDAR["Reler identidade, atribuição, versão, estado e registros; não duplicar execução ativa nem reexecutar concluída"] --> PRONTO{"Task atribuída/preparada/liberada e intervalo aberto confirmado?"}
     PRONTO -->|Sim| TRABALHO
     PRONTO -->|Não| ESPERA["Aguardar condição faltante; sem atribuição, orientar Leader ou usuário a registrar e atribuir"]
 ```
@@ -217,3 +218,7 @@ Siga [bootstrap do Collaborator](beeteam://references/collaborator-bootstrap): n
 ## Transições de status
 
 Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
+
+## Fronteiras explícitas do trabalho
+
+Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](beeteam://references/execution-intervals). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.

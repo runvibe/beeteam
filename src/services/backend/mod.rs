@@ -4,6 +4,7 @@ pub mod hierarchy;
 mod kanban;
 mod overview;
 mod usage;
+mod tracking;
 mod queries;
 mod ra;
 pub mod service;
@@ -104,7 +105,9 @@ pub async fn execute(repository: &dyn ResourceStore, mut command: Command) -> Re
         crate::dto::usage::require_report(&command.body)?;
     }
     validation?;
-    let mut result = if command.operation == "reconcileSummaryUsage" {
+    let mut result = if command.operation == "reconcileTaskExecutionInterval" {
+        tracking::reconcile(&mut unit, &command).await?
+    } else if command.operation == "reconcileSummaryUsage" {
         usage::reconcile(&mut unit, &command).await?
     } else if matches!(
         command.operation.as_str(),

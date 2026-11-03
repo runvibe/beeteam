@@ -2,6 +2,7 @@ use crate::dto::backend::*;
 use serde_json::{json, Value};
 
 pub const MATERIALS: &[(&str, &str, &str)] = &[
+    ("beeteam://references/execution-intervals", "Explicit task session intervals", include_str!("../../resources/bee-team/references/execution-intervals.md")),
     (
         "beeteam://references/collaborator-bootstrap",
         "Collaborator chat-first bootstrap",
@@ -79,7 +80,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 388415e855004317b367fe55f6df47d5d6993299 plus local SQLite startup guidance (2026-11-02). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 631072a1da56265c0f1b1d062e20b61db732cda0 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS

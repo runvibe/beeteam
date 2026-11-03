@@ -104,8 +104,12 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
             return Err(Failure::missing());
         }
     }
+    if c.params.contains_key("intervalId") {
+        let interval=records.get("task_execution_intervals",c.id("intervalId")?)?;
+        if interval.reference("taskId")!=Some(c.id("taskId")?) {return Err(Failure::missing());}
+    }
     match c.operation.as_str() {
-        "getTaskUsage" | "listTaskUsageDimensions" => Ok(unit.select(c).await?.items.remove(0)),
+        "getTaskExecutionIntervalUsage" | "getTaskUsage" | "listTaskUsageDimensions" => Ok(unit.select(c).await?.items.remove(0)),
         "getAgent" => resource(records, "agents", c.id("agentId")?),
         "getTeam" => resource(records, "teams", c.id("teamId")?),
         "getBoard" => resource(records, "boards", c.id("boardId")?),

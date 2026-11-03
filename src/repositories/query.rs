@@ -8,6 +8,10 @@ use super::records::Selection;
 
 fn table(c: &Command) -> Result<&'static str> {
     Ok(match c.operation.as_str() {
+        "listTaskExecutions" => "task_executions",
+        "listTaskExecutionIntervals" | "listOpenExecutionIntervals" => "task_execution_intervals",
+        "listTaskExecutionTrackingEvents" => "task_execution_tracking_events",
+        "listTaskExecutionIntervalRevisions" => "task_execution_interval_revisions",
         "listAgents" => "agents",
         "listTeams" => "teams",
         "listBoards" => "boards",
@@ -60,8 +64,9 @@ fn base(c: &Command, table: &'static str) -> Result<QueryBuilder<Postgres>> {
     } else {
         "r.deleted_at IS NULL"
     });
+    if c.operation == "listOpenExecutionIntervals" { q.push(" AND r.state='open'"); }
     if c.operation != "listAgentActivities" && c.operation != "listTeamMembers" {
-        for key in ["boardId", "taskId", "agentId", "planId"] {
+        for key in ["boardId", "taskId", "agentId", "planId", "intervalId"] {
             if let Some(id) = c.params.get(key) {
                 if key == "taskId" && table == "events" && c.q("includeChildren") == true {
                     q.push(" AND r.task_id IN (WITH RECURSIVE tree AS (SELECT id FROM tasks WHERE id=").push_bind(c.id(key)?)
@@ -223,6 +228,7 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
 }
 
 pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> Result<Selection> {
+    if c.operation=="getTaskExecutionIntervalUsage" { return crate::repositories::tracking::postgres::select(tx,c).await; }
     if matches!(c.operation.as_str(), "getTaskUsage" | "listTaskUsageDimensions") {
         return super::usage::postgres::select(tx,c).await;
     }

@@ -119,6 +119,15 @@ async fn roundtrip(pg_source: bool, pg_dest: bool) {
             json!({"taskId":task,"content":"historical text"}),
         ));
     }
+    let summary=fixtures.iter().find(|(g,_,_)|*g=="execution_summaries").unwrap().1;
+    let execution=Uuid::now_v7();let interval=Uuid::now_v7();
+    fixtures.extend([
+        ("task_executions",execution,json!({"taskId":task,"agentId":agent,"startSummaryId":summary,"source":"fixture","sessionId":"session","coverageRootSessionId":"session","state":"finished"})),
+        ("task_execution_intervals",interval,json!({"taskId":task,"executionId":execution,"startSummaryId":summary,"endSummaryId":summary,"source":"fixture","sessionId":"session","coverageRootSessionId":"session","state":"closed","totalTokens":"9007199254740993","reason":"Literal correction"})),
+        ("task_execution_interval_counters",Uuid::now_v7(),json!({"taskId":task,"intervalId":interval,"counterKey":"global","calculation":{"segments":[{"startSummaryId":summary,"delta":{"totalTokens":"9007199254740993"}}]}})),
+        ("task_execution_tracking_events",Uuid::now_v7(),json!({"taskId":task,"executionId":execution,"intervalId":interval,"summaryId":summary,"action":"finish","evidence":[]})),
+        ("task_execution_interval_revisions",Uuid::now_v7(),json!({"taskId":task,"intervalId":interval,"revision":1,"interval":{"partialTokens":null},"reason":"audit"})),
+    ]);
     for (group, rid, payload) in &fixtures {
         store.append(id,&format!("records/{group}.jsonl"),&json!({"id":rid,"data":payload,"version":7,"createdAt":timestamp,"updatedAt":timestamp,"archivedAt":timestamp,"deletedAt":timestamp})).unwrap();
     }

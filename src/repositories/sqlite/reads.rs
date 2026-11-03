@@ -48,6 +48,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
         ("taskId", "tasks"),
         ("planId", "plans"),
         ("commentId", "comments"),
+        ("intervalId", "task_execution_intervals"),
         ("attachmentId", "attachments"),
         ("parentId", "tasks"),
         ("statusId", "statuses"),
