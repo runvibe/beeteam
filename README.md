@@ -929,4 +929,4 @@ e [CLI do VS Code](https://code.visualstudio.com/docs/configure/command-line).
 
 Ao abrir um ponto com `summaryId`, o frontend consulta somente o resumo vinculado pelo filtro exato de ID e tarefa. O tooltip exibe o status histórico e as observações de uso, separando acumulados de sessão de deltas e atribuição à tarefa. Pontos legados sem vínculo continuam sem status/consumo inferidos; carregamento, erro e resumo indisponível são estados distintos. Não há associação por proximidade de horário nem soma de snapshots.
 
-A Visão geral exibe tokens válidos, duração somada e tempo decorrido no consumo por intervalos; o indicador de tokens parciais não é exibido nesse painel.
+Logo abaixo das abas, a Visão geral exibe tokens válidos, duração somada e tempo decorrido no consumo por intervalos; o indicador de tokens parciais não é exibido nesse painel.

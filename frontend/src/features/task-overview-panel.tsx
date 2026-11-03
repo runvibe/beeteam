@@ -39,16 +39,16 @@ export function TaskOverviewPanel({
       {q.error && <Failure error={q.error} retry={() => void q.refetch()} />}
       {q.data && (
         <>
+          <TaskExecutionTracking
+            key={task.id}
+            taskId={task.id}
+            version={task.version}
+          />
           <ProgressHistory taskId={task.id} data={q.data.progressHistory} mode="chart" />
           <OverviewSubtasks
             total={q.data.directSubtasks.total}
             task={task}
             onOpen={() => onTab("children")}
-          />
-          <TaskExecutionTracking
-            key={task.id}
-            taskId={task.id}
-            version={task.version}
           />
         </>
       )}
