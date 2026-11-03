@@ -817,3 +817,5 @@ O gráfico de progresso mantém detalhes somente nos pontos, sem repetir o regis
 O consumo por intervalos usa indicadores compactos e etiquetas de cobertura, sem parágrafos explicativos. Valores ausentes aparecem como traço acessível; zero medido continua exibido como zero.
 
 A aba Resumos apresenta cada registro em um Card do shadcn, com autor, data e resultado no cabeçalho. Markdown, métricas, entregas e pendências permanecem completos, separados dentro do mesmo card.
+
+A lista de subtarefas mostra a barra e o percentual registrado em cada tarefa. Ausência de progresso mantém a barra vazia e um traço; não presume zero nem infere avanço pelo status.

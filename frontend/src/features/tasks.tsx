@@ -1,3 +1,4 @@
+import { RecordedProgress, recordedPercent } from "@/components/recorded-progress";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { SummaryUsage } from "./summary-usage";
@@ -285,6 +286,7 @@ function Children({ task }: { task: Task }) {
   );
 }
 function ChildRow({ task }: { task: Task }) {
+  const percent = recordedPercent(task.progress?.percent);
   const statuses = useList("statuses", task.boardId, { limit: 100 });
   const done = statuses.data?.items.find((s) => s.id === task.statusId)?.isDone;
   const open = useUi((s) => s.openTask);
@@ -302,6 +304,10 @@ function ChildRow({ task }: { task: Task }) {
         <p className="small-note">
           <BoardName id={task.boardId} /> · {task.childSummary.total} subtasks
         </p>
+        <div className="subtask-progress">
+          <RecordedProgress percent={percent} label={`Progresso de ${task.title}`} />
+          <span aria-hidden="true">{percent === undefined ? "—" : `${percent}%`}</span>
+        </div>
       </div>
       <AgentName id={task.executorAgentId} />
     </div>

@@ -624,3 +624,6 @@ body:has(.task-page) {
     align-self: start;
   }
 }
+
+.subtask-progress { display: flex; align-items: center; gap: 8px; width: min(100%, 220px); margin-top: 8px; }
+.subtask-progress span { min-width: 4ch; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--muted-foreground); }
