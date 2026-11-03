@@ -1,3 +1,6 @@
+import { SessionSnapshot } from "./session-snapshots";
+import { tokenCount } from "./usage-format";
+export { tokenCount } from "./usage-format";
 import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
 import type { UsageEntry } from "@/api/generated/kanban/UsageEntry";
 import type { UsageDelta } from "@/api/generated/kanban/UsageDelta";
@@ -6,11 +9,6 @@ import { formatDate } from "@/components/shared";
 import { OverviewAttribution } from "./overview-artifacts";
 import "./task-usage.css";
 
-export function tokenCount(value: string | null | undefined) {
-  return value == null
-    ? "Não informado"
-    : BigInt(value).toLocaleString("pt-BR");
-}
 export function TokenComponents({ value }: { value: Partial<UsageDelta> }) {
   return (
     <dl className="usage-components">
@@ -86,6 +84,7 @@ function UsageEntryDetails({ entry }: { entry: UsageEntry }) {
           }[o.actorRole]
         }
       </p>
+      <SessionSnapshot observation={o} />
       <p>
         Delta derivado: <strong>{tokenCount(entry.delta?.totalTokens)}</strong>
         {entry.counted

@@ -570,3 +570,13 @@ vínculo explícito com resumos: status histórico e tokens permanecem não info
 Nos resumos com baseline de sessão, o detalhe também exibe o snapshot acumulado
 registrado (entrada + saída), sem somar cache/raciocínio novamente. Essa referência
 não é atribuída à tarefa, não altera totais nem substitui o delta ausente.
+
+
+Novos resumos exigem observações medidas com acumulado `totalTokens`, modelo e
+agente identificado, em escopo de sessão ou sessão e descendentes. O frontend
+sincroniza `RecordExecution` com `SessionUsageInput`; não oferece formulário de
+criação de resumo. Detalhes, checkpoints e popovers mostram cada snapshot até
+`observedAt`, incluindo os posteriores ao baseline, sem somar checkpoints ou
+árvores e subagentes. `totalTokens` é autoritativo; no histórico sem esse campo,
+entrada + saída é exibida como cálculo legado somente quando ambos existem.
+O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.

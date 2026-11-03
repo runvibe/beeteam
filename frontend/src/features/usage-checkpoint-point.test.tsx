@@ -213,7 +213,7 @@ it("shows a session baseline snapshot without fabricating a delta or double-coun
       "Acumulado registrado de sessão (medido): Não informado tokens",
     ),
   ).toBeVisible();
-  baseline.entries[0].observation.scope = "session_tree";
+  baseline.entries[0].observation.scope = "request";
   rerender(
     <UsageCheckpointPoint
       point={{

@@ -44,4 +44,6 @@ export type UsageObservation = {
     reason: string;
     attempts: string[];
   } | null;
+  /** @description Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots. */
+  totalTokens?: string | null;
 };

@@ -1,5 +1,5 @@
 import { ChartPointPopover } from "./chart-point-popover";
-import { SessionBaseline } from "./session-baseline";
+import { SessionSnapshots } from "./session-snapshots";
 import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsageTimelineItem";
 import { OverviewAttribution } from "./overview-artifacts";
 import { tokenCount } from "./summary-usage";
@@ -51,7 +51,7 @@ export function UsageCheckpointPoint({
           Referência inicial: snapshot não somado ao delta.
         </p>
       )}
-      <SessionBaseline report={point.usageReport} />
+      <SessionSnapshots report={point.usageReport} />
     </ChartPointPopover>
   );
 }

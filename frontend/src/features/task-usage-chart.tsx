@@ -1,4 +1,4 @@
-import { SessionBaseline } from "./session-baseline";
+import { SessionSnapshots } from "./session-snapshots";
 import { UsageCheckpointPoint } from "./usage-checkpoint-point";
 import { useId, useState, useRef, useLayoutEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -261,7 +261,7 @@ export function UsageCheckpointChart({
                 do delta.
               </p>
             )}
-            <SessionBaseline report={selected.usageReport} />
+            <SessionSnapshots report={selected.usageReport} />
             <p className="small-note">
               Executor histórico da tarefa: não registrado.
             </p>
