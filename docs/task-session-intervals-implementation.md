@@ -10,7 +10,7 @@ Referência: [especificação](task-session-intervals-spec.md). Autorização de
 - [x] Frontend: apresentação separada de acumulados da sessão e consumo/duração dos intervalos.
 - [x] Skills: fronteiras explícitas, recuperação e exemplos validados contra o contrato final.
 - [x] Integração: testes focados HTTP/MCP e interface, builds e revisão de toda a alteração.
-- [ ] Publicação na branch de integração, preservando runtime e dados locais.
+- [x] Publicação na branch `codex/integrate-conversation-scroll`, preservando runtime e dados locais.
 
 ## Limites de execução
 
@@ -44,6 +44,8 @@ Implementações usam os worktrees existentes das equipes. O checkout principal 
 - `git diff --check` passou. Nenhum banco do produto foi modificado e nenhum serviço ativo foi reiniciado.
 
 ## Ativação
+
+Os commits integrados de Backend, Frontend e Skills foram publicados no remoto em `52fbb72`, juntamente com a documentação das verificações. Não houve merge na `main` nem troca do executável em execução.
 
 A implementação está no checkout de integração. A API em execução deve ser recompilada/reiniciada pelo fluxo local habitual, preservando seu banco e configuração, para oferecer os endpoints e migrações novos. O frontend em desenvolvimento lê as alterações integradas; a aceitação visual com a API local atualizada permanece distinta dos testes com fixtures/bancos isolados.
 
