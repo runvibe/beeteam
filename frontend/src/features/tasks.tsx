@@ -1,3 +1,4 @@
+import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
 import { ChildRow } from "./subtask-row";
 import { SubtaskFilterChoices } from "./subtask-filter-choices";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -5,7 +6,7 @@ import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { SummaryUsage } from "./summary-usage";
 import { useQuery } from "@tanstack/react-query";
 import { TaskDescription, TaskCurrentSummary } from "./task-header-content";
-import { TaskOverviewPanel } from "./task-overview-panel";
+import { openOverviewChildren, TaskOverviewPanel } from "./task-overview-panel";
 import { TaskRecordList } from "./task-record-list";
 import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
@@ -188,7 +189,26 @@ function TaskDetail({ id }: { id: string }) {
                       <Records resource="attachments" task={q.data} />
                     </TabsContent>
                     <TabsContent value="summaries">
-                      <Records resource="summaries" task={q.data} />
+                      {overview.data && (
+                        <ProgressHistory
+                          data={overview.data.progressHistory}
+                          mode="chart"
+                        />
+                      )}
+                      <div className="summary-index-layout">
+                        {overview.data && (
+                          <aside
+                            className="summary-index"
+                            aria-label="Índice dos resumos"
+                          >
+                            <ProgressHistory
+                              data={overview.data.progressHistory}
+                              mode="table"
+                            />
+                          </aside>
+                        )}
+                        <Records resource="summaries" task={q.data} />
+                      </div>
                     </TabsContent>
                     <TabsContent value="timeline">
                       <TaskExecutionTimeline
@@ -216,6 +236,11 @@ function TaskDetail({ id }: { id: string }) {
   );
 }
 function Children({ task }: { task: Task }) {
+  const api = useApi();
+  const overview = useQuery({
+    queryKey: ["task-overview", task.id, task.version],
+    queryFn: ({ signal }) => api.overview(task.id, signal),
+  });
   const [offset] = useUrlState<number>("children.offset", 0);
   const limit = usePageSize("children", 10);
   const [statusId, setStatus] = useUrlState<string>("children.statusId", "");
@@ -263,6 +288,17 @@ function Children({ task }: { task: Task }) {
           />
         </FilterBar>
       </TaskFilters>
+      {overview.error && (
+        <Failure error={overview.error} retry={() => void overview.refetch()} />
+      )}
+      {overview.data && (
+        <div className="overview-chart-grid">
+          <SubtaskCharts
+            data={overview.data.directSubtasks}
+            onFilter={openOverviewChildren}
+          />
+        </div>
+      )}
       <TaskRecordList
         resource="tasks"
         scope=""

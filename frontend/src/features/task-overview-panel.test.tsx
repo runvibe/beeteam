@@ -30,7 +30,7 @@ it("drills into actual server-side child filters and includes archived children 
   window.history.replaceState(
     {},
     "",
-    `/tasks/${parent.id}?tab=overview&from=%2Fboards`,
+    `/tasks/${parent.id}?tab=children&from=%2Fboards`,
   );
   render(
     <ApiProvider api={api}>
@@ -69,7 +69,7 @@ it("labels missing summary provenance and omits absent next-step and decisions",
       <TaskOverviewPanel task={task} onTab={() => {}} />
     </ApiProvider>,
   );
-  await screen.findByRole("heading", { name: "Subtarefas por status" });
+  await screen.findByRole("heading", { name: "Evolução do progresso registrado" });
   const summary = container.querySelector(
     ".task-summary-section",
   ) as HTMLElement;

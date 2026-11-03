@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { Task, Filters } from "@/api/types";
 import { currentUrl, navigate } from "@/routing/location";
-import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
+import { ProgressHistory } from "./task-overview-charts";
 import { LoadingIndicator } from "@/components/loading-indicator";
 import { Failure } from "@/components/shared";
 import "./task-overview-panel.css";
@@ -40,13 +40,11 @@ export function TaskOverviewPanel({
       {q.data && (
         <>
           <ProgressHistory data={q.data.progressHistory} />
-          <div className="overview-chart-grid">
-            <SubtaskCharts
-              data={q.data.directSubtasks}
-              onFilter={openOverviewChildren}
-            />
-          </div>
-          <OverviewSubtasks total={q.data.directSubtasks.total} task={task} onOpen={() => onTab("children")} />
+          <OverviewSubtasks
+            total={q.data.directSubtasks.total}
+            task={task}
+            onOpen={() => onTab("children")}
+          />
           <TaskExecutionTracking
             key={task.id}
             taskId={task.id}

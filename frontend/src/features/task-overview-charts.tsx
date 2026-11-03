@@ -178,8 +178,10 @@ export function SubtaskCharts({
 
 export function ProgressHistory({
   data,
+  mode = "all",
 }: {
   data: TaskOverviewData["progressHistory"];
+  mode?: "all" | "chart" | "table";
 }) {
   const title = useId(),
     description = useId();
@@ -213,13 +215,17 @@ export function ProgressHistory({
     y: 180 - point.percent * 1.5,
   }));
   return (
-    <section className="overview-chart overview-progress-history">
-      <h2>Evolução do progresso registrado</h2>
-      <p className="small-note">
-        Registros explícitos da tarefa; independente da conclusão das
-        subtarefas.
-      </p>
-      {!points.length && (
+    <section
+      className={`overview-chart overview-progress-history progress-mode-${mode}`}
+    >
+      {mode !== "table" && <h2>Evolução do progresso registrado</h2>}
+      {mode !== "table" && (
+        <p className="small-note">
+          Registros explícitos da tarefa; independente da conclusão das
+          subtarefas.
+        </p>
+      )}
+      {mode !== "table" && !points.length && (
         <p className="small-note">
           Sem histórico explícito de progresso disponível. O percentual atual
           não permite reconstruir o passado.
@@ -227,171 +233,194 @@ export function ProgressHistory({
       )}
       <>
         <div className="overview-progress-layout">
-          <div className="overview-progress-plot">
-            <svg
-              className="overview-progress-svg"
-              ref={chart}
-              viewBox={`0 0 ${width} 215`}
-              role="img"
-              aria-labelledby={`${title} ${description}`}
-            >
-              <title id={title}>
-                Evolução do progresso registrado: {points.length} registros
-              </title>
-              <desc id={description}>
-                Cada ponto é uma atualização registrada. A linha conecta
-                registros, sem estimar trabalho entre eles. Valores disponíveis
-                na tabela de registros.
-              </desc>
-              {[0, 50, 100].map((value) => (
-                <g key={value}>
-                  <line
-                    x1="40"
-                    x2={width - 32}
-                    y1={180 - value * 1.5}
-                    y2={180 - value * 1.5}
-                    className="overview-gridline"
-                  />
-                  <text x="4" y={184 - value * 1.5}>
-                    {value}
-                  </text>
-                </g>
-              ))}
-              {positions.length > 1 && (
-                <polyline
-                  points={positions.map((p) => `${p.x},${p.y}`).join(" ")}
-                  className="overview-progress-line"
-                />
-              )}
-              {positions.map((position, index) => (
-                <circle
-                  key={points[index].eventId}
-                  cx={position.x}
-                  cy={position.y}
-                  r="4"
-                  className="overview-progress-point"
-                >
-                  <title>
-                    {formatDate(points[index].occurredAt)}:{" "}
-                    {points[index].percent}%
-                  </title>
-                </circle>
-              ))}
-              <text x="40" y="208">
-                {points.length
-                  ? new Date(points[0].occurredAt).toLocaleDateString("pt-BR")
-                  : "Data do registro"}
-              </text>
-              {points.length > 1 && (
-                <text x={width - 32} y="208" textAnchor="end">
-                  {new Date(points.at(-1)!.occurredAt).toLocaleDateString(
-                    "pt-BR",
-                  )}
-                </text>
-              )}
-            </svg>
-            {positions.map((position, index) => (
-              <ChartPointPopover
-                key={points[index].eventId}
-                pointId={points[index].eventId}
-                position={position}
-                hitWidth={Math.max(
-                  1,
-                  Math.min(
-                    44,
-                    index > 0
-                      ? Math.abs(position.x - positions[index - 1].x)
-                      : 44,
-                    index < positions.length - 1
-                      ? Math.abs(positions[index + 1].x - position.x)
-                      : 44,
-                  ),
-                )}
-                className="overview-progress-hit"
-                label={`${formatDate(points[index].occurredAt)}: ${points[index].percent}%`}
-                dialogLabel="Detalhes do progresso neste ponto"
-                selected={selected?.eventId === points[index].eventId}
-                detailId={`${description}-detail`}
-                onSelect={() => setSelected(points[index].eventId)}
+          {mode !== "table" && (
+            <div className="overview-progress-plot">
+              <svg
+                className="overview-progress-svg"
+                ref={chart}
+                viewBox={`0 0 ${width} 215`}
+                role="img"
+                aria-labelledby={`${title} ${description}`}
               >
-                <strong>Progresso registrado: {points[index].percent}%</strong>
-                <OverviewAttribution
-                  actor={points[index]}
-                  date={points[index].occurredAt}
-                />
-                <p>Status no momento do registro: não registrado.</p>
-                <p>Tokens neste ponto: não informados.</p>
-                <p className="small-note">
-                  {points[index].summaryId
-                    ? "Resumo vinculado disponível na tabela de registros."
-                    : "Este evento de progresso não tem vínculo explícito com um resumo ou evidência de consumo."}
-                </p>
-                {points[index].note && <p>{points[index].note}</p>}
-              </ChartPointPopover>
-            ))}
-          </div>
-          <section
-            className="overview-history-table"
-            aria-label="Registros de progresso"
-          >
-            <h3>{data.truncated ? `${points.length} de ${data.total} registros` : `${points.length} registros`}</h3>
-            <div
-              className="overview-table-scroll"
-              tabIndex={0}
-              role="region"
-              aria-label="Tabela de registros de progresso"
-            >
-              <table>
-                <caption className="sr-only">
-                  Valores de progresso registrados
-                </caption>
-                <thead>
-                  <tr>
-                    <th>Data</th>
-                    <th>Progresso</th>
-                    <th>Nota registrada</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {!points.length && (
-                    <tr>
-                      <td colSpan={3}>Sem registros de progresso.</td>
-                    </tr>
+                <title id={title}>
+                  Evolução do progresso registrado: {points.length} registros
+                </title>
+                <desc id={description}>
+                  Cada ponto é uma atualização registrada. A linha conecta
+                  registros, sem estimar trabalho entre eles. Valores
+                  disponíveis na tabela de registros.
+                </desc>
+                {[0, 50, 100].map((value) => (
+                  <g key={value}>
+                    <line
+                      x1="40"
+                      x2={width - 32}
+                      y1={180 - value * 1.5}
+                      y2={180 - value * 1.5}
+                      className="overview-gridline"
+                    />
+                    <text x="4" y={184 - value * 1.5}>
+                      {value}
+                    </text>
+                  </g>
+                ))}
+                {positions.length > 1 && (
+                  <polyline
+                    points={positions.map((p) => `${p.x},${p.y}`).join(" ")}
+                    className="overview-progress-line"
+                  />
+                )}
+                {positions.map((position, index) => (
+                  <circle
+                    key={points[index].eventId}
+                    cx={position.x}
+                    cy={position.y}
+                    r="4"
+                    className="overview-progress-point"
+                  >
+                    <title>
+                      {formatDate(points[index].occurredAt)}:{" "}
+                      {points[index].percent}%
+                    </title>
+                  </circle>
+                ))}
+                <text x="40" y="208">
+                  {points.length
+                    ? new Date(points[0].occurredAt).toLocaleDateString("pt-BR")
+                    : "Data do registro"}
+                </text>
+                {points.length > 1 && (
+                  <text x={width - 32} y="208" textAnchor="end">
+                    {new Date(points.at(-1)!.occurredAt).toLocaleDateString(
+                      "pt-BR",
+                    )}
+                  </text>
+                )}
+              </svg>
+              {positions.map((position, index) => (
+                <ChartPointPopover
+                  key={points[index].eventId}
+                  pointId={points[index].eventId}
+                  position={position}
+                  hitWidth={Math.max(
+                    1,
+                    Math.min(
+                      44,
+                      index > 0
+                        ? Math.abs(position.x - positions[index - 1].x)
+                        : 44,
+                      index < positions.length - 1
+                        ? Math.abs(positions[index + 1].x - position.x)
+                        : 44,
+                    ),
                   )}
-                  {points.map((point) => (
-                    <tr key={point.eventId}>
-                      <td>
-                        <time dateTime={point.occurredAt}>
-                          {formatDate(point.occurredAt)}
-                        </time>
-                      </td>
-                      <td>
-                        {point.summaryId ? (
-                          <button
-                            type="button"
-                            className="underline"
-                            onClick={() => {
-                              const [path, search] = currentUrl().split("?");
-                              const query = new URLSearchParams(search);
-                              query.set("tab", "summaries");
-                              query.set("summaries.selected", point.summaryId!);
-                              navigate(`${path}?${query}`);
-                            }}
-                            aria-label={`Abrir resumo do progresso ${point.percent}%`}
-                          >
-                            {point.percent}%
-                          </button>
-                        ) : (
-                          `${point.percent}%`
-                        )}
-                      </td>
-                      <td>{point.note || "Sem nota"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  className="overview-progress-hit"
+                  label={`${formatDate(points[index].occurredAt)}: ${points[index].percent}%`}
+                  dialogLabel="Detalhes do progresso neste ponto"
+                  selected={selected?.eventId === points[index].eventId}
+                  detailId={`${description}-detail`}
+                  onSelect={() => setSelected(points[index].eventId)}
+                >
+                  <strong>
+                    Progresso registrado: {points[index].percent}%
+                  </strong>
+                  <OverviewAttribution
+                    actor={points[index]}
+                    date={points[index].occurredAt}
+                  />
+                  <p>Status no momento do registro: não registrado.</p>
+                  <p>Tokens neste ponto: não informados.</p>
+                  <p className="small-note">
+                    {points[index].summaryId
+                      ? "Resumo vinculado disponível na tabela de registros."
+                      : "Este evento de progresso não tem vínculo explícito com um resumo ou evidência de consumo."}
+                  </p>
+                  {points[index].note && <p>{points[index].note}</p>}
+                </ChartPointPopover>
+              ))}
             </div>
-          </section>
+          )}
+          {mode !== "chart" && (
+            <section
+              className="overview-history-table"
+              aria-label="Registros de progresso"
+            >
+              <h3>
+                {data.truncated
+                  ? `${points.length} de ${data.total} registros`
+                  : `${points.length} registros`}
+              </h3>
+              <div
+                className="overview-table-scroll"
+                tabIndex={0}
+                role="region"
+                aria-label="Tabela de registros de progresso"
+              >
+                <table>
+                  <caption className="sr-only">
+                    Valores de progresso registrados
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Data</th>
+                      <th>Progresso</th>
+                      <th>Nota registrada</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!points.length && (
+                      <tr>
+                        <td colSpan={3}>Sem registros de progresso.</td>
+                      </tr>
+                    )}
+                    {points.map((point) => (
+                      <tr key={point.eventId}>
+                        <td>
+                          <time dateTime={point.occurredAt}>
+                            {formatDate(point.occurredAt)}
+                          </time>
+                        </td>
+                        <td>
+                          {point.summaryId ? (
+                            <button
+                              type="button"
+                              className="underline"
+                              onClick={() => {
+                                const target = document.getElementById(
+                                  `summaries-${point.summaryId}`,
+                                );
+                                if (target) {
+                                  target.scrollIntoView({
+                                    block: "center",
+                                    behavior: "instant",
+                                  });
+                                  target.focus({ preventScroll: true });
+                                }
+                                const [path, search] = currentUrl().split("?");
+                                const query = new URLSearchParams(search);
+                                query.set("tab", "summaries");
+                                query.set(
+                                  "summaries.selected",
+                                  point.summaryId!,
+                                );
+                                navigate(`${path}?${query}`);
+                              }}
+                              aria-label={`Abrir resumo do progresso ${point.percent}%`}
+                            >
+                              {point.percent}%
+                            </button>
+                          ) : (
+                            `${point.percent}%`
+                          )}
+                        </td>
+                        <td>{point.note || "Sem nota"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
         </div>
       </>
     </section>

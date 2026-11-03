@@ -338,3 +338,15 @@
 .overview-subtask-meter .recorded-progress-track { height: 4px; }
 .overview-subtask-meter span { min-width: 4ch; font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 480px) { .overview-subtask-row { grid-template-columns: minmax(0, 1fr) 96px; gap: 10px; } }
+
+.progress-mode-chart .overview-progress-layout,
+.progress-mode-table .overview-progress-layout { grid-template-columns: minmax(0, 1fr); }
+.progress-mode-table { border-top: 0; padding-top: 0; }
+.summary-index-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 24px; align-items: start; }
+.summary-index-layout > * { min-width: 0; }
+.summary-index .overview-history-table { height: auto; max-height: 360px; }
+@media (min-width: 1056px) {
+  .summary-index-layout { grid-template-columns: minmax(220px, 0.65fr) minmax(0, 1.35fr); }
+  .summary-index { position: sticky; top: 80px; }
+  .summary-index .overview-history-table { max-height: min(600px, 65vh); }
+}
