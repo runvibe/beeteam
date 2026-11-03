@@ -1,4 +1,5 @@
 import { SubtaskStatusPie } from "./subtask-status-pie";
+import { ProgressSummary } from "./progress-summary";
 import { currentUrl, navigate } from "@/routing/location";
 import { ChartPointPopover } from "./chart-point-popover";
 import { OverviewAttribution } from "./overview-artifacts";
@@ -168,9 +169,11 @@ export function SubtaskCharts({
 
 export function ProgressHistory({
   data,
+  taskId,
   mode = "all",
 }: {
   data: TaskOverviewData["progressHistory"];
+  taskId?: string;
   mode?: "all" | "chart" | "table";
 }) {
   const title = useId(),
@@ -318,8 +321,12 @@ export function ProgressHistory({
                     actor={points[index]}
                     date={points[index].occurredAt}
                   />
-                  <p>Status no momento do registro: não registrado.</p>
-                  <p>Tokens neste ponto: não informados.</p>
+                  {taskId && points[index].summaryId ? (
+                    <ProgressSummary taskId={taskId} summaryId={points[index].summaryId!} />
+                  ) : <>
+                    <p>Status no momento do registro: não registrado.</p>
+                    <p>Tokens neste ponto: não informados.</p>
+                  </>}
                   <p className="small-note">
                     {points[index].summaryId
                       ? "Resumo vinculado disponível na tabela de registros."

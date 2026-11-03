@@ -189,6 +189,7 @@ function TaskDetail({ id }: { id: string }) {
                     <TabsContent value="summaries">
                       {overview.data && (
                         <ProgressHistory
+                          taskId={q.data.id}
                           data={overview.data.progressHistory}
                           mode="chart"
                         />

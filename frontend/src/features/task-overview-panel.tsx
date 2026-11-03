@@ -39,7 +39,7 @@ export function TaskOverviewPanel({
       {q.error && <Failure error={q.error} retry={() => void q.refetch()} />}
       {q.data && (
         <>
-          <ProgressHistory data={q.data.progressHistory} mode="chart" />
+          <ProgressHistory taskId={task.id} data={q.data.progressHistory} mode="chart" />
           <OverviewSubtasks
             total={q.data.directSubtasks.total}
             task={task}

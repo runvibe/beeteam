@@ -924,3 +924,7 @@ operacionais são reportados como indisponíveis, sem fallback para shell.
 
 Referências da implementação: [argumentos de processos Rust](https://doc.rust-lang.org/stable/std/process/struct.Command.html)
 e [CLI do VS Code](https://code.visualstudio.com/docs/configure/command-line).
+
+## Evidência nos pontos de progresso
+
+Ao abrir um ponto com `summaryId`, o frontend consulta somente o resumo vinculado pelo filtro exato de ID e tarefa. O tooltip exibe o status histórico e as observações de uso, separando acumulados de sessão de deltas e atribuição à tarefa. Pontos legados sem vínculo continuam sem status/consumo inferidos; carregamento, erro e resumo indisponível são estados distintos. Não há associação por proximidade de horário nem soma de snapshots.
