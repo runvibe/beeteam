@@ -827,3 +827,5 @@ Os filtros compactos de subtarefas têm ícones distintos para status, responsá
 Na Visão geral, a lista de subtarefas é apresentada diretamente na página, sem card nem rolagem interna: total, nome e progresso em linhas compactas. Carrega os demais itens pela rolagem da página e inclui arquivadas, acompanhando o total dos gráficos.
 
 Os gráficos de subtarefas por status e responsável ficam no início da aba Subtarefas. Resumos repete o gráfico de evolução no topo e organiza índice de registros à esquerda e cards à direita, empilhados no celular. O índice usa o vínculo explícito com o resumo.
+
+Subtarefas por status usa gráfico de pizza e legenda com quantidade e percentual. Fatias e legendas filtram a lista; o gráfico permanece vazio quando não há subtarefas.

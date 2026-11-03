@@ -1,3 +1,4 @@
+import { SubtaskStatusPie } from "./subtask-status-pie";
 import { currentUrl, navigate } from "@/routing/location";
 import { ChartPointPopover } from "./chart-point-popover";
 import { OverviewAttribution } from "./overview-artifacts";
@@ -31,24 +32,13 @@ export function SubtaskCharts({
           Filhas diretas{data.archivedIncluded ? ", incluindo arquivadas" : ""}{" "}
           · {data.total} no total
         </p>
+        <SubtaskStatusPie data={data} onSelect={statusId => onFilter({statusId})} />
         {!data.total ? (
           <>
-            <div
-              className="overview-segments overview-empty-track"
-              aria-hidden="true"
-            />
             <p className="small-note">Nenhuma subtarefa direta registrada.</p>
           </>
         ) : (
           <>
-            <div className="overview-segments" aria-hidden="true">
-              {data.byStatus.map((status, index) => (
-                <span
-                  key={status.statusId}
-                  style={{ flex: status.total, background: chartColor(index) }}
-                />
-              ))}
-            </div>
             <ul className="overview-legend">
               {data.byStatus.map((status, index) => (
                 <li key={status.statusId}>
@@ -72,7 +62,7 @@ export function SubtaskCharts({
                         </small>
                       )}
                     </span>
-                    <strong>{status.total}</strong>
+                    <strong>{status.total} · {((status.total / data.total) * 100).toLocaleString("pt-BR", {maximumFractionDigits: 1})}%</strong>
                   </Button>
                 </li>
               ))}

@@ -114,7 +114,8 @@ it("keeps empty distribution tracks without invented status or executor bars", (
       onFilter={vi.fn()}
     />,
   );
-  expect(container.querySelectorAll(".overview-empty-track")).toHaveLength(2);
+  expect(container.querySelectorAll(".overview-empty-track")).toHaveLength(1);
+  expect(container.querySelector(".subtask-status-pie circle")).toBeInTheDocument();
   expect(container.querySelectorAll(".overview-empty-track > *")).toHaveLength(
     0,
   );
