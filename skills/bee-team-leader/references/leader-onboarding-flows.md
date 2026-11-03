@@ -81,7 +81,7 @@ flowchart TD
     Y -->|Pendente| Z["Declarar pendência; recuperar só etapa faltante conforme detalhamento"]
     Y -->|Sim| TASK{"Há task registrada e atribuída para executar?"}
     TASK -->|Não| WAIT["Após prontidão, Leader registra e atribui; Collaborator aguarda notificação com commentID"]
-    TASK -->|Sim| WORK["Informar referência real da task e contexto de origem; receber confirmação de compreensão e pendências"]
+    TASK -->|Sim| WORK["Informar task/contexto; receber compreensão/pendências; exigir início e IDs confirmados antes do trabalho"]
     WORK --> R
     R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
 ```
@@ -269,3 +269,7 @@ Siga [bootstrap do Collaborator](collaborator-bootstrap.md). A ordem para novo c
 ## Transições de status
 
 Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
+
+## Fronteiras explícitas do trabalho
+
+Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](execution-intervals.md). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.

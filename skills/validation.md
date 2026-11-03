@@ -186,3 +186,11 @@ quick_validate, links contidos/existentes, paridade de referências/prompts e di
 Contrato final conferido no OpenAPI Backend: SessionUsageInput/SessionUsageObservation. Exemplo sintético baseline com totalTokens1200=input1000+output200, actor agent UUIDv7, modelo identificado, session/cumulative_snapshot/measured/shared e previousEvidenceId null passou validador local de schema incluindo allOf/oneOf e aritmética int64. Nenhuma chamada de mutação foi feita. Revisão textual independente aprovada: sem inferir executor, somar snapshots ou árvore/subagentes, nem exigir delta inicial ou consumo exclusivo de task. Falta de fonte/modelo vira comentário de impedimento, não resumo fictício.
 
 quick_validate, links contidos/existentes, paridade e diff check passaram. Build/14 unitários passaram; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente. Instalações globais com backup/manifestos/hashes não comprovam publicação do bundle nem atualização do runtime.
+
+## Execuções e intervalos da sessão — 2026-11-03
+
+Especificação principal task-session-intervals-spec.md lida integralmente e contrato task-session-intervals-contract.md alinhado. Revisão independente corrigiu comparação de contador global através de troca de modelo e recuperação de intervalo ativo com IDs existentes sem start/resume duplicado. Revisão final aprovou finish pausado, coverageLost, seleção explícita/unallocated, versão task versus intervalo e rollout opcional.
+
+Erro de estrutura YAML detectado e corrigido pela frente Backend antes da validação. Após yaml.safe_load passar, sete exemplos sintéticos (RecordExecution start completo e seis fragmentos tracking) passaram verificador local contra RecordExecution/ExecutionTrackingInput com refs/uniões/required/formatos e regras semânticas das ações. Não foram enviados à API. quick_validate, links contidos/existentes, paridade das referências/prompts e diff check passaram.
+
+Build e 14 unitários passaram neste checkout; nove alvos de integração falharam por BEE_TEST_DATABASE_URL ausente. PostgreSQL isolado da integração final fica com a coordenação; não se reivindica execução local desses testes PG. Nenhum chat, perfil ou dado BeeTeam criado. Instalações Codex com backup/manifesto/hash não comprovam bundle/runtime sincronizado.
