@@ -1,4 +1,3 @@
-import { ProjectDiscovery } from "./project-discovery";
 import type { TaskWorkScope } from "@/api/generated/kanban/TaskWorkScope";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,12 +5,15 @@ import { Markdown } from "@/components/markdown";
 import { NoData } from "@/components/shared";
 import { safeRepositoryUrl } from "./repository-links";
 import "./task-specification.css";
+import { TaskProjectActions } from "./project-actions";
 export function TaskSpecification({
   specification,
   scope,
+  taskId,
 }: {
   specification: string;
   scope?: TaskWorkScope;
+  taskId?: string;
 }) {
   const repositories =
     scope?.repositories.filter((repo) =>
@@ -58,7 +60,14 @@ export function TaskSpecification({
                   <li key={project.key}>
                     <strong>{project.name}</strong>
                     <code>{project.rootPath}</code>
-                    <ProjectDiscovery project={project} />
+                    {taskId && (
+                      <TaskProjectActions
+                        key={`${taskId}/${project.key}/${project.rootPath}`}
+                        taskId={taskId}
+                        projectKey={project.key}
+                        projectName={project.name}
+                      />
+                    )}
                   </li>
                 ))}
               </ul>

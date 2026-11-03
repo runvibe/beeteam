@@ -11,6 +11,7 @@ pub struct AppState {
 struct SharedState {
     backend: crate::services::backend::service::BackendService,
     changes: crate::services::changes::ChangeFeed,
+    local_projects: crate::services::local_projects::LocalProjectService,
 }
 
 impl AppState {
@@ -24,10 +25,27 @@ impl AppState {
         database: DatabaseRepository,
         discovery: Arc<dyn crate::repositories::contracts::ProjectDiscovery>,
     ) -> Self {
+        Self::with_project_adapters(
+            database,
+            discovery,
+            Arc::new(crate::repositories::local_projects::LocalProjectOpener),
+        )
+    }
+    pub fn with_project_adapters(
+        database: DatabaseRepository,
+        discovery: Arc<dyn crate::repositories::contracts::ProjectDiscovery>,
+        opener: Arc<dyn crate::repositories::contracts::ProjectOpener>,
+    ) -> Self {
         let (resources, source) = database.stores();
         let changes = crate::services::changes::ChangeFeed::new(source);
+        let local_projects =
+            crate::services::local_projects::LocalProjectService::new(resources.clone(), opener);
         let backend = crate::services::backend::service::BackendService::new(resources, discovery);
-        let inner = SharedState { backend, changes };
+        let inner = SharedState {
+            backend,
+            changes,
+            local_projects,
+        };
         Self {
             inner: Arc::new(inner),
             transfers: None,
@@ -53,6 +71,9 @@ impl AppState {
 
     pub fn backend(&self) -> &crate::services::backend::service::BackendService {
         &self.inner.backend
+    }
+    pub fn local_projects(&self) -> &crate::services::local_projects::LocalProjectService {
+        &self.inner.local_projects
     }
 }
 

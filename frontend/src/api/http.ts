@@ -35,6 +35,15 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    openProject: (taskId, projectKey, application) =>
+      request(
+        `/tasks/${segment(taskId)}/projects/${segment(projectKey)}/open`,
+        {
+          method: "POST",
+          body: JSON.stringify({ application }),
+          headers: { "X-Bee-Local-Action": "open-project" },
+        },
+      ),
     executionIntervalUsage: (taskId, signal) =>
       request(`/tasks/${segment(taskId)}/execution-interval-usage`, { signal }),
     executionIntervals: (taskId, pagination = {}, signal) =>

@@ -1,0 +1,307 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Bee Team local project actions",
+    "version": "1.0.0",
+    "description": "HTTP-only explicit local desktop actions. Not exposed through MCP. Requires a loopback-bound listener, real loopback peer, loopback Host and browser Origin (when present), no forwarding headers, and X-Bee-Local-Action. Actor metadata is not authentication. Do not expose this route through remote tunnels or reverse proxies."
+  },
+  "paths": {
+    "/api/v1/tasks/{taskId}/projects/{projectKey}/open": {
+      "post": {
+        "operationId": "openLocalProject",
+        "summary": "Request Explorer or VS Code for a registered project folder on the Windows server host",
+        "description": "Resolves the current registered task/project; accepts no path or executable. Does not mutate task state. Starts an absolute known executable directly without a shell. HTTP 202 confirms process start, not GUI visibility. No automatic retry or persistent idempotency; check the desktop after an uncertain network result. Windows standard VS Code installation locations are supported. Other OSes return 501.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "taskId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "projectKey",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-Bee-Local-Action",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open-project"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenProjectRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Process start requested; not proof of a visible window",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenProjectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Request rejected or local action unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "details": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProjectApplication": {
+        "type": "string",
+        "enum": [
+          "explorer",
+          "vscode"
+        ]
+      },
+      "OpenProjectRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "application"
+        ],
+        "properties": {
+          "application": {
+            "$ref": "#/components/schemas/ProjectApplication"
+          }
+        }
+      },
+      "OpenProjectResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "projectKey",
+          "application",
+          "outcome"
+        ],
+        "properties": {
+          "projectKey": {
+            "type": "string"
+          },
+          "application": {
+            "$ref": "#/components/schemas/ProjectApplication"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "requested"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

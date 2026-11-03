@@ -161,6 +161,7 @@ function TaskDetail({ id }: { id: string }) {
                     </TabsContent>
                     <TabsContent value="specification">
                       <TaskSpecification
+                        taskId={q.data.id}
                         specification={q.data.specification}
                         scope={q.data.workScope}
                       />

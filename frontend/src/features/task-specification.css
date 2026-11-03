@@ -26,6 +26,8 @@
   white-space: pre-wrap;
   font-size: 12px;
 }
+.project-actions { display: grid; gap: 6px; min-width: 0; }
+.project-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
 .scope-records a {
   text-decoration: underline;
   text-underline-offset: 3px;

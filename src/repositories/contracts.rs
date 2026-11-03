@@ -127,3 +127,12 @@ pub trait ProjectDiscovery: Send + Sync {
         roots: &'a [String],
     ) -> Pin<Box<dyn Future<Output = Vec<GitInspection>> + Send + 'a>>;
 }
+
+/// OS integration only; the service resolves registered projects before calling.
+pub trait ProjectOpener: Send + Sync {
+    fn open<'a>(
+        &'a self,
+        root: &'a str,
+        application: crate::dto::local_projects::ProjectApplication,
+    ) -> RepositoryFuture<'a, ()>;
+}

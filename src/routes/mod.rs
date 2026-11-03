@@ -13,6 +13,7 @@ mod data_transfer;
 #[cfg(feature = "mcp")]
 mod data_transfer_mcp;
 mod frontend;
+mod local_projects;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
@@ -73,10 +74,18 @@ pub fn create_router_with_frontend(
                         "../../docs/data-transfer-openapi.json"
                     ))
                     .expect("bundled transfer OpenAPI"),
+                )
+                .external_url_unchecked(
+                    "/openapi/local-projects.json",
+                    serde_json::from_str::<serde_json::Value>(include_str!(
+                        "../../docs/local-projects-openapi.json"
+                    ))
+                    .expect("bundled local projects OpenAPI"),
                 ),
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
+        .merge(local_projects::router(config.host.is_loopback()))
         .merge(data_transfer::router(state.clone()));
 
     let api_router = if config.otel_enabled {

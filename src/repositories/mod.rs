@@ -26,3 +26,4 @@ mod tracking;
 
 pub mod project_discovery;
 pub mod local_git;
+pub mod local_projects;

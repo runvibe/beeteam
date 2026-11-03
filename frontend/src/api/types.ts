@@ -100,6 +100,11 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  openProject(
+    taskId: string,
+    projectKey: string,
+    application: import("./local-projects").ProjectApplication,
+  ): Promise<import("./local-projects").OpenProjectResponse>;
   executionIntervalUsage(
     taskId: string,
     signal?: AbortSignal,

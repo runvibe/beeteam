@@ -6,3 +6,4 @@ pub mod changes;
 
 pub mod data_transfer;
 pub mod frontend;
+pub mod local_projects;

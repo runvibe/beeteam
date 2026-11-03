@@ -36,3 +36,23 @@ and real registered data, without seed/reset or service restarts.
 6. Navigate pages and browser back/forward; query edits must not fade the page.
 7. Repeat with OS reduced motion enabled: no spring/resize/fade delay, same keyboard
    and pointer behavior. Existing source/output build warning is not visual acceptance.
+
+## Local project action acceptance after API rollout (Leader/user)
+
+Pending: no Explorer or VS Code windows were opened during automated tests. The
+isolated SQLite/real-loopback HTTP tests inject a recording OS adapter; filesystem
+tests verify local directory handling and literal command arguments without spawning.
+
+1. Use a real registered project in the specification. Confirm only its name/path
+   and two actions appear, repository links still work and no application opens on
+   initial render or refresh.
+2. Click Explorer once, then VS Code once after the first request settles. Confirm
+   the actual registered folder opens on the API host. A 202 response/notice alone
+   is not evidence that the desktop displayed the folder.
+3. Verify a missing folder and an unavailable VS Code installation show an error;
+   no success notice. Do not alter/delete real project folders to fabricate cases.
+4. Verify mobile wrapping and keyboard access, disabled controls while pending,
+   and no automatic retry after an uncertain network response.
+5. API must be updated before this action can work. Existing services were not
+   restarted by the collaborator. Non-Windows/remote-bound deployments deliberately
+   reject local launch; no shell or browser protocol fallback is provided.

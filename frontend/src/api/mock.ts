@@ -267,6 +267,13 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async openProject() {
+      throw new ApiError(
+        501,
+        "local_action_unavailable",
+        "A abertura local de projetos exige conexão com a API do Bee Team.",
+      );
+    },
     async executionIntervalUsage() {
       throw new ApiError(
         501,

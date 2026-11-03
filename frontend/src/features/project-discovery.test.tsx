@@ -20,7 +20,7 @@ const project = {
   rootPath: "C:/worktrees/used/src",
   discovery,
 };
-it("shows only the explicitly used checkout and branch, without promoting common directory to a project", () => {
+it("shows only the registered project path without discovery details or unrelated repositories", () => {
   render(
     <TaskSpecification
       specification="Spec"
@@ -49,9 +49,10 @@ it("shows only the explicitly used checkout and branch, without promoting common
     />,
   );
   expect(screen.getByText("C:/worktrees/used/src")).toBeVisible();
-  expect(screen.getByText("C:/worktrees/used")).toBeVisible();
-  expect(screen.getByText("feature/used")).toBeVisible();
-  expect(screen.getByText("Worktree Git")).toBeVisible();
+  expect(screen.queryByText("C:/worktrees/used")).toBeNull();
+  expect(screen.queryByText("feature/used")).toBeNull();
+  expect(screen.queryByText("Worktree Git")).toBeNull();
+  expect(screen.queryByText(/Verificado em/)).toBeNull();
   expect(screen.queryByText("C:/main/.git")).toBeNull();
   expect(screen.queryByText("Other worktree")).toBeNull();
 });
@@ -61,7 +62,7 @@ it.each([
   ["unavailable", "git_unavailable", "Git indisponível para inspeção."],
   ["unavailable", "timeout", "Descoberta excedeu o tempo limite."],
 ] as const)(
-  "distinguishes %s/%s beside the project and hides repositories",
+  "keeps the registered path for %s/%s without auxiliary discovery text",
   (status, reason, label) => {
     render(
       <TaskSpecification
@@ -89,12 +90,13 @@ it.each([
         }}
       />,
     );
-    expect(screen.getByText(label)).toBeVisible();
+    expect(screen.queryByText(label)).toBeNull();
+    expect(screen.getByText(project.rootPath)).toBeVisible();
     expect(screen.getByText("App")).toBeVisible();
     expect(screen.queryByRole("heading", { name: "Repositórios" })).toBeNull();
   },
 );
-it("distinguishes legacy discovery from a confirmed absence of Git", () => {
+it("shows the declared legacy project without inventing discovery information", () => {
   render(
     <TaskSpecification
       specification=""
@@ -105,8 +107,7 @@ it("distinguishes legacy discovery from a confirmed absence of Git", () => {
       }}
     />,
   );
-  expect(
-    screen.getByText("Descoberta Git ainda não registrada."),
-  ).toBeVisible();
+  expect(screen.queryByText("Descoberta Git ainda não registrada.")).toBeNull();
+  expect(screen.getByText("C:/legacy")).toBeVisible();
   expect(screen.queryByText("Sem Git nesta pasta.")).toBeNull();
 });

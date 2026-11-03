@@ -894,9 +894,33 @@ pelo backend. Repositórios e metadados Git são saída derivada, nunca campos d
 A interface atual não oferece formulário de criação/edição de escopo. A demonstração
 rejeita essa escrita como indisponível, sem simular uma inspeção do filesystem.
 
-Nos cards, cada projeto conserva sua pasta declarada e mostra o checkout/worktree usado,
-branch e data da inspeção. Sem Git, pasta inacessível, Git indisponível, limites de inspeção
-e descoberta legada ausente são estados distintos. O card Repositórios é ocultado quando
+Nos cards, cada projeto conserva seu nome e sua pasta declarada, sem repetir raiz do
+checkout, branch ou data da inspeção. Os metadados de descoberta continuam no contrato
+da API. O card Repositórios é ocultado quando
 não há repositórios vinculados aos projetos declarados. Outras worktrees e o diretório Git
 compartilhado não são apresentados como projetos envolvidos. Commits históricos continuam
 usando seus snapshots originais, independentemente de novas descobertas.
+
+Os botões **Abrir no Explorer** e **Abrir no VS Code** enviam uma ação explícita para
+o computador Windows onde a API Bee Team está rodando. A API resolve a pasta pela
+task UUID e chave do projeto cadastrado; o navegador não envia caminho nem comando.
+O card mostra espera e erro e evita cliques concorrentes. A confirmação significa
+solicitação enviada ao processo, não comprovação de uma janela visível. A demonstração
+não simula abertura. Contrato: [local-projects-openapi.json](docs/local-projects-openapi.json),
+também disponível em `/openapi/local-projects.json`.
+
+A rota POST exige listener e conexão loopback, Host local, Origin local quando
+presente e `X-Bee-Local-Action: open-project`; rejeita headers de encaminhamento.
+Isso protege o uso direto local e a prévia Vite local. Não exponha essa rota por
+túneis/proxies remotos; metadados de ator não são autenticação. Não há ferramenta MCP
+de abertura, mudança de banco, retry automático ou idempotência persistente: após
+timeout, confira o desktop antes de repetir. Pastas inexistentes, arquivos, caminhos
+relativos/UNC/dispositivos e aplicações ausentes retornam erro. O adaptador verifica
+a pasta antes de iniciar um `.exe` absoluto, sem `cmd`, PowerShell, `.cmd` ou busca
+em PATH. Explorer usa `%SystemRoot%/explorer.exe`; VS Code usa a instalação padrão
+em `%LOCALAPPDATA%/Programs/Microsoft VS Code`, `%ProgramFiles%/Microsoft VS Code`
+ou `%ProgramFiles(x86)%/Microsoft VS Code`. Outras instalações e outros sistemas
+operacionais são reportados como indisponíveis, sem fallback para shell.
+
+Referências da implementação: [argumentos de processos Rust](https://doc.rust-lang.org/stable/std/process/struct.Command.html)
+e [CLI do VS Code](https://code.visualstudio.com/docs/configure/command-line).
