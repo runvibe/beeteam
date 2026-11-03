@@ -379,3 +379,14 @@ Antes do pacote opcional, documentar em `docs/usage-source-capabilities.md` rece
 - Histórico anterior sem prova fica unavailable; importação opt-in exige sessão exata, sem capturar transcrição inteira.
 
 **Autorrevisão do plano:** requisitos de cinco ambientes, modelo em andamento/concluído, Leader, agregação global, cache/subagente, timestamp/qualidade, custo separado e política de Skills cobertos nas tarefas1–7. A revisão de31/10 exige investigação antes do fallback, leitura direta de primeira classe, relatório persistido e cache/invalidação, com casos de teste nas tarefas1,4,5. Os cinco riscos do Review Focus têm casos de teste explícitos. Fontes documentais não foram tratadas como smoke local. Nenhuma funcionalidade de tokens foi implementada por este documento.
+
+
+## Revisão de requisito — 2026-11-02
+
+A autorização nova exige total numérico e agente responsável em todo novo resumo.
+O fallback deste plano que aceitava unavailable para criar resumo foi substituído;
+permanece apenas para ler dados antigos e representar evidência histórica incompleta.
+Não fabricar zero nem deduzir consumo pelo texto/contexto/créditos. A pesquisa oficial
+foi renovada em [fontes por harness](../../harness-token-sources.md), separando fonte
+existente de integração/coletor efetivamente instalado. O contrato definitivo de
+novas gravações será documentado junto à validação compartilhada HTTP/MCP.
