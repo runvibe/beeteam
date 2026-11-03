@@ -368,3 +368,21 @@ Server-owned statusObserved captures the destination status id/name/isDone at
 registration and is never rehydrated from the current status, including on late
 usage reconciliation. Exact saved POST replays retain their historical response;
 PUT position has no persisted replay mechanism and still enforces If-Match.
+
+
+### Real usage guidance bundle — 2026-11-02
+
+Bundled Skills source `88f3a44f6ad0c9dc07db817604144d7b176e3e10` requires actual
+model/harness/agent/token/source evidence before a new summary, using the current
+usageReport.entries payload. This is stricter skill guidance, not a new schema:
+no tokenUsage/totalTokens field was added, and baseline-only snapshots are not
+rejected merely for being initial. The user's decision on session cumulative
+versus task-separated total remains pending. When reliable evidence is absent,
+record the impediment through a comment rather than inventing usage or reporting
+successful summary persistence. Existing SQLite startup/bootstrap overlays remain.
+
+Validation of this bundle: 26 library and 2 SQLite MCP tests passed; the one
+PostgreSQL-only SDK test was explicitly excluded (no isolated database configured).
+Cargo build with mcp passed. Catalog regenerated (71 tools/15 resources/3 prompts),
+13 source/bundle SHA256 pairs verified. No runtime restart, product data mutation
+or global skill installation was performed by the backend bundle update.

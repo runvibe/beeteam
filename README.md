@@ -574,3 +574,15 @@ capability research, not an installed collector. The new required numeric-total
 and responsible-agent write contract is pending the user's scope decision
 (session cumulative consumption versus task-separated consumption); the current
 runtime validation has not been changed by this documentation-only update.
+
+
+### Real usage guidance bundle — 2026-11-02
+
+Bundled Skills source `88f3a44f6ad0c9dc07db817604144d7b176e3e10` requires actual
+model/harness/agent/token/source evidence before a new summary, using the current
+usageReport.entries payload. This is stricter skill guidance, not a new schema:
+no tokenUsage/totalTokens field was added, and baseline-only snapshots are not
+rejected merely for being initial. The user's decision on session cumulative
+versus task-separated total remains pending. When reliable evidence is absent,
+record the impediment through a comment rather than inventing usage or reporting
+successful summary persistence. Existing SQLite startup/bootstrap overlays remain.
