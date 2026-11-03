@@ -879,8 +879,8 @@ tipo vazio ou binário genérico usa a extensão como fallback. Tipos desconheci
 Removidos preservam descrição e data de remoção, com badge, nome secundário e download
 desabilitado. No mobile, nomes quebram linha e a ação fica abaixo dos metadados.
 
-Na Conversa, cada mensagem mostra tempo relativo no canto superior direito, acima da
-identidade do autor. Reutiliza o relógio compartilhado de `RelativeTime`; hover/foco
+Na Conversa, cada mensagem mostra tempo relativo no canto superior direito, na mesma
+faixa do avatar e da identidade do autor, com alinhamento pelo topo. Reutiliza o relógio compartilhado de `RelativeTime`; hover/foco
 revela a data e hora exatas em tooltip, e clique/toque abre o mesmo dado em popover.
 Nomes longos quebram linha sem sobrepor a data; ordenação e ancoragem de scroll são preservadas.
 

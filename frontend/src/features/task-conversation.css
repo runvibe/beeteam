@@ -31,15 +31,14 @@
 }
 .conversation-message header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
+  grid-template-columns: auto minmax(0, 1fr) fit-content(35%);
+  align-items: start;
   gap: 12px;
   margin-bottom: 16px;
   min-width: 0;
 }
 .conversation-timestamp {
-  grid-column: 1 / -1;
-  grid-row: 1;
+  min-width: 0;
   justify-self: end;
   text-align: right;
   cursor: pointer;
