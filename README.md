@@ -869,6 +869,9 @@ na URL e no filtro padrão com tags/limpar/docking. A lista reutiliza o scroll i
 lotes de 10. Metadados removidos são identificados; seu botão de download fica desabilitado.
 Os controles usam ícones distintos de busca, tipo de arquivo e lixeira, mantendo tooltip,
 nome acessível e indicação de filtro ativo tanto no desktop quanto no mobile.
+As tags expandidas respeitam a borda direita do resumo, incluindo o estado recolhido e
+o dock mobile, sem aumentar a largura rolável da página. Regressão visual documentada em
+[filter-summary-overflow-qa.md](docs/superpowers/plans/2026-11-03-filter-summary-overflow-qa.md).
 Cada arquivo aparece em uma linha compacta com ícone de categoria, nome em destaque,
 tamanho legível, autoria/data e ação de download. O MIME determina a categoria; somente
 tipo vazio ou binário genérico usa a extensão como fallback. Tipos desconhecidos mantêm
