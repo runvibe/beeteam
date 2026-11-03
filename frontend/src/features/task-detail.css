@@ -585,3 +585,42 @@ body:has(.task-page) {
   vertical-align: -2px;
   flex-shrink: 0;
 }
+
+/* Each historical summary is a distinct document, including its own metadata. */
+.task-execution-summary {
+  margin-block: 8px 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.summary-record-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.summary-record-header .record-author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  min-width: 0;
+}
+.summary-record-header [data-slot="badge"] { justify-self: start; }
+.summary-record-content {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.summary-record-content > section + section {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+.summary-record-content h4 { font-weight: 600; }
+@media (min-width: 640px) {
+  .summary-record-header { grid-template-columns: minmax(0, 1fr) auto; }
+  .summary-record-header .record-author { grid-column: 1; }
+  .summary-record-header [data-slot="badge"] {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    justify-self: end;
+    align-self: start;
+  }
+}

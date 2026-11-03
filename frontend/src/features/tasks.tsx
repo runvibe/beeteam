@@ -1,3 +1,4 @@
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { SummaryUsage } from "./summary-usage";
 import { useQuery } from "@tanstack/react-query";
@@ -377,8 +378,9 @@ function RecordContent({
   if (kind === "summaries") {
     const r = row as Resources["summaries"];
     return (
-      <article className="record task-execution-summary">
-        <section className="task-reading-block">
+      <Card role="article" aria-label={`Resumo de ${formatDate(r.createdAt)}`} className="task-execution-summary">
+        <CardHeader className="summary-record-header">
+          <CardTitle>Resumo do trabalho</CardTitle>
           <Author id={r.actorId} date={r.createdAt} />
           <Badge variant="secondary">
             {
@@ -389,6 +391,9 @@ function RecordContent({
               }[r.outcome]
             }
           </Badge>
+        </CardHeader>
+        <CardContent className="summary-record-content">
+        <section className="task-reading-block" aria-label="Conteúdo do resumo">
           <Markdown headingOffset={2} sectionDividers>
             {r.summary}
           </Markdown>
@@ -426,7 +431,8 @@ function RecordContent({
             <p className="small-note">Sem pendências registradas.</p>
           )}
         </section>
-      </article>
+        </CardContent>
+      </Card>
     );
   }
   const r = row as Resources["timeline"];
