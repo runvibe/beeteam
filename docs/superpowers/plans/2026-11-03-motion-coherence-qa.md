@@ -16,6 +16,12 @@
 - Integration exposed a test race: navigation asserted visibility before Motion's
   first animation frame. It now waits for visibility rather than only DOM presence;
   all 18 focused navigation/project/dialog/preset tests passed without timeout changes.
+- All 366 frontend tests across 94 files passed in sorted batches of ten files
+  with two workers. Single full-suite invocations stalled in this local harness;
+  batching preserved every test and assertion.
+- Runtime review found a separate progress-tooltip defect: linked summaries were
+  still shown with hardcoded missing-status/tokens text. This was returned for
+  correction before final acceptance; the interval total itself was correct.
 
 Task: `01a189de-f0fd-7e10-92d1-5bc61be7cfba`.
 
