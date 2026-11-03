@@ -114,3 +114,24 @@
 .usage-point-arrow {
   fill: var(--popover);
 }
+
+.chart-point-trigger .chart-point-hexagon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  transform: translate(-50%, -50%);
+  color: var(--ring);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  pointer-events: none;
+  opacity: 0;
+}
+.chart-point-trigger:focus-visible,
+.chart-point-trigger[aria-pressed="true"] { outline: none; }
+.chart-point-trigger:focus-visible::before,
+.chart-point-trigger[aria-pressed="true"]::before { content: none; }
+.chart-point-trigger:focus-visible .chart-point-hexagon,
+.chart-point-trigger[aria-pressed="true"] .chart-point-hexagon { opacity: 1; }

@@ -1,3 +1,4 @@
+import { Hexagon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Popover } from "radix-ui";
 import "./task-usage-chart.css";
@@ -50,7 +51,7 @@ export function ChartPointPopover({
         <button
           ref={anchor}
           type="button"
-          className={className}
+          className={`${className} chart-point-trigger`}
           data-missing={missing}
           aria-pressed={selected}
           aria-expanded={open}
@@ -76,7 +77,9 @@ export function ChartPointPopover({
               setOpen(false);
             }
           }}
-        />
+        >
+          <Hexagon className="chart-point-hexagon" aria-hidden="true" />
+        </button>
       </Popover.Anchor>
       <Popover.Portal>
         <Popover.Content

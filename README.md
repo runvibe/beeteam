@@ -934,3 +934,5 @@ Logo abaixo das abas, a Visão geral exibe tokens válidos, duração somada e t
 Os botões de abertura de projetos usam apenas ícones com nomes acessíveis, sem mensagem de sucesso; falhas continuam visíveis. O SVG do Visual Studio Code vem do pacote oficial em https://code.visualstudio.com/brand.
 
 A timeline de execução mantém a rolagem horizontal dentro do próprio gráfico em telas estreitas, sem o seletor e o bloco de detalhes repetidos abaixo. Detalhes nos pontos e histórico de revisões continuam disponíveis.
+
+Os pontos selecionados ou em foco nos gráficos e na timeline usam o mesmo hexágono SVG da marca, mantendo o ponto central e a área de interação.

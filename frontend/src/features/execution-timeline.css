@@ -53,8 +53,7 @@
 }
 .execution-timeline-point:focus-visible,
 .execution-timeline-point[aria-pressed="true"] {
-  outline: 2px solid var(--ring);
-  outline-offset: -5px;
+  outline: none;
 }
 .execution-timeline-detail {
   display: grid;
