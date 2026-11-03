@@ -865,6 +865,8 @@ Arquivos oferece busca literal por nome, tipo MIME exato aplicado ao confirmar e
 de removidos, usando parâmetros reais `fileName`, `mediaType`, `includeRemoved`, combinados
 na URL e no filtro padrão com tags/limpar/docking. A lista reutiliza o scroll infinito em
 lotes de 10. Metadados removidos são identificados; seu botão de download fica desabilitado.
+Os controles usam ícones distintos de busca, tipo de arquivo e lixeira, mantendo tooltip,
+nome acessível e indicação de filtro ativo tanto no desktop quanto no mobile.
 
 ### Projetos, repositórios e commits de execução
 

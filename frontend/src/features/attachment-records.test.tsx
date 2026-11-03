@@ -40,6 +40,18 @@ it("combines URL filters literally, includes removed metadata and clears standar
     </ApiProvider>,
   );
   await screen.findByText("Relatório_100%.PDF");
+  for (const [name, icon] of [
+    ["Nome do arquivo", "search"],
+    ["Tipo de arquivo", "file-type"],
+    ["Arquivos removidos", "trash-2"],
+  ]) {
+    const trigger = screen.getByRole("button", { name });
+    expect(trigger).toHaveAttribute("data-active", "true");
+    expect(trigger.querySelector(`.lucide-${icon}`)).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+  }
   expect(screen.queryByText("Relatório_100%.txt")).toBeNull();
   expect(list.mock.calls[0][2]).toMatchObject({
     fileName: "100%",
@@ -75,7 +87,7 @@ it("applies an arbitrary exact MIME only on submit and keeps filename search in 
   await userEvent.type(input, "pdf");
   expect(input).toBeInvalid();
   await userEvent.click(screen.getByRole("button", { name: "Aplicar tipo" }));
-  expect(list.mock.calls.every(call => !call[2]?.mediaType)).toBe(true);
+  expect(list.mock.calls.every((call) => !call[2]?.mediaType)).toBe(true);
   await userEvent.clear(input);
   await userEvent.type(input, "application/vnd.custom+json");
   expect(list.mock.calls.every((call) => !call[2]?.mediaType)).toBe(true);

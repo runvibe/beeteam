@@ -23,11 +23,15 @@ import {
   Briefcase,
   GitBranch,
   ListFilter,
+  FileType,
+  Trash2,
   Check,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
 const icons: Record<string, LucideIcon> = {
+  "Tipo de arquivo": FileType,
+  "Arquivos removidos": Trash2,
   "Status da subtarefa": CircleDot,
   "Responsável da subtarefa": UserRound,
   "Bloqueio das subtarefas": Ban,
