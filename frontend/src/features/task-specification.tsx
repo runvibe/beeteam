@@ -1,3 +1,4 @@
+import { ProjectDiscovery } from "./project-discovery";
 import type { TaskWorkScope } from "@/api/generated/kanban/TaskWorkScope";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,10 @@ export function TaskSpecification({
   specification: string;
   scope?: TaskWorkScope;
 }) {
+  const repositories =
+    scope?.repositories.filter((repo) =>
+      scope.projects.some((project) => repo.projectKeys.includes(project.key)),
+    ) ?? [];
   const empty = !scope
     ? "Escopo não informado neste registro."
     : scope.status === "not_applicable"
@@ -53,6 +58,7 @@ export function TaskSpecification({
                   <li key={project.key}>
                     <strong>{project.name}</strong>
                     <code>{project.rootPath}</code>
+                    <ProjectDiscovery project={project} />
                   </li>
                 ))}
               </ul>
@@ -61,47 +67,49 @@ export function TaskSpecification({
             )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              <h2>Repositórios</h2>
-            </CardTitle>
-            {scope?.status === "to_identify" && !!scope.repositories.length && (
-              <Badge variant="secondary">Identificação parcial</Badge>
-            )}
-          </CardHeader>
-          <CardContent>
-            {scope?.repositories.length ? (
-              <ul className="scope-records">
-                {scope.repositories.map((repo) => {
-                  const href = safeRepositoryUrl(repo.webUrl);
-                  const projects = scope.projects.filter((project) =>
-                    repo.projectKeys.includes(project.key),
-                  );
-                  return (
-                    <li key={repo.key}>
-                      {href ? (
-                        <a href={href} target="_blank" rel="noreferrer">
-                          {repo.name}
-                        </a>
-                      ) : (
-                        <strong>{repo.name}</strong>
-                      )}
-                      {!!projects.length && (
-                        <span className="small-note">
-                          Projetos:{" "}
-                          {projects.map((project) => project.name).join(", ")}
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="small-note">{empty}</p>
-            )}
-          </CardContent>
-        </Card>
+        {!!scope && !!repositories.length && (
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                <h2>Repositórios</h2>
+              </CardTitle>
+              {scope?.status === "to_identify" && !!repositories.length && (
+                <Badge variant="secondary">Identificação parcial</Badge>
+              )}
+            </CardHeader>
+            <CardContent>
+              {repositories.length ? (
+                <ul className="scope-records">
+                  {repositories.map((repo) => {
+                    const href = safeRepositoryUrl(repo.webUrl);
+                    const projects = scope.projects.filter((project) =>
+                      repo.projectKeys.includes(project.key),
+                    );
+                    return (
+                      <li key={repo.key}>
+                        {href ? (
+                          <a href={href} target="_blank" rel="noreferrer">
+                            {repo.name}
+                          </a>
+                        ) : (
+                          <strong>{repo.name}</strong>
+                        )}
+                        {!!projects.length && (
+                          <span className="small-note">
+                            Projetos:{" "}
+                            {projects.map((project) => project.name).join(", ")}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="small-note">{empty}</p>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </aside>
     </div>
   );

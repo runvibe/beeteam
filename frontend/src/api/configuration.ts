@@ -50,6 +50,12 @@ export function patchRecord<K extends keyof Patches>(
     );
   if (resource === "tasks") {
     const patch = body as Patches["tasks"];
+    if (patch.workScope !== undefined)
+      throw new ApiError(
+        501,
+        "unavailable",
+        "A descoberta de projetos requer a API conectada.",
+      );
     if (
       patch.specification !== undefined &&
       typeof patch.specification !== "string"

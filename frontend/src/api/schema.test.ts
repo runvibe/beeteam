@@ -39,6 +39,55 @@ describe("OpenAPI response conformance", () => {
       ])
         expect(validate(row), JSON.stringify(validate.errors)).toBe(true);
     });
+  it("requires project-only input for creation and keeps discovery server-owned", () => {
+    const validate = ajv.getSchema("kanban#/components/schemas/CreateTask")!;
+    const task = makeSeed().tasks[0];
+    const input = {
+      title: "Task",
+      authorAgentId: task.authorAgentId,
+      executorAgentId: task.executorAgentId,
+      coordinationContext: {
+        mode: "manual",
+        conversationRef: "conversation",
+        approvalRef: "approved",
+      },
+    };
+    const project = { key: "app", name: "App", rootPath: "C:/worktrees/app" };
+    expect(validate(input)).toBe(false);
+    expect(
+      validate({ ...input, workScope: { projects: [project] } }),
+      JSON.stringify(validate.errors),
+    ).toBe(true);
+    for (const workScope of [
+      { projects: [] },
+      { projects: [project], repositories: [] },
+      { projects: [project], status: "identified" },
+      { projects: [{ ...project, discovery: { status: "not_git" } }] },
+    ])
+      expect(validate({ ...input, workScope })).toBe(false);
+    const patch = ajv.getSchema("kanban#/components/schemas/PatchTask")!;
+    expect(patch({ workScope: { projects: [project] } })).toBe(true);
+    expect(
+      patch({ workScope: { projects: [project], repositories: [] } }),
+    ).toBe(false);
+  });
+  it("does not simulate local Git discovery in the demo adapter", async () => {
+    const task = makeSeed().tasks[0];
+    const api = createMockApi({ delay: 0 });
+    await expect(
+      api.patch(
+        "tasks",
+        task.id,
+        {
+          workScope: {
+            projects: [{ key: "app", name: "App", rootPath: "C:/app" }],
+          },
+        },
+        task.version,
+      ),
+    ).rejects.toMatchObject({ status: 501 });
+    expect((await api.get("tasks", task.id)).workScope).toBeUndefined();
+  });
   it("requires a non-null usage report when recording a new summary", () => {
     const validate = ajv.getSchema(
       "kanban#/components/schemas/RecordExecution",
@@ -145,7 +194,9 @@ describe("OpenAPI response conformance", () => {
     };
     expect(validate(input), JSON.stringify(validate.errors)).toBe(true);
     expect(validate({ ...input, commitReport: undefined })).toBe(false);
-    expect(validate({ ...input, commitReport: { hasCommits: true, commits: [] } })).toBe(false);
+    expect(
+      validate({ ...input, commitReport: { hasCommits: true, commits: [] } }),
+    ).toBe(false);
     for (const patch of [
       { totalTokens: undefined },
       { totalTokens: null },

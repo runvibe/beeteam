@@ -53,7 +53,7 @@ it.each([undefined, "to_identify", "not_applicable"] as const)(
       />,
     );
     expect(screen.getByRole("heading", { name: "Projetos" })).toBeVisible();
-    expect(screen.getByRole("heading", { name: "Repositórios" })).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "Repositórios" })).toBeNull();
     expect(
       screen.getAllByText(
         status === "not_applicable"
@@ -62,7 +62,7 @@ it.each([undefined, "to_identify", "not_applicable"] as const)(
             ? "A identificar."
             : "Escopo não informado neste registro.",
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
   },
 );
 it("preserves historical commits, named/detached/unknown branches and full hashes", () => {
@@ -140,4 +140,23 @@ it("permits only declared published provider/hash URLs without credentials or gu
   expect(
     safeCommitUrl({ ...gitlab, commitUrl: gitlab.commitUrl + "0" }),
   ).toBeUndefined();
+});
+
+it("keeps declared projects when there are no repositories", () => {
+  render(
+    <TaskSpecification
+      specification="Pesquisa independente de Git"
+      scope={{
+        status: "identified",
+        projects: [
+          { key: "research", name: "Pesquisa", rootPath: "C:/research" },
+        ],
+        repositories: [],
+      }}
+    />,
+  );
+  expect(screen.getByText("Pesquisa")).toBeVisible();
+  expect(screen.getByText("C:/research")).toBeVisible();
+  expect(screen.queryByRole("heading", { name: "Repositórios" })).toBeNull();
+  expect(screen.queryByRole("link")).toBeNull();
 });

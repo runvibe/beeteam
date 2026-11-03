@@ -3,4 +3,5 @@ export type WorkProject = {
   key: string;
   name: string;
   rootPath: string;
+  discovery?: import("./ProjectGitDiscovery").ProjectGitDiscovery;
 };

@@ -869,3 +869,16 @@ lotes de 10. Metadados removidos são identificados; seu botão de download fica
 ### Projetos, repositórios e commits de execução
 
 Tarefas aceitam `workScope` opcional com projetos, raízes absolutas de checkout e repositórios relacionados explicitamente. Cada novo resumo exige `commitReport`: `hasCommits: false` com lista vazia ou `true` com referências completas. Branches nomeadas, detached HEAD e estado desconhecido permanecem distintos; os nomes e URLs dos repositórios são copiados para o histórico. Links exigem publicação declarada com verificação remota, provedor e URL web explícitos e hash completo correspondente. O servidor não acessa Git nem confirma publicação. Registros antigos sem declaração continuam ausentes; replays salvos são preservados. Contrato e exemplos em [summary-repository-contract.md](docs/summary-repository-contract.md).
+
+A entrada de escopo agora contém somente `workScope.projects` (key, nome e pasta raiz
+absoluta). A criação exige projetos; PATCH substitui a lista e solicita nova descoberta
+pelo backend. Repositórios e metadados Git são saída derivada, nunca campos de entrada.
+A interface atual não oferece formulário de criação/edição de escopo. A demonstração
+rejeita essa escrita como indisponível, sem simular uma inspeção do filesystem.
+
+Nos cards, cada projeto conserva sua pasta declarada e mostra o checkout/worktree usado,
+branch e data da inspeção. Sem Git, pasta inacessível, Git indisponível, limites de inspeção
+e descoberta legada ausente são estados distintos. O card Repositórios é ocultado quando
+não há repositórios vinculados aos projetos declarados. Outras worktrees e o diretório Git
+compartilhado não são apresentados como projetos envolvidos. Commits históricos continuam
+usando seus snapshots originais, independentemente de novas descobertas.
