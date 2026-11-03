@@ -26,6 +26,8 @@ it("opens explicit events with keyboard, mouse and touch while preserving equal 
       renderDetail={(event) => <p>Resumo {event.id}</p>}
     />,
   );
+  expect(screen.queryByRole("combobox")).toBeNull();
+  expect(screen.queryByText("Resumo pause")).toBeNull();
   await user.tab();
   expect(
     within(screen.getByRole("dialog")).getByText("Resumo start"),

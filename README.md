@@ -932,3 +932,5 @@ Ao abrir um ponto com `summaryId`, o frontend consulta somente o resumo vinculad
 Logo abaixo das abas, a Visão geral exibe tokens válidos, duração somada e tempo decorrido no consumo por intervalos; o indicador de tokens parciais não é exibido nesse painel.
 
 Os botões de abertura de projetos usam apenas ícones com nomes acessíveis, sem mensagem de sucesso; falhas continuam visíveis. O SVG do Visual Studio Code vem do pacote oficial em https://code.visualstudio.com/brand.
+
+A timeline de execução mantém a rolagem horizontal dentro do próprio gráfico em telas estreitas, sem o seletor e o bloco de detalhes repetidos abaixo. Detalhes nos pontos e histórico de revisões continuam disponíveis.

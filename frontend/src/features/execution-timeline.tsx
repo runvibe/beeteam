@@ -72,34 +72,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
           ))}
         </div>
       </div>
-      {selected && (
-        <>
-          <label className="usage-chart-selection">
-            Transição
-            <select
-              aria-label="Transição de execução"
-              value={selected.id}
-              onChange={(e) => setSelectedId(e.target.value)}
-            >
-              {events.map((event, index) => (
-                <option key={event.id} value={event.id}>
-                  {index + 1}. {event.label} ·{" "}
-                  {event.occurredAt
-                    ? formatDate(event.occurredAt)
-                    : "Horário não informado"}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div
-            id={`${id}-detail`}
-            className="execution-timeline-detail"
-            aria-live="polite"
-          >
-            {renderDetail(selected)}
-          </div>
-        </>
-      )}
+
     </section>
   );
 }
