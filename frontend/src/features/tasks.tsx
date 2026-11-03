@@ -1,3 +1,4 @@
+import { SummaryBrowser } from "./summary-index";
 import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
 import { ChildRow } from "./subtask-row";
 import { SubtaskFilterChoices } from "./subtask-filter-choices";
@@ -195,20 +196,9 @@ function TaskDetail({ id }: { id: string }) {
                           mode="chart"
                         />
                       )}
-                      <div className="summary-index-layout">
-                        {overview.data && (
-                          <aside
-                            className="summary-index"
-                            aria-label="Índice dos resumos"
-                          >
-                            <ProgressHistory
-                              data={overview.data.progressHistory}
-                              mode="table"
-                            />
-                          </aside>
-                        )}
+                      <SummaryBrowser taskId={q.data.id} progress={overview.data?.progressHistory.items ?? []}>
                         <Records resource="summaries" task={q.data} />
-                      </div>
+                      </SummaryBrowser>
                     </TabsContent>
                     <TabsContent value="timeline">
                       <TaskExecutionTimeline

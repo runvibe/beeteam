@@ -266,29 +266,24 @@ it("resumes visible autofill after live refresh cancels an in-flight next page",
   }
 });
 
-it("loads older pages to reveal and focus the selected summary", async () => {
+it("queries selected summary directly without traversing or scrolling", async () => {
   window.history.replaceState(
     {},
     "",
-    "/tasks/example?tab=summaries&summaries.selected=older",
+    "/tasks/example?summaries.selected=older",
   );
   const api = createMockApi({ delay: 0 });
   const scroll = vi.fn();
   HTMLElement.prototype.scrollIntoView = scroll;
-  vi.spyOn(api, "list").mockImplementation(
-    async (_resource, _scope, filters) =>
+  const list = vi.spyOn(api, "list").mockImplementation(
+    async (_r, _s, f) =>
       ({
-        items: [
-          {
-            ...makeSeed().summaries[0],
-            id: filters?.offset ? "older" : "newer",
-          },
-        ],
-        offset: filters?.offset ?? 0,
+        items: [{ ...makeSeed().summaries[0], id: f?.id || "newer" }],
+        offset: 0,
         limit: 1,
-        total: 2,
-        hasMore: !filters?.offset,
-        nextOffset: filters?.offset ? null : 1,
+        total: 1,
+        hasMore: false,
+        nextOffset: null,
       }) as never,
   );
   render(
@@ -303,12 +298,9 @@ it("loads older pages to reveal and focus the selected summary", async () => {
       </TaskRecordList>
     </ApiProvider>,
   );
-  await waitFor(() =>
-    expect(document.activeElement?.getAttribute("data-task-list-row")).toBe(
-      "older",
-    ),
-  );
-  expect(scroll).toHaveBeenCalledWith({ block: "center", behavior: "instant" });
-  expect(document.activeElement).toHaveClass("task-record-selected");
+  await screen.findByText("older");
+  expect(list).toHaveBeenCalledTimes(1);
+  expect(list.mock.calls[0][2]).toMatchObject({ id: "older", offset: 0 });
+  expect(scroll).not.toHaveBeenCalled();
   window.history.replaceState({}, "", "/");
 });

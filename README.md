@@ -836,3 +836,11 @@ A Visão geral mostra somente o gráfico de evolução; a tabela de registros fi
 ### Filtro exato de resumo
 
 `GET /api/v1/tasks/{taskId}/execution-summaries?id={summaryId}` e MCP `listExecutionSummarys` aceitam `id` UUIDv7 opcional. O filtro combina com a tarefa e os demais filtros antes da contagem e paginação; seleção fora da primeira página não exige percorrer páginas intermediárias. ID inexistente, excluído ou de outra tarefa retorna página vazia; formato inválido ou UUID de outra versão retorna 400. Remover `id` restaura a coleção paginada. Os predicados existentes SQLite/PostgreSQL são reutilizados, sem migração. Esta entrega valida SQLite isolado e paridade HTTP/MCP; PostgreSQL foi dispensado neste escopo e não foi executado. Publicar código não atualiza a API em execução.
+Na aba Resumos, o índice compacto tem paginação própria e permanece disponível ao filtrar.
+Selecionar um título aplica `summaries.selected` ao filtro padrão Resumo e consulta
+`GET /api/v1/tasks/{taskId}/execution-summaries?id={summaryId}` diretamente, sem buscar
+páginas intermediárias ou rolar até o registro. Limpar o filtro restaura a lista; voltar e
+avançar restauram a seleção pela URL. Requer a API com suporte ao filtro `id`.
+Os títulos são trechos da primeira linha não vazia, exibidos como texto simples. As barras
+usam somente vínculos explícitos `summaryId` no histórico disponível: ausência de vínculo
+ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.

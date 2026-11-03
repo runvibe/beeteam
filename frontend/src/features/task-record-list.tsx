@@ -1,5 +1,5 @@
 import { useUrlState } from "@/routing/query";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
@@ -28,16 +28,21 @@ export function TaskRecordList<
 }) {
   const api = useApi();
   const [selected] = useUrlState("summaries.selected", "");
-  const revealed = useRef("");
-  const root = useRef<HTMLDivElement>(null);
+  const target = resource === "summaries" ? selected : "";
+  const effectiveFilters = target ? { ...filters, id: target } : filters;
   const sentinel = useRef<HTMLDivElement>(null);
-  const identity = JSON.stringify([resource, scope, filters]);
+  const identity = JSON.stringify([resource, scope, effectiveFilters]);
   const query = useInfiniteQuery({
-    queryKey: [resource, scope, "task-infinite", filters],
+    queryKey: [resource, scope, "task-infinite", effectiveFilters],
     // Old paginated links must not hide rows now that there is no previous-page control.
     initialPageParam: 0,
     queryFn: ({ pageParam, signal }) =>
-      api.list(resource, scope, { ...filters, offset: pageParam }, signal),
+      api.list(
+        resource,
+        scope,
+        { ...effectiveFilters, offset: pageParam },
+        signal,
+      ),
     getNextPageParam: (last, pages) =>
       nextPageOffset(last, pages, (row) => row.id),
   });
@@ -48,33 +53,6 @@ export function TaskRecordList<
         .map((row) => [row.id, row]) ?? [],
     ).values(),
   ];
-  const target = resource === "summaries" ? selected : "";
-  useEffect(() => {
-    if (
-      !target ||
-      revealed.current === target ||
-      query.isPending ||
-      query.error
-    )
-      return;
-    const node = Array.from(
-      root.current?.querySelectorAll<HTMLElement>("[data-task-list-row]") ?? [],
-    ).find((element) => element.dataset.taskListRow === target);
-    if (node) {
-      revealed.current = target;
-      node.scrollIntoView({ block: "center", behavior: "instant" });
-      node.focus({ preventScroll: true });
-    } else if (query.hasNextPage && !query.isFetching) {
-      void query.fetchNextPage({ cancelRefetch: false });
-    }
-  }, [
-    target,
-    query.dataUpdatedAt,
-    query.isFetching,
-    query.hasNextPage,
-    query.isPending,
-    query.error,
-  ]);
   useInfiniteScroll({
     sentinel,
     getRoot: () =>
@@ -90,7 +68,7 @@ export function TaskRecordList<
     loadMore: () => query.fetchNextPage({ cancelRefetch: false }),
   });
   return (
-    <div ref={root}>
+    <div>
       {rows.map((row) => (
         <div
           key={row.id}
@@ -109,7 +87,7 @@ export function TaskRecordList<
         !rows.some((row) => row.id === target) && (
           <p role="status">Resumo não encontrado nesta tarefa.</p>
         )}
-      {!query.isPending && !query.error && !rows.length && (
+      {!target && !query.isPending && !query.error && !rows.length && (
         <NoData title={empty} description={emptyDescription} />
       )}
       <div

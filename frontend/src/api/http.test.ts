@@ -147,3 +147,15 @@ it("requests usage and dimension pages without client-side aggregation", async (
     "/api/v1/tasks/task/usage/dimensions?offset=100&limit=100&kind=model",
   );
 });
+
+it("requests exact summary ID within the task collection", async () => {
+  const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
+  await createHttpApi({ fetch: fetcher }).list("summaries", "task", {
+    id: "summary",
+    offset: 0,
+    limit: 10,
+  });
+  expect(fetcher.mock.calls[0][0]).toBe(
+    "/api/v1/tasks/task/execution-summaries?id=summary&offset=0&limit=10",
+  );
+});

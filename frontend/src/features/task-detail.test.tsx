@@ -166,7 +166,7 @@ it("keeps execution summary content grouped with complete deliveries and pending
   expect(within(deliveries).getByText("Notas da descoberta")).toBeVisible();
   const pending = screen.getByRole("region", { name: "Pendências" });
   expect(within(pending).getAllByRole("listitem")).toHaveLength(2);
-  expect(screen.getByText(/Pontos de entrada inventariados/)).toBeVisible();
+  expect(within(screen.getByRole("region", { name: "Conteúdo do resumo" })).getByText(/Pontos de entrada inventariados/)).toBeVisible();
   expect(new URLSearchParams(location.search).get("tab")).toBe("summaries");
 });
 

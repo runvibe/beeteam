@@ -63,6 +63,7 @@ export interface TaskParticipant {
   agentDeleted: boolean;
 }
 export interface Filters {
+  id?: string;
   offset?: number;
   limit?: number;
   title?: string;
