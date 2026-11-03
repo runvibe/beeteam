@@ -35,6 +35,25 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    executionIntervalUsage: (taskId, signal) =>
+      request(`/tasks/${segment(taskId)}/execution-interval-usage`, { signal }),
+    executionIntervals: (taskId, pagination = {}, signal) =>
+      request(
+        `/tasks/${segment(taskId)}/execution-intervals` + query(pagination),
+        { signal },
+      ),
+    executionTrackingEvents: (taskId, pagination = {}, signal) =>
+      request(
+        `/tasks/${segment(taskId)}/execution-tracking-events` +
+          query(pagination),
+        { signal },
+      ),
+    executionIntervalRevisions: (taskId, intervalId, pagination = {}, signal) =>
+      request(
+        `/tasks/${segment(taskId)}/execution-intervals/${segment(intervalId)}/revisions` +
+          query(pagination),
+        { signal },
+      ),
     usage: (taskId, pagination = {}, signal) =>
       request(`/tasks/${segment(taskId)}/usage` + query(pagination), {
         signal,

@@ -1,0 +1,60 @@
+.task-execution-tracking {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+  padding-block: 24px;
+  border-block: 1px solid var(--border);
+}
+.task-execution-tracking h2,
+.task-execution-tracking h3,
+.task-execution-tracking h4 {
+  font-weight: 600;
+}
+.execution-records,
+.execution-event-detail,
+.execution-interval-detail,
+.execution-interval-record {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.execution-interval-record {
+  padding-block: 16px;
+}
+.execution-counter {
+  padding-block: 16px;
+  border-top: 1px solid var(--border);
+}
+.execution-counter > div {
+  display: grid;
+  gap: 10px;
+  padding-block: 12px;
+}
+.task-execution-tracking summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding-block: 12px;
+}
+.task-execution-tracking summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.task-execution-timeline {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding-block: 16px;
+}
+
+.task-execution-tracking .usage-totals {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+.task-execution-tracking .usage-totals dd {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.execution-interval-detail .usage-totals dd {
+  font-size: 14px;
+}

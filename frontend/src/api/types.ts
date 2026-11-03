@@ -97,6 +97,34 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  executionIntervalUsage(
+    taskId: string,
+    signal?: AbortSignal,
+  ): Promise<
+    import("./generated/kanban/TaskExecutionIntervalUsage").TaskExecutionIntervalUsage
+  >;
+  executionIntervals(
+    taskId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<
+    import("./generated/kanban/TaskExecutionIntervalPage").TaskExecutionIntervalPage
+  >;
+  executionTrackingEvents(
+    taskId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<
+    import("./generated/kanban/TaskExecutionTrackingEventPage").TaskExecutionTrackingEventPage
+  >;
+  executionIntervalRevisions(
+    taskId: string,
+    intervalId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<
+    import("./generated/kanban/TaskExecutionIntervalRevisionPage").TaskExecutionIntervalRevisionPage
+  >;
   usage(
     taskId: string,
     pagination?: Pick<Filters, "offset" | "limit">,

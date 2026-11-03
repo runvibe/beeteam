@@ -777,3 +777,21 @@ O acumulado permanece separado dos deltas e dos totais atribuídos à tarefa.
 Especificação proposta, ainda não implementada: [consumo por tarefa com intervalos de sessão](docs/task-session-intervals-spec.md).
 
 As skills passam a orientar intervalos explícitos de trabalho: início salvo antes de executar, checkpoint, pausa antes de trocar tarefa, retomada em novo intervalo e encerramento independente do aceite/status final. IDs retornados e evidências vinculam as fronteiras; texto, status e proximidade temporal não substituem os vínculos. Payload/leituras dependem do contrato Backend e não são inventados pela skill.
+
+A visão geral inclui **Consumo por intervalos da tarefa**, alimentado pelas leituras
+`execution-interval-usage`, `execution-intervals` e `execution-tracking-events`.
+Totais globais vêm da API, independentemente das páginas carregadas: intervalos
+válidos, parcelas parciais, cobertura e durações observada somada/decorrida permanecem
+separados dos acumulados de sessão. A linha do tempo mostra início, checkpoint,
+pausa, retomada e fim com status histórico, autor, modelos, fonte, coleta e resumo
+explicitamente referenciado. Pontos suportam mouse, teclado e toque; o espaçamento
+visual separa registros e não representa duração. A seleção também fica disponível
+abaixo do gráfico, que permanece visível sem dados.
+
+O detalhe de intervalo mostra fronteiras observadas e recebidas, evidências,
+segmentos e diferenças calculadas pelo servidor. Resumos e intervalos são resolvidos
+por UUID, nunca por proximidade de horário. Revisões anteriores podem ser consultadas
+sem substituir o cálculo atual. Estados abertos/incompletos/ausentes não viram zero,
+e encerramento enquanto pausado não cria nova coleta. O frontend não abre, encerra,
+reconcilia nem preenche intervalos legados automaticamente. Rollout depende da API
+com esses endpoints; falhas e indisponibilidade são exibidas com tentativa novamente.

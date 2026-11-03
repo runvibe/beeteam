@@ -1,3 +1,4 @@
+import { TaskExecutionTracking } from "./task-execution-tracking";
 import { TaskUsagePanel } from "./task-usage";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -55,6 +56,11 @@ export function TaskOverviewPanel({
             />
           </div>
           <ProgressHistory data={q.data.progressHistory} />
+          <TaskExecutionTracking
+            key={task.id}
+            taskId={task.id}
+            version={task.version}
+          />
           <TaskUsagePanel
             taskId={task.id}
             version={task.version}

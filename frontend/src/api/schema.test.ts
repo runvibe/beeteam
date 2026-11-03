@@ -174,6 +174,48 @@ describe("OpenAPI response conformance", () => {
       legacy({ ...old, modelId: null, actor: { kind: "human", id: null } }),
     ).toBe(true);
   });
+  it("keeps execution tracking additive and permits a paused finish without a fabricated interval", () => {
+    const validate = ajv.getSchema(
+      "kanban#/components/schemas/ExecutionSummary",
+    )!;
+    const row = makeSeed().summaries[0];
+    expect(validate(row)).toBe(true);
+    expect(
+      validate({
+        ...row,
+        executionTracking: {
+          action: "finish",
+          executionId: row.id,
+          intervalId: null,
+          executionState: "finished",
+          intervalState: null,
+        },
+      }),
+      JSON.stringify(validate.errors),
+    ).toBe(true);
+    const usage = ajv.getSchema(
+      "kanban#/components/schemas/TaskExecutionIntervalUsage",
+    )!;
+    const empty = {
+      validTotalTokens: null,
+      partialTotalTokens: null,
+      observedDurationMs: null,
+      elapsedDurationMs: null,
+      coverage: {
+        totalIntervals: 0,
+        validIntervals: 0,
+        openIntervals: 0,
+        incompleteIntervals: 0,
+        invalidIntervals: 0,
+        untrackedSummaries: 1,
+      },
+    };
+    expect(usage(empty)).toBe(true);
+    expect(
+      usage({ ...empty, validTotalTokens: "0", observedDurationMs: "0" }),
+    ).toBe(true);
+    expect(usage({ ...empty, validTotalTokens: "-1" })).toBe(false);
+  });
   it("projections conform after querying", async () => {
     const api = createMockApi({ delay: 0 });
     for (const [schema, value] of [
