@@ -99,3 +99,27 @@ it("keeps an expanded stack during successive removals and transfers keyboard fo
     screen.queryByRole("button", { name: /filtros ativos/ }),
   ).not.toBeInTheDocument();
 });
+
+it("returns focus to the toggle before collapsing a focused tag on Escape", async () => {
+  const user = userEvent.setup();
+  render(
+    <FilterSummary
+      filters={[
+        { label: "Busca", value: "Projeto" },
+        { label: "Papel", value: "Colaborador", onRemove: () => {} },
+      ]}
+    />,
+  );
+  const toggle = screen.getByRole("button", { name: /Expandir/ });
+  await user.tab();
+  await user.tab();
+  expect(
+    screen.getByRole("button", { name: /Remover filtro Papel/ }),
+  ).toHaveFocus();
+  await user.keyboard("{Escape}");
+  expect(toggle).toHaveFocus();
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(
+    document.getElementById(toggle.getAttribute("aria-controls")!),
+  ).toHaveAttribute("inert");
+});

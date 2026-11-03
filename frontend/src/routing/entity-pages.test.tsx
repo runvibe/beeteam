@@ -131,6 +131,9 @@ it("opens collaborators from a team footer with team and role filters and a retu
   expect(params.get("agents.teamId")).toBe(ids.team);
   expect(params.get("agents.role")).toBe("collaborator");
   expect(params.get("from")).toBe("/teams?teams.name=Produto");
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Expandir 2 filtros ativos" }),
+  );
   expect(
     await screen.findByRole("button", { name: /Remover filtro Time:/ }),
   ).toBeInTheDocument();

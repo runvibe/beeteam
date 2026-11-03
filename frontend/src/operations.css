@@ -341,7 +341,6 @@ progress {
   gap: 0;
   border-left: 1px solid var(--input);
   box-shadow: var(--shadow-xl);
-  animation: none !important;
 }
 .detail-scroll {
   overflow: auto;

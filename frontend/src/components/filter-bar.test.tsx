@@ -122,6 +122,9 @@ it("removes just one active filter from its tag with keyboard, resets pages and 
   expect(location.search).toContain("agents.role=collaborator");
   expect(location.search).toContain("agents.limit=1");
   expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Remover filtro Papel: Colaborador" }),
+  ).toHaveFocus();
   await user.click(
     screen.getByRole("button", { name: "Remover filtro Papel: Colaborador" }),
   );

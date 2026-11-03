@@ -1,0 +1,15 @@
+/* Radix owns unmounting and focus. Its Presence observes this CSS exit, so
+   dialogs do not retain an inert modal tree through a second presence layer. */
+.dialog-motion[data-state="closed"] {
+  animation: dialog-motion-exit var(--motion-exit) ease-in both;
+}
+@keyframes dialog-motion-exit {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog-motion {
+    animation: none;
+  }
+}

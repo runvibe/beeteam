@@ -12,7 +12,12 @@ import { motion, useIsPresent, useReducedMotion } from "motion/react";
 import { Popover, Tooltip } from "radix-ui";
 import { FilterX } from "lucide-react";
 import { Button } from "./ui/button";
-import { filterSpring } from "./motion-settings";
+import {
+  filterSpring,
+  feedbackTransition,
+  motionTiming,
+  surfaceMotion,
+} from "./motion-presets";
 import { FilterDirectionContext } from "./filter-context";
 
 // Fragments are common in the search slot; keep each control's stable identity
@@ -58,12 +63,12 @@ export function ClearFilterMotion({ onClear }: { onClear: () => void }) {
       animate={{
         opacity: 1,
         scale: 1,
-        transition: { duration: reduced ? 0 : 0.14, delay: reduced ? 0 : 0.18 },
+        transition: feedbackTransition(reduced, motionTiming.enter),
       }}
       exit={{
         opacity: 0,
         scale: reduced ? 1 : 0.96,
-        transition: { duration: reduced ? 0 : 0.1 },
+        transition: { duration: reduced ? 0 : motionTiming.exit },
       }}
       style={{ pointerEvents: present ? undefined : "none" }}
     >
@@ -135,23 +140,7 @@ export function AnimatedFilterContent({
         className="filter-popover"
         inert={!present || undefined}
         aria-hidden={!present || undefined}
-        initial={{
-          opacity: reduced ? 1 : 0,
-          y: reduced ? 0 : 4,
-          scale: reduced ? 1 : 0.98,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          transition: { duration: reduced ? 0 : 0.15, ease: "easeOut" },
-        }}
-        exit={{
-          opacity: 0,
-          y: reduced ? 0 : 4,
-          scale: reduced ? 1 : 0.98,
-          transition: { duration: reduced ? 0 : 0.1 },
-        }}
+        {...surfaceMotion(reduced)}
         style={{
           transformOrigin: "var(--radix-popover-content-transform-origin)",
           pointerEvents: present ? undefined : "none",

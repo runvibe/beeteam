@@ -5,6 +5,10 @@ import { Tooltip } from "radix-ui";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { FilterSummaryContext } from "./filter-context";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { feedbackTransition, motionCssVariables } from "./motion-presets";
+
+const MotionInput = motion.create(Input);
 
 export function InlineFilterSearch({
   label,
@@ -16,6 +20,7 @@ export function InlineFilterSearch({
   onChange: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const reduced = useReducedMotion();
   const input = useRef<HTMLInputElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const id = useId();
@@ -33,8 +38,15 @@ export function InlineFilterSearch({
     trigger.current?.focus();
   };
   return (
-    <div className="inline-filter-search" data-open={open}>
-      <Input
+    <div
+      className="inline-filter-search"
+      data-open={open}
+      style={motionCssVariables}
+    >
+      <MotionInput
+        initial={false}
+        animate={{ opacity: open ? 1 : 0 }}
+        transition={feedbackTransition(reduced)}
         ref={input}
         id={id}
         type="search"
@@ -67,7 +79,22 @@ export function InlineFilterSearch({
             data-active={!!value || undefined}
             onClick={() => (open ? close() : setOpen(true))}
           >
-            {open ? <X aria-hidden="true" /> : <Search aria-hidden="true" />}
+            <span className="inline-search-glyph" aria-hidden="true">
+              <AnimatePresence initial={false}>
+                <motion.span
+                  key={open ? "close" : "search"}
+                  initial={{
+                    opacity: reduced ? 1 : 0,
+                    scale: reduced ? 1 : 0.85,
+                  }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: reduced ? 1 : 0.85 }}
+                  transition={feedbackTransition(reduced)}
+                >
+                  {open ? <X /> : <Search />}
+                </motion.span>
+              </AnimatePresence>
+            </span>
             {!!value && !open && (
               <span className="filter-active-dot" aria-hidden="true" />
             )}

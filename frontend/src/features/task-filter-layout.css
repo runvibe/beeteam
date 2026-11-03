@@ -100,14 +100,6 @@
   max-height: min(240px, calc(var(--filter-dock-height) - 44px));
   padding-left: 0;
 }
-.task-filter-slot[data-docked="true"] .filter-summary-tag {
-  transform: translateX(-4px);
-}
-.task-filter-slot[data-docked="true"]
-  .filter-summary[data-expanded="true"]
-  .filter-summary-tag {
-  transform: translateX(0);
-}
 @media (prefers-reduced-motion: reduce) {
   .task-filter-slot[data-docked="true"] .filter-summary-tag {
     transform: none;

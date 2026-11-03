@@ -4,6 +4,9 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 
 import { Button } from "@/components/ui/button";
 import { XIcon } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { motionCssVariables, motionTiming } from "../motion-presets";
+import "./dialog-motion.css";
 
 function Dialog({
   ...props
@@ -33,15 +36,27 @@ function DialogOverlay({
   className,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+  const reduced = useReducedMotion();
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "dialog-motion fixed inset-0 isolate z-50 bg-black/10 supports-backdrop-filter:backdrop-blur-xs",
         className,
       )}
       {...props}
-    />
+      asChild
+    >
+      <motion.div
+        style={motionCssVariables}
+        initial={{ opacity: reduced ? 1 : 0 }}
+        animate={{ opacity: 1 }}
+        transition={{
+          duration: reduced ? 0 : motionTiming.enter,
+          ease: "easeOut",
+        }}
+      />
+    </DialogPrimitive.Overlay>
   );
 }
 
@@ -56,6 +71,7 @@ function DialogContent({
   showCloseButton?: boolean;
 }) {
   const opener = React.useRef<HTMLElement | null>(null);
+  const reduced = useReducedMotion();
   const panel = className?.includes("detail-dialog");
   return (
     <DialogPortal>
@@ -63,7 +79,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "dialog-motion fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 outline-none sm:max-w-sm",
           className,
         )}
         onOpenAutoFocus={(event) => {
@@ -78,20 +94,31 @@ function DialogContent({
           }
         }}
         {...props}
+        asChild
       >
-        {panel ? <div className="detail-scroll">{children}</div> : children}
-        {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button
-              variant="ghost"
-              className="absolute top-2 right-2"
-              size="icon-sm"
-            >
-              <XIcon />
-              <span className="sr-only">Fechar</span>
-            </Button>
-          </DialogPrimitive.Close>
-        )}
+        <motion.div
+          style={motionCssVariables}
+          initial={{ opacity: reduced ? 1 : 0 }}
+          animate={{ opacity: 1 }}
+          transition={{
+            duration: reduced ? 0 : motionTiming.enter,
+            ease: "easeOut",
+          }}
+        >
+          {panel ? <div className="detail-scroll">{children}</div> : children}
+          {showCloseButton && (
+            <DialogPrimitive.Close data-slot="dialog-close" asChild>
+              <Button
+                variant="ghost"
+                className="absolute top-2 right-2"
+                size="icon-sm"
+              >
+                <XIcon />
+                <span className="sr-only">Fechar</span>
+              </Button>
+            </DialogPrimitive.Close>
+          )}
+        </motion.div>
       </DialogPrimitive.Content>
     </DialogPortal>
   );

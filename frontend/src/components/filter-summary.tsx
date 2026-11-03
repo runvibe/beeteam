@@ -3,10 +3,14 @@ import {
   useState,
   useRef,
   useLayoutEffect,
+  useContext,
   type MouseEvent,
 } from "react";
 import type { ActiveFilter } from "./filter-context";
 import { X } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { FilterDirectionContext } from "./filter-context";
+import { filterSpring, motionCssVariables } from "./motion-presets";
 
 function RemoveFilter({
   filter,
@@ -40,6 +44,9 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
   const [focused, setFocused] = useState(false);
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const reduced = useReducedMotion();
+  const direction = useContext(FilterDirectionContext);
   const pendingFocus = useRef<number | null>(null);
   const [area, setArea] = useState<{
     width: number;
@@ -92,11 +99,16 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
     <div
       ref={root}
       className="filter-summary"
-      style={
-        area
-          ? { width: area.width, minHeight: area.height, pointerEvents: "auto" }
-          : undefined
-      }
+      style={{
+        ...motionCssVariables,
+        ...(area
+          ? {
+              width: area.width,
+              minHeight: area.height,
+              pointerEvents: "auto" as const,
+            }
+          : {}),
+      }}
       data-expanded={expanded}
       onPointerEnter={(event) => {
         if (event.pointerType === "mouse") setHovered(true);
@@ -120,6 +132,10 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
       }}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          // Focus must leave the list before it becomes inert during collapse.
+          toggle.current?.focus({ preventScroll: true });
           setPinned(false);
           setFocused(false);
           setHovered(false);
@@ -129,6 +145,7 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
     >
       <div className="filter-summary-head">
         <button
+          ref={toggle}
           type="button"
           className="filter-summary-toggle"
           aria-label={`${expanded ? "Recolher" : "Expandir"} ${filters.length} filtros ativos`}
@@ -156,12 +173,22 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
         style={area ? { top: area.head } : undefined}
         aria-label="Filtros ativos"
         inert={!expanded}
+        aria-hidden={!expanded}
       >
         {filters.slice(1).map((filter) => (
-          <li key={filter.label} className="filter-summary-tag">
+          <motion.li
+            key={filter.label}
+            className="filter-summary-tag"
+            initial={false}
+            animate={{
+              x: !reduced && !expanded && direction === "right" ? -4 : 0,
+              y: !reduced && !expanded && direction !== "right" ? -4 : 0,
+            }}
+            transition={reduced ? { duration: 0 } : filterSpring}
+          >
             {filter.label}: {filter.value}
             <RemoveFilter filter={filter} onRemove={remove} />
-          </li>
+          </motion.li>
         ))}
       </ul>
     </div>
