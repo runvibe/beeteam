@@ -831,3 +831,8 @@ Os gráficos de subtarefas por status e responsável ficam no início da aba Sub
 Subtarefas por status usa gráfico de pizza e legenda com quantidade e percentual. Fatias e legendas filtram a lista; o gráfico permanece vazio quando não há subtarefas.
 
 A Visão geral mostra somente o gráfico de evolução; a tabela de registros fica exclusivamente no índice da aba Resumos.
+
+
+### Filtro exato de resumo
+
+`GET /api/v1/tasks/{taskId}/execution-summaries?id={summaryId}` e MCP `listExecutionSummarys` aceitam `id` UUIDv7 opcional. O filtro combina com a tarefa e os demais filtros antes da contagem e paginação; seleção fora da primeira página não exige percorrer páginas intermediárias. ID inexistente, excluído ou de outra tarefa retorna página vazia; formato inválido ou UUID de outra versão retorna 400. Remover `id` restaura a coleção paginada. Os predicados existentes SQLite/PostgreSQL são reutilizados, sem migração. Esta entrega valida SQLite isolado e paridade HTTP/MCP; PostgreSQL foi dispensado neste escopo e não foi executado. Publicar código não atualiza a API em execução.
