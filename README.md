@@ -819,3 +819,5 @@ O consumo por intervalos usa indicadores compactos e etiquetas de cobertura, sem
 A aba Resumos apresenta cada registro em um Card do shadcn, com autor, data e resultado no cabeçalho. Markdown, métricas, entregas e pendências permanecem completos, separados dentro do mesmo card.
 
 A lista de subtarefas mostra a barra e o percentual registrado em cada tarefa. Ausência de progresso mantém a barra vazia e um traço; não presume zero nem infere avanço pelo status.
+
+A Visão geral inclui uma lista compacta de subtarefas com rolagem infinita interna, responsável, status e progresso. A aba Subtarefas permite combinar filtros de status, responsável, bloqueio e arquivamento; as opções de status e responsável vêm dos agregados completos da tarefa, inclusive subtarefas ainda não carregadas.

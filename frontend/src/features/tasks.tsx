@@ -1,4 +1,5 @@
-import { RecordedProgress, recordedPercent } from "@/components/recorded-progress";
+import { ChildRow } from "./subtask-row";
+import { SubtaskFilterChoices } from "./subtask-filter-choices";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { SummaryUsage } from "./summary-usage";
@@ -15,14 +16,8 @@ import { motion } from "motion/react";
 import { usePageEntrance } from "@/components/motion-settings";
 import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
-import {
-  Ban,
-  Download,
-  CheckCircle2,
-  Circle,
-  ExternalLink,
-} from "lucide-react";
-import { useApi, useEntity, useList } from "@/api/context";
+import { Ban, Download, ExternalLink } from "lucide-react";
+import { useApi, useEntity } from "@/api/context";
 import type { Resources, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -37,7 +32,7 @@ import {
   formatDate,
   safeUrl,
 } from "@/components/shared";
-import { AgentName, BoardName } from "@/components/names";
+import { AgentName } from "@/components/names";
 import { TaskContext, TaskSections } from "./task-detail-layout";
 import "./task-detail.css";
 import { useTaskHeaderVisibility } from "./task-scroll-header";
@@ -117,7 +112,11 @@ function TaskDetail({ id }: { id: string }) {
                   </div>
                 </Alert>
               )}
-              <TaskCurrentSummary task={q.data} overview={overview.data} relativeDate />
+              <TaskCurrentSummary
+                task={q.data}
+                overview={overview.data}
+                relativeDate
+              />
             </>
           )}
         </div>
@@ -241,29 +240,29 @@ function Children({ task }: { task: Task }) {
   }, [filtered, statusId, executorAgentId, blocked]);
   return (
     <div className="detail-section">
-      {(filtered || includeArchived === "true") && (
-        <div className="overview-child-filters">
-          <p className="small-note">
-            Filhas diretas
-            {includeArchived === "true" ? ", incluindo arquivadas" : ""}
-            {statusId ? " · status selecionado" : ""}
-            {executorAgentId ? " · responsável selecionado" : ""}
-            {blocked === "true" ? " · bloqueadas" : ""}
-          </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setStatus("");
-              setExecutor("");
-              setBlocked("");
-              setArchived("false");
-            }}
-          >
-            Limpar filtros de subtarefas
-          </Button>
-        </div>
-      )}
+      <TaskFilters active={filtered || includeArchived === "true"}>
+        <FilterBar
+          active={filtered || includeArchived === "true"}
+          onClear={() => {
+            setStatus("");
+            setExecutor("");
+            setBlocked("");
+            setArchived("false");
+          }}
+        >
+          <SubtaskFilterChoices
+            task={task}
+            statusId={statusId}
+            executorAgentId={executorAgentId}
+            blocked={blocked}
+            includeArchived={includeArchived}
+            setStatus={setStatus}
+            setExecutor={setExecutor}
+            setBlocked={setBlocked}
+            setArchived={setArchived}
+          />
+        </FilterBar>
+      </TaskFilters>
       <TaskRecordList
         resource="tasks"
         scope=""
@@ -282,34 +281,6 @@ function Children({ task }: { task: Task }) {
       >
         {(child) => <ChildRow task={child} />}
       </TaskRecordList>
-    </div>
-  );
-}
-function ChildRow({ task }: { task: Task }) {
-  const percent = recordedPercent(task.progress?.percent);
-  const statuses = useList("statuses", task.boardId, { limit: 100 });
-  const done = statuses.data?.items.find((s) => s.id === task.statusId)?.isDone;
-  const open = useUi((s) => s.openTask);
-  return (
-    <div className="record-row">
-      {done ? (
-        <CheckCircle2 size={18} aria-label="Concluída" />
-      ) : (
-        <Circle size={18} aria-label="Pendente" />
-      )}
-      <div className="grow min-w-0">
-        <button className="record-link" onClick={() => open(task.id)}>
-          {task.title}
-        </button>
-        <p className="small-note">
-          <BoardName id={task.boardId} /> · {task.childSummary.total} subtasks
-        </p>
-        <div className="subtask-progress">
-          <RecordedProgress percent={percent} label={`Progresso de ${task.title}`} />
-          <span aria-hidden="true">{percent === undefined ? "—" : `${percent}%`}</span>
-        </div>
-      </div>
-      <AgentName id={task.executorAgentId} />
     </div>
   );
 }
@@ -384,7 +355,11 @@ function RecordContent({
   if (kind === "summaries") {
     const r = row as Resources["summaries"];
     return (
-      <Card role="article" aria-label={`Resumo de ${formatDate(r.createdAt)}`} className="task-execution-summary">
+      <Card
+        role="article"
+        aria-label={`Resumo de ${formatDate(r.createdAt)}`}
+        className="task-execution-summary"
+      >
         <CardHeader className="summary-record-header">
           <CardTitle>Resumo do trabalho</CardTitle>
           <Author id={r.actorId} date={r.createdAt} />
@@ -399,44 +374,47 @@ function RecordContent({
           </Badge>
         </CardHeader>
         <CardContent className="summary-record-content">
-        <section className="task-reading-block" aria-label="Conteúdo do resumo">
-          <Markdown headingOffset={2} sectionDividers>
-            {r.summary}
-          </Markdown>
-        </section>
-        <SummaryUsage report={r.usageReport} />
-        <section className="task-reading-block" aria-label="Entregas">
-          <h4>Entregas</h4>
-          {r.deliverables.length ? (
-            r.deliverables.map((d, i) => (
-              <div key={i}>
-                {safeUrl(d.url) ? (
-                  <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
-                    {d.label} <ExternalLink size={12} />
-                  </a>
-                ) : (
-                  d.label
-                )}
-              </div>
-            ))
-          ) : (
-            <p className="small-note">Nenhuma entrega registrada.</p>
-          )}
-        </section>
-        <section className="task-reading-block" aria-label="Pendências">
-          <h4>Pendências</h4>
-          {r.pending.length ? (
-            <ul className="list-disc pl-5">
-              {r.pending.map((p, i) => (
-                <li key={i}>
-                  <Markdown headingOffset={2}>{p}</Markdown>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="small-note">Sem pendências registradas.</p>
-          )}
-        </section>
+          <section
+            className="task-reading-block"
+            aria-label="Conteúdo do resumo"
+          >
+            <Markdown headingOffset={2} sectionDividers>
+              {r.summary}
+            </Markdown>
+          </section>
+          <SummaryUsage report={r.usageReport} />
+          <section className="task-reading-block" aria-label="Entregas">
+            <h4>Entregas</h4>
+            {r.deliverables.length ? (
+              r.deliverables.map((d, i) => (
+                <div key={i}>
+                  {safeUrl(d.url) ? (
+                    <a href={safeUrl(d.url)} target="_blank" rel="noreferrer">
+                      {d.label} <ExternalLink size={12} />
+                    </a>
+                  ) : (
+                    d.label
+                  )}
+                </div>
+              ))
+            ) : (
+              <p className="small-note">Nenhuma entrega registrada.</p>
+            )}
+          </section>
+          <section className="task-reading-block" aria-label="Pendências">
+            <h4>Pendências</h4>
+            {r.pending.length ? (
+              <ul className="list-disc pl-5">
+                {r.pending.map((p, i) => (
+                  <li key={i}>
+                    <Markdown headingOffset={2}>{p}</Markdown>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="small-note">Sem pendências registradas.</p>
+            )}
+          </section>
         </CardContent>
       </Card>
     );

@@ -78,9 +78,10 @@ export function TaskRecordList<
   useInfiniteScroll({
     sentinel,
     getRoot: () =>
-      window.matchMedia?.("(min-width: 1056px)").matches
+      sentinel.current?.closest("[data-list-scroll]") ??
+      (window.matchMedia?.("(min-width: 1056px)").matches
         ? (sentinel.current?.closest("[data-detail-scroll]") ?? null)
-        : null,
+        : null),
     identity,
     progress: `${query.dataUpdatedAt}:${rows.map((row) => row.id).join(",")}`,
     hasMore: !!query.hasNextPage,

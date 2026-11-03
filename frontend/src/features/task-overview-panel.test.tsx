@@ -82,3 +82,33 @@ it("labels missing summary provenance and omits absent next-step and decisions",
     screen.queryByRole("heading", { name: "Decisões registradas" }),
   ).toBeNull();
 });
+
+it("shows subtask progress in the dashboard and opens the full list", async () => {
+  const seed = makeSeed();
+  const parent = seed.tasks[0];
+  seed.tasks = [
+    parent,
+    {
+      ...parent,
+      id: uuid(990),
+      slug: "child-dashboard",
+      title: "Dashboard child",
+      parentId: parent.id,
+      progress: { percent: 63, note: "" },
+    },
+  ];
+  const onTab = vi.fn();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0, seed })}>
+      <TaskOverviewPanel task={parent} onTab={onTab} />
+    </ApiProvider>,
+  );
+  const progress = await screen.findByRole("progressbar", {
+    name: "Progresso de Dashboard child",
+  });
+  expect(progress).toHaveAttribute("aria-valuenow", "63");
+  await userEvent.click(
+    screen.getByRole("button", { name: "Ver todas e filtrar" }),
+  );
+  expect(onTab).toHaveBeenCalledWith("children");
+});

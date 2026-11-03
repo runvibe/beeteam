@@ -1,3 +1,4 @@
+import { OverviewSubtasks } from "./overview-subtasks";
 import { TaskExecutionTracking } from "./task-execution-tracking";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -22,6 +23,7 @@ export function openOverviewChildren(filters: Filters) {
 }
 export function TaskOverviewPanel({
   task,
+  onTab,
 }: {
   task: Task;
   onTab: (tab: string) => void;
@@ -44,6 +46,7 @@ export function TaskOverviewPanel({
               onFilter={openOverviewChildren}
             />
           </div>
+          <OverviewSubtasks task={task} onOpen={() => onTab("children")} />
           <TaskExecutionTracking
             key={task.id}
             taskId={task.id}

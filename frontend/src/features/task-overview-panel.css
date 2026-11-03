@@ -328,3 +328,5 @@
   gap: 6px;
   font-size: 13px;
 }
+
+.overview-subtask-list { max-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 2px; }
