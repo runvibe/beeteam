@@ -83,7 +83,7 @@ it("labels missing summary provenance and omits absent next-step and decisions",
   ).toBeNull();
 });
 
-it("shows subtask progress in the dashboard and opens the full list", async () => {
+it.each([63, 100])("shows subtask progress %s in the dashboard and opens the full list", async (percent) => {
   const seed = makeSeed();
   const parent = seed.tasks[0];
   seed.tasks = [
@@ -94,7 +94,7 @@ it("shows subtask progress in the dashboard and opens the full list", async () =
       slug: "child-dashboard",
       title: "Dashboard child",
       parentId: parent.id,
-      progress: { percent: 63, note: "" },
+      progress: { percent, note: "" },
     },
   ];
   const onTab = vi.fn();
@@ -106,7 +106,8 @@ it("shows subtask progress in the dashboard and opens the full list", async () =
   const progress = await screen.findByRole("progressbar", {
     name: "Progresso de Dashboard child",
   });
-  expect(progress).toHaveAttribute("aria-valuenow", "63");
+  expect(progress).toHaveAttribute("aria-valuenow", String(percent));
+  expect(progress.parentElement).toHaveTextContent(`${percent}%`);
   await userEvent.click(
     screen.getByRole("button", { name: "Ver todas e filtrar" }),
   );

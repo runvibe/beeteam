@@ -825,6 +825,8 @@ A Visão geral inclui uma lista compacta de subtarefas com rolagem infinita inte
 Os filtros compactos de subtarefas têm ícones distintos para status, responsável, bloqueio e arquivamento, preservando nomes acessíveis e tooltips.
 
 Na Visão geral, a lista de subtarefas é apresentada diretamente na página, sem card nem rolagem interna: total, nome e progresso em linhas compactas. Carrega os demais itens pela rolagem da página e inclui arquivadas, acompanhando o total dos gráficos.
+O percentual ocupa sua largura de conteúdo ao lado da barra flexível, com respiro de 8px
+à direita da linha. Títulos longos e 100% não criam rolagem horizontal nem invadem a scrollbar.
 
 Os gráficos de subtarefas por status e responsável ficam no início da aba Subtarefas. Resumos repete o gráfico de evolução no topo e organiza índice de registros à esquerda e cards à direita, empilhados no celular. O índice usa o vínculo explícito com o resumo.
 

@@ -332,9 +332,9 @@
 .overview-subtask-list { max-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 2px; }
 
 .overview-subtasks-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.overview-subtask-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px; align-items: center; gap: 16px; padding-block: 8px; }
+.overview-subtask-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px; align-items: center; gap: 16px; padding-block: 8px; padding-inline-end: 8px; min-width: 0; }
 .overview-subtask-row .record-link { min-width: 0; text-align: left; font-size: 13px; overflow-wrap: anywhere; }
-.overview-subtask-meter { display: flex; align-items: center; gap: 8px; }
+.overview-subtask-meter { display: grid; grid-template-columns: minmax(0, 1fr) max-content; min-width: 0; align-items: center; gap: 8px; }
 .overview-subtask-meter .recorded-progress-track { height: 4px; }
 .overview-subtask-meter span { min-width: 4ch; font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 480px) { .overview-subtask-row { grid-template-columns: minmax(0, 1fr) 96px; gap: 10px; } }
