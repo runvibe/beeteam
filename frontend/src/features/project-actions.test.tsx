@@ -29,9 +29,7 @@ it("opens only on explicit click and prevents overlapping launches", async () =>
   );
   expect(open).toHaveBeenCalledTimes(1);
   await act(async () => complete());
-  expect(screen.getByRole("status")).toHaveTextContent(
-    "Solicitação enviada ao Explorer.",
-  );
+  expect(screen.queryByRole("status")).toBeNull();
 });
 
 it("reports an unavailable application without claiming it opened and allows retry", async () => {
@@ -83,7 +81,7 @@ it("connects the project card to its task/key and clears feedback when navigatin
     "app",
     "explorer",
   );
-  expect(screen.getByRole("status")).toHaveTextContent("Solicitação enviada");
+  expect(screen.queryByRole("status")).toBeNull();
   view.rerender(<View taskId="019a0000-0000-7000-8000-000000000002" />);
   expect(screen.queryByRole("status")).toBeNull();
 });

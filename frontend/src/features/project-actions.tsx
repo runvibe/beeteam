@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { CodeXml, FolderOpen } from "lucide-react";
+import { FolderOpen } from "lucide-react";
+import vscodeIcon from "@/assets/vscode.svg";
 import { Button } from "@/components/ui/button";
 import { useApi } from "@/api/context";
 import type { ProjectApplication } from "@/api/local-projects";
@@ -35,18 +36,13 @@ export function ProjectActions({
   const busy = useRef(false);
   const [pending, setPending] = useState<ProjectApplication | null>(null);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const open = async (application: ProjectApplication) => {
     if (busy.current) return;
     busy.current = true;
     setPending(application);
     setError("");
-    setNotice("");
     try {
       await onOpen(application);
-      setNotice(
-        `Solicitação enviada ao ${application === "explorer" ? "Explorer" : "VS Code"}.`,
-      );
     } catch (cause) {
       setError(
         cause instanceof Error
@@ -68,31 +64,28 @@ export function ProjectActions({
       <div className="project-action-buttons">
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
           disabled={pending !== null}
+          aria-label="Abrir no Explorer"
+          title="Abrir no Explorer"
           onClick={() => void open("explorer")}
         >
           <FolderOpen aria-hidden="true" />
-          {pending === "explorer" ? "Abrindo Explorer…" : "Abrir no Explorer"}
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
           disabled={pending !== null}
+          aria-label="Abrir no VS Code"
+          title="Abrir no VS Code"
           onClick={() => void open("vscode")}
         >
-          <CodeXml aria-hidden="true" />
-          {pending === "vscode" ? "Abrindo VS Code…" : "Abrir no VS Code"}
+          <img src={vscodeIcon} alt="" aria-hidden="true" className="size-4" />
         </Button>
       </div>
       {error && (
         <p role="alert" className="small-note">
           {error}
-        </p>
-      )}
-      {notice && (
-        <p role="status" className="small-note">
-          {notice}
         </p>
       )}
     </div>
