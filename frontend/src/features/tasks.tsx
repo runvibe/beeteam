@@ -1,5 +1,6 @@
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
+import { Attachment } from "./attachment-item";
 import { AttachmentRecords } from "./attachment-records";
 import { SummaryBrowser } from "./summary-index";
 import { SubtaskCharts, ProgressHistory } from "./task-overview-charts";
@@ -21,13 +22,12 @@ import { motion } from "motion/react";
 import { usePageEntrance } from "@/components/motion-settings";
 import { Plans } from "./plans";
 import { Markdown } from "@/components/markdown";
-import { Ban, Download, ExternalLink } from "lucide-react";
+import { Ban, ExternalLink } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import type { Resources, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
   Choice,
@@ -482,53 +482,5 @@ function Author({ id, date }: { id: string | null; date: string }) {
       <AgentName id={id} />
       <time dateTime={date}>{formatDate(date)}</time>
     </div>
-  );
-}
-function Attachment({ item }: { item: Resources["attachments"] }) {
-  const api = useApi();
-  const [error, setError] = useState<unknown>(null),
-    [busy, setBusy] = useState(false);
-  async function download() {
-    setBusy(true);
-    setError(null);
-    try {
-      const blob = await api.download(item.taskId, item.id);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = item.originalName;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch (e) {
-      setError(e);
-    } finally {
-      setBusy(false);
-    }
-  }
-  return (
-    <article className="record">
-      <Author id={item.actorId} date={item.createdAt} />
-      <h3>{item.originalName}</h3>
-      {item.deletedAt && (
-        <Badge variant="secondary">
-          Removido em {formatDate(item.deletedAt)}
-        </Badge>
-      )}
-      <p className="small-note">
-        {item.mediaType} · {item.sizeBytes} bytes
-      </p>
-      <Markdown headingOffset={2} sectionDividers>
-        {item.description}
-      </Markdown>
-      <Button
-        variant="outline"
-        disabled={busy || !!item.deletedAt}
-        onClick={() => void download()}
-      >
-        <Download data-icon="inline-start" />
-        {busy ? "Preparando…" : "Baixar arquivo"}
-      </Button>
-      {error && <Failure error={error} />}
-    </article>
   );
 }

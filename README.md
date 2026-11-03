@@ -869,6 +869,12 @@ na URL e no filtro padrão com tags/limpar/docking. A lista reutiliza o scroll i
 lotes de 10. Metadados removidos são identificados; seu botão de download fica desabilitado.
 Os controles usam ícones distintos de busca, tipo de arquivo e lixeira, mantendo tooltip,
 nome acessível e indicação de filtro ativo tanto no desktop quanto no mobile.
+Cada arquivo aparece em uma linha compacta com ícone de categoria, nome em destaque,
+tamanho legível, autoria/data e ação de download. O MIME determina a categoria; somente
+tipo vazio ou binário genérico usa a extensão como fallback. Tipos desconhecidos mantêm
+ícone genérico. O MIME original e bytes exatos permanecem no título dos metadados.
+Removidos preservam descrição e data de remoção, com badge, nome secundário e download
+desabilitado. No mobile, nomes quebram linha e a ação fica abaixo dos metadados.
 
 Na Conversa, cada mensagem mostra tempo relativo no canto superior direito, acima da
 identidade do autor. Reutiliza o relógio compartilhado de `RelativeTime`; hover/foco
