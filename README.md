@@ -847,3 +847,7 @@ usam somente vínculos explícitos `summaryId` no histórico disponível: ausên
 ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.
 
 No mobile, o índice lateral de Resumos fica oculto. O filtro padrão mantém suas opções com scroll infinito próprio, compartilhando o cache do índice e buscando páginas apenas conforme a área visível exige. Seleção pela URL, tags removíveis e docking continuam disponíveis.
+
+### Kanban: bloqueios e altura das colunas
+
+Cards bloqueados usam fundo avermelhado e borda de destaque, além do aviso textual. As colunas, inclusive vazias, se estendem por toda a altura disponível do quadro, com rolagem independente para suas tarefas.

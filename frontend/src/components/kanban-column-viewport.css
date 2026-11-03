@@ -1,7 +1,8 @@
 .kanban > .kanban-column {
   min-height: 0;
   overflow: hidden;
-  height: 100%;
+  height: auto;
+  align-self: stretch;
 }
 .kanban-column > .column-heading {
   flex-shrink: 0;
@@ -29,6 +30,8 @@
 main > .kanban {
   overflow-y: hidden;
   grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  align-content: stretch;
 }
 
 .task-card .agent-name:hover {
