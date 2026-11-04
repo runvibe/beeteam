@@ -56,5 +56,15 @@
   "thisRecordWasUpdatedInAnotherSessionYourDraftWas": "Este registro foi atualizado em outra sessão. Seu rascunho foi preservado. Use Recarregar formulário após o conflito para descartar o rascunho e carregar a versão atual.",
   "unnamedAgent": "Agente {{id}}",
   "details": "Detalhes do agente",
-  "backToAgent": "Voltar ao agente"
+  "backToAgent": "Voltar ao agente",
+  "chatName": "Nome do chat",
+  "chatHarness": "Harness",
+  "chatHarnessExact": "Nome exato do harness, incluindo maiúsculas e minúsculas.",
+  "chatRegistry": "Cadastro do chat",
+  "chatCreatedPeriod": "Período de criação",
+  "chatCreatedFrom": "Criado de (inclusive)",
+  "chatCreatedUntil": "Criado até (inclusive)",
+  "chatDateTimezone": "Dias no seu fuso horário: {{timezone}}.",
+  "chatInvalidPeriod": "Informe datas válidas com o início anterior ou igual ao fim.",
+  "noChatsMatchFilters": "Nenhum chat corresponde aos filtros"
 }

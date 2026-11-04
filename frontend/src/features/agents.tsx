@@ -1,3 +1,4 @@
+import { AgentChats } from "./agent-chats";
 import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -15,7 +16,7 @@ import { useLocation, navigate, destination } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useEntity } from "@/api/context";
 import type { Agent } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -44,7 +45,6 @@ import {
   NoData,
   TextBlock,
   formatDate,
-  safeUrl,
 } from "@/components/shared";
 import { ProfileForm } from "./profile-form";
 export function Agents() {
@@ -315,7 +315,7 @@ function AgentDetail({ id }: { id: string }) {
                 <Activities agentId={id} />
               </TabsContent>
               <TabsContent value="chats">
-                <Chats agentId={id} />
+                <AgentChats agentId={id} />
               </TabsContent>
             </Tabs>
           </>
@@ -428,40 +428,6 @@ function Activities({ agentId }: { agentId: string }) {
               </Badge>
               <span className="small-note">{formatDate(a.taskUpdatedAt)}</span>
             </div>
-          </article>
-        )}
-      </DetailRecordList>
-    </div>
-  );
-}
-function Chats({ agentId }: { agentId: string }) {
-  useLocale();
-  const limit = usePageSize("chats", 10);
-  return (
-    <div className="detail-section">
-      <p className="muted-copy">
-        {tr(
-          "agents.recordedExternalReferencesTheyDoNotIndicateRunningSessions",
-        )}
-      </p>
-      <DetailRecordList
-        resource="chats"
-        scope={agentId}
-        filters={{ limit }}
-        empty={tr("agents.noChatReferences")}
-        countLabel={tr("agents.chats")}
-      >
-        {(c) => (
-          <article className="record" key={c.id}>
-            <h3>{c.label}</h3>
-            <p className="small-note">
-              {c.harness} · {c.externalId} · {formatDate(c.updatedAt)}
-            </p>
-            {safeUrl(c.url) && (
-              <a href={safeUrl(c.url)} target="_blank" rel="noreferrer">
-                {tr("agents.openReference")} <ExternalLink size={14} />
-              </a>
-            )}
           </article>
         )}
       </DetailRecordList>

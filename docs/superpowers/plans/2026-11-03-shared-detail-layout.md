@@ -130,3 +130,7 @@ Remover Retomada do frontend (aba, consulta, adapter, tipo gerado e textos exclu
 ## Ajuste autorizado: scroll infinito Agent/Team
 
 Migrar quatro listas: Activities/Chats de Agent, Members/Boards de Team. Reutilizar TaskRecordList sob nome compartilhado DetailRecordList (export de compatibilidade para Task), controlador useInfiniteScroll e nextPageOffset. Identidades: taskId para activities, agentId para members, id para demais. Preservar limites/filtros, cache de páginas para retorno, totais e retry; iniciar em zero como demais listas sem pager. Testar red/green quatro entradas, sobreposição/retry, Task existente e navegação/scroll real desktop/mobile. Sem mudanças API ou dados reais.
+
+## Ajuste autorizado: filtros Chats Agent
+
+Extrair AgentChats de agents.tsx, reutilizar controles FilterBar/Search/Choice/FilterPopover e DetailRecordList. API já aceita label substring, harness exato, archived boolean, createdFrom/createdBefore RFC3339. Expor período local inclusivo usando próximo dia de calendário como limite exclusivo, sem somar 24h. Helper puro valida datas/ordem; bloqueia consulta inválida. URL guarda dias e filtros; limpar em uma navegação preserva origem/limite e back. Testar filtros combinados antes de paginação, reset/dedupe/retry, limites de dias/DST, EN/PT desktop/mobile e empty/erro. Sem relação team/board inferida ou alteração de API necessária.
