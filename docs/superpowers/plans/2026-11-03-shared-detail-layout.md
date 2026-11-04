@@ -117,3 +117,8 @@ Mobile entregue em `d5df9d5`. Base i18n `98b579b` integrada em `51159ad`; extra�
 Validação: 494 testes frontend passaram; build passou. QA somente leitura de 72 cenários (Task/Agent/Team × 320/390/768/1055/1056/1440 × EN/PT × claro/escuro), incluindo scroll/foco/identidade, ausência de overflow e retorno do histórico após Configurar. Corrigido wrap de nomes longos de boards em 320px. Revisão independente encontrou perda do índice de retorno após settings: corrigida com origem explícita preservada, regressão testada antes/depois.
 
 Cargo build passou. `cargo test` com BEE_TEST_DRIVER=sqlite passou 41 testes lib, 2 backend_api e 1 backend_board_subtasks, mas interrompeu em três testes de backend_changes que exigem BEE_TEST_DATABASE_URL para PostgreSQL 18 isolado, ausente neste ambiente. Nenhum backend alterado por esta refatoração. Não equivale a suite Rust completa aprovada. Integração ao runtime e aceite seguem com a Leader.
+
+
+## Ajuste autorizado: navegação principal como Board
+
+Após integração de `6008749`, em 04/11 o usuário pediu Agent/Team exatamente com a navegação principal do Board. A implementação existente usa `AppPath` desktop e `MobileContextPath` até850px; o Voltar no corpo de Board fica oculto. Remover o slot backAction de EntityDetailPage e a prop fallback de seus callers, mantendo a implementação global e seus fallbacks. O Voltar da tela própria Info continua com semântica de retornar à entidade. Este ajuste substitui a exigência anterior de botão próprio no adapter. Validar ausência de duplicação, origem filtrada, entrada direta, slugs, foco Info e EN/PT em1440/851/850/390px. Testes de regressão falharam antes e passaram depois; revisão independente sem achados.

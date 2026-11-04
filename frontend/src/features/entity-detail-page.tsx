@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { ArrowUpLeft } from "lucide-react";
 import { useLocale, t as tr } from "@/i18n";
-import { goBack, useLocation } from "@/routing/location";
+import { useLocation } from "@/routing/location";
 import {
   isDetailsView,
   openDetails,
@@ -19,7 +19,6 @@ export function EntityDetailPage({
   label,
   title,
   description,
-  fallback,
   viewKey,
   contextLabel,
   backLabel,
@@ -31,7 +30,6 @@ export function EntityDetailPage({
   label: string;
   title: string;
   description: ReactNode;
-  fallback: string;
   viewKey: string;
   contextLabel: string;
   backLabel: string;
@@ -52,16 +50,6 @@ export function EntityDetailPage({
     <section className="detail-page entity-page" aria-label={label}>
       <DetailShell
         primaryHidden={screen}
-        backAction={
-          <Button
-            variant="ghost"
-            className="task-back"
-            onClick={() => goBack(fallback)}
-          >
-            <ArrowUpLeft />
-            {tr("common.back")}
-          </Button>
-        }
         hero={
           <DetailHeader
             title={title}

@@ -112,3 +112,22 @@ it("returns from direct mobile team details to the same team with independent pa
   expect(location.search).toContain("managedBoards.offset=2");
   expect(location.search).not.toContain("team.view");
 });
+
+it.each([
+  ["agents", ids.agent, "Agente"],
+  ["teams", ids.team, "Time"],
+])(
+  "uses the global return navigation without a duplicate in %s content",
+  async (resource, id, label) => {
+    setup(`/${resource}/${id}`);
+    const region = await screen.findByRole("region", { name: label });
+    expect(within(region).queryByRole("button", { name: "Voltar" })).toBeNull();
+    const compact = screen.getByRole("navigation", {
+      name: "Caminho compacto",
+    });
+    await userEvent.click(
+      within(compact).getByRole("button", { name: "Voltar" }),
+    );
+    expect(location.pathname).toBe(`/${resource}`);
+  },
+);

@@ -242,7 +242,6 @@ function AgentDetail({ id }: { id: string }) {
           </Dialog>
         )
       }
-      fallback="/agents"
       viewKey="agent.view"
       contextLabel={tr("agents.details")}
       backLabel={tr("agents.backToAgent")}

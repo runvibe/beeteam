@@ -258,7 +258,6 @@ function TeamDetail({ id }: { id: string }) {
           </Dialog>
         )
       }
-      fallback="/teams"
     >
       <QueryState query={q}>
         {q.data && (
