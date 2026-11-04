@@ -1,3 +1,4 @@
+import { TaskInfoButton, useTaskContextView } from "./task-context-view";
 import { TimelineEventCard } from "./timeline-event-card";
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
@@ -51,6 +52,7 @@ export function TaskPage() {
   ) : null;
 }
 function TaskDetail({ id }: { id: string }) {
+  const contextView = useTaskContextView();
   const q = useEntity("tasks", id);
   const api = useApi();
   const overview = useQuery({
@@ -86,7 +88,8 @@ function TaskDetail({ id }: { id: string }) {
   }, [id]);
   return (
     <div className="task-detail-columns">
-      <div className="task-detail-primary" data-detail-scroll ref={primary}>
+      {q.data && <TaskInfoButton />}
+      <div className="task-detail-primary" data-detail-scroll ref={primary} hidden={contextView && !!q.data} inert={contextView && !!q.data}>
         <div className="task-detail-hero" ref={hero}>
           <header className="task-detail-heading">
             <h1 ref={heading} tabIndex={-1}>

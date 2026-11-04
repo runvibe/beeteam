@@ -1,5 +1,7 @@
-import { useId, useState } from "react";
-import { ChevronDown, ArrowUpLeft } from "lucide-react";
+import { closeTaskDetails } from "@/routing/task-details-view";
+import { useTaskContextView, useTaskMobile } from "./task-context-view";
+import { useEffect, useRef } from "react";
+import { ArrowUpLeft } from "lucide-react";
 import type { TaskOverviewData } from "@/api/task-overview";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -34,40 +36,44 @@ export function TaskContext({
   compactHeader?: boolean;
   overview?: TaskOverviewData;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const contentId = useId();
+  const details = useTaskContextView();
+  const mobile = useTaskMobile();
+  const heading = useRef<HTMLHeadingElement>(null);
+  const wasDetails = useRef(details);
+  useEffect(() => {
+    if (details) heading.current?.focus({ preventScroll: true });
+    else if (wasDetails.current && !mobile)
+      document.querySelector<HTMLElement>(".task-detail-primary h1")?.focus({ preventScroll: true });
+    wasDetails.current = details;
+  }, [details, mobile]);
   const openTask = useUi((s) => s.openTask);
   const openBoard = useUi((s) => s.openBoard);
   return (
     <aside
       className="task-context"
       aria-label="Contexto da tarefa"
-      data-expanded={expanded}
+      data-detail-screen={details}
+      hidden={mobile && !details}
     >
       <TaskCompactHeader
         task={task}
         visible={compactHeader}
         overview={overview}
       />
-      <Button
-        variant="ghost"
-        className="task-context-toggle"
-        aria-expanded={expanded}
-        aria-controls={contentId}
-        onClick={() => setExpanded(!expanded)}
-      >
-        <span>
-          Detalhes da tarefa{" "}
-          <small>
-            Autonomia{" "}
-            {task.executionContext.effectiveMode === "automatic"
-              ? "automática"
-              : "manual"}
-          </small>
-        </span>
-        <ChevronDown aria-hidden="true" />
-      </Button>
-      <div className="task-context-content" id={contentId}>
+      <header className="task-context-screen-header" hidden={!details}>
+        <Button
+          variant="ghost"
+          onClick={closeTaskDetails}
+          aria-label="Voltar à tarefa"
+        >
+          <ArrowUpLeft aria-hidden="true" />
+          Voltar
+        </Button>
+        <h1 ref={heading} tabIndex={-1}>
+          Detalhes da tarefa
+        </h1>
+      </header>
+      <div className="task-context-content">
         <section>
           <h2>Status</h2>
           <TaskStatus task={task} />

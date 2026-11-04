@@ -5,6 +5,7 @@ import { useUi } from "@/state/ui";
 import { goBack, useLocation } from "@/routing/location";
 import { Button } from "./ui/button";
 import "./mobile-context-path.css";
+import { closeTaskDetails, isTaskDetailsView } from "@/routing/task-details-view";
 
 export function MobileContextPath() {
   const { area, boardId, taskId, agentId, teamId } = useUi();
@@ -37,7 +38,7 @@ export function MobileContextPath() {
         variant="ghost"
         size="icon"
         aria-label="Voltar"
-        onClick={() => goBack(fallback)}
+        onClick={() => taskId && isTaskDetailsView(url) ? closeTaskDetails() : goBack(fallback)}
       >
         <ChevronLeft aria-hidden="true" />
       </Button>

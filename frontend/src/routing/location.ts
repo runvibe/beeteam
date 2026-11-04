@@ -30,7 +30,8 @@ export function navigate(to: string, replace = false) {
   savePosition(currentUrl());
   const previous = currentUrl();
   if (to === previous) return;
-  if (to.split("?")[0] === previous.split("?")[0])
+  const detailView = (url: string) => new URLSearchParams(url.split("?")[1]).get("task.view");
+  if (to.split("?")[0] === previous.split("?")[0] && detailView(to) === detailView(previous))
     positions.set(to, positions.get(previous)!);
   let old = window.history.state;
   if (!old?.bee) {
@@ -114,7 +115,10 @@ export function useRestorePosition() {
   const url = useLocation();
   useEffect(() => {
     const position = positions.get(url);
-    const save = () => savePosition(url);
+    const save = () => {
+      // A view switch can emit a delayed scroll event after its old tree was hidden.
+      if (currentUrl() === url) savePosition(url);
+    };
     window.addEventListener("scroll", save, true);
     const frame = requestAnimationFrame(() => {
       window.scrollTo(position?.x ?? 0, position?.y ?? 0);

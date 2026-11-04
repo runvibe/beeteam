@@ -191,21 +191,6 @@ body:has(.task-page) {
     border-top: 1px solid var(--border);
     padding: 12px 0 0;
   }
-  .task-page .task-context-toggle {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    min-height: 44px;
-  }
-  .task-context-toggle small {
-    display: block;
-    color: var(--muted-foreground);
-    font-size: 12px;
-    font-weight: 400;
-  }
-  .task-context[data-expanded="false"] .task-context-content {
-    display: none;
-  }
   .task-context-content {
     padding-top: 20px;
   }
