@@ -15,6 +15,7 @@ import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
 import {
   Search,
+  TerminalSquare,
   CircleDot,
   Ban,
   Users,
@@ -32,6 +33,9 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 const icons: readonly (readonly [string, LucideIcon])[] = [
+  ["agents.chatHarness", TerminalSquare],
+  ["agents.chatRegistry", Archive],
+  ["agents.chatCreatedPeriod", CalendarDays],
   ["files.fileType", FileType],
   ["files.removedFiles", Trash2],
   ["tasks.subtaskStatus", CircleDot],

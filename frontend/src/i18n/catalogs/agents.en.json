@@ -56,5 +56,15 @@
   "thisRecordWasUpdatedInAnotherSessionYourDraftWas": "This record was updated in another session. Your draft was preserved. Use Reload form after the conflict to discard the draft and load the current version.",
   "unnamedAgent": "Agent {{id}}",
   "details": "Agent details",
-  "backToAgent": "Back to agent"
+  "backToAgent": "Back to agent",
+  "chatName": "Chat name",
+  "chatHarness": "Harness",
+  "chatHarnessExact": "Exact harness name, including letter case.",
+  "chatRegistry": "Chat registry",
+  "chatCreatedPeriod": "Creation period",
+  "chatCreatedFrom": "Created from (inclusive)",
+  "chatCreatedUntil": "Created through (inclusive)",
+  "chatDateTimezone": "Calendar days in your timezone: {{timezone}}.",
+  "chatInvalidPeriod": "Enter valid dates with the start on or before the end.",
+  "noChatsMatchFilters": "No chats match these filters"
 }
