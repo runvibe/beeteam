@@ -1,87 +1,87 @@
-# Execuções e intervalos explícitos por tarefa
+# Explicit executions and intervals per task
 
-## Iniciar antes de trabalhar
+## Start before working
 
-Antes de executar trabalho da task atribuída, consulte os registros de execução/intervalo da tarefa e da fonte/sessão pelas leituras realmente anunciadas no contrato. Na retomada de chat, recupere o intervalo ativo antes de criar outro. Se a mesma task/fonte já tiver intervalo aberto válido, continue com executionId/intervalId existentes: não emita outro start ou resume. Resume é para execução pausada, não para mera reabertura do chat. taskId, executionId e intervalId são vínculos técnicos retornados pelo servidor: mantenha-os no contexto permitido e recupere-os da API quando faltarem. Não deduza IDs, pares de fronteiras ou estado a partir do texto de um resumo, status, nome, proximidade de horários ou título do chat.
+Before performing work on the assigned task, consult the task's and source/session's execution/interval records through the reads actually advertised in the contract. When resuming a chat, retrieve the active interval before creating another. If the same task/source already has a valid open interval, continue with the existing executionId/intervalId: do not issue another start or resume. Resume is for a paused execution, not merely reopening a chat. taskId, executionId, and intervalId are technical links returned by the server: keep them in the permitted context and retrieve them from the API when missing. Do not infer IDs, boundary pairs, or state from summary text, status, name, proximity of timestamps, or chat title.
 
-Investigue no início a fonte permitida de acumulados; preserve fonte, sessão, epoch, escopo, semântica de contador, agente e modelo(s). Colete antes de cada fronteira e resumo. Não converta créditos/contexto em tokens nem instale coletores/integrações ou faça chamadas pagas só para medir sem autorização específica. Não é necessária uma sessão nova por tarefa.
+Investigate the permitted source of cumulative counts at the start; preserve source, session, epoch, scope, counter semantics, agent, and model(s). Collect before every boundary and summary. Do not convert credits/context into tokens, install collectors/integrations, or make paid calls solely to measure without specific authorization. A new session per task is not required.
 
-Se não houver intervalo ativo incompatível e o trabalho estiver autorizado/atribuído/preparado, registre resumo de início com evidências reais e ação de início conforme contrato. Só comece depois de confirmar persistência e obter executionId/intervalId reais. Se já existir intervalo aberto da mesma fonte em outra task, não abra sobreposto e não encerre a anterior automaticamente; consulte o conflito e resolva a transição explicitamente. Mudar agente não contorna exclusividade da fonte.
+If there is no incompatible active interval and the work is authorized/assigned/prepared, record a start summary with actual evidence and a start action according to the contract. Begin only after confirming persistence and obtaining actual executionId/intervalId. If an interval from the same source is already open on another task, do not open an overlapping one or automatically close the previous one; inspect the conflict and resolve the transition explicitly. Changing agents does not bypass source exclusivity.
 
-## Checkpoint, troca, retomada e fim
+## Checkpoint, switching, resumption, and finish
 
-Checkpoint registra nova evidência/resumo no intervalo aberto, preservando seu início; não cria intervalo novo nem declara fim. Parcial é parcial, não consumo final. Nunca some deltas intermediários ao delta final.
+Checkpoint records new evidence/summary in the open interval, preserving its start; it does not create a new interval or declare a finish. Partial is partial, not final usage. Never add intermediate deltas to the final delta.
 
-Antes de trocar de tarefa, colete e salve pausa ou encerramento do intervalo atual, referenciando seus IDs. Só após confirmação abra o intervalo da próxima tarefa. Pausa fecha o intervalo e mantém execução pausada. Resume abre novo intervalo na mesma execução com nova fronteira inicial; o período parado fica fora do consumo atribuído. Não reutilize intervalId fechado como novo intervalo.
+Before switching tasks, collect and save a pause or closure of the current interval, referencing its IDs. Open the next task's interval only after confirmation. Pause closes the interval and keeps the execution paused. Resume opens a new interval in the same execution with a new initial boundary; the paused period is excluded from attributed usage. Do not reuse a closed intervalId as a new interval.
 
-Finish encerra a execução e fecha o intervalo aberto; quando já pausada, não inventa consumo para o período parado. Nesse caso ainda envie usageReport estrito normal no resumo, com evidenceIds vazio e sem intervalId; as observações não criam fronteira nem consumo do período pausado. Finalizar intervalo/execução não significa aprovar entrega ou concluir status da task: revisão humana pode continuar pendente. Preserve status, outcome, currentSummary, summary e aceite como dimensões distintas.
+Finish ends the execution and closes the open interval; when already paused, it does not invent usage for the paused period. In that case, still send a normal strict usageReport in the summary, with empty evidenceIds and no intervalId; the observations create neither a boundary nor usage for the paused period. Finishing an interval/execution does not mean approving the deliverable or completing the task status: human review may remain pending. Preserve status, outcome, currentSummary, summary, and acceptance as distinct dimensions.
 
-A mudança de status continua exclusivamente via registro de resumo, com usageReport e statusObserved gerado pelo servidor. No rollout aditivo, executionTracking é opcional no servidor: ausência salva resumo sem rastreamento e nunca cria fronteira implícita. Esta skill orienta rastrear o trabalho novo quando a capacidade estiver disponível; não declare intervalo salvo num resumo sem tracking nem trate opcionalidade da API como fronteira automática. Resumo, status, evidências e transição do intervalo precisam ser atômicos e idempotentes. close_activity só pode ser usado quando o contrato suportar essa mesma operação completa; percentual isolado e comentário continuam caminhos separados, sem implicitamente iniciar/fechar intervalo.
+Status changes continue exclusively through summary recording, with usageReport and server-generated statusObserved. In the additive rollout, executionTracking is optional on the server: its absence saves a summary without tracking and never creates an implicit boundary. This skill directs tracking new work when the capability is available; do not claim an interval was saved in a summary without tracking or treat API optionality as an automatic boundary. Summary, status, evidence, and interval transition must be atomic and idempotent. close_activity may be used only when the contract supports that same complete operation; a standalone percentage and a comment remain separate paths, without implicitly starting/closing an interval.
 
-## Evidência, cálculo e limites
+## Evidence, calculation, and limits
 
-Acumulado da sessão é diferente de consumo atribuído ao intervalo. O servidor calcula final - inicial apenas entre evidências explicitamente vinculadas e comparáveis. A exclusividade de dedicação à tarefa é declaração do agente, não prova produzida pelos contadores. Consumo até a coleta final não cobre geração ou chamadas posteriores; a mesma limitação vale para a mensagem/ferramenta usada para registrar início. Não prometa precisão por chamada se só há snapshots.
+Cumulative session usage differs from usage attributed to an interval. The server calculates final - initial only between explicitly linked, comparable evidence. Exclusive dedication to a task is the agent's declaration, not proof produced by counters. Usage up to final collection does not cover subsequent generation or calls; the same limitation applies to the message/tool used to record the start. Do not promise per-call precision when only snapshots exist.
 
-Não somar checkpoints, árvore com filhos, total global com parcelas, nem pares escolhidos por horário. Fonte/sessão/epoch/escopo e semântica devem corresponder. Mudança de modelo não prova reset do contador global: preserve modelos envolvidos e só divida consumo se a fonte fornecer séries realmente disjuntas. Não atribua tudo ao último modelo nem invente uma divisão.
+Do not add checkpoints, a tree with its children, a global total with its components, or pairs selected by time. Source/session/epoch/scope and semantics must match. A model change does not prove a global counter reset: preserve the models involved and split usage only if the source provides truly disjoint series. Do not attribute everything to the last model or invent a breakdown.
 
-Reset, queda do contador, lacuna ou fonte incompatível produzem cobertura incompleta/indisponível com motivo; nunca delta negativo ou zero fabricado. Sem fim, intervalo permanece aberto; sem início, histórico continua legível sem consumo retroativo inventado. Não reconstrua intervalos legados por status, texto ou horário. Correção/reconciliação precisa de trilha auditável e versão conforme contrato, não edição silenciosa das fronteiras.
+A reset, counter decrease, gap, or incompatible source produces incomplete/unavailable coverage with a reason; never a negative delta or fabricated zero. Without a finish, the interval remains open; without a start, history remains readable without invented retroactive usage. Do not reconstruct legacy intervals from status, text, or time. Correction/reconciliation requires an auditable trail and version according to the contract, not silent boundary edits.
 
-Duração observada é diferença entre horários das evidências, não CPU/raciocínio/produtividade. Soma de duração de trabalho e tempo decorrido da task são diferentes, sobretudo com sessões paralelas; não some sobreposições e chame de tempo decorrido.
+Observed duration is the difference between evidence timestamps, not CPU/reasoning/productivity. Summed work duration and task elapsed time differ, especially with parallel sessions; do not sum overlaps and call it elapsed time.
 
-## Falhas e retomada
+## Failures and resumption
 
-Falha de coleta: salve comentário de impedimento com tentativas reais, confirme persistência e notifique por task/commentID. Não invente medição nem declare pausa/fim/resumo salvos; o intervalo fica aberto/incompleto até correção explícita. Queda do agente não fecha intervalo automaticamente. Recuperação consulta estado real e cobertura perdida antes de registrar ação suportada.
+Collection failure: save an impediment comment with actual attempts, confirm persistence, and notify via task/commentID. Do not invent a measurement or claim a saved pause/finish/summary; the interval remains open/incomplete until explicit correction. An agent crash does not automatically close an interval. Recovery queries actual state and lost coverage before recording a supported action.
 
-Em timeout, consulte os registros e reutilize chave/conteúdo idempotentes quando cabível, recuperando os mesmos IDs. Em conflito de outra task/sessão/agente ou início concorrente, não substitua IDs nem repita criação cegamente. Erro não autoriza alegar efeitos parciais ou mudança de status. Mantêm-se comentário completo e notificação referencial após persistência; executionId/intervalId não são commentID.
+On timeout, consult records and reuse the idempotency key/content when appropriate, retrieving the same IDs. In a conflict with another task/session/agent or a concurrent start, do not substitute IDs or blindly repeat creation. An error does not authorize claiming partial effects or a status change. A complete comment and reference notification after persistence remain required; executionId/intervalId are not commentID.
 
-## Contrato de escrita e leitura
+## Write and read contract
 
-Contrato alinhado com o Backend; confirme disponibilidade/schema no runtime conectado antes de enviar payload. RecordExecution.executionTracking é opcional no rollout e compartilha transação/chave idempotente com resumo/status/usage. Ações: start, checkpoint, pause, resume, finish. executionId é exigido após start; intervalId é exigido em checkpoint/pause/finish ativo e omitido em start/resume/finish já pausado. evidenceIds seleciona explicitamente entradas do usageReport, não vazias exceto finish pausado. evidenceIds contém strings observation.evidenceId, resolvidas exatamente dentro do usageReport da mesma chamada. reason é opcional; coverageLost true exige reason não vazio e só se aplica em checkpoint/pause/finish ativo: encerra comparabilidade e abre segmento com a nova evidência, preservando fechamento incomplete. Não use para inventar cobertura recuperada.
+Contract aligned with the Backend; confirm availability/schema in the connected runtime before sending a payload. RecordExecution.executionTracking is optional in the rollout and shares the transaction/idempotency key with summary/status/usage. Actions: start, checkpoint, pause, resume, finish. executionId is required after start; intervalId is required for active checkpoint/pause/finish and omitted for start/resume/already paused finish. evidenceIds explicitly selects usageReport entries, nonempty except for a paused finish. evidenceIds contains observation.evidenceId strings, resolved exactly within the same call's usageReport. reason is optional; coverageLost true requires a nonempty reason and applies only to active checkpoint/pause/finish: it ends comparability and opens a segment with the new evidence, preserving incomplete closure. Do not use it to invent recovered coverage.
 
-Start exige counterMode global ou per_model e coverageRootSessionId: identidade real da sessão raiz (sessionId se sessão isolada). global seleciona exatamente um contador; troca de modelo preserva os modelos envolvidos, sem atribuir o delta ao último. per_model declara séries disjuntas reais, não uma divisão estimada. Evidências selecionadas têm attribution unallocated para não duplicar atribuição no ledger legado. Não altere contadores/modelos observados para satisfazer modo ou requisitos.
+Start requires counterMode global or per_model and coverageRootSessionId: the actual root session identity (sessionId for an isolated session). global selects exactly one counter; a model change preserves the models involved without attributing the delta to the last one. per_model declares actual disjoint series, not an estimated breakdown. Selected evidence has attribution unallocated to avoid duplicate attribution in the legacy ledger. Do not alter observed counters/models to satisfy the mode or requirements.
 
-Execução fixa source/harness/surface/session/scope/agent e raiz de cobertura. O lock source/root não depende de agente/modelo/epoch/scope; árvore e filhos declaram a mesma raiz real. Não troque root, agente ou epoch para contornar intervalo aberto. Metadados não são autenticação nem prova de exclusividade; o servidor não descobre filhos automaticamente. Reset/lacuna encerra comparabilidade com cobertura incompleta e segmento novo conforme operação suportada.
+An execution fixes source/harness/surface/session/scope/agent and the coverage root. The source/root lock does not depend on agent/model/epoch/scope; a tree and its children declare the same actual root. Do not change root, agent, or epoch to bypass an open interval. Metadata is neither authentication nor proof of exclusivity; the server does not discover children automatically. A reset/gap ends comparability with incomplete coverage and a new segment according to the supported operation.
 
-A resposta traz executionSummary.executionTracking com action, executionId, intervalId (null no finish pausado), executionState active/paused/finished e intervalState open/closed/incomplete/null. close_activity também retorna executionSummary, preservando campos anteriores. Guarde os IDs exatos desse resultado; em resposta direta consulte o envelope real em vez de inventar caminho. Replays conservam IDs/resultado. expectedVersion/If-Match nas ações de resumo e close_activity é da task; na reconciliação é a versão do intervalo. Não use executionId como versão nem confunda version com revision.
+The response includes executionSummary.executionTracking with action, executionId, intervalId (null for a paused finish), executionState active/paused/finished, and intervalState open/closed/incomplete/null. close_activity also returns executionSummary, preserving previous fields. Keep the exact IDs from this result; for a direct response, consult the actual envelope instead of inventing a path. Replays preserve IDs/result. expectedVersion/If-Match in summary actions and close_activity belongs to the task; in reconciliation it is the interval version. Do not use executionId as a version or confuse version with revision.
 
-Leituras anunciadas (confira catálogo e envelopes params/query antes de chamar):
+Advertised reads (check the catalog and params/query envelopes before calling):
 
-| Necessidade | HTTP GET | Operação MCP |
+| Need | HTTP GET | MCP operation |
 | --- | --- | --- |
-| Execuções da task | /api/v1/tasks/{taskId}/executions | listTaskExecutions |
-| Intervalos da task | /api/v1/tasks/{taskId}/execution-intervals | listTaskExecutionIntervals |
-| Eventos explícitos | /api/v1/tasks/{taskId}/execution-tracking-events | listTaskExecutionTrackingEvents |
-| Total completo, independente da página | /api/v1/tasks/{taskId}/execution-interval-usage | getTaskExecutionIntervalUsage |
-| Intervalos abertos entre tasks | /api/v1/execution-intervals | listOpenExecutionIntervals |
-| Revisões auditáveis | /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions | listTaskExecutionIntervalRevisions |
+| Task executions | /api/v1/tasks/{taskId}/executions | listTaskExecutions |
+| Task intervals | /api/v1/tasks/{taskId}/execution-intervals | listTaskExecutionIntervals |
+| Explicit events | /api/v1/tasks/{taskId}/execution-tracking-events | listTaskExecutionTrackingEvents |
+| Complete total, independent of the page | /api/v1/tasks/{taskId}/execution-interval-usage | getTaskExecutionIntervalUsage |
+| Open intervals across tasks | /api/v1/execution-intervals | listOpenExecutionIntervals |
+| Auditable revisions | /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions | listTaskExecutionIntervalRevisions |
 
-A consulta global usa source/sessionId/coverageRootSessionId/agentId e retorna abertos por padrão. listTaskExecutions filtra state; listTaskExecutionIntervals filtra state/executionId. As listas e revisões aceitam offset/limit; eventos e totais usam os parâmetros anunciados no catálogo, sem filtros inventados. Para detectar sobreposição, não limite a busca ao próprio agente se isso ocultar a mesma fonte em uso por outro. Pagine offset/limit com items/total/hasMore/nextOffset; IDs e startSummaryId/endSummaryId fornecem vínculos, não horários. Guarde também IDs de evidência e cobertura de fronteiras confirmadas.
+The global query uses source/sessionId/coverageRootSessionId/agentId and returns open intervals by default. listTaskExecutions filters state; listTaskExecutionIntervals filters state/executionId. Lists and revisions accept offset/limit; events and totals use the parameters advertised in the catalog, without invented filters. To detect overlap, do not restrict the search to your own agent if that would hide the same source in use by another. Paginate offset/limit with items/total/hasMore/nextOffset; IDs and startSummaryId/endSummaryId provide links, not timestamps. Also keep evidence IDs and confirmed boundary coverage.
 
-Totais: validTotalTokens exclui intervalos open/incomplete/invalid; partes conhecidas ficam em partialTotalTokens. Durações observedDurationMs (soma) e elapsedDurationMs (união dos períodos fechados) são distintas. Valores são strings decimais; ausência null, zero real "0". Use o agregado completo, não some apenas a página listada. coverage inclui contagens de intervalos válidos, abertos, incompletos, inválidos e resumos sem rastreamento.
+Totals: validTotalTokens excludes open/incomplete/invalid intervals; known portions go into partialTotalTokens. Durations observedDurationMs (sum) and elapsedDurationMs (union of closed periods) are distinct. Values are decimal strings; absence is null, actual zero is "0". Use the complete aggregate, do not sum only the listed page. coverage includes counts of valid, open, incomplete, invalid intervals and untracked summaries.
 
-reconcileTaskExecutionInterval corresponde a POST /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions: referencia fronteiras por summaryId/evidenceId, reason e expectedVersion, preservando revisão anterior. O corpo ReconcileExecutionInterval aceita reason, invalidate, startEvidence e endEvidence; fronteiras são arrays de {summaryId,evidenceId}, se fornecidas. expectedVersion fica no envelope/If-Match, não no corpo. Confira o catálogo antes de enviar. Correção não muda evidência/resumo original nem reabre silenciosamente intervalo fechado; preserva identidade/não sobreposição. Perdida cobertura não vira zero nem preenchimento retroativo presumido.
+reconcileTaskExecutionInterval corresponds to POST /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions: it references boundaries by summaryId/evidenceId, reason, and expectedVersion, preserving the previous revision. The ReconcileExecutionInterval body accepts reason, invalidate, startEvidence, and endEvidence; boundaries are arrays of {summaryId,evidenceId}, if provided. expectedVersion belongs in the envelope/If-Match, not the body. Check the catalog before sending. Correction does not change the original evidence/summary or silently reopen a closed interval; it preserves identity/non-overlap. Lost coverage does not become zero or presumed backfill.
 
-## Exemplos de sequência (sem payload inventado)
+## Sequence examples (without invented payloads)
 
-Start: coletar snapshot real; selecionar sua evidência com attribution unallocated, counterMode correspondente à fonte e raiz real; enviar resumo com start; confirmar executionId/intervalId antes de trabalhar. Checkpoint: enviar IDs ativos e nova evidência sem fechar. Pause: coletar fronteira e fechar intervalo ativo antes de trocar. Resume: mesma executionId, sem intervalId antigo; nova evidência inicial e novo intervalId retornado. Finish ativo: executionId/intervalId e fronteira final; finish pausado: executionId sem intervalId e sem inventar evidência de período parado. Finish pausado ainda exige usageReport estrito normal, porém evidenceIds vazio não cria nova fronteira. Em todos os casos mantêm-se os campos obrigatórios do resumo e a versão da task.
+Start: collect an actual snapshot; select its evidence with attribution unallocated, counterMode matching the source, and the actual root; send a summary with start; confirm executionId/intervalId before working. Checkpoint: send active IDs and new evidence without closing. Pause: collect a boundary and close the active interval before switching. Resume: same executionId, without the old intervalId; new initial evidence and a new returned intervalId. Active finish: executionId/intervalId and final boundary; paused finish: executionId without intervalId and without inventing paused-period evidence. A paused finish still requires a normal strict usageReport, but empty evidenceIds creates no new boundary. In every case, required summary fields and the task version remain required.
 
-Retomada: consultar listOpenExecutionIntervals e registros da task; se ativo válido da mesma task/fonte, continuar com seus IDs, não start/resume novo. Se fonte ocupada por outra task, tratar conflito e fechar/pausar explicitamente só quando autorizado, sem fechamento automático. Falha de coleta mantém aberto/incompleto e produz comentário/aviso de impedimento, nunca resumo/fim fictícios. Obter prompts permanece leitura, sem executar essas sequências.
+Resumption: query listOpenExecutionIntervals and task records; if there is a valid active interval for the same task/source, continue with its IDs, without a new start/resume. If the source is occupied by another task, handle the conflict and explicitly close/pause only when authorized, without automatic closure. Collection failure keeps the interval open/incomplete and produces an impediment comment/notification, never a fictitious summary/finish. Obtaining prompts remains a read, without executing these sequences.
 
-Cenário conceitual, sem chamada de API: A inicia em1000 e pausa em1300; B usa a sessão; A retoma em2000 e termina em2200. A tem dois intervalos e300+200=500, não1200. Em outra sequência, A fecha em1600 e B abre em1650: os50 entre fronteiras não pertencem a nenhuma tarefa. Os números não são evidências reais nem devem ser enviados ao servidor.
+Conceptual scenario, without an API call: A starts at 1000 and pauses at 1300; B uses the session; A resumes at 2000 and finishes at 2200. A has two intervals and 300+200=500, not 1200. In another sequence, A closes at 1600 and B opens at 1650: the 50 between boundaries belongs to no task. These numbers are not actual evidence and must not be sent to the server.
 
-## Exemplos sintéticos de corpo e fragmentos
+## Synthetic body examples and fragments
 
-Não executar estes exemplos nem copiar IDs, nomes, contadores ou fontes para registros reais. O primeiro JSON declara false/lista vazia porque o exemplo de início não relata commit; não copiar essa declaração se houve commit no trabalho real. O primeiro JSON é somente RecordExecution (corpo de createExecutionSummary ou valor execution em close_activity), não o envelope de ator/versão/idempotência. taskId continua no caminho/params; executionContext preserva a raiz/origem real. Os demais JSONs mostram somente a propriedade executionTracking: completar o restante do resumo e usageReport válido, com cada evidenceId selecionado presente naquela chamada. UUIDs de execution/interval devem vir da resposta real, nunca destes marcadores sintéticos.
+Do not execute these examples or copy IDs, names, counters, or sources into actual records. The first JSON declares false/an empty list because the start example reports no commit; do not copy that declaration if a commit occurred in the actual work. The first JSON is only RecordExecution (the body of createExecutionSummary or the execution value in close_activity), not the actor/version/idempotency envelope. taskId remains in the path/params; executionContext preserves the actual root/origin. The other JSONs show only the executionTracking property: complete the rest of the summary and a valid usageReport, with each selected evidenceId present in that call. Execution/interval UUIDs must come from the actual response, never these synthetic placeholders.
 
 ```json
 {
-  "currentSummary": "Exemplo sintético: preparação concluída; início pendente de confirmação.",
-  "summary": "Exemplo sintético de fronteira inicial.",
+  "currentSummary": "Synthetic example: preparation completed; start awaiting confirmation.",
+  "summary": "Synthetic example of an initial boundary.",
   "outcome": "progress",
   "statusId": "10000000-0000-7000-8000-000000000003",
   "deliverables": [],
   "pending": [
-    "Executar somente após confirmar início"
+    "Execute only after confirming the start"
   ],
   "executionContext": {
     "rootTaskId": "10000000-0000-7000-8000-000000000001",
@@ -136,7 +136,7 @@ Não executar estes exemplos nem copiar IDs, nomes, contadores ou fontes para re
 }
 ```
 
-Checkpoint sem fechar:
+Checkpoint without closing:
 
 ```json
 {
@@ -151,7 +151,7 @@ Checkpoint sem fechar:
 }
 ```
 
-Pausa antes de trocar tarefa:
+Pause before switching tasks:
 
 ```json
 {
@@ -166,7 +166,7 @@ Pausa antes de trocar tarefa:
 }
 ```
 
-Retomada: novo intervalId será retornado:
+Resumption: a new intervalId will be returned:
 
 ```json
 {
@@ -180,7 +180,7 @@ Retomada: novo intervalId será retornado:
 }
 ```
 
-Fim ativo, independente de aceite/status final:
+Active finish, independent of acceptance/final status:
 
 ```json
 {
@@ -195,7 +195,7 @@ Fim ativo, independente de aceite/status final:
 }
 ```
 
-Fim já pausado: usageReport continua obrigatório, sem fronteira adicional:
+Already paused finish: usageReport remains required, without an additional boundary:
 
 ```json
 {
@@ -207,7 +207,7 @@ Fim já pausado: usageReport continua obrigatório, sem fronteira adicional:
 }
 ```
 
-Checkpoint com lacuna explicitamente declarada; não completa cobertura perdida:
+Checkpoint with an explicitly declared gap; does not fill lost coverage:
 
 ```json
 {
@@ -219,7 +219,7 @@ Checkpoint com lacuna explicitamente declarada; não completa cobertura perdida:
       "example-after-gap"
     ],
     "coverageLost": true,
-    "reason": "Exemplo sintético: intervalo sem observação verificável antes desta evidência."
+    "reason": "Synthetic example: interval without a verifiable observation before this evidence."
   }
 }
 ```
