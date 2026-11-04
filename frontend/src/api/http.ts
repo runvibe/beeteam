@@ -35,6 +35,7 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    timelinePoints: (taskId, pagination={}, signal) => request(`/tasks/${segment(taskId)}/timeline-points`+query({...pagination,sortBy:"sequence",sortOrder:"asc"}),{signal}),
     comment: (taskId, commentId, signal) => request(`/tasks/${segment(taskId)}/comments/${segment(commentId)}`, { signal }),
     openProject: (taskId, projectKey, application) =>
       request(

@@ -9,7 +9,7 @@ import { useApi } from "@/api/context";
 import { Failure } from "@/components/shared";
 import { IntervalMetrics } from "./interval-metrics";
 import { ExecutionTimeline } from "./execution-timeline";
-import { ExecutionPages } from "./execution-pages";
+import { TimelinePointPages } from "./timeline-point-pages";
 import "./task-execution-tracking.css";
 const coverageLabels = {
   totalIntervals: "intervalos",
@@ -73,23 +73,19 @@ export function TaskExecutionTimeline({
   const [, setSelected] = useUrlState<string>("timeline.selected", "");
   return (
     <section className="task-execution-timeline">
-      <ExecutionPages
-        queryKey={["timeline", taskId, "all-events-chart", version]}
+      <TimelinePointPages
+        taskId={taskId}
+        version={version}
         fetchPage={(offset, signal) =>
-          api.list(
-            "timeline",
+          api.timelinePoints(
             taskId,
             {
               offset,
-              limit: 20,
-              sortBy: "sequence",
-              sortOrder: "asc",
+              limit: 100,
             },
             signal,
           )
         }
-        label="eventos"
-        showCount={false}
       >
         {(rows, loading, failed) => (
           <ExecutionTimeline
@@ -121,7 +117,7 @@ export function TaskExecutionTimeline({
             )}
           />
         )}
-      </ExecutionPages>
+      </TimelinePointPages>
     </section>
   );
 }

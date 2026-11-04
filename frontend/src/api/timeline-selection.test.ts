@@ -1,21 +1,19 @@
 import { expect, it, vi } from "vitest";
 import { createHttpApi } from "./http";
 it("sends independent exact Event and Summary identifiers to their scoped endpoints", async () => {
-  const fetcher = vi
-    .fn()
-    .mockImplementation(
-      async () =>
-        new Response(
-          JSON.stringify({
-            items: [],
-            total: 0,
-            offset: 0,
-            limit: 1,
-            hasMore: false,
-            nextOffset: null,
-          }),
-        ),
-    );
+  const fetcher = vi.fn().mockImplementation(
+    async () =>
+      new Response(
+        JSON.stringify({
+          items: [],
+          total: 0,
+          offset: 0,
+          limit: 1,
+          hasMore: false,
+          nextOffset: null,
+        }),
+      ),
+  );
   const api = createHttpApi({ fetch: fetcher });
   await api.list("timeline", "task", {
     id: "event-id",
@@ -34,6 +32,12 @@ it("sends independent exact Event and Summary identifiers to their scoped endpoi
   );
   const controller = new AbortController();
   await api.comment("task", "comment-id", controller.signal);
-  expect(fetcher.mock.calls[2][0]).toBe("/api/v1/tasks/task/comments/comment-id");
+  expect(fetcher.mock.calls[2][0]).toBe(
+    "/api/v1/tasks/task/comments/comment-id",
+  );
   expect(fetcher.mock.calls[2][1].signal).toBeInstanceOf(AbortSignal);
+  await api.timelinePoints("task", { offset: 100, limit: 100 });
+  expect(fetcher.mock.calls[3][0]).toBe(
+    "/api/v1/tasks/task/timeline-points?offset=100&limit=100&sortBy=sequence&sortOrder=asc",
+  );
 });

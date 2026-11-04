@@ -100,6 +100,7 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  timelinePoints(taskId:string,pagination?:Pick<Filters,"offset"|"limit">,signal?:AbortSignal):Promise<import("./timeline-points").TimelinePointPage>;
   comment(taskId: string, commentId: string, signal?: AbortSignal): Promise<Resources["comments"]>;
   openProject(
     taskId: string,

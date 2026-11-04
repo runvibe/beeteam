@@ -13,35 +13,27 @@ it("retains earlier points when loading the next page of mixed timeline events",
   const rows = Array.from({ length: 21 }, (_, index) => ({
     ...makeSeed().timeline[0],
     id: `page-event-${index}`,
+    sequence: index,
     taskId: "task",
     data: {},
     type: index === 0 ? "execution.recorded" : "comment.created",
   }));
-  vi.spyOn(api, "list").mockImplementation(
-    async (_resource, _taskId, query) => {
-      const offset = Number(query?.offset ?? 0);
-      return {
-        items: rows.slice(offset, offset + 20),
-        total: 21,
-        offset,
-        limit: 20,
-        hasMore: offset === 0,
-        nextOffset: offset === 0 ? 20 : null,
-      } as never;
-    },
-  );
+  vi.spyOn(api, "timelinePoints").mockImplementation(async (_taskId, query) => {
+    const offset = Number(query?.offset ?? 0);
+    return {
+      items: rows.slice(offset, offset + 20),
+      total: 21,
+      offset,
+      limit: 20,
+      hasMore: offset === 0,
+      nextOffset: offset === 0 ? 20 : null,
+    } as never;
+  });
+  const fullEvents = vi.spyOn(api, "list");
   const { container } = render(
     <ApiProvider api={api}>
       <TaskExecutionTimeline taskId="task" version={3} />
     </ApiProvider>,
-  );
-  await waitFor(() =>
-    expect(
-      container.querySelectorAll(".execution-timeline-point"),
-    ).toHaveLength(20),
-  );
-  await userEvent.click(
-    screen.getByRole("button", { name: "Carregar mais eventos" }),
   );
   await waitFor(() =>
     expect(
@@ -52,6 +44,8 @@ it("retains earlier points when loading the next page of mixed timeline events",
     screen.getByRole("button", { name: /Resumo de execução registrado:/ }),
   ).toBeInTheDocument();
   expect(screen.queryByText(/Histórico parcial/)).toBeNull();
+  expect(screen.queryByRole("button", { name: /Carregar mais/ })).toBeNull();
+  expect(fullEvents).not.toHaveBeenCalled();
 });
 
 it("preserves all timeline event types and keeps the chart independent of selected event", async () => {
@@ -69,20 +63,14 @@ it("preserves all timeline event types and keeps the chart independent of select
   ].map((type, index) => ({
     ...makeSeed().timeline[0],
     id: `event-${index}`,
+    sequence: index,
     type,
     data: {},
     taskId: "task",
   }));
-  const list = vi
-    .spyOn(api, "list")
-    .mockImplementation(async (_resource, _taskId, query) => {
-      const filtered = rows.filter(
-        (row) =>
-          (!query?.types || query.types === row.type) &&
-          (!query?.id || query.id === row.id),
-      );
-      return executionPage(filtered) as never;
-    });
+  const list = vi.spyOn(api, "timelinePoints").mockImplementation(async () => {
+    return executionPage(rows) as never;
+  });
   const { container } = render(
     <ApiProvider api={api}>
       <TaskExecutionTimeline taskId="task" version={2} />
@@ -119,6 +107,9 @@ it("uses the unified Event ID, not the tracking or summary ID, and closes the co
   const list = vi
     .spyOn(api, "list")
     .mockResolvedValue(executionPage([row]) as never);
+  vi.spyOn(api, "timelinePoints").mockResolvedValue(
+    executionPage([row]) as never,
+  );
   const tracking = vi
     .spyOn(api, "executionTrackingEvents")
     .mockResolvedValue(executionPage([event]));
@@ -142,6 +133,12 @@ it("uses the unified Event ID, not the tracking or summary ID, and closes the co
   );
   await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   expect(list).toHaveBeenCalledTimes(1);
+  expect(list).toHaveBeenCalledWith(
+    "timeline",
+    "task",
+    { id: row.id, offset: 0, limit: 1 },
+    expect.any(AbortSignal),
+  );
   expect(tracking).toHaveBeenCalledWith(
     "task",
     { summaryId: event.summaryId, offset: 0, limit: 1 },

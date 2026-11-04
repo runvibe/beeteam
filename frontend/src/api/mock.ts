@@ -267,6 +267,10 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async timelinePoints(taskId,pagination={},signal) {
+      const page=await api.list("timeline",taskId,{...pagination,sortBy:"sequence",sortOrder:"asc"},signal);
+      return {...page,items:page.items.map(({id,taskId,type,occurredAt,sequence})=>({id,taskId,type,occurredAt,sequence}))};
+    },
     async comment(taskId, commentId) {
       const row = db.comments.find(row => row.taskId === taskId && row.id === commentId && !row.deletedAt);
       if (!row) throw new ApiError(404, "not_found", "Comentário não encontrado.");
