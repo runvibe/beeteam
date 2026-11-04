@@ -1,5 +1,10 @@
 /* Exact source values and explicit role adaptations: docs/design/theme-palettes.md. */
 
+/* Codex entity listings share secondary-button surfaces; Kanban cards keep --card. */
+:root[data-palette="codex"] .balanced-card-grid .board-card {
+  background-color: var(--secondary);
+}
+
 :root[data-palette="claude-code"]:not(.dark) {
   --background: hsl(48 33.3% 97.1%);
   --foreground: hsl(60 2.6% 7.6%);

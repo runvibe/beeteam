@@ -6,6 +6,8 @@ Verified 2026-11-04. `theme-sources.json` stores the exact source values, produc
 The existing `index.css` light/dark tokens are unchanged. No palette selector overrides apply. Existing `beeteam.theme` remains the light/dark/system preference; an absent/invalid `beeteam.palette` means Default. Separate keys preserve existing installations without a destructive migration.
 
 ## Codex
+Product-specific adaptation: only board/team/agent listing cards inside `balanced-card-grid` use `--secondary`, matching resting secondary buttons in light and dark modes. This is a user-approved Bee Team surface mapping, not an extracted Codex token. Page backgrounds and Kanban task cards keep their existing values.
+
 Official Appearance preset documented at https://learn.chatgpt.com/docs/reference/settings (redirect from developers.openai.com/codex/app/settings): light background#FFFFFF/foreground#0D0D0D/accent#0285FF; dark#181818/#FFFFFF/#339CFF. This is a documentation snapshot, not a claim that all Codex releases or custom themes use these values. Installed desktop26.1029.7803.0 ASAR contains dynamic color generation (`webview/assets/async/496175.cf5ad221c1.js`); onboarding/checkout styles are different scopes and were not substituted.
 
 Background/foreground map directly, inverse primary button uses ink/surface, accent maps to focus rings. Other surfaces retain Default as an explicit adaptation. Accent is not used as small body text on white, avoiding a contrast loss.
