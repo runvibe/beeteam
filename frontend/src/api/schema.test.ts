@@ -273,6 +273,8 @@ describe("OpenAPI response conformance", () => {
   it("projections conform after querying", async () => {
     const api = createMockApi({ delay: 0 });
     for (const [schema, value] of [
+      ["ra#/components/schemas/AgentLatestActivity", await api.agentLatestActivity(ids.agent)],
+      ["ra#/components/schemas/AgentLatestActivity", {activity:null}],
       [
         "ra#/components/schemas/ActivityLinkPage",
         await api.list("activities", ids.agent),

@@ -66,5 +66,7 @@
   "chatCreatedUntil": "Criado até (inclusive)",
   "chatDateTimezone": "Dias no seu fuso horário: {{timezone}}.",
   "chatInvalidPeriod": "Informe datas válidas com o início anterior ou igual ao fim.",
-  "noChatsMatchFilters": "Nenhum chat corresponde aos filtros"
+  "noChatsMatchFilters": "Nenhum chat corresponde aos filtros",
+  "latestActivity": "Última atividade",
+  "noRecordedActivity": "Nenhuma atividade registrada."
 }

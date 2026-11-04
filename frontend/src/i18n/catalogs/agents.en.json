@@ -66,5 +66,7 @@
   "chatCreatedUntil": "Created through (inclusive)",
   "chatDateTimezone": "Calendar days in your timezone: {{timezone}}.",
   "chatInvalidPeriod": "Enter valid dates with the start on or before the end.",
-  "noChatsMatchFilters": "No chats match these filters"
+  "noChatsMatchFilters": "No chats match these filters",
+  "latestActivity": "Latest activity",
+  "noRecordedActivity": "No recorded activity."
 }
