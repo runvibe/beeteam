@@ -33,7 +33,9 @@ Use `message(key, options)` with `LocalizedError`/`ApiError` for application-own
 errors. The message is resolved when rendered, so cached errors follow live locale
 changes. Store operation codes, rather than translated copy, in asynchronous busy
 state. Transfer job persistence is optional and safely tolerates denied reads/writes,
-so the actual global Settings dialog remains usable without browser storage. Transfer state/stage/error codes use explicit mappings. The two known
+so the actual global Settings dialog remains usable without browser storage. Transfer state/stage/error codes use explicit mappings. Stage localization has a
+backend-source parity regression against records TABLES, archive groups and emitted
+progress/lifecycle literals, including execution tracking and archive-ready stages. The two known
 backend-owned resumption notices use exact protocol-template mappings; unknown
 notices and external errors remain verbatim.
 

@@ -29,7 +29,20 @@ const stages: Record<string, string> = {
   attachments: "transfer.stage.attachments",
   execution_summaries: "transfer.stage.execution_summaries",
   chat_references: "transfer.stage.chat_references",
-  execution_intervals: "transfer.stage.execution_intervals",
+  task_executions: "transfer.stage.task_executions",
+  task_execution_intervals: "transfer.stage.task_execution_intervals",
+  task_execution_interval_counters:
+    "transfer.stage.task_execution_interval_counters",
+  task_execution_tracking_events:
+    "transfer.stage.task_execution_tracking_events",
+  task_execution_interval_revisions:
+    "transfer.stage.task_execution_interval_revisions",
+  images: "transfer.stage.images",
+  memberships: "transfer.stage.memberships",
+  board_events: "transfer.stage.board_events",
+  file_contents: "transfer.stage.file_contents",
+  request_replays: "transfer.stage.request_replays",
+  archive_ready: "transfer.stage.archive_ready",
 };
 const busy: Record<string, string> = {
   preparing: "transfer.preparingArchive",

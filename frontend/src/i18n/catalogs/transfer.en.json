@@ -60,7 +60,17 @@
     "attachments": "Attachments",
     "execution_summaries": "Execution summaries",
     "chat_references": "Chat references",
-    "execution_intervals": "Execution intervals"
+    "task_executions": "Task executions",
+    "task_execution_intervals": "Execution intervals",
+    "task_execution_interval_counters": "Execution interval counters",
+    "task_execution_tracking_events": "Execution tracking events",
+    "task_execution_interval_revisions": "Execution interval revisions",
+    "images": "Images",
+    "memberships": "Team memberships",
+    "board_events": "Board events",
+    "file_contents": "File contents",
+    "request_replays": "Idempotency responses",
+    "archive_ready": "Archive ready"
   },
   "error": {
     "disabled": "Transfer is disabled.",

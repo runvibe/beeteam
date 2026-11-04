@@ -60,7 +60,17 @@
     "attachments": "Anexos",
     "execution_summaries": "Resumos de execução",
     "chat_references": "Referências de chats",
-    "execution_intervals": "Intervalos de execução"
+    "task_executions": "Execuções de tarefas",
+    "task_execution_intervals": "Intervalos de execução",
+    "task_execution_interval_counters": "Contadores dos intervalos de execução",
+    "task_execution_tracking_events": "Eventos de rastreamento de execução",
+    "task_execution_interval_revisions": "Revisões dos intervalos de execução",
+    "images": "Imagens",
+    "memberships": "Vínculos de times",
+    "board_events": "Eventos dos boards",
+    "file_contents": "Conteúdos dos arquivos",
+    "request_replays": "Respostas de idempotência",
+    "archive_ready": "Arquivo pronto"
   },
   "error": {
     "disabled": "Transferência desativada.",
