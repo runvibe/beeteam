@@ -25,8 +25,10 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
     events.find((event) => event.id === selectedId) ?? events.at(-1);
   return (
     <section aria-labelledby={id} className="execution-timeline">
-      <h3 id={id}>Linha do tempo da execução</h3>
-      <p className="small-note">{description}</p>
+      <header className="execution-timeline-heading">
+        <h3 id={id}>Linha do tempo da execução</h3>
+        <p className="small-note">{description}</p>
+      </header>
       <div
         className="execution-timeline-scroll"
         role="group"

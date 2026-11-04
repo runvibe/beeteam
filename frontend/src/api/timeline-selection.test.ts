@@ -32,4 +32,8 @@ it("sends independent exact Event and Summary identifiers to their scoped endpoi
   expect(fetcher.mock.calls[1][0]).toBe(
     "/api/v1/tasks/task/execution-tracking-events?summaryId=summary-id&limit=1",
   );
+  const controller = new AbortController();
+  await api.comment("task", "comment-id", controller.signal);
+  expect(fetcher.mock.calls[2][0]).toBe("/api/v1/tasks/task/comments/comment-id");
+  expect(fetcher.mock.calls[2][1].signal).toBeInstanceOf(AbortSignal);
 });

@@ -267,6 +267,11 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async comment(taskId, commentId) {
+      const row = db.comments.find(row => row.taskId === taskId && row.id === commentId && !row.deletedAt);
+      if (!row) throw new ApiError(404, "not_found", "Comentário não encontrado.");
+      return structuredClone(row);
+    },
     async openProject() {
       throw new ApiError(
         501,

@@ -7,6 +7,9 @@
   overflow-x: auto;
   max-width: 100%;
 }
+.execution-timeline-heading { display: grid; gap: 4px; }
+.execution-timeline-heading > h3,
+.execution-timeline-heading > p { margin: 0; }
 .execution-timeline-plot {
   height: 180px;
   position: relative;

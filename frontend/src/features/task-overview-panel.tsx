@@ -50,12 +50,14 @@ export function TaskOverviewPanel({
             data={q.data.progressHistory}
             mode="chart"
           />
-          <OverviewUsageCards taskId={task.id} version={task.version} />
-          <OverviewSubtasks
-            total={q.data.directSubtasks.total}
-            task={task}
-            onOpen={() => onTab("children")}
-          />
+          <div className="overview-work-and-usage">
+            <OverviewSubtasks
+              total={q.data.directSubtasks.total}
+              task={task}
+              onOpen={() => onTab("children")}
+            />
+            <OverviewUsageCards taskId={task.id} version={task.version} />
+          </div>
         </>
       )}
     </div>

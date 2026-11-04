@@ -342,3 +342,13 @@
 .subtask-status-pie [role="button"]:focus-visible { outline: none; stroke: var(--foreground); stroke-width: 4px; }
 
 [data-task-section="summaries"] .overview-progress-history { border-top: 0; }
+.overview-work-and-usage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.overview-work-and-usage > * { min-width: 0; }
+@media (min-width: 900px) {
+  .overview-work-and-usage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}

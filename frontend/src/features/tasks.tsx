@@ -1,5 +1,4 @@
-import { eventLabels } from "./timeline-labels";
-import { TimelineExecutionDetail } from "./timeline-execution-detail";
+import { TimelineEventCard } from "./timeline-event-card";
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
 import { Attachment } from "./attachment-item";
@@ -456,27 +455,7 @@ function RecordContent({
       </Card>
     );
   }
-  const r = row as Resources["timeline"];
-  return (
-    <article className="record timeline-record">
-      <Author id={r.actorId} date={r.occurredAt} />
-      <strong>{eventLabels[r.type] ?? r.type}</strong>
-      <p className="small-note">
-        Task {r.taskId.slice(-4)} · evento {r.sequence}
-      </p>
-      {r.type === "execution.recorded" &&
-        typeof r.data.executionSummaryId === "string" && (
-          <TimelineExecutionDetail
-            taskId={r.taskId}
-            summaryId={r.data.executionSummaryId}
-          />
-        )}
-      <details>
-        <summary>Dados do evento</summary>
-        <pre>{JSON.stringify(r.data, null, 2)}</pre>
-      </details>
-    </article>
-  );
+  return <TimelineEventCard event={row as Resources["timeline"]} />;
 }
 function Author({ id, date }: { id: string | null; date: string }) {
   return (

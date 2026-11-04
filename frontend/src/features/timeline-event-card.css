@@ -1,0 +1,67 @@
+.timeline-event-card .record-author > p {
+  margin: 0;
+}
+.timeline-task-origin {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.timeline-event-fields {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  min-width: 0;
+}
+.timeline-event-fields dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-bottom: 4px;
+}
+.timeline-event-fields dd {
+  margin: 0;
+  min-width: 0;
+}
+.timeline-event-fields .timeline-event-fields {
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+  gap: 8px;
+}
+.timeline-changes {
+  display: grid;
+  gap: 24px;
+}
+.timeline-change-values {
+  display: grid;
+  gap: 16px;
+  margin-top: 12px;
+}
+.timeline-change-values > div {
+  min-width: 0;
+}
+.timeline-change-values h5 {
+  margin: 0 0 8px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.timeline-original-data {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.timeline-original-data pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.timeline-literal {
+  overflow-wrap: anywhere;
+}
+.timeline-value-list {
+  display: grid;
+  gap: 12px;
+  padding-left: 20px;
+}
+@media (min-width: 768px) {
+  .timeline-change-values {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
