@@ -4,7 +4,7 @@ import type { TaskExecutionInterval } from "@/api/generated/kanban/TaskExecution
 import { formatDate } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { observedDuration } from "./interval-format";
-import { tokenCount } from "./usage-format";
+import { tokenCount, tokenAmount } from "./usage-format";
 import { SessionSnapshot } from "./session-snapshots";
 import { TokenComponents } from "./summary-usage";
 import { RecordedSummary } from "./recorded-summary";
@@ -141,7 +141,7 @@ export function ExecutionIntervalDetail({
                 />
                 <p>
                   {tr("usage.differenceCalculatedByTheApi")}{" "}
-                  {tokenCount(segment.delta?.totalTokens)} {tr("usage.tokens")}
+                  {tokenAmount(segment.delta?.totalTokens)}
                 </p>
                 {segment.delta && <TokenComponents value={segment.delta} />}
               </div>

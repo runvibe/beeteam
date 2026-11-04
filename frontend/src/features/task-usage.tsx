@@ -187,6 +187,39 @@ export function TaskUsagePanel({
       </section>
     );
   const c = usage.coverage;
+  const coverageDetails: readonly [string, string, number][] = [
+    ["entries", tr("usage.coverageLabels.entries"), c.entries],
+    [
+      "measuredEntries",
+      tr("usage.coverageLabels.measuredEntries"),
+      c.measuredEntries,
+    ],
+    [
+      "estimatedEntries",
+      tr("usage.coverageLabels.estimatedEntries"),
+      c.estimatedEntries,
+    ],
+    [
+      "unavailableEntries",
+      tr("usage.coverageLabels.unavailableEntries"),
+      c.unavailableEntries,
+    ],
+    [
+      "baselineEntries",
+      tr("usage.coverageLabels.baselineEntries"),
+      c.baselineEntries,
+    ],
+    [
+      "duplicateEntries",
+      tr("usage.coverageLabels.duplicateEntries"),
+      c.duplicateEntries,
+    ],
+    [
+      "unallocatedEntries",
+      tr("usage.coverageLabels.unallocatedEntries"),
+      c.unallocatedEntries,
+    ],
+  ];
   const session = usage.recordedSessionUsage;
   return (
     <section className="task-usage" aria-label={tr("usage.recordedUsage")}>
@@ -266,24 +299,10 @@ export function TaskUsagePanel({
       <details>
         <summary>{tr("usage.coverageAndGaps")}</summary>
         <dl className="usage-components">
-          {[
-            [tr("usage.coverageLabels.entries"), c.entries],
-            [tr("usage.coverageLabels.measuredEntries"), c.measuredEntries],
-            [tr("usage.coverageLabels.estimatedEntries"), c.estimatedEntries],
-            [
-              tr("usage.coverageLabels.unavailableEntries"),
-              c.unavailableEntries,
-            ],
-            [tr("usage.coverageLabels.baselineEntries"), c.baselineEntries],
-            [tr("usage.coverageLabels.duplicateEntries"), c.duplicateEntries],
-            [
-              tr("usage.coverageLabels.unallocatedEntries"),
-              c.unallocatedEntries,
-            ],
-          ].map(([label, value]) => (
-            <div key={label}>
+          {coverageDetails.map(([key, label, value]) => (
+            <div key={key}>
               <dt>{label}</dt>
-              <dd>{value}</dd>
+              <dd>{formatNumber(value)}</dd>
             </div>
           ))}
         </dl>

@@ -23,7 +23,8 @@ Module-owned Intl formatters are rebuilt lazily after a language change.
 
 Use `formatNumber`/`formatPercent` for displayed numbers and `locale()` for other
 Intl formatters. `tokenCount` and `observedDuration` retain BigInt arithmetic;
-large counters are never converted through Number. Translation interpolation
+large counters are never converted through Number. `tokenAmount` selects singular/plural
+from exact BigInt comparisons and formats the original amount independently. Translation interpolation
 keeps the numeric count for plural selection and formats the displayed value
 separately. Full count phrases use `_zero`, `_one`, `_other` and `_many` entries in
 both catalogs, including zero and Portuguese million-category behavior.
@@ -31,7 +32,8 @@ both catalogs, including zero and Portuguese million-category behavior.
 Use `message(key, options)` with `LocalizedError`/`ApiError` for application-owned
 errors. The message is resolved when rendered, so cached errors follow live locale
 changes. Store operation codes, rather than translated copy, in asynchronous busy
-state. Transfer state/stage/error codes use explicit mappings. The two known
+state. Transfer job persistence is optional and safely tolerates denied reads/writes,
+so the actual global Settings dialog remains usable without browser storage. Transfer state/stage/error codes use explicit mappings. The two known
 backend-owned resumption notices use exact protocol-template mappings; unknown
 notices and external errors remain verbatim.
 
@@ -44,7 +46,7 @@ and default literals; lowercase display branches; and interpolated UI templates.
 Translation keys, CSS/cva classes, type declarations, imports, technical
 comparisons and punctuation-only composition are distinguished structurally.
 
-The audit currently covers 164 production modules with zero unresolved candidates.
+The audit currently covers 165 production modules with zero unresolved candidates.
 Its 51 exceptions are exact **file + literal + reason** entries in
 `scripts/i18n-exceptions.json`; there are no ordinary UI file exemptions. The
 exceptions are product/provider brands, keyboard/HTML/directive tokens, MIME and

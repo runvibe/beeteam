@@ -33,7 +33,6 @@
   "epoch": "· Epoch:",
   "lastRecordedBoundary": "Last recorded boundary",
   "differenceCalculatedByTheApi": "Difference calculated by the API:",
-  "tokens": "tokens",
   "explicitBoundariesOnlyAbsenceIsNotZeroDoNotAdd": "Explicit boundaries only. Absence is not zero; do not add intermediate deltas to the final value or tree counters to children.",
   "revisionHistory": "Revision history",
   "revisions": "revisions",
@@ -135,7 +134,6 @@
   "reportTimeAndObservedStatusForEachSummaryDoesNot": "Report time and observed status for each summary. Does not represent usage time or inferred status change. Includes summaries without metrics.",
   "checkpoints": "checkpoints",
   "noMeasuredDelta": "no measured delta",
-  "tokens2": " tokens",
   "summaryDetailsAtThisPoint": "Summary details at this point",
   "recordedSummary": "Recorded summary",
   "measuredSessionDelta": "Measured session delta:",
@@ -208,5 +206,9 @@
   "checkpointNoun_zero": "checkpoints",
   "checkpointNoun_one": "checkpoint",
   "checkpointNoun_other": "checkpoints",
-  "checkpointNoun_many": "checkpoints"
+  "checkpointNoun_many": "checkpoints",
+  "tokenAmount_zero": "{{amount}} tokens",
+  "tokenAmount_one": "{{amount}} token",
+  "tokenAmount_other": "{{amount}} tokens",
+  "tokenAmount_many": "{{amount}} tokens"
 }

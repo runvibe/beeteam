@@ -1,3 +1,5 @@
+import { setLocalePreference } from "@/i18n";
+import { formatDate } from "@/components/shared";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
@@ -61,3 +63,25 @@ it("keeps the download action available after a failure and preserves the file d
   expect(button).toBeEnabled();
   expect(screen.getByText("Descrição preservada").tagName).toBe("STRONG");
 });
+
+it.each(["en", "pt"] as const)(
+  "interpolates visible removed-attachment dates in %s without raw placeholders",
+  (language) => {
+    setLocalePreference(language);
+    const seed = makeSeed(),
+      item = { ...seed.attachments[0], deletedAt: "2026-11-03T12:00:00Z" };
+    const { container } = render(
+      <ApiProvider api={createMockApi({ seed, delay: 0 })}>
+        <Attachment item={item} />
+      </ApiProvider>,
+    );
+    const message =
+      (language === "en" ? "Removed at " : "Removido em ") +
+      formatDate(item.deletedAt);
+    expect(screen.getByText(message)).toBeVisible();
+    expect(
+      screen.getByText(language === "en" ? "Removed" : "Removido"),
+    ).toHaveAttribute("title", message);
+    expect(container.textContent).not.toContain("{{");
+  },
+);

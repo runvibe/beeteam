@@ -8,6 +8,7 @@ import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsa
 import { formatDate } from "@/components/shared";
 import { OverviewAttribution } from "./overview-artifacts";
 import { SummaryUsage, tokenCount } from "./summary-usage";
+import { tokenAmount } from "./usage-format";
 import "./task-usage-chart.css";
 
 export function UsageCheckpointChart({
@@ -184,10 +185,9 @@ export function UsageCheckpointChart({
             </p>
             <p>
               {tr("usage.measuredDelta")}{" "}
-              {tokenCount(session?.measuredTotalTokens ?? null)}{" "}
+              {tokenAmount(session?.measuredTotalTokens)}{" "}
               {tr("usage.estimated2")}{" "}
-              {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
-              {tr("usage.tokens")}
+              {tokenAmount(session?.estimatedTotalTokens)}
             </p>
             {!!session?.coverage.baselineEntries && (
               <p className="small-note">

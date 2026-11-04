@@ -1,3 +1,4 @@
+import { setLocalePreference } from "@/i18n";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
@@ -323,5 +324,30 @@ it.each([undefined, { ...usage(), timeline: page([]) }])(
       container.querySelector(".usage-chart-plot svg"),
     ).toBeInTheDocument();
     expect(screen.getByText("Sem resumos disponíveis")).toBeVisible();
+  },
+);
+
+it.each(["en", "pt"] as const)(
+  "formats four-digit coverage-detail aggregates in %s",
+  async (language) => {
+    setLocalePreference(language);
+    const data = usage();
+    data.coverage.entries = 1234;
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <TaskUsagePanel taskId="task" usage={data} version={1} />
+      </ApiProvider>,
+    );
+    await userEvent.click(
+      screen.getByText(
+        language === "en" ? "Coverage and gaps" : "Cobertura e lacunas",
+      ),
+    );
+    const label = screen.getByText(language === "en" ? "Entries" : "Entradas", {
+      selector: "dt",
+    });
+    expect(label.parentElement?.querySelector("dd")).toHaveTextContent(
+      language === "en" ? "1,234" : "1.234",
+    );
   },
 );

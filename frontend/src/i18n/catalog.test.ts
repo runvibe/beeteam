@@ -120,3 +120,49 @@ it("keeps every production source and catalog below the file-size limit", () => 
     ),
   ).toEqual([]);
 });
+
+it("supplies required placeholders and plural counts at static translation call sites", () => {
+  const missing: string[] = [];
+  for (const file of sourceFiles()) {
+    if (/\.test\.|generated|[\\/]test[\\/]/.test(file)) continue;
+    const sf = ts.createSourceFile(
+      file,
+      fs.readFileSync(file, "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    function visit(node: ts.Node) {
+      if (
+        ts.isCallExpression(node) &&
+        ["tr", "t", "message"].includes(node.expression.getText(sf))
+      ) {
+        const key = node.arguments[0];
+        if (key && ts.isStringLiteral(key)) {
+          const text = en[key.text] ?? en[key.text + "_other"];
+          if (text) {
+            const required = new Set(placeholders(text));
+            if (key.text + "_one" in en) required.add("count");
+            const options = node.arguments[1];
+            const supplied = new Set(
+              options && ts.isObjectLiteralExpression(options)
+                ? options.properties
+                    .filter(
+                      (p) =>
+                        ts.isPropertyAssignment(p) ||
+                        ts.isShorthandPropertyAssignment(p),
+                    )
+                    .map((p) => p.name.getText(sf).replaceAll('"', ""))
+                : [],
+            );
+            for (const name of required)
+              if (!supplied.has(name))
+                missing.push(file + ": " + key.text + " requires " + name);
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    }
+    visit(sf);
+  }
+  expect(missing).toEqual([]);
+});

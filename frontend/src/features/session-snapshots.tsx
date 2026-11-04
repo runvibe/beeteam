@@ -3,7 +3,7 @@ import { useLocale, t as tr } from "@/i18n";
 import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
 import type { UsageObservation } from "@/api/generated/kanban/UsageObservation";
 import { OverviewAttribution } from "./overview-artifacts";
-import { tokenCount } from "./usage-format";
+import { tokenAmount } from "./usage-format";
 
 export function SessionSnapshot({
   observation: o,
@@ -33,7 +33,7 @@ export function SessionSnapshot({
         {o.quality === "estimated"
           ? tr("usage.estimatedLower")
           : tr("usage.measuredLower")}
-        ): {tokenCount(total)} {tr("usage.tokens")}
+        ): {tokenAmount(total)}
       </p>
       <p className="small-note">
         {o.modelId || tr("tasks.modelNotProvided")} {tr("common.session2")}{" "}

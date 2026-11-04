@@ -4,7 +4,7 @@ import { ChartPointPopover } from "./chart-point-popover";
 import { SessionSnapshots } from "./session-snapshots";
 import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsageTimelineItem";
 import { OverviewAttribution } from "./overview-artifacts";
-import { tokenCount } from "./summary-usage";
+import { tokenAmount } from "./usage-format";
 import { formatDate } from "@/components/shared";
 
 export function UsageCheckpointPoint({
@@ -37,7 +37,7 @@ export function UsageCheckpointPoint({
         delta:
           measured == null
             ? tr("usage.noMeasuredDelta")
-            : tokenCount(measured) + tr("usage.tokens2"),
+            : tokenAmount(measured),
         status: point.statusObserved?.name ?? tr("tasks.notRecorded"),
       })}
       dialogLabel={tr("usage.summaryDetailsAtThisPoint")}
@@ -53,12 +53,11 @@ export function UsageCheckpointPoint({
         {point.statusObserved?.name ?? tr("execution.notRecorded")}
       </p>
       <p>
-        {tr("usage.measuredSessionDelta")} {tokenCount(measured)}{" "}
-        {tr("usage.tokens")}
+        {tr("usage.measuredSessionDelta")} {tokenAmount(measured)}
       </p>
       <p>
         {tr("usage.estimatedSessionDelta")}{" "}
-        {tokenCount(usage?.estimatedTotalTokens)} {tr("usage.tokens")}
+        {tokenAmount(usage?.estimatedTotalTokens)}
       </p>
       {!!usage?.coverage.baselineEntries && (
         <p className="small-note">

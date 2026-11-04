@@ -1,3 +1,4 @@
+import { readTransferJob, persistTransferJob } from "./transfer-job-storage";
 import {
   formatNumber,
   formatPercent,
@@ -36,7 +37,6 @@ import {
   transferStage,
   transferErrorText,
 } from "./transfer-labels";
-const storageKey = "bee-transfer-job";
 const ongoing = (state: string) =>
   ["running", "restoring", "queued"].includes(state);
 export function DataTransferSettings() {
@@ -84,7 +84,7 @@ export function DataTransferSettings() {
 export function DataTransferPanel() {
   useLocale();
   const client = useQueryClient();
-  const [jobId, setJobId] = useState(() => localStorage.getItem(storageKey));
+  const [jobId, setJobId] = useState(readTransferJob);
   const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState("");
   const [percent, setPercent] = useState(0);
@@ -112,7 +112,7 @@ export function DataTransferPanel() {
   });
   const remember = (value: TransferJob) => {
     setJobId(value.id);
-    localStorage.setItem(storageKey, value.id);
+    persistTransferJob(value.id);
     client.setQueryData(["transfer-job", value.id], value);
     setConfirmed(false);
     setTruncate(false);
@@ -143,7 +143,7 @@ export function DataTransferPanel() {
       );
       if (e instanceof TransferError && e.activeJobId) {
         setJobId(e.activeJobId);
-        localStorage.setItem(storageKey, e.activeJobId);
+        persistTransferJob(e.activeJobId);
       }
     } finally {
       setBusy("");
@@ -377,7 +377,7 @@ export function DataTransferPanel() {
               variant="ghost"
               onClick={() => {
                 setJobId(null);
-                localStorage.removeItem(storageKey);
+                persistTransferJob(null);
                 actionKeys.current.clear();
               }}
             >

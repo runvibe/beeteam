@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { Failure } from "@/components/shared";
 import { SessionSnapshots } from "./session-snapshots";
-import { tokenCount } from "./usage-format";
+import { tokenAmount } from "./usage-format";
 
 /** Mounted only inside the open point popover; no timestamp matching or history preload. */
 export function ProgressSummary({
@@ -55,7 +55,7 @@ export function ProgressSummary({
                   : entry.observation.quality === "estimated"
                     ? tr("usage.estimatedLower")
                     : tr("tasks.unavailable")}
-                ): {tokenCount(entry.delta?.totalTokens)} {tr("usage.tokens")}
+                ): {tokenAmount(entry.delta?.totalTokens)}
               </p>
               <p className="small-note">
                 {entry.counted

@@ -162,7 +162,7 @@ export function Attachment({ item }: { item: Resources["attachments"] }) {
         </div>
         {item.deletedAt && (
           <p className="attachment-metadata">
-            {tr("files.removedAt")} {formatDate(item.deletedAt)}
+            {tr("files.removedAt", { date: formatDate(item.deletedAt) })}
           </p>
         )}
         {item.description && (

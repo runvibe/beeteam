@@ -33,7 +33,6 @@
   "epoch": "· Epoch:",
   "lastRecordedBoundary": "Última fronteira registrada",
   "differenceCalculatedByTheApi": "Diferença calculada pela API:",
-  "tokens": "tokens",
   "explicitBoundariesOnlyAbsenceIsNotZeroDoNotAdd": "Somente fronteiras explícitas. Ausência não é zero; não somar deltas intermediários ao final nem contadores de árvore aos filhos.",
   "revisionHistory": "Histórico de revisões",
   "revisions": "revisões",
@@ -135,7 +134,6 @@
   "reportTimeAndObservedStatusForEachSummaryDoesNot": "Momento de reporte e status observado em cada resumo. Não representa horário de consumo nem mudança inferida de status. Inclui resumos sem métricas.",
   "checkpoints": "checkpoints",
   "noMeasuredDelta": "sem delta medido",
-  "tokens2": " tokens",
   "summaryDetailsAtThisPoint": "Detalhes do resumo neste ponto",
   "recordedSummary": "Resumo registrado",
   "measuredSessionDelta": "Delta medido de sessão:",
@@ -208,5 +206,9 @@
   "checkpointNoun_zero": "checkpoints",
   "checkpointNoun_one": "checkpoint",
   "checkpointNoun_other": "checkpoints",
-  "checkpointNoun_many": "checkpoints"
+  "checkpointNoun_many": "checkpoints",
+  "tokenAmount_zero": "{{amount}} tokens",
+  "tokenAmount_one": "{{amount}} token",
+  "tokenAmount_other": "{{amount}} tokens",
+  "tokenAmount_many": "{{amount}} tokens"
 }
