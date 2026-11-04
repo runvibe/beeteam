@@ -1,0 +1,309 @@
+#![cfg(feature = "mcp")]
+mod support;
+use axum::{body::Body, http::Request, Router};
+use http_body_util::BodyExt;
+use serde_json::{json, Value};
+use support::*;
+use tower::ServiceExt;
+async fn tool(app: &Router, task: &Value, query: Value) -> Value {
+    let response=app.clone().oneshot(Request::post("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"getTimelinePoints","arguments":{"params":{"taskId":id(task)},"query":query}}}).to_string())).unwrap()).await.unwrap();
+    serde_json::from_slice::<Value>(&response.into_body().collect().await.unwrap().to_bytes())
+        .unwrap()["result"]
+        .clone()
+}
+async fn page(app: &Router, task: &Value, query: Value) -> Value {
+    let mut url = url::Url::parse(&format!(
+        "http://localhost/api/v1/tasks/{}/timeline-points",
+        id(task)
+    ))
+    .unwrap();
+    for (key, value) in query.as_object().unwrap() {
+        let text = match value {
+            Value::String(s) => s.clone(),
+            Value::Array(items) => items
+                .iter()
+                .map(|v| v.as_str().unwrap())
+                .collect::<Vec<_>>()
+                .join(","),
+            _ => value.to_string(),
+        };
+        url.query_pairs_mut().append_pair(key, &text);
+    }
+    let http = get(
+        app,
+        &format!("{}?{}", url.path(), url.query().unwrap_or("")),
+    )
+    .await;
+    let mcp = tool(app, task, query).await;
+    assert_eq!(mcp["isError"], false, "{mcp}");
+    assert_eq!(mcp["structuredContent"]["data"], http);
+    http
+}
+#[tokio::test]
+async fn lightweight_timeline_points_preserve_filters_scope_and_pagination() {
+    let (app, store): (Router, Box<dyn beeteam::repositories::contracts::ResourceStore>) =
+        if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("sqlite") {
+            let (app, pool) = sqlite_app_with_pool().await;
+            (app, Box::new(beeteam::repositories::sqlite::ResourceRepository::new(pool)))
+        } else {
+            let (app, pool) = app_with_pool().await;
+            (app, Box::new(beeteam::repositories::resources::ResourceRepository::new(pool)))
+        };
+    let agent = ok(
+        &app,
+        "POST",
+        "/api/v1/agents",
+        json!({"name":"Timeline fixture"}),
+        None,
+    )
+    .await;
+    let team = ok(
+        &app,
+        "POST",
+        "/api/v1/teams",
+        json!({"name":"Timeline fixture","leaderId":id(&agent),"coordinationContext":manual()}),
+        None,
+    )
+    .await;
+    let mut boards = vec![];
+    for name in ["Root board", "Cross board"] {
+        boards.push(
+            ok(
+                &app,
+                "POST",
+                "/api/v1/boards",
+                json!({"name":name,"teamId":id(&team)}),
+                None,
+            )
+            .await,
+        );
+    }
+    let body = |title: &str, parent: Value| json!({"title":title,"parentId":parent,"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual(),"workScope":test_project_scope()});
+    let root = ok(
+        &app,
+        "POST",
+        &format!("/api/v1/boards/{}/tasks", id(&boards[0])),
+        body("Root", Value::Null),
+        None,
+    )
+    .await;
+    let child = ok(
+        &app,
+        "POST",
+        &format!("/api/v1/boards/{}/tasks", id(&boards[1])),
+        body("Child", root["id"].clone()),
+        ver(&root),
+    )
+    .await;
+    let grandchild = ok(
+        &app,
+        "POST",
+        &format!("/api/v1/boards/{}/tasks", id(&boards[0])),
+        body("Grandchild", child["id"].clone()),
+        ver(&child),
+    )
+    .await;
+    let other = ok(
+        &app,
+        "POST",
+        &format!("/api/v1/boards/{}/tasks", id(&boards[0])),
+        body("Unrelated", Value::Null),
+        None,
+    )
+    .await;
+    let task_path = format!("/api/v1/tasks/{}", id(&root));
+    let mut current = get(&app, &task_path).await;
+    for n in 0..55 {
+        ok(
+            &app,
+            "POST",
+            &format!("{task_path}/comments"),
+            json!({"body":format!("Timeline event {n}")}),
+            ver(&current),
+        )
+        .await;
+        current = get(&app, &task_path).await;
+    }
+    let all = page(&app, &root, json!({"limit":100})).await;
+    let first = page(&app, &root, json!({"limit":50})).await;
+    assert!(all["total"].as_u64().unwrap() > 50);
+    assert_eq!(first["total"], all["total"]);
+    assert_eq!(first["items"].as_array().unwrap().len(), 50);
+    let mut collected = Vec::new();
+    let mut offset = 0;
+    loop {
+        let batch = page(&app, &root, json!({"limit":7,"offset":offset})).await;
+        for item in batch["items"].as_array().unwrap() {
+            let keys: Vec<_> = item.as_object().unwrap().keys().map(String::as_str).collect();
+            assert_eq!(keys, vec!["id","occurredAt","sequence","taskId","type"]);
+            collected.push(item.clone());
+        }
+        if batch["hasMore"] == false { break; }
+        let next = batch["nextOffset"].as_u64().unwrap();
+        assert!(next > offset);
+        offset = next;
+    }
+    assert_eq!(json!(collected), all["items"]);
+    let complete = get(&app, &format!("{task_path}/timeline?limit=100")).await;
+    for (point, event) in collected.iter().zip(complete["items"].as_array().unwrap()) {
+        for key in ["id","occurredAt","sequence","taskId","type"] {
+            assert_eq!(point[key],event[key]);
+        }
+    }
+    let selected = all["items"].as_array().unwrap().last().unwrap();
+    assert!(!first["items"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|e| e["id"] == selected["id"]));
+    let exact = page(
+        &app,
+        &root,
+        json!({"id":id(selected).to_uppercase(),"limit":1}),
+    )
+    .await;
+    assert_eq!(exact["total"], 1);
+    assert_eq!(exact["items"], json!([selected]));
+    assert_eq!(exact["hasMore"], false);
+    assert!(exact["nextOffset"].is_null());
+    let beyond = page(&app, &root, json!({"id":id(selected),"offset":1,"limit":1})).await;
+    assert_eq!(beyond["total"], 1);
+    assert_eq!(beyond["items"], json!([]));
+    assert_eq!(beyond["hasMore"], false);
+    let combined = page(
+        &app,
+        &root,
+        json!({"id":id(selected),"types":[selected["type"].clone()],"sortOrder":"desc"}),
+    )
+    .await;
+    assert_eq!(combined["items"], json!([selected]));
+    for query in [
+        json!({"id":uuid::Uuid::now_v7()}),
+        json!({"id":id(selected),"types":["task.created"]}),
+        json!({"id":id(selected),"actorId":id(&agent)}),
+        json!({"id":id(selected),"occurredBefore":"2000-01-01T00:00:00Z"}),
+    ] {
+        let empty = page(&app, &root, query).await;
+        assert_eq!(empty["total"], 0);
+        assert_eq!(empty["items"], json!([]));
+    }
+    for descendant in [&child, &grandchild] {
+        let child_events = page(&app, descendant, json!({})).await;
+        let event = &child_events["items"][0];
+        for include in [false, true] {
+            let result = page(
+                &app,
+                &root,
+                json!({"id":id(event),"includeChildren":include}),
+            )
+            .await;
+            assert_eq!(result["total"], if include { 1 } else { 0 });
+            if include {
+                assert_eq!(result["items"], json!([event]));
+            }
+        }
+        assert_eq!(
+            page(&app, &other, json!({"id":id(event),"includeChildren":true})).await["total"],
+            0
+        );
+    }
+    let other_event = page(&app, &other, json!({})).await["items"][0].clone();
+    assert_eq!(
+        page(
+            &app,
+            &root,
+            json!({"id":id(&other_event),"includeChildren":true})
+        )
+        .await["total"],
+        0
+    );
+    assert_eq!(
+        page(
+            &app,
+            &child,
+            json!({"id":id(selected),"includeChildren":true})
+        )
+        .await["total"],
+        0
+    );
+    for invalid in ["invalid".to_owned(), uuid::Uuid::new_v4().to_string()] {
+        assert_eq!(
+            request(
+                &app,
+                "GET",
+                &format!("{task_path}/timeline-points?id={invalid}"),
+                Value::Null,
+                None
+            )
+            .await
+            .0,
+            400
+        );
+        assert_eq!(
+            tool(&app, &root, json!({"id":invalid})).await["isError"],
+            true
+        );
+    }
+    assert_eq!(
+        request(
+            &app,
+            "GET",
+            &format!(
+                "{task_path}/timeline-points?id={}&id={}",
+                id(selected),
+                id(selected)
+            ),
+            Value::Null,
+            None
+        )
+        .await
+        .0,
+        400
+    );
+    assert_eq!(
+        tool(&app, &root, json!({"id":[id(selected),id(selected)]})).await["isError"],
+        true
+    );
+
+    // The repository returns projected values without loading full event records.
+    let command = beeteam::dto::backend::Command {
+        operation: "getTimelinePoints".into(),
+        params: [("taskId".into(), id(&root).into())].into(),
+        query: [("limit".into(), json!(7)), ("sortBy".into(), json!("sequence"))].into(),
+        body: Value::Null, actor: None, expected_version: None, idempotency_key: None, upload: None,
+    };
+    let mut read = store.read(&command).await.unwrap();
+    let selection = read.select(&command).await.unwrap();
+    assert_eq!(selection.items.len(), 7);
+    assert!(selection.records.rows.is_empty());
+    assert!(read.records.list("events").is_empty());
+    assert!(read.records.list("execution_summaries").is_empty());
+    read.rollback().await.unwrap();
+    // Only this isolated fixture is tombstoned; point reads must exclude it too.
+    let mut unit = store.begin().await.unwrap();
+    let event = unit.records.get_mut("events", uuid::Uuid::parse_str(id(selected)).unwrap()).unwrap();
+    event.deleted_at = Some(chrono::Utc::now());
+    event.touch();
+    unit.commit().await.unwrap();
+    assert_eq!(page(&app,&root,json!({"id":id(selected)})).await["total"],0);
+
+}
+#[test]
+fn timeline_points_id_is_optional_uuidv7_in_the_shared_contract() {
+    let catalog = beeteam::routes::mcp::catalog();
+    let tool = catalog["tools"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|t| t["name"] == "getTimelinePoints")
+        .unwrap();
+    let schema = &tool["inputSchema"]["properties"]["query"];
+    assert_eq!(schema["properties"]["id"]["format"], "uuid");
+    assert!(schema["properties"]["id"]["pattern"]
+        .as_str()
+        .unwrap()
+        .contains("-7"));
+    assert!(!schema["required"]
+        .as_array()
+        .is_some_and(|fields| fields.iter().any(|f| f == "id")));
+}

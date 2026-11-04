@@ -125,6 +125,15 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
 async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     let page = unit.select(c).await?;
     let mut items = page.items;
+    if c.operation == "getTimelinePoints" {
+        // SQL keeps actorId only for filtering. The output contract has exactly five fields.
+        items = items.into_iter().map(|item| {
+            let point: crate::dto::timeline::TimelinePoint = serde_json::from_value(item)
+                .map_err(|_| Failure::new("internal_error", "Invalid timeline point projection"))?;
+            serde_json::to_value(point)
+                .map_err(|_| Failure::new("internal_error", "Unable to serialize timeline point"))
+        }).collect::<Result<Vec<_>>>()?;
+    }
     if page.table == "tasks" && c.operation != "listAgentActivities" {
         for item in &mut items {
             let id = value_id(&item["id"])?;

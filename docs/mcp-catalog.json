@@ -29215,6 +29215,288 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
+      "description": "GET /api/v1/tasks/{taskId}/timeline-points. Consultar pontos leves da timeline. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "taskId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "taskId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "actorId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "includeChildren": {
+                "default": false,
+                "type": "boolean"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "occurredBefore": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "occurredFrom": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "offset": {
+                "default": 0,
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "sortBy": {
+                "default": "sequence",
+                "enum": [
+                  "sequence"
+                ],
+                "type": "string"
+              },
+              "sortOrder": {
+                "default": "asc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              },
+              "types": {
+                "items": {
+                  "enum": [
+                    "task.created",
+                    "task.updated",
+                    "assignment.changed",
+                    "position.changed",
+                    "block.changed",
+                    "plan.created",
+                    "plan.revised",
+                    "comment.created",
+                    "attachment.added",
+                    "attachment.removed",
+                    "execution.recorded",
+                    "task.archived",
+                    "task.restored",
+                    "subtask.created"
+                  ],
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array",
+                "uniqueItems": true
+              }
+            },
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getTimelinePoints",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "hasMore": {
+                "type": "boolean"
+              },
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "occurredAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "sequence": {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "taskId": {
+                      "format": "uuid",
+                      "type": "string"
+                    },
+                    "type": {
+                      "enum": [
+                        "task.created",
+                        "task.updated",
+                        "assignment.changed",
+                        "position.changed",
+                        "block.changed",
+                        "plan.created",
+                        "plan.revised",
+                        "comment.created",
+                        "attachment.added",
+                        "attachment.removed",
+                        "execution.recorded",
+                        "task.archived",
+                        "task.restored",
+                        "subtask.created"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "taskId",
+                    "type",
+                    "occurredAt",
+                    "sequence"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "limit": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "nextOffset": {
+                "minimum": 0,
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "offset": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "total": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "items",
+              "total",
+              "offset",
+              "limit",
+              "hasMore",
+              "nextOffset"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
       "description": "GET /api/v1/tasks/{taskId}/usage. Read known usage totals and summary checkpoints. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
@@ -41923,6 +42205,80 @@
               ],
               "type": "object"
             },
+            "TimelinePoint": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "occurredAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "sequence": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "type": {
+                  "$ref": "#/components/schemas/EventType"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "type",
+                "occurredAt",
+                "sequence"
+              ],
+              "type": "object"
+            },
+            "TimelinePointPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TimelinePoint"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
+                "hasMore",
+                "nextOffset"
+              ],
+              "type": "object"
+            },
             "UploadAttachment": {
               "additionalProperties": false,
               "properties": {
@@ -50072,6 +50428,80 @@
               ],
               "type": "object"
             },
+            "TimelinePoint": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "occurredAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "sequence": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "type": {
+                  "$ref": "#/components/schemas/EventType"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "type",
+                "occurredAt",
+                "sequence"
+              ],
+              "type": "object"
+            },
+            "TimelinePointPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TimelinePoint"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
+                "hasMore",
+                "nextOffset"
+              ],
+              "type": "object"
+            },
             "UploadAttachment": {
               "additionalProperties": false,
               "properties": {
@@ -58000,6 +58430,80 @@
               },
               "required": [
                 "projects"
+              ],
+              "type": "object"
+            },
+            "TimelinePoint": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "occurredAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "sequence": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "type": {
+                  "$ref": "#/components/schemas/EventType"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "type",
+                "occurredAt",
+                "sequence"
+              ],
+              "type": "object"
+            },
+            "TimelinePointPage": {
+              "additionalProperties": false,
+              "properties": {
+                "hasMore": {
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/TimelinePoint"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "total",
+                "offset",
+                "limit",
+                "hasMore",
+                "nextOffset"
               ],
               "type": "object"
             },

@@ -2544,6 +2544,117 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
+  /api/v1/tasks/{taskId}/timeline-points:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTimelinePoints
+      summary: Consultar pontos leves da timeline
+      description: Projeção leve sem data, Markdown ou evidências. Consumir nextOffset até hasMore=false antes de apresentar o histórico como completo. Cada página usa snapshot próprio; novos eventos são obtidos por atualização da consulta. Timeline disponível a todos. includeChildren=true reúne toda a descendência recursiva,
+        inclusive cross-board, sem limite fixo de níveis; preservar taskId/autor de cada evento, sem
+        duplicação. Ordenar por sequence e paginar offset/limit.
+      x-contract-status: proposed
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: UUIDv7 exato do evento, combinado com o escopo da tarefa (e includeChildren) e demais filtros no banco antes de contagem e paginação. Evento inexistente, excluído ou fora do escopo retorna página vazia.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: includeChildren
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+            default: false
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: types
+          in: query
+          required: false
+          description: Lista CSV de tipos; OR entre tipos, AND com demais filtros.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
+            minItems: 1
+            uniqueItems: true
+          style: form
+          explode: false
+        - name: occurredFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de occurredAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: occurredBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de occurredAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - sequence
+            default: sequence
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Consultar pontos leves da timeline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelinePointPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
   /api/v1/tasks/{taskId}/archive:
     parameters:
       - name: taskId
@@ -4521,6 +4632,8 @@ components:
         - task.archived
         - task.restored
         - subtask.created
+    TimelinePoint: {"type": "object", "properties": {"id": {"type": "string", "format": "uuid"}, "taskId": {"type": "string", "format": "uuid"}, "type": {"$ref": "#/components/schemas/EventType"}, "occurredAt": {"type": "string", "format": "date-time"}, "sequence": {"type": "integer", "minimum": 1}}, "required": ["id", "taskId", "type", "occurredAt", "sequence"], "additionalProperties": false}
+    TimelinePointPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TimelinePoint"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1}, "hasMore": {"type": "boolean"}, "nextOffset": {"type": ["integer", "null"], "minimum": 0}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     Event:
       type: object
       properties:

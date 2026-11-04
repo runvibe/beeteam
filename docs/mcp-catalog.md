@@ -434,3 +434,9 @@ Verificação: 2 testes de timeline, 2 regressões de filtros de comentários/re
 ### Tracking por resumo explícito (2026-11-03)
 
 `listTaskExecutionTrackingEvents.query.summaryId` é um UUIDv7 escalar opcional, equivalente ao parâmetro HTTP de mesmo nome. Seleciona a referência explícita ao resumo, distinta do ID de evento da Timeline. Os predicados existentes de ambos os adapters aplicam igualdade vinculada antes de count e paginação, mantendo o escopo da tarefa e combinando com executionId/intervalId. Inexistente ou fora do escopo retorna página vazia; UUID inválido é rejeitado pelo DTO compartilhado.
+
+### Pontos leves da Timeline (2026-11-03)
+
+`getTimelinePoints` corresponde a `GET /api/v1/tasks/{taskId}/timeline-points`. Item: id, taskId, type, occurredAt, sequence. Page: items, total, offset, limit, hasMore, nextOffset. Mesmos filtros da Timeline, sequência asc por padrão, limit padrão50/máximo100. A projeção SQL preserva escopo recursivo cross-board e filtra antes de count/paginação; não carrega data, Markdown, evidências nem reidrata eventos. DTO remove o actorId interno usado no filtro. Clientes devem consumir todas as páginas leves, distinguir falha/carregamento parcial e consultar conteúdo completo só por demanda. Páginas têm snapshots independentes, sem garantia de snapshot global entre chamadas. Catálogo: 79 tools, 17 resources, 3 prompts.
+
+Validação: suíte Rust completa com 160 testes aprovados; 2 testes do endpoint repetidos em PostgreSQL 18 isolado, além de SQLite. Cobertura de campos mínimos, coleta de todas as páginas, total/ordenação/filtros, descendência cross-board, exclusão lógica e ausência de hidratação de eventos/resumos. Nenhum banco de produto ou serviço ativo foi alterado.
