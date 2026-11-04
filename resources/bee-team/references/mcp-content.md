@@ -1,10 +1,10 @@
-# Materiais Bee Team no MCP
+# Bee Team materials in MCP
 
-O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, incluindo a revisão currentSummary validada: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. Esta referência documenta conteúdo e empacotamento; não mantém um catálogo concorrente. As instruções operacionais e exemplos estão em [integração](integration.md), disponível como `beeteam://references/integration`.
+The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, including the validated currentSummary revision: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. This reference documents content and packaging; it does not maintain a competing catalog. Operational instructions and examples are in [integration](beeteam://references/integration), available as `beeteam://references/integration`.
 
-## Mapa editorial de recursos — confirmar descoberta atual
+## Editorial resource map — confirm current discovery
 
-| URI de referência a confirmar em resources/list | Fonte editorial |
+| Reference URI to confirm in resources/list | Editorial source |
 |---|---|
 | beeteam://skills/leader | skills/bee-team-leader/SKILL.md |
 | beeteam://skills/collaborator | skills/bee-team-collaborator/SKILL.md |
@@ -13,40 +13,44 @@ O catálogo autoritativo é `docs/mcp-catalog.md`/`.json` do backend, incluindo 
 | beeteam://references/codex | skills/references/codex.md |
 | beeteam://references/team-examples | skills/bee-team-leader/references/team-examples.md |
 
-Use resources/list/read; URI desconhecida ou filesystem arbitrário é rejeitado. Conteúdo é snapshot editorial em `resources/bee-team`, sem instalação global. Atualizações nesta frente precisam ser incorporadas pelo backend antes de aparecerem no servidor. Não exponha notas de validação/progresso, segredos ou arquivos não permitidos. Links relativos são editoriais: use URIs anunciadas, nunca exploração de filesystem. Descubra no catálogo atual se este guia é anunciado e use a URI retornada, sem fixar presença/ausência por esta referência.
+Use resources/list/read; unknown URIs or arbitrary filesystem access are rejected. Content is an editorial snapshot in `resources/bee-team`, without global installation. Updates in this workstream must be incorporated by the backend before appearing on the server. Do not expose validation/progress notes, secrets or files outside the allowlist. Relative links are editorial: use advertised URIs, never filesystem exploration. Discover whether this guide is advertised in the current catalog and use the returned URI, without fixing its presence/absence based on this reference.
 
-## Prompts implementados
+## Implemented prompts
 
-| Nome público | Argumentos string UUIDv7 obrigatórios | Fonte |
+| Public name | Required UUIDv7 string arguments | Source |
 |---|---|---|
-| task_briefing | taskId | [task-briefing.md](prompts/task-briefing.md) |
-| agent_resumption | agentId, taskId | [collaborator-resumption.md](prompts/collaborator-resumption.md) |
-| delivery_review | taskId | [delivery-review.md](prompts/delivery-review.md) |
+| task_briefing | taskId | [task-briefing.md](beeteam://references/task-briefing) |
+| agent_resumption | agentId, taskId | [collaborator-resumption.md](beeteam://references/collaborator-resumption) |
+| delivery_review | taskId | [delivery-review.md](beeteam://references/delivery-review) |
 
-O [manifesto](prompts/content-manifest.json) mantém descrições/argumentos e nomes alinhados ao catálogo. O backend mapeia arquivos aos nomes e incorpora contexto consultado por serviços em uma mensagem user. prompts/get rejeita parâmetros ausentes, extras, não textuais, IDs inválidos e recursos inexistentes. Origem é derivada da cadeia, não argumento editável. O contexto retornado não autoriza execução nem prova que nada mudou depois da consulta.
+The [manifest](beeteam://references/content-manifest) keeps descriptions/arguments and names aligned with the catalog. The backend maps files to names and embeds context queried by services into a user message. prompts/get rejects missing, extra or non-text parameters, invalid IDs and nonexistent resources. Origin is derived from the chain, not an editable argument. Returned context does not authorize execution or prove nothing has changed since the query.
 
-Exemplo de params de prompts/get: `{"name":"agent_resumption","arguments":{"agentId":"10000000-0000-7000-8000-000000000002","taskId":"10000000-0000-7000-8000-000000000001"}}`. IDs são ilustrativos e devem existir. Não envie paths/URIs nesses argumentos.
+Example prompts/get params: `{"name":"agent_resumption","arguments":{"agentId":"10000000-0000-7000-8000-000000000002","taskId":"10000000-0000-7000-8000-000000000001"}}`. IDs are illustrative and must exist. Do not send paths/URIs in these arguments.
 
-Resources/prompts não executam IA ou controlam chats. `prepare_execution` consulta sem iniciar agente; `record_progress`/`close_activity` são mutações atômicas/idempotentes conforme catálogo. Nunca anuncie sucesso parcial como conclusão de transação. Checklist deriva das tasks; encerrar atividade pode manter tarefa em andamento. Autoria declarada não é autenticação e a política de edição do líder continua pendente.
+Resources/prompts do not execute AI or control chats. `prepare_execution` queries without starting an agent; `record_progress`/`close_activity` are atomic/idempotent mutations according to the catalog. Never announce partial success as transaction completion. The checklist derives from tasks; closing an activity may leave the task in progress. Declared authorship is not authentication and the leader editing policy remains unresolved.
 
-## Integração e verificação
+## Integration and verification
 
-Preserve os arquivos como fonte editorial; não edite snapshots no worktree de outra frente. O responsável backend atualiza `resources/bee-team` a partir do commit entregue e executa testes reais de discovery, resources, prompts, segurança da allowlist e paridade de conteúdo. Testes de schema/renderização nesta frente não substituem testes de protocolo. Descubra capacidades do servidor conectado; instalação antiga pode não ter a revisão. Paginação MCP de descoberta usa cursor do protocolo; listagens de entidades usam offset/limit.
+Preserve the files as editorial source; do not edit snapshots in another workstream's worktree. The backend owner updates `resources/bee-team` from the delivered commit and runs actual tests of discovery, resources, prompts, allowlist security and content parity. Schema/rendering tests in this workstream do not replace protocol tests. Discover the connected server's capabilities; an older installation may lack the revision. MCP discovery pagination uses the protocol cursor; entity listings use offset/limit.
 
-## Síntese cumulativa
+## Cumulative synthesis
 
-Os três prompts consultam currentSummary como estado cumulativo, sem atualizá-lo por leitura. O executor o recompõe ao registrar avanço/status/encerramento; `record_progress` aceita currentSummary por alvo e exige não vazio com progress; `close_activity` exige execution.currentSummary além do resumo histórico. Campo sempre presente em Task não torna seu conteúdo prova de atividade ao vivo. Os exemplos foram validados contra o catálogo regenerado com esses campos; o backend deve sincronizar os snapshots editoriais desta revisão.
+All three prompts query currentSummary as cumulative state without updating it through reads. The executor recomposes it when recording progress/status/closure; `record_progress` accepts currentSummary per target and requires a nonempty value with progress; `close_activity` requires execution.currentSummary in addition to the historical summary. An always-present Task field does not make its content proof of live activity. The examples were validated against the catalog regenerated with these fields; the backend must synchronize this revision's editorial snapshots.
 
-## Especificação em Markdown
+## Markdown specification
 
-Os prompts consultam Task.specification junto da task, distinguindo requisitos/aceite de description, plan.content e currentSummary. Preparação retorna specification inclusive nos filhos; ler Markdown não o executa nem autoriza escrita. A edição via createTask/updateTask aceita string opcional, inclusive vazia para limpeza explícita, mas não null. Os exemplos foram validados contra o catálogo regenerado com specification; o backend deve sincronizar os textos editoriais deste commit.
+Prompts query Task.specification alongside the task, distinguishing requirements/acceptance from description, plan.content and currentSummary. Preparation returns specification in children as well; reading Markdown does not execute it or authorize writes. Editing through createTask/updateTask accepts an optional string, including empty for explicit clearing, but not null. The examples were validated against the catalog regenerated with specification; the backend must synchronize this commit's editorial texts.
 
-## Slugs na entrada do consumidor
+## Slugs at the consumer entry point
 
-resolveAgentSlug, resolveTeamSlug e resolveTaskSlug resolvem referências legíveis para `{id,slug}`. Resolva antes de prompts/get: os três prompts mantêm argumentos UUIDv7, sem novos parâmetros de slug. Consulte o catálogo conectado para nomes, schemas e URIs atuais, sem depender de contagens fixas. Este conteúdo não acrescenta aliases nem gera slug em cliente.
+resolveAgentSlug, resolveTeamSlug and resolveTaskSlug resolve readable references to `{id,slug}`. Resolve before prompts/get: all three prompts retain UUIDv7 arguments, without new slug parameters. Consult the connected catalog for current names, schemas and URIs, without relying on fixed counts. This content adds no aliases and does not generate slugs on the client.
 
-## Workflows operacionais em pacotes autocontidos
+## Operational workflows in self-contained packages
 
-As duas pastas bee-team-leader e bee-team-collaborator contêm SKILL.md enxuto e references/ com workflows completos (texto e Mermaid), integração, handoff, Codex, exemplos e templates. Os links locais ficam dentro do próprio pacote. Os workflows derivam dos documentos aprovados no commit 01e77b9; as cópias operacionais retiram a advertência histórica de que a skill ainda não aplica essas decisões, sem afirmar runtime atualizado.
+Both bee-team-leader and bee-team-collaborator folders contain a concise SKILL.md and references/ with complete workflows (text and Mermaid), integration, handoff, Codex, examples and templates. Local links stay within each package. Workflows derive from documents approved in commit 01e77b9; operational copies remove the historical warning that the skill does not yet apply those decisions, without claiming an updated runtime.
 
-Ao sincronizar MCP, incorporar as duas entradas, os workflows e suas referências alcançáveis; não publicar entradas com links inacessíveis como se os workflows estivessem disponíveis. O backend deve disponibilizar esse conteúdo por resources realmente anunciados ou por conteúdo agregado ao resource correspondente, e validar discovery/leitura e prompts. Esta frente não define novas URIs de runtime. A tabela acima descreve o catálogo anterior; conferir resources/list após atualização. Templates de briefing/retomada/revisão agora preservam atribuição obrigatória, duas confirmações e salvar antes de notificar, sem alterar argumentos UUID nem tornar prompts mutantes.
+When synchronizing MCP, incorporate both entrypoints, workflows and their reachable references; do not publish entrypoints with inaccessible links as though workflows were available. The backend must expose this content through actually advertised resources or content aggregated into the corresponding resource, and validate discovery/reads and prompts. This workstream defines no new runtime URIs. The table above describes the previous catalog; check resources/list after updating. Briefing/resumption/review templates now preserve mandatory assignment, two confirmations and saving before notification, without changing UUID arguments or making prompts mutative.
+
+## Status transitions
+
+Initial status is set at creation. Every later status change (including start, resumption, review and completion) goes through summary recording with statusObserved and mandatory usageReport in the same transaction. close_activity is valid only when it records that summary through the common service; do not use updateTask/moveTask/record_progress for transitions. A percentage alone remains separately updatable with the required synthesis, without implicitly changing status. Confirm a transition only after persistence; comment/commentID, idempotency and legacy behavior remain preserved.

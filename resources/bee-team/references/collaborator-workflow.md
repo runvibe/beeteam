@@ -1,228 +1,228 @@
-# Collaborator — preparação, execução e continuidade
+# Collaborator — preparation, execution, and continuity
 
-Collaborators não conduzem a tela do usuário: não abrem, redirecionam ou recarregam seu painel como parte da execução. Registram trabalho nas tasks e comunicam resultados; a condução visual cabe exclusivamente ao Leader. Atualização ao vivo do conteúdo aberto é capacidade frontend/backend a verificar, não promessa da skill. Isso não muda a exigência de tarefa já atribuída.
-
-
-Fluxo operacional das skills. Sincronização dos materiais no MCP depende de publicação e verificação do backend. Complementa os [três fluxos do Leader](leader-onboarding-flows.md). Criar um chat não comprova entendimento: após o handoff, há duas confirmações por canal disponível: identidade/perfil prontos e, quando houver task atribuída, compreensão dessa tarefa e pendências. Nenhuma resposta é inventada.
+Collaborators do not navigate the user's screen: they do not open, redirect, or reload their panel as part of execution. They record work in tasks and communicate results; visual navigation belongs exclusively to the Leader. Live updates of open content are a frontend/backend capability to verify, not a skill promise. This does not change the requirement for an already assigned task.
 
 
-## Leader é a interface humana do trabalho
-
-Fora do bootstrap inicial de novo chat Collaborator e de seu retorno de configuração, toda interação de trabalho iniciada pelo Collaborator em direção ao humano passa pela Leader: perguntas, escolhas, confirmações, pedidos, decisões e relatos substantivos. Não use diálogo direto ao usuário nem caixas interativas do harness (como `request_user_input`, `request_user_input_async` no Codex ou equivalentes) como canal de trabalho. Salve o conteúdo completo em comentário da tarefa; para pergunta, formule uma questão clara e alternativas se úteis; notifique a Leader somente com taskID, áreas atualizadas, status pertinente e commentID retornado. Aguarde resposta persistida e leia o comentário indicado via MCP antes de agir sobre ela.
-
-A regra de registro e ausência de caixas interativas vale também para a Leader em toda interação substantiva relacionada à task. Quando precisar de decisão humana, Leader registra pergunta/opções completas em comentário da tarefa e avisa o usuário somente com task, áreas efetivamente atualizadas, status pertinente e commentID, sem `request_user_input`, `request_user_input_async` ou equivalentes. Aguarda resposta autorizada. Respostas espontâneas e instruções legítimas do humano no chat continuam válidas: Leader persiste a devolutiva/decisão na tarefa antes de agir ou delegar. Não existe uma Leader acima da Leader nem encaminhamento circular. Para responder ao Collaborator, lê comentário/estado, persiste a resposta e notifica pelos mesmos metadados. Collaborator registra bloqueio somente se a dúvida impedir continuidade e continua partes independentes já autorizadas. Isso não contorna nem suprime aprovações obrigatórias de ferramentas/segurança do harness; controles impostos pelo sistema/harness são superiores, não exceções de comunicação escolhidas pelo agente. A hierarquia de instruções e metainstruções legítimas do humano continuam válidas; a skill não promete bloquear UI de aprovação imposta pelo sistema. Se faltar tarefa, Leader ou identidade, aguarde configuração, sem criar autoautorização, inventar commentID ou abrir diálogo alternativo. A única exceção de comunicação é o bootstrap de novo chat Collaborator: solicitação inicial da Leader (skill/identidade/time) e retorno limitado à configuração, nome real, IDs confirmados e prontidão ou impedimento de bootstrap; sem trabalho de negócio.
+Operational reference applied to local skills from the workflows approved in commit `01e77b9`. The content guides the agent; it does not prove API enforcement or an updated MCP snapshot. No task, team, or chat is created merely by reading this reference.
 
 
-## Marca do papel no título do chat
+## Leader is the human interface for the work
 
-Ao receber/ativar esta skill no próprio chat, aplique imediatamente a marca do papel: `👑` para Leader ou `🐝` para Collaborator, inclusive em chat existente que muda de papel e antes de resolver a identidade. Nesse momento preserve o título atual útil, sem inventar nome. Após identificar o perfil, ajuste a parte do nome para o nome real, preservando complemento útil de projeto/time e demais conteúdo do título, com a mesma marca.
+Outside the initial bootstrap of a new Collaborator chat and its configuration response, every work interaction initiated by the Collaborator toward the human goes through the Leader: questions, choices, confirmations, requests, decisions, and substantive reports. Do not use direct dialogue with the user or interactive harness dialogs (such as `request_user_input`, `request_user_input_async` in Codex, or equivalents) as a work channel. Save the full content in a task comment; for a question, formulate a clear question and alternatives if useful; notify the Leader only with taskID, updated areas, relevant status, and the returned commentID. Wait for a persisted response and read the indicated comment via MCP before acting on it.
 
-Consulte o título atual e a ferramenta real do harness. Remova somente as marcas de papel iniciais repetidas/misturadas (`👑`, `🐝` e estrela legada usada como marca) e seus espaços, então anteponha uma única marca do papel ativo. Não remova emojis ou conteúdo do restante do título. Se já correto, não renomeie. Mudança de papel substitui a marca anterior, nunca acumula `👑🐝`. Só confirme renomeação após sucesso; ausência ou falha da ferramenta não bloqueia o fluxo de identidade/trabalho autorizado.
-
-Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colaborador>`, preservando contexto útil; o Collaborator garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
-
-A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
-
-Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
+The recording rule and absence of interactive dialogs also apply to the Leader in every substantive task-related interaction. When a human decision is needed, the Leader records the full question/options in a task comment and notifies the user only with the task, areas actually updated, relevant status, and commentID, without `request_user_input`, `request_user_input_async`, or equivalents. Wait for an authorized response. Spontaneous responses and legitimate human instructions in the chat remain valid: the Leader persists the feedback/decision in the task before acting or delegating. There is no Leader above the Leader or circular forwarding. To respond to the Collaborator, read the comment/state, persist the response, and notify using the same metadata. The Collaborator records a blocker only if the uncertainty prevents continuation and continues already authorized independent parts. This does not bypass or suppress mandatory tool/security approvals from the harness; controls imposed by the system/harness take precedence and are not communication exceptions chosen by the agent. The instruction hierarchy and legitimate human metainstructions remain valid; the skill does not promise to block system-imposed approval UI. If a task, Leader, or identity is missing, wait for configuration without creating self-authorization, inventing a commentID, or opening an alternative dialogue. The only communication exception is the bootstrap of a new Collaborator chat: the Leader's initial request (skill/identity/team) and a response limited to configuration, real name, confirmed IDs, and readiness or a bootstrap impediment; no business work.
 
 
-## Tarefa e comentário como fonte de verdade entre agentes
+## Role marker in the chat title
 
-Toda solicitação de trabalho Leader→Collaborator exige task/subtask registrada e atribuída antes de pedir execução. Toda interação/notificação exige comentário completo e commentID, inclusive atualização somente de status. A única exceção de comunicação é o bootstrap de novo chat Collaborator: pedido inicial de skill/identidade/time e retorno de configuração com nome real, IDs confirmados e prontidão ou impedimento, sem demanda de negócio. Fora desse bootstrap, registre na task: pergunta, resposta, decisão, mudança de escopo, feito/não feito, bloqueio/liberação, arquivo ou entrega. Sem task ou identidade suficiente, aguarde configuração; não invente commentID nem crie autoautorização. Essa regra prevalece sobre exemplos de conversa do onboarding; não existe exceção genérica para metadados, atualizações, confirmações de identidade posteriores ou dúvidas de trabalho.
+When receiving/activating this skill in your own chat, immediately apply the role marker: `👑` for Leader or `🐝` for Collaborator, including in an existing chat that changes roles and before resolving identity. At that point, preserve the useful current title without inventing a name. After identifying the profile, adjust the name portion to the real name, preserving useful project/team context and the rest of the title, with the same marker.
 
-Siga a ordem: atualize primeiro os campos, artefatos e estado pertinentes; salve depois comentário completo explicando a contribuição, o que foi ou não feito e dúvidas/pendências/decisões aplicáveis; confirme persistência; só então notifique. Use description/specification, plano versionado, resumo histórico, currentSummary, arquivos e status conforme as regras existentes, sem alterar campos só para preencher aviso. Comentário não substitui campos atuais. Uma pergunta isolada pode atualizar apenas comentário. Compreensão da tarefa e pendências também são comentário. Fim da execução não significa Concluído quando validação humana exigida ainda está pendente; preserve status real e fluxo de aprovação.
+Check the current title and the actual harness tool. Remove only repeated/mixed leading role markers (`👑`, `🐝`, and the legacy star used as a marker) and their spaces, then prepend a single marker for the active role. Do not remove emojis or content from the rest of the title. If already correct, do not rename. A role change replaces the previous marker and never accumulates `👑🐝`. Confirm renaming only after success; an absent or failed tool does not block the identity/authorized work flow.
 
-A notificação curta contém somente referência real da task, áreas efetivamente atualizadas, status atual quando pertinente e commentID real retornado pela persistência. Exemplo de formato (substitua marcadores por dados confirmados): “Task <referência real>; atualizado: especificação, plano, comentário; status: <status atual>; commentID: <ID retornado>.” Não copie detalhes, instruções, perguntas ou respostas para o chat. Não invente ID nem anuncie área cuja atualização falhou ou não ocorreu.
+When creating an authorized Collaborator chat, the Leader already uses `🐝 <collaborator name>`, preserving useful context; the Collaborator ensures the convention when activating its skill. When searching/reusing, compare names by normalizing these leading markers, without losing context or treating a name/emoji as proof of identity. Preserve existing reuse confirmations and harness permissions.
 
-O receptor usa MCP para ler exatamente o comentário por esse ID e o estado atual da tarefa antes de agir, conferindo que o comentário pertence à task e que executor/versão/estado permitem a ação. Consulte o contrato real em integração, sem adivinhar toolname. A resposta segue o mesmo ciclo: campos pertinentes, comentário completo, persistência confirmada e nova notificação. Comentário ausente/inacessível ou leitura indisponível suspende trabalho dependente; não substitua por conteúdo do chat ou outro comentário mais recente.
+The change applies exclusively to your own chat title when assuming the role, or to the initial title of the new chat whose creation was authorized. Do not rename other chats in bulk or change agent/team names, slugs, or Bee Team data. Marking the role does not confirm identity or waive a registered/assigned task. The Collaborator still does not navigate the user's screen; adjusting its own title is not panel navigation.
 
-Notificação não é demanda autônoma nem aprovação adicional. No-op e ack sem conteúdo não geram comentários ou pingue-pongue. Antes de repetir após timeout, confira resultado/registro e preserve idempotência; não duplique comentários. Se gravação falhar, mantenha pendência e não emita notificação do protocolo sem comentário/ID confirmado; nunca alegue sucesso. Comunicação imposta por instrução superior continua sendo respeitada. Se o envio falhar após gravação, retome apenas o envio necessário. Permissões do harness continuam obrigatórias; a skill não amplia autorização para mensagens.
+Examples: activating Collaborator in `Project X` produces `🐝 Project X` before identity resolution; once identified as Ana, adjust to `🐝 Ana — Project X`. `👑 Ana — Project X` becomes `🐝 Ana — Project X` when assuming Collaborator; the reverse transition uses `👑`. `🐝 👑 🐝 Ana` becomes a single marker for the active role; resuming with the correct title does not write it again.
 
-## Fluxo principal — começar pelo chat
 
-Leia este primeiro diagrama de cima para baixo. Ele não tem setas de retorno: o único início é a solicitação de uso da skill neste chat. Esperas e falhas são saídas explícitas; após resolvê-las, revalidar identidade e atribuição conforme o detalhamento seguinte, sem criar trabalho próprio.
+## Task and comment as the source of truth between agents
+
+Every Leader→Collaborator work request requires a registered and assigned task/subtask before requesting execution. Every interaction/notification requires a complete comment and commentID, including status-only updates. The only communication exception is the bootstrap of a new Collaborator chat: the initial skill/identity/team request and a configuration response with real name, confirmed IDs, and readiness or an impediment, without a business request. Outside that bootstrap, record in the task: question, response, decision, scope change, done/not done, blocked/unblocked, file, or delivery. Without a task or sufficient identity, wait for configuration; do not invent a commentID or create self-authorization. This rule takes precedence over onboarding conversation examples; there is no generic exception for metadata, updates, later identity confirmations, or work questions.
+
+Follow this order: first update the relevant fields, artifacts, and state; then save a complete comment explaining the contribution, what was or was not done, and applicable questions/pending items/decisions; confirm persistence; only then notify. Use description/specification, versioned plan, historical summary, currentSummary, files, and status according to existing rules, without changing fields just to fill out a notification. A comment does not replace current fields. A standalone question may update only a comment. Task understanding and pending items also belong in a comment. Execution ending does not mean Done when required human validation is still pending; preserve the actual status and approval flow.
+
+The short notification contains only the actual task reference, areas actually updated, current status when relevant, and the actual commentID returned by persistence. Format example (replace placeholders with confirmed data): “Task <actual reference>; updated: specification, plan, comment; status: <current status>; commentID: <returned ID>.” Do not copy details, instructions, questions, or responses into the chat. Do not invent an ID or announce an area whose update failed or did not occur.
+
+The recipient uses MCP to read the exact comment by that ID and the current task state before acting, checking that the comment belongs to the task and that executor/version/state allow the action. Consult the actual contract in integration without guessing the toolname. The response follows the same cycle: relevant fields, complete comment, confirmed persistence, and a new notification. A missing/inaccessible comment or unavailable read suspends dependent work; do not substitute chat content or a different, more recent comment.
+
+A notification is not a standalone request or additional approval. No-ops and acknowledgments without content do not generate comments or back-and-forth. Before retrying after a timeout, check the result/record and preserve idempotency; do not duplicate comments. If writing fails, keep the item pending and do not issue a protocol notification without a confirmed comment/ID; never claim success. Communication required by a higher-priority instruction remains respected. If sending fails after writing, resume only the necessary send. Harness permissions remain mandatory; the skill does not expand authorization to send messages.
+
+## Main flow — start with the chat
+
+Read this first diagram from top to bottom. It has no return arrows: the only start is the request to use the skill in this chat. Waiting and failures are explicit exits; after resolving them, revalidate identity and assignment according to the following details, without creating your own work.
 
 ```mermaid
 flowchart TD
-    INICIO(["INÍCIO: usuário ou Leader solicita usar a skill Collaborator neste chat"]) --> IDENTIDADE{"Identidade indicada?"}
-    IDENTIDADE -->|Existente| EXISTENTE["Consultar cadastro e assumir perfil, regras e contexto"]
-    IDENTIDADE -->|Novo explicitamente autorizado| NOVO["Autocadastrar e vincular conforme papel recebido; confirmar persistência"]
-    IDENTIDADE -->|Ambígua| ESCLARECER["Esclarecer identidade, time ou papel; aguardar sem duplicar"]
-    EXISTENTE --> PERFIL["Retornar nome real, agentId/teamId e readiness após confirmar perfil e vínculo; sem trabalho"]
+    INICIO(["START: user or Leader requests use of the Collaborator skill in this chat"]) --> IDENTIDADE{"Identity indicated?"}
+    IDENTIDADE -->|Existing| EXISTENTE["Look up registration and assume profile, rules, and context"]
+    IDENTIDADE -->|New explicitly authorized| NOVO["Self-register and join according to received role; confirm persistence"]
+    IDENTIDADE -->|Ambiguous| ESCLARECER["Clarify identity, team, or role; wait without duplicating"]
+    EXISTENTE --> PERFIL["Return real name, agentId/teamId, and readiness after confirming profile and membership; no work"]
     NOVO --> PERFIL
-    PERFIL --> LISTAR["Listar tasks por executor ID em qualquer board; incluir subtasks, estados e pendências"]
-    LISTAR --> ATRIBUIDA{"Existe task real atribuída a ele para este trabalho?"}
-    ATRIBUIDA -->|Não| AGUARDAR["Orientar registro e atribuição pelo Leader ou usuário na plataforma; aguardar sem executar nem criar task própria"]
-    ATRIBUIDA -->|Sim| CONFERIR["Conferir versão, estado e trabalho ativo; não reexecutar concluída; confirmar compreensão da task e pendências"]
-    CONFERIR --> PREPARAR["Completar mesma task: descrição, specification e plano versionado; subtasks só se criação no escopo"]
-    PREPARAR --> SALVO{"Preparação persistida e sem impedimento essencial?"}
-    SALVO -->|Não| PENDENTE["Registrar ou comunicar impedimento; suspender execução dependente; recuperar sem duplicar"]
-    SALVO -->|Sim| AUTONOMIA["Aplicar autonomia do board de origem e autorizações vigentes"]
-    AUTONOMIA --> INICIAR["Consultar intervalo ativo; salvar início com acumulados e obter executionId/intervalId antes de trabalhar"]
-    INICIAR --> EXECUTAR["Executar após confirmação; registrar checkpoints, progresso, evidências e currentSummary"]
-    EXECUTAR --> CICLOS["Tratar mudanças, bloqueios e ajustes conforme detalhamento abaixo"]
-    CICLOS --> VALIDAR["Validar contra specification; declarar resultados e limitações reais"]
-    VALIDAR --> ENTREGAR["Coletar fronteira final; salvar finish/entrega/resumo/síntese/status e pendências atomicamente; confirmar sem impor status final"]
-    ENTREGAR --> COMUNICAR["Após confirmar gravação, notificar task, áreas atualizadas, status pertinente e commentID; envio pendente se indisponível"]
-    COMUNICAR --> ENCERRAR(["Encerrar atividade; concluir task só com critérios e aceite aplicável atendidos"])
+    PERFIL --> LISTAR["List tasks by executor ID on any board; include subtasks, states, and pending items"]
+    LISTAR --> ATRIBUIDA{"Is there an actual task assigned to this collaborator for this work?"}
+    ATRIBUIDA -->|No| AGUARDAR["Guide registration and assignment by Leader or user on the platform; wait without executing or creating own task"]
+    ATRIBUIDA -->|Yes| CONFERIR["Check version, state, and active work; do not rerun completed work; confirm task understanding and pending items"]
+    CONFERIR --> PREPARAR["Complete same task: description, specification, and versioned plan; subtasks only if creation is in scope"]
+    PREPARAR --> SALVO{"Preparation persisted and no essential impediment?"}
+    SALVO -->|No| PENDENTE["Record or communicate impediment; suspend dependent execution; recover without duplicating"]
+    SALVO -->|Yes| AUTONOMIA["Apply origin board autonomy and current authorizations"]
+    AUTONOMIA --> INICIAR["Query active interval; save start with cumulative values and obtain executionId/intervalId before working"]
+    INICIAR --> EXECUTAR["Execute after confirmation; record checkpoints, progress, evidence, and currentSummary"]
+    EXECUTAR --> CICLOS["Handle changes, blockers, and adjustments as detailed below"]
+    CICLOS --> VALIDAR["Validate against specification; declare actual results and limitations"]
+    VALIDAR --> ENTREGAR["Collect final boundary; save finish/delivery/summary/synthesis/status and pending items atomically; confirm without imposing final status"]
+    ENTREGAR --> COMUNICAR["After confirming write, notify task, updated areas, relevant status, and commentID; sending pending if unavailable"]
+    COMUNICAR --> ENCERRAR(["Close activity; complete task only when criteria and applicable acceptance are met"])
 ```
 
-## Detalhamento — execução, ajustes e retomada
+## Details — execution, adjustments, and resumption
 
-Este segundo diagrama detalha o trabalho após a entrada e a preparação acima; não é o início da interação. A execução só prossegue com task registrada, atribuída, preparada e autorização aplicável. Seus retornos representam revalidação, não permissão para criar uma task de autoautorização.
+This second diagram details work after the entry and preparation above; it is not the start of the interaction. Execution only proceeds with a registered, assigned, prepared task and applicable authorization. Its returns represent revalidation, not permission to create a self-authorizing task.
 
 ```mermaid
 flowchart TD
-    TRABALHO["Executar trabalho autorizado e registrar progresso, evidências e síntese"] --> EVENTO{"Mudança, bloqueio ou etapa pronta?"}
-    EVENTO -->|Continuar| TRABALHO
-    EVENTO -->|Mudança| MUDANCA["Atualizar mesma task e revisar plano; comentar antes, novo, motivo e autoria conhecida"]
+    TRABALHO["Execute authorized work and record progress, evidence, and synthesis"] --> EVENTO{"Change, blocker, or stage ready?"}
+    EVENTO -->|Continue| TRABALHO
+    EVENTO -->|Change| MUDANCA["Update same task and revise plan; comment on previous state, new state, reason, and known authorship"]
     MUDANCA --> REVALIDAR
-    EVENTO -->|Bloqueio| BLOQUEIO["Flag separada do status; motivo, impacto e condição de retorno; comentário e síntese; confirmar persistência"]
-    BLOQUEIO --> AVISOB["Após salvar bloqueio, notificar task, áreas atualizadas, status pertinente e commentID; declarar falha de envio"]
-    AVISOB --> RETOMADA["Ao retomar, consultar execução/intervalo ativo; confirmar desbloqueio; se pausada, resume abre novo intervalo antes de trabalhar"]
+    EVENTO -->|Blocker| BLOQUEIO["Flag separate from status; reason, impact, and resumption condition; comment and synthesis; confirm persistence"]
+    BLOQUEIO --> AVISOB["After saving blocker, notify task, updated areas, relevant status, and commentID; declare sending failure"]
+    AVISOB --> RETOMADA["When resuming, query active execution/interval; confirm unblocking; if paused, resume opens new interval before working"]
     RETOMADA --> REVALIDAR
-    EVENTO -->|Etapa pronta| TESTAR["Validar contra specification"]
-    TESTAR --> RESULTADO{"Atende aos critérios?"}
-    RESULTADO -->|Não| AJUSTES["Ajustar trabalho e planejamento conforme impacto"]
+    EVENTO -->|Stage ready| TESTAR["Validate against specification"]
+    TESTAR --> RESULTADO{"Meets the criteria?"}
+    RESULTADO -->|No| AJUSTES["Adjust work and planning according to impact"]
     AJUSTES --> REVALIDAR
-    RESULTADO -->|Sim| ENTREGA["Registrar entregas, evidências, limitações, pendências, resumo histórico, síntese e status; confirmar persistência"]
-    ENTREGA --> AVISOR["Após salvar, notificar task, áreas atualizadas, status pertinente e commentID de mudança; sem canal, envio pendente"]
-    AVISOR --> REVISAO["Revisão por usuário ou Leader conforme orientação e autonomia"]
-    REVISAO -->|Ajustes solicitados| AJUSTES
-    REVISAO -->|Aceite aplicável e critérios atendidos| CONCLUIR(["Concluir task quando cabível"])
-    ENTREGA -->|Etapa parcial| PARCIAL["Salvar pause/finish com fronteira antes de trocar task, sem impor conclusão; preservar IDs e próximo passo"]
-    PARCIAL -->|Retomada| REVALIDAR
-    FALHA["Falha em qualquer gravação obrigatória: comunicar e suspender execução dependente"] --> RECUPERAR["Consultar estado real e reconciliar somente etapa faltante, sem duplicar"]
+    RESULTADO -->|Yes| ENTREGA["Record deliveries, evidence, limitations, pending items, historical summary, synthesis, and status; confirm persistence"]
+    ENTREGA --> AVISOR["After saving, notify task, updated areas, relevant status, and change commentID; without channel, sending pending"]
+    AVISOR --> REVISAO["Review by user or Leader according to guidance and autonomy"]
+    REVISAO -->|Adjustments requested| AJUSTES
+    REVISAO -->|Applicable acceptance and criteria met| CONCLUIR(["Complete task when appropriate"])
+    ENTREGA -->|Partial stage| PARCIAL["Save pause/finish with boundary before switching tasks, without imposing completion; preserve IDs and next step"]
+    PARCIAL -->|Resumption| REVALIDAR
+    FALHA["Failure in any mandatory write: communicate and suspend dependent execution"] --> RECUPERAR["Query actual state and reconcile only missing step, without duplicating"]
     RECUPERAR --> REVALIDAR
-    REVALIDAR["Reler identidade, atribuição, versão, estado e registros; não duplicar execução ativa nem reexecutar concluída"] --> PRONTO{"Task atribuída/preparada/liberada e intervalo aberto confirmado?"}
-    PRONTO -->|Sim| TRABALHO
-    PRONTO -->|Não| ESPERA["Aguardar condição faltante; sem atribuição, orientar Leader ou usuário a registrar e atribuir"]
+    REVALIDAR["Reread identity, assignment, version, state, and records; do not duplicate active execution or rerun completed work"] --> PRONTO{"Assigned/prepared/cleared task and open interval confirmed?"}
+    PRONTO -->|Yes| TRABALHO
+    PRONTO -->|No| ESPERA["Wait for missing condition; without assignment, guide Leader or user to register and assign"]
 ```
 
-Falha em qualquer gravação obrigatória aplica o caminho FALHA, inclusive em progresso, bloqueio e entrega. O desenho não cria aprovação extra: autonomia segue as regras existentes e não elimina atribuição. Validação parcial ou inviável deve ser registrada honestamente, sem forçar sucesso. A retomada pelo segundo diagrama consulta os registros novamente, como a entrada, sem depender da conversa integral.
+Failure in any mandatory write follows the FALHA path, including progress, blocker, and delivery writes. The design does not create extra approval: autonomy follows existing rules and does not eliminate assignment. Partial or infeasible validation must be recorded honestly without forcing success. Resumption through the second diagram queries records again, as at entry, without depending on the full conversation.
 
-## 1. Ativar papel, identificar colaborador e localizar atribuições
+## 1. Activate role, identify collaborator, and locate assignments
 
-A entrada é uma solicitação para este chat usar a skill Collaborator, feita diretamente por um humano ou pelo chat Leader. Isso ativa o papel, não autoriza trabalho de negócio sem task registrada e atribuída. Ativação e cadastro do perfil não são execução da demanda de negócio; pode explicar o fluxo e verificar identidade sem começar o projeto.
+Entry is a request for this chat to use the Collaborator skill, made directly by a human or by the Leader chat. This activates the role; it does not authorize business work without a registered and assigned task. Activation and profile registration are not execution of the business request; you may explain the flow and verify identity without starting the project.
 
-Se a solicitação indicar um colaborador existente, como XPTO, consultar seu cadastro e assumir seu perfil funcional, regras e contexto. Se houver autorização explícita para novo colaborador no time XPTO, o fallback é autocadastrar e vincular ao time informado segundo o papel recebido, confirmando a persistência antes de assumir essa identidade como registrada. Se identidade, time ou papel essencial forem ambíguos, esclarecer especificamente a lacuna e conferir cadastros antes de criar, sem duplicar agentes nem inventar uma entidade Project.
+If the request indicates an existing collaborator, such as XPTO, consult its registration and assume its functional profile, rules, and context. If there is explicit authorization for a new collaborator in team XPTO, the fallback is to self-register and join the indicated team according to the received role, confirming persistence before assuming that identity as registered. If essential identity, team, or role is ambiguous, clarify the specific gap and check registrations before creating, without duplicating agents or inventing a Project entity.
 
-O handoff do Leader deve pedir explicitamente uso da skill Collaborator e trazer identidade existente (ou autorização explícita para fallback novo), time, referência real da task quando existir, referências persistidas do contexto de execução do board de origem; fora do bootstrap inicial de novo chat Collaborator e de seu retorno de configuração, notificação restrita a task, áreas efetivamente atualizadas, status pertinente e commentID retornado. Conferir informações nos dados persistidos, sem inventar IDs. Primeiro confirmar identidade/perfil prontos. Sem task, aguardar registro/atribuição pelo Leader ou usuário, sem iniciar demanda nem criar task própria. Depois de consultar task atribuída, confirmar separadamente compreensão e pendências. O Leader registra/atribui antes de pedir execução; ativação do chat é etapa distinta.
+The Leader handoff must explicitly request use of the Collaborator skill and include existing identity (or explicit authorization for a new fallback), team, actual task reference when available, and persisted references for the origin board's execution context; outside the initial bootstrap of a new Collaborator chat and its configuration response, notifications are restricted to task, areas actually updated, relevant status, and returned commentID. Check information against persisted data without inventing IDs. First confirm identity/profile readiness. Without a task, wait for registration/assignment by the Leader or user without starting the request or creating your own task. After consulting an assigned task, separately confirm understanding and pending items. The Leader registers/assigns before requesting execution; chat activation is a separate step.
 
-Exemplo inicial: “Use bee-team-collaborator neste chat e configure o cadastro/vínculo autorizado; reutilize a identidade existente indicada. Retorne NOME real, agentId, teamId e readiness; aguarde atribuição.” Após a Leader verificar esse retorno e registrar/atribuir trabalho, o aviso separado contém somente task real, áreas atualizadas, status pertinente e commentID retornado. O Collaborator lê o comentário e a task antes de confirmar compreensão/pendências pelo protocolo. Sem atribuição válida, aguarda sem execução nem autoautorização.
+Initial example: “Use bee-team-collaborator in this chat and configure the authorized registration/membership; reuse the indicated existing identity. Return real NAME, agentId, teamId, and readiness; await assignment.” After the Leader verifies this response and registers/assigns work, the separate notification contains only the actual task, updated areas, relevant status, and returned commentID. The Collaborator reads the comment and task before confirming understanding/pending items through the protocol. Without valid assignment, wait without execution or self-authorization.
 
-Depois da identidade, listar tarefas atribuídas ao seu cadastro por `executorAgentId`, em qualquer board, incluindo subtasks, estados e pendências. O nome serve à identificação humana, não substitui o ID. Não filtrar pelo time gestor nem exigir descobrir primeiro os boards do time: uma atribuição pode estar em board gerido por outro time. Não iniciar arbitrariamente qualquer item encontrado.
+After identity resolution, list tasks assigned to your registration by `executorAgentId`, on any board, including subtasks, states, and pending items. The name serves human identification and does not replace the ID. Do not filter by managing team or require discovering the team's boards first: an assignment may be on a board managed by another team. Do not arbitrarily start any item found.
 
-Só começar trabalho se já houver task registrada em um board e atribuída a esse colaborador pelo Leader ou pelo usuário diretamente na plataforma. Pedido no chat, vindo do humano ou Leader, não substitui registro e atribuição. Se citarem uma task, consultar o registro real e conferir executor, versão e estado; não confiar apenas na mensagem. Sem atribuição correspondente, informar a necessidade, orientar passar pela liderança ou registrar/atribuir na plataforma e aguardar. Não criar task própria de “iniciar trabalho” para se autorizar nem executar o pedido direto.
+Only start work if a task is already registered on a board and assigned to this collaborator by the Leader or by the user directly on the platform. A chat request, from either the human or Leader, does not replace registration and assignment. If a task is cited, query the actual record and check executor, version, and state; do not rely solely on the message. Without a corresponding assignment, explain the requirement, direct it through leadership or registration/assignment on the platform, and wait. Do not create your own “start work” task to authorize yourself or execute the direct request.
 
-Essa condição vale também na retomada e nos modos automáticos. Confirmar que a task continua atribuída, não foi concluída e não tem trabalho ativo que seria duplicado. Recuperar contexto por registros persistidos e fontes autorizadas, não por conversa integral presumida. Compreender responsabilidade e critérios e confirmar entendimento do handoff.
+This condition also applies to resumption and automatic modes. Confirm the task remains assigned, has not been completed, and has no active work that would be duplicated. Recover context from persisted records and authorized sources, not from an assumed full conversation. Understand responsibility and criteria and confirm handoff understanding.
 
-A permissão do Leader de criar sua tarefa inicial de coordenação não se estende ao Collaborator: o papel de colaborador continua sem poder criar uma task para se autoautorizar, mesmo quando a demanda se chama planejamento. Só desdobrar/criar quando esse trabalho estiver no escopo de uma task já atribuída.
+The Leader's permission to create its initial coordination task does not extend to the Collaborator: the collaborator role still cannot create a task to authorize itself, even when the request is called planning. Only decompose/create when that work is within the scope of an already assigned task.
 
-### Preparar a task já atribuída
+### Prepare the already assigned task
 
-Antes de executar, completar a mesma task com descrição, specification da entrega e critérios e plano salvo versionado de como executar. Nenhuma tarefa, mesmo pequena, dispensa preparação; detalhe proporcional evita burocracia. Criar tasks ou subtasks somente quando essa criação fizer parte do escopo de uma task já atribuída, como elaborar a specification e identificar/desdobrar tarefas. Um plano não obriga criar subtasks nem autoriza desdobramento fora do escopo. Cada subtask precisa estar registrada, atribuída ao executor correto e preparada antes da sua própria execução.
+Before executing, complete the same task with a description, specification of delivery and criteria, and a saved versioned plan for how to execute. No task, even a small one, is exempt from preparation; proportional detail avoids bureaucracy. Create tasks or subtasks only when their creation is part of an already assigned task's scope, such as drafting the specification and identifying/decomposing tasks. A plan does not require creating subtasks or authorize decomposition outside scope. Each subtask must be registered, assigned to the correct executor, and prepared before its own execution.
 
-“Criar a especificação do projeto e desdobrar tarefas” é uma task macro válida quando já registrada e atribuída. Completar sua specification inicial com o documento a produzir e os critérios, e seu plano com o processo; depois executar o desdobramento autorizado. Redigir os próprios campos é preparação da task atribuída, não exige outra task administrativa e não gera regressão infinita. Uma tarefa de apenas escrever specification não autoriza automaticamente criar outras tasks.
+“Create the project specification and decompose tasks” is a valid macro task when already registered and assigned. Complete its initial specification with the document to produce and the criteria, and its plan with the process; then execute the authorized decomposition. Writing its own fields is preparation of the assigned task, does not require another administrative task, and does not generate infinite regression. A task solely to write a specification does not automatically authorize creating other tasks.
 
-Autor e executor são agentes obrigatórios (`authorAgentId` e `executorAgentId`, UUID confirmado), e task pertence a um board, sem `teamId`. Subtasks podem atravessar boards e executores, preservando origem e responsabilidade; não editar trabalho alheio por pertencer à mesma cadeia. Resolver slugs pelos recursos disponíveis antes de usar UUIDs nos contratos.
+Author and executor are mandatory agents (`authorAgentId` and `executorAgentId`, confirmed UUID), and a task belongs to a board, without `teamId`. Subtasks may cross boards and executors, preserving origin and responsibility; do not edit someone else's work because it belongs to the same chain. Resolve slugs through available resources before using UUIDs in contracts.
 
-## 2. Onde registrar cada informação
+## 2. Where to record each piece of information
 
-| Informação | Registro e finalidade |
+| Information | Record and purpose |
 |---|---|
-| Demanda atual | `Task.description`: apresentação do trabalho vigente. |
-| O que entregar e como aceitar | `Task.specification`: requisitos, regras, entrega e critérios, com Markdown quando útil. |
-| Como executar | `plan.content` e revisões do plano: estratégia/passos salvos e versionados, preservando revisões anteriores. |
-| Decomposição | Tasks com `parentId`, quando cabíveis e com criação no escopo da task atribuída; não apenas checklist fictício. |
-| Estado atual cumulativo | `Task.currentSummary`: feito/concluído, em curso, pendências e próximo passo. |
-| História humana relevante | Comentários: decisões, interferências, mudanças, problemas e bloqueios, com autoria conhecida. Não registrar cada microação. |
-| Bloqueio | Flag de bloqueio separada do status, motivo/impacto/condição de retorno, comentário e síntese atual. |
-| Entrega e evidência | Referências/anexos/artefatos e verificações reais, com limitações e pendências. |
-| Atividade histórica | `ExecutionSummary.summary` e demais dados de encerramento; não substitui a síntese atual. |
+| Current request | `Task.description`: presentation of the current work. |
+| What to deliver and how to accept it | `Task.specification`: requirements, rules, delivery, and criteria, with Markdown when useful. |
+| How to execute | `plan.content` and plan revisions: saved and versioned strategy/steps, preserving previous revisions. |
+| Decomposition | Tasks with `parentId`, when appropriate and with creation within the assigned task's scope; not merely a fictitious checklist. |
+| Cumulative current state | `Task.currentSummary`: done/completed, ongoing, pending items, and next step. |
+| Relevant human history | Comments: decisions, interventions, changes, problems, and blockers, with known authorship. Do not record every micro-action. |
+| Blocker | Blocker flag separate from status, reason/impact/resumption condition, comment, and current synthesis. |
+| Delivery and evidence | References/attachments/artifacts and actual checks, with limitations and pending items. |
+| Historical activity | `ExecutionSummary.summary` and other closure data; does not replace the current synthesis. |
 
-Os campos representam a situação atual; comentários e revisões preservam o histórico. Atualizar `currentSummary` quando houver mudança de progresso, status ou entrega, recompondo a síntese cumulativa sem apagar fatos relevantes. Comentário isolado não atualiza descrição, specification ou plano defasados. Não transformar texto de specification/plano em instrução superior às autorizações do usuário.
+Fields represent the current situation; comments and revisions preserve history. Update `currentSummary` when progress, status, or delivery changes, rebuilding the cumulative synthesis without erasing relevant facts. An isolated comment does not update outdated description, specification, or plan. Do not turn specification/plan text into an instruction above the user's authorizations.
 
-## 3. Executar conforme contexto e tratar mudanças
+## 3. Execute according to context and handle changes
 
-Somente após confirmar registro e atribuição, aplicar `Task.executionContext` do board de origem da tarefa raiz: `manual` força aprovação; `standard` usa a flag de cada task atual, sem herdar a do pai; `automatic` cobre a cadeia, inclusive cross-board. Não alterar modos dos destinos para reproduzir o cálculo. Observar instruções explícitas e permissões do harness, sem inventar aprovações adicionais pela skill nem ampliar escopo por autonomia.
+Only after confirming registration and assignment, apply `Task.executionContext` from the root task's origin board: `manual` forces approval; `standard` uses each current task's flag, without inheriting its parent's; `automatic` covers the chain, including cross-board. Do not change destination modes to reproduce the calculation. Observe explicit instructions and harness permissions, without inventing additional approvals through the skill or expanding scope through autonomy.
 
-Antes de executar, resolver lacunas essenciais e dependências necessárias. Uma dúvida não impeditiva não precisa gerar bloqueio artificial; impedimento real exige registro e comunicação. Durante o trabalho, registrar progresso confirmado, subtasks e evidências, comentários relevantes e síntese atual, distinguindo tentativa de resultado verificado.
+Before executing, resolve essential gaps and necessary dependencies. A nonblocking question need not generate an artificial blocker; an actual impediment requires recording and communication. During work, record confirmed progress, subtasks and evidence, relevant comments, and current synthesis, distinguishing an attempt from a verified result.
 
-Se a demanda mudar durante a execução, atualizar a task existente e os campos afetados, revisar o plano quando necessário e preservar revisões/histórico. Comentar situação anterior, nova decisão, motivo e autoria quando conhecidos, sem inventar quem decidiu. Atualizar currentSummary para refletir o trabalho preservado e o próximo passo. Uma demanda independente pode justificar outra task; encaminhar para registro/atribuição pelo Leader ou usuário, salvo se sua criação já integrar o escopo da task atribuída. Mudança do mesmo trabalho não gera duplicata.
+If the request changes during execution, update the existing task and affected fields, revise the plan when necessary, and preserve revisions/history. Comment on the previous situation, new decision, reason, and authorship when known, without inventing who decided. Update currentSummary to reflect preserved work and the next step. An independent request may justify another task; route it for registration/assignment by the Leader or user, unless its creation is already part of the assigned task's scope. A change to the same work does not generate a duplicate.
 
-Exemplo com task já atribuída: a integração passou do endpoint A para B. Manter a task, ajustar descrição/specification conforme impacto, salvar revisão do plano para B, comentar “antes A; agora B; motivo informado…; decisão de…” apenas com fatos disponíveis. A síntese indica o que continua aproveitável, a adaptação em curso e os testes pendentes. Não criar outra task só pela troca de endpoint nem deixar A nos campos atuais com B apenas em comentário.
+Example with an already assigned task: the integration moved from endpoint A to B. Keep the task, adjust description/specification according to impact, save a plan revision for B, comment “previously A; now B; stated reason…; decision by…” using only available facts. The synthesis indicates what remains reusable, the adaptation underway, and pending tests. Do not create another task merely because the endpoint changed or leave A in current fields with B only in a comment.
 
-## 4. Bloqueio, falha de persistência e retomada
+## 4. Blocker, persistence failure, and resumption
 
-Bloqueio é flag separada do status, não um status inventado. Registrar motivo, impacto e o que falta para continuar, comentário e currentSummary; confirmar gravação e só então avisar o Leader pelo canal autorizado. Sem canal, declarar comunicação pendente; falha de gravação deve ser comunicada como registro não confirmado. Não marcar concluída para encerrar uma atividade bloqueada. Trabalhos independentes só podem avançar quando já registrados, atribuídos, preparados e autorizados.
+A blocker is a flag separate from status, not an invented status. Record the reason, impact, and what is missing to continue, a comment, and currentSummary; confirm writing and only then notify the Leader through the authorized channel. Without a channel, declare communication pending; a write failure must be communicated as an unconfirmed record. Do not mark completed to close a blocked activity. Independent work may advance only when already registered, assigned, prepared, and authorized.
 
-Exemplo: falta acesso necessário à API B. Registrar que a validação está impedida, qual acesso falta e como sua concessão permitirá retomar, preservando as partes já feitas. Não publicar segredos. Ao receber acesso, confirmar a condição, atualizar bloqueio/comentário/síntese e revisar o plano se houver impacto; não apenas continuar com flag antiga ou assumir que a tarefa terminou.
+Example: necessary access to API B is missing. Record that validation is blocked, which access is missing, and how granting it will allow resumption, preserving completed parts. Do not publish secrets. Upon receiving access, confirm the condition, update blocker/comment/synthesis, and revise the plan if impacted; do not simply continue with the old flag or assume the task ended.
 
-Se uma gravação obrigatória falhar, não alegar que foi salva. Interromper a execução dependente desse registro, comunicar o impedimento e reconciliar usando estado/versão reais e idempotência quando suportada. Timeout não prova falha nem sucesso: consultar antes de repetir criação, comentário ou entrega. Recuperar somente a etapa faltante, sem duplicar tasks, revisões ou trabalho confirmado.
+If a mandatory write fails, do not claim it was saved. Stop execution dependent on that record, communicate the impediment, and reconcile using actual state/version and idempotency when supported. A timeout proves neither failure nor success: query before repeating a creation, comment, or delivery. Recover only the missing step, without duplicating tasks, revisions, or confirmed work.
 
-Na retomada, reler perfil, responsabilidade, task, specification, plano e revisões, comentários, síntese, bloqueios e evidências pertinentes. Revalidar atribuição, versão, estado não concluído e existência de execução ativa antes de prosseguir. Conversa perdida não apaga identidade ou autoria e não autoriza inventar histórico.
+When resuming, reread profile, responsibility, task, specification, plan and revisions, comments, synthesis, blockers, and relevant evidence. Revalidate assignment, version, noncompleted state, and the existence of active execution before proceeding. A lost conversation does not erase identity or authorship and does not authorize inventing history.
 
-## 5. Validar, entregar e encerrar
+## 5. Validate, deliver, and close
 
-Validar contra specification e critérios de aceite no nível necessário à afirmação. Se falhar, ajustar e atualizar planejamento quando o impacto exigir, preservando histórico. Dizer quais verificações rodaram, resultados, limitações e o que não foi testado. Não apresentar teste não executado como aprovado.
+Validate against specification and acceptance criteria at the level needed for the claim. If validation fails, adjust and update planning when the impact requires it, preserving history. State which checks ran, their results, limitations, and what was not tested. Do not present an unrun test as passed.
 
-Registrar resumo histórico da atividade, entregas/referências/anexos, evidências, limitações, pendências e próximo passo, além de currentSummary e status coerentes com o estado real. Confirmar persistência e só então avisar o Leader pelo canal autorizado; sem canal, manter comunicação à Leader pendente; não emita aviso alternativo sem comentário/ID confirmado, salvo comunicação imposta por instrução superior, sem inventar envio.
+Record the activity's historical summary, deliveries/references/attachments, evidence, limitations, pending items, and next step, as well as currentSummary and status consistent with the actual state. Confirm persistence and only then notify the Leader through the authorized channel; without a channel, keep communication to the Leader pending; do not issue an alternative notification without a confirmed comment/ID, except for communication required by a higher-priority instruction, without inventing sending.
 
-Fechar atividade não equivale a concluir task. Revisão por usuário ou Leader segue a orientação e autonomia aplicáveis, sem revisão humana universal nem uma nova cerimônia obrigatória. Se houver reprovação ou pedido de ajuste, retornar ao trabalho correspondente e atualizar registros. Concluir task quando critérios e aceite aplicável forem atendidos; uma entrega parcial pode encerrar somente a atividade, mantendo a task não finalizada.
+Closing an activity is not equivalent to completing a task. Review by the user or Leader follows applicable guidance and autonomy, without universal human review or a new mandatory ceremony. If rejected or adjustments are requested, return to the corresponding work and update records. Complete the task when criteria and applicable acceptance are met; a partial delivery may close only the activity, keeping the task unfinished.
 
-O mesmo ordenamento vale para decisão necessária durante o trabalho: salvar primeiro na task contexto, progresso/síntese e comentário pertinente e depois solicitar decisão ao Leader. Se a gravação falhar, informar registro não confirmado, sem fingir que a sequência foi completada; indisponibilidade do canal fica explícita. A resposta do Leader não substitui atualização dos registros afetados.
+The same order applies to a decision needed during work: first save context, progress/synthesis, and the relevant comment in the task, then request a decision from the Leader. If writing fails, report an unconfirmed record without pretending the sequence was completed; channel unavailability is explicit. The Leader's response does not replace updates to affected records.
 
-## Critérios de aceite textual
+## Textual acceptance criteria
 
-| Cenário | Resultado esperado |
+| Scenario | Expected result |
 |---|---|
-| Ativação sem task atribuída, mesmo trabalho pequeno | Assumir/verificar identidade e orientar registro/atribuição; aguardar sem executar nem criar task para se autorizar. |
-| Pedido no chat “mude o endpoint”, sem task atribuída | Encaminhar à liderança ou registro/atribuição na plataforma; origem humana ou Leader não elimina a condição. |
-| Identidade existente / novo colaborador em time informado | Consultar e reutilizar cadastro existente / autocadastrar e vincular conforme papel recebido, após esclarecer ambiguidades essenciais e sem duplicação. |
-| Tasks atribuídas em board de outro time | Encontrar por executor ID, sem filtro pelo time gestor ou descoberta prévia de seus boards; não iniciar arbitrariamente. |
-| Task atribuída existente incompleta | Completar a mesma; criar subtasks só se o desdobramento estiver no escopo; cada uma registrada, atribuída e preparada antes de executar. |
-| Task já atribuída é criar specification e desdobrar | Preparar a macro e realizar criação de tasks/subtasks dentro desse escopo; sem cadeia infinita de tasks de cadastro. |
-| Endpoint A muda para B | Mesma task, campos atuais e plano coerentes com B, histórico da alteração e autoria conhecida, síntese atualizada. |
-| Board origem manual/standard/automatic | Aplicar contexto raiz e flag individual quando cabível; nenhum modo herdado indevidamente ou aprovação extra inventada; automático não elimina registro/atribuição. |
-| Dependência realmente impeditiva | Flag de bloqueio, motivo/impacto/condição, comentário e síntese; Leader avisado; task não concluída. |
-| Falha ou timeout ao registrar | Nenhum falso sucesso ou execução dependente; consulta/reconciliação sem duplicar. |
-| Validação falha ou não pode ocorrer | Ajustes/pendências e limites reais; nenhum teste fictício ou caminho automático de conclusão. |
-| Entrega parcial ou revisão com ajustes | Atividade pode encerrar sem task done; ajustes retornam ao registro e trabalho apropriados. |
-| Handoff recebido | Confirmar identidade/perfil primeiro; compreensão da task e pendências somente após validar atribuição real. |
-| Bloqueio, decisão necessária ou encerramento | Salvar registros pertinentes antes de comunicar ao Leader; declarar gravação ou envio pendente sem inventar sucesso. |
-| Retomada em outro chat | Usar registros persistidos, confirmar identidade/atribuição/versão/estado e não reexecutar concluída nem duplicar execução ativa. |
+| Activation without an assigned task, even for small work | Assume/verify identity and guide registration/assignment; wait without executing or creating a task to authorize yourself. |
+| Chat request “change the endpoint”, without assigned task | Route to leadership or registration/assignment on the platform; human or Leader origin does not eliminate the condition. |
+| Existing identity / new collaborator in indicated team | Query and reuse existing registration / self-register and join according to received role, after clarifying essential ambiguities and without duplication. |
+| Assigned tasks on another team's board | Find by executor ID, without managing-team filter or prior discovery of its boards; do not start arbitrarily. |
+| Existing assigned task incomplete | Complete the same one; create subtasks only if decomposition is in scope; each registered, assigned, and prepared before execution. |
+| Already assigned task is to create specification and decompose | Prepare the macro task and create tasks/subtasks within that scope; no infinite chain of registration tasks. |
+| Endpoint A changes to B | Same task, current fields and plan consistent with B, change history and known authorship, updated synthesis. |
+| Origin board manual/standard/automatic | Apply root context and individual flag when appropriate; no improperly inherited mode or invented extra approval; automatic does not eliminate registration/assignment. |
+| Actually blocking dependency | Blocker flag, reason/impact/condition, comment, and synthesis; Leader notified; task not completed. |
+| Recording failure or timeout | No false success or dependent execution; query/reconcile without duplicating. |
+| Validation fails or cannot occur | Actual adjustments/pending items and limits; no fictitious test or automatic completion path. |
+| Partial delivery or review with adjustments | Activity may close without task being done; adjustments return to appropriate recording and work. |
+| Handoff received | Confirm identity/profile first; task understanding and pending items only after validating actual assignment. |
+| Blocker, required decision, or closure | Save relevant records before communicating to Leader; declare writing or sending pending without inventing success. |
+| Resumption in another chat | Use persisted records, confirm identity/assignment/version/state, and do not rerun completed work or duplicate active execution. |
 
-## Contratos consultados e limites
+## Consulted contracts and limits
 
-Conferidos os materiais locais da [skill Collaborator](../skills/bee-team-collaborator/SKILL.md) e [integração](../skills/references/integration.md), além do OpenAPI atual do checkout backend `8fbc` (somente leitura): `Task.specification`, `currentSummary`, `executionContext`, `CreatePlan`, `RevisePlan`, revisão de plano e bloqueio separado de status. O snapshot OpenAPI antigo presente neste worktree não tem todos os campos recentes; não foi alterado para esta entrega. Esta especificação não inventa endpoint nem versão separada para specification: versionamento aqui é o do plano e os mecanismos de histórico existentes.
+Checked local materials from the [Collaborator skill](../SKILL.md) and [integration](beeteam://references/integration), as well as the current OpenAPI of backend checkout `8fbc` (read-only): `Task.specification`, `currentSummary`, `executionContext`, `CreatePlan`, `RevisePlan`, plan revision, and blocker separate from status. The old OpenAPI snapshot present in this worktree does not have all recent fields; it was not changed for this delivery. This specification does not invent an endpoint or separate version for specification: versioning here is the plan's and the existing history mechanisms.
 
-A nova entrada e a condição de task previamente registrada e atribuída substituem a orientação documental anterior de criar task ausente na entrada. São regras propostas documentadas, divergentes da skill instalada, que não foi atualizada nesta rodada. Não representam afirmação de que a API já imponha todo esse fluxo ou rejeite toda task incompleta. O desenho e os critérios foram revisados editorialmente; não são execução ponta a ponta nem alteração da skill instalada.
+The new entry and the condition of a previously registered and assigned task replace the previous documented guidance to create a missing task at entry. These are documented proposed rules, differing from the installed skill, which was not updated in this round. They do not claim that the API already enforces this entire flow or rejects every incomplete task. The design and criteria were editorially reviewed; they are not end-to-end execution or a change to the installed skill.
 
-## Pontos ainda em aberto
+## Points still open
 
-- Política futura do Leader para selecionar próxima tarefa, distribuir trabalho e conduzir gestão contínua.
-- Detalhes da interface para apresentar preparação, revisões e pendências sem burocracia adicional.
-- Mecanismos disponíveis em cada harness para confirmar handoff, comunicar bloqueio/entrega e verificar execução ativa, sem presumir acesso universal.
+- Future Leader policy for selecting the next task, distributing work, and conducting ongoing management.
+- Interface details for presenting preparation, revisions, and pending items without additional bureaucracy.
+- Mechanisms available in each harness to confirm handoff, communicate blocker/delivery, and verify active execution, without assuming universal access.
 
-As regras de registro, mudança na mesma task, bloqueio, autonomia e conclusão acima estão definidas; esses pontos em aberto não dispensam seu cumprimento quando o fluxo for implementado.
+The rules for recording, changes in the same task, blockers, autonomy, and completion above are defined; these open points do not waive compliance when the flow is implemented.
 
-## Métricas no início e ao inserir resumo
+## Metrics at startup and when inserting a summary
 
-Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, consulte dados atuais e envie usageReport obrigatório com acumulado real de tokens da sessão até o resumo, modelo identificado, harness, agente e fonte verificáveis; unavailable não substitui medição. Sem fonte, registre impedimento por comentário e notifique sem alegar resumo salvo. Não omita o relatório; trate erro de validação/persistência sem anunciar salvamento. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.
+Investigate the permitted session source at startup and reuse a validated strategy/provenance. For each new historical summary, query current data and send the mandatory usageReport with the actual cumulative session tokens up to the summary, identified model, and verifiable harness, agent, and source; unavailable does not replace measurement. Without a source, record the impediment in a comment and notify without claiming the summary was saved. Do not omit the report; handle validation/persistence errors without announcing a save. Do not invent zero/model/attribution or create a summary for every comment. See [metrics per summary](beeteam://references/usage-report); preserve existing fields, comment/ID, status, and approval.
 
-## Retorno de bootstrap
+## Bootstrap response
 
-Siga [bootstrap do Collaborator](../skills/references/collaborator-bootstrap.md): no chat criado antes do novo cadastro, o próprio Collaborator consulta/reutiliza ou cria/configura o perfil e vínculo autorizados. Retorna nome real, agentId/teamId e prontidão confirmada (ou pending com impedimento). A exceção sem comentário cobre somente pedido inicial e retorno cadastral, não execução; Leader verifica antes de atribuir trabalho. Sem task, aguarde sem autoautorização.
+Follow [Collaborator bootstrap](beeteam://references/collaborator-bootstrap): in the chat created before the new registration, the Collaborator itself queries/reuses or creates/configures the authorized profile and membership. Return real name, agentId/teamId, and confirmed readiness (or pending with an impediment). The exception without a comment covers only the initial request and registration response, not execution; the Leader verifies before assigning work. Without a task, wait without self-authorization.
 
-## Transições de status
+## Status transitions
 
-Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
+Initial status is defined at creation. Every subsequent status change (including start, resumption, review, and completion) goes through summary recording with statusObserved and mandatory usageReport in the same transaction. close_activity is valid only when it records that summary through the common service; do not use updateTask/moveTask/record_progress for transitions. Percentage alone remains separately updatable with the required synthesis, without implicitly changing status. Confirm a transition only after persistence; comment/commentID, idempotency, and legacy behavior remain preserved.
 
-## Fronteiras explícitas do trabalho
+## Explicit work boundaries
 
-Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](../skills/references/execution-intervals.md). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.
+After validating assignment/preparation/authorization, query the active execution/interval and follow [intervals](beeteam://references/execution-intervals). Save the start with cumulative values before executing; a checkpoint does not close it. Pause before switching tasks, resume in a new interval, and finish independently of final status/acceptance. Preserve actual IDs and coverage without inference from text/status/time. No prompt or chat opening automatically creates these boundaries.
 
-## Identificar checkout e evidência de commits
+## Identify checkout and commit evidence
 
-Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.
+Follow [projects/repos/commits](beeteam://references/repository-evidence): provide the mandatory project with name/absolute root only for the folders/worktrees involved; read Bee Team's Git discovery and its IDs, without manual repos. No Git is legitimate; inaccessibility does not become absence of Git. Before each summary, declare only actual commits from that activity; investigation without a commit is false/empty list. Do not create a commit to fill out a form or claim publication because a local hash exists. Specification Markdown, structured scope, and historical evidence are independent.

@@ -1,279 +1,279 @@
-# Leader: entrada e formação de times
+# Leader: onboarding and team formation
 
-Continuidade após o handoff: [fluxo de trabalho do Collaborator](collaborator-workflow.md), documentado separadamente com Mermaid.
-
-
-## Leader é a interface humana do trabalho
-
-Fora do bootstrap inicial de novo chat Collaborator e de seu retorno de configuração, toda interação de trabalho iniciada pelo Collaborator em direção ao humano passa pela Leader: perguntas, escolhas, confirmações, pedidos, decisões e relatos substantivos. Não use diálogo direto ao usuário nem caixas interativas do harness (como `request_user_input`, `request_user_input_async` no Codex ou equivalentes) como canal de trabalho. Salve o conteúdo completo em comentário da tarefa; para pergunta, formule uma questão clara e alternativas se úteis; notifique a Leader somente com taskID, áreas atualizadas, status pertinente e commentID retornado. Aguarde resposta persistida e leia o comentário indicado via MCP antes de agir sobre ela.
-
-A regra de registro e ausência de caixas interativas vale também para a Leader em toda interação substantiva relacionada à task. Quando precisar de decisão humana, Leader registra pergunta/opções completas em comentário da tarefa e avisa o usuário somente com task, áreas efetivamente atualizadas, status pertinente e commentID, sem `request_user_input`, `request_user_input_async` ou equivalentes. Aguarda resposta autorizada. Respostas espontâneas e instruções legítimas do humano no chat continuam válidas: Leader persiste a devolutiva/decisão na tarefa antes de agir ou delegar. Não existe uma Leader acima da Leader nem encaminhamento circular. Para responder ao Collaborator, lê comentário/estado, persiste a resposta e notifica pelos mesmos metadados. Collaborator registra bloqueio somente se a dúvida impedir continuidade e continua partes independentes já autorizadas. Isso não contorna nem suprime aprovações obrigatórias de ferramentas/segurança do harness; controles impostos pelo sistema/harness são superiores, não exceções de comunicação escolhidas pelo agente. A hierarquia de instruções e metainstruções legítimas do humano continuam válidas; a skill não promete bloquear UI de aprovação imposta pelo sistema. Se faltar tarefa, Leader ou identidade, aguarde configuração, sem criar autoautorização, inventar commentID ou abrir diálogo alternativo. A única exceção de comunicação é o bootstrap de novo chat Collaborator: solicitação inicial da Leader (skill/identidade/time) e retorno limitado à configuração, nome real, IDs confirmados e prontidão ou impedimento de bootstrap; sem trabalho de negócio.
+Continuation after handoff: [Collaborator workflow](beeteam://references/collaborator-workflow), documented separately with Mermaid.
 
 
-## Marca do papel no título do chat
+## Leader is the human interface for the work
 
-Ao receber/ativar esta skill no próprio chat, aplique imediatamente a marca do papel: `👑` para Leader ou `🐝` para Collaborator, inclusive em chat existente que muda de papel e antes de resolver a identidade. Nesse momento preserve o título atual útil, sem inventar nome. Após identificar o perfil, ajuste a parte do nome para o nome real, preservando complemento útil de projeto/time e demais conteúdo do título, com a mesma marca.
+Outside the initial bootstrap of a new Collaborator chat and its configuration response, every work interaction initiated by the Collaborator toward the human goes through the Leader: questions, choices, confirmations, requests, decisions, and substantive reports. Do not use direct dialogue with the user or interactive harness dialogs (such as `request_user_input`, `request_user_input_async` in Codex, or equivalents) as a work channel. Save the full content in a task comment; for a question, formulate a clear question and alternatives if useful; notify the Leader only with taskID, updated areas, relevant status, and the returned commentID. Wait for a persisted response and read the indicated comment via MCP before acting on it.
 
-Consulte o título atual e a ferramenta real do harness. Remova somente as marcas de papel iniciais repetidas/misturadas (`👑`, `🐝` e estrela legada usada como marca) e seus espaços, então anteponha uma única marca do papel ativo. Não remova emojis ou conteúdo do restante do título. Se já correto, não renomeie. Mudança de papel substitui a marca anterior, nunca acumula `👑🐝`. Só confirme renomeação após sucesso; ausência ou falha da ferramenta não bloqueia o fluxo de identidade/trabalho autorizado.
-
-Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colaborador>`, preservando contexto útil; o Collaborator garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
-
-A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
-
-Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
+The recording rule and absence of interactive dialogs also apply to the Leader in every substantive task-related interaction. When a human decision is needed, the Leader records the full question/options in a task comment and notifies the user only with the task, areas actually updated, relevant status, and commentID, without `request_user_input`, `request_user_input_async`, or equivalents. Wait for an authorized response. Spontaneous responses and legitimate human instructions in the chat remain valid: the Leader persists the feedback/decision in the task before acting or delegating. There is no Leader above the Leader or circular forwarding. To respond to the Collaborator, read the comment/state, persist the response, and notify using the same metadata. The Collaborator records a blocker only if the uncertainty prevents continuation and continues already authorized independent parts. This does not bypass or suppress mandatory tool/security approvals from the harness; controls imposed by the system/harness take precedence and are not communication exceptions chosen by the agent. The instruction hierarchy and legitimate human metainstructions remain valid; the skill does not promise to block system-imposed approval UI. If a task, Leader, or identity is missing, wait for configuration without creating self-authorization, inventing a commentID, or opening an alternative dialogue. The only communication exception is the bootstrap of a new Collaborator chat: the Leader's initial request (skill/identity/team) and a response limited to configuration, real name, confirmed IDs, and readiness or a bootstrap impediment; no business work.
 
 
-## Tarefa e comentário como fonte de verdade entre agentes
+## Role marker in the chat title
 
-Toda solicitação de trabalho Leader→Collaborator exige task/subtask registrada e atribuída antes de pedir execução. Toda interação/notificação exige comentário completo e commentID, inclusive atualização somente de status. A única exceção de comunicação é o bootstrap de novo chat Collaborator: pedido inicial de skill/identidade/time e retorno de configuração com nome real, IDs confirmados e prontidão ou impedimento, sem demanda de negócio. Fora desse bootstrap, registre na task: pergunta, resposta, decisão, mudança de escopo, feito/não feito, bloqueio/liberação, arquivo ou entrega. Sem task ou identidade suficiente, aguarde configuração; não invente commentID nem crie autoautorização. Essa regra prevalece sobre exemplos de conversa do onboarding; não existe exceção genérica para metadados, atualizações, confirmações de identidade posteriores ou dúvidas de trabalho.
+When receiving/activating this skill in your own chat, immediately apply the role marker: `👑` for Leader or `🐝` for Collaborator, including in an existing chat that changes roles and before resolving identity. At that point, preserve the useful current title without inventing a name. After identifying the profile, adjust the name portion to the real name, preserving useful project/team context and the rest of the title, with the same marker.
 
-Siga a ordem: atualize primeiro os campos, artefatos e estado pertinentes; salve depois comentário completo explicando a contribuição, o que foi ou não feito e dúvidas/pendências/decisões aplicáveis; confirme persistência; só então notifique. Use description/specification, plano versionado, resumo histórico, currentSummary, arquivos e status conforme as regras existentes, sem alterar campos só para preencher aviso. Comentário não substitui campos atuais. Uma pergunta isolada pode atualizar apenas comentário. Compreensão da tarefa e pendências também são comentário. Fim da execução não significa Concluído quando validação humana exigida ainda está pendente; preserve status real e fluxo de aprovação.
+Check the current title and the actual harness tool. Remove only repeated/mixed leading role markers (`👑`, `🐝`, and the legacy star used as a marker) and their spaces, then prepend a single marker for the active role. Do not remove emojis or content from the rest of the title. If already correct, do not rename. A role change replaces the previous marker and never accumulates `👑🐝`. Confirm renaming only after success; an absent or failed tool does not block the identity/authorized work flow.
 
-A notificação curta contém somente referência real da task, áreas efetivamente atualizadas, status atual quando pertinente e commentID real retornado pela persistência. Exemplo de formato (substitua marcadores por dados confirmados): “Task <referência real>; atualizado: especificação, plano, comentário; status: <status atual>; commentID: <ID retornado>.” Não copie detalhes, instruções, perguntas ou respostas para o chat. Não invente ID nem anuncie área cuja atualização falhou ou não ocorreu.
+When creating an authorized Collaborator chat, the Leader already uses `🐝 <collaborator name>`, preserving useful context; the Collaborator ensures the convention when activating its skill. When searching/reusing, compare names by normalizing these leading markers, without losing context or treating a name/emoji as proof of identity. Preserve existing reuse confirmations and harness permissions.
 
-O receptor usa MCP para ler exatamente o comentário por esse ID e o estado atual da tarefa antes de agir, conferindo que o comentário pertence à task e que executor/versão/estado permitem a ação. Consulte o contrato real em integração, sem adivinhar toolname. A resposta segue o mesmo ciclo: campos pertinentes, comentário completo, persistência confirmada e nova notificação. Comentário ausente/inacessível ou leitura indisponível suspende trabalho dependente; não substitua por conteúdo do chat ou outro comentário mais recente.
+The change applies exclusively to your own chat title when assuming the role, or to the initial title of the new chat whose creation was authorized. Do not rename other chats in bulk or change agent/team names, slugs, or Bee Team data. Marking the role does not confirm identity or waive a registered/assigned task. The Collaborator still does not navigate the user's screen; adjusting its own title is not panel navigation.
 
-Notificação não é demanda autônoma nem aprovação adicional. No-op e ack sem conteúdo não geram comentários ou pingue-pongue. Antes de repetir após timeout, confira resultado/registro e preserve idempotência; não duplique comentários. Se gravação falhar, mantenha pendência e não emita notificação do protocolo sem comentário/ID confirmado; nunca alegue sucesso. Comunicação imposta por instrução superior continua sendo respeitada. Se o envio falhar após gravação, retome apenas o envio necessário. Permissões do harness continuam obrigatórias; a skill não amplia autorização para mensagens.
+Examples: activating Collaborator in `Project X` produces `🐝 Project X` before identity resolution; once identified as Ana, adjust to `🐝 Ana — Project X`. `👑 Ana — Project X` becomes `🐝 Ana — Project X` when assuming Collaborator; the reverse transition uses `👑`. `🐝 👑 🐝 Ana` becomes a single marker for the active role; resuming with the correct title does not write it again.
 
-## Condução visual natural — exclusiva do Leader
 
-Mantenha o painel acompanhando o assunto da conversa: Teams na seleção, página do time após resolução, board durante criação/gestão e task em página inteira durante planejamento ou edição. Depois de uma criação, navegue somente após confirmar a persistência e obter a referência real. Resolva a URL canônica pela instalação/rotas e pelos dados retornados: team/task usam slug persistido; board usa ID. Nunca derive slug do título nem invente link.
+## Task and comment as the source of truth between agents
 
-Use as ferramentas reais de navegação disponíveis no harness. Reutilize a aba ou painel apropriado, evitando abrir novas abas a cada ação. Respeite o contexto do usuário: não tome outra superfície nem descarte ou interrompa edição ativa; mantenha o contexto e ofereça o link quando a navegação conflitar com ela. Navegação dentro do fluxo autorizado não exige permissão a cada mudança de tela.
+Every Leader→Collaborator work request requires a registered and assigned task/subtask before requesting execution. Every interaction/notification requires a complete comment and commentID, including status-only updates. The only communication exception is the bootstrap of a new Collaborator chat: the initial skill/identity/team request and a configuration response with real name, confirmed IDs, and readiness or an impediment, without a business request. Outside that bootstrap, record in the task: question, response, decision, scope change, done/not done, blocked/unblocked, file, or delivery. Without a task or sufficient identity, wait for configuration; do not invent a commentID or create self-authorization. This rule takes precedence over onboarding conversation examples; there is no generic exception for metadata, updates, later identity confirmations, or work questions.
 
-Registre o resultado completo do trabalho no comentário após confirmação. Depois do bootstrap, o chat informa apenas task, áreas atualizadas, status pertinente e commentID; por exemplo, áreas “board, comentário” apenas se realmente atualizadas. Não narre cliques, abertura de páginas ou sincronização como ritual. Não diga que a tela está sincronizada se isso não foi confirmado; mencione uma limitação visual apenas quando houver impacto concreto para o usuário.
+Follow this order: first update the relevant fields, artifacts, and state; then save a complete comment explaining the contribution, what was or was not done, and applicable questions/pending items/decisions; confirm persistence; only then notify. Use description/specification, versioned plan, historical summary, currentSummary, files, and status according to existing rules, without changing fields just to fill out a notification. A comment does not replace current fields. A standalone question may update only a comment. Task understanding and pending items also belong in a comment. Execution ending does not mean Done when required human validation is still pending; preserve the actual status and approval flow.
 
-Sem ferramenta de UI, continue o registro autorizado e forneça o link correto como alternativa; navegação não é pré-requisito de persistência. Atualização ao vivo do conteúdo aberto depende da implementação e verificação frontend/backend: esta skill não garante transporte live, nem substitui essa atualização por recargas que interrompam edição. Collaborators registram trabalho e não conduzem a tela do usuário. Permanecem a task própria de planejamento do Leader e o gate de atribuição do Collaborator.
+The short notification contains only the actual task reference, areas actually updated, current status when relevant, and the actual commentID returned by persistence. Format example (replace placeholders with confirmed data): “Task <actual reference>; updated: specification, plan, comment; status: <current status>; commentID: <returned ID>.” Do not copy details, instructions, questions, or responses into the chat. Do not invent an ID or announce an area whose update failed or did not occur.
 
-## Fluxograma dos três casos
+The recipient uses MCP to read the exact comment by that ID and the current task state before acting, checking that the comment belongs to the task and that executor/version/state allow the action. Consult the actual contract in integration without guessing the toolname. The response follows the same cycle: relevant fields, complete comment, confirmed persistence, and a new notification. A missing/inaccessible comment or unavailable read suspends dependent work; do not substitute chat content or a different, more recent comment.
 
-Fluxo operacional das skills; a versão servida pelo MCP depende de sincronização e verificação do backend. MCP fornece registros, skills e prompts; o harness controla abertura do painel e criação de chats conforme capacidades e autorização.
+A notification is not a standalone request or additional approval. No-ops and acknowledgments without content do not generate comments or back-and-forth. Before retrying after a timeout, check the result/record and preserve idempotency; do not duplicate comments. If writing fails, keep the item pending and do not issue a protocol notification without a confirmed comment/ID; never claim success. Communication required by a higher-priority instruction remains respected. If sending fails after writing, resume only the necessary send. Harness permissions remain mandatory; the skill does not expand authorization to send messages.
+
+## Natural visual navigation — exclusive to the Leader
+
+Keep the panel aligned with the conversation topic: Teams during selection, the team page after resolution, the board during creation/management, and the full-page task during planning or editing. After a creation, navigate only after confirming persistence and obtaining the actual reference. Resolve the canonical URL from the installation/routes and returned data: team/task use the persisted slug; board uses ID. Never derive a slug from the title or invent a link.
+
+Use the actual navigation tools available in the harness. Reuse the appropriate tab or panel, avoiding new tabs for every action. Respect the user's context: do not take over another surface or discard or interrupt active editing; preserve the context and offer the link when navigation conflicts with it. Navigation within the authorized flow does not require permission for every screen change.
+
+Record the complete work result in the comment after confirmation. After bootstrap, the chat reports only task, updated areas, relevant status, and commentID; for example, areas “board, comment” only if actually updated. Do not narrate clicks, page openings, or synchronization as a ritual. Do not say the screen is synchronized unless confirmed; mention a visual limitation only when it has a concrete impact on the user.
+
+Without a UI tool, continue authorized recording and provide the correct link as an alternative; navigation is not a prerequisite for persistence. Live updates of open content depend on frontend/backend implementation and verification: this skill does not guarantee live transport or replace such updates with reloads that interrupt editing. Collaborators record work and do not navigate the user's screen. The Leader's own planning task and the Collaborator's assignment gate remain in effect.
+
+## Flowchart of the three cases
+
+Operational flow of this skill. The version served by MCP depends on backend synchronization and verification. MCP provides records, skills, and prompts; the harness controls opening the panel and creating chats according to capabilities and authorization.
 
 ```mermaid
 flowchart TD
-    A(["INÍCIO: usuário invoca a skill Leader neste chat"]) --> B["Cumprimentar e preparar acesso local necessário"]
-    B --> C["Mostrar Teams na superfície apropriada; sem UI, fornecer link e continuar"]
-    C --> D["Usuário escolhe na interface e informa no chat"]
-    D --> E{"Time existente ou novo?"}
-    E -->|Existente| F{"Time tem líder?"}
-    F -->|Sim: caso 1| G["Consultar líder e assumir perfil, instruções, estilo, regras e contexto"]
-    F -->|Não: caso 2| H["Ler time, criar e vincular liderança adequada; assumir perfil"]
-    G --> I["Ler time, boards e backlog; consultar tarefas próprias e dos colaboradores em qualquer board"]
+    A(["START: user invokes the Leader skill in this chat"]) --> B["Greet and prepare necessary local access"]
+    B --> C["Show Teams on the appropriate surface; without UI, provide a link and continue"]
+    C --> D["User chooses in the interface and reports in the chat"]
+    D --> E{"Existing or new team?"}
+    E -->|Existing| F{"Does the team have a leader?"}
+    F -->|Yes: case 1| G["Look up the leader and assume profile, instructions, style, rules, and context"]
+    F -->|No: case 2| H["Read the team, create and link suitable leadership; assume profile"]
+    G --> I["Read team, boards, and backlog; look up own and collaborators' tasks on any board"]
     H --> I
-    I --> J["Reconstruir concluído, em andamento, interrompido e pendências"]
-    J --> X["Apresentar resumo curto: colaboradores, boards, tarefas em andamento, bloqueios e lacunas"]
-    X --> K["Resolver board adequado autorizado; após confirmação, mostrar board sem interromper edição"]
-    E -->|Novo: caso 3| L["Entender contexto inicial; sem cadastros ainda, coletar o necessário sem circularidade"]
-    L --> M["Propor composição sucinta com líder e perfis funcionais: execução e responsabilidades"]
-    M --> N{"Usuário revisa e aprova?"}
-    N -->|Alterar ou rejeitar| O["Rever composição e perfis com o usuário"]
-    N -->|Aprovar| P["Preparar Leader/time; novos Collaborators cadastram-se nos próprios chats"]
+    I --> J["Reconstruct completed, ongoing, interrupted, and pending work"]
+    J --> X["Present a short summary: collaborators, boards, ongoing tasks, blockers, and gaps"]
+    X --> K["Resolve a suitable authorized board; after confirmation, show board without interrupting editing"]
+    E -->|New: case 3| L["Understand initial context; without registrations yet, collect what is needed without circularity"]
+    L --> M["Propose concise composition with leader and functional profiles: execution and responsibilities"]
+    M --> N{"Does the user review and approve?"}
+    N -->|Change or reject| O["Review composition and profiles with the user"]
+    N -->|Approve| P["Prepare Leader/team; new Collaborators register themselves in their own chats"]
     P --> K
-    K --> PLAN["Reutilizar tarefa de planejamento ou criar coordenação atribuída ao Leader; materializar contexto inicial"]
-    PLAN --> PERSIST["Confirmar task antes de planejar; mostrar página inteira se possível; persistir descrição, specification, plano e síntese na conversa"]
-    PERSIST --> Q["Buscar candidatos por nomes e referências disponíveis; consultar contexto quando permitido"]
-    Q --> S{"Há candidatos para reutilizar?"}
-    S -->|Sim| T["Proposta conjunta: perguntar continuar nos candidatos ou criar novos"]
-    T --> U["Aplicar escolhas do usuário; reutilizar ou criar conforme autorização"]
-    S -->|Não| U
-    U --> W["Bootstrap no chat: usar Collaborator; identificar/criar/configurar perfil e vínculo autorizados"]
-    W --> Y{"Retorno com nome, UUIDs e prontidão verificado?"}
-    Y -->|Pendente| Z["Declarar pendência; recuperar só etapa faltante conforme detalhamento"]
-    Y -->|Sim| TASK{"Há task registrada e atribuída para executar?"}
-    TASK -->|Não| WAIT["Após prontidão, Leader registra e atribui; Collaborator aguarda notificação com commentID"]
-    TASK -->|Sim| WORK["Informar task/contexto; receber compreensão/pendências; exigir início e IDs confirmados antes do trabalho"]
+    K --> PLAN["Reuse planning task or create coordination assigned to Leader; materialize initial context"]
+    PLAN --> PERSIST["Confirm task before planning; show full page if possible; persist description, specification, plan, and synthesis during the conversation"]
+    PERSIST --> Q["Find candidates by available names and references; consult context when permitted"]
+    Q --> S{"Are there candidates to reuse?"}
+    S -->|Yes| T["Combined proposal: ask whether to continue in candidates or create new chats"]
+    T --> U["Apply user choices; reuse or create as authorized"]
+    S -->|No| U
+    U --> W["Bootstrap in chat: use Collaborator; identify/create/configure authorized profile and membership"]
+    W --> Y{"Response with name, UUIDs, and readiness verified?"}
+    Y -->|Pending| Z["Declare pending item; recover only the missing step as detailed"]
+    Y -->|Yes| TASK{"Is there a registered and assigned task to execute?"}
+    TASK -->|No| WAIT["After readiness, Leader registers and assigns; Collaborator awaits notification with commentID"]
+    TASK -->|Yes| WORK["Provide task/context; receive understanding/pending items; require confirmed start and IDs before work"]
     WORK --> R
-    R["Pronto para continuidade de gestão; próxima tarefa, retomada e gestão contínua: a detalhar"]
+    R["Ready to continue management; next task, resumption, and ongoing management: to be detailed"]
 ```
 
-O diagrama principal não tem ciclos: inicia pela ativação da skill no chat. Revisões de proposta e recuperação retomam somente a etapa necessária, conforme o detalhamento abaixo, sem repetir cadastros.
+The main diagram has no cycles: it starts with skill activation in the chat. Proposal revisions and recovery resume only the necessary step, as detailed below, without repeating registrations.
 
-### Detalhamento — recuperação e retorno do Collaborator
+### Details — Collaborator recovery and response
 
 ```mermaid
 flowchart TD
-    PENDENCIA["Proposta a ajustar ou etapa de handoff pendente"] --> RECUPERAR["Rever só proposta ou etapa faltante; preservar agentes, time e chats"]
-    RECUPERAR --> CONFIRMAR{"Escolhas e confirmações obtidas?"}
-    CONFIRMAR -->|Não| PENDENCIA
-    CONFIRMAR -->|Sim| CONTINUAR["Revalidar task registrada e atribuída antes de pedir execução"]
-    RESULTADO["Collaborator salva na task progresso, síntese, comentários e resultado pertinentes"] --> SALVO{"Persistência confirmada?"}
-    SALVO -->|Sim| AVISO["Comunicar ao Leader bloqueio, decisão necessária ou encerramento"]
-    SALVO -->|Não| FALHA["Informar falha de persistência e suspender trabalho dependente; não alegar salvo"]
-    AVISO --> CANAL{"Comunicação confirmada?"}
-    CANAL -->|Não| SEMCANAL["Declarar envio pendente, sem fingir mensagem"]
-    CANAL -->|Sim| LEITURA["Leader consulta registros atuais; gestão futura conforme orientação"]
+    PENDENCIA["Proposal to adjust or pending handoff step"] --> RECUPERAR["Review only proposal or missing step; preserve agents, team, and chats"]
+    RECUPERAR --> CONFIRMAR{"Choices and confirmations obtained?"}
+    CONFIRMAR -->|No| PENDENCIA
+    CONFIRMAR -->|Yes| CONTINUAR["Revalidate registered and assigned task before requesting execution"]
+    RESULTADO["Collaborator saves relevant progress, synthesis, comments, and result in the task"] --> SALVO{"Persistence confirmed?"}
+    SALVO -->|Yes| AVISO["Communicate blocker, required decision, or closure to Leader"]
+    SALVO -->|No| FALHA["Report persistence failure and suspend dependent work; do not claim saved"]
+    AVISO --> CANAL{"Communication confirmed?"}
+    CANAL -->|No| SEMCANAL["Declare sending pending without pretending a message was sent"]
+    CANAL -->|Yes| LEITURA["Leader consults current records; future management according to guidance"]
 ```
 
-A escolha na interface não é recebida automaticamente pelo chat. Squad com competências completas não habilita execução automática: preservar modos de boards/tasks. Projeto é a demanda, não uma entidade Project/workspace. Geração de avatar e demais mecanismos dependem das capacidades reais do harness e serão detalhados.
+The interface choice is not automatically received by the chat. A squad with complete skills coverage does not enable automatic execution: preserve board/task modes. The project is the work request, not a Project/workspace entity. Avatar generation and other mechanisms depend on actual harness capabilities and will be detailed.
 
-Referência operacional das skills locais. O conteúdo orienta o agente; não comprova enforcement pela API nem publicação do snapshot MCP. Nenhuma task, time ou chat é criado apenas por ler esta referência.
+Operational reference for local skills. The content guides the agent; it does not prove API enforcement or publication of the MCP snapshot. No task, team, or chat is created merely by reading this reference.
 
 
-## Entrada comum aos três casos
+## Entry common to all three cases
 
-O usuário inicia um chat mencionando a skill Leader. O agente cumprimenta brevemente, verifica ou prepara o acesso local quando necessário, reutilizando serviços saudáveis, e abre o aplicativo na tela **Teams**, rota `/teams`. Descobre o endereço da instalação; no ambiente atual, o endereço esperado é `http://127.0.0.1:5173/teams`, não um endereço universal. A abertura depende do navegador disponível no harness; se não puder abrir, informa a limitação e entrega o link correto, sem alegar que abriu a tela.
+The user starts a chat mentioning the Leader skill. The agent greets briefly, checks or prepares local access when needed, reusing healthy services, and opens the application on the **Teams** screen, route `/teams`. Discover the installation address; in the current environment, the expected address is `http://127.0.0.1:5173/teams`, not a universal address. Opening depends on the browser available in the harness; if unable to open it, explain the limitation and provide the correct link without claiming the screen was opened.
 
-Pede ao usuário escolher um time existente ou criar um time. O usuário faz a escolha na interface e informa no chat qual foi sua escolha. Não existe, nesta especificação, garantia de que um evento da interface chegue automaticamente ao agente. Não interpretar apenas abertura, clique ou estado anterior da tela como comunicação da escolha. Se o usuário já informou explicitamente a escolha no contexto do chat, utilizá-la sem repetir a pergunta.
+Ask the user to choose an existing team or create a team. The user makes the choice in the interface and reports their choice in the chat. This specification does not guarantee that an interface event automatically reaches the agent. Do not interpret opening, clicking, or the screen's previous state alone as communication of the choice. If the user has already explicitly stated the choice in the chat context, use it without repeating the question.
 
-Conferências técnicas de conexão MCP, API, banco e painel dão suporte à conversa, sem substituir a escolha por um checklist técnico. Servidor acessível, conexão configurada e ferramentas expostas no chat são verificações distintas. Em indisponibilidade, informar o impedimento, preservar dados e continuar somente conversa ou atividades independentes possíveis; não inventar consultas ou persistência.
+Technical checks of MCP connection, API, database, and panel support the conversation without replacing the choice with a technical checklist. Reachable server, configured connection, and tools exposed in the chat are separate checks. If unavailable, report the impediment, preserve data, and continue only possible conversation or independent activities; do not invent queries or persistence.
 
-## Planejamento do Leader também é trabalho registrado
+## Leader planning is also recorded work
 
-Após assumir identidade e time, consultar boards, backlog e tarefas existentes, incluindo atribuições da própria Leader e dos colaboradores. Escolher/reutilizar um board adequado à demanda ou criar um quando necessário dentro da solicitação autorizada. Não transferir gestão de board alheio implicitamente. Conferir IDs reais de board, status e agentes antes de escrever.
+After assuming identity and team, consult boards, backlog, and existing tasks, including the Leader's own assignments and those of collaborators. Choose/reuse a board suitable for the request or create one when necessary within the authorized request. Do not implicitly transfer management of someone else's board. Check actual board, status, and agent IDs before writing.
 
-Antes do trabalho substantivo de planejamento, reutilizar a task de planejamento/coordenação pertinente ou criar uma inicial, como “Planejar projeto e montar time”, atribuída à própria Leader. Usar autor e executor reais conforme contrato, nunca inventar identidade. Essa criação é permitida ao Leader dentro da solicitação do usuário, sem criar uma etapa artificial de aprovação quando a autorização já a cobre. Não duplicar tarefa só porque mudou o chat ou porque o backlog está vazio.
+Before substantive planning work, reuse the relevant planning/coordination task or create an initial one, such as “Plan project and assemble team”, assigned to the Leader itself. Use actual author and executor according to the contract; never invent identity. The Leader is allowed to create this within the user's request, without creating an artificial approval step when authorization already covers it. Do not duplicate a task just because the chat changed or the backlog is empty.
 
-Registrar incrementalmente as decisões da conversa nessa mesma task: description da demanda, specification do que entregar/aceitar, plano com revisões do como, comentários de mudanças e currentSummary cumulativo feito/em curso/pendente. Não deixar decisões apenas no chat enquanto afirma atualizar um plano. Usar status reais do board: backlog enquanto o trabalho não começou; em andamento quando efetivamente planeja. Se faltar status adequado, tratar a lacuna sem inventar ID ou nome obrigatório. Confirmação de composição do time e escolha agrupada de chats continuam exigidas; registrar planejamento não aprova propostas por si só.
+Incrementally record the conversation's decisions in that same task: description of the request, specification of what to deliver/accept, a plan with revisions of how to do it, change comments, and cumulative currentSummary of done/ongoing/pending work. Do not leave decisions only in the chat while claiming to update a plan. Use actual board statuses: backlog while work has not started; in progress when actually planning. If a suitable status is missing, address the gap without inventing an ID or mandatory name. Team composition confirmation and the grouped chat choice remain required; recording planning does not approve proposals by itself.
 
-Cumprimentar, escolher time e consultar cadastro não exigem tasks artificiais. Se o time for novo e identidade/time/board ainda não existirem, coletar o contexto inicial necessário e resolver cadastros conforme aprovações já previstas, sem exigir um registro impossível nem interromper toda conversa por burocracia. Assim que os pré-requisitos existirem, materializar o contexto já coletado numa task de coordenação e seguir nela antes de avançar no planejamento substantivo. O contexto coletado antes disso está pendente de registro, não salvo.
+Greeting, choosing a team, and consulting registration do not require artificial tasks. If the team is new and identity/team/board do not yet exist, collect the necessary initial context and resolve registrations according to the approvals already established, without requiring an impossible record or interrupting all conversation with bureaucracy. As soon as prerequisites exist, materialize the context already collected in a coordination task and continue in it before advancing substantive planning. Context collected before that is pending recording, not saved.
 
-Só afirmar “salvo” ou “plano atualizado no Bee Team” após confirmação da persistência. Em erro, explicar o que não foi confirmado, suspender trabalho dependente do registro e reconciliar somente a etapa faltante, preservando cadastros existentes. Atualizar plano em ferramenta do harness ou na conversa não equivale a salvar plan.content/revisão no Bee Team.
+Only claim “saved” or “plan updated in Bee Team” after persistence is confirmed. On error, explain what was not confirmed, suspend work dependent on the record, and reconcile only the missing step, preserving existing registrations. Updating a plan in a harness tool or in the conversation is not equivalent to saving plan.content/revision in Bee Team.
 
-**Distinção de papéis:** o Leader pode criar essa tarefa inicial de coordenação dentro da solicitação do usuário. O Collaborator não pode criar task para se autoautorizar: só executa task já registrada/atribuída e só cria/desdobra quando isso estiver no escopo atribuído.
+**Role distinction:** the Leader may create this initial coordination task within the user's request. The Collaborator cannot create a task to authorize itself: it only executes an already registered/assigned task and only creates/decomposes when that is within the assigned scope.
 
-## Caso 1 — Time existente com líder
+## Case 1 — Existing team with a leader
 
-Após receber a escolha no chat, consultar o time e identificar seu agente líder. Carregar o perfil único desse agente, seus dados, instruções, estilo, regras, limites e contexto, assumindo essa identidade funcional nesta sessão. Não criar outro líder nem sobrescrever perfil ou associação para adequá-los ao chat.
+After receiving the choice in the chat, consult the team and identify its leader agent. Load that agent's single profile, data, instructions, style, rules, limits, and context, assuming that functional identity in this session. Do not create another leader or overwrite a profile or association to fit the chat.
 
-Ler descrição e contexto do time, colaboradores e boards sob sua gestão. Consultar também tarefas atribuídas aos colaboradores por executor ID em qualquer board, incluindo subtasks, sem limitar a busca aos boards do time. Uma atribuição em outro board não dá ao time propriedade ou gestão desse board. Consultar histórico, progresso, pendências e bloqueios para reconstruir o que foi concluído, o que está em andamento e o que foi interrompido. Diferenciar registros históricos de atividade confirmada agora; apresentar lacunas sem inventar continuidade.
+Read the team's description and context, collaborators, and boards under its management. Also query tasks assigned to collaborators by executor ID on any board, including subtasks, without limiting the search to the team's boards. An assignment on another board does not give the team ownership or management of that board. Consult history, progress, pending items, and blockers to reconstruct what was completed, what is ongoing, and what was interrupted. Distinguish historical records from activity confirmed now; present gaps without inventing continuity.
 
-Após contextualizar e antes de agir, apresentar um resumo curto dos colaboradores, boards, tarefas em andamento, bloqueios e lacunas, distinguindo concluído e interrompido quando relevante. O resultado é um líder contextualizado, pronto para continuar a gestão com o usuário. A política para escolher a próxima tarefa, retomar atividades interrompidas, distribuir trabalho ou manter gestão contínua será detalhada depois. Este documento não escolhe automaticamente uma tarefa nem autoriza execução só por carregar o contexto.
+After gathering context and before acting, present a short summary of collaborators, boards, ongoing tasks, blockers, and gaps, distinguishing completed and interrupted work when relevant. The result is a leader with context, ready to continue management with the user. The policy for choosing the next task, resuming interrupted activities, distributing work, or maintaining ongoing management will be detailed later. This document does not automatically choose a task or authorize execution merely by loading context.
 
-## Caso 2 — Time escolhido sem líder
+## Case 2 — Selected team without a leader
 
-Consultar primeiro as informações do time escolhido. Criar liderança por meio de um agente adequado a esse time e assumir seu perfil nesta sessão. Essa criação é parte do fluxo aprovado pelo usuário: substitui a regra anterior de apenas parar e perguntar genericamente o que fazer quando o time não tem líder. Não exigir uma nova pergunta genérica exclusivamente pela ausência do líder.
+First consult the selected team's information. Create leadership through an agent suitable for that team and assume its profile in this session. This creation is part of the user-approved flow: it replaces the previous rule of merely stopping and asking generically what to do when the team has no leader. Do not require a new generic question solely because the leader is absent.
 
-A criação deve usar informações reais do time e respeitar os contratos e vínculos válidos. Se faltar um dado obrigatório ou houver uma inconsistência diferente da simples ausência de líder, esclarecer especificamente essa lacuna; não inventar requisitos, identidade persistida ou sucesso de cadastro. Detalhes de como derivar e revisar o perfil desse líder serão refinados posteriormente.
+Creation must use actual team information and respect valid contracts and memberships. If a required datum is missing or there is an inconsistency other than the mere absence of a leader, clarify that specific gap; do not invent requirements, persisted identity, or successful registration. Details of how to derive and review this leader's profile will be refined later.
 
-Depois de estabelecer a liderança, conhecer membros, boards, tarefas e situação atual com a mesma leitura contextual do caso 1, incluindo atribuições dos colaboradores em qualquer board. Se faltar estrutura para o trabalho, preparar board/task de coordenação conforme a regra acima e registrar nela a conversa e proposta do próximo passo adequado: criar board, assumir ou transferir a gestão de um board existente quando autorizado, organizar tarefas ou colaboradores.
+After establishing leadership, learn about members, boards, tasks, and current state using the same contextual reading as case 1, including collaborator assignments on any board. If the work lacks structure, prepare a board/coordination task according to the rule above and record the conversation and proposal for the appropriate next step in it: create a board, assume or transfer management of an existing board when authorized, organize tasks or collaborators.
 
-A criação da liderança não concede autorização irrestrita para transferir gestão, mover dados, modificar perfis existentes ou executar tarefas. Propostas de estrutura e suas autorizações devem ser concretas; sequência e política de gestão posterior permanecem em aberto.
+Creating leadership does not grant unrestricted authorization to transfer management, move data, modify existing profiles, or execute tasks. Structure proposals and their authorizations must be concrete; the sequence and policy for subsequent management remain open.
 
-## Caso 3 — Criar novo time
+## Case 3 — Create a new team
 
-Na entrada de time novo, aproveite contexto já fornecido pelo usuário. Sem task/identidade suficiente, aguarde configuração; não use a antiga exceção de inicialização para abrir diálogo alternativo. Quando houver task válida, registre perguntas/opções e contexto nela e use notificação com commentID. Projeto significa a demanda discutida, não entidade Project ou workspace. Materialize contexto na task própria da Leader assim que os pré-requisitos autorizados existirem.
+When entering with a new team, use context already provided by the user. Without sufficient task/identity, wait for configuration; do not use the old initialization exception to open an alternative dialogue. When a valid task exists, record questions/options and context in it and use a notification with commentID. Project means the work request being discussed, not a Project or workspace entity. Materialize context in the Leader's own task as soon as the authorized prerequisites exist.
 
-A LLM decide naturalmente se usa ferramentas ou skills auxiliares disponíveis que julgue úteis, como brainstorming, assim como em qualquer projeto. Esse apoio é opcional, não uma etapa do fluxo nem uma escolha que o Leader deva impor ao usuário. Não pedir ao usuário que selecione uma skill nem bloquear a descoberta aguardando isso. O usuário pode sugerir uma espontaneamente; a conversa continua centrada no projeto e nos objetivos. O fluxo é portável e não pressupõe Codex, plugins ou ferramentas ausentes.
+The LLM naturally decides whether to use available auxiliary tools or skills it considers useful, such as brainstorming, as with any project. This support is optional, not a flow step or a choice the Leader must impose on the user. Do not ask the user to select a skill or block discovery while waiting for it. The user may spontaneously suggest one; the conversation remains focused on the project and objectives. The flow is portable and does not assume Codex, plugins, or absent tools.
 
-Somente com compreensão clara da demanda, propor um squad multidisciplinar suficiente para as necessidades do projeto. A composição não se limita a desenvolvimento: pode incluir backend e frontend, ou finanças, pricing e marketing, entre outras especialidades pertinentes. Dimensionar a equipe pelo trabalho, sem impor uma lista fixa de perfis.
+Only with a clear understanding of the request, propose a multidisciplinary squad sufficient for the project's needs. Composition is not limited to development: it may include backend and frontend, or finance, pricing, and marketing, among other relevant specialties. Size the team according to the work without imposing a fixed list of profiles.
 
-Definir perfis funcionais, inclusive o líder, centrados em execução e responsabilidade: escopo, descrição da atuação, especialidade, responsabilidades, instruções, estilo de trabalho e regras úteis ao projeto. Não criar personagens ou biografias fictícias com idade, juventude, história pessoal ou personalidade ornamental. Nome e avatar permanecem elementos de identificação, sem longa discussão nem aprovação individual obrigatória. Indicar identidades a reutilizar ou criar, respeitando vínculos e perfil único. Geração e armazenamento do avatar dependem de mecanismos a detalhar e das capacidades reais do harness.
+Define functional profiles, including the leader, centered on execution and responsibility: scope, description of the role, specialty, responsibilities, instructions, working style, and rules useful to the project. Do not create characters or fictional biographies with age, youth, personal history, or ornamental personality. Name and avatar remain identifying elements, without lengthy discussion or mandatory individual approval. Indicate identities to reuse or create, respecting memberships and the single profile. Avatar generation and storage depend on mechanisms to be detailed and actual harness capabilities.
 
-Apresentar a composição de forma sucinta, fluida e direta por padrão. Aprofundar um perfil individual somente se o usuário pedir ou um requisito essencial realmente exigir; não prolongar a entrevista para preencher detalhes ornamentais. Uma aprovação objetiva da composição é suficiente, sem exigir aprovações separadas por agente ou campo. O usuário pode alterar, rejeitar ou aprovar; incorporar mudanças e obter aprovação da proposta resultante antes de cadastrar agentes, time e vínculos. A intenção de criar um time ou o silêncio não aprovam uma composição indefinida. Essa aprovação é requisito explícito, independente de modos automáticos de tarefas ou boards.
+Present composition concisely, fluently, and directly by default. Explore an individual profile further only if the user asks or an essential requirement actually demands it; do not prolong the interview to fill ornamental details. One clear approval of the composition is sufficient, without requiring separate approvals per agent or field. The user may change, reject, or approve; incorporate changes and obtain approval of the resulting proposal before registering agents, team, and memberships. Intent to create a team or silence does not approve an undefined composition. This approval is an explicit requirement, independent of automatic task or board modes.
 
-Exemplo compacto: “Eu lidero a coordenação. Backend: backend e infraestrutura; Frontend: interface; QA: testes. Criaremos chats separados para esse trabalho. Posso prosseguir?”. Nomes e avatares identificam os agentes, sem transformar essa proposta em uma discussão de biografias.
+Compact example: “I lead coordination. Backend: backend and infrastructure; Frontend: interface; QA: testing. We will create separate chats for this work. May I proceed?”. Names and avatars identify agents without turning this proposal into a discussion of biographies.
 
-Depois da aprovação aplicável, preparar a identidade da Leader e o time; para cada novo Collaborator, criar primeiro o chat e pedir que ele próprio identifique/crie/configure seu perfil e vínculo, conforme a etapa comum abaixo. Não pré-cadastrar colaboradores em nome deles. Para um time novo, criar ou reutilizar chats separados dos colaboradores, identificando os escolhidos na coordenação do chat atual do líder; a aprovação concreta da proposta pode incluir essa criação. Não solicitar novamente permissão para ações já cobertas pela autorização vigente.
+After applicable approval, prepare the Leader's identity and the team; for each new Collaborator, first create the chat and ask it to identify/create/configure its own profile and membership, according to the common step below. Do not pre-register collaborators on their behalf. For a new team, create or reuse separate collaborator chats, identifying the selected ones in coordination within the leader's current chat; concrete approval of the proposal may include this creation. Do not ask permission again for actions already covered by current authorization.
 
-Squad autônomo significa cobertura de competências para realizar o projeto. Não ativa execução automática: continuam valendo os modos e o contexto de origem de boards/tasks, além das permissões para ações externas. Formação do time, criação de chats e início do trabalho são fatos distintos a confirmar.
+An autonomous squad means coverage of the skills needed to carry out the project. It does not activate automatic execution: board/task modes and origin context remain applicable, as do permissions for external actions. Team formation, chat creation, and starting work are distinct facts to confirm.
 
-## Etapa comum aos três casos — Criar ou reutilizar/apropriar chat
+## Step common to all three cases — Create or reuse/take over a chat
 
-Após contextualizar um time existente, com ou sem líder anterior, ou formar um time novo, procurar chats existentes por nome igual, próximo ou parecido com o do colaborador. Aproveitar relações e referências já disponibilizadas pelo harness/LLM na coordenação, sem prometer capacidades inexistentes. Quando ferramentas e permissões permitirem, consultar em leitura um candidato mesmo que não esteja associado à coordenação atual: verificar contexto, sinais de uso da skill Collaborator, perfil e trabalho correspondente. Essa consulta pode preceder a escolha. Nome parecido e menção à skill são evidências candidatas, não prova absoluta de identidade; referência antiga também não comprova disponibilidade. Se houver ambiguidade ou falta de acesso, sinalizar objetivamente e oferecer novo chat sem afirmar que o anterior foi apagado.
+After contextualizing an existing team, with or without a previous leader, or forming a new team, search for existing chats with the same, close, or similar name as the collaborator. Use relationships and references already provided by the harness/LLM in coordination, without promising nonexistent capabilities. When tools and permissions allow, read a candidate even if it is not associated with current coordination: check context, signs of Collaborator skill use, profile, and corresponding work. This consultation may precede the choice. A similar name and mention of the skill are candidate evidence, not absolute proof of identity; an old reference does not prove availability either. If there is ambiguity or lack of access, state it objectively and offer a new chat without claiming the previous one was deleted.
 
-Reunir candidatos numa única proposta e obter escolha explícita sobre continuar ou criar novo. Quando já há task, registrar proposta/opções no comentário e avisar o humano só pelos metadados, sem caixa interativa nem perguntas repetidas por agente. Aguardar resposta autorizada e persistir a escolha antes de agir. Não reutilizar automaticamente, mesmo em modo automático: essa escolha foi solicitada explicitamente. Não enviar mensagem de tomada de controle ou instruções a um chat ainda não escolhido. Se o usuário aprovar a reutilização, usar o chat escolhido; se preferir outro, criar o novo conforme autorização e fornecer perfil funcional e contexto do colaborador. Se não houver chat, criar conforme autorização aplicável. Uma escolha já respondida não precisa ser perguntada novamente.
+Gather candidates into a single proposal and obtain an explicit choice about continuing or creating a new chat. When a task already exists, record the proposal/options in the comment and notify the human only through metadata, without an interactive dialog or repeated questions per agent. Wait for an authorized response and persist the choice before acting. Do not reuse automatically, even in automatic mode: this choice was explicitly requested. Do not send a takeover message or instructions to a chat that has not yet been chosen. If the user approves reuse, use the chosen chat; if they prefer another, create the new one as authorized and provide the collaborator's functional profile and context. If no chat exists, create according to applicable authorization. A choice already answered does not need to be asked again.
 
-Na criação autorizada, Leader usa 🐝 e o nome do colaborador como base legível; o complemento útil tem formato livre. Em chat existente, o próprio Collaborator normaliza o título ao assumir a skill; Leader não renomeia o chat alheio. Somente título do chat muda, não nome ou identidade do colaborador. Recriar chat não duplica agente nem apaga autoria, tarefas ou histórico. Preparar esses registros na tarefa: perfil funcional referenciado, contexto, plano, specification, currentSummary, pendências e limites; notificar somente task, áreas efetivamente atualizadas, status pertinente e commentID retornado; não alegar recuperação integral de conversa inexistente.
+During authorized creation, the Leader uses 🐝 and the collaborator's name as a readable base; useful additional context has a free format. In an existing chat, the Collaborator itself normalizes the title when assuming the skill; the Leader does not rename someone else's chat. Only the chat title changes, not the collaborator's name or identity. Recreating a chat does not duplicate the agent or erase authorship, tasks, or history. Prepare these records in the task: referenced functional profile, context, plan, specification, currentSummary, pending items, and limits; notify only task, areas actually updated, relevant status, and returned commentID; do not claim full recovery of a nonexistent conversation.
 
-Para time novo, a aprovação da composição pode incluir a criação dos chats explicitados na proposta. Para existentes, seguir modo, autorizações vigentes e exigências do harness, sem repetir pedidos já cobertos; isso não elimina a escolha explícita entre continuar no candidato encontrado ou criar outro. Esta documentação não solicita criação de chats reais agora.
+For a new team, composition approval may include creation of the chats specified in the proposal. For existing teams, follow mode, current authorizations, and harness requirements without repeating requests already covered; this does not eliminate the explicit choice between continuing in the candidate found or creating another. Create chats only within the session's actual request and authorization.
 
-A coordenação atual precisa saber qual chat foi escolhido para cada colaborador e que o chat atual desempenha o papel do líder. Decisão aprovada: NÃO construir vínculo persistente adicional chat–colaborador no Bee Team nesta fase. Aproveitar somente relações e referências que o harness/LLM já disponibilize para coordenar as sessões reais, sem exigir novo mapeamento em banco ou cadastro extra de IDs. Não inventar relação nativa pai/filho nem presumir que todas as ferramentas mantenham os mesmos vínculos.
+Current coordination needs to know which chat was chosen for each collaborator and that the current chat plays the leader role. Approved decision: do NOT build an additional persistent chat–collaborator link in Bee Team at this stage. Use only relationships and references the harness/LLM already provides to coordinate actual sessions, without requiring a new database mapping or extra ID registration. Do not invent a native parent/child relationship or assume all tools maintain the same links.
 
-No handoff ao chat escolhido, explicitar uso da skill Collaborator, identidade existente ou autorização explícita para cadastrar novo colaborador como fallback, time, referência da task quando existir, referências persistidas do contexto de execução do board de origem; fora do bootstrap inicial de novo chat Collaborator e de seu retorno de configuração, notificação restrita a task, áreas efetivamente atualizadas, status pertinente e commentID retornado. Usar dados persistidos como fonte, sem inventar IDs ou substituir registro por mensagem.
+In the handoff to the chosen chat, explicitly state use of the Collaborator skill, existing identity or explicit authorization to register a new collaborator as fallback, team, task reference when available, and persisted references for the origin board's execution context; outside the initial bootstrap of a new Collaborator chat and its configuration response, notifications are restricted to task, areas actually updated, relevant status, and returned commentID. Use persisted data as the source, without inventing IDs or replacing records with messages.
 
-Separar duas confirmações observáveis: primeiro retorno do nome real, agentId/teamId e prontidão após configurar e verificar cadastro/vínculo; depois compreensão da task realmente atribuída e pendências. Criar chat ou confirmar identidade não autoriza trabalho. Sem task registrada e atribuída, o colaborador retorna a configuração no bootstrap e aguarda; o Leader registra e atribui antes de solicitar execução. Pedido direto humano ou Leader não substitui esse requisito. Criar/desdobrar tasks pelo colaborador só cabe no escopo de uma task já atribuída, nunca para se autoautorizar. Sem resposta observável, declarar confirmação pendente, sem inventar aceite. Em falha parcial, retomar apenas a etapa faltante e preservar agentes, times, vínculos de equipe e chats já criados; não repetir cadastros nem recriar sessões válidas. Se faltar contexto, complementar o handoff existente.
+Separate two observable confirmations: first, the response with real name, agentId/teamId, and readiness after configuring and verifying registration/membership; then, understanding of the actually assigned task and pending items. Creating a chat or confirming identity does not authorize work. Without a registered and assigned task, the collaborator returns configuration during bootstrap and waits; the Leader registers and assigns before requesting execution. A direct human or Leader request does not replace this requirement. A collaborator may create/decompose tasks only within the scope of an already assigned task, never to authorize itself. Without an observable response, declare confirmation pending without inventing acceptance. On partial failure, resume only the missing step and preserve agents, teams, team memberships, and chats already created; do not repeat registrations or recreate valid sessions. If context is missing, supplement the existing handoff.
 
-Se faltarem ferramentas para consultar, criar ou acessar chats, informar a etapa pendente e fornecer handoff para abertura pelo mecanismo disponível. Não tratar subagente temporário como chat persistente nem afirmar comunicação entre sessões sem capacidade confirmada. A política de próxima tarefa e gestão contínua continua em aberto.
+If tools to query, create, or access chats are missing, report the pending step and provide a handoff for opening through the available mechanism. Do not treat a temporary subagent as a persistent chat or claim cross-session communication without confirmed capability. The next-task and ongoing-management policy remains open.
 
-### Exemplo curto de handoff e retorno
+### Short handoff and response example
 
-Ativação sem demanda: “Use a skill bee-team-collaborator neste chat; identifique/crie/configure seu perfil e vínculo no time dentro da autorização recebida, reutilizando cadastro existente. Retorne seu NOME real com agentId, teamId e readiness após confirmar persistência; aguarde atribuição.” Notificação de trabalho, somente após registro e atribuição confirmados: “Task <referência real>; atualizado: atribuição, comentário; commentID: <ID retornado>.” Os marcadores são substituídos por referências retornadas, não enviados como IDs fictícios. O destinatário lê a tarefa, registra compreensão/pendências e segue o escopo e autonomia persistidos. Fallback novo exige autorização explícita de identidade/time/papel; não contém instruções de negócio.
+Activation without a work request: “Use the bee-team-collaborator skill in this chat; identify/create/configure your profile and team membership within the received authorization, reusing existing registration. Return your real NAME with agentId, teamId, and readiness after confirming persistence; await assignment.” Work notification, only after confirmed registration and assignment: “Task <actual reference>; updated: assignment, comment; commentID: <returned ID>.” Placeholders are replaced with returned references, not sent as fictitious IDs. The recipient reads the task, records understanding/pending items, and follows the persisted scope and autonomy. A new fallback requires explicit identity/team/role authorization; it contains no business instructions.
 
-No retorno, o Collaborator salva primeiro na task progresso, currentSummary, comentários e resultado pertinentes, confirma persistência e só então comunica bloqueio, decisão necessária ou encerramento ao Leader. Se a gravação falhar, comunica essa falha como registro não confirmado e suspende trabalho dependente. Sem canal de comunicação, declara envio pendente; o Leader consulta os registros disponíveis. Não fingir envio nem definir aqui uma nova política de gestão contínua.
+In the response, the Collaborator first saves relevant progress, currentSummary, comments, and result in the task, confirms persistence, and only then communicates a blocker, required decision, or closure to the Leader. If writing fails, communicate that failure as an unconfirmed record and suspend dependent work. Without a communication channel, declare sending pending; the Leader consults available records. Do not pretend to send or define a new ongoing-management policy here.
 
-## Modelo e limites preservados
+## Preserved model and limits
 
-- Boards têm um time gestor; a autoria do board é preservada. Transferir gestão exige autorização e operação compatível com o contrato.
-- Tasks têm board, autor e executor; não introduzir `teamId` ou propriedade de task por time. A leitura de tarefas relacionadas deve considerar essas relações, sem assumir que todos os executores pertencem ao time gestor do board.
-- Subtasks são recursivas e podem atravessar boards e executores. Preservar contexto de origem e regras de autonomia; não atribuir gestão de outro board implicitamente pela relação pai/filho.
-- Agente tem perfil único e pode liderar no máximo um time e colaborar em no máximo um time, em times diferentes. Não duplicar identidade para contornar vínculos.
-- Ausência de líder no caso 2 tem encaminhamento aprovado próprio. Identidade ambígua, conflito de vínculo ou falha de persistência continuam exigindo tratamento explícito, sem substituição silenciosa.
-- Não configurar credenciais, mudar políticas, contornar recusa de ferramenta ou reiniciar serviços saudáveis como consequência automática da abertura da conversa.
+- Boards have a managing team; board authorship is preserved. Transferring management requires authorization and an operation compatible with the contract.
+- Tasks have a board, author, and executor; do not introduce `teamId` or team ownership of tasks. Reading related tasks must consider these relationships without assuming all executors belong to the board's managing team.
+- Subtasks are recursive and may cross boards and executors. Preserve origin context and autonomy rules; do not implicitly assign management of another board through the parent/child relationship.
+- An agent has a single profile and may lead at most one team and collaborate in at most one team, in different teams. Do not duplicate identity to bypass memberships.
+- A missing leader in case 2 has its own approved handling. Ambiguous identity, membership conflict, or persistence failure still require explicit handling without silent replacement.
+- Do not configure credentials, change policies, bypass tool refusal, or restart healthy services as an automatic consequence of opening the conversation.
 
-## Transições e critérios de aceite textual
+## Transitions and textual acceptance criteria
 
-| Estado/entrada | Transição esperada | Critério de aceite |
+| State/input | Expected transition | Acceptance criterion |
 |---|---|---|
-| Chat inicia com Leader | Cumprimentar, preparar acesso necessário e abrir Teams | Endereço descoberto; tela `/teams` aberta ou limitação declarada com link; pergunta de escolha compreensível. |
-| Usuário escolhe apenas na interface | Aguardar informação no chat | Nenhuma escolha inferida como evento recebido automaticamente. |
-| Escolha já informada explicitamente | Resolver o time ou intenção de criação | Sem pergunta repetida; ambiguidades reais esclarecidas. |
-| Board/backlog vazio após identidade confirmada | Preparar board adequado e criar task de coordenação própria | Task real antes de planejamento substantivo; não planejar só no chat nem inventar author/executor/status. |
-| Planejamento já registrado | Reutilizar a task pertinente | Atualizações incrementais da mesma task, com plano versionado, comentários e síntese; sem duplicata por novo chat. |
-| Time novo sem cadastros | Coletar contexto necessário e resolver cadastros aprovados | Materializar na task assim que possível, sem circularidade; não alegar que o contexto já está salvo. |
-| Decisão de planejamento mudou | Atualizar campos/plano/histórico/síntese | Status real backlog antes do início e em andamento enquanto planeja; só afirmar salvo após confirmação. |
-| Time com líder | Carregar líder e contexto do time | Mesma identidade/perfil preservados; visão de concluído/em andamento/interrompido e lacunas; nenhuma próxima tarefa arbitrariamente iniciada. |
-| Time sem líder | Ler time, criar liderança adequada e assumir perfil | Ausência não gera parada genérica; criação confirmada antes de assumir identidade persistida; vínculos respeitados. |
-| Time sem estrutura suficiente | Conversar projeto e propor organização | Criar/transferir board ou organizar pessoas/tarefas não ocorre como autorização implícita irrestrita. |
-| Novo time solicitado | Descobrir demanda uma pergunta por vez | Nenhum cadastro antes de compreender projeto e aprovar proposta concreta. |
-| Compreensão suficiente | Propor composição sucinta e perfis funcionais | Inclui líder, execução e responsabilidades; nome/avatar identificam, sem biografias fictícias ou aprovação individual obrigatória. Uma aprovação objetiva basta; aprofundamento apenas a pedido ou por requisito essencial. |
-| Proposta alterada/rejeitada | Revisar e obter aprovação resultante | Nenhum cadastro da proposta rejeitada; silêncio não aprova. |
-| Proposta aprovada | Preparar Leader/time; criar chats e aguardar autocadastro/prontidão dos Collaborators | Aprovação pode incluir chats dos colaboradores; nenhum pedido de permissão repetido para ação já coberta. |
-| Qualquer caso contextualizado/formado | Procurar chats pelo nome do colaborador e conferir candidatos | Nome é base legível, não prova de identidade; referências disponíveis, existência e acesso são conferidos. |
-| Nenhum chat encontrado ou chat confirmado apagado | Criar conforme autorização vigente | Mesmo agente, autoria e histórico preservados; handoff com perfil, tarefas, plano, specification, currentSummary e pendências; sem persistência adicional do vínculo no Bee Team. |
-| Candidato encontrado, inclusive nome igual ou semelhante | Incluir na proposta conjunta continuar no candidato ou criar outro | Reutilizar somente após escolha explícita, mesmo no automático; consulta permitida pode preceder escolha, mas nenhuma instrução é enviada ao candidato não escolhido. |
-| Nome do chat precisa de ajuste | Novo chat autorizado já recebe 🐝; no existente, Collaborator ajusta ao assumir | Marca do papel obrigatória, complemento útil livre; identidade e registros preservados. |
-| Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
-| Contextualização concluída | Apresentar resumo curto antes de agir | Colaboradores, boards, tarefas em andamento, bloqueios e lacunas visíveis ao usuário. |
-| Handoff de inicialização | Confirmar identidade/perfil prontos | Uso de Collaborator e identidade/time explícitos; fallback novo autorizado; não autoriza trabalho sem task. |
-| Task registrada e atribuída | Confirmar compreensão e pendências | Referência real e contexto de origem conferidos; Leader registra/atribui antes de pedir execução. |
-| Retorno do Collaborator | Salvar na task antes de comunicar | Persistência e envio confirmados separadamente; falhas declaradas sem sucesso fictício. |
-| Retomada do Leader | Consultar atribuições dos colaboradores em qualquer board | Busca por executor ID não implica gestão dos boards alheios. |
-| Falha parcial | Retomar apenas etapa faltante | Agentes, times e chats já criados preservados, sem duplicação; pendências declaradas. |
-| Squad formado | Preparar continuidade de gestão | Competências completas não mudam autonomia de execução; política posterior ainda não definida. |
+| Chat starts with Leader | Greet, prepare necessary access, and open Teams | Address discovered; `/teams` screen opened or limitation declared with link; understandable choice question. |
+| User chooses only in the interface | Wait for information in the chat | No choice inferred as an automatically received event. |
+| Choice already explicitly stated | Resolve the team or creation intent | No repeated question; actual ambiguities clarified. |
+| Empty board/backlog after confirmed identity | Prepare suitable board and create own coordination task | Actual task before substantive planning; do not plan only in chat or invent author/executor/status. |
+| Planning already recorded | Reuse the relevant task | Incremental updates to the same task, with versioned plan, comments, and synthesis; no duplicate for a new chat. |
+| New team without registrations | Collect necessary context and resolve approved registrations | Materialize in the task as soon as possible, without circularity; do not claim context is already saved. |
+| Planning decision changed | Update fields/plan/history/synthesis | Actual backlog status before starting and in progress while planning; claim saved only after confirmation. |
+| Team with leader | Load leader and team context | Same identity/profile preserved; view of completed/ongoing/interrupted work and gaps; no next task arbitrarily started. |
+| Team without leader | Read team, create suitable leadership, and assume profile | Absence does not cause a generic stop; creation confirmed before assuming persisted identity; memberships respected. |
+| Team without sufficient structure | Discuss project and propose organization | Creating/transferring a board or organizing people/tasks does not occur under unrestricted implicit authorization. |
+| New team requested | Discover the request one question at a time | No registration before understanding the project and approving a concrete proposal. |
+| Sufficient understanding | Propose concise composition and functional profiles | Includes leader, execution, and responsibilities; name/avatar identify, without fictional biographies or mandatory individual approval. One clear approval is sufficient; further detail only on request or for an essential requirement. |
+| Proposal changed/rejected | Revise and obtain approval of the result | No registration of the rejected proposal; silence is not approval. |
+| Proposal approved | Prepare Leader/team; create chats and await Collaborators' self-registration/readiness | Approval may include collaborator chats; no repeated permission request for an action already covered. |
+| Any case contextualized/formed | Search chats by collaborator name and check candidates | Name is a readable base, not proof of identity; available references, existence, and access are checked. |
+| No chat found or chat confirmed deleted | Create according to current authorization | Same agent, authorship, and history preserved; handoff with profile, tasks, plan, specification, currentSummary, and pending items; no additional link persistence in Bee Team. |
+| Candidate found, including same or similar name | Include continuing in candidate or creating another in the combined proposal | Reuse only after explicit choice, even in automatic mode; permitted reading may precede choice, but no instruction is sent to an unchosen candidate. |
+| Chat name needs adjustment | Authorized new chat already receives 🐝; in an existing one, Collaborator adjusts when assuming the role | Mandatory role marker, free useful additional context; identity and records preserved. |
+| Reference exists, access unconfirmed | Declare limitation and handle next authorized action | Do not claim deletion or recover a nonexistent full conversation; partial failures are not presented as success. |
+| Contextualization completed | Present a short summary before acting | Collaborators, boards, ongoing tasks, blockers, and gaps visible to user. |
+| Initialization handoff | Confirm identity/profile ready | Explicit Collaborator use and identity/team; authorized new fallback; does not authorize work without a task. |
+| Task registered and assigned | Confirm understanding and pending items | Actual reference and origin context checked; Leader registers/assigns before requesting execution. |
+| Collaborator response | Save in task before communicating | Persistence and sending confirmed separately; failures declared without fictitious success. |
+| Leader resumption | Query collaborator assignments on any board | Search by executor ID does not imply management of others' boards. |
+| Partial failure | Resume only missing step | Agents, teams, and chats already created preserved without duplication; pending items declared. |
+| Squad formed | Prepare management continuation | Complete skills coverage does not change execution autonomy; subsequent policy not yet defined. |
 
-## Decisões aprovadas versus implementação atual
+## Origin of decisions versus previous baseline
 
-| Tema | Leader `dfd4e19` | Decisão deste documento |
+| Topic | Leader `dfd4e19` | Decision in this document |
 |---|---|---|
-| Entrada | Pergunta qual time usar salvo contexto explícito; readiness e onboarding MCP documentados | Acrescentar saudação, abertura de Teams e escolha feita na interface e comunicada no chat. |
-| Time com líder | Reutiliza líder/perfil/contexto sem duplicação | Detalhar leitura de descrição, colaboradores, boards, tarefas e situação histórica/atual antes da gestão. |
-| Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
-| Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
-| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Buscar por nome/contexto permitido, apresentar proposta conjunta de reutilização ou criação e confirmar entendimento após handoff; usar referências existentes, sem persistência adicional no Bee Team. |
-| Planejamento inicial | Contextualização e propostas sem requisito explícito de task própria | Reutilizar/criar task de coordenação atribuída à Leader antes de planejamento substantivo, com exceção inicial sem cadastros e persistência incremental. |
-| Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
+| Entry | Asks which team to use unless context is explicit; readiness and MCP onboarding documented | Add greeting, opening Teams, and choice made in interface and communicated in chat. |
+| Team with leader | Reuses leader/profile/context without duplication | Detail reading description, collaborators, boards, tasks, and historical/current situation before management. |
+| Team without leader | Asks user for a decision before assuming or registering | Replace with creating suitable leadership as part of case 2, with specific handling of other gaps. |
+| New team | Discovery, composition proposal, and approval before registration | Propose concise functional profiles, preserving name/avatar, multidisciplinary scope, and separate chats after clear approval. |
+| Chats in all three cases | General references and resumption, without this explicit common step | Search by name/permitted context, present a combined reuse-or-create proposal, and confirm understanding after handoff; use existing references without additional persistence in Bee Team. |
+| Initial planning | Contextualization and proposals without explicit own-task requirement | Reuse/create a coordination task assigned to the Leader before substantive planning, with an initial exception without registrations and incremental persistence. |
+| Subsequent management | General coordination and autonomy rules | Do not add an automatic next-task or continuation policy in this round. |
 
-O documento registra intenção aprovada, não comprova que a skill, o frontend ou o MCP já executem os novos comportamentos. A divergência do caso 2 é deliberadamente explicitada; sua implementação será uma etapa posterior autorizada.
+The table records the evolution relative to baseline dfd4e19. This skill applies the current decisions; frontend/API and MCP need their own validation, without inferring runtime updates from reading the package.
 
-## Decisões ainda pendentes
+## Decisions still pending
 
-1. Política de escolher próxima tarefa, retomar interrupções e conduzir gestão contínua após contextualização.
-2. Detalhes para derivar o perfil da liderança ausente e tratar dados obrigatórios incompletos, concorrência ou falha parcial na criação/vínculo.
-3. Sequência e autorização de criar boards, assumir/transferir sua gestão e organizar tarefas/colaboradores quando faltar estrutura.
-4. Geração, escolha, armazenamento e limites dos avatares em diferentes harnesses.
-5. Formato exato dos nomes dos chats e limitações operacionais de cada harness. Já está decidido não criar persistência adicional chat–colaborador no Bee Team nesta fase; usar referências existentes e retomar somente etapas faltantes em falhas parciais.
-6. Eventual integração de eventos de seleção da interface com o chat. Por enquanto, a comunicação é explícita pelo usuário.
+1. Policy for choosing the next task, resuming interruptions, and conducting ongoing management after contextualization.
+2. Details for deriving the missing leader's profile and handling incomplete required data, concurrency, or partial creation/membership failure.
+3. Sequence and authorization for creating boards, assuming/transferring their management, and organizing tasks/collaborators when structure is missing.
+4. Avatar generation, selection, storage, and limits in different harnesses.
+5. Exact chat-name format and operational limitations of each harness. It is already decided not to create additional chat–collaborator persistence in Bee Team at this stage; use existing references and resume only missing steps on partial failures.
+6. Possible integration of interface selection events with the chat. For now, communication is explicit through the user.
 
-## Escopo desta entrega
+## Scope of reference use
 
-Somente esta especificação e uma referência no README. Sem alterações em `SKILL.md`, instalação pessoal, configuração MCP, snapshots do servidor, API/UI, agentes, times, boards, tarefas ou chats reais. Critérios acima são textuais; não representam teste ponta a ponta dos fluxos futuros.
+Reading this reference does not authorize creating records or chats outside the current request. Confirm actual authorizations, capabilities, and persistence. Textual criteria do not replace result verification.
 
-## Métricas no início e ao inserir resumo
+## Metrics at startup and when inserting a summary
 
-Investigue no início a fonte permitida da sessão e reutilize estratégia/proveniência validada. A cada novo resumo histórico, consulte dados atuais e envie usageReport obrigatório com acumulado real de tokens da sessão até o resumo, modelo identificado, harness, agente e fonte verificáveis; unavailable não substitui medição. Sem fonte, registre impedimento por comentário e notifique sem alegar resumo salvo. Não omita o relatório; trate erro de validação/persistência sem anunciar salvamento. Não invente zero/modelo/atribuição nem crie resumo para cada comentário. Consulte [métricas por resumo](../skills/references/usage-report.md); preserve campos, comentário/ID, status e aprovação existentes.
+Investigate the permitted session source at startup and reuse a validated strategy/provenance. For each new historical summary, query current data and send the mandatory usageReport with the actual cumulative session tokens up to the summary, identified model, and verifiable harness, agent, and source; unavailable does not replace measurement. Without a source, record the impediment in a comment and notify without claiming the summary was saved. Do not omit the report; handle validation/persistence errors without announcing a save. Do not invent zero/model/attribution or create a summary for every comment. See [metrics per summary](beeteam://references/usage-report); preserve existing fields, comment/ID, status, and approval.
 
-## Bootstrap cadastral no chat criado
+## Registration bootstrap in the created chat
 
-Siga [bootstrap do Collaborator](../skills/references/collaborator-bootstrap.md). A ordem para novo colaborador é chat autorizado → configuração pelo próprio Collaborator → retorno nome real/UUIDs/prontidão → conferência pela Leader → registro/atribuição de trabalho → comentário e aviso referencial. Perfil existente é reutilizado; retorno pending não autoriza atribuir nem duplicar. Esta documentação não executa cadastros/chats.
+Follow [Collaborator bootstrap](beeteam://references/collaborator-bootstrap). The order for a new collaborator is authorized chat → configuration by the Collaborator itself → response with real name/UUIDs/readiness → Leader verification → work registration/assignment → comment and reference-only notification. An existing profile is reused; a pending response does not authorize assignment or duplication. This documentation does not execute registrations/chats.
 
-## Transições de status
+## Status transitions
 
-Status inicial é definido na criação. Toda mudança posterior de status (inclusive início, retomada, revisão e conclusão) passa pelo registro de resumo com statusObserved e usageReport obrigatório na mesma transação. close_activity só é válido quando registra esse resumo pelo serviço comum; não use updateTask/moveTask/record_progress para transições. Percentual isolado permanece atualizável separadamente com síntese exigida, sem mudar status implicitamente. Só confirme transição após persistência; comentário/commentID, idempotência e legado permanecem preservados.
+Initial status is defined at creation. Every subsequent status change (including start, resumption, review, and completion) goes through summary recording with statusObserved and mandatory usageReport in the same transaction. close_activity is valid only when it records that summary through the common service; do not use updateTask/moveTask/record_progress for transitions. Percentage alone remains separately updatable with the required synthesis, without implicitly changing status. Confirm a transition only after persistence; comment/commentID, idempotency, and legacy behavior remain preserved.
 
-## Fronteiras explícitas do trabalho
+## Explicit work boundaries
 
-Após validar atribuição/preparo/autorização, consulte execução/intervalo ativo e siga [intervalos](../skills/references/execution-intervals.md). Salve início com acumulados antes de executar; checkpoint não fecha. Pause antes da troca de task, retome em intervalo novo e encerre independentemente de status final/aceite. Preserve IDs reais e cobertura, sem inferência por texto/status/horário. Nenhum prompt ou abertura de chat cria essas fronteiras automaticamente.
+After validating assignment/preparation/authorization, query the active execution/interval and follow [intervals](beeteam://references/execution-intervals). Save the start with cumulative values before executing; a checkpoint does not close it. Pause before switching tasks, resume in a new interval, and finish independently of final status/acceptance. Preserve actual IDs and coverage without inference from text/status/time. No prompt or chat opening automatically creates these boundaries.
 
-## Identificar checkout e evidência de commits
+## Identify checkout and commit evidence
 
-Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.
+Follow [projects/repos/commits](beeteam://references/repository-evidence): provide the mandatory project with name/absolute root only for the folders/worktrees involved; read Bee Team's Git discovery and its IDs, without manual repos. No Git is legitimate; inaccessibility does not become absence of Git. Before each summary, declare only actual commits from that activity; investigation without a commit is false/empty list. Do not create a commit to fill out a form or claim publication because a local hash exists. Specification Markdown, structured scope, and historical evidence are independent.

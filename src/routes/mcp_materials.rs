@@ -81,7 +81,10 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
 ];
 pub fn resources() -> Value {
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled Skills commit 3265680f383f4645827b341fd95104fc97b00853 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
+    let provenance: Value = serde_json::from_str(include_str!("../../resources/bee-team/provenance.json"))
+        .expect("valid bundled provenance");
+    let source = provenance["sourceCommit"].as_str().expect("bundled source commit");
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled English Skills commit {source} plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let (_, _, text) = MATERIALS

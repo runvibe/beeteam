@@ -98,12 +98,13 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(resource["description"]
             .as_str()
             .unwrap()
-            .contains("3265680"));
+            .contains(provenance["sourceCommit"].as_str().unwrap()));
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
             "beeteam://skills/leader" => "bee-team-leader/SKILL.md".to_owned(),
             "beeteam://skills/collaborator" => "bee-team-collaborator/SKILL.md".to_owned(),
+            "beeteam://references/content-manifest" => "prompts/content-manifest.json".to_owned(),
             "beeteam://references/team-examples" => {
                 "bee-team-leader/references/team-examples.md".to_owned()
             }
@@ -348,11 +349,11 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
             .as_str()
             .unwrap();
         assert!(text.contains("originBoardId"));
-        assert!(text.contains("No MCP implementado"));
+        assert!(text.contains("In the implemented MCP"));
         assert!(text.contains(name));
         assert!(text.contains("specification"));
         assert!(text.contains(
-            "Este resultado é contexto de leitura, não mensagem de despacho entre agentes."
+            "This result is read context, not a dispatch message between agents."
         ));
         assert!(!text.contains("{{taskId}}"));
     }
@@ -490,15 +491,15 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     );
     let provenance: Value =
         serde_json::from_str(include_str!("../resources/bee-team/provenance.json")).unwrap();
-    assert_eq!(
-        provenance["sourceCommit"],
-        "3265680f383f4645827b341fd95104fc97b00853"
-    );
+    let source = provenance["sourceCommit"].as_str().unwrap();
+    assert_eq!(source.len(), 40);
+    assert!(source.bytes().all(|b| b.is_ascii_hexdigit()));
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();
         let uri = match path {
             "bee-team-leader/SKILL.md" => "beeteam://skills/leader".to_owned(),
             "bee-team-collaborator/SKILL.md" => "beeteam://skills/collaborator".to_owned(),
+            "prompts/content-manifest.json" => "beeteam://references/content-manifest".to_owned(),
             _ => format!(
                 "beeteam://references/{}",
                 path.rsplit('/').next().unwrap().trim_end_matches(".md")
