@@ -1,0 +1,101 @@
+.overview-usage-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.usage-presence-card {
+  min-width: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.usage-presence-card h2 {
+  margin: 0 0 12px;
+}
+.usage-presence-card .small-note {
+  margin: 0;
+}
+.harness-presence-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+}
+.harness-presence-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: default;
+}
+.harness-presence-icon img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+.dark .harness-presence-icon {
+  background: #080808;
+  color: #fff;
+}
+.dark .harness-presence-icon img {
+  filter: invert(1);
+}
+.harness-presence-icon:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.model-presence-list {
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 14px;
+  list-style: none;
+}
+.model-presence-list li > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.model-presence-list li > div:first-child > span:first-child {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.model-presence-list li > div:first-child > span:last-child {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.model-presence-list small {
+  color: var(--muted-foreground);
+}
+.model-presence-track {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--muted);
+  overflow: hidden;
+}
+.model-presence-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--foreground);
+  opacity: 0.75;
+}
+.usage-presence-error {
+  grid-column: 1 / -1;
+}
+@media (max-width: 640px) {
+  .overview-usage-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .usage-presence-card {
+    padding: 16px;
+  }
+}

@@ -1,4 +1,5 @@
 import { OverviewSubtasks } from "./overview-subtasks";
+import { OverviewUsageCards } from "./overview-usage-cards";
 import { TaskExecutionTracking } from "./task-execution-tracking";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -44,7 +45,12 @@ export function TaskOverviewPanel({
             taskId={task.id}
             version={task.version}
           />
-          <ProgressHistory taskId={task.id} data={q.data.progressHistory} mode="chart" />
+          <ProgressHistory
+            taskId={task.id}
+            data={q.data.progressHistory}
+            mode="chart"
+          />
+          <OverviewUsageCards taskId={task.id} version={task.version} />
           <OverviewSubtasks
             total={q.data.directSubtasks.total}
             task={task}

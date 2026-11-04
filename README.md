@@ -929,6 +929,10 @@ e [CLI do VS Code](https://code.visualstudio.com/docs/configure/command-line).
 
 Ao abrir um ponto com `summaryId`, o frontend consulta somente o resumo vinculado pelo filtro exato de ID e tarefa. O tooltip exibe o status histórico e as observações de uso, separando acumulados de sessão de deltas e atribuição à tarefa. Pontos legados sem vínculo continuam sem status/consumo inferidos; carregamento, erro e resumo indisponível são estados distintos. Não há associação por proximidade de horário nem soma de snapshots.
 
+## Harnesses e modelos na Visão Geral
+
+Os cards mostram harnesses registrados sem duplicações e presença de modelos por resumo distinto. As barras representam quantos resumos mencionam cada modelo; não representam tokens. A leitura percorre todas as páginas de uso antes de exibir contagens e rejeita páginas inconsistentes, sem apresentar um total parcial como completo. Ausência de evidência mantém os dois cards vazios. Ícones monocromáticos locais do Lobe Icons 1.102.0 (MIT, licença e proveniência em `frontend/public/harness-icons`) têm nome acessível, tooltip e fallback para harnesses desconhecidos. Layout em duas colunas no desktop e empilhado no mobile, respeitando ambos os temas.
+
 Logo abaixo das abas, a Visão geral exibe tokens válidos, duração somada e tempo decorrido no consumo por intervalos; o indicador de tokens parciais não é exibido nesse painel.
 
 Os botões de abertura de projetos usam apenas ícones com nomes acessíveis, sem mensagem de sucesso; falhas continuam visíveis. O SVG do Visual Studio Code vem do pacote oficial em https://code.visualstudio.com/brand.
