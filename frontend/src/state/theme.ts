@@ -1,9 +1,21 @@
 import { createStore } from "zustand/vanilla";
+export const themePresets = [
+  "default",
+  "codex",
+  "claude-code",
+  "copilot",
+] as const;
+export type ThemePreset = (typeof themePresets)[number];
+export const paletteStorageKey = "beeteam.palette";
+export const isThemePreset = (value: unknown): value is ThemePreset =>
+  themePresets.includes(value as ThemePreset);
 export type ThemePreference = "system" | "light" | "dark";
 export const themeStorageKey = "beeteam.theme";
 export const isThemePreference = (value: unknown): value is ThemePreference =>
   value === "system" || value === "light" || value === "dark";
 interface ThemeState {
+  preset: ThemePreset;
+  setPreset: (preset: ThemePreset) => void;
   preference: ThemePreference;
   resolved: "light" | "dark";
   setPreference: (preference: ThemePreference) => void;
@@ -19,6 +31,17 @@ export function createThemeController(target: Window) {
       return "system";
     }
   };
+  const readPreset = (): ThemePreset => {
+    try {
+      const value = target.localStorage.getItem(paletteStorageKey);
+      return isThemePreset(value) ? value : "default";
+    } catch {
+      return "default";
+    }
+  };
+  const applyPreset = (preset: ThemePreset) => {
+    target.document.documentElement.dataset.palette = preset;
+  };
   const resolve = (preference: ThemePreference): "light" | "dark" =>
     preference === "system" ? (media?.matches ? "dark" : "light") : preference;
   const apply = (resolved: "light" | "dark") => {
@@ -29,6 +52,17 @@ export function createThemeController(target: Window) {
   const preference = read();
   const store = createStore<ThemeState>((set) => ({
     preference,
+    preset: readPreset(),
+    setPreset(next) {
+      if (!isThemePreset(next)) return;
+      try {
+        target.localStorage.setItem(paletteStorageKey, next);
+      } catch {
+        /* Session-only preference. */
+      }
+      applyPreset(next);
+      set({ preset: next });
+    },
     resolved: resolve(preference),
     setPreference(next) {
       if (!isThemePreference(next)) return;
@@ -51,6 +85,11 @@ export function createThemeController(target: Window) {
     }
   };
   const onStorage = (event: StorageEvent) => {
+    if (event.key === paletteStorageKey || event.key === null) {
+      const preset = readPreset();
+      applyPreset(preset);
+      store.setState({ preset });
+    }
     if (event.key === themeStorageKey || event.key === null) {
       const preference = read(),
         resolved = resolve(preference);
@@ -59,6 +98,7 @@ export function createThemeController(target: Window) {
     }
   };
   apply(store.getState().resolved);
+  applyPreset(store.getState().preset);
   media?.addEventListener("change", onSystemChange);
   target.addEventListener("storage", onStorage);
   return {

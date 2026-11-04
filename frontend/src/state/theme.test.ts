@@ -87,3 +87,47 @@ describe("theme preference", () => {
     blocked.dispose();
   });
 });
+
+describe("independent palette preset", () => {
+  it("preserves legacy mode and restores palette independently", () => {
+    system(false);
+    localStorage.setItem(key, "dark");
+    const first = createThemeController(window);
+    expect(first.store.getState().preset).toBe("default");
+    first.store.getState().setPreset("claude-code");
+    expect(first.store.getState().preference).toBe("dark");
+    expect(document.documentElement.dataset.palette).toBe("claude-code");
+    first.dispose();
+    const next = createThemeController(window);
+    expect(next.store.getState().preset).toBe("claude-code");
+    next.store.getState().setPreference("light");
+    expect(next.store.getState().preset).toBe("claude-code");
+    next.dispose();
+  });
+  it("syncs palette across tabs and resets unknown values safely", () => {
+    system(false);
+    const theme = createThemeController(window);
+    localStorage.setItem("beeteam.palette", "copilot");
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "beeteam.palette" }),
+    );
+    expect(theme.store.getState().preset).toBe("copilot");
+    localStorage.setItem("beeteam.palette", "invalid");
+    window.dispatchEvent(
+      new StorageEvent("storage", { key: "beeteam.palette" }),
+    );
+    expect(theme.store.getState().preset).toBe("default");
+    theme.dispose();
+  });
+  it("keeps a session-only palette when storage is denied", () => {
+    system(true);
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw Error("denied");
+    });
+    const theme = createThemeController(window);
+    theme.store.getState().setPreset("codex");
+    expect(theme.store.getState().preset).toBe("codex");
+    expect(document.documentElement).toHaveClass("dark");
+    theme.dispose();
+  });
+});

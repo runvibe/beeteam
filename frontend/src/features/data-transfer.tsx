@@ -7,6 +7,7 @@ import {
   LocalizedError,
   message,
 } from "@/i18n";
+import { AppearanceSettings } from "@/components/appearance-settings";
 import { LanguageControl } from "@/components/language-control";
 
 import { useEffect, useRef, useState } from "react";
@@ -67,15 +68,22 @@ export function DataTransferSettings() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="detail-dialog">
           <DialogHeader>
-            <DialogTitle>{tr("transfer.exportAndImportData")}</DialogTitle>
+            <DialogTitle>{tr("transfer.globalSettings")}</DialogTitle>
             <DialogDescription>
+              {tr("settings.globalSettingsHelp")}
+            </DialogDescription>
+          </DialogHeader>
+          <AppearanceSettings />
+          <LanguageControl />
+          <section className="detail-section">
+            <h3>{tr("transfer.exportAndImportData")}</h3>
+            <p className="small-note">
               {tr(
                 "transfer.portableArchiveOfThisBeeTeamInstallationImportRequiresAn",
               )}
-            </DialogDescription>
-          </DialogHeader>
-          <LanguageControl />
-          <DataTransferPanel />
+            </p>
+            <DataTransferPanel />
+          </section>
         </DialogContent>
       </Dialog>
     </>

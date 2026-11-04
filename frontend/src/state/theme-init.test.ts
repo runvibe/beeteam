@@ -38,3 +38,20 @@ it("keeps the blocking script before body and React entry", () => {
   expect(html.indexOf("theme-init.js")).toBeLessThan(html.indexOf("<body>"));
   expect(html).toContain('<script src="%BASE_URL%theme-init.js"></script>');
 });
+
+it.each(["default", "codex", "claude-code", "copilot", "invalid"])(
+  "restores preset %s before app boot",
+  (preset) => {
+    const target = {
+      localStorage: {
+        getItem: (key: string) => (key === "beeteam.palette" ? preset : "dark"),
+      },
+      matchMedia: () => ({ matches: false }),
+    };
+    new Function("window", "document", source)(target, document);
+    expect(document.documentElement.dataset.palette).toBe(
+      preset === "invalid" ? "default" : preset,
+    );
+    expect(document.documentElement).toHaveClass("dark");
+  },
+);

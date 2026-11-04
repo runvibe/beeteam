@@ -8,6 +8,15 @@
   } catch {
     /* Private/restricted storage: use the system default. */
   }
+  var preset = "default";
+  try {
+    var palette = window.localStorage.getItem("beeteam.palette");
+    if (["default", "codex", "claude-code", "copilot"].indexOf(palette) !== -1)
+      preset = palette;
+  } catch {
+    /* Keep Default when storage is unavailable. */
+  }
+  document.documentElement.dataset.palette = preset;
   var dark =
     preference === "dark" ||
     (preference === "system" &&

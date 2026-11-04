@@ -1,0 +1,97 @@
+{
+  "claude-code": {
+    "product": "Claude Desktop main window (Code host)",
+    "version": "4.16336.0",
+    "url": "https://claude.ai/api/desktop/win32/x64/msix/latest/redirect",
+    "asset": ".vite/renderer/main_window/assets/MainWindowPage-CuBboJr_.css",
+    "sha256": "940228b2da09be0ea41b28fdc77c6195aa9b3b5ef7eb5d465e32beaf1407b087",
+    "tokens": {
+      "light": {
+        "accent-brand": "15 63.1% 59.6%",
+        "accent-000": "210 73.7% 40.2%",
+        "bg-000": "0 0% 100%",
+        "bg-100": "48 33.3% 97.1%",
+        "bg-200": "53 28.6% 94.5%",
+        "bg-300": "48 25% 92.2%",
+        "border-100": "30 3.3% 11.8%",
+        "text-000": "60 2.6% 7.6%",
+        "text-200": "60 2.5% 23.3%",
+        "text-400": "51 3.1% 43.7%"
+      },
+      "dark": {
+        "accent-brand": "15 63.1% 59.6%",
+        "accent-000": "210 65.5% 67.1%",
+        "bg-000": "60 2.1% 18.4%",
+        "bg-100": "60 2.7% 14.5%",
+        "bg-200": "30 3.3% 11.8%",
+        "bg-300": "60 2.6% 7.6%",
+        "border-100": "51 16.5% 84.5%",
+        "text-000": "48 33.3% 97.1%",
+        "text-200": "50 9% 73.7%",
+        "text-400": "48 4.8% 59.2%"
+      }
+    }
+  },
+  "copilot": {
+    "product": "GitHub Copilot CLI GitHub preset",
+    "version": "0.0.418",
+    "url": "https://registry.npmjs.org/@github/copilot/-/copilot-0.0.418.tgz",
+    "asset": "package/index.js",
+    "sha256": "7383c3f312646e8be34ec3dfe2d4f050e340b9dee0f086ed19f08514ee1c4ee0",
+    "tokens": {
+      "light": {
+        "black": "#1f2328",
+        "blackBright": "#59636e",
+        "white": "#eaeef2",
+        "whiteBright": "#ffffff",
+        "red": "#d1242f",
+        "redBright": "#ff8182",
+        "green": "#1a7f37",
+        "greenBright": "#4ac26b",
+        "yellow": "#9a6700",
+        "yellowBright": "#d4a72c",
+        "blue": "#0969da",
+        "blueBright": "#218bff",
+        "magenta": "#8250df",
+        "magentaBright": "#9f7ce1",
+        "cyan": "#0969da",
+        "cyanBright": "#218bff"
+      },
+      "dark": {
+        "black": "#010409",
+        "blackBright": "#444c56",
+        "white": "#8794a2",
+        "whiteBright": "#cdd9e5",
+        "red": "#f47067",
+        "redBright": "#ff938a",
+        "green": "#57ab5a",
+        "greenBright": "#6bc46d",
+        "yellow": "#c69026",
+        "yellowBright": "#daaa3f",
+        "blue": "#539bf5",
+        "blueBright": "#6cb6ff",
+        "magenta": "#b083f0",
+        "magentaBright": "#dcbdfb",
+        "cyan": "#539bf5",
+        "cyanBright": "#6cb6ff"
+      }
+    }
+  },
+  "codex": {
+    "product": "Codex appearance documented preset",
+    "version": "documentation snapshot 2026-11-04; installed desktop26.1029.7803.0",
+    "url": "https://learn.chatgpt.com/docs/reference/settings",
+    "tokens": {
+      "light": {
+        "surface": "#FFFFFF",
+        "ink": "#0D0D0D",
+        "accent": "#0285FF"
+      },
+      "dark": {
+        "surface": "#181818",
+        "ink": "#FFFFFF",
+        "accent": "#339CFF"
+      }
+    }
+  }
+}

@@ -5,6 +5,8 @@
 @import "@fontsource-variable/playfair-display";
 @import "@fontsource-variable/jetbrains-mono";
 
+@import "./theme-palettes.css";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
