@@ -1,14 +1,27 @@
+.detail-section-navigation {
+  display: grid;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+.detail-section-navigation-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px 44px;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
 /* Sticky navigation 20; conversation filters 19; portalled overlays 50. */
-.task-section-viewport {
+.detail-section-viewport {
   min-width: 0;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
 }
-.task-section-viewport::-webkit-scrollbar {
+.detail-section-viewport::-webkit-scrollbar {
   display: none;
 }
-.task-section-list[data-slot="tabs-list"] {
+.detail-section-list[data-slot="tabs-list"] {
   display: flex;
   width: max-content;
   min-width: 100%;
@@ -20,7 +33,7 @@
   border-radius: var(--radius);
   background: transparent;
 }
-.task-section-list [data-slot="tabs-trigger"] {
+.detail-section-list [data-slot="tabs-trigger"] {
   flex: 0 0 auto;
   height: auto;
   min-height: 44px;
@@ -31,29 +44,42 @@
   background: transparent;
   transition: none;
 }
-.task-section-list [data-slot="tabs-trigger"][data-state="active"] {
+.detail-section-list [data-slot="tabs-trigger"][data-state="active"] {
   background: var(--secondary);
   color: var(--secondary-foreground);
   border-color: var(--border);
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
 }
-.task-section-list [data-slot="tabs-trigger"]:hover {
+.detail-section-list [data-slot="tabs-trigger"]:hover {
   color: var(--foreground);
 }
-.task-section-list [data-slot="tabs-trigger"]:focus-visible {
+.detail-section-list [data-slot="tabs-trigger"]:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: -2px;
 }
-.task-section-arrow[data-slot="button"] {
+.detail-section-arrow[data-slot="button"] {
   width: 44px;
   min-height: 44px;
   padding: 0;
 }
-.task-section-arrow[aria-disabled="true"] {
+.detail-section-arrow[aria-disabled="true"] {
   opacity: 0.35;
   cursor: default;
 }
 /* Both controls stay at the right; the tab strip aligns with the content start. */
-.task-section-navigation[data-overflow="false"] .task-section-arrow {
+.detail-section-navigation[data-overflow="false"] .detail-section-arrow {
   visibility: hidden;
+}
+
+@media (max-width: 1055px) {
+  .detail-section-navigation {
+    display: contents;
+  }
+  .detail-section-navigation-strip {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--background);
+    padding: 0;
+  }
 }

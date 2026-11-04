@@ -28,5 +28,7 @@
   "collaborators_one": "{{count}} collaborator in team {{name}}",
   "collaborators_zero": "{{count}} collaborators in team {{name}}",
   "collaborators_other": "{{count}} collaborators in team {{name}}",
-  "collaborators_many": "{{count}} collaborators in team {{name}}"
+  "collaborators_many": "{{count}} collaborators in team {{name}}",
+  "details": "Team details",
+  "backToTeam": "Back to team"
 }

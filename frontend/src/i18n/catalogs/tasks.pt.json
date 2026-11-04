@@ -254,5 +254,6 @@
   "progressHistoryTitle_zero": "Evolução do progresso registrado: {{count}} registros",
   "progressHistoryTitle_one": "Evolução do progresso registrado: {{count}} registro",
   "progressHistoryTitle_other": "Evolução do progresso registrado: {{count}} registros",
-  "progressHistoryTitle_many": "Evolução do progresso registrado: {{count}} registros"
+  "progressHistoryTitle_many": "Evolução do progresso registrado: {{count}} registros",
+  "backToTask": "Voltar à tarefa"
 }

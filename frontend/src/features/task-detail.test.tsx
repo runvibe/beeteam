@@ -113,9 +113,6 @@ it("shares section selection with deep links and retains the autonomy form acros
   ).toBe(autonomy);
   expect(document.querySelector(".task-detail-reading")).toBe(panel);
   expect(panel).toHaveAttribute("data-task-section", "overview");
-  await userEvent.click(
-    screen.getByRole("button", { name: /Detalhes da tarefa/ }),
-  );
   await userEvent.click(screen.getByRole("tab", { name: "Planos" }));
   await waitFor(() =>
     expect(screen.getByRole("tab", { name: "Planos" })).toHaveAttribute(

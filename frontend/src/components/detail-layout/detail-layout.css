@@ -1,0 +1,242 @@
+body:has(.detail-page) {
+  min-width: 0;
+}
+
+.detail-page {
+  container: detail / inline-size;
+  padding: 0;
+  gap: 20px;
+}
+
+.detail-header h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.35;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  outline: none;
+  max-width: 52ch;
+}
+
+.detail-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 32px;
+  align-items: start;
+}
+
+.detail-primary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.detail-primary {
+  scroll-padding-top: var(--detail-navigation-height, 70px);
+}
+
+.detail-context {
+  min-width: 0;
+  border-left: 1px solid var(--border);
+  padding-left: 24px;
+}
+
+.detail-context-content {
+  display: grid;
+  gap: 24px;
+}
+
+.detail-context-content > section {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-context dl {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-context dl > div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.detail-context dt {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.detail-context dd {
+  margin: 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.detail-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-section-navigation {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--background);
+  padding: 0;
+  min-width: 0;
+}
+
+/* Desktop scrollers activate only with room for the rail and two-column context. */
+@media (min-width: 1056px) {
+  .app-shell:has(.detail-page) {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .main-shell:has(.detail-page) {
+    min-height: 0;
+  }
+  .main-shell > main:has(> .detail-page) {
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+  .detail-page {
+    min-height: 0;
+  }
+  .detail-columns {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: 0;
+  }
+  .detail-primary,
+  .detail-context {
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    padding-bottom: 0;
+  }
+  .detail-primary {
+    padding-right: 4px;
+  }
+  .detail-primary > * {
+    flex-shrink: 0;
+  }
+  .detail-context {
+    padding-right: 4px;
+  }
+}
+
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+.detail-header-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.detail-header .muted-copy {
+  max-width: 72ch;
+  overflow-wrap: anywhere;
+}
+.detail-primary > .task-back {
+  align-self: flex-start;
+}
+.detail-context h2 {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.detail-context .agent-name,
+.detail-context button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.detail-primary[hidden],
+.detail-context[hidden],
+.detail-info-button[hidden],
+.detail-context-screen-header[hidden] {
+  display: none !important;
+}
+.detail-info-button,
+.detail-context-screen-header {
+  display: none;
+}
+.detail-primary > [data-slot="tabs"] {
+  min-width: 0;
+  gap: 20px;
+}
+.detail-primary h3 {
+  font-weight: 600;
+}
+@media (max-width: 1055px) {
+  .detail-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .icon-navigation main:has(> .detail-page) {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .detail-info-button:not([hidden]) {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 40;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+  .detail-context:not([data-detail-screen="true"]) {
+    display: none;
+  }
+  .detail-context[data-detail-screen="true"] {
+    display: block;
+    border: 0;
+    padding: 0 0 max(20px, env(safe-area-inset-bottom));
+  }
+  .detail-context-content {
+    padding-top: 20px;
+  }
+  .detail-context-screen-header {
+    display: grid;
+    gap: 16px;
+  }
+  .detail-context-screen-header h1 {
+    font-size: 20px;
+    line-height: 1.4;
+    outline: none;
+  }
+  .detail-context-screen-header button {
+    justify-self: start;
+    min-height: 44px;
+  }
+  html:has(.detail-page) {
+    scroll-padding-top: var(--detail-navigation-height, 70px);
+  }
+}
+@media (max-width: 699px) {
+  .detail-header h1 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+}

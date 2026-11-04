@@ -28,5 +28,7 @@
   "collaborators_one": "{{count}} colaborador do time {{name}}",
   "collaborators_zero": "{{count}} colaboradores do time {{name}}",
   "collaborators_other": "{{count}} colaboradores do time {{name}}",
-  "collaborators_many": "{{count}} colaboradores do time {{name}}"
+  "collaborators_many": "{{count}} colaboradores do time {{name}}",
+  "details": "Detalhes do time",
+  "backToTeam": "Voltar ao time"
 }

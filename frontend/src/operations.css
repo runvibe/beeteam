@@ -768,3 +768,6 @@ textarea,
 .entity-page-meta > button:last-child { margin-left:auto; }
 .entity-page h1, .agent-card [data-slot=card-title], .team-card [data-slot=card-title] { overflow-wrap:anywhere; min-width:0; }
 .entity-page > h3 { font-weight:600; margin-top:1rem; }
+
+.team-board-link[data-slot="button"] { min-width:0; max-width:100%; height:auto; min-height:36px; white-space:normal; }
+.team-board-link > span { min-width:0; overflow-wrap:anywhere; }

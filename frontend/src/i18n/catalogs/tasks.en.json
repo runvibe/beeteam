@@ -254,5 +254,6 @@
   "progressHistoryTitle_zero": "Recorded progress over time: {{count}} records",
   "progressHistoryTitle_one": "Recorded progress over time: {{count}} record",
   "progressHistoryTitle_other": "Recorded progress over time: {{count}} records",
-  "progressHistoryTitle_many": "Recorded progress over time: {{count}} records"
+  "progressHistoryTitle_many": "Recorded progress over time: {{count}} records",
+  "backToTask": "Back to task"
 }

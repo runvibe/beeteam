@@ -59,5 +59,7 @@
   "thisRecordWasUpdatedInAnotherSessionYourDraftWas": "This record was updated in another session. Your draft was preserved. Use Reload form after the conflict to discard the draft and load the current version.",
   "unnamedAgent": "Agent {{id}}",
   "demoResumeNotice": "Demo context. Does not start chats or confirm live activity.",
-  "storedResumeNotice": "Stored context only; no session is started or monitored."
+  "storedResumeNotice": "Stored context only; no session is started or monitored.",
+  "details": "Agent details",
+  "backToAgent": "Back to agent"
 }
