@@ -1630,6 +1630,34 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
+  /api/v1/agents/{agentId}/latest-activity:
+    parameters:
+      - name: agentId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getAgentLatestActivity
+      summary: Read the latest recorded task activity attributed to an agent
+      description: Returns the latest persisted task timeline event whose actorKind is agent and actorId matches this agent. Orders by occurredAt instant descending (including subsecond precision), then sequence and eventId descending. Includes archived tasks and boards, excludes deleted events, tasks and boards. Task authorship, assignment and profile/task updatedAt do not imply event authorship. Returns activity null only when no eligible event exists; missing/deleted agent is 404 and infrastructure failures remain errors. Reads at most one result within a consistent database snapshot. summaryId is the explicit execution.recorded reference when its summary still exists on the same task. Task slug/title are current metadata. No current team membership restriction or online status is inferred.
+      responses:
+        "200":
+          description: Latest attributed activity or an explicit absence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentLatestActivity"
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
 components:
   parameters:
     Limit:
@@ -1750,6 +1778,7 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    AgentLatestActivity: {"type": "object", "properties": {"activity": {"type": ["object", "null"], "properties": {"type": {"type": "string", "description": "Persisted task timeline EventType; translate this identifier for display."}, "occurredAt": {"type": "string", "format": "date-time"}, "taskId": {"type": "string", "format": "uuid"}, "taskSlug": {"type": "string"}, "taskTitle": {"type": "string"}, "eventId": {"type": "string", "format": "uuid"}, "summaryId": {"type": ["string", "null"], "format": "uuid"}}, "required": ["type", "occurredAt", "taskId", "taskSlug", "taskTitle", "eventId", "summaryId"], "additionalProperties": false}}, "required": ["activity"], "additionalProperties": false}
     Slug:
       type: string
       minLength: 1

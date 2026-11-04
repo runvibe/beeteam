@@ -134,3 +134,7 @@ Migrar quatro listas: Activities/Chats de Agent, Members/Boards de Team. Reutili
 ## Ajuste autorizado: filtros Chats Agent
 
 Extrair AgentChats de agents.tsx, reutilizar controles FilterBar/Search/Choice/FilterPopover e DetailRecordList. API já aceita label substring, harness exato, archived boolean, createdFrom/createdBefore RFC3339. Expor período local inclusivo usando próximo dia de calendário como limite exclusivo, sem somar 24h. Helper puro valida datas/ordem; bloqueia consulta inválida. URL guarda dias e filtros; limpar em uma navegação preserva origem/limite e back. Testar filtros combinados antes de paginação, reset/dedupe/retry, limites de dias/DST, EN/PT desktop/mobile e empty/erro. Sem relação team/board inferida ou alteração de API necessária.
+
+## Ajuste autorizado: Última atividade do agente
+
+ActivityLink não permite inferir último evento nem ordenar lastWorkedAt; Backend coordena consulta explícita latest-activity por actorKind=agent/actorId com limite1 e ordem determinística no banco. Consumir resposta activity nullable confirmada pela Leader; manter erro distinto de null. Bloco isolado no Perfil usa eventLabels/RelativeTime e link timeline.selected com from. Preservar título do usuário, sem online/tokens/gráficos. Mock representa só eventos atribuídos, arquivados acessíveis e exclui deletados. Validar transporte, estados, autoria/ties, deep link/back, EN/PT mobile/desktop e API real após integração Backend.

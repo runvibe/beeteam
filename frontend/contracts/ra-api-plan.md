@@ -85,3 +85,5 @@ GET /api/v1/agents?name=carlos&role=leader&offset=0&limit=25
 GET /api/v1/agents/10000000-0000-7000-8000-000000000010/activities?relation=worked&title=api&offset=0&limit=50
 
 O YAML contém exemplos de perfil, composição, cópia com resumo solicitado e referências externas. Não iniciar implementação nesta revisão. Após autorização, manter camadas API Rush e validar transação/cardinalidades/versões, transferência de origem arquivada sem efeito nas tasks, contexto isolado por agente, leituras sem duplicação e exclusão lógica. Política de edição pelo líder permanece pendente.
+
+Última atividade: GET `/agents/{agentId}/latest-activity` retorna evento atribuído actorKind=agent/actorId ou activity:null. Inclui arquivados acessíveis, exclui deletados e não infere autoria de updatedAt ou atribuição. Ordenação por occurredAt, sequence e eventId descendentes, limitada no banco.

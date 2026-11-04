@@ -279,6 +279,46 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async agentLatestActivity(agentId) {
+      await api.get("agents", agentId);
+      const event = db.timeline
+        .filter((e) => {
+          const task = db.tasks.find((t) => t.id === e.taskId && !t.deletedAt);
+          return (
+            e.actorKind === "agent" &&
+            e.actorId === agentId &&
+            !e.deletedAt &&
+            task &&
+            db.boards.some((b) => b.id === task.boardId && !b.deletedAt)
+          );
+        })
+        .sort(
+          (a, b) =>
+            Date.parse(b.occurredAt) - Date.parse(a.occurredAt) ||
+            b.sequence - a.sequence ||
+            b.id.localeCompare(a.id),
+        )[0];
+      if (!event) return { activity: null };
+      const task = db.tasks.find((t) => t.id === event.taskId)!;
+      const summary = db.summaries.find(
+        (s) =>
+          event.type === "execution.recorded" &&
+          s.id === event.data.executionSummaryId &&
+          s.taskId === task.id &&
+          !s.deletedAt,
+      );
+      return {
+        activity: {
+          type: event.type,
+          occurredAt: event.occurredAt,
+          taskId: task.id,
+          taskSlug: task.slug,
+          taskTitle: task.title,
+          eventId: event.id,
+          summaryId: summary?.id ?? null,
+        },
+      };
+    },
     async timelinePoints(taskId, pagination = {}, signal) {
       const page = await api.list(
         "timeline",

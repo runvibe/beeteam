@@ -83,6 +83,7 @@ Leituras nÃ£o iniciam atividade. ExclusÃµes sÃ£o lÃ³gicas e nÃ£o remov
 | `listChatReferences` | GET `/api/v1/agents/{agentId}/chat-references` | read | â€” | ChatReferencePage |
 | `updateChatReference` | PATCH `/api/v1/agents/{agentId}/chat-references/{chatReferenceId}` | write | PatchChatReference | ChatReference |
 | `listAgentActivities` | GET `/api/v1/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
+| `getAgentLatestActivity` | GET `/api/v1/agents/{agentId}/latest-activity` | read | — | AgentLatestActivity |
 
 ### Resolução por slug
 
