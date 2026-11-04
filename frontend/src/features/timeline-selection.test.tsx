@@ -7,6 +7,105 @@ import { makeSeed } from "@/api/seed";
 import { TaskExecutionTimeline } from "./task-execution-tracking";
 import { event, executionPage } from "./execution-fixtures";
 
+it("retains earlier points when loading the next page of mixed timeline events", async () => {
+  window.history.replaceState({}, "", "/tasks/example?tab=timeline");
+  const api = createMockApi({ delay: 0 });
+  const rows = Array.from({ length: 21 }, (_, index) => ({
+    ...makeSeed().timeline[0],
+    id: `page-event-${index}`,
+    taskId: "task",
+    data: {},
+    type: index === 0 ? "execution.recorded" : "comment.created",
+  }));
+  vi.spyOn(api, "list").mockImplementation(
+    async (_resource, _taskId, query) => {
+      const offset = Number(query?.offset ?? 0);
+      return {
+        items: rows.slice(offset, offset + 20),
+        total: 21,
+        offset,
+        limit: 20,
+        hasMore: offset === 0,
+        nextOffset: offset === 0 ? 20 : null,
+      } as never;
+    },
+  );
+  const { container } = render(
+    <ApiProvider api={api}>
+      <TaskExecutionTimeline taskId="task" version={3} />
+    </ApiProvider>,
+  );
+  await waitFor(() =>
+    expect(
+      container.querySelectorAll(".execution-timeline-point"),
+    ).toHaveLength(20),
+  );
+  await userEvent.click(
+    screen.getByRole("button", { name: "Carregar mais eventos" }),
+  );
+  await waitFor(() =>
+    expect(
+      container.querySelectorAll(".execution-timeline-point"),
+    ).toHaveLength(21),
+  );
+  expect(
+    screen.getByRole("button", { name: /Resumo de execução registrado:/ }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText(/Histórico parcial/)).toBeNull();
+});
+
+it("preserves all timeline event types and keeps the chart independent of selected event", async () => {
+  window.history.replaceState(
+    {},
+    "",
+    "/tasks/example?tab=timeline&timeline.selected=comment",
+  );
+  const api = createMockApi({ delay: 0 });
+  const rows = [
+    "comment.created",
+    "plan.revised",
+    "task.updated",
+    "execution.recorded",
+  ].map((type, index) => ({
+    ...makeSeed().timeline[0],
+    id: `event-${index}`,
+    type,
+    data: {},
+    taskId: "task",
+  }));
+  const list = vi
+    .spyOn(api, "list")
+    .mockImplementation(async (_resource, _taskId, query) => {
+      const filtered = rows.filter(
+        (row) =>
+          (!query?.types || query.types === row.type) &&
+          (!query?.id || query.id === row.id),
+      );
+      return executionPage(filtered) as never;
+    });
+  const { container } = render(
+    <ApiProvider api={api}>
+      <TaskExecutionTimeline taskId="task" version={2} />
+    </ApiProvider>,
+  );
+  await waitFor(() =>
+    expect(
+      container.querySelectorAll(".execution-timeline-point"),
+    ).toHaveLength(4),
+  );
+  await userEvent.click(
+    screen.getByRole("button", { name: /Comentário registrado:/ }),
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Ver evento" }));
+  expect(new URLSearchParams(location.search).get("timeline.selected")).toBe(
+    "event-0",
+  );
+  expect(container.querySelectorAll(".execution-timeline-point")).toHaveLength(
+    4,
+  );
+  expect(list).toHaveBeenCalledTimes(1);
+});
+
 it("uses the unified Event ID, not the tracking or summary ID, and closes the compact popover without a modal", async () => {
   window.history.replaceState({}, "", "/tasks/example?tab=timeline");
   const api = createMockApi({ delay: 0 });

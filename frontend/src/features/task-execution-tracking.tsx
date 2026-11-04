@@ -74,7 +74,7 @@ export function TaskExecutionTimeline({
   return (
     <section className="task-execution-timeline">
       <ExecutionPages
-        queryKey={["timeline", taskId, "execution-chart", version]}
+        queryKey={["timeline", taskId, "all-events-chart", version]}
         fetchPage={(offset, signal) =>
           api.list(
             "timeline",
@@ -82,19 +82,18 @@ export function TaskExecutionTimeline({
             {
               offset,
               limit: 20,
-              types: "execution.recorded",
               sortBy: "sequence",
               sortOrder: "asc",
             },
             signal,
           )
         }
-        label="transições"
+        label="eventos"
         showCount={false}
       >
         {(rows, loading, failed) => (
           <ExecutionTimeline
-            description="Resumos de execução na ordem de registro. Selecione um ponto para abrir seu evento. O espaçamento não representa duração."
+            description="Eventos da tarefa na ordem de registro. Selecione um ponto para abrir seu evento. O espaçamento não representa duração."
             events={rows.map((row) => ({
               ...row,
               label: eventLabels[row.type] ?? row.type,
@@ -102,7 +101,7 @@ export function TaskExecutionTimeline({
             }))}
             emptyMessage={
               loading
-                ? "Carregando transições…"
+                ? "Carregando eventos…"
                 : failed
                   ? "Histórico de execução indisponível."
                   : undefined

@@ -21,3 +21,13 @@ Reexecução dos12arquivos frontend afetados:51/51 testes, mais um teste HTTP no
 ## Aceite do usuário pendente
 
 Validação técnica não conclui a tarefa. Manter Em revisão para aceite do usuário; integração/publicação e testes completos da Leader são evidências separadas.
+
+## Regressão de ponto único: todos os tipos de eventos
+
+Relato da Leader no comentário `01a1a3f9-0934-7610-b014-9aeab6281fa9`. Caso real informado: `/tasks/implementar-agente-node-e-transporte-de-tuneis?tab=timeline`, resolvido pelo endpoint tipado para `01a1927c-9840-7cc0-8189-1a501c846fec`. Somente leitura dessa tarefa.
+
+Causa: o gráfico consultava `types=execution.recorded`, embora a Timeline contenha outros eventos. A API real retornou 17 eventos (7 comentários, 5 atualizações, 1 resumo, 1 plano, 1 revisão de plano, 1 posição e 1 subtask); tracking explícito vazio. Não houve perda de dados nem necessidade de inferir vínculos legados. Removido o filtro de tipo, preservando Event ID, ordem de sequência, paginação explícita e isolamento de `timeline.selected` em relação ao gráfico. A chave de cache distingue a consulta de todos os eventos da antiga consulta de resumos.
+
+Teste de regressão falhou com 1 ponto em vez de 4 antes da correção e passou depois. Cobertura adicional de 21 eventos em duas páginas, seleção de comentário por Event ID e preservação dos pontos ao selecionar. Os 15 testes dos cinco arquivos afetados passaram; build frontend, cargo build e 40 testes Rust unitários passaram. PostgreSQL isolado continua indisponível; não houve alteração backend.
+
+Chromium isolado com build corrigido e API real59865, somente GET: em1440/390px, claro/escuro, caso XYZ mostrou17/17 pontos; Motion mostrou49/49 após carregar três páginas. Seleção de evento histórico retorna um card sem reduzir pontos, limpar/back funcionam, sem modal/overflow de documento. Resumos mostrou1 ponto explícito de progresso no caso XYZ e7 em Motion, exatamente como overview. Screenshots inspecionados, rolagem horizontal interna preservada. Evidências locais `.local/qa/timeline-regression` e `.local/qa/timeline-motion-regression`, cada uma com `evidence.json` e capturas. Nenhum restart ou controle da aba do usuário; integração do novo commit cabe à Leader.
