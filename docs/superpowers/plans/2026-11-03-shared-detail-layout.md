@@ -126,3 +126,7 @@ Após integração de `6008749`, em 04/11 o usuário pediu Agent/Team exatamente
 ## Ajuste autorizado em 2026-11-04: simplificar Agent
 
 Remover Retomada do frontend (aba, consulta, adapter, tipo gerado e textos exclusivos), coordenando endpoint/tool/contratos com Backend. Links legados agent.tab=resume e tab=resume abrem Perfil, preservando parâmetros de origem e chats. Manter instruções e contexto no Perfil, histórico e chats. Vínculos ficam apenas no contexto responsivo lateral/Info, preservando memberships e navegação. Validar EN/PT, desktop/mobile, ausência de chamadas resumption-context, testes frontend/build/audit e Cargo conforme ambiente isolado disponível.
+
+## Ajuste autorizado: scroll infinito Agent/Team
+
+Migrar quatro listas: Activities/Chats de Agent, Members/Boards de Team. Reutilizar TaskRecordList sob nome compartilhado DetailRecordList (export de compatibilidade para Task), controlador useInfiniteScroll e nextPageOffset. Identidades: taskId para activities, agentId para members, id para demais. Preservar limites/filtros, cache de páginas para retorno, totais e retry; iniciar em zero como demais listas sem pager. Testar red/green quatro entradas, sobreposição/retry, Task existente e navegação/scroll real desktop/mobile. Sem mudanças API ou dados reais.

@@ -1,3 +1,4 @@
+import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -15,7 +16,7 @@ import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
-import { useEntity, useList } from "@/api/context";
+import { useEntity } from "@/api/context";
 import type { Agent } from "@/api/types";
 import { useUi } from "@/state/ui";
 import {
@@ -41,7 +42,6 @@ import {
   Search,
   QueryState,
   NoData,
-  Pager,
   TextBlock,
   formatDate,
   safeUrl,
@@ -357,22 +357,13 @@ function TeamLink({ id, role }: { id: string; role: string }) {
 }
 function Activities({ agentId }: { agentId: string }) {
   useLocale();
-  const [offset, setOffset] = useUrlState<number>("activities.offset", 0),
-    [relation, setRelation] = useUrlState<string>(
+  const [relation, setRelation] = useUrlState<string>(
       "activities.relation",
       "any",
       { values: ["any", "authored", "executing", "worked"] },
     ),
     [title, setTitle] = useUrlState<string>("activities.title", "");
   const limit = usePageSize("activities", 10);
-  const q = useList("activities", agentId, {
-    relation: relation as "any" | "authored" | "executing" | "worked",
-    title: title || undefined,
-    offset,
-    limit,
-    sortBy: "taskUpdatedAt",
-    sortOrder: "desc",
-  });
   const open = useUi((s) => s.openTask);
   return (
     <div className="detail-section">
@@ -383,7 +374,6 @@ function Activities({ agentId }: { agentId: string }) {
               value={title}
               onChange={(v) => {
                 setTitle(v);
-                setOffset(0);
               }}
               label={tr("agents.searchAgentTasks")}
             />
@@ -393,7 +383,6 @@ function Activities({ agentId }: { agentId: string }) {
         onClear={() => {
           setTitle("");
           setRelation("any");
-          setOffset(0);
         }}
       >
         <Choice
@@ -401,7 +390,6 @@ function Activities({ agentId }: { agentId: string }) {
           value={relation}
           onChange={(v) => {
             setRelation(v);
-            setOffset(0);
           }}
           options={[
             { value: "any", label: tr("agents.all") },
@@ -411,46 +399,44 @@ function Activities({ agentId }: { agentId: string }) {
           ]}
         />
       </FilterBar>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.map((a) => (
-              <article className="record" key={a.taskId}>
-                <button className="record-link" onClick={() => open(a.taskId)}>
-                  {a.title}
-                </button>
-                <div className="flex gap-2">
-                  <Badge variant="outline">
-                    {a.isCurrentExecutor
-                      ? tr("agents.currentExecutor")
-                      : tr("agents.historyPreserved")}
-                  </Badge>
-                  <span className="small-note">
-                    {formatDate(a.taskUpdatedAt)}
-                  </span>
-                </div>
-              </article>
-            ))}
-            {!q.data.items.length && (
-              <NoData
-                title={tr("agents.noTasksMatchTheFilters")}
-                description={tr(
-                  "agents.adjustTheSearchOrRelationshipWithThisAgent",
-                )}
-              />
-            )}
-            <Pager page={q.data} onOffset={setOffset} />
-          </>
+      <DetailRecordList
+        resource="activities"
+        scope={agentId}
+        filters={{
+          relation: relation as "any" | "authored" | "executing" | "worked",
+          title: title || undefined,
+          limit,
+          sortBy: "taskUpdatedAt",
+          sortOrder: "desc",
+        }}
+        empty={tr("agents.noTasksMatchTheFilters")}
+        emptyDescription={tr(
+          "agents.adjustTheSearchOrRelationshipWithThisAgent",
         )}
-      </QueryState>
+        countLabel={tr("agents.tasks")}
+      >
+        {(a) => (
+          <article className="record" key={a.taskId}>
+            <button className="record-link" onClick={() => open(a.taskId)}>
+              {a.title}
+            </button>
+            <div className="flex gap-2">
+              <Badge variant="outline">
+                {a.isCurrentExecutor
+                  ? tr("agents.currentExecutor")
+                  : tr("agents.historyPreserved")}
+              </Badge>
+              <span className="small-note">{formatDate(a.taskUpdatedAt)}</span>
+            </div>
+          </article>
+        )}
+      </DetailRecordList>
     </div>
   );
 }
 function Chats({ agentId }: { agentId: string }) {
   useLocale();
-  const [offset, setOffset] = useUrlState<number>("chats.offset", 0);
   const limit = usePageSize("chats", 10);
-  const q = useList("chats", agentId, { offset, limit });
   return (
     <div className="detail-section">
       <p className="muted-copy">
@@ -458,29 +444,27 @@ function Chats({ agentId }: { agentId: string }) {
           "agents.recordedExternalReferencesTheyDoNotIndicateRunningSessions",
         )}
       </p>
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            {q.data.items.map((c) => (
-              <article className="record" key={c.id}>
-                <h3>{c.label}</h3>
-                <p className="small-note">
-                  {c.harness} · {c.externalId} · {formatDate(c.updatedAt)}
-                </p>
-                {safeUrl(c.url) && (
-                  <a href={safeUrl(c.url)} target="_blank" rel="noreferrer">
-                    {tr("agents.openReference")} <ExternalLink size={14} />
-                  </a>
-                )}
-              </article>
-            ))}
-            {!q.data.items.length && (
-              <NoData title={tr("agents.noChatReferences")} />
+      <DetailRecordList
+        resource="chats"
+        scope={agentId}
+        filters={{ limit }}
+        empty={tr("agents.noChatReferences")}
+        countLabel={tr("agents.chats")}
+      >
+        {(c) => (
+          <article className="record" key={c.id}>
+            <h3>{c.label}</h3>
+            <p className="small-note">
+              {c.harness} · {c.externalId} · {formatDate(c.updatedAt)}
+            </p>
+            {safeUrl(c.url) && (
+              <a href={safeUrl(c.url)} target="_blank" rel="noreferrer">
+                {tr("agents.openReference")} <ExternalLink size={14} />
+              </a>
             )}
-            <Pager page={q.data} onOffset={setOffset} />
-          </>
+          </article>
         )}
-      </QueryState>
+      </DetailRecordList>
     </div>
   );
 }

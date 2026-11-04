@@ -1,3 +1,4 @@
+import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -10,7 +11,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useLocation, navigate, destination } from "@/routing/location";
 import { openCardLink, openCardBody } from "@/routing/card-navigation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
-import { useApi, useEntity, useList } from "@/api/context";
+import { useApi, useEntity } from "@/api/context";
 import type { Team } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { EntityDetailPage } from "./entity-detail-page";
@@ -40,7 +41,6 @@ import {
   Search,
   QueryState,
   NoData,
-  Pager,
   TextBlock,
 } from "@/components/shared";
 import { AgentName } from "@/components/names";
@@ -166,24 +166,9 @@ export function TeamPage() {
 function TeamDetail({ id }: { id: string }) {
   useLocale();
   const configuring = useLocation().split("?")[0].endsWith("/settings");
-  const q = useEntity("teams", id),
-    [offset, setOffset] = useUrlState<number>("members.offset", 0),
-    [boardOffset, setBoardOffset] = useUrlState<number>(
-      "managedBoards.offset",
-      0,
-    );
+  const q = useEntity("teams", id);
   const memberLimit = usePageSize("members", 10),
     boardLimit = usePageSize("managedBoards", 10);
-  const members = useList("members", id, {
-      offset,
-      limit: memberLimit,
-      sortBy: "name",
-    }),
-    boards = useList("boards", "", {
-      teamId: id,
-      offset: boardOffset,
-      limit: boardLimit,
-    });
   const openBoard = useUi((s) => s.openBoard);
   return (
     <EntityDetailPage
@@ -266,47 +251,46 @@ function TeamDetail({ id }: { id: string }) {
               <TextBlock>{q.data.context}</TextBlock>
             </div>
             <h3>{tr("common.agents")}</h3>
-            <QueryState query={members}>
-              {members.data && (
-                <>
-                  {members.data.items.map((m) => (
-                    <div key={m.agentId} className="record-row">
-                      <AgentName id={m.agentId} />
-                      <Badge variant="outline">
-                        {m.role === "leader"
-                          ? tr("common.leader")
-                          : tr("common.collaborator")}
-                      </Badge>
-                    </div>
-                  ))}
-                  <Pager page={members.data} onOffset={setOffset} />
-                </>
+            <DetailRecordList
+              resource="members"
+              scope={id}
+              filters={{ limit: memberLimit, sortBy: "name" }}
+              empty={tr("agents.noCurrentAssociations")}
+              countLabel={tr("common.agents")}
+            >
+              {(m) => (
+                <div key={m.agentId} className="record-row">
+                  <AgentName id={m.agentId} />
+                  <Badge variant="outline">
+                    {m.role === "leader"
+                      ? tr("common.leader")
+                      : tr("common.collaborator")}
+                  </Badge>
+                </div>
               )}
-            </QueryState>
+            </DetailRecordList>
             <h3>{tr("teams.managedBoards")}</h3>
-            <QueryState query={boards}>
-              {boards.data && (
-                <>
-                  {boards.data.items.map((b) => (
-                    <Button
-                      key={b.id}
-                      className="team-board-link"
-                      variant="outline"
-                      onClick={() => {
-                        openBoard(b.id);
-                      }}
-                    >
-                      <span>{b.name}</span>
-                      <ArrowUpRight data-icon="inline-end" />
-                    </Button>
-                  ))}
-                  {!boards.data.items.length && (
-                    <NoData title={tr("teams.noLinkedBoards")} />
-                  )}
-                  <Pager page={boards.data} onOffset={setBoardOffset} />
-                </>
+            <DetailRecordList
+              resource="boards"
+              scope=""
+              filters={{ teamId: id, limit: boardLimit }}
+              empty={tr("teams.noLinkedBoards")}
+              countLabel={tr("teams.managedBoards")}
+            >
+              {(b) => (
+                <Button
+                  key={b.id}
+                  className="team-board-link"
+                  variant="outline"
+                  onClick={() => {
+                    openBoard(b.id);
+                  }}
+                >
+                  <span>{b.name}</span>
+                  <ArrowUpRight data-icon="inline-end" />
+                </Button>
               )}
-            </QueryState>
+            </DetailRecordList>
           </>
         )}
       </QueryState>

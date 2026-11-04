@@ -1010,3 +1010,5 @@ A navegação principal de Agent e Team segue Board: breadcrumb global no deskto
 Links antigos com `agent.tab=resume` ou `tab=resume` abrem Perfil. Instruções de trabalho e contexto permanecem no perfil; o frontend não consulta mais o endpoint de retomada do agente.
 
 Vínculos do agente aparecem somente no contexto lateral desktop e na tela Info mobile, sem duplicação na aba Perfil. Memberships e navegação para o time permanecem disponíveis.
+
+Nos detalhes de Agent, Tasks e Chats usam scroll infinito; em Team, Membros e Boards geridos carregam independentemente. `DetailRecordList` reutiliza o controlador `useInfiniteScroll`, marcador de 60px e loading padrão. Carrega páginas limitadas quando o fim está visível, deduplica pela identidade do registro, mantém totais da API e registros já carregados em erros, com retry da página pendente. Filtros/limites/from permanecem na URL; offsets legados não ocultam registros iniciais. Desktop observa o painel principal e mobile observa a página.
