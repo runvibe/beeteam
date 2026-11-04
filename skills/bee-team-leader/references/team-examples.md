@@ -1,85 +1,85 @@
-# Exemplos adaptáveis de equipes
+# Adaptable team examples
 
-São propostas de divisão, não equipes fixas nem autorização de execução. Para cada demanda, consulte perfis e contexto existentes; formação de equipe exige aprovação concreta do usuário independentemente da autonomia de tasks/boards. Aprovações de execução/chats seguem suas regras próprias.
+These are proposed divisions of work, not fixed teams or execution authorization. For each request, consult existing profiles and context; team formation requires concrete user approval regardless of task/board autonomy. Execution/chat approvals follow their own rules.
 
-## Abertura e formação
+## Opening and formation
 
-| Situação | Resposta esperada antes de qualquer cadastro |
+| Situation | Expected response before any registration |
 |---|---|
-| Chat novo sem time indicado | Cumprimentar, abrir Teams no endereço confirmado e pedir escolha existente/novo; usuário informa escolha no chat, sem substituir conversa por checklist MCP. |
-| Usuário escolhe time existente | Consultar time e líder; carregar perfil/instruções/estilo/regras/contexto, assumir esse papel e retomar trabalho relevante sem criar ou sobrescrever identidade. |
-| Contexto diz explicitamente “use o time Alfa” | Resolver e consultar Alfa, sem repetir a pergunta de escolha. Nome ambíguo exige esclarecer, não escolher arbitrariamente. |
-| Nenhum time adequado | “Você quer criar um time?”; se sim, perguntar primeiro sobre o objetivo do projeto, depois esclarecer escopo uma pergunta por vez. Não criar registros ainda. |
-| Demanda entendida | Propor líder e colaboradores com responsabilidades e motivo, explicando reutilização/criação; aguardar aprovação concreta. |
-| Usuário altera ou rejeita composição | Incorporar a mudança, reapresentar composição resultante e aguardar confirmação; nada da proposta rejeitada é cadastrado. |
-| Time sem líder ou vínculos inconsistentes | Para time escolhido sem líder, ler time e criar/vincular liderança adequada conforme fluxo; inconsistência distinta ou dado essencial ausente exige esclarecimento específico, sem duplicar identidade. |
-| Board automático, equipe ainda não aprovada | Manter aprovação da formação; autonomia da execução não aprova agentes/time/vínculos. |
+| New chat without an indicated team | Greet, open Teams at the confirmed address, and ask for existing/new choice; user reports choice in chat, without replacing conversation with an MCP checklist. |
+| User chooses existing team | Consult team and leader; load profile/instructions/style/rules/context, assume that role, and resume relevant work without creating or overwriting identity. |
+| Context explicitly says “use team Alfa” | Resolve and consult Alfa without repeating the choice question. An ambiguous name requires clarification, not arbitrary selection. |
+| No suitable team | “Do you want to create a team?”; if yes, first ask about the project objective, then clarify scope one question at a time. Do not create records yet. |
+| Request understood | Propose leader and collaborators with responsibilities and rationale, explaining reuse/creation; await concrete approval. |
+| User changes or rejects composition | Incorporate the change, present the resulting composition again, and await confirmation; nothing from the rejected proposal is registered. |
+| Team without leader or inconsistent memberships | For a selected team without a leader, read team and create/link suitable leadership according to the flow; a distinct inconsistency or missing essential datum requires specific clarification, without duplicating identity. |
+| Automatic board, team not yet approved | Preserve formation approval; execution autonomy does not approve agents/team/memberships. |
 
-Exemplo de time novo: após entender que o usuário quer um site com API, propor “Eu conduzo o trabalho como líder; proponho Ana para interface e Bruno para API, por essas entregas terem contratos distintos. Reutilizaremos os perfis disponíveis, se os vínculos permitirem. Você aprova essa composição?”. Se o usuário pedir uma única pessoa para implementar, ajustar a proposta antes de cadastrar. Projeto permanece descrição da demanda; não criar entidade Project/workspace.
+New-team example: after understanding that the user wants a website with an API, propose “I will lead the work; I propose Ana for the interface and Bruno for the API, because these deliveries have distinct contracts. We will reuse available profiles if memberships permit. Do you approve this composition?”. If the user asks for a single person to implement it, adjust the proposal before registering. Project remains a description of the request; do not create a Project/workspace entity.
 
-## Desenvolvimento: site com API
+## Development: website with API
 
-Demanda: construir site que consulte uma API, com escopo de publicação separado.
-Divisão: interface produz telas; API produz contrato e serviço; validação verifica integração e critérios de aceitação. A separação permite execução independente após combinar contrato e dados de exemplo. Validação da integração depende das duas entregas.
-Entregas: telas, contrato/serviço, evidências de testes e pendências de publicação.
-Reutilizar: colaborador que conhece interface ou API e cujo chat ainda tem contexto pertinente. Criar: sessão para frente independente sem contexto adequado; novo perfil somente se faltar atuação disponível, respeitando vínculos. Não criar três pessoas se uma alteração pequena couber em uma.
-Proposta: “Reutilizar Ana na interface e Bruno na API; criar chat para Carla validar quando ambos entregarem. Entregar integração testada; publicação continua fora do escopo.”
+Request: build a website that queries an API, with publication scope separate.
+Division: interface produces screens; API produces contract and service; validation checks integration and acceptance criteria. Separation allows independent execution after agreeing on contract and example data. Integration validation depends on both deliveries.
+Deliverables: screens, contract/service, test evidence, and pending publication items.
+Reuse: collaborator familiar with interface or API whose chat still has relevant context. Create: session for an independent workstream without suitable context; a new profile only if the required role is unavailable, respecting memberships. Do not create three people if a small change fits within one person's work.
+Proposal: “Reuse Ana for the interface and Bruno for the API; create a chat for Carla to validate when both deliver. Deliver tested integration; publication remains outside scope.”
 
-## Tesouraria: fluxo de caixa
+## Treasury: cash flow
 
-Demanda: organizar contas e projetar caixa de 90 dias, sem movimentar dinheiro.
-Divisão: contas organiza pagar/receber; projeção usa saldos e vencimentos reconciliados; conferência identifica divergências e lacunas. Separar origem dos dados da projeção facilita conferir premissas.
-Entregas: base conciliada, projeção por período, lista de divergências e premissas. Projeção depende da base; conferência pode examinar amostras enquanto ela é preparada.
-Reutilizar: quem conhece categorias e fontes anteriores, após conferir atualização. Criar: chat para conferência independente se houver volume e capacidade; não duplicar identidade só porque o chat antigo foi fechado.
-Proposta: “Ana organiza contas; Bruno projeta após receber a base; Ana confere divergências se o volume permitir, ou proponho uma terceira frente. Nenhum pagamento será executado.”
+Request: organize accounts and project cash flow for 90 days, without moving money.
+Division: accounts organizes payables/receivables; projection uses reconciled balances and due dates; checking identifies discrepancies and gaps. Separating the data source from projection makes assumptions easier to check.
+Deliverables: reconciled dataset, projection by period, list of discrepancies and assumptions. Projection depends on the dataset; checking can examine samples while it is prepared.
+Reuse: someone familiar with previous categories and sources, after checking they are up to date. Create: chat for independent checking if volume and capacity warrant it; do not duplicate identity just because the old chat was closed.
+Proposal: “Ana organizes accounts; Bruno projects after receiving the dataset; Ana checks discrepancies if volume permits, or I propose a third workstream. No payment will be executed.”
 
-## Financeiro: custos, orçamento e cenários
+## Finance: costs, budget, and scenarios
 
-Demanda: estruturar planilha de orçamento versus realizado e analisar cenários.
-Divisão: organização da planilha normaliza períodos/categorias; custos explica variações; cenários calcula alternativas com premissas explícitas. Custos e cenários dependem da base comparável, evitando misturar períodos.
-Entregas: planilha com fórmulas verificadas, análise de desvios, cenários e incertezas. Revisão confere fórmulas, unidades e premissas, sem aprovar gastos.
-Reutilizar: agente que mantém o modelo e seu contexto; abrir nova sessão da mesma identidade quando a anterior faltar. Criar outro colaborador apenas para capacidade/atuação distinta; atuar na task não exige mudar de time. Se o usuário também pedir reorganização, proponha composição válida ou cópia de perfil solicitada, sem levar histórico interno.
-Proposta: “Reutilizar responsável pelo modelo na base; analista de custos explica desvios; cenários começa depois da conferência. Entrega é análise, não execução do orçamento.”
+Request: structure a budget-versus-actual spreadsheet and analyze scenarios.
+Division: spreadsheet organization normalizes periods/categories; costs explains variances; scenarios calculates alternatives with explicit assumptions. Costs and scenarios depend on a comparable dataset, avoiding mixed periods.
+Deliverables: spreadsheet with verified formulas, variance analysis, scenarios, and uncertainties. Review checks formulas, units, and assumptions without approving spending.
+Reuse: agent maintaining the model and its context; open a new session with the same identity when the previous one is unavailable. Create another collaborator only for distinct capacity/role; working on the task does not require changing teams. If the user also requests reorganization, propose a valid composition or requested profile copy without carrying over internal history.
+Proposal: “Reuse the model owner for the dataset; a cost analyst explains variances; scenarios starts after checking. The delivery is analysis, not budget execution.”
 
-## Mercado: concorrentes, segmentos e síntese
+## Market: competitors, segments, and synthesis
 
-Demanda: avaliar oportunidade em segmento e região definidos.
-Divisão: concorrentes levanta ofertas/fontes; segmentos analisa necessidades e sinais de demanda; síntese cruza evidências, limitações e hipóteses. As pesquisas podem correr em paralelo com recorte comum; conclusão depende das duas.
-Entregas: comparação com fontes/datas, segmentos fundamentados e síntese com incertezas. Não transformar hipótese em fato nem concluir só pela quantidade de fontes.
-Reutilizar: pesquisador com histórico relevante e fontes acessíveis; criar sessão independente quando o recorte exigir contexto separado. O líder pode consolidar sem criar um agente só para síntese.
-Proposta: “Reutilizar pesquisador de concorrentes; abrir sessão para análise de segmentos; consolidarei quando receber ambos. A aprovação cobre essas duas frentes, sem contato externo com clientes.”
+Request: assess an opportunity in a defined segment and region.
+Division: competitors surveys offerings/sources; segments analyzes needs and demand signals; synthesis cross-references evidence, limitations, and hypotheses. Research can run in parallel with a common focus; the conclusion depends on both.
+Deliverables: comparison with sources/dates, substantiated segments, and synthesis with uncertainties. Do not turn a hypothesis into a fact or conclude based solely on the number of sources.
+Reuse: researcher with relevant history and accessible sources; create an independent session when the focus requires separate context. The leader can consolidate without creating an agent solely for synthesis.
+Proposal: “Reuse the competitor researcher; open a session for segment analysis; I will consolidate when I receive both. Approval covers these two workstreams, without external customer contact.”
 
-## Uma demanda atravessando boards
+## One request across boards
 
-Pré-condição em chat novo: se a skill está carregada e o painel abre, mas ferramentas Bee Team faltam, o líder identifica a URL MCP e prepara cadastro autorizado conforme a referência Codex. Depois confirma leitura pela ferramenta da sessão antes de consultar/registrar a demanda. Se o cadastro já existe e apenas este chat não foi atualizado, reutiliza a conexão e orienta atualização/nova sessão suportada; não inicia outra API. Colaborador sem acesso reporta a lacuna, sem repetir configuração global.
+Precondition in a new chat: if the skill is loaded and the panel opens but Bee Team tools are missing, the leader identifies the MCP URL and prepares authorized registration according to the Codex reference. Then confirm reading through the session tool before querying/recording the request. If registration already exists and only this chat has not been refreshed, reuse the connection and guide a supported refresh/new session; do not start another API. A collaborator without access reports the gap without repeating global configuration.
 
-Uma análise de mercado pode originar uma subtask financeira em outro board, executada por outro agente. Preserve `rootTaskId`/`originBoardId` da pesquisa e consulte a task financeira: origem `standard` exige a flag individual dela, mesmo se a pesquisa pai for automática. Origem `automatic` cobre a cadeia; origem `manual` exige aprovação. Não altere configurações do board financeiro. O briefing leva objetivo, fontes, decisões e limites da task; não copia histórico interno do pesquisador. Autor/executor são explícitos e a relação entre tasks não exige pertencerem ao mesmo time.
+Market analysis may produce a financial subtask on another board, executed by another agent. Preserve the research's `rootTaskId`/`originBoardId` and consult the financial task: origin `standard` requires its individual flag, even if the parent research is automatic. Origin `automatic` covers the chain; origin `manual` requires approval. Do not change the financial board's settings. The brief carries the task's objective, sources, decisions, and limits; it does not copy the researcher's internal history. Author/executor are explicit and the relationship between tasks does not require them to belong to the same team.
 
-## Chats e duas confirmações
+## Chats and two confirmations
 
-Candidatos por nome/contexto são evidência, não prova: reunir escolha de reuso/novo numa proposta única inclusive em automatic. Handoff explicita usar Collaborator; confirmar identidade/perfil e depois compreensão da task real atribuída. Sem task, aguardar registro/atribuição. Não criar persistência adicional chat–agente.
+Candidates by name/context are evidence, not proof: gather the reuse/new choice in a single proposal, including in automatic. Handoff explicitly requires Collaborator use; confirm identity/profile and then understanding of the actual assigned task. Without a task, await registration/assignment. Do not create additional chat–agent persistence.
 
-## Exemplo de pergunta, decisão e entrega
+## Example of a question, decision, and delivery
 
-Na mudança de endpoint, Collaborator salva a pergunta completa em comentário e notifica task, área “comentário” e commentID retornado. Leader lê esse ID via MCP e a task atual; atualiza specification/plano se necessário, salva resposta/decisão completa em novo comentário e notifica somente task, áreas realmente atualizadas, status pertinente e novo commentID. Collaborator lê esse comentário e estado atual, executa o escopo atribuído, salva arquivos/evidências, síntese e estado pertinentes, depois comentário completo de feito/não feito e pendências. Notifica só após confirmar tudo. Validação humana pendente não vira Concluído. Aviso repetido ou ack sem contribuição não gera novo comentário/notificação.
+When an endpoint changes, the Collaborator saves the full question in a comment and notifies task, area “comment”, and returned commentID. The Leader reads that ID via MCP and the current task; updates specification/plan if necessary, saves the full response/decision in a new comment, and notifies only task, areas actually updated, relevant status, and new commentID. The Collaborator reads that comment and current state, executes the assigned scope, saves relevant files/evidence, synthesis, and state, then a complete comment on done/not done and pending items. Notify only after confirming everything. Pending human validation does not become Done. A repeated notification or acknowledgment without a contribution does not generate a new comment/notification.
+
+## Role marker in the chat title
+
+When receiving/activating this skill in your own chat, immediately apply the role marker: `👑` for Leader or `🐝` for Collaborator, including in an existing chat that changes roles and before resolving identity. At that point, preserve the useful current title without inventing a name. After identifying the profile, adjust the name portion to the real name, preserving useful project/team context and the rest of the title, with the same marker.
+
+Check the current title and the actual harness tool. Remove only repeated/mixed leading role markers (`👑`, `🐝`, and the legacy star used as a marker) and their spaces, then prepend a single marker for the active role. Do not remove emojis or content from the rest of the title. If already correct, do not rename. A role change replaces the previous marker and never accumulates `👑🐝`. Confirm renaming only after success; an absent or failed tool does not block the identity/authorized work flow.
+
+When creating an authorized Collaborator chat, the Leader already uses `🐝 <collaborator name>`, preserving useful context; the Collaborator ensures the convention when activating its skill. When searching/reusing, compare names by normalizing these leading markers, without losing context or treating a name/emoji as proof of identity. Preserve existing reuse confirmations and harness permissions.
+
+The change applies exclusively to your own chat title when assuming the role, or to the initial title of the new chat whose creation was authorized. Do not rename other chats in bulk or change agent/team names, slugs, or Bee Team data. Marking the role does not confirm identity or waive a registered/assigned task. The Collaborator still does not navigate the user's screen; adjusting its own title is not panel navigation.
+
+Examples: activating Collaborator in `Project X` produces `🐝 Project X` before identity resolution; once identified as Ana, adjust to `🐝 Ana — Project X`. `👑 Ana — Project X` becomes `🐝 Ana — Project X` when assuming Collaborator; the reverse transition uses `👑`. `🐝 👑 🐝 Ana` becomes a single marker for the active role; resuming with the correct title does not write it again.
 
 
-## Marca do papel no título do chat
+## Execution question
 
-Ao receber/ativar esta skill no próprio chat, aplique imediatamente a marca do papel: `👑` para Leader ou `🐝` para Collaborator, inclusive em chat existente que muda de papel e antes de resolver a identidade. Nesse momento preserve o título atual útil, sem inventar nome. Após identificar o perfil, ajuste a parte do nome para o nome real, preservando complemento útil de projeto/time e demais conteúdo do título, com a mesma marca.
+The Collaborator needs to decide the endpoint's error behavior: record the full question and alternatives in the comment, do not open request_user_input or ask the human. If already authorized independent tests can be executed, continue that part; only mark a blocker when necessary. The Leader reads comment/task and responds or records question/options in the task and notifies the human by reference without an interactive dialog; wait for an authorized response, persist the decision, and return a taskID/areas/relevant status/commentID notification. The Collaborator reads the response by ID via MCP before implementing. Mandatory tool approval continues to be respected.
 
-Consulte o título atual e a ferramenta real do harness. Remova somente as marcas de papel iniciais repetidas/misturadas (`👑`, `🐝` e estrela legada usada como marca) e seus espaços, então anteponha uma única marca do papel ativo. Não remova emojis ou conteúdo do restante do título. Se já correto, não renomeie. Mudança de papel substitui a marca anterior, nunca acumula `👑🐝`. Só confirme renomeação após sucesso; ausência ou falha da ferramenta não bloqueia o fluxo de identidade/trabalho autorizado.
+Delivery reports, confirmation requests, and alternative choices follow the same route: the Collaborator records substantive content in a comment and notifies the Leader only through metadata; do not report or request confirmation directly from the human. When a human decision is needed, the Leader records question/options in a comment and notifies by reference, without an interactive dialog; wait for an authorized response, persist the feedback, and notify. A legitimate user metainstruction or mandatory tool approval is not bypassed by this rule.
 
-Ao criar um chat Collaborator autorizado, a Leader já usa `🐝 <nome do colaborador>`, preservando contexto útil; o Collaborator garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
-
-A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Collaborator continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
-
-Exemplos: ativar Collaborator em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Collaborator vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
-
-## Dúvida de execução
-
-Collaborator precisa decidir comportamento de erro do endpoint: registra a pergunta completa e alternativas no comentário, não abre request_user_input nem pergunta ao humano. Se puder executar testes independentes já autorizados, continua essa parte; só marca bloqueio quando necessário. Leader lê comentário/task e responde ou registra pergunta/opções na tarefa e avisa o humano por referência sem caixa interativa; aguarda resposta autorizada, persiste decisão e devolve notificação taskID/áreas/status pertinente/commentID. Collaborator lê a resposta pelo ID via MCP antes de implementar. Aprovação obrigatória de ferramenta continua sendo respeitada.
-
-Relato de entrega, pedido de confirmação e escolha de alternativa seguem a mesma via: Collaborator registra conteúdo substantivo em comentário e notifica a Leader apenas pelos metadados; não relata nem pede confirmação diretamente ao humano. Quando decisão humana for necessária, Leader registra pergunta/opções em comentário e avisa por referência, sem caixa interativa; aguarda resposta autorizada, persiste a devolutiva e notifica. Metainstrução legítima do usuário ou aprovação obrigatória da ferramenta não é contornada por essa regra.
-
-Na criação autorizada de novo Collaborator, siga [bootstrap](collaborator-bootstrap.md): primeiro chat, depois cadastro/vínculo pelo próprio Collaborator e retorno nome real/IDs/prontidão; só então Leader atribui trabalho. Exemplos de nomes não são perfis persistidos.
+During authorized creation of a new Collaborator, follow [bootstrap](collaborator-bootstrap.md): first the chat, then registration/membership by the Collaborator itself and a response with real name/IDs/readiness; only then does the Leader assign work. Example names are not persisted profiles.
