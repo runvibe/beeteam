@@ -975,3 +975,5 @@ O conteúdo editorial anunciado pelo MCP (ferramentas, schemas, prompts e recurs
 # Criação de status no frontend
 
 Nas configurações do board, **Adicionar status** revela o formulário e foca o nome. **Salvar** cria o status e recolhe o formulário; falhas mantêm o rascunho para nova tentativa. **Cancelar** ou Escape descartam o rascunho sem gravar. Durante o envio, os controles ficam desabilitados para evitar duplicação. Criação e edição usam **Conta como concluído**, com a mesma semântica do campo `isDone`.
+
+Na Visão Geral, Harnesses utilizados e Modelos utilizados são seções sem superfície, borda ou sombra externa, mantendo ícones, barras e estados de leitura. O layout continua com subtarefas à esquerda e presença empilhada à direita, empilhando tudo no mobile.
