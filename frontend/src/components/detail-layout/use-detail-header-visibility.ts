@@ -34,4 +34,3 @@ export function useDetailHeaderVisibility() {
   }, []);
   return { primary, hero, pastHeader };
 }
-

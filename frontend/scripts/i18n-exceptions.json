@@ -253,5 +253,10 @@
     "file": "src/components/entity-filter.tsx",
     "text": "Executor",
     "reason": "Historical selector query-scope identifier; kept byte-for-byte for existing URLs and separated from the translated display label."
+  },
+  {
+    "file": "src/components/detail-layout/detail-context.tsx",
+    "text": ".detail-primary h1",
+    "reason": "DOM selector for restoring focus to the primary heading after a responsive context transition; never displayed."
   }
 ]

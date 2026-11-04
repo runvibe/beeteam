@@ -13,7 +13,17 @@ const sections = () =>
     ["timeline", tr("tasks.timeline")],
   ] as const;
 
-export function TaskSections({value}:{value:string}) {
- useLocale();
- return <DetailNavigation value={value} items={sections()} ariaLabel={tr("tasks.taskSection")} previousLabel={tr("tasks.showPreviousTabs")} nextLabel={tr("tasks.showNextTabs")} heightProperty="--task-sections-height" filterSlot={<TaskFilterSlot />} />;
+export function TaskSections({ value }: { value: string }) {
+  useLocale();
+  return (
+    <DetailNavigation
+      value={value}
+      items={sections()}
+      ariaLabel={tr("tasks.taskSection")}
+      previousLabel={tr("tasks.showPreviousTabs")}
+      nextLabel={tr("tasks.showNextTabs")}
+      heightProperty="--task-sections-height"
+      filterSlot={<TaskFilterSlot />}
+    />
+  );
 }

@@ -16,16 +16,6 @@
   width: min(200px, 20vw);
 }
 @media (max-width: 1055px) {
-  .detail-section-navigation {
-    display: contents;
-  }
-  .detail-section-navigation-strip {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    background: var(--background);
-    padding: 0;
-  }
   .task-filter-origin {
     max-width: 100%;
     align-self: flex-end;

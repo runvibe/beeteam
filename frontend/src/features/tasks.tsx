@@ -93,11 +93,29 @@ function TaskDetail({ id }: { id: string }) {
     heading.current?.focus();
   }, [id]);
   return (
-    <DetailShell primaryRef={primary} heroRef={hero} primaryHidden={contextView && !!q.data} primaryClassName="task-detail-primary" heroClassName="task-detail-hero"
-     overlays={q.data && <TaskInfoButton />}
-     context={q.data && <TaskContext task={q.data} compactHeader={pastHeader} overview={overview.data} />}
-     hero={<>
-       <DetailHeader className="task-detail-heading" titleRef={heading} title={q.data?.title ?? tr("tasks.taskDetails2")} />
+    <DetailShell
+      primaryRef={primary}
+      heroRef={hero}
+      primaryHidden={contextView && !!q.data}
+      primaryClassName="task-detail-primary"
+      heroClassName="task-detail-hero"
+      overlays={q.data && <TaskInfoButton />}
+      context={
+        q.data && (
+          <TaskContext
+            task={q.data}
+            compactHeader={pastHeader}
+            overview={overview.data}
+          />
+        )
+      }
+      hero={
+        <>
+          <DetailHeader
+            className="task-detail-heading"
+            titleRef={heading}
+            title={q.data?.title ?? tr("tasks.taskDetails2")}
+          />
           {q.data && <TaskDescription task={q.data} />}
           {q.data && (
             <>
@@ -132,98 +150,97 @@ function TaskDetail({ id }: { id: string }) {
               />
             </>
           )}
-        </>} >
-        <QueryState query={q}>
-          {q.data && (
-            <>
-              <TaskFilterProvider>
-                <Tabs
-                  value={tab}
-                  activationMode="manual"
-                  onValueChange={(value) => {
-                    // Keep the outgoing height while comments resolve, so the shared
-                    // scroller cannot clamp to the much shorter loading placeholder.
-                    setConversationPlaceholderHeight(
-                      value === "comments"
-                        ? (reading.current?.getBoundingClientRect().height ?? 0)
-                        : 0,
-                    );
-                    setTab(value);
+        </>
+      }
+    >
+      <QueryState query={q}>
+        {q.data && (
+          <>
+            <TaskFilterProvider>
+              <Tabs
+                value={tab}
+                activationMode="manual"
+                onValueChange={(value) => {
+                  // Keep the outgoing height while comments resolve, so the shared
+                  // scroller cannot clamp to the much shorter loading placeholder.
+                  setConversationPlaceholderHeight(
+                    value === "comments"
+                      ? (reading.current?.getBoundingClientRect().height ?? 0)
+                      : 0,
+                  );
+                  setTab(value);
+                }}
+                className="task-detail-tabs"
+              >
+                <TaskSections value={tab} />
+                <motion.div
+                  className="task-detail-reading"
+                  ref={reading}
+                  style={{
+                    minHeight:
+                      tab === "comments"
+                        ? conversationPlaceholderHeight
+                        : undefined,
                   }}
-                  className="task-detail-tabs"
+                  animate={panelAnimation}
+                  data-task-section={tab}
                 >
-                  <TaskSections value={tab} />
-                  <motion.div
-                    className="task-detail-reading"
-                    ref={reading}
-                    style={{
-                      minHeight:
-                        tab === "comments"
-                          ? conversationPlaceholderHeight
-                          : undefined,
-                    }}
-                    animate={panelAnimation}
-                    data-task-section={tab}
-                  >
-                    <TabsContent value="overview">
-                      <TaskOverviewPanel task={q.data} onTab={setTab} />
-                    </TabsContent>
-                    <TabsContent value="specification">
-                      <TaskSpecification
+                  <TabsContent value="overview">
+                    <TaskOverviewPanel task={q.data} onTab={setTab} />
+                  </TabsContent>
+                  <TabsContent value="specification">
+                    <TaskSpecification
+                      taskId={q.data.id}
+                      specification={q.data.specification}
+                      scope={q.data.workScope}
+                    />
+                  </TabsContent>
+                  <TabsContent value="children">
+                    <Children task={q.data} />
+                  </TabsContent>
+                  <TabsContent value="plans">
+                    <Plans task={q.data} revealConsumed={planRevealConsumed} />
+                  </TabsContent>
+                  <TabsContent value="comments">
+                    <TaskConversation
+                      taskId={q.data.id}
+                      onReady={conversationReady}
+                    />
+                  </TabsContent>
+                  <TabsContent value="attachments">
+                    <AttachmentRecords taskId={q.data.id}>
+                      {(item) => <Attachment item={item} />}
+                    </AttachmentRecords>
+                  </TabsContent>
+                  <TabsContent value="summaries">
+                    {overview.data && (
+                      <ProgressHistory
                         taskId={q.data.id}
-                        specification={q.data.specification}
-                        scope={q.data.workScope}
+                        data={overview.data.progressHistory}
+                        mode="chart"
                       />
-                    </TabsContent>
-                    <TabsContent value="children">
-                      <Children task={q.data} />
-                    </TabsContent>
-                    <TabsContent value="plans">
-                      <Plans
-                        task={q.data}
-                        revealConsumed={planRevealConsumed}
-                      />
-                    </TabsContent>
-                    <TabsContent value="comments">
-                      <TaskConversation
-                        taskId={q.data.id}
-                        onReady={conversationReady}
-                      />
-                    </TabsContent>
-                    <TabsContent value="attachments">
-                      <AttachmentRecords taskId={q.data.id}>
-                        {(item) => <Attachment item={item} />}
-                      </AttachmentRecords>
-                    </TabsContent>
-                    <TabsContent value="summaries">
-                      {overview.data && (
-                        <ProgressHistory
-                          taskId={q.data.id}
-                          data={overview.data.progressHistory}
-                          mode="chart"
-                        />
-                      )}
-                      <SummaryBrowser
-                        taskId={q.data.id}
-                        progress={overview.data?.progressHistory.items ?? []}
-                      >
-                        <Records resource="summaries" task={q.data} />
-                      </SummaryBrowser>
-                    </TabsContent>
-                    <TabsContent value="timeline">
-                      <TaskExecutionTimeline
-                        key={q.data.id}
-                        taskId={q.data.id}
-                        version={q.data.version}
-                      />
-                      <Records resource="timeline" task={q.data} />
-                    </TabsContent>
-                  </motion.div>
-                </Tabs>
-              </TaskFilterProvider>
-            </>
-          )}
-        </QueryState>
+                    )}
+                    <SummaryBrowser
+                      taskId={q.data.id}
+                      progress={overview.data?.progressHistory.items ?? []}
+                    >
+                      <Records resource="summaries" task={q.data} />
+                    </SummaryBrowser>
+                  </TabsContent>
+                  <TabsContent value="timeline">
+                    <TaskExecutionTimeline
+                      key={q.data.id}
+                      taskId={q.data.id}
+                      version={q.data.version}
+                    />
+                    <Records resource="timeline" task={q.data} />
+                  </TabsContent>
+                </motion.div>
+              </Tabs>
+            </TaskFilterProvider>
+          </>
+        )}
+      </QueryState>
     </DetailShell>
   );
 }

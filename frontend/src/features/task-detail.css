@@ -1,3 +1,5 @@
+.task-page { container-name: task-detail; --task-sections-height:70px; }
+.task-detail-primary { scroll-padding-top:var(--task-sections-height); }
 /* Account for the browser scrollbar inside a 320px viewport on this page. */
 .task-detail-state {
   display: flex;

@@ -16,14 +16,32 @@ export function openDetails(key: string) {
   query.set(key, "details");
   navigate(`${path}?${query}`);
   window.history.replaceState(
-    { ...window.history.state, [key === "task.view" ? "taskDetailsReturnUrl" : `${key}.returnUrl`]: previous },
+    {
+      ...window.history.state,
+      detailReturn: {
+        key,
+        url: previous,
+        index: window.history.state.index - 1,
+      },
+    },
     "",
   );
 }
 export function closeDetails(key: string) {
   const fallback = mainDetailsUrl(key);
   const state = window.history.state;
-  if (state?.bee && state.index > 0 && typeof state[key === "task.view" ? "taskDetailsReturnUrl" : `${key}.returnUrl`] === "string" && mainDetailsUrl(key, state[key === "task.view" ? "taskDetailsReturnUrl" : `${key}.returnUrl`]) === fallback)
-    window.history.back();
-  else navigate(fallback, true);
+  const origin = state?.detailReturn;
+  if (
+    state?.bee &&
+    origin?.key === key &&
+    Number.isInteger(origin.index) &&
+    origin.index >= 0 &&
+    origin.index < state.index &&
+    typeof origin.url === "string" &&
+    mainDetailsUrl(key, origin.url) === fallback
+  ) {
+    const distance = origin.index - state.index;
+    if (distance === -1) window.history.back();
+    else window.history.go(distance);
+  } else navigate(fallback, true);
 }

@@ -12,7 +12,23 @@ function reveal(viewport: HTMLElement, target: HTMLElement) {
     viewport.scrollLeft += tab.right - bounds.right;
 }
 
-export function DetailNavigation({ value, items, ariaLabel, previousLabel, nextLabel, filterSlot, heightProperty="--detail-navigation-height" }: {value:string;items:ReadonlyArray<readonly [string,string]>;ariaLabel:string;previousLabel:string;nextLabel:string;filterSlot?:ReactNode;heightProperty?:string}) {
+export function DetailNavigation({
+  value,
+  items,
+  ariaLabel,
+  previousLabel,
+  nextLabel,
+  filterSlot,
+  heightProperty = "--detail-navigation-height",
+}: {
+  value: string;
+  items: ReadonlyArray<readonly [string, string]>;
+  ariaLabel: string;
+  previousLabel: string;
+  nextLabel: string;
+  filterSlot?: ReactNode;
+  heightProperty?: string;
+}) {
   const navigation = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({
@@ -102,10 +118,7 @@ export function DetailNavigation({ value, items, ariaLabel, previousLabel, nextL
               reveal(viewport.current, event.target);
           }}
         >
-          <TabsList
-            className="detail-section-list"
-            aria-label={ariaLabel}
-          >
+          <TabsList className="detail-section-list" aria-label={ariaLabel}>
             {items.map(([key, label]) => (
               <TabsTrigger key={key} value={key}>
                 {label}

@@ -13,7 +13,13 @@ export function MobileContextPath() {
   useLocale();
   const { area, boardId, taskId, agentId, teamId } = useUi();
   const url = useLocation();
-  const viewKey = taskId ? "task.view" : agentId ? "agent.view" : teamId ? "team.view" : "";
+  const viewKey = taskId
+    ? "task.view"
+    : agentId
+      ? "agent.view"
+      : teamId
+        ? "team.view"
+        : "";
   const board = useEntity("boards", boardId ?? "");
   const task = useEntity("tasks", taskId ?? "");
   const agent = useEntity("agents", agentId ?? "");
@@ -46,7 +52,11 @@ export function MobileContextPath() {
         variant="ghost"
         size="icon"
         aria-label={tr("common.back")}
-        onClick={() => viewKey && isDetailsView(url, viewKey) ? closeDetails(viewKey) : goBack(fallback)}
+        onClick={() =>
+          viewKey && isDetailsView(url, viewKey)
+            ? closeDetails(viewKey)
+            : goBack(fallback)
+        }
       >
         <ChevronLeft aria-hidden="true" />
       </Button>

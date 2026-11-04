@@ -44,80 +44,102 @@ export function TaskContext({
   const openTask = useUi((s) => s.openTask);
   const openBoard = useUi((s) => s.openBoard);
   return (
-    <DetailContext className="task-context" contentClassName="task-context-content" label={tr("tasks.taskContext")} screenTitle={tr("tasks.taskDetails")} mobile={mobile} screen={details}
-      compactHeader={<TaskCompactHeader task={task} visible={compactHeader} overview={overview} />}
-      backAction={<Button variant="ghost" onClick={closeTaskDetails} aria-label={tr("tasks.backToTask")}><ArrowUpLeft aria-hidden="true" />{tr("common.back")}</Button>}>
-        <section>
-          <h2>{tr("boards.status")}</h2>
-          <TaskStatus task={task} />
-        </section>
-        <section>
-          <h2>{tr("tasks.assignees")}</h2>
-          <dl>
-            <div>
-              <dt>{tr("boards.executor")}</dt>
-              <dd>
-                <AgentName id={task.executorAgentId} />
-              </dd>
-            </div>
-            <div>
-              <dt>{tr("tasks.author")}</dt>
-              <dd>
-                <AgentName id={task.authorAgentId} />
-              </dd>
-            </div>
-          </dl>
-        </section>
-        <section>
-          <h2>{tr("tasks.relationships")}</h2>
-          <dl>
-            <div>
-              <dt>{tr("tasks.currentBoard")}</dt>
-              <dd>
-                <Button variant="link" onClick={() => openBoard(task.boardId)}>
-                  <BoardName id={task.boardId} />
-                </Button>
-              </dd>
-            </div>
-            <div>
-              <dt>{tr("tasks.chainOriginBoard")}</dt>
-              <dd>
-                <Button
-                  variant="link"
-                  onClick={() => openBoard(task.executionContext.originBoardId)}
-                >
-                  <BoardName id={task.executionContext.originBoardId} />
-                </Button>
-              </dd>
-            </div>
-          </dl>
-          {task.parentId && (
-            <Button variant="link" onClick={() => openTask(task.parentId!)}>
-              <ArrowUpLeft />
-              {tr("tasks.parentTask")}
-            </Button>
-          )}
-        </section>
-        <TaskMode task={task} />
-        <section>
-          <h2>{tr("tasks.record")}</h2>
-          <dl>
-            <div>
-              <dt>{tr("agents.registry")}</dt>
-              <dd>
-                {task.archivedAt ? tr("tasks.archived") : tr("tasks.active")}
-              </dd>
-            </div>
-            <div>
-              <dt>{tr("tasks.updatedAt")}</dt>
-              <dd>
-                <time dateTime={task.updatedAt}>
-                  {formatDate(task.updatedAt)}
-                </time>
-              </dd>
-            </div>
-          </dl>
-        </section>
+    <DetailContext
+      className="task-context"
+      contentClassName="task-context-content"
+      label={tr("tasks.taskContext")}
+      screenTitle={tr("tasks.taskDetails")}
+      mobile={mobile}
+      screen={details}
+      compactHeader={
+        <TaskCompactHeader
+          task={task}
+          visible={compactHeader}
+          overview={overview}
+        />
+      }
+      backAction={
+        <Button
+          variant="ghost"
+          onClick={closeTaskDetails}
+          aria-label={tr("tasks.backToTask")}
+        >
+          <ArrowUpLeft aria-hidden="true" />
+          {tr("common.back")}
+        </Button>
+      }
+    >
+      <section>
+        <h2>{tr("boards.status")}</h2>
+        <TaskStatus task={task} />
+      </section>
+      <section>
+        <h2>{tr("tasks.assignees")}</h2>
+        <dl>
+          <div>
+            <dt>{tr("boards.executor")}</dt>
+            <dd>
+              <AgentName id={task.executorAgentId} />
+            </dd>
+          </div>
+          <div>
+            <dt>{tr("tasks.author")}</dt>
+            <dd>
+              <AgentName id={task.authorAgentId} />
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section>
+        <h2>{tr("tasks.relationships")}</h2>
+        <dl>
+          <div>
+            <dt>{tr("tasks.currentBoard")}</dt>
+            <dd>
+              <Button variant="link" onClick={() => openBoard(task.boardId)}>
+                <BoardName id={task.boardId} />
+              </Button>
+            </dd>
+          </div>
+          <div>
+            <dt>{tr("tasks.chainOriginBoard")}</dt>
+            <dd>
+              <Button
+                variant="link"
+                onClick={() => openBoard(task.executionContext.originBoardId)}
+              >
+                <BoardName id={task.executionContext.originBoardId} />
+              </Button>
+            </dd>
+          </div>
+        </dl>
+        {task.parentId && (
+          <Button variant="link" onClick={() => openTask(task.parentId!)}>
+            <ArrowUpLeft />
+            {tr("tasks.parentTask")}
+          </Button>
+        )}
+      </section>
+      <TaskMode task={task} />
+      <section>
+        <h2>{tr("tasks.record")}</h2>
+        <dl>
+          <div>
+            <dt>{tr("agents.registry")}</dt>
+            <dd>
+              {task.archivedAt ? tr("tasks.archived") : tr("tasks.active")}
+            </dd>
+          </div>
+          <div>
+            <dt>{tr("tasks.updatedAt")}</dt>
+            <dd>
+              <time dateTime={task.updatedAt}>
+                {formatDate(task.updatedAt)}
+              </time>
+            </dd>
+          </div>
+        </dl>
+      </section>
     </DetailContext>
   );
 }

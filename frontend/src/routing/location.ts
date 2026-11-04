@@ -30,8 +30,14 @@ export function navigate(to: string, replace = false) {
   savePosition(currentUrl());
   const previous = currentUrl();
   if (to === previous) return;
-  const detailView = (url: string) => ["task.view", "agent.view", "team.view"].map(key => new URLSearchParams(url.split("?")[1]).get(key) ?? "").join("|");
-  if (to.split("?")[0] === previous.split("?")[0] && detailView(to) === detailView(previous))
+  const detailView = (url: string) =>
+    ["task.view", "agent.view", "team.view"]
+      .map((key) => new URLSearchParams(url.split("?")[1]).get(key) ?? "")
+      .join("|");
+  if (
+    to.split("?")[0] === previous.split("?")[0] &&
+    detailView(to) === detailView(previous)
+  )
     positions.set(to, positions.get(previous)!);
   let old = window.history.state;
   if (!old?.bee) {
@@ -53,6 +59,10 @@ export function navigate(to: string, replace = false) {
         ? old.index
         : undefined,
     returnUrl: samePage ? old.returnUrl : from,
+    detailReturn:
+      samePage && detailView(to) === detailView(previous)
+        ? old.detailReturn
+        : undefined,
   };
   window.history[replace ? "replaceState" : "pushState"](next, "", to);
   window.dispatchEvent(new Event(eventName));

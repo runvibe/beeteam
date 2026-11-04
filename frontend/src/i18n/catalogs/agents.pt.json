@@ -59,5 +59,7 @@
   "thisRecordWasUpdatedInAnotherSessionYourDraftWas": "Este registro foi atualizado em outra sessão. Seu rascunho foi preservado. Use Recarregar formulário após o conflito para descartar o rascunho e carregar a versão atual.",
   "unnamedAgent": "Agente {{id}}",
   "demoResumeNotice": "Contexto demonstrativo. Não inicia chats nem confirma atividade ao vivo.",
-  "storedResumeNotice": "Somente contexto registrado; nenhuma sessão é iniciada ou monitorada."
+  "storedResumeNotice": "Somente contexto registrado; nenhuma sessão é iniciada ou monitorada.",
+  "details": "Detalhes do agente",
+  "backToAgent": "Voltar ao agente"
 }

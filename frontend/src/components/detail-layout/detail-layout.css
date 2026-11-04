@@ -8,10 +8,6 @@ body:has(.detail-page) {
   gap: 20px;
 }
 
-.detail-page {
-  --task-sections-height: 70px;
-}
-
 .detail-header h1 {
   margin: 0;
   font-size: 24px;
@@ -37,7 +33,7 @@ body:has(.detail-page) {
 }
 
 .detail-primary {
-  scroll-padding-top: var(--task-sections-height, var(--detail-navigation-height, 70px));
+  scroll-padding-top: var(--detail-navigation-height, 70px);
 }
 
 .detail-context {
@@ -138,27 +134,109 @@ body:has(.detail-page) {
   }
 }
 
-.detail-page { display:flex; flex-direction:column; width:100%; min-width:0; flex:1; }
-.detail-header { display:flex; align-items:flex-start; gap:16px; min-width:0; }
-.detail-header-text { flex:1; min-width:0; display:grid; gap:8px; }
-.detail-header .muted-copy { max-width:72ch; overflow-wrap:anywhere; }
-.detail-primary > .task-back { align-self:flex-start; }
-.detail-context h2 { font-size:14px; line-height:1.5; font-weight:600; }
-.detail-context .agent-name, .detail-context button { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
-.detail-primary[hidden], .detail-context[hidden], .detail-info-button[hidden], .detail-context-screen-header[hidden] { display:none!important; }
-.detail-info-button, .detail-context-screen-header { display:none; }
-.detail-primary > [data-slot="tabs"] { min-width:0; gap:20px; }
-.detail-primary h3 { font-weight:600; }
-@media (max-width:1055px) {
- .detail-columns { grid-template-columns:minmax(0,1fr); gap:28px; }
- .icon-navigation main:has(> .detail-page) { padding-right:max(1rem,env(safe-area-inset-right)); }
- .detail-info-button:not([hidden]) { position:fixed; top:max(8px,env(safe-area-inset-top)); right:max(12px,env(safe-area-inset-right)); z-index:40; display:inline-flex; width:44px; height:44px; border-radius:50%; }
- .detail-context:not([data-detail-screen="true"]) { display:none; }
- .detail-context[data-detail-screen="true"] { display:block; border:0; padding:0 0 max(20px,env(safe-area-inset-bottom)); }
- .detail-context-content { padding-top:20px; }
- .detail-context-screen-header { display:grid; gap:16px; }
- .detail-context-screen-header h1 { font-size:20px;line-height:1.4;outline:none; }
- .detail-context-screen-header button { min-height:44px; }
- html:has(.detail-page) { scroll-padding-top:var(--detail-navigation-height,70px); }
+.detail-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
 }
-@media(max-width:699px) { .detail-header h1 {font-size:20px;line-height:1.4;} }
+.detail-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+.detail-header-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.detail-header .muted-copy {
+  max-width: 72ch;
+  overflow-wrap: anywhere;
+}
+.detail-primary > .task-back {
+  align-self: flex-start;
+}
+.detail-context h2 {
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.detail-context .agent-name,
+.detail-context button {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.detail-primary[hidden],
+.detail-context[hidden],
+.detail-info-button[hidden],
+.detail-context-screen-header[hidden] {
+  display: none !important;
+}
+.detail-info-button,
+.detail-context-screen-header {
+  display: none;
+}
+.detail-primary > [data-slot="tabs"] {
+  min-width: 0;
+  gap: 20px;
+}
+.detail-primary h3 {
+  font-weight: 600;
+}
+@media (max-width: 1055px) {
+  .detail-columns {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .icon-navigation main:has(> .detail-page) {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .detail-info-button:not([hidden]) {
+    position: fixed;
+    top: max(8px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 40;
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+  .detail-context:not([data-detail-screen="true"]) {
+    display: none;
+  }
+  .detail-context[data-detail-screen="true"] {
+    display: block;
+    border: 0;
+    padding: 0 0 max(20px, env(safe-area-inset-bottom));
+  }
+  .detail-context-content {
+    padding-top: 20px;
+  }
+  .detail-context-screen-header {
+    display: grid;
+    gap: 16px;
+  }
+  .detail-context-screen-header h1 {
+    font-size: 20px;
+    line-height: 1.4;
+    outline: none;
+  }
+  .detail-context-screen-header button {
+    justify-self: start;
+    min-height: 44px;
+  }
+  html:has(.detail-page) {
+    scroll-padding-top: var(--detail-navigation-height, 70px);
+  }
+}
+@media (max-width: 699px) {
+  .detail-header h1 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+}

@@ -8,7 +8,8 @@ import { CardExcerpt } from "@/components/card-excerpt";
 import { useCardPages } from "@/api/card-pages";
 import { CardListViewport } from "@/components/card-list-viewport";
 import { BalancedCardGrid } from "@/components/balanced-card-grid";
-import { DetailPage } from "@/components/detail-page";
+import { EntityDetailPage } from "./entity-detail-page";
+import { DetailNavigation } from "@/components/detail-layout/detail-navigation";
 import { openCardLink } from "@/routing/card-navigation";
 import { useLocation, navigate, destination } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
@@ -26,7 +27,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Card,
   CardHeader,
@@ -213,19 +214,43 @@ function AgentDetail({ id }: { id: string }) {
   });
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   return (
-    <DetailPage
+    <EntityDetailPage
       label={tr("agents.agent")}
       title={q.data?.name ?? tr("agents.agentProfile")}
       description={
-        q.data?.roleDescription ?? tr("agents.recordedProfileAndContext")
+        <TextBlock>
+          {q.data?.roleDescription ?? tr("agents.recordedProfileAndContext")}
+        </TextBlock>
+      }
+      overlays={
+        q.data && (
+          <Dialog
+            open={configuring}
+            onOpenChange={(v) =>
+              !v && navigate(`/agents/${q.data.slug}${location.search}`, true)
+            }
+          >
+            <DialogContent className="detail-dialog">
+              <DialogHeader>
+                <DialogTitle>{q.data.name}</DialogTitle>
+                <DialogDescription>
+                  {tr("agents.agentProfileSettings")}
+                </DialogDescription>
+              </DialogHeader>
+              <ProfileForm key={q.data.id} agent={q.data} />
+            </DialogContent>
+          </Dialog>
+        )
       }
       fallback="/agents"
-    >
-      <QueryState query={q}>
-        {q.data && (
+      viewKey="agent.view"
+      contextLabel={tr("agents.details")}
+      backLabel={tr("agents.backToAgent")}
+      avatar={q.data && <AgentAvatar agent={q.data} />}
+      context={
+        q.data && (
           <>
-            <div className="entity-page-meta">
-              <AgentAvatar agent={q.data} />
+            <>
               <div>
                 <Badge variant="secondary">
                   {q.data.archivedAt
@@ -244,18 +269,49 @@ function AgentDetail({ id }: { id: string }) {
               >
                 {tr("agents.configure")}
               </Button>
-            </div>
+            </>
+
+            <section>
+              <h2>{tr("agents.associations")}</h2>
+              {q.data.bindings.leaderTeamId && (
+                <TeamLink
+                  id={q.data.bindings.leaderTeamId}
+                  role={tr("common.leader")}
+                />
+              )}
+              {q.data.bindings.collaboratorTeamId && (
+                <TeamLink
+                  id={q.data.bindings.collaboratorTeamId}
+                  role={tr("common.collaborator")}
+                />
+              )}
+              {!q.data.bindings.leaderTeamId &&
+                !q.data.bindings.collaboratorTeamId && (
+                  <p className="small-note">
+                    {tr("agents.noCurrentAssociations")}
+                  </p>
+                )}
+            </section>
+          </>
+        )
+      }
+    >
+      <QueryState query={q}>
+        {q.data && (
+          <>
             <Tabs value={tab} onValueChange={setTab}>
-              <TabsList className="detail-tabs">
-                <TabsTrigger value="profile">
-                  {tr("agents.profile")}
-                </TabsTrigger>
-                <TabsTrigger value="activities">
-                  {tr("agents.tasks")}
-                </TabsTrigger>
-                <TabsTrigger value="chats">{tr("agents.chats")}</TabsTrigger>
-                <TabsTrigger value="resume">{tr("agents.resume")}</TabsTrigger>
-              </TabsList>
+              <DetailNavigation
+                value={tab}
+                ariaLabel={tr("agents.details")}
+                previousLabel={tr("tasks.showPreviousTabs")}
+                nextLabel={tr("tasks.showNextTabs")}
+                items={[
+                  ["profile", tr("agents.profile")],
+                  ["activities", tr("agents.tasks")],
+                  ["chats", tr("agents.chats")],
+                  ["resume", tr("agents.resume")],
+                ]}
+              />
               <TabsContent value="profile">
                 <Profile agent={q.data} />
               </TabsContent>
@@ -269,26 +325,10 @@ function AgentDetail({ id }: { id: string }) {
                 <Resume agentId={id} />
               </TabsContent>
             </Tabs>
-            <Dialog
-              open={configuring}
-              onOpenChange={(v) =>
-                !v && navigate(`/agents/${q.data.slug}${location.search}`, true)
-              }
-            >
-              <DialogContent className="detail-dialog">
-                <DialogHeader>
-                  <DialogTitle>{q.data.name}</DialogTitle>
-                  <DialogDescription>
-                    {tr("agents.agentProfileSettings")}
-                  </DialogDescription>
-                </DialogHeader>
-                <ProfileForm key={q.data.id} agent={q.data} />
-              </DialogContent>
-            </Dialog>
           </>
         )}
       </QueryState>
-    </DetailPage>
+    </EntityDetailPage>
   );
 }
 function Profile({ agent }: { agent: Agent }) {

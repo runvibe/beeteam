@@ -13,7 +13,8 @@ import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { useApi, useEntity, useList } from "@/api/context";
 import type { Team } from "@/api/types";
 import { useUi } from "@/state/ui";
-import { DetailPage } from "@/components/detail-page";
+import { EntityDetailPage } from "./entity-detail-page";
+import { formatDate } from "@/components/shared";
 import { FilterBar } from "@/components/filter-bar";
 import {
   Card,
@@ -185,19 +186,84 @@ function TeamDetail({ id }: { id: string }) {
     });
   const openBoard = useUi((s) => s.openBoard);
   return (
-    <DetailPage
+    <EntityDetailPage
       label={tr("agents.team")}
       title={q.data?.name ?? tr("agents.team")}
-      description={tr(
-        "teams.compositionAndManagedBoardsTasksRetainTheirAuthorAndExecutor",
-      )}
+      description={
+        q.data ? (
+          <TextBlock>{q.data.purpose}</TextBlock>
+        ) : (
+          tr(
+            "teams.compositionAndManagedBoardsTasksRetainTheirAuthorAndExecutor",
+          )
+        )
+      }
+      viewKey="team.view"
+      contextLabel={tr("teams.details")}
+      backLabel={tr("teams.backToTeam")}
+      context={
+        q.data && (
+          <>
+            <section>
+              <h2>{tr("tasks.record")}</h2>
+              <dl>
+                <div>
+                  <dt>{tr("agents.registry")}</dt>
+                  <dd>
+                    {q.data.archivedAt
+                      ? tr("common.archived")
+                      : tr("agents.active")}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{tr("agents.lastUpdated")}</dt>
+                  <dd>
+                    <time dateTime={q.data.updatedAt}>
+                      {formatDate(q.data.updatedAt)}
+                    </time>
+                  </dd>
+                </div>
+              </dl>
+            </section>{" "}
+            <Button
+              variant="outline"
+              onClick={() =>
+                navigate(`/teams/${q.data.slug}/settings${location.search}`)
+              }
+            >
+              {tr("teams.editTeamMetadata")}
+            </Button>
+          </>
+        )
+      }
+      overlays={
+        q.data && (
+          <Dialog
+            open={configuring}
+            onOpenChange={(v) =>
+              !v && navigate(`/teams/${q.data.slug}${location.search}`, true)
+            }
+          >
+            <DialogContent className="detail-dialog">
+              <DialogHeader>
+                <DialogTitle>
+                  {tr("agents.configure")} {q.data.name}
+                </DialogTitle>
+                <DialogDescription>
+                  {tr("teams.editTeamMetadata2")}
+                </DialogDescription>
+              </DialogHeader>
+              <TeamForm key={q.data.id} team={q.data} />
+            </DialogContent>
+          </Dialog>
+        )
+      }
       fallback="/teams"
     >
       <QueryState query={q}>
         {q.data && (
           <>
             <div className="team-intro">
-              <TextBlock>{q.data.purpose}</TextBlock>
               <TextBlock>{q.data.context}</TextBlock>
             </div>
             <h3>{tr("common.agents")}</h3>
@@ -225,12 +291,13 @@ function TeamDetail({ id }: { id: string }) {
                   {boards.data.items.map((b) => (
                     <Button
                       key={b.id}
+                      className="team-board-link"
                       variant="outline"
                       onClick={() => {
                         openBoard(b.id);
                       }}
                     >
-                      {b.name}
+                      <span>{b.name}</span>
                       <ArrowUpRight data-icon="inline-end" />
                     </Button>
                   ))}
@@ -241,36 +308,10 @@ function TeamDetail({ id }: { id: string }) {
                 </>
               )}
             </QueryState>
-            <Button
-              variant="outline"
-              onClick={() =>
-                navigate(`/teams/${q.data.slug}/settings${location.search}`)
-              }
-            >
-              {tr("teams.editTeamMetadata")}
-            </Button>
-            <Dialog
-              open={configuring}
-              onOpenChange={(v) =>
-                !v && navigate(`/teams/${q.data.slug}${location.search}`, true)
-              }
-            >
-              <DialogContent className="detail-dialog">
-                <DialogHeader>
-                  <DialogTitle>
-                    {tr("agents.configure")} {q.data.name}
-                  </DialogTitle>
-                  <DialogDescription>
-                    {tr("teams.editTeamMetadata2")}
-                  </DialogDescription>
-                </DialogHeader>
-                <TeamForm key={q.data.id} team={q.data} />
-              </DialogContent>
-            </Dialog>
           </>
         )}
       </QueryState>
-    </DetailPage>
+    </EntityDetailPage>
   );
 }
 function TeamForm({ team: latest }: { team: Team }) {

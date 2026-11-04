@@ -108,3 +108,12 @@ Aprovar este plano autoriza a sequência incremental descrita, incluindo header 
 ## Adendo aprovado: ordem e contexto mobile
 
 Em03/11/2026 o usuário aprovou a execução após finalizar/testar/entregar a etapa mobile atual. A descrição anterior de disclosure/collapse mobile é substituída por tela própria: Info circular no header navega para `task.view=details`, mostra detalhes e ações do contexto e Voltar restaura tarefa/aba/filtros/scroll. Não usar Sheet/modal nem bloco duplicado no rodapé. Desktop mantém sidebar. Este comportamento entra no contrato do futuro DetailContext por slots e navegação pertencente ao adapter; Task deve preservar a instância de formulário ao trocar view/resize. Para Agent/Team definir adapter equivalente sem copiar parâmetros de Task. A refatoração ampla só começa depois da entrega mobile e coordenação de arquivos i18n. O restante deste plano permanece como baseline; os trechos antigos sobre autorização somente de análise e collapse são históricos e substituídos por este adendo.
+
+
+## Execução em 04/11/2026
+
+Mobile entregue em `d5df9d5`. Base i18n `98b579b` integrada em `51159ad`; extração Task em `ada7b84`. Componentes genéricos em `components/detail-layout`, adapters de domínio preservados em `features`. `EntityDetailPage` coordena navegação de Agent/Team, fornecendo slots ao shell. Configurações ficam fora da coluna oculta para continuar acessíveis no contexto mobile. Removidos `DetailPage` e CSS anteriores sem consumidores.
+
+Validação: 494 testes frontend passaram; build passou. QA somente leitura de 72 cenários (Task/Agent/Team × 320/390/768/1055/1056/1440 × EN/PT × claro/escuro), incluindo scroll/foco/identidade, ausência de overflow e retorno do histórico após Configurar. Corrigido wrap de nomes longos de boards em 320px. Revisão independente encontrou perda do índice de retorno após settings: corrigida com origem explícita preservada, regressão testada antes/depois.
+
+Cargo build passou. `cargo test` com BEE_TEST_DRIVER=sqlite passou 41 testes lib, 2 backend_api e 1 backend_board_subtasks, mas interrompeu em três testes de backend_changes que exigem BEE_TEST_DATABASE_URL para PostgreSQL 18 isolado, ausente neste ambiente. Nenhum backend alterado por esta refatoração. Não equivale a suite Rust completa aprovada. Integração ao runtime e aceite seguem com a Leader.

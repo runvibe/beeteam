@@ -997,3 +997,10 @@ Nas configurações do board, **Adicionar status** revela o formulário e foca o
 Na Visão Geral, Harnesses utilizados e Modelos utilizados são seções sem superfície, borda ou sombra externa, mantendo ícones, barras e estados de leitura. O layout continua com subtarefas à esquerda e presença empilhada à direita, empilhando tudo no mobile. Modelos não exibe o subtítulo redundante; contagens e descrição acessível das barras permanecem. Na Timeline, o eixo fica a 40px do topo do plot, com legendas abaixo e rolagem horizontal preservada.
 
 No mobile, o botão Info abre uma tela própria de detalhes da tarefa (`task.view=details`), com Voltar e os mesmos controles do contexto desktop. Aba, filtros e origem permanecem na URL; o conteúdo principal e os formulários continuam montados. Entrada direta retorna à tarefa sem depender de histórico anterior. Desktop conserva a sidebar.
+
+
+## Layout compartilhado de detalhes
+
+Task, Agent e Team usam os componentes de `frontend/src/components/detail-layout`: shell por slots, cabeçalho, navegação horizontal opcional, contexto responsivo e observação do cabeçalho. Esses componentes recebem conteúdo, labels traduzidos e callbacks, sem consultar API ou conhecer entidades. Os adapters mantêm queries, regras de domínio, navegação, formulários e filtros.
+
+No desktop (1056px ou mais), conteúdo e sidebar têm rolagem independente. No mobile, Info abre uma tela própria e Voltar restaura a página, aba, filtros e rolagem; os controles continuam montados ao alternar a tela ou redimensionar. As chaves são `task.view`, `agent.view` e `team.view`, sem alterar slugs. O padding direito é 1rem, respeitando safe areas. Configurações de Agent/Team continuam em `/settings` com os formulários fora do conteúdo oculto. Agent preserva suas quatro abas; Team mantém membros e boards com paginações independentes, sem novas abas. Troca de idioma mantém identidade dos componentes e conteúdo fornecido pelo usuário.
