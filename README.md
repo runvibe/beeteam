@@ -54,6 +54,9 @@ abrir a persistência. Nenhum banco anterior é movido, convertido ou resetado.
 Para produzir o executável completo, use `node scripts/build-distribution.mjs`
 (Rust >=1.94, Node/npm no build). Ele compila **mcp e embedded-ui** e verifica os
 assets antes de embuti-los. Execute o binário copiado sem Node/Vite em runtime.
+O staging inclui o catálogo canônico `docs/team-role-icons.json` como entrada
+externa; os hashes Node/Rust cobrem seu nome relativo e seus bytes. Uma alteração
+somente nesse catálogo invalida o build embutido anterior.
 `cargo build`/`cargo run` comuns incluem MCP, mas são builds de desenvolvimento
 sem UI; `--no-default-features` permite o build API-only sem MCP. A variável de
 ambiente não pode habilitar uma feature ausente do binário.

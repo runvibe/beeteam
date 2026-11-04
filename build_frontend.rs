@@ -37,59 +37,13 @@ pub fn generate() {
             }
         })
         .unwrap_or_else(|| root.join("dist"));
-    let mut inputs = Vec::new();
-    for name in [
-        "src",
-        "public",
-        "scripts",
-        "package.json",
-        "package-lock.json",
-        "index.html",
-        "vite.config.ts",
-        "tsconfig.json",
-        "tsconfig.app.json",
-        "tsconfig.node.json",
-    ] {
-        println!("cargo:rerun-if-changed=frontend/{name}");
-        files(&root.join(name), &mut inputs);
-    }
     println!("cargo:rerun-if-changed={}", dist.display());
-    let mut inputs: Vec<_> = inputs
-        .into_iter()
-        .map(|path| {
-            (
-                path.strip_prefix(&root)
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .replace('\\', "/"),
-                path,
-            )
-        })
-        .collect();
-    inputs.sort_by(|a, b| a.0.cmp(&b.0));
-    let mut source = Sha256::new();
-    for (name, path) in inputs {
-        source.update(name.as_bytes());
-        source.update([0]);
-        source.update(fs::read(path).unwrap());
-        source.update([0]);
-    }
-    let source: String = source
-        .finalize()
-        .iter()
-        .map(|b| format!("{b:02x}"))
-        .collect();
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read(dist.join(".beeteam-build.json")).expect(
             "Missing embedded frontend build; run npm ci and npm run build:embedded in frontend",
         ))
         .unwrap();
-    assert_eq!(
-        manifest["sourceHash"].as_str(),
-        Some(source.as_str()),
-        "Stale frontend build; run npm run build:embedded in frontend"
-    );
+    verify_source_hash(&manifest, &root);
     assert_eq!(manifest["nodeEnv"], "production");
     assert_eq!(manifest["apiMode"], "http");
     assert_eq!(manifest["apiBase"], "/api/v1");
@@ -138,4 +92,69 @@ pub fn generate() {
         output,
     )
     .unwrap();
+}
+
+pub fn verify_source_hash(manifest: &serde_json::Value, root: &Path) {
+    let source = source_hash(root);
+    assert_eq!(
+        manifest["sourceHash"].as_str(),
+        Some(source.as_str()),
+        "Stale frontend build; run npm run build:embedded in frontend"
+    );
+}
+
+// Keep stable input names and byte ordering in parity with build-inputs.mjs.
+pub fn source_hash(root: &Path) -> String {
+    let mut inputs = Vec::new();
+    for name in [
+        "src",
+        "public",
+        "scripts",
+        "package.json",
+        "package-lock.json",
+        "index.html",
+        "vite.config.ts",
+        "tsconfig.json",
+        "tsconfig.app.json",
+        "tsconfig.node.json",
+    ] {
+        println!("cargo:rerun-if-changed=frontend/{name}");
+        files(&root.join(name), &mut inputs);
+    }
+    let mut inputs: Vec<_> = inputs
+        .into_iter()
+        .map(|path| {
+            (
+                path.strip_prefix(&root)
+                    .unwrap()
+                    .to_str()
+                    .unwrap()
+                    .replace('\\', "/"),
+                path,
+            )
+        })
+        .collect();
+    let catalog = root.parent().unwrap().join("docs/team-role-icons.json");
+    assert_eq!(
+        fs::canonicalize(&catalog).unwrap(),
+        fs::canonicalize(root).unwrap().parent().unwrap().join("docs/team-role-icons.json"),
+        "external embedded UI inputs cannot traverse symlinks"
+    );
+    assert!(!fs::symlink_metadata(&catalog).unwrap().file_type().is_symlink());
+    inputs.push(("../docs/team-role-icons.json".into(), catalog));
+    println!("cargo:rerun-if-changed=docs/team-role-icons.json");
+    inputs.sort_by(|a, b| a.0.cmp(&b.0));
+    let mut source = Sha256::new();
+    for (name, path) in inputs {
+        source.update(name.as_bytes());
+        source.update([0]);
+        source.update(fs::read(path).unwrap());
+        source.update([0]);
+    }
+    let source: String = source
+        .finalize()
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect();
+    source
 }

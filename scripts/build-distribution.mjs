@@ -2,18 +2,41 @@
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {mkdirSync,cpSync,rmSync,realpathSync,existsSync,lstatSync} from 'node:fs';
-import {resolve,sep} from 'node:path';
-const root=fileURLToPath(new URL('..',import.meta.url));
-const frontend=resolve(root,'frontend');
-const staging=resolve(root,'.local','distribution','frontend');
-const allowed=resolve(root,'.local','distribution')+sep;
-if(!staging.startsWith(allowed))throw new Error('Invalid build staging directory');
-mkdirSync(staging,{recursive:true});
-if(realpathSync(staging)!==resolve(realpathSync(root),'.local','distribution','frontend'))throw new Error('Build staging must not traverse a symlink or junction');
-const inputs=['src','public','scripts','package.json','package-lock.json','index.html','vite.config.ts','tsconfig.json','tsconfig.app.json','tsconfig.node.json'];
-for(const name of inputs){const target=resolve(staging,name);if(!target.startsWith(staging+sep))throw new Error('Invalid build input');if(existsSync(target)&&lstatSync(target).isSymbolicLink())throw new Error('Build input must not be a symlink');rmSync(target,{recursive:true,force:true});cpSync(resolve(frontend,name),target,{recursive:true});}
+import {resolve,sep,dirname} from 'node:path';
+import {frontendInputs,externalInputs,sourceHash} from '../frontend/scripts/build-inputs.mjs';
+
+export function stageFrontend(root) {
+  root=realpathSync(root);
+  const frontend=resolve(root,'frontend');
+  if(realpathSync(frontend)!==frontend)throw new Error('Frontend source must not traverse a symlink or junction');
+  const allowed=resolve(root,'.local','distribution')+sep;
+  function directory(path) {
+    if(!path.startsWith(allowed))throw new Error('Invalid build staging directory');
+    mkdirSync(path,{recursive:true});
+    if(realpathSync(path)!==path)throw new Error('Build staging must not traverse a symlink or junction');
+  }
+  const staging=resolve(root,'.local','distribution','frontend');
+  directory(staging);
+  // Validate canonical source paths before copying. Verify no input changed during staging.
+  const expectedHash=sourceHash(frontend);
+  for(const name of [...frontendInputs,...externalInputs]) {
+    const target=resolve(staging,name);
+    if(!target.startsWith(allowed))throw new Error('Invalid build input');
+    directory(dirname(target));
+    if(existsSync(target)&&lstatSync(target).isSymbolicLink())throw new Error('Build input must not be a symlink');
+    rmSync(target,{recursive:true,force:true});
+    cpSync(resolve(frontend,name),target,{recursive:true});
+  }
+  if(sourceHash(staging)!==expectedHash)throw new Error('Build sources changed while staging');
+  return staging;
+}
+
 function run(program,args,cwd,env=process.env){const result=spawnSync(program,args,{cwd,env,stdio:'inherit'});if(result.status!==0)process.exit(result.status??1);}
-if(process.platform==='win32')run(process.env.ComSpec??'cmd.exe',['/d','/s','/c','npm ci --include=dev'],staging);
-else run('npm',['ci','--include=dev'],staging);
-run(process.execPath,['scripts/build-embedded.mjs'],staging);
-run('cargo',['build','--locked','--release','--features','mcp,embedded-ui'],root,{...process.env,BEE_FRONTEND_DIST:resolve(staging,'dist')});
+if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
+  const root=fileURLToPath(new URL('..',import.meta.url));
+  const staging=stageFrontend(root);
+  if(process.platform==='win32')run(process.env.ComSpec??'cmd.exe',['/d','/s','/c','npm ci --include=dev'],staging);
+  else run('npm',['ci','--include=dev'],staging);
+  run(process.execPath,['scripts/build-embedded.mjs'],staging);
+  run('cargo',['build','--locked','--release','--features','mcp,embedded-ui'],root,{...process.env,BEE_FRONTEND_DIST:resolve(staging,'dist')});
+}
