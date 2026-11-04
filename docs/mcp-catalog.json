@@ -35132,6 +35132,183 @@
         "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "GET /api/v1/agents/{agentId}/latest-activity. Read the latest recorded task activity attributed to an agent. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getAgentLatestActivity",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "activity": {
+                "additionalProperties": false,
+                "properties": {
+                  "eventId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "occurredAt": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "summaryId": {
+                    "format": "uuid",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "taskId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "taskSlug": {
+                    "type": "string"
+                  },
+                  "taskTitle": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "description": "Persisted task timeline EventType; translate this identifier for display.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "occurredAt",
+                  "taskId",
+                  "taskSlug",
+                  "taskTitle",
+                  "eventId",
+                  "summaryId"
+                ],
+                "type": [
+                  "object",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "activity"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
         "readOnlyHint": false
       },
       "description": "POST /api/v1/team-composition-changes. Change composition or transfer between teams atomically. Actor is declared, not authenticated.",

@@ -18,6 +18,7 @@ pub mod frontend;
 pub mod transfer;
 
 mod participants;
+mod agent_activity;
 
 mod overview;
 mod usage;

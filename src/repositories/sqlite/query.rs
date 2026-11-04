@@ -240,6 +240,7 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
 }
 
 pub(super) async fn select(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Result<Selection> {
+    if c.operation == "getAgentLatestActivity" { return super::super::agent_activity::sqlite(tx,c).await; }
     if c.operation=="getTaskExecutionIntervalUsage" { return crate::repositories::tracking::sqlite::select(tx,c).await; }
     if matches!(c.operation.as_str(), "getTaskUsage" | "listTaskUsageDimensions") {
         return crate::repositories::usage::sqlite::select(tx,c).await;

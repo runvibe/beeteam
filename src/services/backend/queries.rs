@@ -108,6 +108,13 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     }
     match c.operation.as_str() {
         "getTaskExecutionIntervalUsage" | "getTaskUsage" | "listTaskUsageDimensions" => Ok(unit.select(c).await?.items.remove(0)),
+        "getAgentLatestActivity" => {
+            let activity = unit.select(c).await?.items.into_iter().next()
+                .map(serde_json::from_value::<crate::dto::agent_activity::AgentActivity>)
+                .transpose().map_err(|_| Failure::new("internal_error", "Invalid agent activity projection"))?;
+            serde_json::to_value(crate::dto::agent_activity::AgentLatestActivity { activity })
+                .map_err(|_| Failure::new("internal_error", "Unable to serialize agent activity"))
+        }
         "getAgent" => resource(records, "agents", c.id("agentId")?),
         "getTeam" => resource(records, "teams", c.id("teamId")?),
         "getBoard" => resource(records, "boards", c.id("boardId")?),

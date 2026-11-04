@@ -231,6 +231,7 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
 }
 
 pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> Result<Selection> {
+    if c.operation == "getAgentLatestActivity" { return super::agent_activity::postgres(tx,c).await; }
     if c.operation=="getTaskExecutionIntervalUsage" { return crate::repositories::tracking::postgres::select(tx,c).await; }
     if matches!(c.operation.as_str(), "getTaskUsage" | "listTaskUsageDimensions") {
         return super::usage::postgres::select(tx,c).await;

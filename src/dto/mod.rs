@@ -16,3 +16,4 @@ pub mod frontend;
 pub mod work_scope;
 pub mod local_projects;
 pub mod timeline;
+pub mod agent_activity;
