@@ -62,7 +62,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
                 showClose={false}
                 position={{
                   x: `${((index + 0.5) / events.length) * 100}%`,
-                  y: 80,
+                  y: 40,
                 }}
                 className="execution-timeline-point"
                 selected={selected?.id === event.id}
