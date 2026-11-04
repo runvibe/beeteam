@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import "./recorded-progress.css";
 export function recordedPercent(percent?: number | null) {
   return typeof percent === "number" && Number.isFinite(percent)
@@ -13,6 +15,7 @@ export function RecordedProgress({
   label: string;
   className?: string;
 }) {
+  useLocale();
   const value = recordedPercent(percent);
   return (
     <div
@@ -22,7 +25,7 @@ export function RecordedProgress({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={value}
-      aria-valuetext={value === undefined ? "Sem dados" : undefined}
+      aria-valuetext={value === undefined ? tr("tasks.noData") : undefined}
       data-empty={value === undefined}
     >
       {value !== undefined && (

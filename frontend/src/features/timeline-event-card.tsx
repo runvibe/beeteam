@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import type { Resources } from "@/api/types";
 import { useEntity } from "@/api/context";
 import { eventLabels } from "./timeline-labels";
@@ -9,14 +11,16 @@ import { TimelineEventReference } from "./timeline-event-reference";
 import { ChangedFields, EventFields } from "./timeline-event-fields";
 import "./timeline-event-card.css";
 function EventTaskOrigin({ taskId }: { taskId: string }) {
+  useLocale();
   const task = useEntity("tasks", taskId);
   return (
     <p className="small-note timeline-task-origin" title={taskId}>
-      Tarefa de origem: {task.data?.title ?? taskId}
+      {tr("execution.originTask")} {task.data?.title ?? taskId}
     </p>
   );
 }
 export function TimelineEventCard({ event }: { event: Resources["timeline"] }) {
+  useLocale();
   const label = eventLabels[event.type] ?? event.type;
   const referenced = [
     "comment.created",
@@ -37,7 +41,9 @@ export function TimelineEventCard({ event }: { event: Resources["timeline"] }) {
           <OverviewAttribution actor={event} date={event.occurredAt} />
         </div>
         <EventTaskOrigin taskId={event.taskId} />
-        <Badge variant="secondary">Evento {event.sequence}</Badge>
+        <Badge variant="secondary">
+          {tr("tasks.event")} {formatNumber(event.sequence)}
+        </Badge>
       </CardHeader>
       <CardContent className="summary-record-content">
         {referenced ? (
@@ -71,7 +77,7 @@ export function TimelineEventCard({ event }: { event: Resources["timeline"] }) {
           <EventFields data={event.data} />
         )}
         <details className="timeline-original-data">
-          <summary>Registro original do evento</summary>
+          <summary>{tr("execution.originalEventRecord")}</summary>
           <pre>{JSON.stringify(event.data, null, 2)}</pre>
         </details>
       </CardContent>

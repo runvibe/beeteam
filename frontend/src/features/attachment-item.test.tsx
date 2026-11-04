@@ -26,7 +26,10 @@ it("keeps removed metadata readable and prevents download", async () => {
     screen.getByRole("heading", { name: item.originalName }),
   ).toBeVisible();
   expect(screen.getByText("Imagem")).toHaveAttribute("title", "image/png");
-  expect(screen.getByText("2,5 MB")).toHaveAttribute("title", "2500000 bytes");
+  expect(screen.getByText("2,5 MB")).toHaveAttribute(
+    "title",
+    "2.500.000 bytes",
+  );
   expect(screen.getByText("Removido")).toBeVisible();
   expect(screen.getByText(/Removido em/)).toBeVisible();
   const button = screen.getByRole("button", { name: "Baixar arquivo" });

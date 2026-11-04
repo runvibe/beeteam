@@ -1,44 +1,120 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { Markdown } from "@/components/markdown";
 import { AgentName } from "@/components/names";
 
 const labels: Record<string, string> = {
-  title: "Título",
-  description: "Descrição",
-  specification: "Especificação",
-  currentSummary: "Síntese do trabalho",
-  previousCurrentSummary: "Síntese anterior",
-  progress: "Progresso",
-  percent: "Percentual",
-  note: "Observação",
-  executorAgentId: "Executor",
-  previousExecutorAgentId: "Executor anterior",
-  authorAgentId: "Autor",
-  statusId: "ID do status registrado",
-  previousStatusId: "ID do status anterior",
-  beforeTaskId: "ID da tarefa seguinte",
-  parentId: "ID da tarefa mãe",
-  boardId: "ID do board",
-  blocked: "Bloqueada",
-  reason: "Motivo",
-  block: "Bloqueio",
-  previous: "Antes",
-  changes: "Depois",
-  archived: "Arquivada",
-  autonomyMode: "Autonomia",
-  coordinationContext: "Contexto de coordenação",
-  commentId: "ID do comentário",
-  planId: "ID do plano",
-  revisionId: "ID da revisão",
-  revision: "Revisão",
-  attachmentId: "ID do arquivo",
-  executionSummaryId: "ID do resumo",
-  workScope: "Escopo de trabalho",
-  projects: "Projetos",
-  name: "Nome",
-  key: "Chave",
-  rootPath: "Pasta local",
-  message: "Mensagem",
-  content: "Conteúdo",
+  get title() {
+    return tr("execution.title");
+  },
+  get description() {
+    return tr("common.description");
+  },
+  get specification() {
+    return tr("tasks.specification");
+  },
+  get currentSummary() {
+    return tr("execution.workSynthesis");
+  },
+  get previousCurrentSummary() {
+    return tr("execution.previousSynthesis");
+  },
+  get progress() {
+    return tr("tasks.progress");
+  },
+  get percent() {
+    return tr("execution.percentage");
+  },
+  get note() {
+    return tr("execution.note");
+  },
+  get executorAgentId() {
+    return tr("boards.executor");
+  },
+  get previousExecutorAgentId() {
+    return tr("execution.previousExecutor");
+  },
+  get authorAgentId() {
+    return tr("tasks.author");
+  },
+  get statusId() {
+    return tr("execution.recordedStatusId");
+  },
+  get previousStatusId() {
+    return tr("execution.previousStatusId");
+  },
+  get beforeTaskId() {
+    return tr("execution.nextTaskId");
+  },
+  get parentId() {
+    return tr("execution.parentTaskId");
+  },
+  get boardId() {
+    return tr("execution.boardId");
+  },
+  get blocked() {
+    return tr("boards.blocked2");
+  },
+  get reason() {
+    return tr("execution.reason");
+  },
+  get block() {
+    return tr("boards.block");
+  },
+  get previous() {
+    return tr("execution.before");
+  },
+  get changes() {
+    return tr("execution.after");
+  },
+  get archived() {
+    return tr("tasks.archived");
+  },
+  get autonomyMode() {
+    return tr("common.autonomy");
+  },
+  get coordinationContext() {
+    return tr("execution.coordinationContext");
+  },
+  get commentId() {
+    return tr("execution.commentId");
+  },
+  get planId() {
+    return tr("execution.planId");
+  },
+  get revisionId() {
+    return tr("execution.revisionId");
+  },
+  get revision() {
+    return tr("tasks.revision");
+  },
+  get attachmentId() {
+    return tr("execution.fileId");
+  },
+  get executionSummaryId() {
+    return tr("execution.summaryId");
+  },
+  get workScope() {
+    return tr("execution.workScope");
+  },
+  get projects() {
+    return tr("tasks.projects");
+  },
+  get name() {
+    return tr("agents.name");
+  },
+  get key() {
+    return tr("execution.key");
+  },
+  get rootPath() {
+    return tr("execution.localFolder");
+  },
+  get message() {
+    return tr("execution.message");
+  },
+  get content() {
+    return tr("execution.content");
+  },
 };
 export function asFields(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -57,18 +133,21 @@ export function EventValue({
   value: unknown;
   field?: string;
 }) {
+  useLocale();
   if (value === undefined || value === null)
-    return <span className="small-note">Não informado</span>;
-  if (typeof value === "boolean") return <span>{value ? "Sim" : "Não"}</span>;
+    return <span className="small-note">{tr("usage.notProvided2")}</span>;
+  if (typeof value === "boolean")
+    return <span>{value ? tr("execution.yes") : tr("execution.no")}</span>;
   if (typeof value === "number")
     return (
       <span>
-        {value}
+        {formatNumber(value)}
         {field === "percent" ? "%" : ""}
       </span>
     );
   if (typeof value === "string") {
-    if (!value) return <span className="small-note">Vazio</span>;
+    if (!value)
+      return <span className="small-note">{tr("execution.empty")}</span>;
     if (field.endsWith("AgentId"))
       return (
         <span title={value}>
@@ -81,9 +160,9 @@ export function EventValue({
       return (
         <span>
           {value === "manual"
-            ? "Manual"
+            ? tr("common.manual")
             : value === "automatic"
-              ? "Automática"
+              ? tr("execution.automatic")
               : value}
         </span>
       );
@@ -99,11 +178,12 @@ export function EventValue({
         ))}
       </ul>
     ) : (
-      <span className="small-note">Nenhum item</span>
+      <span className="small-note">{tr("execution.noItems")}</span>
     );
   return <EventFields data={asFields(value)} />;
 }
 export function EventFields({ data }: { data: Record<string, unknown> }) {
+  useLocale();
   return Object.keys(data).length ? (
     <dl className="timeline-event-fields">
       {Object.entries(data).map(([key, value]) => (
@@ -116,7 +196,7 @@ export function EventFields({ data }: { data: Record<string, unknown> }) {
       ))}
     </dl>
   ) : (
-    <p className="small-note">Nenhum detalhe adicional registrado.</p>
+    <p className="small-note">{tr("execution.noAdditionalDetailsRecorded")}</p>
   );
 }
 export function ChangedFields({
@@ -126,6 +206,7 @@ export function ChangedFields({
   previous: unknown;
   changes: unknown;
 }) {
+  useLocale();
   const before = asFields(previous),
     after = asFields(changes);
   return Object.keys(after).length ? (
@@ -139,11 +220,11 @@ export function ChangedFields({
           <h4>{fieldLabel(key)}</h4>
           <div className="timeline-change-values">
             <div>
-              <h5>Antes</h5>
+              <h5>{tr("execution.before")}</h5>
               <EventValue field={key} value={before[key]} />
             </div>
             <div>
-              <h5>Depois</h5>
+              <h5>{tr("execution.after")}</h5>
               <EventValue field={key} value={value} />
             </div>
           </div>
@@ -151,6 +232,8 @@ export function ChangedFields({
       ))}
     </div>
   ) : (
-    <p className="small-note">Campos alterados não registrados neste evento.</p>
+    <p className="small-note">
+      {tr("execution.changedFieldsWereNotRecordedInThisEvent")}
+    </p>
   );
 }

@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { UsageCheckpointChart } from "./task-usage-chart";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -22,6 +24,7 @@ function PagedUsage<T>({
   fetchPage,
   renderItem,
   label,
+  countLabel,
   itemKey,
   overview,
   detailsLabel,
@@ -31,10 +34,12 @@ function PagedUsage<T>({
   fetchPage: (offset: number, signal: AbortSignal) => Promise<UsagePage<T>>;
   renderItem: (item: T) => ReactNode;
   label: string;
+  countLabel: (count: number) => string;
   itemKey: (item: T) => string;
   overview?: (items: T[]) => ReactNode;
   detailsLabel?: string;
 }) {
+  useLocale();
   const q = useInfiniteQuery({
     queryKey,
     initialPageParam: 0,
@@ -62,12 +67,17 @@ function PagedUsage<T>({
   return (
     <div className="usage-page">
       <p className="small-note">
-        {rows.length} de {q.data.pages[0].total} {label}
+        {tr("common.loadedCollection", {
+          shown: rows.length,
+          total: q.data.pages[0].total,
+          label: countLabel(q.data.pages[0].total),
+        })}
       </p>
       {overview && q.hasNextPage && (
         <p className="small-note">
-          Histórico parcial: o gráfico mostra apenas os checkpoints carregados.
-          Os totais acima abrangem o agregado da API.
+          {tr(
+            "usage.partialHistoryTheChartOnlyShowsLoadedCheckpointsTotalsAbove",
+          )}
         </p>
       )}
       {overview?.(rows)}
@@ -93,7 +103,9 @@ function PagedUsage<T>({
           disabled={q.isFetching}
           onClick={() => void q.fetchNextPage()}
         >
-          {q.isFetching ? "Carregando…" : `Carregar mais ${label}`}
+          {q.isFetching
+            ? tr("common.loading")
+            : tr("usage.loadMore", { label: label })}
         </Button>
       )}
     </div>
@@ -110,12 +122,15 @@ function Dimensions({
   initial: UsageDimensionPage;
   version: number;
 }) {
+  useLocale();
   const api = useApi();
   return (
     <details>
       <summary>
-        {kind === "model" ? "Modelos registrados" : "Harnesses registrados"} (
-        {initial.total})
+        {kind === "model"
+          ? tr("usage.recordedModels")
+          : tr("usage.recordedHarnesses")}{" "}
+        ({formatNumber(initial.total)})
       </summary>
       <PagedUsage
         initial={initial}
@@ -123,18 +138,27 @@ function Dimensions({
         fetchPage={(offset, signal) =>
           api.usageDimensions(taskId, kind, { offset, limit: 100 }, signal)
         }
-        label={kind === "model" ? "modelos" : "harnesses"}
+        label={
+          kind === "model"
+            ? tr("usage.modelsLower")
+            : tr("usage.harnessesLower")
+        }
+        countLabel={(count) =>
+          tr(kind === "model" ? "usage.modelNoun" : "usage.harnessNoun", {
+            count,
+          })
+        }
         itemKey={(item) =>
           JSON.stringify([item.provider, item.modelId, item.harness])
         }
         renderItem={(item) =>
           kind === "model" ? (
             <span>
-              {item.modelId || "Modelo não informado"} ·{" "}
-              {item.provider || "Provedor não informado"}
+              {item.modelId || tr("tasks.modelNotProvided")} ·{" "}
+              {item.provider || tr("usage.providerNotProvided")}
             </span>
           ) : (
-            <span>{item.harness || "Harness não informado"}</span>
+            <span>{item.harness || tr("usage.harnessNotProvided")}</span>
           )
         }
       />
@@ -150,14 +174,14 @@ export function TaskUsagePanel({
   usage?: TaskUsage;
   version: number;
 }) {
+  useLocale();
   const api = useApi();
   if (!usage)
     return (
-      <section className="task-usage" aria-label="Uso registrado">
-        <h2>Uso registrado</h2>
+      <section className="task-usage" aria-label={tr("usage.recordedUsage")}>
+        <h2>{tr("usage.recordedUsage")}</h2>
         <p className="small-note">
-          Agregação de uso não disponível nesta resposta. Ausência não significa
-          zero.
+          {tr("usage.usageAggregationIsNotAvailableInThisResponseAbsenceDoes")}
         </p>
         <UsageCheckpointChart items={[]} taskId={taskId} />
       </section>
@@ -165,77 +189,98 @@ export function TaskUsagePanel({
   const c = usage.coverage;
   const session = usage.recordedSessionUsage;
   return (
-    <section className="task-usage" aria-label="Uso registrado">
-      <h2>Uso registrado</h2>
+    <section className="task-usage" aria-label={tr("usage.recordedUsage")}>
+      <h2>{tr("usage.recordedUsage")}</h2>
       {session && (
-        <section aria-label="Consumo registrado de sessão">
-          <h3>Consumo registrado de sessão</h3>
+        <section aria-label={tr("usage.recordedSessionUsage")}>
+          <h3>{tr("usage.recordedSessionUsage")}</h3>
           <dl className="usage-totals">
             <div>
-              <dt>Medido na sessão (tokens)</dt>
+              <dt>{tr("usage.measuredInSessionTokens")}</dt>
               <dd>{tokenCount(session.measuredTotalTokens)}</dd>
             </div>
             <div>
-              <dt>Estimado na sessão (tokens)</dt>
+              <dt>{tr("usage.estimatedInSessionTokens")}</dt>
               <dd>{tokenCount(session.estimatedTotalTokens)}</dd>
             </div>
           </dl>
           <p className="small-note">
-            Deltas registrados de sessão, calculados pela API. Podem incluir
-            outros trabalhos; não representam consumo exato atribuído à tarefa.
-            Não somar aos totais abaixo.
+            {tr("usage.recordedSessionDeltasCalculatedByTheApiMayIncludeOther")}
           </p>
           <p className="small-note">
-            {session.coverage.sessions} sessões ·{" "}
-            {session.coverage.deltaEntries} deltas ·{" "}
-            {session.coverage.baselineEntries} referências iniciais ·{" "}
-            {session.coverage.duplicateEntries} duplicadas excluídas. O primeiro
-            snapshot é referência, não consumo somado.
+            {tr("usage.sessionCoverage", {
+              sessions: tr("usage.sessionCount", {
+                count: session.coverage.sessions,
+              }),
+              deltas: tr("usage.deltaCount", {
+                count: session.coverage.deltaEntries,
+              }),
+              baselines: tr("usage.baselineCount", {
+                count: session.coverage.baselineEntries,
+              }),
+              duplicates: tr("usage.duplicateCount", {
+                count: session.coverage.duplicateEntries,
+              }),
+            })}
           </p>
         </section>
       )}
-      <h3>Atribuído à tarefa</h3>
+      <h3>{tr("usage.attributedToTask")}</h3>
       <dl className="usage-totals">
         <div>
-          <dt>Total acumulado conhecido (tokens)</dt>
+          <dt>{tr("usage.knownCumulativeTotalTokens")}</dt>
           <dd>{tokenCount(usage.knownTotalTokens)}</dd>
         </div>
         <div>
-          <dt>Total estimado separado (tokens)</dt>
+          <dt>{tr("usage.separateEstimatedTotalTokens")}</dt>
           <dd>{tokenCount(usage.estimatedTotalTokens)}</dd>
         </div>
       </dl>
       <p className="small-note">
-        Total conhecido: deltas medidos com atribuição exata, agregados pela
-        API. Estimativas são separadas; snapshots e referências duplicadas não
-        são somados diretamente.
+        {tr(
+          "usage.knownTotalMeasuredDeltasWithExactAttributionAggregatedByThe",
+        )}
       </p>
       <TokenComponents value={usage.measuredComponents} />
       <p className="small-note">
-        Cache e raciocínio são subconjuntos, não tokens adicionais. Componentes
-        não informados não equivalem a zero.
+        {tr(
+          "usage.cacheAndReasoningAreSubsetsNotAdditionalTokensUnreportedComponents",
+        )}
       </p>
       <p>
-        {c.reportedSummaries} de {c.totalSummaries} resumos com reporte ·{" "}
-        {c.missingSummaries} sem métricas.
+        {tr("usage.summaryCoverage", {
+          reported: tr("usage.reportedSummaryCount", {
+            reported: c.reportedSummaries,
+            count: c.totalSummaries,
+          }),
+          missing: tr("usage.missingSummaryCount", {
+            count: c.missingSummaries,
+          }),
+        })}
       </p>
       {c.measuredEntries > 0 && c.estimatedEntries > 0 && (
         <p className="small-note">
-          Qualidade mista: há observações medidas e estimadas.
+          {tr("usage.mixedQualityMeasuredAndEstimatedObservationsPresent")}
         </p>
       )}
       <details>
-        <summary>Cobertura e lacunas</summary>
+        <summary>{tr("usage.coverageAndGaps")}</summary>
         <dl className="usage-components">
-          {Object.entries({
-            Entradas: c.entries,
-            Medidas: c.measuredEntries,
-            Estimadas: c.estimatedEntries,
-            Indisponíveis: c.unavailableEntries,
-            "Referências iniciais": c.baselineEntries,
-            Duplicadas: c.duplicateEntries,
-            "Compartilhadas ou não atribuídas": c.unallocatedEntries,
-          }).map(([label, value]) => (
+          {[
+            [tr("usage.coverageLabels.entries"), c.entries],
+            [tr("usage.coverageLabels.measuredEntries"), c.measuredEntries],
+            [tr("usage.coverageLabels.estimatedEntries"), c.estimatedEntries],
+            [
+              tr("usage.coverageLabels.unavailableEntries"),
+              c.unavailableEntries,
+            ],
+            [tr("usage.coverageLabels.baselineEntries"), c.baselineEntries],
+            [tr("usage.coverageLabels.duplicateEntries"), c.duplicateEntries],
+            [
+              tr("usage.coverageLabels.unallocatedEntries"),
+              c.unallocatedEntries,
+            ],
+          ].map(([label, value]) => (
             <div key={label}>
               <dt>{label}</dt>
               <dd>{value}</dd>
@@ -243,8 +288,9 @@ export function TaskUsagePanel({
           ))}
         </dl>
         <p className="small-note">
-          Categorias de cobertura podem se sobrepor. Ausência, referência
-          inicial e atribuição compartilhada limitam o total conhecido.
+          {tr(
+            "usage.coverageCategoriesMayOverlapAbsenceInitialReferencesAndSharedAttribution",
+          )}
         </p>
       </details>
       <div className="usage-dimension-grid">
@@ -261,15 +307,15 @@ export function TaskUsagePanel({
           version={version}
         />
       </div>
-      <section aria-label="Histórico de consumo dos resumos">
+      <section aria-label={tr("usage.summaryUsageHistory")}>
         <p className="small-note">
-          Momento de reporte e status observado em cada resumo. Não representa
-          horário de consumo nem mudança inferida de status. Inclui resumos sem
-          métricas.
+          {tr("usage.reportTimeAndObservedStatusForEachSummaryDoesNot")}
         </p>
         <PagedUsage
           initial={usage.timeline}
-          detailsLabel={`Checkpoints dos resumos (${usage.timeline.total})`}
+          detailsLabel={tr("usage.summaryCheckpoints", {
+            count: usage.timeline.total,
+          })}
           overview={(items) => (
             <UsageCheckpointChart items={items} taskId={taskId} />
           )}
@@ -277,7 +323,8 @@ export function TaskUsagePanel({
           fetchPage={async (offset, signal) =>
             (await api.usage(taskId, { offset, limit: 20 }, signal)).timeline
           }
-          label="checkpoints"
+          label={tr("usage.checkpoints")}
+          countLabel={(count) => tr("usage.checkpointNoun", { count })}
           itemKey={(item) => item.summaryId}
           renderItem={(item) => (
             <>
@@ -286,10 +333,10 @@ export function TaskUsagePanel({
                 date={item.reportedAt}
               />
               <p className="small-note">
-                Status observado:{" "}
+                {tr("usage.observedStatus")}{" "}
                 {item.statusObserved
                   ? item.statusObserved.name || item.statusObserved.id
-                  : "Não registrado"}
+                  : tr("execution.notRecorded")}
               </p>
               <SummaryUsage report={item.usageReport} />
             </>

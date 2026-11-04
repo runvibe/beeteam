@@ -1,3 +1,4 @@
+import { useLocale } from "@/i18n";
 import {
   createContext,
   useContext,
@@ -21,6 +22,7 @@ const TaskFilterHost = createContext<{
   setDock: (dock: Dock | null) => void;
 } | null>(null);
 export function TaskFilterProvider({ children }: { children: ReactNode }) {
+  useLocale();
   const [host, setHost] = useState<HTMLDivElement | null>(null);
   const [active, setActive] = useState(false);
   const [dock, setDock] = useState<Dock | null>(null);
@@ -33,6 +35,7 @@ export function TaskFilterProvider({ children }: { children: ReactNode }) {
   );
 }
 export function TaskFilterSlot() {
+  useLocale();
   const context = useContext(TaskFilterHost);
   const origin = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
@@ -70,7 +73,9 @@ export function TaskFilterSlot() {
         docked
           ? {
               top,
-              left: rail!.getBoundingClientRect().left + (rail!.getBoundingClientRect().width - 44) / 2,
+              left:
+                rail!.getBoundingClientRect().left +
+                (rail!.getBoundingClientRect().width - 44) / 2,
               height: available,
             }
           : null,
@@ -138,6 +143,7 @@ export function TaskFilters({
   children: ReactNode;
   active?: boolean;
 }) {
+  useLocale();
   const context = useContext(TaskFilterHost);
   const setActive = context?.setActive;
   useLayoutEffect(() => {

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { StatusSettings } from "./status-settings";
 import {
   useSettingsAutosave,
@@ -33,6 +35,7 @@ export function BoardSettings({
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }) {
+  useLocale();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -47,9 +50,9 @@ export function BoardSettings({
         }}
       >
         <DialogHeader>
-          <DialogTitle>Configurações do board</DialogTitle>
+          <DialogTitle>{tr("boards.boardSettings")}</DialogTitle>
           <DialogDescription>
-            Metadados, autonomia e status do board.
+            {tr("common.boardMetadataAutonomyAndStatuses")}
           </DialogDescription>
         </DialogHeader>
         <BoardForm key={board.id} board={board} />
@@ -59,6 +62,7 @@ export function BoardSettings({
   );
 }
 function BoardForm({ board }: { board: Board }) {
+  useLocale();
   const api = useApi(),
     client = useQueryClient();
   const autosave = useSettingsAutosave({
@@ -83,7 +87,7 @@ function BoardForm({ board }: { board: Board }) {
     <form className="detail-section" {...autosave.formProps}>
       <FieldGroup>
         <Field>
-          <FieldLabel htmlFor="board-name">Nome</FieldLabel>
+          <FieldLabel htmlFor="board-name">{tr("agents.name")}</FieldLabel>
           <Input
             id="board-name"
             value={name}
@@ -94,7 +98,9 @@ function BoardForm({ board }: { board: Board }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="board-description">Descrição</FieldLabel>
+          <FieldLabel htmlFor="board-description">
+            {tr("common.description")}
+          </FieldLabel>
           <Textarea
             id="board-description"
             value={description}
@@ -103,7 +109,7 @@ function BoardForm({ board }: { board: Board }) {
           />
         </Field>
         <Choice
-          label="Autonomia do board de origem"
+          label={tr("common.originBoardAutonomy")}
           value={mode}
           onChange={(v) =>
             autosave.change("autonomyMode", v as Board["autonomyMode"], true)
@@ -114,13 +120,14 @@ function BoardForm({ board }: { board: Board }) {
           }))}
         />
         <FieldDescription>
-          Manual exige aprovação em toda a cadeia. Padrão respeita a flag de
-          cada task. Automático cobre toda a cadeia, inclusive subtasks em
-          outros boards.
+          {tr(
+            "common.manualRequiresApprovalThroughoutTheChainStandardRespectsEachTask",
+          )}
         </FieldDescription>
       </FieldGroup>
       <div className="small-note">
-        Criador preservado: <AgentName id={board.createdBy.actorId} />
+        {tr("common.originalCreator")}{" "}
+        <AgentName id={board.createdBy.actorId} />
       </div>
       <AutosaveFeedback state={autosave} />
       {autosave.error && (
@@ -130,7 +137,7 @@ function BoardForm({ board }: { board: Board }) {
           disabled={reload.isPending}
           onClick={() => reload.mutate()}
         >
-          Recarregar formulário
+          {tr("common.reloadForm")}
         </Button>
       )}
       {reload.error && <Failure error={reload.error} />}
@@ -138,6 +145,7 @@ function BoardForm({ board }: { board: Board }) {
   );
 }
 export function TaskMode({ task }: { task: Task }) {
+  useLocale();
   const api = useApi();
   const autosave = useSettingsAutosave({
     resource: "tasks",
@@ -147,43 +155,45 @@ export function TaskMode({ task }: { task: Task }) {
   });
   return (
     <section className="task-autonomy">
-      <h2>Autonomia</h2>
+      <h2>{tr("common.autonomy")}</h2>
       <p className="task-effective-mode">
-        Modo efetivo:{" "}
+        {tr("common.effectiveMode")}{" "}
         <strong>
           {task.executionContext.effectiveMode === "automatic"
-            ? "Automático"
-            : "Manual"}
+            ? tr("common.automatic")
+            : tr("common.manual")}
         </strong>
       </p>
       <details className="task-autonomy-explanation">
-        <summary>Como a autonomia é definida</summary>
+        <summary>{tr("common.howAutonomyIsDetermined")}</summary>
         <p>
-          Modo da origem: {modeLabels[task.executionContext.originBoardMode]}
+          {tr("common.originMode")}{" "}
+          {modeLabels[task.executionContext.originBoardMode]}
         </p>
         <p>
-          Em modo padrão, a configuração desta task vale individualmente. A
-          configuração do pai e o board de destino não substituem a origem.
+          {tr("common.inStandardModeThisTaskSSettingAppliesIndividuallyThe")}
         </p>
       </details>
       {task.archivedAt ? (
-        <p>Configuração individual: {modeLabels[task.autonomyMode]}</p>
+        <p>
+          {tr("common.individualSetting")} {modeLabels[task.autonomyMode]}
+        </p>
       ) : (
         <Choice
-          label="Configuração individual"
+          label={tr("common.individualSetting2")}
           value={autosave.draft.autonomyMode}
           onChange={(v) =>
             !task.archivedAt &&
             autosave.change("autonomyMode", v as Task["autonomyMode"], true)
           }
           options={[
-            { value: "manual", label: "Manual" },
-            { value: "automatic", label: "Automático" },
+            { value: "manual", label: tr("common.manual") },
+            { value: "automatic", label: tr("common.automatic") },
           ]}
         />
       )}
       {task.archivedAt && (
-        <p className="small-note">Task arquivada: somente leitura.</p>
+        <p className="small-note">{tr("common.archivedTaskReadOnly")}</p>
       )}
       <AutosaveFeedback state={autosave} />
     </section>

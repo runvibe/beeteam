@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { Crown, UserRound } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useEntity } from "@/api/context";
@@ -15,6 +17,7 @@ function Shortcut({
   label: string;
   children: ReactNode;
 }) {
+  useLocale();
   return (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
@@ -39,14 +42,18 @@ function Shortcut({
   );
 }
 export function TeamCardLinks({ team }: { team: Team }) {
+  useLocale();
   const leader = useEntity("agents", team.leaderId || "");
-  const countLabel = `${team.collaboratorCount} ${team.collaboratorCount === 1 ? "colaborador" : "colaboradores"} do time ${team.name}`;
+  const countLabel = tr("teams.collaborators", {
+    count: team.collaboratorCount,
+    name: team.name,
+  });
   return (
     <Tooltip.Provider delayDuration={200}>
       {leader.data?.slug ? (
         <Shortcut
           href={destination(`/agents/${leader.data.slug}`)}
-          label={`Abrir liderança: ${leader.data.name}`}
+          label={tr("teams.openLeader", { name: leader.data.name })}
         >
           <Crown fill="currentColor" aria-hidden="true" />
         </Shortcut>
@@ -55,7 +62,9 @@ export function TeamCardLinks({ team }: { team: Team }) {
           className="team-card-shortcut"
           role="img"
           aria-label={
-            team.leaderId ? "Liderança indisponível" : "Sem liderança"
+            team.leaderId
+              ? tr("teams.leadershipUnavailable")
+              : tr("teams.noLeader")
           }
         >
           <Crown aria-hidden="true" />
@@ -66,7 +75,7 @@ export function TeamCardLinks({ team }: { team: Team }) {
         label={countLabel}
       >
         <UserRound fill="currentColor" aria-hidden="true" />
-        <span aria-hidden="true">{team.collaboratorCount}</span>
+        <span aria-hidden="true">{formatNumber(team.collaboratorCount)}</span>
       </Shortcut>
     </Tooltip.Provider>
   );

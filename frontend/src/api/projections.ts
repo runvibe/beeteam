@@ -1,3 +1,4 @@
+import { message } from "@/i18n";
 import type { Database } from "./seed";
 import type { Task } from "./types";
 import { ApiError } from "./types";
@@ -7,11 +8,19 @@ export function projectTask(task: Task, db: Database): Task {
   const seen = new Set<string>();
   while (root.parentId) {
     if (seen.has(root.id))
-      throw new ApiError(409, "hierarchy_cycle", "Ciclo na hierarquia.");
+      throw new ApiError(
+        409,
+        "hierarchy_cycle",
+        message("errors.hierarchyCycle"),
+      );
     seen.add(root.id);
     const parent = db.tasks.find((t) => t.id === root.parentId);
     if (!parent)
-      throw new ApiError(409, "invalid_hierarchy", "Task pai não encontrada.");
+      throw new ApiError(
+        409,
+        "invalid_hierarchy",
+        message("errors.parentTaskNotFound"),
+      );
     root = parent;
   }
   const board = db.boards.find((b) => b.id === root.boardId);
@@ -19,7 +28,7 @@ export function projectTask(task: Task, db: Database): Task {
     throw new ApiError(
       409,
       "invalid_hierarchy",
-      "Board de origem não encontrado.",
+      message("errors.originBoardNotFound"),
     );
   const children = db.tasks.filter(
     (t) => t.parentId === task.id && !t.deletedAt,

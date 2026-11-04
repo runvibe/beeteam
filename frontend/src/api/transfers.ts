@@ -1,8 +1,13 @@
+import { type LocalizedMessage, LocalizedError, message } from "@/i18n";
+import { transferErrorMessage } from "@/i18n/transfer-errors";
+
 import { runtimeConfig } from "../runtime";
-export class TransferError extends Error {
+export class TransferError extends LocalizedError {
   activeJobId?: string;
-  constructor(message: string, activeJobId?: unknown) {
-    super(message);
+  constructor(message: string | LocalizedMessage, activeJobId?: unknown) {
+    super(
+      typeof message === "string" ? transferErrorMessage(message) : message,
+    );
     if (typeof activeJobId === "string") this.activeJobId = activeJobId;
   }
 }
@@ -89,11 +94,12 @@ export function uploadArchive(
     xhr.onloadend = () => signal.removeEventListener("abort", abort);
     xhr.onerror = () =>
       reject(
-        new Error(
-          "Falha de conexão durante upload. Tente novamente com o mesmo arquivo.",
+        new LocalizedError(
+          message("errors.connectionFailedDuringUploadTryAgainWithTheSameFile"),
         ),
       );
-    xhr.onabort = () => reject(new Error("Upload cancelado"));
+    xhr.onabort = () =>
+      reject(new LocalizedError(message("errors.uploadCancelled")));
     xhr.onload = () => {
       try {
         const data = JSON.parse(xhr.responseText);
@@ -106,13 +112,13 @@ export function uploadArchive(
           );
         else resolve(data);
       } catch {
-        reject(new Error("Resposta inválida"));
+        reject(new LocalizedError(message("errors.invalidResponse")));
       }
     };
     const body = new FormData();
     body.append("file", file);
     if (signal.aborted) {
-      reject(new Error("Upload cancelado"));
+      reject(new LocalizedError(message("errors.uploadCancelled")));
       return;
     }
     xhr.send(body);

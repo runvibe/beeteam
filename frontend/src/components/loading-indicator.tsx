@@ -1,14 +1,17 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { Hexagon } from "lucide-react";
 import { useEffect, useState } from "react";
 import "./loading-indicator.css";
 
 export function LoadingIndicator({
-  label = "Carregando",
+  label = tr("common.loading2"),
   compact = false,
 }: {
   label?: string;
   compact?: boolean;
 }) {
+  useLocale();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 100);

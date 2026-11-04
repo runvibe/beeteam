@@ -1,3 +1,5 @@
+import { formatPercent, formatNumber, useLocale, t as tr } from "@/i18n";
+
 import {
   RecordedProgress,
   recordedPercent,
@@ -50,6 +52,7 @@ import { Choice, Search, QueryState, NoData } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { BoardSettings } from "./settings";
 export function Boards() {
+  useLocale();
   const selected = useUi((s) => s.boardId);
   return selected ? (
     <BoardScreen key={selected} id={selected} />
@@ -58,6 +61,7 @@ export function Boards() {
   );
 }
 function BoardIndex() {
+  useLocale();
   const [name, setName] = useUrlState<string>("boards.name", ""),
     [teamId, setTeam] = useUrlState<string>("boards.teamId", ""),
     [archived, setArchived] = useUrlState<string>("boards.archived", "false", {
@@ -78,8 +82,8 @@ function BoardIndex() {
     <>
       <header className="page-heading listing-heading">
         <div className="sr-only">
-          <h1>Boards</h1>
-          <p>Uma visão do trabalho, das decisões e do que vem a seguir.</p>
+          <h1>{tr("common.boards")}</h1>
+          <p>{tr("boards.aViewOfTheWorkDecisionsAndWhatComesNext")}</p>
         </div>
         <FilterBar
           inHeader
@@ -91,7 +95,7 @@ function BoardIndex() {
                   setName(v);
                   setOffset(0);
                 }}
-                label="Buscar boards"
+                label={tr("boards.searchBoards")}
               />
             </>
           }
@@ -105,7 +109,7 @@ function BoardIndex() {
         >
           <EntityFilter
             resource="teams"
-            label="Time gestor"
+            label={tr("boards.managingTeam")}
             value={teamId}
             onChange={(v) => {
               setTeam(v);
@@ -113,20 +117,24 @@ function BoardIndex() {
             }}
           />
           <Choice
-            label="Cadastro"
+            label={tr("agents.registry")}
             value={archived}
             onChange={(v) => {
               setArchived(v);
               setOffset(0);
             }}
             options={[
-              { value: "false", label: "Ativos" },
-              { value: "true", label: "Arquivados" },
+              { value: "false", label: tr("agents.active") },
+              { value: "true", label: tr("agents.archived") },
             ]}
           />
         </FilterBar>
       </header>
-      <CardListViewport key={q.identity} state={q} label="Lista de boards">
+      <CardListViewport
+        key={q.identity}
+        state={q}
+        label={tr("boards.boardList")}
+      >
         {q.items && (
           <>
             {q.items.length ? (
@@ -144,7 +152,7 @@ function BoardIndex() {
                       <CardHeader>
                         <CardDescription>
                           {teams.data?.items.find((t) => t.id === b.teamId)
-                            ?.name ?? "Time gestor"}
+                            ?.name ?? tr("boards.managingTeam")}
                         </CardDescription>
                         <CardTitle>{b.name}</CardTitle>
                       </CardHeader>
@@ -165,10 +173,10 @@ function BoardIndex() {
               <NoData
                 title={
                   name || teamId
-                    ? "Nenhum board corresponde aos filtros"
-                    : "Nenhum board neste cadastro"
+                    ? tr("boards.noBoardsMatchTheFilters")
+                    : tr("boards.noBoardsInThisRegistry")
                 }
-                description="Ajuste os filtros para consultar outros boards."
+                description={tr("boards.adjustTheFiltersToBrowseOtherBoards")}
               />
             )}
           </>
@@ -178,6 +186,7 @@ function BoardIndex() {
   );
 }
 function BoardScreen({ id }: { id: string }) {
+  useLocale();
   const api = useApi();
   const entity = useEntity("boards", id);
   const [title, setTitle] = useUrlState<string>("kanban.title", ""),
@@ -222,7 +231,7 @@ function BoardScreen({ id }: { id: string }) {
         onClick={() => goBack("/boards")}
       >
         <ArrowUpLeft />
-        Voltar
+        {tr("common.back")}
       </Button>
       <QueryState query={entity}>
         {entity.data && (
@@ -241,7 +250,7 @@ function BoardScreen({ id }: { id: string }) {
                         variant="ghost"
                         size="icon"
                         className="filter-icon"
-                        aria-label="Configurações do board"
+                        aria-label={tr("boards.boardSettings")}
                         onClick={() => setSettings(true)}
                       >
                         <Settings aria-hidden="true" />
@@ -252,7 +261,7 @@ function BoardScreen({ id }: { id: string }) {
                         className="navigation-tooltip"
                         sideOffset={6}
                       >
-                        Configurações do board
+                        {tr("boards.boardSettings")}
                       </Tooltip.Content>
                     </Tooltip.Portal>
                   </Tooltip.Root>
@@ -262,7 +271,7 @@ function BoardScreen({ id }: { id: string }) {
                     <Search
                       value={title}
                       onChange={setTitle}
-                      label="Buscar tasks"
+                      label={tr("boards.searchTasks")}
                     />
                   </>
                 }
@@ -276,30 +285,30 @@ function BoardScreen({ id }: { id: string }) {
               >
                 <EntityFilter
                   resource="agents"
-                  label="Executor"
+                  label={tr("boards.executor")}
                   value={executor}
                   onChange={setExecutor}
                 />
                 <Choice
-                  label="Bloqueio"
+                  label={tr("boards.block")}
                   value={blocked}
                   onChange={setBlocked}
                   options={[
-                    { value: "true", label: "Bloqueadas" },
-                    { value: "false", label: "Sem bloqueio" },
+                    { value: "true", label: tr("boards.blocked") },
+                    { value: "false", label: tr("boards.notBlocked") },
                   ]}
-                  all="Todas"
+                  all={tr("agents.all")}
                 />
                 <FilterPopover
-                  label="Atualizadas desde"
+                  label={tr("boards.updatedSince")}
                   active={!!updatedFrom}
                   summary={updatedFrom}
                   onClear={() => setUpdatedFrom("")}
                 >
                   <label className="date-filter">
-                    Atualizadas desde
+                    {tr("boards.updatedSince")}
                     <input
-                      aria-label="Atualizadas desde"
+                      aria-label={tr("boards.updatedSince")}
                       type="date"
                       value={updatedFrom}
                       onChange={(e) => setUpdatedFrom(e.target.value)}
@@ -352,6 +361,7 @@ function Column({
   boardId: string;
   filters: Filters;
 }) {
+  useLocale();
   const page = useColumnPages(boardId, column, filters);
   return (
     <section className="kanban-column" aria-label={column.status.name}>
@@ -360,7 +370,7 @@ function Column({
           className={column.status.isDone ? "status-dot done" : "status-dot"}
         />
         <h2>{column.status.name}</h2>
-        <span>{page.total}</span>
+        <span>{formatNumber(page.total)}</span>
       </div>
       <KanbanColumnViewport
         storageKey={JSON.stringify([boardId, column.status.id, filters])}
@@ -372,8 +382,8 @@ function Column({
         ))}
         {page.items.length === 0 && (
           <NoData
-            title="Sem tasks"
-            description="Nenhuma task corresponde a esta coluna."
+            title={tr("boards.noTasks")}
+            description={tr("boards.noTasksMatchThisColumn")}
           />
         )}
       </KanbanColumnViewport>
@@ -381,6 +391,7 @@ function Column({
   );
 }
 export function TaskCard({ task }: { task: Task }) {
+  useLocale();
   const href = destination(`/tasks/${task.slug}`);
   return (
     <Card
@@ -400,23 +411,23 @@ export function TaskCard({ task }: { task: Task }) {
         </CardHeader>
         <CardContent>
           <CardExcerpt
-            text={task.currentSummary || "Sem atualização registrada"}
+            text={task.currentSummary || tr("boards.noUpdateRecorded")}
           />
           {task.block.blocked && (
             <Badge variant="destructive">
               <LockKeyhole />
-              Bloqueada
+              {tr("boards.blocked2")}
             </Badge>
           )}
           <div className="progress-line">
             <RecordedProgress
               percent={task.progress?.percent}
-              label={`Progresso de ${task.title}`}
+              label={tr("tasks.progressOf", { title: task.title })}
             />
             <span>
               {recordedPercent(task.progress?.percent) === undefined
-                ? "Sem dados"
-                : `${recordedPercent(task.progress?.percent)}%`}
+                ? tr("tasks.noData")
+                : formatPercent(recordedPercent(task.progress?.percent))}
             </span>
           </div>
         </CardContent>
@@ -427,7 +438,8 @@ export function TaskCard({ task }: { task: Task }) {
         {task.childSummary.total > 0 && (
           <span className="check-count">
             <CheckCheck size={14} />
-            {task.childSummary.done}/{task.childSummary.total}
+            {formatNumber(task.childSummary.done)}/
+            {formatNumber(task.childSummary.total)}
           </span>
         )}
       </CardFooter>

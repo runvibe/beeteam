@@ -1,3 +1,6 @@
+import { beforeEach } from "vitest";
+import { setLocalePreference } from "@/i18n";
+beforeEach(() => setLocalePreference("pt"));
 import "@testing-library/jest-dom/vitest";
 import { afterEach } from "vitest";
 import { cleanup } from "@testing-library/react";

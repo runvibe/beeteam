@@ -1,3 +1,4 @@
+import { LocalizedError, type LocalizedMessage } from "@/i18n";
 import type { Board } from "./generated/kanban/Board";
 import type { BoardView } from "./generated/kanban/BoardView";
 import type { Task } from "./generated/kanban/Task";
@@ -100,8 +101,16 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
-  timelinePoints(taskId:string,pagination?:Pick<Filters,"offset"|"limit">,signal?:AbortSignal):Promise<import("./timeline-points").TimelinePointPage>;
-  comment(taskId: string, commentId: string, signal?: AbortSignal): Promise<Resources["comments"]>;
+  timelinePoints(
+    taskId: string,
+    pagination?: Pick<Filters, "offset" | "limit">,
+    signal?: AbortSignal,
+  ): Promise<import("./timeline-points").TimelinePointPage>;
+  comment(
+    taskId: string,
+    commentId: string,
+    signal?: AbortSignal,
+  ): Promise<Resources["comments"]>;
   openProject(
     taskId: string,
     projectKey: string,
@@ -122,7 +131,7 @@ export interface BeeApi {
   >;
   executionTrackingEvents(
     taskId: string,
-    pagination?: Pick<Filters, "offset" | "limit"> & {summaryId?: string},
+    pagination?: Pick<Filters, "offset" | "limit"> & { summaryId?: string },
     signal?: AbortSignal,
   ): Promise<
     import("./generated/kanban/TaskExecutionTrackingEventPage").TaskExecutionTrackingEventPage
@@ -196,10 +205,14 @@ export interface BeeApi {
   download(taskId: string, attachmentId: string): Promise<Blob>;
   image(agentId: string): Promise<Blob>;
 }
-export class ApiError extends Error {
+export class ApiError extends LocalizedError {
   status: number;
   code: string;
-  constructor(status: number, code: string, message: string) {
+  constructor(
+    status: number,
+    code: string,
+    message: string | LocalizedMessage,
+  ) {
     super(message);
     this.status = status;
     this.code = code;

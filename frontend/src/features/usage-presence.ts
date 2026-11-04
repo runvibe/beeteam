@@ -1,3 +1,4 @@
+import { LocalizedError, message } from "@/i18n";
 import type { BeeApi } from "@/api/types";
 import { canonicalHarness } from "./harness-catalog";
 
@@ -27,13 +28,13 @@ export async function loadUsagePresence(
     );
     expected ??= page.total;
     if (page.total !== expected || page.offset !== offset)
-      throw new Error(
-        "Não foi possível completar a leitura. Os registros mudaram; atualize os cards.",
+      throw new LocalizedError(
+        message("usage.couldNotCompleteTheReadRecordsChangedRefreshCards"),
       );
     for (const row of page.items) {
       if (summaries.has(row.summaryId))
-        throw new Error(
-          "Não foi possível completar a leitura sem registros repetidos.",
+        throw new LocalizedError(
+          message("usage.couldNotCompleteTheReadWithoutDuplicateRecords"),
         );
       summaries.add(row.summaryId);
       const inSummary = new Set<string>();
@@ -52,11 +53,11 @@ export async function loadUsagePresence(
     }
     if (!page.truncated) {
       if (summaries.size !== expected)
-        throw new Error("Não foi possível completar todos os resumos.");
+        throw new LocalizedError(message("usage.couldNotLoadAllSummaries"));
       break;
     }
     if (!page.items.length || summaries.size >= expected)
-      throw new Error("Não foi possível completar a paginação.");
+      throw new LocalizedError(message("usage.couldNotCompletePagination"));
     offset += page.items.length;
   }
   return {

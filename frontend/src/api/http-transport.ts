@@ -1,3 +1,4 @@
+import { message } from "@/i18n";
 import { ApiError } from "./types";
 export type HttpOptions = {
   baseUrl?: string;
@@ -38,7 +39,7 @@ export function createTransport(options: HttpOptions = {}) {
           body?.code ?? "http_error",
           typeof body?.error === "string"
             ? body.error
-            : `A API retornou erro HTTP ${response.status}.`,
+            : message("errors.http", { status: response.status }),
         );
       }
       if (binary) return (await response.blob()) as T;
@@ -48,7 +49,7 @@ export function createTransport(options: HttpOptions = {}) {
         throw new ApiError(
           response.status,
           "invalid_response",
-          "A API retornou uma resposta inválida.",
+          message("errors.theApiReturnedAnInvalidResponse"),
         );
       }
     } catch (error) {
@@ -58,8 +59,8 @@ export function createTransport(options: HttpOptions = {}) {
         0,
         "network_error",
         controller.signal.aborted
-          ? "A API demorou para responder. Confira o resultado antes de repetir a alteração."
-          : "Não foi possível conectar à API. Tente novamente.",
+          ? message("errors.theApiTimedOutCheckTheResultBeforeRepeatingThe")
+          : message("errors.couldNotConnectToTheApiTryAgain"),
       );
     } finally {
       clearTimeout(timeout);

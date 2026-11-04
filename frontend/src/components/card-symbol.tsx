@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import {
   Crown,
   UserRound,
@@ -9,12 +11,42 @@ import {
 import { Tooltip } from "radix-ui";
 
 const symbols = {
-  leader: { icon: Crown, label: "Líder" },
-  collaborator: { icon: UserRound, label: "Colaborador" },
-  unbound: { icon: UserRoundMinus, label: "Sem vínculo" },
-  manual: { icon: ZapOff, label: "Totalmente manual" },
-  automatic: { icon: Zap, label: "Totalmente automático" },
-  standard: { icon: SlidersHorizontal, label: "Padrão" },
+  leader: {
+    icon: Crown,
+    get label() {
+      return tr("common.leader");
+    },
+  },
+  collaborator: {
+    icon: UserRound,
+    get label() {
+      return tr("common.collaborator");
+    },
+  },
+  unbound: {
+    icon: UserRoundMinus,
+    get label() {
+      return tr("common.noAssociation");
+    },
+  },
+  manual: {
+    icon: ZapOff,
+    get label() {
+      return tr("common.fullyManual");
+    },
+  },
+  automatic: {
+    icon: Zap,
+    get label() {
+      return tr("common.fullyAutomatic");
+    },
+  },
+  standard: {
+    icon: SlidersHorizontal,
+    get label() {
+      return tr("common.standard");
+    },
+  },
 };
 export function CardSymbol({
   kind,
@@ -23,6 +55,7 @@ export function CardSymbol({
   kind: keyof typeof symbols;
   label?: string;
 }) {
+  useLocale();
   const { icon: Icon, label: defaultLabel } = symbols[kind];
   const label = customLabel || defaultLabel;
   return (

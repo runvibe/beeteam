@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { nextPageOffset } from "@/api/page-continuation";
 import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import { useRef } from "react";
@@ -18,6 +20,7 @@ export function PlanHistory({
   item: PlanRevision;
   onSelect: (revision: number) => void;
 }) {
+  useLocale();
   const api = useApi();
   const limit = usePageSize(`revision.${item.planId}`, 5);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -70,14 +73,14 @@ export function PlanHistory({
   return (
     <section
       className="task-plan-history task-reading-block"
-      aria-label="Histórico de alterações"
+      aria-label={tr("tasks.changeHistory")}
     >
-      <h3>Histórico de alterações</h3>
+      <h3>{tr("tasks.changeHistory")}</h3>
       {records.map((p) => (
         <div className="record" key={p.id}>
           <h4>
-            Revisão {p.revision}
-            {p.revision === item.revision ? " · atual" : ""}
+            {tr("tasks.revision")} {formatNumber(p.revision)}
+            {p.revision === item.revision ? tr("tasks.current") : ""}
           </h4>
           <Metadata item={p} />
           {p.changeSummary && (
@@ -89,16 +92,16 @@ export function PlanHistory({
               onSelect(p.revision === item.revision ? 0 : p.revision)
             }
           >
-            Ver revisão {p.revision}
+            {tr("tasks.viewRevision")} {formatNumber(p.revision)}
           </Button>
         </div>
       ))}
       {!q.isPending && !error && !records.length && (
-        <NoData title="Nenhuma revisão registrada" />
+        <NoData title={tr("tasks.noRevisionsRecorded")} />
       )}
       <div ref={sentinel} data-history-sentinel>
         {isFetching && (
-          <LoadingIndicator label="Carregando histórico de alterações" />
+          <LoadingIndicator label={tr("tasks.loadingChangeHistory")} />
         )}
       </div>
       {error && (

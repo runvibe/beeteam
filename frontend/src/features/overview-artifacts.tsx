@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { RelativeTime } from "@/components/relative-time";
 import { useState } from "react";
 import { Download, ExternalLink, UserRound } from "lucide-react";
@@ -18,18 +20,28 @@ export function OverviewAttribution({
   relative?: boolean;
   showActorIcon?: boolean;
 }) {
+  useLocale();
   return (
     <p className="small-note">
-      {showActorIcon && <UserRound className="summary-author-icon" aria-hidden="true" />}
-      {showActorIcon && actor.actorKind === "agent" && <span className="sr-only">Agente: </span>}
+      {showActorIcon && (
+        <UserRound className="summary-author-icon" aria-hidden="true" />
+      )}
+      {showActorIcon && actor.actorKind === "agent" && (
+        <span className="sr-only">{tr("common.agent")} </span>
+      )}
       {actor.actorKind === "human" ? (
-        "Pessoa · identidade não informada"
+        tr("common.personIdentityNotProvided")
       ) : actor.actorId ? (
         <AgentName id={actor.actorId} />
       ) : (
-        "Agente não identificado"
+        tr("common.unidentifiedAgent")
       )}{" "}
-      · {relative ? <RelativeTime value={date} /> : <time dateTime={date}>{formatDate(date)}</time>}
+      ·{" "}
+      {relative ? (
+        <RelativeTime value={date} />
+      ) : (
+        <time dateTime={date}>{formatDate(date)}</time>
+      )}
     </p>
   );
 }
@@ -40,6 +52,7 @@ export function OverviewArtifacts({
   data: TaskOverviewData;
   onTab: (tab: string) => void;
 }) {
+  useLocale();
   const api = useApi();
   const [busy, setBusy] = useState<string | null>(null),
     [error, setError] = useState<unknown>(null);
@@ -62,7 +75,7 @@ export function OverviewArtifacts({
   }
   return (
     <section className="overview-artifacts">
-      <h2>Entregas e arquivos recentes</h2>
+      <h2>{tr("common.recentDeliverablesAndFiles")}</h2>
       {!!data.latestDeliverables.items.length && (
         <ul className="overview-feed">
           {data.latestDeliverables.items.slice(0, 5).map((item, index) => (
@@ -92,10 +105,12 @@ export function OverviewArtifacts({
                         item.deliverable.label,
                       )
                     }
-                    aria-label={`Baixar entrega ${item.deliverable.label}`}
+                    aria-label={tr("tasks.downloadDeliverable", {
+                      label: item.deliverable.label,
+                    })}
                   >
                     <Download size={14} />
-                    Baixar
+                    {tr("common.download")}
                   </Button>
                 )}
               </div>
@@ -123,18 +138,22 @@ export function OverviewArtifacts({
         </ul>
       )}
       {!data.latestDeliverables.total && !data.latestAttachments.total && (
-        <p className="small-note">Nenhuma entrega ou arquivo registrado.</p>
+        <p className="small-note">
+          {tr("common.noDeliverablesOrFilesRecorded")}
+        </p>
       )}
       {(data.latestDeliverables.total > 5 ||
         data.latestAttachments.total > 5) && (
-        <p className="small-note">Até 5 entregas e 5 arquivos mais recentes.</p>
+        <p className="small-note">
+          {tr("common.upTo5MostRecentDeliverablesAnd5Files")}
+        </p>
       )}
       <div className="overview-feed-actions">
         <Button variant="ghost" size="sm" onClick={() => onTab("summaries")}>
-          Ver entregas nos resumos
+          {tr("common.viewDeliverablesInSummaries")}
         </Button>
         <Button variant="ghost" size="sm" onClick={() => onTab("attachments")}>
-          Ver arquivos ({data.latestAttachments.total})
+          {tr("tasks.viewFileCount", { count: data.latestAttachments.total })}
         </Button>
       </div>
       {error != null && <Failure error={error} />}
@@ -143,20 +162,48 @@ export function OverviewArtifacts({
 }
 
 const eventNames: Record<string, string> = {
-  "task.created": "Tarefa criada",
-  "task.updated": "Tarefa atualizada",
-  "assignment.changed": "Responsável alterado",
-  "block.changed": "Bloqueio atualizado",
-  "plan.created": "Plano registrado",
-  "plan.revised": "Plano revisado",
-  "comment.created": "Comentário registrado",
-  "attachment.added": "Arquivo anexado",
-  "attachment.removed": "Arquivo removido logicamente",
-  "execution.recorded": "Execução registrada",
-  "task.archived": "Tarefa arquivada",
-  "task.restored": "Tarefa restaurada",
-  "subtask.created": "Subtarefa criada",
-  "position.changed": "Posição alterada",
+  get "task.created"() {
+    return tr("common.taskCreated");
+  },
+  get "task.updated"() {
+    return tr("common.taskUpdated");
+  },
+  get "assignment.changed"() {
+    return tr("common.assigneeChanged");
+  },
+  get "block.changed"() {
+    return tr("common.blockUpdated");
+  },
+  get "plan.created"() {
+    return tr("common.planRecorded");
+  },
+  get "plan.revised"() {
+    return tr("common.planRevised");
+  },
+  get "comment.created"() {
+    return tr("common.commentRecorded");
+  },
+  get "attachment.added"() {
+    return tr("common.fileAttached");
+  },
+  get "attachment.removed"() {
+    return tr("common.fileSoftDeleted");
+  },
+  get "execution.recorded"() {
+    return tr("common.executionRecorded");
+  },
+  get "task.archived"() {
+    return tr("common.taskArchived");
+  },
+  get "task.restored"() {
+    return tr("common.taskRestored");
+  },
+  get "subtask.created"() {
+    return tr("common.subtaskCreated");
+  },
+  get "position.changed"() {
+    return tr("common.positionChanged");
+  },
 };
 export function OverviewActivity({
   data,
@@ -165,9 +212,10 @@ export function OverviewActivity({
   data: TaskOverviewData;
   onTab: (tab: string) => void;
 }) {
+  useLocale();
   return (
     <section>
-      <h2>Atividade recente</h2>
+      <h2>{tr("common.recentActivity")}</h2>
       {data.recentEvents.items.length ? (
         <ol className="overview-feed">
           {data.recentEvents.items.slice(0, 5).map((event) => (
@@ -178,10 +226,10 @@ export function OverviewActivity({
           ))}
         </ol>
       ) : (
-        <p className="small-note">Nenhuma atividade registrada.</p>
+        <p className="small-note">{tr("common.noActivityRecorded")}</p>
       )}
       <Button variant="ghost" size="sm" onClick={() => onTab("timeline")}>
-        Ver timeline ({data.recentEvents.total})
+        {tr("tasks.viewTimelineCount", { count: data.recentEvents.total })}
       </Button>
     </section>
   );

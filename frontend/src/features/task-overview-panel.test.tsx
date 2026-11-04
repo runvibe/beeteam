@@ -38,7 +38,7 @@ it("drills into actual server-side child filters and includes archived children 
     </ApiProvider>,
   );
   await userEvent.click(
-    await screen.findByRole("button", { name: `${status.name}: 1 subtarefas` }),
+    await screen.findByRole("button", { name: `${status.name}: 1 subtarefa` }),
   );
   await waitFor(() =>
     expect(
@@ -69,7 +69,9 @@ it("labels missing summary provenance and omits absent next-step and decisions",
       <TaskOverviewPanel task={task} onTab={() => {}} />
     </ApiProvider>,
   );
-  await screen.findByRole("heading", { name: "Evolução do progresso registrado" });
+  await screen.findByRole("heading", {
+    name: "Evolução do progresso registrado",
+  });
   const summary = container.querySelector(
     ".task-summary-section",
   ) as HTMLElement;
@@ -83,33 +85,36 @@ it("labels missing summary provenance and omits absent next-step and decisions",
   ).toBeNull();
 });
 
-it.each([63, 100])("shows subtask progress %s in the dashboard and opens the full list", async (percent) => {
-  const seed = makeSeed();
-  const parent = seed.tasks[0];
-  seed.tasks = [
-    parent,
-    {
-      ...parent,
-      id: uuid(990),
-      slug: "child-dashboard",
-      title: "Dashboard child",
-      parentId: parent.id,
-      progress: { percent, note: "" },
-    },
-  ];
-  const onTab = vi.fn();
-  render(
-    <ApiProvider api={createMockApi({ delay: 0, seed })}>
-      <TaskOverviewPanel task={parent} onTab={onTab} />
-    </ApiProvider>,
-  );
-  const progress = await screen.findByRole("progressbar", {
-    name: "Progresso de Dashboard child",
-  });
-  expect(progress).toHaveAttribute("aria-valuenow", String(percent));
-  expect(progress.parentElement).toHaveTextContent(`${percent}%`);
-  await userEvent.click(
-    screen.getByRole("button", { name: "Ver todas e filtrar" }),
-  );
-  expect(onTab).toHaveBeenCalledWith("children");
-});
+it.each([63, 100])(
+  "shows subtask progress %s in the dashboard and opens the full list",
+  async (percent) => {
+    const seed = makeSeed();
+    const parent = seed.tasks[0];
+    seed.tasks = [
+      parent,
+      {
+        ...parent,
+        id: uuid(990),
+        slug: "child-dashboard",
+        title: "Dashboard child",
+        parentId: parent.id,
+        progress: { percent, note: "" },
+      },
+    ];
+    const onTab = vi.fn();
+    render(
+      <ApiProvider api={createMockApi({ delay: 0, seed })}>
+        <TaskOverviewPanel task={parent} onTab={onTab} />
+      </ApiProvider>,
+    );
+    const progress = await screen.findByRole("progressbar", {
+      name: "Progresso de Dashboard child",
+    });
+    expect(progress).toHaveAttribute("aria-valuenow", String(percent));
+    expect(progress.parentElement).toHaveTextContent(`${percent}%`);
+    await userEvent.click(
+      screen.getByRole("button", { name: "Ver todas e filtrar" }),
+    );
+    expect(onTab).toHaveBeenCalledWith("children");
+  },
+);

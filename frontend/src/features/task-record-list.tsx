@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useUrlState } from "@/routing/query";
 import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -26,6 +28,7 @@ export function TaskRecordList<
   emptyDescription?: string;
   children: (row: Resources[K]) => ReactNode;
 }) {
+  useLocale();
   const api = useApi();
   const [selected] = useUrlState(`${resource}.selected`, "");
   const target =
@@ -88,8 +91,8 @@ export function TaskRecordList<
         !rows.some((row) => row.id === target) && (
           <p role="status">
             {resource === "timeline"
-              ? "Evento não encontrado neste escopo."
-              : "Resumo não encontrado nesta tarefa."}
+              ? tr("tasks.eventNotFoundInThisScope")
+              : tr("tasks.summaryNotFoundInThisTask")}
           </p>
         )}
       {!target && !query.isPending && !query.error && !rows.length && (
@@ -101,7 +104,7 @@ export function TaskRecordList<
         data-task-record-sentinel={resource}
       >
         {(query.isPending || query.isFetchingNextPage) && (
-          <LoadingIndicator label="Carregando registros" />
+          <LoadingIndicator label={tr("tasks.loadingRecords")} />
         )}
       </div>
       {query.error && (

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { openCardLink } from "@/routing/card-navigation";
 import {
   destination,
@@ -11,31 +13,59 @@ import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 
 export function AppPath() {
+  useLocale();
   const { area, boardId, taskId, agentId, teamId, setArea } = useUi();
   const board = useEntity("boards", boardId ?? "");
   const task = useEntity("tasks", taskId ?? "");
   const agent = useEntity("agents", agentId ?? "");
   const team = useEntity("teams", teamId ?? "");
-  const routePath=useLocation().split("?")[0];
+  const routePath = useLocation().split("?")[0];
   const configuring = routePath.endsWith("/settings");
-  const [,routeKind,routeKey]=routePath.split('/');
-  if(routeKey && ['agents','teams','tasks'].includes(routeKind) && !agentId && !teamId && !taskId){
-    const root=routeKind==='tasks'?'boards':routeKind;
-    return <nav aria-label="Caminho" className="context-path"><ol><li><a href={findOrigin(`/${root}`) ?? `/${root}`} onClick={openCardLink}>{root==='boards'?'Boards':root==='agents'?'Agentes':'Times'}</a></li><li><span aria-current="page">Carregando…</span></li></ol></nav>;
+  const [, routeKind, routeKey] = routePath.split("/");
+  if (
+    routeKey &&
+    ["agents", "teams", "tasks"].includes(routeKind) &&
+    !agentId &&
+    !teamId &&
+    !taskId
+  ) {
+    const root = routeKind === "tasks" ? "boards" : routeKind;
+    return (
+      <nav aria-label={tr("common.path")} className="context-path">
+        <ol>
+          <li>
+            <a
+              href={findOrigin(`/${root}`) ?? `/${root}`}
+              onClick={openCardLink}
+            >
+              {root === "boards"
+                ? tr("common.boards")
+                : root === "agents"
+                  ? tr("common.agents")
+                  : tr("common.teams")}
+            </a>
+          </li>
+          <li>
+            <span aria-current="page">{tr("common.loading")}</span>
+          </li>
+        </ol>
+      </nav>
+    );
   }
   if (agentId || teamId) {
     const resource = agentId ? "agents" : "teams";
     const id = (agentId ? agent.data : team.data)?.slug ?? agentId ?? teamId;
-    const name = (agentId ? agent.data : team.data)?.name ?? "Carregando…";
+    const name =
+      (agentId ? agent.data : team.data)?.name ?? tr("common.loading");
     return (
-      <nav aria-label="Caminho" className="context-path">
+      <nav aria-label={tr("common.path")} className="context-path">
         <ol>
           <li>
             <a
               href={findOrigin(`/${resource}`) ?? `/${resource}`}
               onClick={openCardLink}
             >
-              {agentId ? "Agentes" : "Times"}
+              {agentId ? tr("common.agents") : tr("common.teams")}
             </a>
           </li>
           <li>
@@ -52,7 +82,7 @@ export function AppPath() {
           </li>
           {configuring && (
             <li>
-              <span aria-current="page">Configuração</span>
+              <span aria-current="page">{tr("common.settings")}</span>
             </li>
           )}
         </ol>
@@ -64,23 +94,27 @@ export function AppPath() {
     return task.data ? (
       <TaskPath task={task.data} shell />
     ) : (
-      <nav aria-label="Caminho" className="context-path">
+      <nav aria-label={tr("common.path")} className="context-path">
         <ol>
           <li>
             <a href={listOrigin} onClick={openCardLink}>
-              Boards
+              {tr("common.boards")}
             </a>
           </li>
           <li>
-            <span aria-current="page">Carregando task…</span>
+            <span aria-current="page">{tr("common.loadingTask")}</span>
           </li>
         </ol>
       </nav>
     );
   /* origin search is shared with task ancestors */
-  const label = { boards: "Boards", agents: "Agentes", teams: "Times" }[area];
+  const label = {
+    boards: tr("common.boards"),
+    agents: tr("common.agents"),
+    teams: tr("common.teams"),
+  }[area];
   return (
-    <nav aria-label="Caminho" className="context-path">
+    <nav aria-label={tr("common.path")} className="context-path">
       <ol>
         <li>
           <button onClick={() => setArea("boards")}>Bee Team</button>
@@ -94,7 +128,9 @@ export function AppPath() {
         </li>
         {boardId && area === "boards" && (
           <li>
-            <span aria-current="page">{board.data?.name ?? "Board"}</span>
+            <span aria-current="page">
+              {board.data?.name ?? tr("common.board")}
+            </span>
           </li>
         )}
       </ol>
@@ -126,6 +162,7 @@ export function TaskPath({
   task: Task;
   shell?: boolean;
 }) {
+  useLocale();
   const api = useApi();
   const board = useEntity("boards", task.boardId);
   const ancestors = useQuery({
@@ -147,7 +184,7 @@ export function TaskPath({
   const originBoard = useEntity("boards", originBoardId);
   return (
     <nav
-      aria-label={shell ? "Caminho" : "Caminho da task"}
+      aria-label={shell ? tr("common.path") : tr("common.taskPath")}
       className={
         shell ? "context-path task-shell-path" : "context-path task-path"
       }
@@ -156,7 +193,7 @@ export function TaskPath({
         {shell && (
           <li>
             <a href={findOrigin("/boards") ?? "/boards"} onClick={openCardLink}>
-              Boards
+              {tr("common.boards")}
             </a>
           </li>
         )}
@@ -165,7 +202,7 @@ export function TaskPath({
             href={contextHref(`/boards/${originBoardId}`)}
             onClick={openCardLink}
           >
-            {originBoard.data?.name ?? "Board de origem"}
+            {originBoard.data?.name ?? tr("common.originBoard")}
           </a>
         </li>
         {ancestors.data?.map((parent) => (
@@ -197,12 +234,13 @@ export function TaskPath({
       </ol>
       {originBoardId !== task.boardId && (
         <div className="small-note">
-          Board atual: <span>{board.data?.name ?? "Board"}</span>
+          {tr("common.currentBoard")}{" "}
+          <span>{board.data?.name ?? tr("common.board")}</span>
         </div>
       )}
       {ancestors.error && (
         <span className="small-note">
-          Caminho completo indisponível; use Task pai.
+          {tr("common.fullPathUnavailableUseParentTask")}
         </span>
       )}
     </nav>

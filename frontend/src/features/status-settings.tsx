@@ -1,3 +1,11 @@
+import {
+  formatNumber,
+  LocalizedError,
+  message,
+  useLocale,
+  t as tr,
+} from "@/i18n";
+
 import { StatusCreateForm } from "./status-create-form";
 import {
   useSettingsAutosave,
@@ -13,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { QueryState, Failure } from "@/components/shared";
 export function StatusSettings({ board }: { board: Board }) {
+  useLocale();
   const api = useApi(),
     client = useQueryClient();
   const q = useList("statuses", board.id, { limit: 100, sortBy: "position" });
@@ -28,10 +37,9 @@ export function StatusSettings({ board }: { board: Board }) {
   }
   return (
     <section className="detail-section">
-      <h3>Status do board</h3>
+      <h3>{tr("boards.boardStatuses")}</h3>
       <p className="small-note">
-        A ordem é configurável. Alterar conclusão ou arquivar status em uso é
-        protegido; renomear preserva referências.
+        {tr("boards.orderIsConfigurableChangingCompletionOrArchivingAStatusIn")}
       </p>
       <QueryState query={q}>
         {q.data &&
@@ -42,7 +50,7 @@ export function StatusSettings({ board }: { board: Board }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`Mover ${s.name} para cima`}
+                  aria-label={tr("boards.moveStatusUp", { name: s.name })}
                   disabled={i === 0 || order.isPending || !!board.archivedAt}
                   onClick={() => move(i, -1)}
                 >
@@ -51,7 +59,7 @@ export function StatusSettings({ board }: { board: Board }) {
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  aria-label={`Mover ${s.name} para baixo`}
+                  aria-label={tr("boards.moveStatusDown", { name: s.name })}
                   disabled={
                     i === q.data!.items.length - 1 ||
                     order.isPending ||
@@ -77,13 +85,14 @@ function StatusForm({
   status: Status;
   disabled: boolean;
 }) {
+  useLocale();
   const api = useApi();
   const autosave = useSettingsAutosave({
     resource: "statuses",
     load: async () => {
       const page = await api.list("statuses", latest.boardId, { limit: 100 });
       const fresh = page.items.find((item) => item.id === latest.id);
-      if (!fresh) throw new Error("Status indisponível.");
+      if (!fresh) throw new LocalizedError(message("boards.statusUnavailable"));
       return { ...fresh, archivedAt: disabled ? "disabled" : null };
     },
     latest: { ...latest, archivedAt: disabled ? "disabled" : null },
@@ -97,7 +106,7 @@ function StatusForm({
     <form {...autosave.formProps} className="status-form">
       <Field>
         <FieldLabel htmlFor={status.id}>
-          Status {status.position + 1}
+          {tr("boards.status")} {formatNumber(status.position + 1)}
         </FieldLabel>
         <Input
           id={status.id}
@@ -117,17 +126,15 @@ function StatusForm({
           disabled={disabled}
         />
         <FieldLabel htmlFor={`done-${status.id}`}>
-          Conta como concluído
+          {tr("boards.countsAsCompleted")}
         </FieldLabel>
       </Field>
       <FieldDescription id={`done-help-${status.id}`}>
-        Tarefas neste status são consideradas concluídas.
+        {tr("boards.tasksInThisStatusAreConsideredCompleted")}
       </FieldDescription>
       {latest.version > autosave.version && (
         <p role="status" className="small-note">
-          Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado. Use Recarregar formulário após o conflito para descartar o
-          rascunho e carregar a versão atual.
+          {tr("agents.thisRecordWasUpdatedInAnotherSessionYourDraftWas")}
         </p>
       )}
       <AutosaveFeedback state={autosave} />

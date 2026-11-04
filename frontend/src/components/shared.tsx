@@ -1,3 +1,5 @@
+import { locale, useLocale, t as tr } from "@/i18n";
+
 import { useId, type ReactNode } from "react";
 import { useCompactFilters } from "./filter-context";
 import { InlineFilterSearch } from "./inline-filter-search";
@@ -18,6 +20,7 @@ import { Field, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
 import type { Page } from "@/api/types";
 export function Loading() {
+  useLocale();
   return <LoadingIndicator />;
 }
 export function Failure({
@@ -27,14 +30,15 @@ export function Failure({
   error: unknown;
   retry?: () => void;
 }) {
+  useLocale();
   return (
     <Alert variant="destructive">
-      <AlertTitle>Não foi possível carregar</AlertTitle>
+      <AlertTitle>{tr("common.couldNotLoad")}</AlertTitle>
       <AlertDescription>
-        {error instanceof Error ? error.message : "Tente novamente."}
+        {error instanceof Error ? error.message : tr("common.tryAgain2")}
         {retry && (
           <Button variant="outline" onClick={retry}>
-            Tentar novamente
+            {tr("common.tryAgain")}
           </Button>
         )}
       </AlertDescription>
@@ -42,12 +46,13 @@ export function Failure({
   );
 }
 export function NoData({
-  title = "Nenhum registro encontrado",
-  description = "Tente ajustar os filtros ou consulte o planejamento com o team leader.",
+  title = tr("common.noRecordsFound"),
+  description = tr("common.tryAdjustingFiltersOrCheckThePlanWithTheTeam"),
 }: {
   title?: string;
   description?: string;
 }) {
+  useLocale();
   return (
     <Empty>
       <EmptyHeader>
@@ -69,6 +74,7 @@ export function QueryState({
   };
   children: ReactNode;
 }) {
+  useLocale();
   if (query.isPending) return <Loading />;
   return (
     <>
@@ -86,12 +92,17 @@ export function Pager({
   page: Page<unknown>;
   onOffset: (n: number) => void;
 }) {
+  useLocale();
   return (
-    <nav aria-label="Paginação" className="pager">
+    <nav aria-label={tr("common.pagination")} className="pager">
       <span>
         {page.total === 0
-          ? "0 registros"
-          : `${page.offset + 1}–${page.offset + page.items.length} de ${page.total}`}
+          ? tr("common.0Records")
+          : tr("common.pageRange", {
+              start: page.offset + 1,
+              end: page.offset + page.items.length,
+              total: page.total,
+            })}
       </span>
       <Button
         variant="outline"
@@ -99,7 +110,7 @@ export function Pager({
         disabled={page.offset === 0}
         onClick={() => onOffset(Math.max(0, page.offset - page.limit))}
       >
-        Anterior
+        {tr("common.previous")}
       </Button>
       <Button
         variant="outline"
@@ -107,7 +118,7 @@ export function Pager({
         disabled={!page.hasMore}
         onClick={() => onOffset(page.nextOffset ?? 0)}
       >
-        Próxima
+        {tr("common.next")}
       </Button>
     </nav>
   );
@@ -125,6 +136,7 @@ export function Choice({
   options: { value: string; label: string }[];
   all?: string;
 }) {
+  useLocale();
   const compact = useCompactFilters();
   if (compact) {
     const selected =
@@ -173,12 +185,13 @@ export function Choice({
 export function Search({
   value,
   onChange,
-  label = "Buscar",
+  label = tr("common.search"),
 }: {
   value: string;
   onChange: (v: string) => void;
   label?: string;
 }) {
+  useLocale();
   const id = useId();
   const compact = useCompactFilters();
   const field = (
@@ -188,7 +201,7 @@ export function Search({
         id={id}
         type="search"
         maxLength={200}
-        placeholder="Digite para filtrar…"
+        placeholder={tr("common.typeToFilter")}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -201,23 +214,32 @@ export function Search({
   );
 }
 export const formatDate = (value: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
+  new Intl.DateTimeFormat(locale(), {
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(value));
 export function TextBlock({ children }: { children: ReactNode }) {
+  useLocale();
   return (
     <div className="text-block">
       {children || (
-        <span className="text-muted-foreground">Não informado.</span>
+        <span className="text-muted-foreground">
+          {tr("common.notProvided")}
+        </span>
       )}
     </div>
   );
 }
 export const modeLabels = {
-  manual: "Totalmente manual",
-  standard: "Padrão",
-  automatic: "Totalmente automático",
+  get manual() {
+    return tr("common.fullyManual");
+  },
+  get standard() {
+    return tr("common.standard");
+  },
+  get automatic() {
+    return tr("common.fullyAutomatic");
+  },
 };
 export function safeUrl(value: string | null | undefined) {
   if (!value) return undefined;

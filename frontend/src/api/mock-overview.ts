@@ -1,9 +1,11 @@
+import { message } from "@/i18n";
 import type { Database } from "./seed";
 import type { OverviewFeed, TaskOverviewData } from "./task-overview";
 import { ApiError } from "./types";
 export function mockOverview(db: Database, id: string): TaskOverviewData {
   const task = db.tasks.find((row) => row.id === id && !row.deletedAt);
-  if (!task) throw new ApiError(404, "not_found", "Tarefa não encontrada.");
+  if (!task)
+    throw new ApiError(404, "not_found", message("errors.taskNotFound"));
   const children = db.tasks.filter(
     (row) => row.parentId === id && !row.deletedAt,
   );

@@ -1,14 +1,20 @@
+import { message, t as tr } from "@/i18n";
+
 import { v7 } from "uuid";
 import type { Database } from "./seed";
 import type { Patches, PatchResults, Status } from "./types";
 import { ApiError } from "./types";
 import { projectTask } from "./projections";
-export function validateText(value: unknown, name = "Texto") {
+export function validateText(value: unknown, name = tr("errors.text")) {
   if (
     typeof value === "string" &&
     new TextEncoder().encode(value).length > 65536
   )
-    throw new ApiError(400, "invalid_request", `${name} excede 64 KiB UTF-8.`);
+    throw new ApiError(
+      400,
+      "invalid_request",
+      message("errors.textTooLong", { name: name }),
+    );
   if (Array.isArray(value)) value.forEach((item) => validateText(item, name));
 }
 function validName(name: string) {
@@ -16,7 +22,7 @@ function validName(name: string) {
     throw new ApiError(
       400,
       "invalid_request",
-      "Nome deve conter de 1 a 200 caracteres.",
+      message("errors.nameMustContain1To200Characters"),
     );
 }
 export function patchRecord<K extends keyof Patches>(
@@ -30,23 +36,28 @@ export function patchRecord<K extends keyof Patches>(
     throw new ApiError(
       400,
       "invalid_request",
-      "Status só pode ser alterado ao registrar um resumo de execução.",
+      message("errors.statusCanOnlyBeChangedWhenRecordingAnExecutionSummary"),
     );
   if ("slug" in body)
-    throw new ApiError(400, "invalid_request", "Slug é somente leitura.");
+    throw new ApiError(
+      400,
+      "invalid_request",
+      message("errors.slugIsReadOnly"),
+    );
   const row = db[resource].find((r) => r.id === id && !r.deletedAt);
-  if (!row) throw new ApiError(404, "not_found", "Registro não encontrado.");
+  if (!row)
+    throw new ApiError(404, "not_found", message("errors.recordNotFound"));
   if (row.version !== version)
     throw new ApiError(
       412,
       "version_conflict",
-      "Este registro mudou. Recarregue antes de salvar novamente.",
+      message("errors.thisRecordChangedReloadBeforeSavingAgain"),
     );
   if (row.archivedAt && (!("archived" in body) || body.archived !== false))
     throw new ApiError(
       409,
       "archived",
-      "Registro arquivado é somente leitura.",
+      message("errors.archivedRecordsAreReadOnly"),
     );
   if (resource === "tasks") {
     const patch = body as Patches["tasks"];
@@ -54,7 +65,7 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         501,
         "unavailable",
-        "A descoberta de projetos requer a API conectada.",
+        message("errors.projectDiscoveryRequiresTheConnectedApi"),
       );
     if (
       patch.specification !== undefined &&
@@ -63,7 +74,7 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         400,
         "invalid_request",
-        "Especificação deve ser texto Markdown.",
+        message("errors.specificationMustBeMarkdownText"),
       );
     if (
       (patch.progress !== undefined && !patch.currentSummary?.trim()) ||
@@ -74,13 +85,17 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         400,
         "invalid_request",
-        "Resumo atual obrigatorio, nao vazio e com ate 16384 bytes UTF-8.",
+        message("errors.aNonemptyCurrentSummaryOfUpTo16384Utf8"),
       );
   }
   for (const [key, value] of Object.entries(body)) validateText(value, key);
   if ("name" in body && body.name !== undefined) validName(body.name);
   if ("image" in body && body.image && !body.image.url.startsWith("https://"))
-    throw new ApiError(400, "invalid_request", "A imagem deve usar HTTPS.");
+    throw new ApiError(
+      400,
+      "invalid_request",
+      message("errors.theImageMustUseHttps"),
+    );
   if (
     "autonomyMode" in body &&
     ![
@@ -89,7 +104,7 @@ export function patchRecord<K extends keyof Patches>(
       ...(resource === "boards" ? ["standard"] : []),
     ].includes(body.autonomyMode!)
   )
-    throw new ApiError(400, "invalid_request", "Modo inválido.");
+    throw new ApiError(400, "invalid_request", message("errors.invalidMode"));
   if (resource === "statuses") {
     const status = row as Status;
     const patch = body as Patches["statuses"];
@@ -107,7 +122,7 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         409,
         "duplicate_name",
-        "Já existe um status com esse nome.",
+        message("errors.aStatusWithThisNameAlreadyExists"),
       );
     if (
       (patch.archived ||
@@ -117,7 +132,7 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         409,
         "status_in_use",
-        "Status em uso não pode ser arquivado nem mudar a conclusão.",
+        message("errors.aStatusInUseCannotBeArchivedOrHaveIts"),
       );
     if (
       (patch.archived || patch.isDone) &&
@@ -126,7 +141,7 @@ export function patchRecord<K extends keyof Patches>(
       throw new ApiError(
         409,
         "status_required",
-        "Mantenha ao menos um status ativo não final.",
+        message("errors.keepAtLeastOneActiveStatusThatIsNotCompleted"),
       );
   }
   if (
@@ -140,7 +155,11 @@ export function patchRecord<K extends keyof Patches>(
         (t) => t.id === body.teamId && !t.deletedAt && !t.archivedAt,
       )
     )
-      throw new ApiError(409, "invalid_team", "Time gestor inválido.");
+      throw new ApiError(
+        409,
+        "invalid_team",
+        message("errors.invalidManagingTeam"),
+      );
     const board = row as PatchResults["boards"];
     board.lastManagementChange = {
       id: v7(),
@@ -174,14 +193,20 @@ export function addStatus(
   input: { name: string; isDone: boolean },
 ): Status {
   const board = db.boards.find((b) => b.id === boardId && !b.deletedAt);
-  if (!board) throw new ApiError(404, "not_found", "Board não encontrado.");
-  if (board.archivedAt) throw new ApiError(409, "archived", "Board arquivado.");
+  if (!board)
+    throw new ApiError(404, "not_found", message("errors.boardNotFound"));
+  if (board.archivedAt)
+    throw new ApiError(409, "archived", message("errors.boardArchived"));
   validName(input.name);
   const existing = db.statuses.filter(
     (s) => s.boardId === boardId && !s.deletedAt && !s.archivedAt,
   );
   if (existing.length >= 50)
-    throw new ApiError(409, "status_limit", "Limite de 50 status ativos.");
+    throw new ApiError(
+      409,
+      "status_limit",
+      message("errors.limitOf50ActiveStatuses"),
+    );
   if (
     existing.some(
       (s) => s.name.trim().toLowerCase() === input.name.trim().toLowerCase(),
@@ -190,7 +215,7 @@ export function addStatus(
     throw new ApiError(
       409,
       "duplicate_name",
-      "Já existe um status com esse nome.",
+      message("errors.aStatusWithThisNameAlreadyExists"),
     );
   const status: Status = {
     id: v7(),
@@ -213,14 +238,16 @@ export function orderStatuses(
   version: number,
 ) {
   const board = db.boards.find((b) => b.id === boardId && !b.deletedAt);
-  if (!board) throw new ApiError(404, "not_found", "Board não encontrado.");
+  if (!board)
+    throw new ApiError(404, "not_found", message("errors.boardNotFound"));
   if (board.version !== version)
     throw new ApiError(
       412,
       "version_conflict",
-      "O board mudou. Recarregue os status.",
+      message("errors.theBoardChangedReloadTheStatuses"),
     );
-  if (board.archivedAt) throw new ApiError(409, "archived", "Board arquivado.");
+  if (board.archivedAt)
+    throw new ApiError(409, "archived", message("errors.boardArchived"));
   const statuses = db.statuses.filter(
     (s) => s.boardId === boardId && !s.archivedAt && !s.deletedAt,
   );
@@ -232,7 +259,7 @@ export function orderStatuses(
     throw new ApiError(
       400,
       "invalid_order",
-      "Inclua todos os status ativos uma única vez.",
+      message("errors.includeEveryActiveStatusExactlyOnce"),
     );
   const items = ids.map((id, position) => {
     const status = statuses.find((s) => s.id === id)!;

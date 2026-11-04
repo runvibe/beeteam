@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useUrlState } from "@/routing/query";
 import { Popover } from "radix-ui";
 import { eventLabels } from "./timeline-labels";
@@ -11,14 +13,14 @@ import { IntervalMetrics } from "./interval-metrics";
 import { ExecutionTimeline } from "./execution-timeline";
 import { TimelinePointPages } from "./timeline-point-pages";
 import "./task-execution-tracking.css";
-const coverageLabels = {
-  totalIntervals: "intervalos",
-  validIntervals: "válidos",
-  openIntervals: "abertos",
-  incompleteIntervals: "incompletos",
-  invalidIntervals: "inválidos",
-  untrackedSummaries: "resumos sem rastreamento",
-};
+const coverageKeys = [
+  "totalIntervals",
+  "validIntervals",
+  "openIntervals",
+  "incompleteIntervals",
+  "invalidIntervals",
+  "untrackedSummaries",
+] as const;
 export function TaskExecutionTracking({
   taskId,
   version,
@@ -26,6 +28,7 @@ export function TaskExecutionTracking({
   taskId: string;
   version: number;
 }) {
+  useLocale();
   const api = useApi();
   const q = useQuery({
     queryKey: ["execution-interval-usage", taskId, version],
@@ -34,7 +37,9 @@ export function TaskExecutionTracking({
   const data = q.data;
   return (
     <section className="task-execution-tracking">
-      {q.isPending && <p role="status">Carregando consumo por intervalos…</p>}
+      {q.isPending && (
+        <p role="status">{tr("execution.loadingIntervalUsage")}</p>
+      )}
       {q.error &&
         (q.error instanceof ApiError && q.error.status === 501 ? (
           <p className="small-note">{q.error.message}</p>
@@ -48,12 +53,12 @@ export function TaskExecutionTracking({
                 tokens: data.validTotalTokens,
                 observedMs: data.observedDurationMs,
                 elapsedMs: data.elapsedDurationMs,
-                coverage: Object.entries(coverageLabels).map(
-                  ([key, label]) => ({
-                    label,
-                    count: data.coverage[key as keyof typeof data.coverage],
+                coverage: coverageKeys.map((key) => ({
+                  label: tr(`execution.coverageLabels.${key}`, {
+                    count: data.coverage[key],
                   }),
-                ),
+                  count: data.coverage[key],
+                })),
               }
             : undefined
         }
@@ -69,6 +74,7 @@ export function TaskExecutionTimeline({
   taskId: string;
   version: number;
 }) {
+  useLocale();
   const api = useApi();
   const [, setSelected] = useUrlState<string>("timeline.selected", "");
   return (
@@ -89,7 +95,9 @@ export function TaskExecutionTimeline({
       >
         {(rows, loading, failed) => (
           <ExecutionTimeline
-            description="Eventos da tarefa na ordem de registro. Selecione um ponto para abrir seu evento. O espaçamento não representa duração."
+            description={tr(
+              "execution.taskEventsInRecordingOrderSelectAPointToOpen",
+            )}
             events={rows.map((row) => ({
               ...row,
               label: eventLabels[row.type] ?? row.type,
@@ -97,9 +105,9 @@ export function TaskExecutionTimeline({
             }))}
             emptyMessage={
               loading
-                ? "Carregando eventos…"
+                ? tr("execution.loadingEvents")
                 : failed
-                  ? "Histórico de execução indisponível."
+                  ? tr("execution.executionHistoryUnavailable")
                   : undefined
             }
             renderDetail={(event) => (
@@ -110,7 +118,7 @@ export function TaskExecutionTimeline({
                     variant="outline"
                     onClick={() => setSelected(event.id)}
                   >
-                    Ver evento
+                    {tr("execution.viewEvent")}
                   </Button>
                 </Popover.Close>
               </div>

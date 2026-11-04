@@ -1,3 +1,4 @@
+import { localeFormatter } from "@/i18n";
 export type AttachmentCategory =
   | "image"
   | "audio"
@@ -110,7 +111,9 @@ export function attachmentCategory(
   return "file";
 }
 
-const number = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
+const number = localeFormatter(
+  (language) => new Intl.NumberFormat(language, { maximumFractionDigits: 1 }),
+);
 export function formatAttachmentSize(bytes: number) {
   const units = ["B", "KB", "MB", "GB", "TB"];
   const index =

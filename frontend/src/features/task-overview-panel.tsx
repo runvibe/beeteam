@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { OverviewSubtasks } from "./overview-subtasks";
 import { OverviewUsageCards } from "./overview-usage-cards";
 import { TaskExecutionTracking } from "./task-execution-tracking";
@@ -29,6 +31,7 @@ export function TaskOverviewPanel({
   task: Task;
   onTab: (tab: string) => void;
 }) {
+  useLocale();
   const api = useApi();
   const q = useQuery({
     queryKey: ["task-overview", task.id, task.version],
@@ -36,7 +39,7 @@ export function TaskOverviewPanel({
   });
   return (
     <div className="overview-insights">
-      {q.isPending && <LoadingIndicator label="Carregando visão geral" />}
+      {q.isPending && <LoadingIndicator label={tr("tasks.loadingOverview")} />}
       {q.error && <Failure error={q.error} retry={() => void q.refetch()} />}
       {q.data && (
         <>

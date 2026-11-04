@@ -1,6 +1,8 @@
+import { locale, t as tr } from "@/i18n";
+
 /** Formats an observed millisecond count, never wall-clock time since an open boundary. */
 export function observedDuration(value: string | number | null | undefined) {
-  if (value == null) return "Não informada";
+  if (value == null) return tr("usage.notProvided");
   const total = BigInt(value);
   const parts: string[] = [];
   for (const [unit, divisor] of [
@@ -13,7 +15,7 @@ export function observedDuration(value: string | number | null | undefined) {
       unit === "h"
         ? total / divisor
         : (total / divisor) % (unit === "ms" ? 1000n : 60n);
-    if (amount !== 0n) parts.push(`${amount.toLocaleString("pt-BR")} ${unit}`);
+    if (amount !== 0n) parts.push(`${amount.toLocaleString(locale())} ${unit}`);
   }
-  return parts.join(" ") || "0 ms";
+  return parts.join(" ") || tr("usage.0Ms");
 }

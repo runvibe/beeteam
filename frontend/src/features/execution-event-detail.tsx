@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { AgentName } from "@/components/names";
 import type { TaskExecutionTrackingEvent } from "@/api/generated/kanban/TaskExecutionTrackingEvent";
 import { formatDate } from "@/components/shared";
@@ -7,11 +9,11 @@ import { SessionSnapshot } from "./session-snapshots";
 import { RecordedSummary } from "./recorded-summary";
 export const executionAction = (action: string) =>
   ({
-    start: "Início",
-    checkpoint: "Checkpoint",
-    pause: "Pausa",
-    resume: "Retomada",
-    finish: "Fim",
+    start: tr("execution.start"),
+    checkpoint: tr("execution.checkpoint"),
+    pause: tr("execution.pause"),
+    resume: tr("agents.resume"),
+    finish: tr("execution.finish"),
   })[action] ?? action;
 export function ExecutionEventDetail({
   event,
@@ -22,34 +24,41 @@ export function ExecutionEventDetail({
   onInterval: (id: string) => void;
   expandedSummary?: boolean;
 }) {
+  useLocale();
   return (
     <div className="execution-event-detail">
       <strong>{executionAction(event.action)}</strong>
-      <span className="small-note">Autor do resumo</span>
+      <span className="small-note">{tr("execution.summaryAuthor")}</span>
       <OverviewAttribution
         actor={event.reportingActor}
         date={event.receivedAt}
       />
       <p>
-        <span>Agente da execução:</span> <AgentName id={event.agentId} />
+        <span>{tr("execution.executionAgent")}</span>{" "}
+        <AgentName id={event.agentId} />
       </p>
       <p>
-        Status no momento do resumo:{" "}
-        {event.statusObserved.name || "Não registrado"}
+        {tr("execution.statusWhenTheSummaryWasRecorded")}{" "}
+        {event.statusObserved.name || tr("execution.notRecorded")}
       </p>
       <p>
-        Coleta:{" "}
+        {tr("execution.collection")}{" "}
         {event.observedAt
           ? formatDate(event.observedAt)
-          : "Sem nova fronteira observada"}
-      </p>
-      <p className="small-note">Recebido em {formatDate(event.receivedAt)}</p>
-      <p>
-        Modelos:{" "}
-        {event.models.length ? event.models.join(" · ") : "Não informados"}
+          : tr("execution.noNewBoundaryObserved")}
       </p>
       <p className="small-note">
-        Fonte: {event.source} · Sessão: {event.sessionId}
+        {tr("execution.receivedAt")} {formatDate(event.receivedAt)}
+      </p>
+      <p>
+        {tr("execution.models")}{" "}
+        {event.models.length
+          ? event.models.join(" · ")
+          : tr("execution.notProvided")}
+      </p>
+      <p className="small-note">
+        {tr("execution.source")} {event.source} {tr("execution.session")}{" "}
+        {event.sessionId}
       </p>
       {event.reason && <p>{event.reason}</p>}
       {event.evidence.map((entry) => (
@@ -57,7 +66,7 @@ export function ExecutionEventDetail({
       ))}
       {!event.evidence.length && (
         <p className="small-note">
-          Sem evidências de nova coleta neste evento. Não implica consumo zero.
+          {tr("execution.noEvidenceOfANewCollectionInThisEventDoes")}
         </p>
       )}
       <RecordedSummary
@@ -67,7 +76,7 @@ export function ExecutionEventDetail({
       />
       {event.intervalId && (
         <Button variant="outline" onClick={() => onInterval(event.intervalId!)}>
-          Ver intervalo
+          {tr("execution.viewInterval")}
         </Button>
       )}
     </div>

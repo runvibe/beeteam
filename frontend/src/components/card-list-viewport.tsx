@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useInfiniteScroll } from "./use-infinite-scroll";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useLocation } from "@/routing/location";
@@ -39,6 +41,7 @@ export function CardListViewport({
     setCapacity: (count: number) => void;
   };
 }) {
+  useLocale();
   const url = useLocation();
   const root = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -180,16 +183,16 @@ export function CardListViewport({
           >
             {state.error ? (
               <div role="alert">
-                <p>Não foi possível carregar os cards.</p>
+                <p>{tr("common.couldNotLoadCards")}</p>
                 <Button onClick={() => void state.retry()}>
-                  Tentar novamente
+                  {tr("common.tryAgain")}
                 </Button>
               </div>
             ) : state.hasMore ? (
               <>
                 <div style={{ minHeight: 60 }}>
                   {state.fetching && (
-                    <LoadingIndicator label="Carregando mais registros" />
+                    <LoadingIndicator label={tr("common.loadingMoreRecords")} />
                   )}
                 </div>
                 <Button
@@ -197,13 +200,13 @@ export function CardListViewport({
                   disabled={state.fetching}
                   onClick={state.loadMore}
                 >
-                  Carregar mais
+                  {tr("common.loadMore")}
                 </Button>
               </>
             ) : (
               !state.initialLoading && (
                 <p className="sr-only" role="status">
-                  Fim dos registros · {state.total} no total
+                  {tr("common.endOfRecordsCount", { count: state.total })}
                 </p>
               )
             )}
@@ -215,8 +218,8 @@ export function CardListViewport({
           ref={topButton}
           type="button"
           className="card-list-to-top"
-          aria-label="Voltar ao topo"
-          title="Voltar ao topo"
+          aria-label={tr("common.backToTop")}
+          title={tr("common.backToTop")}
           data-above-footer={footerVisible && (state.hasMore || !!state.error)}
           onClick={() =>
             root.current?.scrollTo({

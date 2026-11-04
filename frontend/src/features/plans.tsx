@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { useRef, type RefObject } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -18,6 +20,7 @@ export function Plans({
   task: Task;
   revealConsumed?: RefObject<boolean>;
 }) {
+  useLocale();
   const ownRevealConsumed = useRef(false);
   const [selected, setSelected] = useUrlState<string>("plans.selected", "", {
     resetOffsets: false,
@@ -59,9 +62,9 @@ export function Plans({
             <QueryState query={selection}>
               {selection.data === null && (
                 <>
-                  <NoData title="Plano não encontrado" />
+                  <NoData title={tr("tasks.planNotFound")} />
                   <Button onClick={() => setSelected("")}>
-                    Ver planos disponíveis
+                    {tr("tasks.viewAvailablePlans")}
                   </Button>
                 </>
               )}
@@ -71,7 +74,7 @@ export function Plans({
             <Plan key={current.planId} item={current} />
           ) : (
             !selected &&
-            !plans.query.error && <NoData title="Nenhum plano registrado" />
+            !plans.query.error && <NoData title={tr("tasks.noPlansRecorded")} />
           )}
         </PlanNavigation>
       )}
@@ -79,6 +82,7 @@ export function Plans({
   );
 }
 function Plan({ item }: { item: PlanRevision }) {
+  useLocale();
   const scope = `revision.${item.planId}`;
   const [selected, setSelected] = useUrlState<number>(`${scope}.selected`, 0, {
     resetOffsets: false,
@@ -107,23 +111,29 @@ function Plan({ item }: { item: PlanRevision }) {
   return (
     <article className="record task-plan">
       <h2>
-        {historical ? `Versão anterior · Revisão ${selected}` : "Plano atual"}
+        {historical
+          ? tr("tasks.previousRevision", { revision: selected })
+          : tr("tasks.currentPlan")}
       </h2>
       {historical && (
         <Button variant="outline" onClick={() => setSelected(0)}>
-          Voltar ao plano atual
+          {tr("tasks.backToCurrentPlan")}
         </Button>
       )}
       {historical && (
         <QueryState query={revision}>
-          {revision.data === null && <NoData title="Revisão não encontrada" />}
+          {revision.data === null && (
+            <NoData title={tr("tasks.revisionNotFound")} />
+          )}
         </QueryState>
       )}
       {displayed && (
         <>
           <header className="task-reading-block">
             <h3>{displayed.title}</h3>
-            <p className="small-note">Revisão {displayed.revision}</p>
+            <p className="small-note">
+              {tr("tasks.revision")} {formatNumber(displayed.revision)}
+            </p>
             <Metadata item={displayed} />
           </header>
           <div className="task-plan-document task-reading-block">
@@ -132,7 +142,7 @@ function Plan({ item }: { item: PlanRevision }) {
             </Markdown>
             {displayed.changeSummary && (
               <div className="task-plan-change">
-                <span className="small-note">Alteração</span>
+                <span className="small-note">{tr("tasks.change")}</span>
                 <Markdown headingOffset={2}>{displayed.changeSummary}</Markdown>
               </div>
             )}

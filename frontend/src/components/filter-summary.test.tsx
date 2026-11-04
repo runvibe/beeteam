@@ -91,7 +91,7 @@ it("keeps an expanded stack during successive removals and transfers keyboard fo
     screen.getByRole("button", { name: "Remover filtro C: C" }),
   ).toHaveFocus();
   expect(
-    screen.getByRole("button", { name: "Recolher 1 filtros ativos" }),
+    screen.getByRole("button", { name: "Recolher 1 filtro ativo" }),
   ).toBeInTheDocument();
   await user.keyboard("{Enter}");
   expect(screen.getByRole("button", { name: "Buscar" })).toHaveFocus();

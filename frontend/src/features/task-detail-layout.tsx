@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useId, useState } from "react";
 import { ChevronDown, ArrowUpLeft } from "lucide-react";
 import type { TaskOverviewData } from "@/api/task-overview";
@@ -13,12 +15,13 @@ import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
 
 export function TaskOverview({ task }: { task: Task }) {
+  useLocale();
   return (
     <div className="task-overview">
       <section aria-labelledby="task-progress-heading">
-        <h2 id="task-progress-heading">Andamento registrado</h2>
+        <h2 id="task-progress-heading">{tr("tasks.recordedUpdates")}</h2>
         <Markdown headingOffset={2} sectionDividers>
-          {task.progress.note || "Nenhuma nota de andamento registrada"}
+          {task.progress.note || tr("tasks.noProgressNotesRecorded")}
         </Markdown>
       </section>
     </div>
@@ -34,6 +37,7 @@ export function TaskContext({
   compactHeader?: boolean;
   overview?: TaskOverviewData;
 }) {
+  useLocale();
   const [expanded, setExpanded] = useState(false);
   const contentId = useId();
   const openTask = useUi((s) => s.openTask);
@@ -41,7 +45,7 @@ export function TaskContext({
   return (
     <aside
       className="task-context"
-      aria-label="Contexto da tarefa"
+      aria-label={tr("tasks.taskContext")}
       data-expanded={expanded}
     >
       <TaskCompactHeader
@@ -57,32 +61,32 @@ export function TaskContext({
         onClick={() => setExpanded(!expanded)}
       >
         <span>
-          Detalhes da tarefa{" "}
+          {tr("tasks.taskDetails")}{" "}
           <small>
-            Autonomia{" "}
+            {tr("common.autonomy")}{" "}
             {task.executionContext.effectiveMode === "automatic"
-              ? "automática"
-              : "manual"}
+              ? tr("tasks.automatic")
+              : tr("common.manualLower")}
           </small>
         </span>
         <ChevronDown aria-hidden="true" />
       </Button>
       <div className="task-context-content" id={contentId}>
         <section>
-          <h2>Status</h2>
+          <h2>{tr("boards.status")}</h2>
           <TaskStatus task={task} />
         </section>
         <section>
-          <h2>Responsáveis</h2>
+          <h2>{tr("tasks.assignees")}</h2>
           <dl>
             <div>
-              <dt>Executor</dt>
+              <dt>{tr("boards.executor")}</dt>
               <dd>
                 <AgentName id={task.executorAgentId} />
               </dd>
             </div>
             <div>
-              <dt>Autor</dt>
+              <dt>{tr("tasks.author")}</dt>
               <dd>
                 <AgentName id={task.authorAgentId} />
               </dd>
@@ -90,10 +94,10 @@ export function TaskContext({
           </dl>
         </section>
         <section>
-          <h2>Relações</h2>
+          <h2>{tr("tasks.relationships")}</h2>
           <dl>
             <div>
-              <dt>Board atual</dt>
+              <dt>{tr("tasks.currentBoard")}</dt>
               <dd>
                 <Button variant="link" onClick={() => openBoard(task.boardId)}>
                   <BoardName id={task.boardId} />
@@ -101,7 +105,7 @@ export function TaskContext({
               </dd>
             </div>
             <div>
-              <dt>Board de origem da cadeia</dt>
+              <dt>{tr("tasks.chainOriginBoard")}</dt>
               <dd>
                 <Button
                   variant="link"
@@ -115,20 +119,22 @@ export function TaskContext({
           {task.parentId && (
             <Button variant="link" onClick={() => openTask(task.parentId!)}>
               <ArrowUpLeft />
-              Task pai
+              {tr("tasks.parentTask")}
             </Button>
           )}
         </section>
         <TaskMode task={task} />
         <section>
-          <h2>Registro</h2>
+          <h2>{tr("tasks.record")}</h2>
           <dl>
             <div>
-              <dt>Cadastro</dt>
-              <dd>{task.archivedAt ? "Arquivada" : "Ativa"}</dd>
+              <dt>{tr("agents.registry")}</dt>
+              <dd>
+                {task.archivedAt ? tr("tasks.archived") : tr("tasks.active")}
+              </dd>
             </div>
             <div>
-              <dt>Atualizada em</dt>
+              <dt>{tr("tasks.updatedAt")}</dt>
               <dd>
                 <time dateTime={task.updatedAt}>
                   {formatDate(task.updatedAt)}

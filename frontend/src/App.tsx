@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { motion, MotionConfig } from "motion/react";
 import {
   pageMotionIdentity,
@@ -25,6 +27,7 @@ import "./App.css";
 import "./navigation.css";
 import "./scrollbars.css";
 export function App() {
+  useLocale();
   const [filterTarget, setFilterTarget] = useState<HTMLDivElement | null>(null);
   useRestorePosition();
   const routeEntity = useRouteEntity();
@@ -53,9 +56,9 @@ export function App() {
             >
               {!knownRoute ? (
                 <div>
-                  <h1>Página não encontrada</h1>
+                  <h1>{tr("common.pageNotFound")}</h1>
                   <Button onClick={() => setArea("boards")}>
-                    Ir para boards
+                    {tr("common.goToBoards")}
                   </Button>
                 </div>
               ) : routeEntity.active &&

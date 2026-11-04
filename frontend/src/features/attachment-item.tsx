@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useState } from "react";
 import {
   Download,
@@ -30,20 +32,76 @@ export const categories: Record<
   AttachmentCategory,
   { icon: LucideIcon; label: string }
 > = {
-  image: { icon: FileImage, label: "Imagem" },
-  audio: { icon: FileAudio, label: "Áudio" },
-  video: { icon: FileVideo, label: "Vídeo" },
-  pdf: { icon: FileText, label: "PDF" },
-  spreadsheet: { icon: FileSpreadsheet, label: "Planilha" },
-  presentation: { icon: FileChartColumn, label: "Apresentação" },
-  document: { icon: FileText, label: "Documento" },
-  archive: { icon: FileArchive, label: "Arquivo compactado" },
-  code: { icon: FileCode, label: "Código / dados" },
-  text: { icon: FileText, label: "Texto" },
-  file: { icon: File, label: "Arquivo" },
+  image: {
+    icon: FileImage,
+    get label() {
+      return tr("files.image");
+    },
+  },
+  audio: {
+    icon: FileAudio,
+    get label() {
+      return tr("files.audio");
+    },
+  },
+  video: {
+    icon: FileVideo,
+    get label() {
+      return tr("files.video");
+    },
+  },
+  pdf: {
+    icon: FileText,
+    get label() {
+      return tr("files.pdf");
+    },
+  },
+  spreadsheet: {
+    icon: FileSpreadsheet,
+    get label() {
+      return tr("files.spreadsheet");
+    },
+  },
+  presentation: {
+    icon: FileChartColumn,
+    get label() {
+      return tr("files.presentation");
+    },
+  },
+  document: {
+    icon: FileText,
+    get label() {
+      return tr("files.document");
+    },
+  },
+  archive: {
+    icon: FileArchive,
+    get label() {
+      return tr("files.archive");
+    },
+  },
+  code: {
+    icon: FileCode,
+    get label() {
+      return tr("files.codeData");
+    },
+  },
+  text: {
+    icon: FileText,
+    get label() {
+      return tr("errors.text");
+    },
+  },
+  file: {
+    icon: File,
+    get label() {
+      return tr("files.file");
+    },
+  },
 };
 
 export function Attachment({ item }: { item: Resources["attachments"] }) {
+  useLocale();
   const api = useApi();
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
@@ -83,16 +141,18 @@ export function Attachment({ item }: { item: Resources["attachments"] }) {
           {item.deletedAt && (
             <Badge
               variant="secondary"
-              title={`Removido em ${formatDate(item.deletedAt)}`}
+              title={tr("files.removedAt", {
+                date: formatDate(item.deletedAt),
+              })}
             >
-              Removido
+              {tr("files.removed")}
             </Badge>
           )}
         </div>
         <p className="attachment-metadata">
           <span title={item.mediaType}>{category.label}</span>
           <span aria-hidden="true">·</span>
-          <span title={`${item.sizeBytes} bytes`}>
+          <span title={tr("files.bytes", { count: item.sizeBytes })}>
             {formatAttachmentSize(item.sizeBytes)}
           </span>
         </p>
@@ -102,7 +162,7 @@ export function Attachment({ item }: { item: Resources["attachments"] }) {
         </div>
         {item.deletedAt && (
           <p className="attachment-metadata">
-            Removido em {formatDate(item.deletedAt)}
+            {tr("files.removedAt")} {formatDate(item.deletedAt)}
           </p>
         )}
         {item.description && (
@@ -122,7 +182,7 @@ export function Attachment({ item }: { item: Resources["attachments"] }) {
         onClick={() => void download()}
       >
         <Download data-icon="inline-start" />
-        {busy ? "Preparando…" : "Baixar arquivo"}
+        {busy ? tr("files.preparing") : tr("files.downloadFile")}
       </Button>
     </article>
   );

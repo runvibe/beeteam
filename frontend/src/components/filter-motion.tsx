@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import {
   Children,
   useContext,
@@ -53,6 +55,7 @@ export function movingControls(
 }
 
 export function ClearFilterMotion({ onClear }: { onClear: () => void }) {
+  useLocale();
   const present = useIsPresent(),
     reduced = useReducedMotion();
   return (
@@ -78,7 +81,7 @@ export function ClearFilterMotion({ onClear }: { onClear: () => void }) {
             variant="ghost"
             size="icon"
             className="filter-icon"
-            aria-label="Limpar filtros"
+            aria-label={tr("common.clearFilters")}
             onClick={onClear}
             disabled={!present}
           >
@@ -87,7 +90,7 @@ export function ClearFilterMotion({ onClear }: { onClear: () => void }) {
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content className="navigation-tooltip" sideOffset={6}>
-            Limpar filtros
+            {tr("common.clearFilters")}
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
@@ -104,6 +107,7 @@ export function AnimatedFilterContent({
   heading: string;
   trigger: RefObject<HTMLButtonElement | null>;
 }) {
+  useLocale();
   const direction = useContext(FilterDirectionContext);
   const present = useIsPresent(),
     reduced = useReducedMotion();

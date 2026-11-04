@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { ChevronLeft } from "lucide-react";
 import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { useEntity } from "@/api/context";
@@ -7,6 +9,7 @@ import { Button } from "./ui/button";
 import "./mobile-context-path.css";
 
 export function MobileContextPath() {
+  useLocale();
   const { area, boardId, taskId, agentId, teamId } = useUi();
   const url = useLocation();
   const board = useEntity("boards", boardId ?? "");
@@ -21,7 +24,11 @@ export function MobileContextPath() {
         ? team.data?.name
         : boardId
           ? board.data?.name
-          : { boards: "Boards", agents: "Agentes", teams: "Times" }[area];
+          : {
+              boards: tr("common.boards"),
+              agents: tr("common.agents"),
+              teams: tr("common.teams"),
+            }[area];
   const fallback = task.data
     ? task.data.parentId
       ? `/tasks/${task.data.parentId}`
@@ -32,21 +39,25 @@ export function MobileContextPath() {
         ? "/teams"
         : "/boards";
   return (
-    <nav className="mobile-context-path" aria-label="Caminho compacto">
+    <nav className="mobile-context-path" aria-label={tr("common.compactPath")}>
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Voltar"
+        aria-label={tr("common.back")}
         onClick={() => goBack(fallback)}
       >
         <ChevronLeft aria-hidden="true" />
       </Button>
-      <BreadcrumbName key={url.split("?")[0]} text={name ?? "Carregando…"} />
+      <BreadcrumbName
+        key={url.split("?")[0]}
+        text={name ?? tr("common.loading")}
+      />
     </nav>
   );
 }
 
 export function BreadcrumbName({ text }: { text: string }) {
+  useLocale();
   const frame = useRef<HTMLSpanElement>(null);
   const name = useRef<HTMLSpanElement>(null);
   const [distance, setDistance] = useState(0);

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
 import type { UsageObservation } from "@/api/generated/kanban/UsageObservation";
 import { OverviewAttribution } from "./overview-artifacts";
@@ -8,6 +10,7 @@ export function SessionSnapshot({
 }: {
   observation: UsageObservation;
 }) {
+  useLocale();
   if (
     o.reportKind !== "cumulative_snapshot" ||
     !["session", "session_tree"].includes(o.scope) ||
@@ -22,28 +25,34 @@ export function SessionSnapshot({
   return (
     <div>
       <p>
-        Acumulado registrado de{" "}
-        {o.scope === "session_tree" ? "sessão e descendentes" : "sessão"} (
-        {o.quality === "estimated" ? "estimado" : "medido"}):{" "}
-        {tokenCount(total)} tokens
+        {tr("common.recordedCumulativeUsageOf")}{" "}
+        {o.scope === "session_tree"
+          ? tr("common.sessionAndDescendants")
+          : tr("common.session")}{" "}
+        (
+        {o.quality === "estimated"
+          ? tr("usage.estimatedLower")
+          : tr("usage.measuredLower")}
+        ): {tokenCount(total)} {tr("usage.tokens")}
       </p>
       <p className="small-note">
-        {o.modelId || "Modelo não informado"} · Sessão {o.sessionId}
+        {o.modelId || tr("tasks.modelNotProvided")} {tr("common.session2")}{" "}
+        {o.sessionId}
       </p>
-      <span className="small-note">Ator da observação · acumulado até</span>
+      <span className="small-note">
+        {tr("common.observationActorCumulativeThrough")}
+      </span>
       <OverviewAttribution
         actor={{ actorKind: o.actor.kind, actorId: o.actor.id }}
         date={o.observedAt}
       />
       {o.totalTokens == null && total !== null && (
         <p className="small-note">
-          Registro legado: acumulado calculado pela entrada + saída.
+          {tr("common.legacyRecordCumulativeUsageCalculatedFromInputOutput")}
         </p>
       )}
       <p className="small-note">
-        Não atribuído à tarefa nem somado ao total ou ao delta. Não somar
-        checkpoints nem sessão e descendentes com subagentes. Cache e raciocínio
-        já estão incluídos na entrada e saída.
+        {tr("common.notAttributedToTheTaskOrAddedToTheTotal")}
       </p>
     </div>
   );
@@ -53,6 +62,7 @@ export function SessionSnapshots({
 }: {
   report?: SummaryUsageReport | null;
 }) {
+  useLocale();
   return (
     <>
       {report?.entries.map(({ id, observation }) => (

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,7 @@ export function PlanCarousel({
   feedback: ReactNode;
   children: ReactNode;
 }) {
+  useLocale();
   const root = useRef<HTMLDivElement>(null);
   const positions = useRef(new Map<string, number>());
   const moving = useRef(false);
@@ -88,22 +91,22 @@ export function PlanCarousel({
     <div className="task-plan-mobile">
       <nav
         className="task-plan-mobile-controls"
-        aria-label="Navegação entre planos"
+        aria-label={tr("tasks.planNavigation")}
       >
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Plano anterior"
+          aria-label={tr("tasks.previousPlan")}
           disabled={external || active === 0}
           onClick={() => void move(active - 1)}
         >
           <ChevronLeft aria-hidden="true" />
         </Button>
-        <span aria-live="polite">{current?.title ?? "Planos"}</span>
+        <span aria-live="polite">{current?.title ?? tr("tasks.plans")}</span>
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Próximo plano"
+          aria-label={tr("tasks.nextPlan")}
           disabled={!canNext || plans.query.isFetching}
           onClick={() => void move(active + 1)}
         >
@@ -113,7 +116,7 @@ export function PlanCarousel({
       <div
         ref={root}
         className="task-plan-carousel"
-        aria-label="Páginas dos planos"
+        aria-label={tr("tasks.planPages")}
         role="region"
         tabIndex={0}
         onScroll={(event) => {
@@ -145,7 +148,7 @@ export function PlanCarousel({
                 className="task-plan-mobile-reading"
                 data-plan-scroll
                 tabIndex={0}
-                aria-label="Conteúdo do plano"
+                aria-label={tr("tasks.planContent")}
                 role="region"
                 onScroll={(event) => {
                   positions.current.set(
@@ -163,7 +166,7 @@ export function PlanCarousel({
         ))}
         {!external && plans.query.hasNextPage && (
           <div className="task-plan-slide" aria-hidden="true">
-            <p>Próximo plano</p>
+            <p>{tr("tasks.nextPlan")}</p>
           </div>
         )}
       </div>

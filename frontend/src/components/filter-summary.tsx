@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import {
   useId,
   useState,
@@ -22,12 +24,16 @@ function RemoveFilter({
     event: MouseEvent<HTMLButtonElement>,
   ) => void;
 }) {
+  useLocale();
   if (!filter.onRemove) return null;
   return (
     <button
       type="button"
       className="filter-remove"
-      aria-label={`Remover filtro ${filter.label}: ${filter.value}`}
+      aria-label={tr("common.removeFilter", {
+        label: filter.label,
+        value: filter.value,
+      })}
       onClick={(event) => {
         event.stopPropagation();
         onRemove(filter, event);
@@ -39,6 +45,7 @@ function RemoveFilter({
 }
 
 export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
+  useLocale();
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -148,7 +155,10 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
           ref={toggle}
           type="button"
           className="filter-summary-toggle"
-          aria-label={`${expanded ? "Recolher" : "Expandir"} ${filters.length} filtros ativos`}
+          aria-label={tr("common.activeFilterCount", {
+            action: expanded ? tr("tasks.collapse") : tr("tasks.expand"),
+            count: filters.length,
+          })}
           aria-expanded={expanded}
           aria-controls={id}
           aria-describedby={`${id}-first`}
@@ -162,7 +172,9 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
             {filters[0].label}: {filters[0].value}
           </span>
           {filters.length > 1 && (
-            <span className="filter-summary-count">+{filters.length - 1}</span>
+            <span className="filter-summary-count">
+              +{formatNumber(filters.length - 1)}
+            </span>
           )}
         </button>
         <RemoveFilter filter={filters[0]} onRemove={remove} />
@@ -171,13 +183,13 @@ export function FilterSummary({ filters }: { filters: ActiveFilter[] }) {
         id={id}
         className="filter-summary-list"
         style={area ? { top: area.head } : undefined}
-        aria-label="Filtros ativos"
+        aria-label={tr("tasks.activeFilters")}
         inert={!expanded}
         aria-hidden={!expanded}
       >
         {filters.slice(1).map((filter) => (
           <motion.li
-            key={filter.label}
+            key={filter.id ?? filter.label}
             className="filter-summary-tag"
             initial={false}
             animate={{
