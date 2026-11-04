@@ -13,7 +13,6 @@ import type { Team } from "./generated/ra/Team";
 import type { Member } from "./generated/ra/Member";
 import type { ChatReference } from "./generated/ra/ChatReference";
 import type { ActivityLink } from "./generated/ra/ActivityLink";
-import type { ResumeContext } from "./generated/ra/ResumeContext";
 import type { PatchAgent } from "./generated/ra/PatchAgent";
 import type { PatchTeam } from "./generated/ra/PatchTeam";
 import type { PatchBoard } from "./generated/kanban/PatchBoard";
@@ -191,7 +190,6 @@ export interface BeeApi {
     filters?: Filters,
     signal?: AbortSignal,
   ): Promise<Page<PlanRevision>>;
-  resume(agentId: string): Promise<ResumeContext>;
   createStatus(
     boardId: string,
     input: import("./generated/kanban/StatusInput").StatusInput,

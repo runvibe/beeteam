@@ -122,7 +122,6 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
           query(filters),
         { signal },
       ),
-    resume: (id) => request(`/agents/${segment(id)}/resumption-context`),
     createStatus: (boardId, input, key = crypto.randomUUID()) =>
       request(`/boards/${segment(boardId)}/statuses`, {
         method: "POST",

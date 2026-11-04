@@ -122,3 +122,7 @@ Cargo build passou. `cargo test` com BEE_TEST_DRIVER=sqlite passou 41 testes lib
 ## Ajuste autorizado: navegação principal como Board
 
 Após integração de `6008749`, em 04/11 o usuário pediu Agent/Team exatamente com a navegação principal do Board. A implementação existente usa `AppPath` desktop e `MobileContextPath` até850px; o Voltar no corpo de Board fica oculto. Remover o slot backAction de EntityDetailPage e a prop fallback de seus callers, mantendo a implementação global e seus fallbacks. O Voltar da tela própria Info continua com semântica de retornar à entidade. Este ajuste substitui a exigência anterior de botão próprio no adapter. Validar ausência de duplicação, origem filtrada, entrada direta, slugs, foco Info e EN/PT em1440/851/850/390px. Testes de regressão falharam antes e passaram depois; revisão independente sem achados.
+
+## Ajuste autorizado em 2026-11-04: simplificar Agent
+
+Remover Retomada do frontend (aba, consulta, adapter, tipo gerado e textos exclusivos), coordenando endpoint/tool/contratos com Backend. Links legados agent.tab=resume e tab=resume abrem Perfil, preservando parâmetros de origem e chats. Manter instruções e contexto no Perfil, histórico e chats. Vínculos ficam apenas no contexto responsivo lateral/Info, preservando memberships e navegação. Validar EN/PT, desktop/mobile, ausência de chamadas resumption-context, testes frontend/build/audit e Cargo conforme ambiente isolado disponível.

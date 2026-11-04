@@ -240,16 +240,6 @@
     "reason": "Technical suffix test identifying ID fields for literal rendering."
   },
   {
-    "file": "src/i18n/system-notices.ts",
-    "text": "Contexto demonstrativo. Não inicia chats nem confirma atividade ao vivo.",
-    "reason": "Exact mock API system-notice protocol template; resumeNotice renders its semantic catalog key, not this literal."
-  },
-  {
-    "file": "src/i18n/system-notices.ts",
-    "text": "Stored context only; no session is started or monitored.",
-    "reason": "Exact backend system-notice protocol template; resumeNotice renders its semantic catalog key and preserves unknown external notices."
-  },
-  {
     "file": "src/components/entity-filter.tsx",
     "text": "Executor",
     "reason": "Historical selector query-scope identifier; kept byte-for-byte for existing URLs and separated from the translated display label."

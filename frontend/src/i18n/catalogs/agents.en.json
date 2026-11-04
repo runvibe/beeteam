@@ -41,9 +41,6 @@
   "recordedExternalReferencesTheyDoNotIndicateRunningSessions": "Recorded external references. They do not indicate running sessions.",
   "openReference": "Open reference",
   "noChatReferences": "No chat references",
-  "resumptionInstructions": "Resumption instructions",
-  "contextRetrievedAt": "Context retrieved at",
-  "resultsAndPendingWorkRemainInTasks": ". Results and pending work remain in tasks.",
   "identity": "Identity",
   "name": "Name",
   "activity": "Activity",
@@ -58,8 +55,6 @@
   "archivedProfileReadOnly": "Archived profile: read-only.",
   "thisRecordWasUpdatedInAnotherSessionYourDraftWas": "This record was updated in another session. Your draft was preserved. Use Reload form after the conflict to discard the draft and load the current version.",
   "unnamedAgent": "Agent {{id}}",
-  "demoResumeNotice": "Demo context. Does not start chats or confirm live activity.",
-  "storedResumeNotice": "Stored context only; no session is started or monitored.",
   "details": "Agent details",
   "backToAgent": "Back to agent"
 }

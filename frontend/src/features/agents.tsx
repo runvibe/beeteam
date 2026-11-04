@@ -1,4 +1,3 @@
-import { resumeNotice } from "@/i18n/system-notices";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -15,9 +14,8 @@ import { useLocation, navigate, destination } from "@/routing/location";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
 import { EntityFilter } from "@/components/entity-filter";
-import { useQuery } from "@tanstack/react-query";
 import { ExternalLink, ArrowUpRight } from "lucide-react";
-import { useApi, useEntity, useList } from "@/api/context";
+import { useEntity, useList } from "@/api/context";
 import type { Agent } from "@/api/types";
 import { useUi } from "@/state/ui";
 import {
@@ -210,7 +208,7 @@ function AgentDetail({ id }: { id: string }) {
   useLocale();
   const q = useEntity("agents", id);
   const [tab, setTab] = useUrlState<string>("agent.tab", "profile", {
-    values: ["profile", "activities", "chats", "resume"],
+    values: ["profile", "activities", "chats"],
   });
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   return (
@@ -308,7 +306,6 @@ function AgentDetail({ id }: { id: string }) {
                   ["profile", tr("agents.profile")],
                   ["activities", tr("agents.tasks")],
                   ["chats", tr("agents.chats")],
-                  ["resume", tr("agents.resume")],
                 ]}
               />
               <TabsContent value="profile">
@@ -319,9 +316,6 @@ function AgentDetail({ id }: { id: string }) {
               </TabsContent>
               <TabsContent value="chats">
                 <Chats agentId={id} />
-              </TabsContent>
-              <TabsContent value="resume">
-                <Resume agentId={id} />
               </TabsContent>
             </Tabs>
           </>
@@ -334,19 +328,6 @@ function Profile({ agent }: { agent: Agent }) {
   useLocale();
   return (
     <div className="detail-section">
-      <h3>{tr("agents.associations")}</h3>
-      {agent.bindings.leaderTeamId && (
-        <TeamLink id={agent.bindings.leaderTeamId} role={tr("common.leader")} />
-      )}
-      {agent.bindings.collaboratorTeamId && (
-        <TeamLink
-          id={agent.bindings.collaboratorTeamId}
-          role={tr("common.collaborator")}
-        />
-      )}
-      {!agent.bindings.leaderTeamId && !agent.bindings.collaboratorTeamId && (
-        <p className="small-note">{tr("agents.noCurrentAssociations")}</p>
-      )}
       <h3>{tr("agents.workingStyle")}</h3>
       <TextBlock>{agent.workStyle}</TextBlock>
       <h3>{tr("agents.instructions")}</h3>
@@ -497,40 +478,6 @@ function Chats({ agentId }: { agentId: string }) {
               <NoData title={tr("agents.noChatReferences")} />
             )}
             <Pager page={q.data} onOffset={setOffset} />
-          </>
-        )}
-      </QueryState>
-    </div>
-  );
-}
-function Resume({ agentId }: { agentId: string }) {
-  useLocale();
-  const api = useApi();
-  const q = useQuery({
-    queryKey: ["resume", agentId],
-    queryFn: () => api.resume(agentId),
-  });
-  return (
-    <div className="detail-section">
-      <QueryState query={q}>
-        {q.data && (
-          <>
-            <p className="muted-copy">{resumeNotice(q.data.notice)}</p>
-            <h3>{tr("agents.resumptionInstructions")}</h3>
-            <TextBlock>{q.data.agent.workInstructions}</TextBlock>
-            <h3>{tr("agents.briefContext")}</h3>
-            <TextBlock>{q.data.agent.contextSummary}</TextBlock>
-            {q.data.teamContexts.map((t) => (
-              <article className="record" key={t.teamId}>
-                <h3>{t.name}</h3>
-                <TextBlock>{t.purpose}</TextBlock>
-                <CardExcerpt text={t.context} />
-              </article>
-            ))}
-            <p className="small-note">
-              {tr("agents.contextRetrievedAt")} {formatDate(q.data.generatedAt)}
-              {tr("agents.resultsAndPendingWorkRemainInTasks")}
-            </p>
           </>
         )}
       </QueryState>

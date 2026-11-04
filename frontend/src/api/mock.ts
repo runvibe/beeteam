@@ -1,4 +1,3 @@
-import { demoResumeNotice } from "@/i18n/system-notices";
 import { message } from "@/i18n";
 
 import { patchRecord, addStatus, orderStatuses } from "./configuration";
@@ -457,29 +456,6 @@ export function createMockApi(
           f,
         ),
       );
-    },
-    async resume(agentId) {
-      const agent = await api.get("agents", agentId);
-      return {
-        agent,
-        teamContexts: db.teams
-          .filter((t) => Object.values(agent.bindings).includes(t.id))
-          .map((t) => ({
-            teamId: t.id,
-            role:
-              agent.bindings.leaderTeamId === t.id
-                ? ("leader" as const)
-                : ("collaborator" as const),
-            name: t.name,
-            purpose: t.purpose,
-            context: t.context,
-          })),
-        activityIndexPath: `/api/v1/agents/${agentId}/activities`,
-        chatReferencesPath: `/api/v1/agents/${agentId}/chat-references`,
-        taskIds: [],
-        generatedAt: new Date().toISOString(),
-        notice: demoResumeNotice,
-      };
     },
     async image(agentId) {
       await wait();

@@ -1003,6 +1003,10 @@ No mobile, o botão Info abre uma tela própria de detalhes da tarefa (`task.vie
 
 Task, Agent e Team usam os componentes de `frontend/src/components/detail-layout`: shell por slots, cabeçalho, navegação horizontal opcional, contexto responsivo e observação do cabeçalho. Esses componentes recebem conteúdo, labels traduzidos e callbacks, sem consultar API ou conhecer entidades. Os adapters mantêm queries, regras de domínio, navegação, formulários e filtros.
 
-No desktop (1056px ou mais), conteúdo e sidebar têm rolagem independente. No mobile, Info abre uma tela própria e Voltar restaura a página, aba, filtros e rolagem; os controles continuam montados ao alternar a tela ou redimensionar. As chaves são `task.view`, `agent.view` e `team.view`, sem alterar slugs. O padding direito é 1rem, respeitando safe areas. Configurações de Agent/Team continuam em `/settings` com os formulários fora do conteúdo oculto. Agent preserva suas quatro abas; Team mantém membros e boards com paginações independentes, sem novas abas. Troca de idioma mantém identidade dos componentes e conteúdo fornecido pelo usuário.
+No desktop (1056px ou mais), conteúdo e sidebar têm rolagem independente. No mobile, Info abre uma tela própria e Voltar restaura a página, aba, filtros e rolagem; os controles continuam montados ao alternar a tela ou redimensionar. As chaves são `task.view`, `agent.view` e `team.view`, sem alterar slugs. O padding direito é 1rem, respeitando safe areas. Configurações de Agent/Team continuam em `/settings` com os formulários fora do conteúdo oculto. Agent apresenta Perfil, Tarefas e Chats; Team mantém membros e boards com paginações independentes, sem novas abas. Troca de idioma mantém identidade dos componentes e conteúdo fornecido pelo usuário.
 
 A navegação principal de Agent e Team segue Board: breadcrumb global no desktop e Voltar no breadcrumb compacto mobile, sem botão duplicado no conteúdo. O Voltar da tela própria Info permanece dedicado ao retorno à mesma entidade.
+
+Links antigos com `agent.tab=resume` ou `tab=resume` abrem Perfil. Instruções de trabalho e contexto permanecem no perfil; o frontend não consulta mais o endpoint de retomada do agente.
+
+Vínculos do agente aparecem somente no contexto lateral desktop e na tela Info mobile, sem duplicação na aba Perfil. Memberships e navegação para o time permanecem disponíveis.

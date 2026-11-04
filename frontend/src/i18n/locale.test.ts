@@ -1,4 +1,3 @@
-import { resumeNotice, demoResumeNotice } from "./system-notices";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   i18n,
@@ -124,22 +123,5 @@ it("supports grammatical plural and numeric interpolation", () => {
   );
   expect(t("teams.collaborators", { count: 1, name: "My team" })).toBe(
     "1 colaborador do time My team",
-  );
-});
-
-it("localizes only known backend-owned notice templates at render time", () => {
-  setLocalePreference("en");
-  expect(resumeNotice(demoResumeNotice)).toBe(
-    "Demo context. Does not start chats or confirm live activity.",
-  );
-  setLocalePreference("pt");
-  expect(resumeNotice(demoResumeNotice)).toBe(demoResumeNotice);
-  expect(
-    resumeNotice("Stored context only; no session is started or monitored."),
-  ).toBe(
-    "Somente contexto registrado; nenhuma sessão é iniciada ou monitorada.",
-  );
-  expect(resumeNotice("Conteúdo externo do usuário")).toBe(
-    "Conteúdo externo do usuário",
   );
 });

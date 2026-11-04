@@ -24,14 +24,14 @@ function setup(url: string, mobile = false) {
     </ApiProvider>,
   );
 }
-it("shows the agent heading and context while preserving all four tabs across language changes", async () => {
+it("shows the agent heading and context while preserving all three tabs across language changes", async () => {
   setup(`/agents/${ids.agent}?agent.tab=chats`);
   const heading = await screen.findByRole("heading", { name: "Lia", level: 1 });
   expect(heading.closest(".sr-only")).toBeNull();
   expect(
     screen.getByRole("complementary", { name: "Detalhes do agente" }),
   ).toBeVisible();
-  expect(screen.getAllByRole("tab")).toHaveLength(4);
+  expect(screen.getAllByRole("tab")).toHaveLength(3);
   const tab = screen.getByRole("tab", { name: "Chats" });
   await userEvent.click(tab);
   act(() => setLocalePreference("en"));
@@ -129,5 +129,31 @@ it.each([
       within(compact).getByRole("button", { name: "Voltar" }),
     );
     expect(location.pathname).toBe(`/${resource}`);
+  },
+);
+
+it.each([false, true])(
+  "keeps agent associations only in responsive context (mobile=%s)",
+  async (mobile) => {
+    setup(`/agents/${ids.agent}`, mobile);
+    await screen.findByRole("tab", { name: "Perfil" });
+    expect(
+      within(screen.getByRole("tabpanel")).queryByRole("heading", {
+        name: "Vínculos",
+      }),
+    ).toBeNull();
+    if (mobile)
+      await userEvent.click(
+        screen.getByRole("button", { name: "Detalhes do agente" }),
+      );
+    const context = screen.getByRole("complementary", {
+      name: "Detalhes do agente",
+    });
+    expect(
+      within(context).getByRole("heading", { name: "Vínculos" }),
+    ).toBeVisible();
+    expect(
+      await within(context).findByRole("button", { name: /Colaborador/ }),
+    ).toBeVisible();
   },
 );

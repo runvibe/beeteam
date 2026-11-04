@@ -82,7 +82,6 @@ Leituras nÃ£o iniciam atividade. ExclusÃµes sÃ£o lÃ³gicas e nÃ£o remov
 | `createChatReference` | POST `/api/v1/agents/{agentId}/chat-references` | write | CreateChatReference | ChatReference |
 | `listChatReferences` | GET `/api/v1/agents/{agentId}/chat-references` | read | â€” | ChatReferencePage |
 | `updateChatReference` | PATCH `/api/v1/agents/{agentId}/chat-references/{chatReferenceId}` | write | PatchChatReference | ChatReference |
-| `getResumptionContext` | GET `/api/v1/agents/{agentId}/resumption-context` | read | â€” | ResumeContext |
 | `listAgentActivities` | GET `/api/v1/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
 
 ### Resolução por slug
@@ -164,7 +163,6 @@ executa. Templates e argumentos vÃªm de `resources/bee-team/prompts/content-ma
 | Nome | Argumentos obrigatÃ³rios | Fonte | Contexto |
 |---|---|---|---|
 | `task_briefing` | taskId | task-briefing.md | prepare_execution |
-| `agent_resumption` | agentId, taskId | collaborator-resumption.md | perfil prÃ³prio/retomada e task selecionada; sem copiar perfil interno do executor anterior |
 | `delivery_review` | taskId | delivery-review.md | prepare_execution, entregas e origem; parecer nÃ£o Ã© aprovaÃ§Ã£o |
 
 Argumentos desconhecidos/nÃ£o textuais, IDs invÃ¡lidos ou recursos ausentes falham.

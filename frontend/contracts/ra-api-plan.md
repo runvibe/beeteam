@@ -26,7 +26,7 @@ Board gestor pode ser transferido pelo PATCH de board, com evento e sem alterar 
 
 ## Coordenação e autonomia
 
-A task fornece executionContext com rootTaskId/originBoardId da cadeia principal. Board de origem tem manual/standard/automatic; task tem manual/automatic. Origem manual força manual; automatic força automático; standard usa somente flag individual da task atual, inclusive descendente em outro board, sem herdar automático do pai. Consultar API Kanban; ResumeContext não cria um modo global do agente/time. Sem contexto de execução, aprovação/manual.
+A task fornece executionContext com rootTaskId/originBoardId da cadeia principal. Board de origem tem manual/standard/automatic; task tem manual/automatic. Origem manual força manual; automatic força automático; standard usa somente flag individual da task atual, inclusive descendente em outro board, sem herdar automático do pai. Consultar API Kanban; o perfil não cria um modo global do agente/time. Sem contexto de execução, aprovação/manual.
 
 O líder organiza distribuição por agentes geridos; seu alcance para editar tasks de um executor gerido, independentemente do autor, está pendente. Não há permissão confirmada de 'líder do time da task'. Usuário pode reatribuir executor. Toda leitura de informação de task permanece disponível, sem autenticação.
 
@@ -55,7 +55,6 @@ Prefixo /api/v1. Perfis/times são coleções diretas. Arquivar/restaurar não r
 | GET `/agents/{agentId}/chat-references` | Listar referências de chats |
 | POST `/agents/{agentId}/chat-references` | Registrar referência a chat externo |
 | PATCH `/agents/{agentId}/chat-references/{chatReferenceId}` | Editar ou arquivar referência |
-| GET `/agents/{agentId}/resumption-context` | Consultar contexto para retomar agente |
 | GET `/agents/{agentId}/activities` | Consultar índice de tarefas e resumos do agente |
 
 ## Convenções comuns

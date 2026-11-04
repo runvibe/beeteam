@@ -277,7 +277,6 @@ describe("OpenAPI response conformance", () => {
         "ra#/components/schemas/ActivityLinkPage",
         await api.list("activities", ids.agent),
       ],
-      ["ra#/components/schemas/ResumeContext", await api.resume(ids.agent)],
       ["kanban#/components/schemas/BoardView", await api.board(ids.board)],
     ] as const) {
       const validate = ajv.getSchema(schema)!;
