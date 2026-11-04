@@ -105,6 +105,9 @@ pub(super) fn tools() -> Vec<Value> {
     }
     tools.extend(crate::dto::mcp::composite_tools());
     tools.extend(crate::dto::data_transfer_tools::tools());
+    for tool in &mut tools {
+        crate::dto::mcp_language::translate_metadata(tool);
+    }
     tools
 }
 pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Result<Value> {
