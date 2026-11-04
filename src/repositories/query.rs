@@ -21,7 +21,7 @@ fn table(c: &Command) -> Result<&'static str> {
         "listComments" => "comments",
         "listAttachments" => "attachments",
         "listExecutionSummarys" => "execution_summaries",
-        "getTimeline" => "events",
+        "getTimeline" | "getTimelinePoints" => "events",
         "listChatReferences" => "chat_references",
         "listTeamMembers" => "agents",
         _ => return Err(Failure::missing()),
@@ -32,6 +32,7 @@ fn table(c: &Command) -> Result<&'static str> {
 fn projection(table: &str, c: &Command) -> String {
     let base = "r.data || jsonb_build_object('id',r.id,'version',r.version,'createdAt',r.created_at,'updatedAt',r.updated_at,'archivedAt',r.archived_at,'deletedAt',r.deleted_at)";
     match c.operation.as_str() {
+        "getTimelinePoints" => "jsonb_build_object('id',r.id,'taskId',r.task_id,'type',r.data->'type','occurredAt',r.data->'occurredAt','sequence',r.data->'sequence','actorId',r.data->'actorId')".into(),
         "listTeamMembers" => "jsonb_build_object('agentId',r.id,'name',r.data->'name','role',member.role,'agentArchivedAt',r.archived_at)".into(),
         "listAgentActivities" => format!("{base} || jsonb_build_object('_archived',{},'taskId',r.id,'isCurrentExecutor',r.executor_agent_id=actor.id,'lastWorkedAt',own.created_at,'latestOwnSummaryId',own.id,'taskUpdatedAt',r.updated_at,'_worked',own.id IS NOT NULL,'_authored',r.author_agent_id=actor.id)", archived()),
         _ if table=="tasks" => format!("{base} || jsonb_build_object('_archived',{})",archived()),
@@ -291,7 +292,7 @@ pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> R
     for row in rows {
         items.push(row.get::<Value, _>("value"));
     }
-    if c.operation != "listTeamMembers" {
+    if !matches!(c.operation.as_str(), "listTeamMembers" | "getTimelinePoints") {
         let ids = items
             .iter()
             .map(|value| crate::dto::backend::value_id(&value["id"]))

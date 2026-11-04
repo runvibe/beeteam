@@ -22,7 +22,7 @@ fn table(c: &Command) -> Result<&'static str> {
         "listComments" => "comments",
         "listAttachments" => "attachments",
         "listExecutionSummarys" => "execution_summaries",
-        "getTimeline" => "events",
+        "getTimeline" | "getTimelinePoints" => "events",
         "listChatReferences" => "chat_references",
         "listTeamMembers" => "agents",
         _ => return Err(Failure::missing()),
@@ -33,6 +33,7 @@ fn table(c: &Command) -> Result<&'static str> {
 fn projection(table: &str, c: &Command) -> String {
     let base = "json_set(r.data,'$.id',r.id,'$.version',r.version,'$.createdAt',r.created_at,'$.updatedAt',r.updated_at,'$.archivedAt',r.archived_at,'$.deletedAt',r.deleted_at)";
     match c.operation.as_str() {
+        "getTimelinePoints" => "json_object('id',r.id,'taskId',r.task_id,'type',r.data->>'type','occurredAt',r.data->>'occurredAt','sequence',r.data->>'sequence','actorId',r.data->>'actorId')".into(),
         "listTeamMembers" => "json_object('agentId',r.id,'name',r.data->>'name','role',member.role,'agentArchivedAt',r.archived_at)".into(),
         "listAgentActivities" => format!("json_set({base},'$._archived',json(CASE WHEN {} THEN 'true' ELSE 'false' END),'$.taskId',r.id,'$.isCurrentExecutor',json(CASE WHEN r.executor_agent_id=actor.id THEN 'true' ELSE 'false' END),'$.lastWorkedAt', (SELECT created_at FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id ORDER BY created_at DESC,id DESC LIMIT 1),'$.latestOwnSummaryId', (SELECT id FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id ORDER BY created_at DESC,id DESC LIMIT 1),'$.taskUpdatedAt',r.updated_at,'$._worked',json(CASE WHEN EXISTS(SELECT 1 FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id) THEN 'true' ELSE 'false' END),'$._authored',json(CASE WHEN r.author_agent_id=actor.id THEN 'true' ELSE 'false' END))", archived()),
         _ if table=="tasks" => format!("json_set({base},'$._archived',json(CASE WHEN {} THEN 'true' ELSE 'false' END))",archived()),
@@ -300,7 +301,7 @@ pub(super) async fn select(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Res
     for row in rows {
         items.push(row.get::<Value, _>("value"));
     }
-    if c.operation != "listTeamMembers" {
+    if !matches!(c.operation.as_str(), "listTeamMembers" | "getTimelinePoints") {
         let ids = items
             .iter()
             .map(|value| crate::dto::backend::value_id(&value["id"]))

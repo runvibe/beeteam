@@ -96,6 +96,8 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
             records.insert(record("images", &row));
         }
     }
+    // Point reads need task/actor existence only, never task summaries or related payloads.
+    if c.operation == "getTimelinePoints" { return Ok(records); }
     hydrate_scoped(tx, &mut records, !matches!(c.operation.as_str(),"getTaskOverview"|"getTaskUsage"|"listTaskUsageDimensions")).await?;
     Ok(records)
 }
