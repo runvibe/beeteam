@@ -10,7 +10,7 @@ When creating or reusing an authorized session, the initial bootstrap of a new C
 
 If the tool does not exist or a policy prevents the action, report the concrete limitation and provide record references for manual opening, without work instructions exclusive to the chat. Do not fabricate IDs or create automations or supervisory chats as implicit substitutes.
 
-Bee Team MCP exposes `prepare_execution`, `record_progress`, `close_activity` and domain tools; none is a Codex tool for creating/controlling chats. Use resources/list/read for URIs actually advertised by the connected catalog and prompts/list/get for `task_briefing`, `agent_resumption`, `delivery_review` when the client offers them. If the harness exposes only tools, do not claim to have read a resource or obtained a prompt; use supplied local materials and explain the missing capability. State queried through a prompt must be revalidated before concurrent writes.
+Bee Team MCP exposes `prepare_execution`, `record_progress`, `close_activity` and domain tools; none is a Codex tool for creating/controlling chats. Use resources/list/read for URIs actually advertised by the connected catalog and prompts/list/get for `task_briefing` and `delivery_review` when the client offers them. If the harness exposes only tools, do not claim to have read a resource or obtained a prompt; use supplied local materials and explain the missing capability. State queried through a prompt must be revalidated before concurrent writes.
 
 ## Connect Bee Team to Codex
 

@@ -3,9 +3,7 @@ use crate::{
     dto::backend::*,
     repositories::{contracts::UnitOfWork, records::Records},
 };
-use chrono::Utc;
 use serde_json::{json, Value};
-use std::collections::BTreeSet;
 use uuid::Uuid;
 
 pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value> {
@@ -117,7 +115,6 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         "getTask" => resource(records, "tasks", c.id("taskId")?),
         "getTaskOverview" => super::overview::read(unit, c).await,
         "getBoardView" => board_view(unit, c).await,
-        "getResumptionContext" => resume(records, c),
         "listAgentActivities" => activities(unit, c).await,
         _ => list(unit, c).await,
     }
@@ -186,36 +183,6 @@ async fn board_view(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     }
     Ok(json!({"boardId":id,"columns":columns}))
 }
-fn resume(records: &Records, c: &Command) -> Result<Value> {
-    let id = c.id("agentId")?;
-    let mut contexts = Vec::new();
-    let agent = resource(records, "agents", id)?;
-    for (role, key) in [
-        ("leader", "leaderTeamId"),
-        ("collaborator", "collaboratorTeamId"),
-    ] {
-        if !agent["bindings"][key].is_null() {
-            let team = records.get("teams", value_id(&agent["bindings"][key])?)?;
-            contexts.push(json!({"teamId":team.id,"role":role,"name":team.data["name"],"purpose":team.data["purpose"],"context":team.data["context"]}));
-        }
-    }
-    let mut ids = BTreeSet::new();
-    if let Some(values) = c.q("taskIds").as_array() {
-        for value in values {
-            let id = value_id(value)?;
-            if !ids.insert(id) {
-                return Err(Failure::invalid("Duplicate taskIds"));
-            }
-            records.get("tasks", id)?;
-        }
-    }
-    if ids.len() > 20 {
-        return Err(Failure::invalid("At most 20 taskIds"));
-    }
-    Ok(
-        json!({"agent":agent,"teamContexts":contexts,"activityIndexPath":format!("/api/v1/agents/{id}/activities"),"chatReferencesPath":format!("/api/v1/agents/{id}/chat-references"),"taskIds":ids,"generatedAt":Utc::now(),"notice":"Stored context only; no session is started or monitored."}),
-    )
-}
 async fn activities(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     if c.query.contains_key("statusId") && !c.query.contains_key("boardId") {
         return Err(Failure::invalid("statusId requires boardId"));
@@ -249,7 +216,7 @@ mod tests {
             comment(&records, Uuid::now_v7(), id).unwrap_err().code,
             "not_found"
         );
-        records.get_mut("comments", id).unwrap().deleted_at = Some(Utc::now());
+        records.get_mut("comments", id).unwrap().deleted_at = Some(chrono::Utc::now());
         assert_eq!(
             comment(&records, task_id, id).unwrap_err().code,
             "not_found"

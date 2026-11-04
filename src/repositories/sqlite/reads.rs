@@ -71,13 +71,6 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
     if let Some(id) = c.actor.as_ref().and_then(|a| a.id) {
         load_ids(tx, &mut records, "agents", &[id]).await?;
     }
-    if let Some(ids) = c.q("taskIds").as_array() {
-        let ids = ids
-            .iter()
-            .filter_map(|v| v.as_str().and_then(|s| Uuid::parse_str(s).ok()))
-            .collect::<Vec<_>>();
-        load_ids(tx, &mut records, "tasks", &ids).await?;
-    }
     if c.operation == "getBoardView" {
         let rows = sqlx::query("SELECT * FROM statuses WHERE board_id=$1 AND deleted_at IS NULL")
             .bind(c.id("boardId")?.to_string())

@@ -147,7 +147,6 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
                 | "includeChildren"
                 | "includeRemoved"
                 | "limitPerColumn"
-                | "taskIds"
                 | "relation"
                 | "collaboratorId"
         ) || (c.operation == "listAgents" && matches!(key.as_str(), "role" | "teamId"))

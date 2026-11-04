@@ -271,16 +271,6 @@ async fn full_http_domain_cross_board_recursion_transfer_and_history() {
     )
     .await;
     get(&app, &format!("/api/v1/agents/{}/chat-references", id(&a))).await;
-    let resume = get(
-        &app,
-        &format!(
-            "/api/v1/agents/{}/resumption-context?taskIds={}",
-            id(&a),
-            id(&root)
-        ),
-    )
-    .await;
-    assert_eq!(resume["taskIds"], json!([id(&root)]));
     let activities = get(
         &app,
         &format!("/api/v1/agents/{}/activities?relation=authored", id(&a)),

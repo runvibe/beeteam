@@ -60,7 +60,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 79);
+    assert_eq!(tools.len(), 78);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -334,13 +334,9 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let context = success(&app, "prepare_execution", json!({"taskId":id(&spec_task)})).await;
     assert_eq!(context["task"]["specification"], updated["specification"]);
     let prompts = rpc(&app, "prompts/list", json!({})).await;
-    assert_eq!(prompts["result"]["prompts"].as_array().unwrap().len(), 3);
+    assert_eq!(prompts["result"]["prompts"].as_array().unwrap().len(), 2);
     for (name, args) in [
         ("task_briefing", json!({"taskId":id(task)})),
-        (
-            "agent_resumption",
-            json!({"taskId":id(task),"agentId":id(&agent)}),
-        ),
         ("delivery_review", json!({"taskId":id(task)})),
     ] {
         let prompt = rpc(&app, "prompts/get", json!({"name":name,"arguments":args})).await;
@@ -477,7 +473,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let app = app().await;
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 79);
+    assert_eq!(tools.len(), 78);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"]).unwrap();
         if let Some(schema) = tool.get("outputSchema") {
@@ -518,6 +514,6 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
             .as_array()
             .unwrap()
             .len(),
-        3
+        2
     );
 }

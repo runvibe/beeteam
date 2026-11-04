@@ -144,7 +144,7 @@ server capabilities; this checkout supplies editorial content for its snapshots.
 
 Reusable task briefing, collaborator resumption, and delivery review templates live
 under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
-for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`, `agent_resumption`,
+for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`
 and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
@@ -1006,3 +1006,5 @@ Task, Agent e Team usam os componentes de `frontend/src/components/detail-layout
 No desktop (1056px ou mais), conteúdo e sidebar têm rolagem independente. No mobile, Info abre uma tela própria e Voltar restaura a página, aba, filtros e rolagem; os controles continuam montados ao alternar a tela ou redimensionar. As chaves são `task.view`, `agent.view` e `team.view`, sem alterar slugs. O padding direito é 1rem, respeitando safe areas. Configurações de Agent/Team continuam em `/settings` com os formulários fora do conteúdo oculto. Agent preserva suas quatro abas; Team mantém membros e boards com paginações independentes, sem novas abas. Troca de idioma mantém identidade dos componentes e conteúdo fornecido pelo usuário.
 
 A navegação principal de Agent e Team segue Board: breadcrumb global no desktop e Voltar no breadcrumb compacto mobile, sem botão duplicado no conteúdo. O Voltar da tela própria Info permanece dedicado ao retorno à mesma entidade.
+
+A consulta agregada de retomada de agentes foi removida da API e do MCP, junto ao prompt específico. Perfil (`workInstructions` e `contextSummary`), contexto dos times e conversas permanecem nas consultas próprias. A continuidade de tarefas usa `task_briefing`/`prepare_execution` e leituras explícitas; os intervalos `start`/`pause`/`resume`/`finish` permanecem disponíveis.

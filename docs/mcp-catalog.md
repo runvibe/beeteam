@@ -82,7 +82,6 @@ Leituras nÃ£o iniciam atividade. ExclusÃµes sÃ£o lÃ³gicas e nÃ£o remov
 | `createChatReference` | POST `/api/v1/agents/{agentId}/chat-references` | write | CreateChatReference | ChatReference |
 | `listChatReferences` | GET `/api/v1/agents/{agentId}/chat-references` | read | â€” | ChatReferencePage |
 | `updateChatReference` | PATCH `/api/v1/agents/{agentId}/chat-references/{chatReferenceId}` | write | PatchChatReference | ChatReference |
-| `getResumptionContext` | GET `/api/v1/agents/{agentId}/resumption-context` | read | â€” | ResumeContext |
 | `listAgentActivities` | GET `/api/v1/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
 
 ### Resolução por slug
@@ -164,7 +163,6 @@ executa. Templates e argumentos vÃªm de `resources/bee-team/prompts/content-ma
 | Nome | Argumentos obrigatÃ³rios | Fonte | Contexto |
 |---|---|---|---|
 | `task_briefing` | taskId | task-briefing.md | prepare_execution |
-| `agent_resumption` | agentId, taskId | collaborator-resumption.md | perfil prÃ³prio/retomada e task selecionada; sem copiar perfil interno do executor anterior |
 | `delivery_review` | taskId | delivery-review.md | prepare_execution, entregas e origem; parecer nÃ£o Ã© aprovaÃ§Ã£o |
 
 Argumentos desconhecidos/nÃ£o textuais, IDs invÃ¡lidos ou recursos ausentes falham.
@@ -448,3 +446,9 @@ Tool and schema descriptions are localized only at the MCP presentation boundary
 Bundled skills, prompt templates/manifests and allowlisted references use the English Skills snapshot recorded in `resources/bee-team/provenance.json`. General project documentation and UI text are outside this translation scope. Packaged English workflow copies are the source of the corresponding MCP resources, rather than translating the general documentation. Resource discovery obtains the snapshot commit from provenance.
 
 English source snapshot: 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26. All 17 source/bundle hash pairs verified. Catalog: 79 tools, 17 resources, 3 prompts. Validation: 41 library tests, 3 MCP integration tests, 12 usage regressions and 3 English-content/user-data tests passed (59 distinct tests), using isolated SQLite/PostgreSQL fixtures as required. Structural comparison of all 79 tools found 1,087 editorial-only changes and no contract changes. No runtime restart or user-data translation.
+
+### Agent aggregate resumption removal (2026-11-04)
+
+The aggregate agent resumption endpoint/tool and its dedicated MCP prompt have been removed. Task briefing and delivery review remain registered; the collaborator continuity resource remains read-only guidance for explicit task/profile/team reads. Profile instructions/context, team context, chat references, activity indexes and task interval start/pause/resume/finish are preserved. Catalog: 78 tools, 17 resources, 2 prompts. No stored records or migrations are changed.
+
+Validation: the full `cargo test --locked --features mcp -j 1` suite passed (165 tests), with temporary SQLite and an isolated PostgreSQL 18 test instance for PostgreSQL-specific cases. The removal/data-preservation regression also passed in a separate PostgreSQL run. Tests verify HTTP 404, missing MCP tool/prompt discovery, unchanged profile/team/conversation data, preserved task interval workflows, and bundled resource hashes. Frontend changes and product runtime rollout are separate.
