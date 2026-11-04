@@ -39,6 +39,24 @@ servers:
   - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v1/team-role-icons:
+    get:
+      operationId: listTeamRoleIcons
+      summary: List the closed catalog of team role icons
+      responses:
+        "200":
+          description: Safe Unicode prefixes and monochrome Lucide SVG representations.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TeamRoleIcon'
   /api/v1/teams/by-slug/{slug}:
     get:
       operationId: resolveTeamSlug
@@ -2152,9 +2170,44 @@ components:
       description: Nova identidade independente no time destino; copia perfil, sem duplicar autoria de
         atividades. contextSummary somente quando fornecido. Fonte pode ser arquivada; transferência
         da mesma identidade usa composição, não cópia.
+    TeamRoleIconId:
+      type: string
+      enum: [crown, user-round, star, shield, rocket, compass, wrench, lightbulb]
+      description: Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.
+    TeamRoleIcon:
+      type: object
+      additionalProperties: false
+      required: [id, name, unicode, svg]
+      properties:
+        id:
+          $ref: '#/components/schemas/TeamRoleIconId'
+        name:
+          type: string
+          description: English catalog name.
+        unicode:
+          type: string
+          description: Safe Unicode chat title prefix.
+        svg:
+          type: string
+          description: Trusted monochrome Lucide SVG from the bundled catalog; never user input.
+    TeamRoleIcons:
+      type: object
+      additionalProperties: false
+      required: [leader, collaborator]
+      properties:
+        leader:
+          $ref: '#/components/schemas/TeamRoleIcon'
+        collaborator:
+          $ref: '#/components/schemas/TeamRoleIcon'
     Team:
       type: object
       properties:
+        roleIcons:
+          $ref: '#/components/schemas/TeamRoleIcons'
+        leaderIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
+        collaboratorIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
         slug:
           $ref: '#/components/schemas/Slug'
         id:
@@ -2220,6 +2273,10 @@ components:
     CreateTeam:
       type: object
       properties:
+        leaderIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
+        collaboratorIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
         name:
           type: string
           minLength: 1
@@ -2255,6 +2312,10 @@ components:
     PatchTeam:
       type: object
       properties:
+        leaderIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
+        collaboratorIconId:
+          $ref: '#/components/schemas/TeamRoleIconId'
         name:
           type: string
           minLength: 1

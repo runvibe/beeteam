@@ -30,5 +30,17 @@
   "collaborators_other": "{{count}} colaboradores do time {{name}}",
   "collaborators_many": "{{count}} colaboradores do time {{name}}",
   "details": "Detalhes do time",
-  "backToTeam": "Voltar ao time"
+  "backToTeam": "Voltar ao time",
+  "leaderIcon": "Ícone do líder",
+  "collaboratorIcon": "Ícone do colaborador",
+  "icons": {
+    "crown": "Coroa",
+    "user-round": "Pessoa",
+    "star": "Estrela",
+    "shield": "Escudo",
+    "rocket": "Foguete",
+    "compass": "Bússola",
+    "wrench": "Chave inglesa",
+    "lightbulb": "Lâmpada"
+  }
 }

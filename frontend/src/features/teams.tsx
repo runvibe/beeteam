@@ -1,3 +1,8 @@
+import {
+  TeamRoleIcon,
+  RoleIconSelect,
+  roleIconId,
+} from "@/components/team-role-icon";
 import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -262,6 +267,7 @@ function TeamDetail({ id }: { id: string }) {
                 <div key={m.agentId} className="record-row">
                   <AgentName id={m.agentId} />
                   <Badge variant="outline">
+                    <TeamRoleIcon id={roleIconId(q.data, m.role)} />
                     {m.role === "leader"
                       ? tr("common.leader")
                       : tr("common.collaborator")}
@@ -297,7 +303,7 @@ function TeamDetail({ id }: { id: string }) {
     </EntityDetailPage>
   );
 }
-function TeamForm({ team: latest }: { team: Team }) {
+export function TeamForm({ team: latest }: { team: Team }) {
   useLocale();
   const api = useApi();
   const autosave = useSettingsAutosave({
@@ -308,6 +314,8 @@ function TeamForm({ team: latest }: { team: Team }) {
       name: team.name,
       purpose: team.purpose,
       context: team.context,
+      leaderIconId: roleIconId(team, "leader"),
+      collaboratorIconId: roleIconId(team, "collaborator"),
     }),
     save: (draft, version) => api.patch("teams", latest.id, draft, version),
   });
@@ -315,6 +323,16 @@ function TeamForm({ team: latest }: { team: Team }) {
   return (
     <form {...autosave.formProps} className="detail-section">
       <FieldGroup>
+        <RoleIconSelect
+          role="leader"
+          value={autosave.draft.leaderIconId}
+          onChange={(id) => autosave.change("leaderIconId", id, true)}
+        />
+        <RoleIconSelect
+          role="collaborator"
+          value={autosave.draft.collaboratorIconId}
+          onChange={(id) => autosave.change("collaboratorIconId", id, true)}
+        />
         <Field>
           <FieldLabel htmlFor="team-name">{tr("agents.name")}</FieldLabel>
           <Input

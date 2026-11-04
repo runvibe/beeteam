@@ -1,3 +1,9 @@
+import {
+  AgentRoleSymbol,
+  TeamRoleIcon,
+  roleIconId,
+  type TeamRole,
+} from "@/components/team-role-icon";
 import { AgentLatestActivity } from "./agent-latest-activity";
 import { AgentChats } from "./agent-chats";
 import { DetailRecordList } from "./detail-record-list";
@@ -166,10 +172,16 @@ export function Agents() {
                       <CardFooter className="justify-between gap-2">
                         <div className="flex flex-wrap gap-2">
                           {a.bindings.leaderTeamId && (
-                            <CardSymbol kind="leader" />
+                            <AgentRoleSymbol
+                              teamId={a.bindings.leaderTeamId}
+                              role="leader"
+                            />
                           )}
                           {a.bindings.collaboratorTeamId && (
-                            <CardSymbol kind="collaborator" />
+                            <AgentRoleSymbol
+                              teamId={a.bindings.collaboratorTeamId}
+                              role="collaborator"
+                            />
                           )}
                           {!a.bindings.leaderTeamId &&
                             !a.bindings.collaboratorTeamId && (
@@ -272,15 +284,12 @@ function AgentDetail({ id }: { id: string }) {
             <section>
               <h2>{tr("agents.associations")}</h2>
               {q.data.bindings.leaderTeamId && (
-                <TeamLink
-                  id={q.data.bindings.leaderTeamId}
-                  role={tr("common.leader")}
-                />
+                <TeamLink id={q.data.bindings.leaderTeamId} role="leader" />
               )}
               {q.data.bindings.collaboratorTeamId && (
                 <TeamLink
                   id={q.data.bindings.collaboratorTeamId}
-                  role={tr("common.collaborator")}
+                  role="collaborator"
                 />
               )}
               {!q.data.bindings.leaderTeamId &&
@@ -346,13 +355,14 @@ function Profile({ agent }: { agent: Agent }) {
     </div>
   );
 }
-function TeamLink({ id, role }: { id: string; role: string }) {
+function TeamLink({ id, role }: { id: string; role: TeamRole }) {
   useLocale();
   const q = useEntity("teams", id),
     open = useUi((s) => s.openTeam);
   return (
     <Button variant="outline" onClick={() => open(id)}>
-      {role} · {q.data?.name ?? tr("agents.team")}
+      <TeamRoleIcon id={roleIconId(q.data, role)} />
+      {tr(`common.${role}`)} · {q.data?.name ?? tr("agents.team")}
       <ArrowUpRight data-icon="inline-end" />
     </Button>
   );

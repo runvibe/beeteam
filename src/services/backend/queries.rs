@@ -24,6 +24,7 @@ pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value
             value["bindings"] = json!({"leaderTeamId":leader,"collaboratorTeamId":collaborator});
         }
         "teams" => {
+            super::team_role_icons::resolve(&mut value);
             value["collaboratorCount"] = json!(records
                 .list("memberships")
                 .iter()
@@ -129,6 +130,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
 async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     let page = unit.select(c).await?;
     let mut items = page.items;
+    if page.table == "teams" {
+        items.iter_mut().for_each(super::team_role_icons::resolve);
+    }
     if c.operation == "getTimelinePoints" {
         // SQL keeps actorId only for filtering. The output contract has exactly five fields.
         items = items.into_iter().map(|item| {

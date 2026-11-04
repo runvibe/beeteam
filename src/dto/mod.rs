@@ -17,3 +17,5 @@ pub mod work_scope;
 pub mod local_projects;
 pub mod timeline;
 pub mod agent_activity;
+
+pub mod team_role_icons;

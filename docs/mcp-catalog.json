@@ -26,103 +26,103 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Structured projects and commit evidence",
       "uri": "beeteam://references/repository-evidence"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Explicit task session intervals",
       "uri": "beeteam://references/execution-intervals"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator chat-first bootstrap",
       "uri": "beeteam://references/collaborator-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team leader",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Bee Team collaborator",
       "uri": "beeteam://skills/collaborator"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator workflow",
       "uri": "beeteam://references/collaborator-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Collaborator task continuity template",
       "uri": "beeteam://references/collaborator-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26 plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 0af928f5178d84ba0a23fb24a129834dff40923e plus local SQLite startup guidance (2026-11-03). Links to bee-team-leader/SKILL.md and bee-team-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -34473,6 +34473,20 @@
                     "minimum": 0,
                     "type": "integer"
                   },
+                  "collaboratorIconId": {
+                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                    "enum": [
+                      "crown",
+                      "user-round",
+                      "star",
+                      "shield",
+                      "rocket",
+                      "compass",
+                      "wrench",
+                      "lightbulb"
+                    ],
+                    "type": "string"
+                  },
                   "context": {
                     "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                     "type": "string",
@@ -34495,6 +34509,20 @@
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": "string"
                   },
+                  "leaderIconId": {
+                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                    "enum": [
+                      "crown",
+                      "user-round",
+                      "star",
+                      "shield",
+                      "rocket",
+                      "compass",
+                      "wrench",
+                      "lightbulb"
+                    ],
+                    "type": "string"
+                  },
                   "leaderId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -34509,6 +34537,92 @@
                     "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                     "type": "string",
                     "x-maxBytes": 65536
+                  },
+                  "roleIcons": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "collaborator": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                            "enum": [
+                              "crown",
+                              "user-round",
+                              "star",
+                              "shield",
+                              "rocket",
+                              "compass",
+                              "wrench",
+                              "lightbulb"
+                            ],
+                            "type": "string"
+                          },
+                          "name": {
+                            "description": "English catalog name.",
+                            "type": "string"
+                          },
+                          "svg": {
+                            "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                            "type": "string"
+                          },
+                          "unicode": {
+                            "description": "Safe Unicode chat title prefix.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "unicode",
+                          "svg"
+                        ],
+                        "type": "object"
+                      },
+                      "leader": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                            "enum": [
+                              "crown",
+                              "user-round",
+                              "star",
+                              "shield",
+                              "rocket",
+                              "compass",
+                              "wrench",
+                              "lightbulb"
+                            ],
+                            "type": "string"
+                          },
+                          "name": {
+                            "description": "English catalog name.",
+                            "type": "string"
+                          },
+                          "svg": {
+                            "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                            "type": "string"
+                          },
+                          "unicode": {
+                            "description": "Safe Unicode chat title prefix.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "unicode",
+                          "svg"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "leader",
+                      "collaborator"
+                    ],
+                    "type": "object"
                   },
                   "slug": {
                     "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -35490,6 +35604,20 @@
                       "minimum": 0,
                       "type": "integer"
                     },
+                    "collaboratorIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb"
+                      ],
+                      "type": "string"
+                    },
                     "context": {
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
@@ -35512,6 +35640,20 @@
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                       "type": "string"
                     },
+                    "leaderIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb"
+                      ],
+                      "type": "string"
+                    },
                     "leaderId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -35526,6 +35668,92 @@
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
                       "x-maxBytes": 65536
+                    },
+                    "roleIcons": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "collaborator": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "enum": [
+                                "crown",
+                                "user-round",
+                                "star",
+                                "shield",
+                                "rocket",
+                                "compass",
+                                "wrench",
+                                "lightbulb"
+                              ],
+                              "type": "string"
+                            },
+                            "name": {
+                              "description": "English catalog name.",
+                              "type": "string"
+                            },
+                            "svg": {
+                              "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                              "type": "string"
+                            },
+                            "unicode": {
+                              "description": "Safe Unicode chat title prefix.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "unicode",
+                            "svg"
+                          ],
+                          "type": "object"
+                        },
+                        "leader": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "enum": [
+                                "crown",
+                                "user-round",
+                                "star",
+                                "shield",
+                                "rocket",
+                                "compass",
+                                "wrench",
+                                "lightbulb"
+                              ],
+                              "type": "string"
+                            },
+                            "name": {
+                              "description": "English catalog name.",
+                              "type": "string"
+                            },
+                            "svg": {
+                              "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                              "type": "string"
+                            },
+                            "unicode": {
+                              "description": "Safe Unicode chat title prefix.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "unicode",
+                            "svg"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "leader",
+                        "collaborator"
+                      ],
+                      "type": "object"
                     },
                     "slug": {
                       "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -35564,6 +35792,167 @@
             },
             "required": [
               "teams"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "GET /api/v1/team-role-icons. List the closed catalog of team role icons. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {},
+            "required": [],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "listTeamRoleIcons",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb"
+                      ],
+                      "type": "string"
+                    },
+                    "name": {
+                      "description": "English catalog name.",
+                      "type": "string"
+                    },
+                    "svg": {
+                      "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                      "type": "string"
+                    },
+                    "unicode": {
+                      "description": "Safe Unicode chat title prefix.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "unicode",
+                    "svg"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "items"
             ],
             "type": "object"
           },
@@ -35766,6 +36155,20 @@
                       "minimum": 0,
                       "type": "integer"
                     },
+                    "collaboratorIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb"
+                      ],
+                      "type": "string"
+                    },
                     "context": {
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
@@ -35788,6 +36191,20 @@
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                       "type": "string"
                     },
+                    "leaderIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb"
+                      ],
+                      "type": "string"
+                    },
                     "leaderId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -35802,6 +36219,92 @@
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
                       "x-maxBytes": 65536
+                    },
+                    "roleIcons": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "collaborator": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "enum": [
+                                "crown",
+                                "user-round",
+                                "star",
+                                "shield",
+                                "rocket",
+                                "compass",
+                                "wrench",
+                                "lightbulb"
+                              ],
+                              "type": "string"
+                            },
+                            "name": {
+                              "description": "English catalog name.",
+                              "type": "string"
+                            },
+                            "svg": {
+                              "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                              "type": "string"
+                            },
+                            "unicode": {
+                              "description": "Safe Unicode chat title prefix.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "unicode",
+                            "svg"
+                          ],
+                          "type": "object"
+                        },
+                        "leader": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "id": {
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "enum": [
+                                "crown",
+                                "user-round",
+                                "star",
+                                "shield",
+                                "rocket",
+                                "compass",
+                                "wrench",
+                                "lightbulb"
+                              ],
+                              "type": "string"
+                            },
+                            "name": {
+                              "description": "English catalog name.",
+                              "type": "string"
+                            },
+                            "svg": {
+                              "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                              "type": "string"
+                            },
+                            "unicode": {
+                              "description": "Safe Unicode chat title prefix.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "unicode",
+                            "svg"
+                          ],
+                          "type": "object"
+                        }
+                      },
+                      "required": [
+                        "leader",
+                        "collaborator"
+                      ],
+                      "type": "object"
                     },
                     "slug": {
                       "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -35921,6 +36424,20 @@
             "additionalProperties": false,
             "description": "Create a group with a leader and members, without a higher-level grouping entity or task ownership. Identities must exist and role cardinalities must be valid.",
             "properties": {
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "collaboratorIds": {
                 "items": {
                   "format": "uuid",
@@ -35957,6 +36474,20 @@
                   "approvalRef"
                 ],
                 "type": "object"
+              },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
               },
               "leaderId": {
                 "format": "uuid",
@@ -36054,6 +36585,20 @@
                 "minimum": 0,
                 "type": "integer"
               },
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36076,6 +36621,20 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "leaderId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -36090,6 +36649,92 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "roleIcons": {
+                "additionalProperties": false,
+                "properties": {
+                  "collaborator": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  },
+                  "leader": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "leader",
+                  "collaborator"
+                ],
+                "type": "object"
               },
               "slug": {
                 "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -36404,6 +37049,20 @@
                 "minimum": 0,
                 "type": "integer"
               },
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36426,6 +37085,20 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "leaderId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -36440,6 +37113,92 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "roleIcons": {
+                "additionalProperties": false,
+                "properties": {
+                  "collaborator": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  },
+                  "leader": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "leader",
+                  "collaborator"
+                ],
+                "type": "object"
               },
               "slug": {
                 "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -36526,10 +37285,38 @@
             "description": "Composition changes only through the separate atomic command.",
             "minProperties": 1,
             "properties": {
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
               },
               "name": {
                 "maxLength": 200,
@@ -36626,6 +37413,20 @@
                 "minimum": 0,
                 "type": "integer"
               },
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36648,6 +37449,20 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "leaderId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -36662,6 +37477,92 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "roleIcons": {
+                "additionalProperties": false,
+                "properties": {
+                  "collaborator": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  },
+                  "leader": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "leader",
+                  "collaborator"
+                ],
+                "type": "object"
               },
               "slug": {
                 "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
@@ -36836,6 +37737,20 @@
                 "minimum": 0,
                 "type": "integer"
               },
+              "collaboratorIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36858,6 +37773,20 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               },
+              "leaderIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb"
+                ],
+                "type": "string"
+              },
               "leaderId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -36872,6 +37801,92 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "roleIcons": {
+                "additionalProperties": false,
+                "properties": {
+                  "collaborator": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  },
+                  "leader": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "enum": [
+                          "crown",
+                          "user-round",
+                          "star",
+                          "shield",
+                          "rocket",
+                          "compass",
+                          "wrench",
+                          "lightbulb"
+                        ],
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "English catalog name.",
+                        "type": "string"
+                      },
+                      "svg": {
+                        "description": "Trusted monochrome Lucide SVG from the bundled catalog; never user input.",
+                        "type": "string"
+                      },
+                      "unicode": {
+                        "description": "Safe Unicode chat title prefix.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "unicode",
+                      "svg"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "leader",
+                  "collaborator"
+                ],
+                "type": "object"
               },
               "slug": {
                 "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",

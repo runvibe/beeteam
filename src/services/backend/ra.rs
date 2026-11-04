@@ -107,6 +107,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 unit.allocate_slug("teams", data["name"].as_str().unwrap())
                     .await?
             );
+            team_role_icons::defaults(&mut data);
             let id = unit.records.insert(Record::new("teams", data));
             let members = body["collaboratorIds"]
                 .as_array()
@@ -127,7 +128,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             patch(
                 unit.records.get_mut("teams", id)?,
                 body,
-                &["name", "purpose", "context"],
+                &["name", "purpose", "context", "leaderIconId", "collaboratorIconId"],
             );
             outcome(&unit.records, "teams", id, false)
         }

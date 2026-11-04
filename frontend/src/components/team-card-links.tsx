@@ -1,6 +1,6 @@
 import { formatNumber, useLocale, t as tr } from "@/i18n";
 
-import { Crown, UserRound } from "lucide-react";
+import { TeamRoleIcon, roleIconId } from "./team-role-icon";
 import { Tooltip } from "radix-ui";
 import { useEntity } from "@/api/context";
 import type { Team } from "@/api/types";
@@ -55,7 +55,7 @@ export function TeamCardLinks({ team }: { team: Team }) {
           href={destination(`/agents/${leader.data.slug}`)}
           label={tr("teams.openLeader", { name: leader.data.name })}
         >
-          <Crown fill="currentColor" aria-hidden="true" />
+          <TeamRoleIcon id={roleIconId(team, "leader")} />
         </Shortcut>
       ) : (
         <span
@@ -67,14 +67,14 @@ export function TeamCardLinks({ team }: { team: Team }) {
               : tr("teams.noLeader")
           }
         >
-          <Crown aria-hidden="true" />
+          <TeamRoleIcon id={roleIconId(team, "leader")} />
         </span>
       )}
       <Shortcut
         href={`${destination("/agents")}&${new URLSearchParams({ "agents.teamId": team.id, "agents.role": "collaborator" })}`}
         label={countLabel}
       >
-        <UserRound fill="currentColor" aria-hidden="true" />
+        <TeamRoleIcon id={roleIconId(team, "collaborator")} />
         <span aria-hidden="true">{formatNumber(team.collaboratorCount)}</span>
       </Shortcut>
     </Tooltip.Provider>

@@ -20,6 +20,30 @@ Os catálogos e as regras para novas mensagens estão em
 [Internacionalização e auditoria da interface](docs/frontend-i18n.md).
 No diretório `frontend`, execute `npm run audit:i18n`, `npm test` e `npm run build`.
 
+## Ícones dos papéis do time
+
+Em **Time → Editar metadados**, os seletores **Ícone do líder** e **Ícone do
+colaborador** salvam automaticamente escolhas independentes, com prévia SVG e
+Unicode. Listas, membros e vínculos de agentes usam a configuração do respectivo
+time; o avatar pessoal permanece separado. O catálogo fechado contém `crown`,
+`user-round`, `star`, `shield`, `rocket`, `compass`, `wrench` e `lightbulb`.
+
+HTTP `GET /api/v1/team-role-icons` e MCP `listTeamRoleIcons` expõem o mesmo catálogo
+com nome inglês, prefixo Unicode seguro e SVG monocromático Lucide. Criação/PATCH
+de time aceitam `leaderIconId` e `collaboratorIconId`; leituras devolvem também
+`roleIcons.leader` e `roleIcons.collaborator`. Apenas IDs são persistidos. Times
+antigos recebem `crown`/👑 e `user-round`/👤 na leitura, sem migração ou alteração do
+banco, inclusive após transferência portátil. Snapshots legados de idempotência
+podem não conter os campos aditivos; uma leitura atual resolve a configuração.
+
+As skills consultam o time e o papel reais antes de ajustar apenas o próprio
+chat, preservam o título, evitam prefixos repetidos e verificam a leitura posterior
+quando suportada. O antigo prefixo fixo 🐝 passa a seguir a escolha do time;
+não há renomeação automática de chats existentes. Sem time/consulta disponível,
+👑/🐝 são fallbacks declarados, com nova consulta na retomada. A configuração
+local não instala nem atualiza skills globais. Catálogo e licença dos SVGs ficam
+em `docs/team-role-icons.json` e `docs/team-role-icons-LICENSE`.
+
 ## Executar
 
 O binário de distribuição inicia sem variáveis: SQLite em `~/.beeteam/beeteam.sql`,

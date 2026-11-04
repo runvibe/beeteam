@@ -9,6 +9,7 @@ mod project_discovery;
 mod tracking;
 mod queries;
 mod ra;
+mod team_role_icons;
 pub mod service;
 
 use crate::{
@@ -37,6 +38,9 @@ pub async fn execute(
         if name != "slug" {
             *value = parse_id(value)?.to_string();
         }
+    }
+    if command.operation == "listTeamRoleIcons" {
+        return Ok(Outcome::data(team_role_icons::catalog()));
     }
     let slug_table = match command.operation.as_str() {
         "resolveAgentSlug" => Some("agents"),

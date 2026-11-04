@@ -1,5 +1,8 @@
 // Generated from contracts/ra-openapi.yaml. Do not edit.
 export type Team = {
+  roleIcons?: import("./TeamRoleIcons").TeamRoleIcons;
+  leaderIconId?: import("./TeamRoleIconId").TeamRoleIconId;
+  collaboratorIconId?: import("./TeamRoleIconId").TeamRoleIconId;
   slug: import("./Slug").Slug;
   /** Format: uuid */
   id: string;
