@@ -25,8 +25,12 @@ No diretório `frontend`, execute `npm run audit:i18n`, `npm test` e `npm run bu
 Em **Time → Editar metadados**, os seletores **Ícone do líder** e **Ícone do
 colaborador** salvam automaticamente escolhas independentes, com prévia SVG e
 Unicode. Listas, membros e vínculos de agentes usam a configuração do respectivo
-time; o avatar pessoal permanece separado. O catálogo fechado contém `crown`,
-`user-round`, `star`, `shield`, `rocket`, `compass`, `wrench` e `lightbulb`.
+time; o avatar pessoal permanece separado. O catálogo fechado tem 24 opções:
+`crown`, `user-round`, `star`, `shield`, `rocket`, `compass`, `wrench`, `lightbulb`,
+`flower-2`, `bot`, `code`, `terminal`, `bug`, `flask-conical`, `book-open`,
+`graduation-cap`, `palette`, `globe`, `heart`, `zap`, `target`, `key-round`,
+`lock` e `music`. Os seletores permitem rolagem e navegação por teclado;
+as oito opções originais e os defaults mantêm seus IDs e representações.
 
 HTTP `GET /api/v1/team-role-icons` e MCP `listTeamRoleIcons` expõem o mesmo catálogo
 com nome inglês, prefixo Unicode seguro e SVG monocromático Lucide. Criação/PATCH

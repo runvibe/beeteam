@@ -120,6 +120,9 @@ fn closed_catalog_matches_validation_and_has_safe_representations() {
     let op = contracts::operation("createTeam").unwrap();
     let ids = op.document["components"]["schemas"]["TeamRoleIconId"]["enum"].as_array().unwrap();
     assert_eq!(ids.len(), CATALOG.len());
+    assert_eq!(CATALOG.len(), 24);
+    let unique: std::collections::HashSet<_> = CATALOG.iter().map(|icon| &icon.id).collect();
+    assert_eq!(unique.len(), CATALOG.len());
     for icon in CATALOG.iter() {
         assert!(ids.contains(&json!(icon.id)));
         assert!(icon.name.is_ascii());
@@ -130,5 +133,23 @@ fn closed_catalog_matches_validation_and_has_safe_representations() {
         for forbidden in ["<script", "<foreignObject", "href=", "style=", "onload=", "<image"] {
             assert!(!icon.svg.contains(forbidden));
         }
+    }
+}
+
+#[tokio::test]
+async fn every_catalog_choice_round_trips_through_http_and_mcp() {
+    use beeteam::dto::team_role_icons::CATALOG;
+    let app = app().await;
+    let agent = ok(&app,"POST","/api/v1/agents",json!({"name":"Expanded icons leader"}),None).await;
+    let mut team = ok(&app,"POST","/api/v1/teams",json!({"name":"Expanded icons","leaderId":id(&agent),"coordinationContext":manual()}),None).await;
+    let path = format!("/api/v1/teams/{}",id(&team));
+    for icon in CATALOG.iter() {
+        team = ok(&app,"PATCH",&path,json!({"leaderIconId":icon.id}),ver(&team)).await;
+        assert_eq!(team["roleIcons"]["leader"],serde_json::to_value(icon).unwrap());
+        let result = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"collaboratorIconId":icon.id},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
+        assert_eq!(result["isError"],false,"{result}");
+        team = get(&app,&path).await;
+        assert_eq!(team["roleIcons"]["leader"],team["roleIcons"]["collaborator"]);
+        assert_eq!(team,result["structuredContent"]["data"]);
     }
 }

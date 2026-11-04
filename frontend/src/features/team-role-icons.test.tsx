@@ -132,3 +132,47 @@ it("uses local trusted assets and stable defaults for older API responses", () =
     ),
   );
 });
+
+it.each(["en", "pt"] as const)(
+  "offers 24 translated icons and saves new choices in %s",
+  async (locale) => {
+    setLocalePreference(locale);
+    const seed = makeSeed();
+    const team = seed.teams[0];
+    const api = createMockApi({ delay: 0, seed });
+    const patch = vi.spyOn(api, "patch");
+    render(
+      <ApiProvider api={api}>
+        <TeamForm team={team} />
+      </ApiProvider>,
+    );
+    expect(patch).not.toHaveBeenCalled();
+    await userEvent.click(
+      screen.getByRole("combobox", {
+        name: locale === "en" ? "Leader icon" : "Ícone do líder",
+      }),
+    );
+    expect(await screen.findAllByRole("option")).toHaveLength(24);
+    for (const option of screen.getAllByRole("option"))
+      expect(option).not.toHaveTextContent("teams.icons.");
+    await userEvent.click(
+      screen.getByRole("option", {
+        name: locale === "en" ? "Robot 🤖" : "Robô 🤖",
+      }),
+    );
+    await waitFor(async () =>
+      expect((await api.get("teams", team.id)).leaderIconId).toBe("bot"),
+    );
+    await userEvent.click(
+      screen.getByRole("combobox", {
+        name: locale === "en" ? "Collaborator icon" : "Ícone do colaborador",
+      }),
+    );
+    await userEvent.keyboard("{End}{Enter}");
+    await waitFor(async () => {
+      const saved = await api.get("teams", team.id);
+      expect(saved.leaderIconId).toBe("bot");
+      expect(saved.collaboratorIconId).toBe("music");
+    });
+  },
+);

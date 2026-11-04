@@ -2172,7 +2172,7 @@ components:
         da mesma identidade usa composição, não cópia.
     TeamRoleIconId:
       type: string
-      enum: [crown, user-round, star, shield, rocket, compass, wrench, lightbulb]
+      enum: [crown, user-round, star, shield, rocket, compass, wrench, lightbulb, flower-2, bot, code, terminal, bug, flask-conical, book-open, graduation-cap, palette, globe, heart, zap, target, key-round, lock, music]
       description: Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.
     TeamRoleIcon:
       type: object

@@ -94,7 +94,10 @@ export function RoleIconSelect({
         <SelectTrigger id={`team-${role}-icon`} aria-label={label}>
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent
+          position="popper"
+          className="max-h-[min(20rem,var(--radix-select-content-available-height))]"
+        >
           {catalog.map((icon) => (
             <SelectItem key={icon.id} value={icon.id}>
               <TeamRoleIcon id={icon.id} />
