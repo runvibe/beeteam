@@ -1055,4 +1055,6 @@ Appearance settings separate the Default/Codex/Claude Code/Copilot palette from 
 
 Harness icons in task Overview use transparent button backgrounds in every palette and mode, retaining their symbols, tooltips and keyboard focus outline.
 
+Task Relationships links to the managing team of the task's current board (`task.boardId → Board.teamId → Team`). The shared desktop/mobile context preserves the task URL as the return origin, independently of the executor's team or the chain's origin board, and exposes loading/errors with retry.
+
 In Codex, board/team/agent listing cards use the secondary-button surface in both modes. Page backgrounds, Kanban task cards and other palettes retain their existing surfaces. The read-only browser regression script `frontend/scripts/check-list-card-surfaces.cjs` compares a baseline build (`--baseline`) with the updated build across four palettes, two modes and desktop/mobile. Set `QA_PLAYWRIGHT_MODULE`, `QA_BROWSER_EXECUTABLE`, `QA_API_URL` and `QA_BOARD_PATH` to a populated test board; run it from the repository root. Evidence stays under `.local/qa/codex-list-surfaces`.

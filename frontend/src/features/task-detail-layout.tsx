@@ -14,6 +14,7 @@ export { TaskSections } from "./task-sections";
 import { TaskMode } from "./settings";
 import { TaskCompactHeader } from "./task-scroll-header";
 import { TaskStatus } from "./task-status";
+import { TaskBoardTeam } from "./task-board-team";
 
 export function TaskOverview({ task }: { task: Task }) {
   useLocale();
@@ -99,6 +100,12 @@ export function TaskContext({
               <Button variant="link" onClick={() => openBoard(task.boardId)}>
                 <BoardName id={task.boardId} />
               </Button>
+            </dd>
+          </div>
+          <div>
+            <dt>{tr("tasks.currentBoardTeam")}</dt>
+            <dd>
+              <TaskBoardTeam boardId={task.boardId} />
             </dd>
           </div>
           <div>

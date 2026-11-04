@@ -104,6 +104,7 @@
   "author": "Autor",
   "relationships": "Relações",
   "currentBoard": "Board atual",
+  "currentBoardTeam": "Time do board atual",
   "chainOriginBoard": "Board de origem da cadeia",
   "parentTask": "Task pai",
   "record": "Registro",
