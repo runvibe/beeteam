@@ -38,6 +38,8 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
+    agentLatestActivity: (agentId, signal) =>
+      request(`/agents/${segment(agentId)}/latest-activity`, { signal }),
     timelinePoints: (taskId, pagination = {}, signal) =>
       request(
         `/tasks/${segment(taskId)}/timeline-points` +

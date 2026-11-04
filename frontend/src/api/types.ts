@@ -100,6 +100,10 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  agentLatestActivity(
+    agentId: string,
+    signal?: AbortSignal,
+  ): Promise<import("./generated/ra/AgentLatestActivity").AgentLatestActivity>;
   timelinePoints(
     taskId: string,
     pagination?: Pick<Filters, "offset" | "limit">,

@@ -1,3 +1,4 @@
+import { AgentLatestActivity } from "./agent-latest-activity";
 import { AgentChats } from "./agent-chats";
 import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
@@ -328,6 +329,7 @@ function Profile({ agent }: { agent: Agent }) {
   useLocale();
   return (
     <div className="detail-section">
+      <AgentLatestActivity agentId={agent.id} />
       <h3>{tr("agents.workingStyle")}</h3>
       <TextBlock>{agent.workStyle}</TextBlock>
       <h3>{tr("agents.instructions")}</h3>
