@@ -75,7 +75,6 @@ export function OverviewUsageCards({
         aria-label={tr("usage.modelsUsed")}
       >
         <h2>{tr("usage.modelsUsed")}</h2>
-        <p className="small-note">{tr("usage.presenceInSummaries")}</p>
         <ul className="model-presence-list">
           {data?.models.map((model) => (
             <li key={model.name}>

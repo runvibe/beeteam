@@ -11,25 +11,25 @@
 .execution-timeline-heading > h3,
 .execution-timeline-heading > p { margin: 0; }
 .execution-timeline-plot {
-  height: 180px;
+  height: 140px;
   position: relative;
 }
 .execution-timeline-axis {
   position: absolute;
-  top: 80px;
+  top: 40px;
   left: 24px;
   right: 24px;
   border-top: 1px solid var(--border);
 }
 .execution-timeline-empty {
   position: absolute;
-  inset: 100px 16px auto;
+  inset: 60px 16px auto;
   font-size: 13px;
   color: var(--muted-foreground);
 }
 .execution-timeline-label {
   position: absolute;
-  top: 108px;
+  top: 68px;
   width: 150px;
   transform: translateX(-50%);
   text-align: center;
