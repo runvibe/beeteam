@@ -2451,6 +2451,14 @@ paths:
         duplicação. Ordenar por sequence e paginar offset/limit.
       x-contract-status: proposed
       parameters:
+        - name: id
+          in: query
+          required: false
+          description: UUIDv7 exato do evento, combinado com o escopo da tarefa (e includeChildren) e demais filtros no banco antes de contagem e paginação. Evento inexistente, excluído ou fora do escopo retorna página vazia.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
         - name: includeChildren
           in: query
           required: false

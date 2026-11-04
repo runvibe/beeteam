@@ -422,3 +422,11 @@ Task workScope is optional; new createExecutionSummary/close_activity writes req
 ### Mandatory project roots and Git discovery (2026-11-03)
 
 CreateTask requires projects-only workScope; updateTask refreshes discovery when the explicit list is resubmitted with If-Match. Legacy specification edits require a project if absent; unrelated edits/read/replays are preserved. No-Git and unavailable folders remain valid projects. See [contract](project-discovery-contract.md). Bundled Skills source3265680f383f4645827b341fd95104fc97b00853. No product runtime restart.
+
+### Timeline: seleção exata de evento (2026-11-03)
+
+`getTimeline.query.id` é um UUIDv7 opcional e escalar, equivalente a `GET /api/v1/tasks/{taskId}/timeline?id=...`. Combina por AND com o escopo da tarefa, `includeChildren` e demais filtros. A igualdade usa parâmetros vinculados na CTE SQL `filtered`, antes de `count`, ordenação e `offset/limit`, em ambos os adapters existentes. UUIDs são normalizados; ID inválido ou repetido retorna 400. ID inexistente, excluído ou fora do escopo retorna `EventPage` vazio. Sem ID, a consulta mantém seu comportamento.
+
+Validação isolada cobre evento além dos primeiros 50, retorno completo, count/paginação, filtros combinados, descendência recursiva cross-board, evento alheio/inexistente/excluído, UUID inválido e paridade HTTP/MCP.
+
+Verificação: 2 testes de timeline, 2 regressões de filtros de comentários/resumos e 40 unitários passaram; build MCP passou. Integrações executadas somente em SQLite isolado, sem banco de produto. Catálogo regenerado (78 tools, 17 resources, 3 prompts).

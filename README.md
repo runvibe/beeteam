@@ -950,3 +950,5 @@ O filtro MIME permite seleção múltipla nos atalhos ou tipos separados por ví
 Na timeline, o tooltip traz apenas ação, agente e status. O item do histórico oferece Detalhes da execução, com resumo, evidências e intervalo consultados pelo ID do resumo quando expandido.
 
 Os tooltips de progresso e execução são compactos, sem botão Fechar; Ver resumo aplica o filtro pelo ID, e Ver evento abre o detalhe completo em um painel de diálogo.
+
+A consulta da timeline aceita `id=<UUIDv7 do evento>` para selecionar um evento exato antes da contagem e paginação. O filtro mantém o escopo da tarefa e de `includeChildren`, além dos demais filtros; eventos fora do escopo retornam página vazia. O mesmo parâmetro está disponível em `getTimeline.query.id` no MCP.
