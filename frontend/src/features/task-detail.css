@@ -509,7 +509,8 @@ body:has(.task-page) {
   width: 100%;
   padding: 12px;
   border-radius: var(--radius);
-  background: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
   color: var(--foreground);
 }
 .task-detail-hero .task-summary-section > h2 {

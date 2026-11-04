@@ -80,9 +80,9 @@ describe("Bee Team interface", () => {
       }),
     );
     dialog = await screen.findByRole("region", { name: "Task" });
-    const path = within(dialog).getByRole("navigation", {
-      name: "Caminho da task",
-    });
+    expect(document.querySelector(".task-detail-hero .task-path")).toBeNull();
+    expect(document.querySelector(".task-detail-hero")?.firstElementChild).toHaveClass("task-detail-heading");
+    const path = screen.getByRole("navigation", { name: "Caminho" });
     expect(
       await within(path).findByText("Pesquisa & estratégia"),
     ).toBeInTheDocument();

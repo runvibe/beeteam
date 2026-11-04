@@ -17,7 +17,6 @@ import { TaskRecordList } from "./task-record-list";
 import { TaskConversation } from "./task-conversation";
 import { useUrlState, usePageSize, booleanValues } from "@/routing/query";
 import { FilterBar } from "@/components/filter-bar";
-import { TaskPath } from "@/components/context-path";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { usePageEntrance } from "@/components/motion-settings";
@@ -89,7 +88,6 @@ function TaskDetail({ id }: { id: string }) {
     <div className="task-detail-columns">
       <div className="task-detail-primary" data-detail-scroll ref={primary}>
         <div className="task-detail-hero" ref={hero}>
-          {q.data?.parentId && <TaskPath task={q.data} />}
           <header className="task-detail-heading">
             <h1 ref={heading} tabIndex={-1}>
               {q.data?.title ?? "Detalhes da task"}

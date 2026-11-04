@@ -953,6 +953,8 @@ Os eventos da timeline se distribuem proporcionalmente por toda a largura dispon
 
 As abas da tarefa seguem: Visão geral, Especificação, Planos, Subtasks, Conversa, Resumos, Arquivos e Timeline.
 
+O cabeçalho da tarefa mantém apenas o breadcrumb global do topo; não repete o caminho acima do título. Relações da lateral permanecem disponíveis. O card “Resumo atual do trabalho” do cabeçalho usa fundo transparente com borda discreta, preservando conteúdo, autoria/data e padding; cards históricos de Resumos e Timeline mantêm suas superfícies.
+
 O bloco de consumo na Visão geral não usa divisórias horizontais e mantém espaçamento compacto até a evolução do progresso.
 
 O filtro MIME em Arquivos oferece atalhos com ícones e extensões dos tipos presentes em todas as páginas e aplica a digitação válida automaticamente após 300 ms.
