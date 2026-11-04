@@ -952,3 +952,5 @@ Na timeline, o tooltip traz apenas ação, agente e status. O item do histórico
 Os tooltips de progresso e execução são compactos, sem botão Fechar; Ver resumo aplica o filtro pelo ID, e Ver evento abre o detalhe completo em um painel de diálogo.
 
 A consulta da timeline aceita `id=<UUIDv7 do evento>` para selecionar um evento exato antes da contagem e paginação. O filtro mantém o escopo da tarefa e de `includeChildren`, além dos demais filtros; eventos fora do escopo retornam página vazia. O mesmo parâmetro está disponível em `getTimeline.query.id` no MCP.
+
+A consulta `GET /api/v1/tasks/{taskId}/execution-tracking-events` aceita `summaryId=<UUIDv7>` (MCP: `listTaskExecutionTrackingEvents.query.summaryId`) para obter os eventos completos vinculados explicitamente ao resumo, sem percorrer páginas ou inferir horários. O filtro é aplicado antes da contagem e paginação, combina com `executionId` e `intervalId` e preserva o escopo da tarefa; resumo inexistente ou de outra tarefa retorna página vazia.

@@ -104,6 +104,49 @@ async fn tool(app: &Router, name: &str, args: Value) -> Value {
         .clone()
 }
 #[tokio::test]
+async fn tracking_summary_filter_has_http_mcp_parity() {
+    let (app, _, board, mut task, other) = setup().await;
+    let body = payload(&task, &board, "start", 100, 0, None);
+    let start = step(&app, &mut task, body).await;
+    let body = payload(&task, &board, "checkpoint", 200, 1, Some(&start["executionTracking"]));
+    let selected = step(&app, &mut task, body).await;
+    let base = format!("/api/v1/tasks/{}/execution-tracking-events", id(&task));
+    let all = get(&app, &base).await;
+    assert_eq!(all["total"], 2);
+    assert_ne!(all["items"][0]["summaryId"], selected["id"]);
+    let expected = all["items"].as_array().unwrap().iter().find(|e| e["summaryId"] == selected["id"]).unwrap();
+    for (target, query, total) in [
+        (&task, json!({"summaryId":id(&selected).to_uppercase(),"limit":1}), 1),
+        (&task, json!({"summaryId":id(&selected),"limit":1,"offset":1}), 1),
+        (&task, json!({"summaryId":uuid::Uuid::now_v7()}), 0),
+        (&other, json!({"summaryId":id(&selected)}), 0),
+        (&task, json!({"summaryId":id(&selected),"executionId":uuid::Uuid::now_v7()}), 0),
+        (&task, json!({"summaryId":id(&selected),"intervalId":uuid::Uuid::now_v7()}), 0),
+    ] {
+        let mut url = url::Url::parse(&format!("http://localhost/api/v1/tasks/{}/execution-tracking-events", id(target))).unwrap();
+        for (key, value) in query.as_object().unwrap() {
+            url.query_pairs_mut().append_pair(key, &value.as_str().map(str::to_owned).unwrap_or_else(||value.to_string()));
+        }
+        let http = get(&app, &format!("{}?{}",url.path(),url.query().unwrap())).await;
+        let mcp = tool(&app,"listTaskExecutionTrackingEvents",json!({"params":{"taskId":id(target)},"query":query})).await;
+        assert_eq!(mcp["isError"], false, "{mcp}");
+        assert_eq!(mcp["structuredContent"]["data"], http);
+        assert_eq!(http["total"], total);
+        assert_eq!(http["hasMore"], false);
+        if total == 1 && query["offset"].is_null() {
+            assert_eq!(http["items"], json!([expected]));
+        } else {
+            assert_eq!(http["items"], json!([]));
+        }
+    }
+    for invalid in ["invalid".to_owned(), uuid::Uuid::new_v4().to_string()] {
+        let (status, _) = request(&app,"GET",&format!("{base}?summaryId={invalid}"),Value::Null,None).await;
+        assert_eq!(status,400);
+        let mcp = tool(&app,"listTaskExecutionTrackingEvents",json!({"params":{"taskId":id(&task)},"query":{"summaryId":invalid}})).await;
+        assert_eq!(mcp["isError"],true);
+    }
+}
+#[tokio::test]
 async fn sequential_tasks_checkpoints_and_gap_are_not_double_counted() {
     let (app, _, board, mut a, mut b) = setup().await;
     let body = payload(&a, &board, "start", 1000, 0, None);

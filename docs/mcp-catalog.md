@@ -430,3 +430,7 @@ CreateTask requires projects-only workScope; updateTask refreshes discovery when
 Validação isolada cobre evento além dos primeiros 50, retorno completo, count/paginação, filtros combinados, descendência recursiva cross-board, evento alheio/inexistente/excluído, UUID inválido e paridade HTTP/MCP.
 
 Verificação: 2 testes de timeline, 2 regressões de filtros de comentários/resumos e 40 unitários passaram; build MCP passou. Integrações executadas somente em SQLite isolado, sem banco de produto. Catálogo regenerado (78 tools, 17 resources, 3 prompts).
+
+### Tracking por resumo explícito (2026-11-03)
+
+`listTaskExecutionTrackingEvents.query.summaryId` é um UUIDv7 escalar opcional, equivalente ao parâmetro HTTP de mesmo nome. Seleciona a referência explícita ao resumo, distinta do ID de evento da Timeline. Os predicados existentes de ambos os adapters aplicam igualdade vinculada antes de count e paginação, mantendo o escopo da tarefa e combinando com executionId/intervalId. Inexistente ou fora do escopo retorna página vazia; UUID inválido é rejeitado pelo DTO compartilhado.

@@ -22411,6 +22411,10 @@
                 "maximum": 2147483647,
                 "minimum": 0,
                 "type": "integer"
+              },
+              "summaryId": {
+                "format": "uuid",
+                "type": "string"
               }
             },
             "type": "object"
