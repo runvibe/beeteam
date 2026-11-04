@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useUrlState } from "@/routing/query";
+import { Popover } from "radix-ui";
+import { eventLabels } from "./timeline-labels";
+import { TimelineEventPreview } from "./timeline-event-preview";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { TimelineExecutionDetail } from "./timeline-execution-detail";
-import { AgentName } from "@/components/names";
 import { ApiError } from "@/api/types";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -10,9 +10,6 @@ import { Failure } from "@/components/shared";
 import { IntervalMetrics } from "./interval-metrics";
 import { ExecutionTimeline } from "./execution-timeline";
 import { ExecutionPages } from "./execution-pages";
-import {
-  executionAction,
-} from "./execution-event-detail";
 import "./task-execution-tracking.css";
 const coverageLabels = {
   totalIntervals: "intervalos",
@@ -73,23 +70,35 @@ export function TaskExecutionTimeline({
   version: number;
 }) {
   const api = useApi();
-  const [summary, setSummary] = useState<string>();
+  const [, setSelected] = useUrlState<string>("timeline.selected", "");
   return (
     <section className="task-execution-timeline">
       <ExecutionPages
-        queryKey={["execution-tracking-events", taskId, version]}
+        queryKey={["timeline", taskId, "execution-chart", version]}
         fetchPage={(offset, signal) =>
-          api.executionTrackingEvents(taskId, { offset, limit: 20 }, signal)
+          api.list(
+            "timeline",
+            taskId,
+            {
+              offset,
+              limit: 20,
+              types: "execution.recorded",
+              sortBy: "sequence",
+              sortOrder: "asc",
+            },
+            signal,
+          )
         }
         label="transições"
         showCount={false}
       >
         {(rows, loading, failed) => (
           <ExecutionTimeline
+            description="Resumos de execução na ordem de registro. Selecione um ponto para abrir seu evento. O espaçamento não representa duração."
             events={rows.map((row) => ({
               ...row,
-              label: executionAction(row.action),
-              occurredAt: row.observedAt,
+              label: eventLabels[row.type] ?? row.type,
+              occurredAt: row.occurredAt,
             }))}
             emptyMessage={
               loading
@@ -100,21 +109,20 @@ export function TaskExecutionTimeline({
             }
             renderDetail={(event) => (
               <div className="execution-event-detail">
-                <strong>{executionAction(event.action)}</strong>
-                <AgentName id={event.agentId} />
-                <span>{event.statusObserved.name || "Status não registrado"}</span>
-                <Button variant="outline" onClick={() => setSummary(event.summaryId)}>Ver evento</Button>
+                <TimelineEventPreview event={event} />
+                <Popover.Close asChild>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelected(event.id)}
+                  >
+                    Ver evento
+                  </Button>
+                </Popover.Close>
               </div>
             )}
           />
         )}
       </ExecutionPages>
-      <Dialog open={!!summary} onOpenChange={open => { if (!open) setSummary(undefined); }}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Detalhes da execução</DialogTitle></DialogHeader>
-          {summary && <TimelineExecutionDetail taskId={taskId} summaryId={summary} />}
-        </DialogContent>
-      </Dialog>
     </section>
   );
 }

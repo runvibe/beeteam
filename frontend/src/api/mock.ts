@@ -124,7 +124,7 @@ export function createMockApi(
     let rows = (source as Row[]).filter(
       (r) => !r.deletedAt || (resource === "attachments" && f.includeRemoved),
     );
-    if (resource === "summaries" && f.id)
+    if ((resource === "summaries" || resource === "timeline") && f.id)
       rows = rows.filter((row) => row.id === f.id);
     if (resource === "attachments") {
       rows = rows.filter(

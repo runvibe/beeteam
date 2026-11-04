@@ -63,25 +63,18 @@ it("keeps baseline informational, breaks lines at gaps and selects checkpoints b
     ),
   ).toBeVisible();
 });
-it("opens the selected immutable summary through paginated read-only API and preserves errors for retry", async () => {
+it("opens the selected immutable summary through exact-ID read-only API and preserves errors for retry", async () => {
   const user = userEvent.setup();
   const api = createMockApi({ delay: 0 });
   const row = {
     ...makeSeed().summaries[0],
     id: "target",
     summary: "Resumo solicitado",
+    taskId: "task",
   };
   const list = vi
     .spyOn(api, "list")
     .mockRejectedValueOnce(new Error("Falha temporária"))
-    .mockResolvedValueOnce({
-      items: [{ ...row, id: "other" }],
-      offset: 0,
-      limit: 100,
-      total: 2,
-      hasMore: true,
-      nextOffset: 100,
-    })
     .mockResolvedValueOnce({
       items: [row],
       offset: 100,
@@ -108,9 +101,8 @@ it("opens the selected immutable summary through paginated read-only API and pre
     "summaries",
     "task",
     expect.objectContaining({
-      createdFrom: "2026-11-02T10:00:00Z",
-      offset: 100,
-      sortOrder: "asc",
+      id: "target",
+      limit: 1,
     }),
     expect.any(AbortSignal),
   );

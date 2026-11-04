@@ -12,9 +12,11 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
   events,
   renderDetail,
   emptyMessage,
+  description = "Transições explícitas, na ordem de registro. O espaçamento separa os registros e não representa duração.",
 }: {
   events: T[];
   emptyMessage?: string;
+  description?: string;
   renderDetail: (event: T) => ReactNode;
 }) {
   const id = useId();
@@ -24,10 +26,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
   return (
     <section aria-labelledby={id} className="execution-timeline">
       <h3 id={id}>Linha do tempo da execução</h3>
-      <p className="small-note">
-        Transições explícitas, na ordem de registro. O espaçamento separa os
-        registros e não representa duração.
-      </p>
+      <p className="small-note">{description}</p>
       <div
         className="execution-timeline-scroll"
         role="group"
@@ -59,7 +58,10 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
               <ChartPointPopover
                 pointId={event.id}
                 showClose={false}
-                position={{ x: `${((index + 0.5) / events.length) * 100}%`, y: 80 }}
+                position={{
+                  x: `${((index + 0.5) / events.length) * 100}%`,
+                  y: 80,
+                }}
                 className="execution-timeline-point"
                 selected={selected?.id === event.id}
                 detailId={`${id}-detail`}
@@ -73,7 +75,6 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
           ))}
         </div>
       </div>
-
     </section>
   );
 }

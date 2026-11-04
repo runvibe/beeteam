@@ -16,9 +16,11 @@ export const executionAction = (action: string) =>
 export function ExecutionEventDetail({
   event,
   onInterval,
+  expandedSummary = false,
 }: {
   event: TaskExecutionTrackingEvent;
   onInterval: (id: string) => void;
+  expandedSummary?: boolean;
 }) {
   return (
     <div className="execution-event-detail">
@@ -58,7 +60,11 @@ export function ExecutionEventDetail({
           Sem evidências de nova coleta neste evento. Não implica consumo zero.
         </p>
       )}
-      <RecordedSummary taskId={event.taskId} summaryId={event.summaryId} />
+      <RecordedSummary
+        taskId={event.taskId}
+        summaryId={event.summaryId}
+        expanded={expandedSummary}
+      />
       {event.intervalId && (
         <Button variant="outline" onClick={() => onInterval(event.intervalId!)}>
           Ver intervalo

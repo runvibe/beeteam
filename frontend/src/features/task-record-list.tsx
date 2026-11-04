@@ -27,8 +27,9 @@ export function TaskRecordList<
   children: (row: Resources[K]) => ReactNode;
 }) {
   const api = useApi();
-  const [selected] = useUrlState("summaries.selected", "");
-  const target = resource === "summaries" ? selected : "";
+  const [selected] = useUrlState(`${resource}.selected`, "");
+  const target =
+    resource === "summaries" || resource === "timeline" ? selected : "";
   const effectiveFilters = target ? { ...filters, id: target } : filters;
   const sentinel = useRef<HTMLDivElement>(null);
   const identity = JSON.stringify([resource, scope, effectiveFilters]);
@@ -85,7 +86,11 @@ export function TaskRecordList<
         !query.error &&
         !query.hasNextPage &&
         !rows.some((row) => row.id === target) && (
-          <p role="status">Resumo não encontrado nesta tarefa.</p>
+          <p role="status">
+            {resource === "timeline"
+              ? "Evento não encontrado neste escopo."
+              : "Resumo não encontrado nesta tarefa."}
+          </p>
         )}
       {!target && !query.isPending && !query.error && !rows.length && (
         <NoData title={empty} description={emptyDescription} />

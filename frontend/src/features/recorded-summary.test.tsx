@@ -10,26 +10,21 @@ it("retrieves an explicit boundary summary by UUID without a timestamp join", as
   const row = {
     ...makeSeed().summaries[0],
     id: "boundary",
+    taskId: "task",
     summary: "Resumo da fronteira",
+    deliverables: [
+      { label: "Entrega revisável", url: "https://example.com/review" },
+    ],
+    pending: ["Aceite pendente"],
   };
-  const list = vi
-    .spyOn(api, "list")
-    .mockResolvedValueOnce({
-      items: [{ ...row, id: "other", summary: "Outro resumo" }],
-      total: 2,
-      limit: 1,
-      offset: 0,
-      hasMore: true,
-      nextOffset: 1,
-    })
-    .mockResolvedValueOnce({
-      items: [row],
-      total: 2,
-      limit: 1,
-      offset: 1,
-      hasMore: false,
-      nextOffset: null,
-    });
+  const list = vi.spyOn(api, "list").mockResolvedValueOnce({
+    items: [row],
+    total: 1,
+    limit: 1,
+    offset: 0,
+    hasMore: false,
+    nextOffset: null,
+  });
   render(
     <ApiProvider api={api}>
       <RecordedSummary taskId="task" summaryId="boundary" />
@@ -38,11 +33,15 @@ it("retrieves an explicit boundary summary by UUID without a timestamp join", as
   expect(list).not.toHaveBeenCalled();
   await userEvent.click(screen.getByRole("button", { name: "Abrir resumo" }));
   expect(await screen.findByText("Resumo da fronteira")).toBeVisible();
+  expect(
+    screen.getByRole("link", { name: "Entrega revisável" }),
+  ).toHaveAttribute("href", "https://example.com/review");
+  expect(screen.getByText("Aceite pendente")).toBeVisible();
   expect(screen.queryByText("Outro resumo")).toBeNull();
   expect(list).toHaveBeenLastCalledWith(
     "summaries",
     "task",
-    expect.objectContaining({ offset: 1 }),
+    expect.objectContaining({ id: "boundary", limit: 1 }),
     expect.any(AbortSignal),
   );
   expect(list.mock.calls[0][2]?.createdFrom).toBeUndefined();

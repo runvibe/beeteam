@@ -3,7 +3,7 @@ import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
 import { createTransport, type HttpOptions } from "./http-transport";
 const segment = encodeURIComponent;
-function query(filters: Filters & { kind?: "model" | "harness" } = {}) {
+function query(filters: Filters & { kind?: "model" | "harness"; summaryId?: string } = {}) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters))
     if (value !== undefined && value !== null && value !== "")

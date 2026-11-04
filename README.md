@@ -933,6 +933,12 @@ Ao abrir um ponto com `summaryId`, o frontend consulta somente o resumo vinculad
 
 Os cards mostram harnesses registrados sem duplicações e presença de modelos por resumo distinto. As barras representam quantos resumos mencionam cada modelo; não representam tokens. A leitura percorre todas as páginas de uso antes de exibir contagens e rejeita páginas inconsistentes, sem apresentar um total parcial como completo. Ausência de evidência mantém os dois cards vazios. Ícones monocromáticos locais do Lobe Icons 1.102.0 (MIT, licença e proveniência em `frontend/public/harness-icons`) têm nome acessível, tooltip e fallback para harnesses desconhecidos. Layout em duas colunas no desktop e empilhado no mobile, respeitando ambos os temas.
 
+## Navegação da Timeline
+
+A Timeline reutiliza o índice lateral e os controles de Resumos. `timeline.selected` guarda o Event ID na URL e consulta `timeline?id=...`, combinado com o escopo da tarefa/descendentes, antes de count/paginação. Limpar restaura a lista infinita; voltar/avançar restauram a seleção. O índice fica oculto no mobile e o filtro continua disponível. O gráfico superior usa os eventos `execution.recorded` da própria Timeline; “Ver evento” seleciona esse Event ID e fecha o popover, sem modal.
+
+Os cards exibem detalhes completos por leituras exatas: `execution-tracking-events?summaryId=...` e `execution-summaries?id=...`, sem percorrer páginas intermediárias. Event ID, TrackingEvent ID e Summary ID permanecem distintos. Essa interface requer os contratos Backend dos commits `54bb4005e6d439da5eda9c405222fd0ecf0f312a` e `1cb6e08c356c82054cf2addd93b062404813b868`; o build frontend não atualiza a API em execução.
+
 Logo abaixo das abas, a Visão geral exibe tokens válidos, duração somada e tempo decorrido no consumo por intervalos; o indicador de tokens parciais não é exibido nesse painel.
 
 Os botões de abertura de projetos usam apenas ícones com nomes acessíveis, sem mensagem de sucesso; falhas continuam visíveis. O SVG do Visual Studio Code vem do pacote oficial em https://code.visualstudio.com/brand.

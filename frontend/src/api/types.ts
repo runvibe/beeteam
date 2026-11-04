@@ -120,7 +120,7 @@ export interface BeeApi {
   >;
   executionTrackingEvents(
     taskId: string,
-    pagination?: Pick<Filters, "offset" | "limit">,
+    pagination?: Pick<Filters, "offset" | "limit"> & {summaryId?: string},
     signal?: AbortSignal,
   ): Promise<
     import("./generated/kanban/TaskExecutionTrackingEventPage").TaskExecutionTrackingEventPage

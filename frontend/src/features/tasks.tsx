@@ -1,4 +1,5 @@
-import { TimelineExecutionDisclosure } from "./timeline-execution-detail";
+import { eventLabels } from "./timeline-labels";
+import { TimelineExecutionDetail } from "./timeline-execution-detail";
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
 import { Attachment } from "./attachment-item";
@@ -314,31 +315,53 @@ function Children({ task }: { task: Task }) {
 }
 type RecordKind = "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
-  const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0),
-    [includeChildren, setInclude] = useUrlState<string>(
-      "timeline.includeChildren",
-      "false",
-      { values: booleanValues },
-    );
+  const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0);
+  const [includeChildren, setInclude] = useUrlState<string>(
+    "timeline.includeChildren",
+    "false",
+    { values: booleanValues },
+  );
   const limit = usePageSize(resource, 10);
+  const scopeFilters =
+    resource === "timeline"
+      ? {
+          includeChildren: includeChildren === "true",
+          sortBy: "sequence",
+          sortOrder: "desc" as const,
+        }
+      : {};
+  const list = (
+    <TaskRecordList
+      resource={resource}
+      scope={task.id}
+      filters={{ offset, limit, ...scopeFilters }}
+      empty="Nenhum registro nesta seção"
+      emptyDescription="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
+    >
+      {(row) => <RecordContent kind={resource} row={row} />}
+    </TaskRecordList>
+  );
   return (
     <div
       className={`detail-section${resource === "timeline" ? " task-timeline" : ""}`}
     >
-      {resource === "timeline" && (
-        <TaskFilters active={includeChildren !== "false"}>
-          <FilterBar
-            active={includeChildren !== "false"}
-            onClear={() => {
-              setInclude("false");
-              setOffset(0);
-            }}
-          >
+      {resource === "timeline" ? (
+        <SummaryBrowser
+          resource="timeline"
+          taskId={task.id}
+          progress={[]}
+          filters={scopeFilters}
+          filtersActive={includeChildren !== "false"}
+          clearFilters={() => {
+            setInclude("false");
+            setOffset(0);
+          }}
+          filterControls={
             <Choice
               label="Eventos"
               value={includeChildren}
-              onChange={(v) => {
-                setInclude(v);
+              onChange={(value) => {
+                setInclude(value);
                 setOffset(0);
               }}
               options={[
@@ -346,28 +369,13 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
                 { value: "true", label: "Incluir toda a descendência" },
               ]}
             />
-          </FilterBar>
-        </TaskFilters>
+          }
+        >
+          {list}
+        </SummaryBrowser>
+      ) : (
+        list
       )}
-      <TaskRecordList
-        resource={resource}
-        scope={task.id}
-        filters={{
-          offset,
-          limit,
-          ...(resource === "timeline"
-            ? {
-                includeChildren: includeChildren === "true",
-                sortBy: "sequence",
-                sortOrder: "desc" as const,
-              }
-            : {}),
-        }}
-        empty="Nenhum registro nesta seção"
-        emptyDescription="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
-      >
-        {(row) => <RecordContent kind={resource} row={row} />}
-      </TaskRecordList>
     </div>
   );
 }
@@ -456,7 +464,13 @@ function RecordContent({
       <p className="small-note">
         Task {r.taskId.slice(-4)} · evento {r.sequence}
       </p>
-      {r.type === "execution.recorded" && typeof r.data.executionSummaryId === "string" && <TimelineExecutionDisclosure taskId={r.taskId} summaryId={r.data.executionSummaryId} />}
+      {r.type === "execution.recorded" &&
+        typeof r.data.executionSummaryId === "string" && (
+          <TimelineExecutionDetail
+            taskId={r.taskId}
+            summaryId={r.data.executionSummaryId}
+          />
+        )}
       <details>
         <summary>Dados do evento</summary>
         <pre>{JSON.stringify(r.data, null, 2)}</pre>
@@ -464,22 +478,6 @@ function RecordContent({
     </article>
   );
 }
-const eventLabels: Record<string, string> = {
-  "task.created": "Task criada",
-  "task.updated": "Task atualizada",
-  "assignment.changed": "Executor alterado",
-  "position.changed": "Posição alterada",
-  "block.changed": "Bloqueio atualizado",
-  "plan.created": "Plano registrado",
-  "plan.revised": "Plano revisado",
-  "comment.created": "Comentário registrado",
-  "attachment.added": "Arquivo anexado",
-  "attachment.removed": "Arquivo removido logicamente",
-  "execution.recorded": "Resumo de execução registrado",
-  "task.archived": "Task arquivada",
-  "task.restored": "Task restaurada",
-  "subtask.created": "Subtask criada",
-};
 function Author({ id, date }: { id: string | null; date: string }) {
   return (
     <div className="record-author">

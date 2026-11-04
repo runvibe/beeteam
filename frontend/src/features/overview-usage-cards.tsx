@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Tooltip } from "radix-ui";
 import { Terminal } from "lucide-react";
 import { useApi } from "@/api/context";
+import { ApiError } from "@/api/types";
 import { Failure } from "@/components/shared";
 import { loadUsagePresence } from "./usage-presence";
 import { harnessIcon } from "./harness-catalog";
@@ -109,7 +110,11 @@ export function OverviewUsageCards({
       </section>
       {q.error && (
         <div className="usage-presence-error">
-          <Failure error={q.error} retry={() => void q.refetch()} />
+          {q.error instanceof ApiError && q.error.status === 501 ? (
+            <p className="small-note">{q.error.message}</p>
+          ) : (
+            <Failure error={q.error} retry={() => void q.refetch()} />
+          )}
         </div>
       )}
     </div>

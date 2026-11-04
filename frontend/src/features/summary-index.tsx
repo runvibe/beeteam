@@ -3,7 +3,8 @@ import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
-import type { Resources } from "@/api/types";
+import type { Resources, Filters } from "@/api/types";
+import { eventTitle } from "./timeline-labels";
 import type { ProgressPoint } from "@/api/task-overview";
 import { useUrlState } from "@/routing/query";
 import { Failure, NoData, formatDate } from "@/components/shared";
@@ -32,13 +33,22 @@ export function summaryTitle(
     : `Resumo de ${formatDate(row.createdAt)}`;
 }
 
-function useSummaryPages(taskId: string) {
+function useSummaryPages(
+  taskId: string,
+  resource: "summaries" | "timeline",
+  filters: Filters,
+) {
   const api = useApi();
   return useInfiniteQuery({
-    queryKey: ["summaries", taskId, "index"],
+    queryKey: [resource, taskId, "index", filters],
     initialPageParam: 0,
     queryFn: ({ pageParam, signal }) =>
-      api.list("summaries", taskId, { offset: pageParam, limit: 20 }, signal),
+      api.list(
+        resource,
+        taskId,
+        { ...filters, offset: pageParam, limit: 20 },
+        signal,
+      ),
     getNextPageParam: (last, pages) =>
       nextPageOffset(last, pages, (row) => row.id),
   });
@@ -48,15 +58,32 @@ export function SummaryBrowser({
   taskId,
   progress,
   children,
+  resource = "summaries",
+  filters = {},
+  filterControls,
+  filtersActive = false,
+  clearFilters,
 }: {
   taskId: string;
   progress: Pick<ProgressPoint, "summaryId" | "percent">[];
   children: ReactNode;
+  resource?: "summaries" | "timeline";
+  filters?: Filters;
+  filterControls?: ReactNode;
+  filtersActive?: boolean;
+  clearFilters?: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
-  const [selected, setSelected] = useUrlState<string>("summaries.selected", "");
-  const query = useSummaryPages(taskId);
+  const [selected, setSelected] = useUrlState<string>(
+    `${resource}.selected`,
+    "",
+  );
+  const query = useSummaryPages(taskId, resource, filters);
+  const noun = resource === "timeline" ? "Evento" : "Resumo";
+  const plural = resource === "timeline" ? "eventos" : "resumos";
+  const rowTitle = (row: Resources["summaries"] | Resources["timeline"]) =>
+    "summary" in row ? summaryTitle(row) : eventTitle(row);
   const rows = [
     ...new Map(
       query.data?.pages
@@ -76,10 +103,10 @@ export function SummaryBrowser({
   });
   const options = rows.map((row) => ({
     value: row.id,
-    label: summaryTitle(row),
+    label: rowTitle(row),
   }));
   if (selected && !options.some((option) => option.value === selected))
-    options.unshift({ value: selected, label: "Resumo selecionado" });
+    options.unshift({ value: selected, label: `${noun} selecionado` });
   // Only explicit summary IDs establish a progress link. Missing feed coverage stays unknown.
   const percents = new Map(
     progress
@@ -88,19 +115,28 @@ export function SummaryBrowser({
   );
   return (
     <>
-      <TaskFilters active={!!selected}>
-        <FilterBar active={!!selected} onClear={() => setSelected("")}>
+      <TaskFilters active={!!selected || filtersActive}>
+        <FilterBar
+          active={!!selected || filtersActive}
+          onClear={() => {
+            setSelected("");
+            clearFilters?.();
+          }}
+        >
+          {filterControls}
           <FilterPopover
-            label="Resumo"
+            label={noun}
             active={!!selected}
             summary={
               options.find((option) => option.value === selected)?.label ??
-              "Todos os resumos"
+              `Todos os ${plural}`
             }
             onClear={() => setSelected("")}
           >
             <SummaryFilterOptions
               taskId={taskId}
+              resource={resource}
+              filters={filters}
               selected={selected}
               onSelect={setSelected}
               options={options}
@@ -109,7 +145,7 @@ export function SummaryBrowser({
         </FilterBar>
       </TaskFilters>
       <div className="summary-index-layout">
-        <aside className="summary-index" aria-label="Índice dos resumos">
+        <aside className="summary-index" aria-label={`Índice dos ${plural}`}>
           <div className="summary-index-items" ref={root}>
             {rows.map((row) => {
               const percent = recordedPercent(percents.get(row.id));
@@ -121,28 +157,30 @@ export function SummaryBrowser({
                   aria-pressed={selected === row.id}
                   onClick={() => setSelected(row.id)}
                 >
-                  <span className="summary-index-title">
-                    {summaryTitle(row)}
-                  </span>
-                  <RecordedProgress
-                    percent={percent}
-                    label="Progresso vinculado ao resumo"
-                  />
+                  <span className="summary-index-title">{rowTitle(row)}</span>
+                  {resource === "summaries" && (
+                    <RecordedProgress
+                      percent={percent}
+                      label="Progresso vinculado ao resumo"
+                    />
+                  )}
                   <span className="small-note">
-                    {percent === undefined
-                      ? "Sem progresso vinculado"
-                      : `${percent}%`}
+                    {"occurredAt" in row
+                      ? formatDate(row.occurredAt)
+                      : percent === undefined
+                        ? "Sem progresso vinculado"
+                        : `${percent}%`}
                   </span>
                 </button>
               );
             })}
             <div ref={sentinel} className="summary-index-sentinel">
               {(query.isPending || query.isFetchingNextPage) && (
-                <LoadingIndicator label="Carregando índice de resumos" />
+                <LoadingIndicator label={`Carregando índice de ${plural}`} />
               )}
             </div>
             {!query.isPending && !query.error && !rows.length && (
-              <NoData title="Nenhum resumo registrado" />
+              <NoData title={`Nenhum ${noun.toLowerCase()} registrado`} />
             )}
             {query.error && (
               <Failure
@@ -167,13 +205,17 @@ function SummaryFilterOptions({
   selected,
   onSelect,
   options,
+  resource,
+  filters,
 }: {
   taskId: string;
   selected: string;
   onSelect: (value: string) => void;
   options: { value: string; label: string }[];
+  resource: "summaries" | "timeline";
+  filters: Filters;
 }) {
-  const query = useSummaryPages(taskId);
+  const query = useSummaryPages(taskId, resource, filters);
   const root = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   useInfiniteScroll({
@@ -189,11 +231,11 @@ function SummaryFilterOptions({
   return (
     <div className="summary-filter-options" ref={root}>
       <FilterOptions
-        label="Resumo"
+        label={resource === "timeline" ? "Evento" : "Resumo"}
         value={selected}
         onChange={onSelect}
         options={options}
-        all="Todos os resumos"
+        all={resource === "timeline" ? "Todos os eventos" : "Todos os resumos"}
       />
       <div ref={sentinel} className="summary-index-sentinel">
         {(query.isPending || query.isFetchingNextPage) && (

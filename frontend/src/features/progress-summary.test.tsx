@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
 import { ApiProvider } from "@/api/context";
 import { createHttpApi } from "@/api/http";
+import { ProgressSummary } from "./progress-summary";
 import { ProgressHistory } from "./task-overview-charts";
 import type { SummaryUsageReport } from "@/api/generated/kanban/SummaryUsageReport";
 
@@ -21,38 +22,40 @@ function setup(summaryId?: string, summary: object = {}) {
   );
   render(
     <ApiProvider api={createHttpApi({ fetch: fetcher })}>
-      <ProgressHistory
-        taskId="task"
-        data={{
-          items: [
-            {
-              eventId: "event",
-              occurredAt: "2026-11-03T12:00:00Z",
-              percent: 90,
-              note: "",
-              source: "task.updated",
-              actorKind: "human",
-              actorId: null,
-              summaryId,
-            },
-          ],
-          total: 1,
-          limit: 100,
-          truncated: false,
-          coverage: "explicit_progress_events_only",
-        }}
-      />
+      {summaryId ? (
+        <ProgressSummary taskId="task" summaryId={summaryId} />
+      ) : (
+        <ProgressHistory
+          taskId="task"
+          data={{
+            items: [
+              {
+                eventId: "event",
+                occurredAt: "2026-11-03T12:00:00Z",
+                percent: 90,
+                note: "",
+                source: "task.updated",
+                actorKind: "human",
+                actorId: null,
+                summaryId,
+              },
+            ],
+            total: 1,
+            limit: 100,
+            truncated: false,
+            coverage: "explicit_progress_events_only",
+          }}
+        />
+      )}
     </ApiProvider>,
   );
   return fetcher;
 }
 
-it("loads the exact linked summary only when opened and displays its historical status", async () => {
+it("loads exact linked summary evidence and displays its historical status", async () => {
   const fetcher = setup("exact-summary", {
     statusObserved: { id: "review", name: "Em revisão", isDone: false },
   });
-  expect(fetcher).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole("button", { name: /: 90%$/ }));
   expect(
     await screen.findByText("Status no momento do registro: Em revisão"),
   ).toBeVisible();
@@ -67,10 +70,7 @@ it("loads the exact linked summary only when opened and displays its historical 
 it("keeps standalone legacy progress unknown without querying nearby summaries", async () => {
   const fetcher = setup();
   await userEvent.click(screen.getByRole("button", { name: /: 90%$/ }));
-  expect(
-    screen.getByText("Status no momento do registro: não registrado."),
-  ).toBeVisible();
-  expect(screen.getByText("Tokens neste ponto: não informados.")).toBeVisible();
+  expect(screen.getByText("Sem resumo vinculado.")).toBeVisible();
   expect(fetcher).not.toHaveBeenCalled();
 });
 
@@ -128,7 +128,6 @@ it("shows measured cumulative evidence separately from its delta without adding 
     ],
   };
   setup("exact-summary", { usageReport: report });
-  await userEvent.click(screen.getByRole("button", { name: /: 90%$/ }));
   expect(
     await screen.findByText("Status no momento do registro: Em revisão"),
   ).toBeVisible();
@@ -147,7 +146,6 @@ it("does not borrow evidence from a different summary returned by a stale adapte
   setup("missing-summary", {
     statusObserved: { id: "done", name: "Concluído", isDone: true },
   });
-  await userEvent.click(screen.getByRole("button", { name: /: 90%$/ }));
   expect(
     await screen.findByText("Resumo vinculado indisponível."),
   ).toBeVisible();
