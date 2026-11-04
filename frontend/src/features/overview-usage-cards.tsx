@@ -69,7 +69,6 @@ export function OverviewUsageCards({
       </section>
       <section className="usage-presence-card" aria-label="Modelos utilizados">
         <h2>Modelos utilizados</h2>
-        <p className="small-note">Presença nos resumos</p>
         <ul className="model-presence-list">
           {data?.models.map((model) => (
             <li key={model.name}>
