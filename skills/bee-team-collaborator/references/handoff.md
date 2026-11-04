@@ -57,7 +57,7 @@ On transfer, carry the task's context and history, without copying the previous 
 
 ## Via MCP
 
-`task_briefing(taskId)` and `agent_resumption(agentId,taskId)` return queried context in a user message, without dispatch. Preserve origin and gaps when consulting it; this read result is not a dispatch message. Materialize the required context in the task before notifying, maintaining a faithful briefing without repeating discovery already performed by the Leader. `prepare_execution` is not the start of execution. During the activity, use `record_progress` only on authorized targets. At closure, `close_activity` records the set atomically; follow schema/versions and check isError/result. Obtaining `delivery_review(taskId)` produces an assessment, not approval or a status change. Consult `beeteam://references/integration` for arguments and pagination.
+`task_briefing(taskId)` returns queried context in a user message, without dispatch. Preserve origin and gaps when consulting it; this read result is not a dispatch message. Materialize the required context in the task before notifying, maintaining a faithful briefing without repeating discovery already performed by the Leader. `prepare_execution` is not the start of execution. During the activity, use `record_progress` only on authorized targets. At closure, `close_activity` records the set atomically; follow schema/versions and check isError/result. Obtaining `delivery_review(taskId)` produces an assessment, not approval or a status change. Consult `beeteam://references/integration` for arguments and pagination.
 
 ## Current synthesis and history
 

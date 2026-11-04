@@ -26,7 +26,7 @@ Board gestor pode ser transferido pelo PATCH de board, com evento e sem alterar 
 
 ## Coordenação e autonomia
 
-A task fornece executionContext com rootTaskId/originBoardId da cadeia principal. Board de origem tem manual/standard/automatic; task tem manual/automatic. Origem manual força manual; automatic força automático; standard usa somente flag individual da task atual, inclusive descendente em outro board, sem herdar automático do pai. Consultar API Kanban; ResumeContext não cria um modo global do agente/time. Sem contexto de execução, aprovação/manual.
+A task fornece executionContext com rootTaskId/originBoardId da cadeia principal. Board de origem tem manual/standard/automatic; task tem manual/automatic. Origem manual força manual; automatic força automático; standard usa somente flag individual da task atual, inclusive descendente em outro board, sem herdar automático do pai. Consultar API Kanban. As consultas de perfil e contexto de time não criam um modo global de execução. Sem contexto de execução, aprovação/manual.
 
 O líder organiza distribuição por agentes geridos; seu alcance para editar tasks de um executor gerido, independentemente do autor, está pendente. Não há permissão confirmada de 'líder do time da task'. Usuário pode reatribuir executor. Toda leitura de informação de task permanece disponível, sem autenticação.
 
@@ -55,7 +55,6 @@ Prefixo /api/v1. Perfis/times são coleções diretas. Arquivar/restaurar não r
 | GET `/agents/{agentId}/chat-references` | Listar referências de chats |
 | POST `/agents/{agentId}/chat-references` | Registrar referência a chat externo |
 | PATCH `/agents/{agentId}/chat-references/{chatReferenceId}` | Editar ou arquivar referência |
-| GET `/agents/{agentId}/resumption-context` | Consultar contexto para retomar agente |
 | GET `/agents/{agentId}/activities` | Consultar índice de tarefas e resumos do agente |
 
 ## Convenções comuns
@@ -66,7 +65,7 @@ Backend Rust existente, PostgreSQL >=18. IDs persistidos são UUID v7; externalI
 
 offset padrão 0 (0..2147483647), limit padrão 50 (1..100). Listas: {items,offset,limit,total,hasMore,nextOffset}; total após filtros/exclusão lógica; hasMore=offset+items.length<total, nextOffset=offset+items.length se houver mais, senão null. Além do total: lista vazia. Ordenação por allowlist e ID de desempate na mesma direção; não há snapshot entre páginas.
 
-Filtros compõem AND. Buscas de nome/título/arquivo são substring literal case-insensitive; escapar %, _ e barra invertida em SQL parametrizado. Datas From inclusivas, Before exclusivas, RFC3339 com timezone e From<Before. Repetidos, desconhecidos, enums/IDs/ranges inválidos são 400. Arrays CSV somente onde declarados (types/taskIds). Arrays embutidos pequenos não são paginados.
+Filtros compõem AND. Buscas de nome/título/arquivo são substring literal case-insensitive; escapar %, _ e barra invertida em SQL parametrizado. Datas From inclusivas, Before exclusivas, RFC3339 com timezone e From<Before. Repetidos, desconhecidos, enums/IDs/ranges inválidos são 400. Arrays CSV somente onde declarados (types). Arrays embutidos pequenos não são paginados.
 
 POST exige Idempotency-Key UUID (chave de requisição, não ID persistido de entidade): 24h por rota/contexto declarado/conteúdo; replay idêntico não duplica registro, conteúdo diferente 409. PATCH/PUT/DELETE e conteúdo da task exigem If-Match; ausência 428, divergência 412. Batch de composição usa expectedVersion em cada time e 409 para conflito. Criar filho usa versão do pai, mesmo cross-board. Campos desconhecidos são rejeitados; PATCH omitido preserva, null somente onde permitido.
 

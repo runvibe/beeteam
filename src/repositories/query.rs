@@ -140,7 +140,6 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
                 | "includeChildren"
                 | "includeRemoved"
                 | "limitPerColumn"
-                | "taskIds"
                 | "relation"
                 | "collaboratorId"
         ) || (c.operation == "listAgents" && matches!(key.as_str(), "role" | "teamId"))

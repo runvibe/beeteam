@@ -20,12 +20,11 @@ Use resources/list/read; unknown URIs or arbitrary filesystem access are rejecte
 | Public name | Required UUIDv7 string arguments | Source |
 |---|---|---|
 | task_briefing | taskId | [task-briefing.md](prompts/task-briefing.md) |
-| agent_resumption | agentId, taskId | [collaborator-resumption.md](prompts/collaborator-resumption.md) |
 | delivery_review | taskId | [delivery-review.md](prompts/delivery-review.md) |
 
 The [manifest](prompts/content-manifest.json) keeps descriptions/arguments and names aligned with the catalog. The backend maps files to names and embeds context queried by services into a user message. prompts/get rejects missing, extra or non-text parameters, invalid IDs and nonexistent resources. Origin is derived from the chain, not an editable argument. Returned context does not authorize execution or prove nothing has changed since the query.
 
-Example prompts/get params: `{"name":"agent_resumption","arguments":{"agentId":"10000000-0000-7000-8000-000000000002","taskId":"10000000-0000-7000-8000-000000000001"}}`. IDs are illustrative and must exist. Do not send paths/URIs in these arguments.
+Example prompts/get params: `{"name":"task_briefing","arguments":{"taskId":"10000000-0000-7000-8000-000000000001"}}`. IDs are illustrative and must exist. Do not send paths/URIs in these arguments.
 
 Resources/prompts do not execute AI or control chats. `prepare_execution` queries without starting an agent; `record_progress`/`close_activity` are atomic/idempotent mutations according to the catalog. Never announce partial success as transaction completion. The checklist derives from tasks; closing an activity may leave the task in progress. Declared authorship is not authentication and the leader editing policy remains unresolved.
 

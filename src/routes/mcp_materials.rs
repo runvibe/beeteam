@@ -66,7 +66,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
     (
         "beeteam://references/collaborator-resumption",
-        "Collaborator resumption template",
+        "Collaborator task continuity template",
         include_str!("../../resources/bee-team/prompts/collaborator-resumption.md"),
     ),
     (
@@ -100,11 +100,6 @@ pub const PROMPT_TEMPLATES: &[(&str, &str, &str)] = &[
         "task_briefing",
         "task-briefing.md",
         include_str!("../../resources/bee-team/prompts/task-briefing.md"),
-    ),
-    (
-        "agent_resumption",
-        "collaborator-resumption.md",
-        include_str!("../../resources/bee-team/prompts/collaborator-resumption.md"),
     ),
     (
         "delivery_review",

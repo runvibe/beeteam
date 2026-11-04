@@ -111,31 +111,13 @@ impl ServerHandler for BeeServer {
                 return Err(ErrorData::invalid_params("Missing prompt argument", None));
             }
         }
-        let context = if request.name == "agent_resumption" {
-            let resume = mcp_adapter::call(
-                &self.state,
-                "getResumptionContext",
-                json!({"params":{"agentId":args["agentId"]},"query":{"taskIds":args["taskId"]}}),
-            )
-            .await
-            .map_err(|e| ErrorData::invalid_params(e.error, None))?;
-            let task = mcp_adapter::call(
-                &self.state,
-                "getTask",
-                json!({"params":{"taskId":args["taskId"]}}),
-            )
-            .await
-            .map_err(|e| ErrorData::invalid_params(e.error, None))?;
-            json!({"resumption":resume,"task":task})
-        } else {
-            mcp_adapter::call(
-                &self.state,
-                "prepare_execution",
-                json!({"taskId":args["taskId"]}),
-            )
-            .await
-            .map_err(|e| ErrorData::invalid_params(e.error, None))?
-        };
+        let context = mcp_adapter::call(
+            &self.state,
+            "prepare_execution",
+            json!({"taskId":args["taskId"]}),
+        )
+        .await
+        .map_err(|e| ErrorData::invalid_params(e.error, None))?;
         let (_, _, template) = mcp_materials::PROMPT_TEMPLATES
             .iter()
             .find(|(name, _, _)| *name == request.name)

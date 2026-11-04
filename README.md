@@ -144,7 +144,7 @@ server capabilities; this checkout supplies editorial content for its snapshots.
 
 Reusable task briefing, collaborator resumption, and delivery review templates live
 under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
-for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`, `agent_resumption`,
+for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`
 and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
@@ -1012,3 +1012,4 @@ Links antigos com `agent.tab=resume` ou `tab=resume` abrem Perfil. Instruções 
 Vínculos do agente aparecem somente no contexto lateral desktop e na tela Info mobile, sem duplicação na aba Perfil. Memberships e navegação para o time permanecem disponíveis.
 
 Nos detalhes de Agent, Tasks e Chats usam scroll infinito; em Team, Membros e Boards geridos carregam independentemente. `DetailRecordList` reutiliza o controlador `useInfiniteScroll`, marcador de 60px e loading padrão. Carrega páginas limitadas quando o fim está visível, deduplica pela identidade do registro, mantém totais da API e registros já carregados em erros, com retry da página pendente. Filtros/limites/from permanecem na URL; offsets legados não ocultam registros iniciais. Desktop observa o painel principal e mobile observa a página.
+A consulta agregada de retomada de agentes foi removida da API e do MCP, junto ao prompt específico. Perfil (`workInstructions` e `contextSummary`), contexto dos times e conversas permanecem nas consultas próprias. A continuidade de tarefas usa `task_briefing`/`prepare_execution` e leituras explícitas; os intervalos `start`/`pause`/`resume`/`finish` permanecem disponíveis.

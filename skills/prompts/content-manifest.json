@@ -15,23 +15,6 @@
       "mcpName": "task_briefing"
     },
     {
-      "file": "collaborator-resumption.md",
-      "description": "Prepare agent resumption on a task with explicit gaps and responsibility.",
-      "arguments": [
-        {
-          "name": "agentId",
-          "description": "Persisted UUIDv7 ID of the agent resuming work.",
-          "required": true
-        },
-        {
-          "name": "taskId",
-          "description": "Persisted UUIDv7 ID of the consulted task.",
-          "required": true
-        }
-      ],
-      "mcpName": "agent_resumption"
-    },
-    {
       "file": "delivery-review.md",
       "description": "Produce an assessment of deliverables and acceptance without changing state.",
       "arguments": [

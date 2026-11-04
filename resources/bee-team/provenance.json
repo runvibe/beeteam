@@ -20,15 +20,15 @@
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
       "sourceSha256": "f2651df47fe1b2f217a71f29eea7a892dbbce9291f8e0422326612a9c6541ba4",
-      "bundledSha256": "66f135de13a552f9653a89f264db8d157ccf1452cc549a6327cace0c7b589403",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "bundledSha256": "9f0f6d1b6c837fbee84d13d686814b3c8b384bd19165fb0fbab4051aa9ebb2b0",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     },
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
       "sourceSha256": "69773a27bdc744d6a1ad37574b33e5be7a52dc5d5765da5fa6c69fa57d161943",
-      "bundledSha256": "99a0987ea334c0472198e0fa799de0414b4d0efd559fbf04bd62c98f272d32fb",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Preserve three reviewed driver-aware SQLite startup paragraphs."
+      "bundledSha256": "81246d61933c9e12e556c7d0c4448790488367350d64234e6bcf944f955146f9",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Preserve three reviewed driver-aware SQLite startup paragraphs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
@@ -62,8 +62,8 @@
       "resourcePath": "prompts/collaborator-resumption.md",
       "sourcePath": "skills/prompts/collaborator-resumption.md",
       "sourceSha256": "b33f2178709d95f3d5e06e8083c8bed31367d16c33cd7f10e780fedf60311712",
-      "bundledSha256": "b33f2178709d95f3d5e06e8083c8bed31367d16c33cd7f10e780fedf60311712",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "bundledSha256": "bfc25fc1276a83d40abc3f078721bc906db1c92f14127929dbd92898a78a6c5f",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     },
     {
       "resourcePath": "prompts/delivery-review.md",
@@ -76,8 +76,8 @@
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
       "sourceSha256": "89fc8d47607ac2e78cd4b6b9c28bc361eb6e24e0628aa8ab8cab42dc67fc803b",
-      "bundledSha256": "a156f6d88e6c894cffcae0c46ae4bb3ea1aa3a22f9b84c72f45c1cc738b9ef62",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "bundledSha256": "a7a6aad91667773c94205eb760539987d21be0f833ede227e3b41a73c6b87311",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     },
     {
       "resourcePath": "references/usage-report.md",
@@ -111,21 +111,22 @@
       "resourcePath": "references/mcp-content.md",
       "sourcePath": "skills/references/mcp-content.md",
       "sourceSha256": "fa8f800503456609ecb25d34162bb7f6d8376304be2734d629a4df2ae9464caa",
-      "bundledSha256": "af945d5a2e1c71fcacb1cbc6247059b0c4c76a8d9f3ba8a7043424d1041ff754",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "bundledSha256": "58a6083a28f3ab341b379f4c857794f16889d68bc0352a2f6798ee32a53bd12f",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     },
     {
       "resourcePath": "prompts/content-manifest.json",
       "sourcePath": "skills/prompts/content-manifest.json",
       "sourceSha256": "f838f9c5e0eef23648e573f9f8e159eed37849e6c5cc101cc082b466f2d2eb62",
-      "bundledSha256": "f838f9c5e0eef23648e573f9f8e159eed37849e6c5cc101cc082b466f2d2eb62",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "bundledSha256": "f05f3ffe606ad1e2394d6d31e245a4902741d49181ffb0b3b1a1f26788a39fba",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
     }
   ],
   "backendContractOverlay": {
     "date": "2026-11-03",
     "contract": "CreateTask requires project roots; repositories are locally discovered; summary commitReport and exact legacy replays preserved.",
     "documentation": "docs/mcp-catalog.md",
-    "skillsSnapshotStatus": "English bundle 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26; explicit MCP URI mapping and reviewed SQLite startup guidance."
+    "skillsSnapshotStatus": "English bundle 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26; explicit MCP URI mapping and reviewed SQLite startup guidance.",
+    "agentResumptionRemoval": "Aggregate agent query and dedicated prompt removed; explicit task/profile/team reads and interval resume preserved. Canonical skills and bundled guidance updated together; global installation is a separate rollout."
   }
 }
