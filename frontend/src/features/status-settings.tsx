@@ -1,14 +1,14 @@
+import { StatusCreateForm } from "./status-create-form";
 import {
   useSettingsAutosave,
   AutosaveFeedback,
 } from "@/components/settings-autosave";
-import { useState, useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowUp, ArrowDown, Plus } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { useApi, useList } from "@/api/context";
 import type { Board, Status } from "@/api/types";
 import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { QueryState, Failure } from "@/components/shared";
@@ -16,27 +16,6 @@ export function StatusSettings({ board }: { board: Board }) {
   const api = useApi(),
     client = useQueryClient();
   const q = useList("statuses", board.id, { limit: 100, sortBy: "position" });
-  const [name, setName] = useState(""),
-    [done, setDone] = useState(false);
-  const intent = useRef<{ body: string; key: string } | null>(null);
-  const create = useMutation({
-    mutationFn: () => {
-      const body = JSON.stringify({ name, isDone: done });
-      if (intent.current?.body !== body)
-        intent.current = { body, key: crypto.randomUUID() };
-      return api.createStatus(
-        board.id,
-        { name, isDone: done },
-        intent.current.key,
-      );
-    },
-    onSuccess: () => {
-      intent.current = null;
-      setName("");
-      setDone(false);
-      return client.invalidateQueries();
-    },
-  });
   const order = useMutation({
     mutationFn: (ids: string[]) =>
       api.reorderStatuses(board.id, ids, board.version),
@@ -87,47 +66,7 @@ export function StatusSettings({ board }: { board: Board }) {
           ))}
       </QueryState>
       {order.error && <Failure error={order.error} />}
-      <form
-        className="record"
-        onSubmit={(e) => {
-          e.preventDefault();
-          create.mutate();
-        }}
-      >
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="new-status">Novo status</FieldLabel>
-            <Input
-              id="new-status"
-              required
-              maxLength={200}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={!!board.archivedAt}
-            />
-          </Field>
-          <Field orientation="horizontal">
-            <Switch
-              id="new-status-done"
-              checked={done}
-              onCheckedChange={setDone}
-              disabled={!!board.archivedAt}
-            />
-            <FieldLabel htmlFor="new-status-done">
-              Representa conclusão
-            </FieldLabel>
-          </Field>
-        </FieldGroup>
-        <Button
-          type="submit"
-          variant="outline"
-          disabled={create.isPending || !!board.archivedAt}
-        >
-          <Plus data-icon="inline-start" />
-          Adicionar status
-        </Button>
-        {create.error && <Failure error={create.error} />}
-      </form>
+      <StatusCreateForm key={board.id} board={board} />
     </section>
   );
 }
@@ -172,12 +111,18 @@ function StatusForm({
       <Field orientation="horizontal">
         <Switch
           id={`done-${status.id}`}
+          aria-describedby={`done-help-${status.id}`}
           checked={done}
           onCheckedChange={(value) => autosave.change("isDone", value, true)}
           disabled={disabled}
         />
-        <FieldLabel htmlFor={`done-${status.id}`}>Conclusão</FieldLabel>
+        <FieldLabel htmlFor={`done-${status.id}`}>
+          Conta como concluído
+        </FieldLabel>
       </Field>
+      <FieldDescription id={`done-help-${status.id}`}>
+        Tarefas neste status são consideradas concluídas.
+      </FieldDescription>
       {latest.version > autosave.version && (
         <p role="status" className="small-note">
           Este registro foi atualizado em outra sessão. Seu rascunho foi

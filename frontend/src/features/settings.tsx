@@ -35,7 +35,17 @@ export function BoardSettings({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="detail-dialog">
+      <DialogContent
+        className="detail-dialog"
+        onEscapeKeyDown={(event) => {
+          // Let the inline creation form consume Escape before dismissing settings.
+          if (
+            event.target instanceof Element &&
+            event.target.closest(".status-create-form")
+          )
+            event.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>Configurações do board</DialogTitle>
           <DialogDescription>

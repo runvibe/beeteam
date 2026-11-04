@@ -1,0 +1,27 @@
+.status-create-form {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.status-create-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  min-width: 0;
+}
+.status-create-row > [data-slot="field"] {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+.status-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.status-create-form [data-slot="field-description"] {
+  margin-top: 6px;
+}
+.status-form > [data-slot="field-description"] {
+  grid-column: 1 / -1;
+}

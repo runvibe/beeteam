@@ -29,21 +29,27 @@ it("keeps the creation key when retrying an uncertain network failure", async ()
       <StatusSettings board={makeSeed().boards[0]} />
     </ApiProvider>,
   );
-  await userEvent.type(screen.getByLabelText("Novo status"), "Revisão HTTP");
   await userEvent.click(
     screen.getByRole("button", { name: "Adicionar status" }),
+  );
+  await userEvent.type(screen.getByLabelText("Novo status"), "Revisão HTTP");
+  await userEvent.click(
+    screen.getByRole("button", { name: "Salvar" }),
   );
   expect(await screen.findByText(/Não foi possível conectar/)).toBeVisible();
   await userEvent.click(
-    screen.getByRole("button", { name: "Adicionar status" }),
+    screen.getByRole("button", { name: "Salvar" }),
   );
   await waitFor(() =>
-    expect(screen.getByLabelText("Novo status")).toHaveValue(""),
+    expect(screen.queryByLabelText("Novo status")).not.toBeInTheDocument(),
   );
   expect(keys[0]).toBe(keys[1]);
-  await userEvent.type(screen.getByLabelText("Novo status"), "Outra intenção");
   await userEvent.click(
     screen.getByRole("button", { name: "Adicionar status" }),
+  );
+  await userEvent.type(screen.getByLabelText("Novo status"), "Outra intenção");
+  await userEvent.click(
+    screen.getByRole("button", { name: "Salvar" }),
   );
   await waitFor(() => expect(keys.length).toBe(3));
   expect(keys[2]).not.toBe(keys[1]);
