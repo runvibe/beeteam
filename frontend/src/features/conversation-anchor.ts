@@ -29,14 +29,14 @@ export function useConversationAnchor(
     );
     const tabs = node
       .closest(".task-detail-tabs")
-      ?.querySelector<HTMLElement>(".task-section-navigation");
+      ?.querySelector<HTMLElement>(".detail-section-navigation");
     const reading =
       forceMessage ||
       node.getBoundingClientRect().top <=
         bounds +
           (tabs?.getBoundingClientRect().height ||
             tabs
-              ?.querySelector(".task-section-navigation-strip")
+              ?.querySelector(".detail-section-navigation-strip")
               ?.getBoundingClientRect().height ||
             0);
     anchor.current = {

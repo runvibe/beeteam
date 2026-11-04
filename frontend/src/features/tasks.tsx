@@ -1,3 +1,5 @@
+import { DetailShell } from "@/components/detail-layout/detail-shell";
+import { DetailHeader } from "@/components/detail-layout/detail-header";
 import { TaskInfoButton, useTaskContextView } from "./task-context-view";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -49,7 +51,7 @@ export function TaskPage() {
   useLocale();
   const id = useUi((s) => s.taskId);
   return id ? (
-    <section className="task-page" aria-label={tr("tasks.task")}>
+    <section className="task-page detail-page" aria-label={tr("tasks.task")}>
       <TaskDetail key={id} id={id} />
     </section>
   ) : null;
@@ -91,15 +93,11 @@ function TaskDetail({ id }: { id: string }) {
     heading.current?.focus();
   }, [id]);
   return (
-    <div className="task-detail-columns">
-      {q.data && <TaskInfoButton />}
-      <div className="task-detail-primary" data-detail-scroll ref={primary} hidden={contextView && !!q.data} inert={contextView && !!q.data}>
-        <div className="task-detail-hero" ref={hero}>
-          <header className="task-detail-heading">
-            <h1 ref={heading} tabIndex={-1}>
-              {q.data?.title ?? tr("tasks.taskDetails2")}
-            </h1>
-          </header>
+    <DetailShell primaryRef={primary} heroRef={hero} primaryHidden={contextView && !!q.data} primaryClassName="task-detail-primary" heroClassName="task-detail-hero"
+     overlays={q.data && <TaskInfoButton />}
+     context={q.data && <TaskContext task={q.data} compactHeader={pastHeader} overview={overview.data} />}
+     hero={<>
+       <DetailHeader className="task-detail-heading" titleRef={heading} title={q.data?.title ?? tr("tasks.taskDetails2")} />
           {q.data && <TaskDescription task={q.data} />}
           {q.data && (
             <>
@@ -134,7 +132,7 @@ function TaskDetail({ id }: { id: string }) {
               />
             </>
           )}
-        </div>
+        </>} >
         <QueryState query={q}>
           {q.data && (
             <>
@@ -226,15 +224,7 @@ function TaskDetail({ id }: { id: string }) {
             </>
           )}
         </QueryState>
-      </div>
-      {q.data && (
-        <TaskContext
-          task={q.data}
-          compactHeader={pastHeader}
-          overview={overview.data}
-        />
-      )}
-    </div>
+    </DetailShell>
   );
 }
 function Children({ task }: { task: Task }) {

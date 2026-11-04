@@ -1,21 +1,4 @@
 /* Account for the browser scrollbar inside a 320px viewport on this page. */
-body:has(.task-page) {
-  min-width: 0;
-}
-.task-page {
-  container: task-detail / inline-size;
-  padding: 0;
-  gap: 20px;
-}
-.task-detail-heading h1 {
-  margin: 0;
-  font-size: 24px;
-  line-height: 1.35;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-  outline: none;
-  max-width: 52ch;
-}
 .task-detail-state {
   display: flex;
   align-items: flex-start;
@@ -56,18 +39,6 @@ body:has(.task-page) {
   min-width: 0;
   gap: 20px;
 }
-.task-detail-columns {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 32px;
-  align-items: start;
-}
-.task-detail-primary {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 0;
-}
 .task-detail-reading {
   min-width: 0;
 }
@@ -102,37 +73,6 @@ body:has(.task-page) {
   font-size: 14px;
   line-height: 1.5;
   font-weight: 600;
-}
-.task-context {
-  min-width: 0;
-  border-left: 1px solid var(--border);
-  padding-left: 24px;
-}
-.task-context-content {
-  display: grid;
-  gap: 24px;
-}
-.task-context-content > section {
-  display: grid;
-  gap: 10px;
-}
-.task-context dl {
-  display: grid;
-  gap: 12px;
-}
-.task-context dl > div {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-.task-context dt {
-  font-size: 12px;
-  color: var(--muted-foreground);
-}
-.task-context dd {
-  margin: 0;
-  font-size: 13px;
-  overflow-wrap: anywhere;
 }
 .task-context .filter-field {
   min-width: 0;
@@ -180,20 +120,6 @@ body:has(.task-page) {
 .task-page :is(select, summary):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
-}
-@container task-detail (max-width: 959px) {
-  .task-detail-columns {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-  .task-context {
-    border-left: 0;
-    border-top: 1px solid var(--border);
-    padding: 12px 0 0;
-  }
-  .task-context-content {
-    padding-top: 20px;
-  }
 }
 @container task-detail (max-width: 699px) {
   .task-detail-heading h1 {
@@ -292,50 +218,6 @@ body:has(.task-page) {
 .task-timeline > .compact-filter-bar + .timeline-record {
   padding-top: 8px;
 }
-/* Desktop scrollers activate only with room for the rail and two-column context. */
-@media (min-width: 1056px) {
-  .app-shell:has(.task-page) {
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .main-shell:has(.task-page) {
-    min-height: 0;
-  }
-  .main-shell > main:has(> .task-page) {
-    display: flex;
-    min-height: 0;
-    overflow: hidden;
-    padding-bottom: 0;
-  }
-  .task-page {
-    min-height: 0;
-  }
-  .task-detail-columns {
-    flex: 1;
-    min-height: 0;
-    grid-template-rows: minmax(0, 1fr);
-    column-gap: 0;
-  }
-  .task-detail-primary,
-  .task-context {
-    min-height: 0;
-    height: 100%;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    scrollbar-gutter: stable;
-    padding-bottom: 0;
-  }
-  .task-detail-primary {
-    padding-right: 4px;
-  }
-  .task-detail-primary > * {
-    flex-shrink: 0;
-  }
-  .task-context {
-    padding-right: 4px;
-  }
-}
 
 .task-detail-state > .task-progress {
   width: 100%;
@@ -372,28 +254,9 @@ body:has(.task-page) {
   border-radius: inherit;
 }
 
-.task-detail-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
 /* Keep the title attached to its description without changing Markdown rhythm. */
 .task-detail-hero > .task-detail-heading {
   margin-bottom: -4px;
-}
-.task-page {
-  --task-sections-height: 70px;
-}
-.task-section-navigation {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: var(--background);
-  padding: 0;
-  min-width: 0;
-}
-.task-detail-primary {
-  scroll-padding-top: var(--task-sections-height);
 }
 .task-compact-header {
   display: grid;

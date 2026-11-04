@@ -1,7 +1,7 @@
 import { useLocale, t as tr } from "@/i18n";
 import { closeTaskDetails } from "@/routing/task-details-view";
 import { useTaskContextView, useTaskMobile } from "./task-context-view";
-import { useEffect, useRef } from "react";
+import { DetailContext } from "@/components/detail-layout/detail-context";
 import { ArrowUpLeft } from "lucide-react";
 import type { TaskOverviewData } from "@/api/task-overview";
 import type { Task } from "@/api/types";
@@ -41,42 +41,12 @@ export function TaskContext({
   useLocale();
   const details = useTaskContextView();
   const mobile = useTaskMobile();
-  const heading = useRef<HTMLHeadingElement>(null);
-  const wasDetails = useRef(details);
-  useEffect(() => {
-    if (details) heading.current?.focus({ preventScroll: true });
-    else if (wasDetails.current && !mobile)
-      document.querySelector<HTMLElement>(".task-detail-primary h1")?.focus({ preventScroll: true });
-    wasDetails.current = details;
-  }, [details, mobile]);
   const openTask = useUi((s) => s.openTask);
   const openBoard = useUi((s) => s.openBoard);
   return (
-    <aside
-      className="task-context"
-      aria-label={tr("tasks.taskContext")}
-      data-detail-screen={details}
-      hidden={mobile && !details}
-    >
-      <TaskCompactHeader
-        task={task}
-        visible={compactHeader}
-        overview={overview}
-      />
-      <header className="task-context-screen-header" hidden={!details}>
-        <Button
-          variant="ghost"
-          onClick={closeTaskDetails}
-          aria-label={tr("tasks.backToTask")}
-        >
-          <ArrowUpLeft aria-hidden="true" />
-          {tr("common.back")}
-        </Button>
-        <h1 ref={heading} tabIndex={-1}>
-          {tr("tasks.taskDetails")}
-        </h1>
-      </header>
-      <div className="task-context-content">
+    <DetailContext className="task-context" contentClassName="task-context-content" label={tr("tasks.taskContext")} screenTitle={tr("tasks.taskDetails")} mobile={mobile} screen={details}
+      compactHeader={<TaskCompactHeader task={task} visible={compactHeader} overview={overview} />}
+      backAction={<Button variant="ghost" onClick={closeTaskDetails} aria-label={tr("tasks.backToTask")}><ArrowUpLeft aria-hidden="true" />{tr("common.back")}</Button>}>
         <section>
           <h2>{tr("boards.status")}</h2>
           <TaskStatus task={task} />
@@ -148,7 +118,6 @@ export function TaskContext({
             </div>
           </dl>
         </section>
-      </div>
-    </aside>
+    </DetailContext>
   );
 }

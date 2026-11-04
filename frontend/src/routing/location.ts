@@ -30,7 +30,7 @@ export function navigate(to: string, replace = false) {
   savePosition(currentUrl());
   const previous = currentUrl();
   if (to === previous) return;
-  const detailView = (url: string) => new URLSearchParams(url.split("?")[1]).get("task.view");
+  const detailView = (url: string) => ["task.view", "agent.view", "team.view"].map(key => new URLSearchParams(url.split("?")[1]).get(key) ?? "").join("|");
   if (to.split("?")[0] === previous.split("?")[0] && detailView(to) === detailView(previous))
     positions.set(to, positions.get(previous)!);
   let old = window.history.state;
