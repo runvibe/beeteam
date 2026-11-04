@@ -1,0 +1,257 @@
+[
+  {
+    "file": "src/api/context.tsx",
+    "text": "ApiProvider required",
+    "reason": "Developer-only invariant for missing React API context; not a product-facing state."
+  },
+  {
+    "file": "src/api/mock.ts",
+    "text": "Dados demonstrativos Bee Team.\nPontos de entrada: boards, tarefas e recursos de agentes.\n",
+    "reason": "Demonstration resumption document is fixture content returned by the mock API, preserved as authored."
+  },
+  {
+    "file": "src/components/context-path.tsx",
+    "text": "Bee Team",
+    "reason": "Product brand; the name is identical in both locales."
+  },
+  {
+    "file": "src/components/filter-summary.tsx",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/components/inline-filter-search.tsx",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/components/markdown.tsx",
+    "text": "noopener noreferrer",
+    "reason": "HTML rel security tokens, not rendered content."
+  },
+  {
+    "file": "src/components/navigation-rail.tsx",
+    "text": "boards",
+    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+  },
+  {
+    "file": "src/components/navigation-rail.tsx",
+    "text": "agents",
+    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+  },
+  {
+    "file": "src/components/navigation-rail.tsx",
+    "text": "teams",
+    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+  },
+  {
+    "file": "src/components/navigation-rail.tsx",
+    "text": "Bee Team",
+    "reason": "Product brand; the name is identical in both locales."
+  },
+  {
+    "file": "src/components/settings-autosave.tsx",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/components/team-filter.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/components/ui/field.tsx",
+    "text": "use client",
+    "reason": "React module directive, not rendered content."
+  },
+  {
+    "file": "src/components/ui/label.tsx",
+    "text": "use client",
+    "reason": "React module directive, not rendered content."
+  },
+  {
+    "file": "src/components/ui/select.tsx",
+    "text": "use client",
+    "reason": "React module directive, not rendered content."
+  },
+  {
+    "file": "src/components/ui/switch.tsx",
+    "text": "use client",
+    "reason": "React module directive, not rendered content."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "png jpg jpeg gif webp avif svg bmp ico heic tiff",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "mp3 wav ogg flac m4a aac opus",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "mp4 webm mov avi mkv m4v",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "csv tsv xls xlsx ods",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "ppt pptx odp",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "doc docx odt rtf",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "zip gz tar tgz bz2 xz 7z rar",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "json xml yaml yml js jsx ts tsx py rs html css sql sh",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-presentation.ts",
+    "text": "txt md markdown log",
+    "reason": "Extension lookup table for MIME/category detection; values are technical file suffixes."
+  },
+  {
+    "file": "src/features/attachment-records.tsx",
+    "text": "application/pdf",
+    "reason": "Exact MIME example in type filter; protocol token must remain literal."
+  },
+  {
+    "file": "src/features/chart-point-popover.tsx",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "codex cli",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "openai codex",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "claude code",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "github copilot",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "gemini cli",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "open code",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Codex",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Claude Code",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Cursor",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "GitHub Copilot",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Gemini CLI",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Windsurf",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Cline",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "Kiro",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/harness-catalog.ts",
+    "text": "OpenCode",
+    "reason": "Provider/harness product name or lookup alias; preserved as the technical brand identifier."
+  },
+  {
+    "file": "src/features/overview-artifacts.tsx",
+    "text": "noopener noreferrer",
+    "reason": "HTML rel security tokens, not rendered content."
+  },
+  {
+    "file": "src/features/profile-form.tsx",
+    "text": "https://…",
+    "reason": "HTTPS protocol example in URL placeholder; protocol syntax stays identical in both locales."
+  },
+  {
+    "file": "src/features/status-create-form.tsx",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/subtask-status-pie.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/task-conversation.tsx",
+    "text": "P",
+    "reason": "Symbolic avatar initial for a person (Pessoa/Person); same character in both locales."
+  },
+  {
+    "file": "src/features/timeline-event-fields.tsx",
+    "text": "Id",
+    "reason": "Technical suffix test identifying ID fields for literal rendering."
+  },
+  {
+    "file": "src/i18n/system-notices.ts",
+    "text": "Contexto demonstrativo. Não inicia chats nem confirma atividade ao vivo.",
+    "reason": "Exact mock API system-notice protocol template; resumeNotice renders its semantic catalog key, not this literal."
+  },
+  {
+    "file": "src/i18n/system-notices.ts",
+    "text": "Stored context only; no session is started or monitored.",
+    "reason": "Exact backend system-notice protocol template; resumeNotice renders its semantic catalog key and preserves unknown external notices."
+  },
+  {
+    "file": "src/components/entity-filter.tsx",
+    "text": "Executor",
+    "reason": "Historical selector query-scope identifier; kept byte-for-byte for existing URLs and separated from the translated display label."
+  }
+]

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { TaskFilters } from "./task-filter-layout";
 import { FilterBar } from "@/components/filter-bar";
 import { TaskParticipantFilter } from "./task-participant-filter";
@@ -7,12 +9,7 @@ import type { Resources } from "@/api/types";
 import { AgentAvatar } from "@/components/agent-avatar";
 import { Markdown } from "@/components/markdown";
 import { LoadingIndicator } from "@/components/loading-indicator";
-import {
-  Failure,
-  NoData,
-  Search,
-  Choice,
-} from "@/components/shared";
+import { Failure, NoData, Search, Choice } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import { useUi } from "@/state/ui";
@@ -29,6 +26,7 @@ export function TaskConversation({
   taskId: string;
   onReady?: () => void;
 }) {
+  useLocale();
   const state = useTaskConversation(taskId);
   useLayoutEffect(() => {
     if (state.query.data || state.query.error || state.metadata.error)
@@ -47,23 +45,23 @@ export function TaskConversation({
           onClear={clear}
           search={
             <Search
-              label="Buscar texto na conversa"
+              label={tr("tasks.searchConversationText")}
               value={state.text}
               onChange={state.setText}
             />
           }
         >
           <Choice
-            all="Todos"
-            label="Tipo de autor"
+            all={tr("common.all")}
+            label={tr("tasks.authorType")}
             value={state.actorKind}
             onChange={(value) => {
               state.setActorKind(value);
               if (value !== "agent") state.setActorId("");
             }}
             options={[
-              { value: "agent", label: "Agentes" },
-              { value: "human", label: "Pessoas" },
+              { value: "agent", label: tr("common.agents") },
+              { value: "human", label: tr("tasks.people") },
             ]}
           />
           <TaskParticipantFilter
@@ -79,7 +77,7 @@ export function TaskConversation({
       </TaskFilters>
       {!!state.text && (
         <p className="small-note">
-          Trecho literal no texto completo; diferencia maiúsculas e minúsculas.
+          {tr("tasks.literalMatchInTheFullTextCaseSensitive")}
         </p>
       )}
       <ConversationWindow key={state.identity} state={state} />
@@ -91,6 +89,7 @@ function ConversationWindow({
 }: {
   state: ReturnType<typeof useTaskConversation>;
 }) {
+  useLocale();
   const { query, metadata, items, identity, explicit, following } = state;
   const list = useRef<HTMLElement>(null),
     before = useRef<HTMLDivElement>(null),
@@ -131,7 +130,7 @@ function ConversationWindow({
     <section
       ref={list}
       className="task-conversation"
-      aria-label="Conversa da tarefa"
+      aria-label={tr("tasks.taskConversation")}
     >
       <div ref={before} className="conversation-page-slot">
         {query.hasPreviousPage && (
@@ -140,13 +139,13 @@ function ConversationWindow({
             disabled={query.isFetching}
             onClick={() => void previous(true)}
           >
-            Carregar anteriores
+            {tr("tasks.loadEarlier")}
           </Button>
         )}
         {(query.isFetchingPreviousPage ||
           query.isPending ||
           (metadata.isFetching && !items.length)) && (
-          <LoadingIndicator label="Carregando conversa" compact />
+          <LoadingIndicator label={tr("tasks.loadingConversation")} compact />
         )}
       </div>
       {!!error && (
@@ -164,14 +163,14 @@ function ConversationWindow({
         />
       )}
       {!query.isPending && !error && !items.length && (
-        <NoData title="Nenhum comentário registrado" />
+        <NoData title={tr("tasks.noCommentsRecorded")} />
       )}
       {items.map((item) => (
         <ConversationMessage key={item.id} item={item} />
       ))}
       <div ref={after} className="conversation-page-slot">
         {query.isFetchingNextPage && (
-          <LoadingIndicator label="Carregando mensagens seguintes" compact />
+          <LoadingIndicator label={tr("tasks.loadingNextMessages")} compact />
         )}
         {(query.hasNextPage || following > 0) && (
           <Button
@@ -183,18 +182,21 @@ function ConversationWindow({
               void query.fetchNextPage({ cancelRefetch: false });
             }}
           >
-            {explicit ? "Ver mensagens seguintes" : "Novas mensagens"}
+            {explicit ? tr("tasks.viewNextMessages") : tr("tasks.newMessages")}
             {following > 0 ? ` (${following})` : ""}
           </Button>
         )}
       </div>
       <span className="sr-only" role="status">
-        {following > 0 ? `${following} mensagens seguintes disponíveis` : ""}
+        {following > 0
+          ? tr("tasks.followingMessages", { count: following })
+          : ""}
       </span>
     </section>
   );
 }
 function ConversationMessage({ item }: { item: Resources["comments"] }) {
+  useLocale();
   const profile = useEntity(
     "agents",
     item.actorKind === "agent" ? (item.actorId ?? "") : "",

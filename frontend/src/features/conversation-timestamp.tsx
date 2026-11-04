@@ -1,8 +1,11 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { Popover, Tooltip } from "radix-ui";
 import { RelativeTime } from "@/components/relative-time";
 import { formatDate } from "@/components/shared";
 
 export function ConversationTimestamp({ value }: { value: string }) {
+  useLocale();
   const exact = formatDate(value);
   return (
     <Tooltip.Provider>
@@ -13,7 +16,7 @@ export function ConversationTimestamp({ value }: { value: string }) {
               <button
                 type="button"
                 className="conversation-timestamp"
-                aria-label={`Data e hora da mensagem: ${exact}`}
+                aria-label={tr("tasks.messageTimestamp", { date: exact })}
               >
                 <RelativeTime value={value} />
               </button>
@@ -30,7 +33,7 @@ export function ConversationTimestamp({ value }: { value: string }) {
             className="navigation-tooltip"
             sideOffset={6}
             align="end"
-            aria-label="Data e hora da mensagem"
+            aria-label={tr("common.messageDateAndTime")}
           >
             {exact}
           </Popover.Content>

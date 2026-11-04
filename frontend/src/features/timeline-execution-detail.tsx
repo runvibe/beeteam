@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -30,9 +32,10 @@ export function TimelineExecutionDetail({
   taskId: string;
   summaryId: string;
 }) {
+  useLocale();
   const [interval, setInterval] = useState<string>();
   const q = useTimelineTracking(taskId, summaryId);
-  if (q.isPending) return <p role="status">Carregando detalhes…</p>;
+  if (q.isPending) return <p role="status">{tr("execution.loadingDetails")}</p>;
   if (q.error)
     return <Failure error={q.error} retry={() => void q.refetch()} />;
   return (
@@ -60,5 +63,6 @@ export function TimelineExecutionDisclosure(props: {
   taskId: string;
   summaryId: string;
 }) {
+  useLocale();
   return <TimelineExecutionDetail {...props} />;
 }

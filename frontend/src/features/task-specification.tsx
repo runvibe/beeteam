@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { TaskWorkScope } from "@/api/generated/kanban/TaskWorkScope";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,17 +17,18 @@ export function TaskSpecification({
   scope?: TaskWorkScope;
   taskId?: string;
 }) {
+  useLocale();
   const repositories =
     scope?.repositories.filter((repo) =>
       scope.projects.some((project) => repo.projectKeys.includes(project.key)),
     ) ?? [];
   const empty = !scope
-    ? "Escopo não informado neste registro."
+    ? tr("tasks.scopeNotProvidedInThisRecord")
     : scope.status === "not_applicable"
-      ? "Não se aplica."
+      ? tr("tasks.notApplicable")
       : scope.status === "to_identify"
-        ? "A identificar."
-        : "Nenhum registro declarado.";
+        ? tr("tasks.toBeIdentified")
+        : tr("tasks.noRecordsDeclared");
   return (
     <div className="detail-section specification-layout">
       <div className="task-specification">
@@ -35,22 +38,26 @@ export function TaskSpecification({
           </Markdown>
         ) : (
           <NoData
-            title="Nenhuma especificação registrada"
-            description="Os requisitos e critérios de aceite serão exibidos nesta seção quando registrados."
+            title={tr("tasks.noSpecificationRecorded")}
+            description={tr(
+              "tasks.requirementsAndAcceptanceCriteriaWillAppearInThisSectionWhen",
+            )}
           />
         )}
       </div>
       <aside
         className="specification-scope"
-        aria-label="Escopo técnico da tarefa"
+        aria-label={tr("tasks.taskTechnicalScope")}
       >
         <Card>
           <CardHeader>
             <CardTitle>
-              <h2>Projetos</h2>
+              <h2>{tr("tasks.projects")}</h2>
             </CardTitle>
             {scope?.status === "to_identify" && !!scope.projects.length && (
-              <Badge variant="secondary">Identificação parcial</Badge>
+              <Badge variant="secondary">
+                {tr("tasks.partiallyIdentified")}
+              </Badge>
             )}
           </CardHeader>
           <CardContent>
@@ -80,10 +87,12 @@ export function TaskSpecification({
           <Card>
             <CardHeader>
               <CardTitle>
-                <h2>Repositórios</h2>
+                <h2>{tr("tasks.repositories")}</h2>
               </CardTitle>
               {scope?.status === "to_identify" && !!repositories.length && (
-                <Badge variant="secondary">Identificação parcial</Badge>
+                <Badge variant="secondary">
+                  {tr("tasks.partiallyIdentified")}
+                </Badge>
               )}
             </CardHeader>
             <CardContent>
@@ -105,7 +114,7 @@ export function TaskSpecification({
                         )}
                         {!!projects.length && (
                           <span className="small-note">
-                            Projetos:{" "}
+                            {tr("tasks.projects2")}{" "}
                             {projects.map((project) => project.name).join(", ")}
                           </span>
                         )}

@@ -1,3 +1,5 @@
+import { formatPercent, useLocale, t as tr } from "@/i18n";
+
 import {
   RecordedProgress,
   recordedPercent,
@@ -5,6 +7,7 @@ import {
 import type { CSSProperties } from "react";
 
 export function TaskProgress({ percent }: { percent?: number | null }) {
+  useLocale();
   const value = recordedPercent(percent);
   return (
     <div
@@ -13,11 +16,11 @@ export function TaskProgress({ percent }: { percent?: number | null }) {
     >
       <div className="task-progress-meter">
         <span className="task-progress-value" aria-hidden="true">
-          {value === undefined ? "Sem dados" : `${value}%`}
+          {value === undefined ? tr("tasks.noData") : formatPercent(value)}
         </span>
         <RecordedProgress
           percent={value}
-          label="Progresso registrado"
+          label={tr("tasks.recordedProgress2")}
           className="task-progress-track"
         />
       </div>

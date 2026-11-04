@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import {
   useEffect,
@@ -33,6 +35,7 @@ export function PlanNavigation({
   onSelect: (id: string) => void;
   children: ReactNode;
 }) {
+  useLocale();
   const [mobile, setMobile] = useState(
     () => window.matchMedia?.("(max-width: 1055px)").matches ?? false,
   );
@@ -81,7 +84,7 @@ export function PlanNavigation({
     <>
       {query.isFetching &&
         (query.isFetchingNextPage || !plans.items.length) && (
-          <LoadingIndicator label="Carregando planos" />
+          <LoadingIndicator label={tr("tasks.loadingPlans")} />
         )}
       {query.error && (
         <Failure error={query.error} retry={() => void plans.retry()} />
@@ -103,14 +106,14 @@ export function PlanNavigation({
       <nav
         ref={list}
         className="task-plan-navigation"
-        aria-label="Planos disponíveis"
+        aria-label={tr("tasks.availablePlans")}
         tabIndex={0}
         onWheelCapture={reveal.manuallyInteracted}
         onPointerDownCapture={reveal.manuallyInteracted}
         onTouchStartCapture={reveal.manuallyInteracted}
         onKeyDownCapture={reveal.manuallyInteracted}
       >
-        <h3>Planos</h3>
+        <h3>{tr("tasks.plans")}</h3>
         {plans.items.map((item) => (
           <Button
             key={item.planId}

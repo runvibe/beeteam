@@ -5,6 +5,7 @@ export const FilterDirectionContext = createContext<"bottom" | "right">(
 );
 export const useCompactFilters = () => useContext(CompactFilters);
 export type ActiveFilter = {
+  id?: string;
   label: string;
   value: string;
   onRemove?: () => void;

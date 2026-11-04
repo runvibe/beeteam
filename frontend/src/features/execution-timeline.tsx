@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useId, useState, type ReactNode } from "react";
 import { formatDate } from "@/components/shared";
 import { ChartPointPopover } from "./chart-point-popover";
@@ -12,13 +14,16 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
   events,
   renderDetail,
   emptyMessage,
-  description = "Transições explícitas, na ordem de registro. O espaçamento separa os registros e não representa duração.",
+  description = tr(
+    "execution.explicitTransitionsInRecordingOrderSpacingSeparatesRecordsAndDoes",
+  ),
 }: {
   events: T[];
   emptyMessage?: string;
   description?: string;
   renderDetail: (event: T) => ReactNode;
 }) {
+  useLocale();
   const id = useId();
   const [selectedId, setSelectedId] = useState<string>();
   const selected =
@@ -26,13 +31,13 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
   return (
     <section aria-labelledby={id} className="execution-timeline">
       <header className="execution-timeline-heading">
-        <h3 id={id}>Linha do tempo da execução</h3>
+        <h3 id={id}>{tr("execution.executionTimeline")}</h3>
         <p className="small-note">{description}</p>
       </header>
       <div
         className="execution-timeline-scroll"
         role="group"
-        aria-label="Transições da execução"
+        aria-label={tr("execution.executionTransitions")}
       >
         <div
           className="execution-timeline-plot"
@@ -41,7 +46,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
           <div className="execution-timeline-axis" aria-hidden="true" />
           {!events.length && (
             <p className="execution-timeline-empty">
-              {emptyMessage ?? "Nenhuma transição de execução registrada."}
+              {emptyMessage ?? tr("execution.noExecutionTransitionsRecorded")}
             </p>
           )}
           {events.map((event, index) => (
@@ -55,7 +60,7 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
                 <br />
                 {event.occurredAt
                   ? formatDate(event.occurredAt)
-                  : "Horário não informado"}
+                  : tr("execution.timeNotProvided")}
               </span>
               <ChartPointPopover
                 pointId={event.id}
@@ -67,8 +72,8 @@ export function ExecutionTimeline<T extends ExecutionTimelineEvent>({
                 className="execution-timeline-point"
                 selected={selected?.id === event.id}
                 detailId={`${id}-detail`}
-                label={`${event.label}: ${event.occurredAt ? formatDate(event.occurredAt) : "Horário não informado"}`}
-                dialogLabel="Detalhes da transição de execução"
+                label={`${event.label}: ${event.occurredAt ? formatDate(event.occurredAt) : tr("execution.timeNotProvided")}`}
+                dialogLabel={tr("execution.executionTransitionDetails")}
                 onSelect={() => setSelectedId(event.id)}
               >
                 {renderDetail(event)}

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { TimelinePoint } from "@/api/timeline-points";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -7,6 +9,7 @@ import { useTimelineTracking } from "./timeline-execution-detail";
 import { executionAction } from "./execution-event-detail";
 import { eventLabels } from "./timeline-labels";
 export function TimelineEventPreview({ event }: { event: TimelinePoint }) {
+  useLocale();
   const api = useApi();
   const q = useQuery({
     queryKey: ["timeline", event.taskId, "point-preview", event.id],
@@ -27,10 +30,12 @@ export function TimelineEventPreview({ event }: { event: TimelinePoint }) {
   return (
     <>
       <strong>{eventLabels[event.type] ?? event.type}</strong>
-      {q.isPending && <span role="status">Carregando detalhes do ponto…</span>}
+      {q.isPending && (
+        <span role="status">{tr("execution.loadingPointDetails")}</span>
+      )}
       {q.error && <Failure error={q.error} retry={() => void q.refetch()} />}
       {!q.isPending && !q.error && !q.data && (
-        <span>Detalhes indisponíveis neste escopo.</span>
+        <span>{tr("execution.detailsUnavailableInThisScope")}</span>
       )}
       {q.data && (
         <OverviewAttribution actor={q.data} date={q.data.occurredAt} />
@@ -51,16 +56,23 @@ function TrackingPreview({
   taskId: string;
   summaryId: string;
 }) {
+  useLocale();
   const q = useTimelineTracking(taskId, summaryId);
   if (q.isPending)
-    return <span className="small-note">Carregando transição…</span>;
+    return (
+      <span className="small-note">{tr("execution.loadingTransition")}</span>
+    );
   if (q.error)
-    return <span className="small-note">Transição indisponível</span>;
+    return (
+      <span className="small-note">
+        {tr("execution.transitionUnavailable")}
+      </span>
+    );
   if (!q.data) return null;
   return (
     <span>
       {executionAction(q.data.action)} ·{" "}
-      {q.data.statusObserved.name ?? "Status não registrado"}
+      {q.data.statusObserved.name ?? tr("execution.statusNotRecorded")}
     </span>
   );
 }

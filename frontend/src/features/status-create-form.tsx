@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useId, useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
@@ -11,6 +13,7 @@ import { Failure } from "@/components/shared";
 import "./status-create-form.css";
 
 export function StatusCreateForm({ board }: { board: Board }) {
+  useLocale();
   const api = useApi(),
     client = useQueryClient();
   const id = useId();
@@ -88,7 +91,9 @@ export function StatusCreateForm({ board }: { board: Board }) {
     >
       <div className="status-create-row">
         <Field>
-          <FieldLabel htmlFor={`${id}-name`}>Novo status</FieldLabel>
+          <FieldLabel htmlFor={`${id}-name`}>
+            {tr("boards.newStatus")}
+          </FieldLabel>
           <Input
             ref={input}
             id={`${id}-name`}
@@ -101,7 +106,7 @@ export function StatusCreateForm({ board }: { board: Board }) {
         </Field>
         <div className="status-create-actions">
           <Button type="submit" variant="outline" disabled={disabled}>
-            Salvar
+            {tr("boards.save")}
           </Button>
           <Button
             type="button"
@@ -109,7 +114,7 @@ export function StatusCreateForm({ board }: { board: Board }) {
             disabled={create.isPending}
             onClick={cancel}
           >
-            Cancelar
+            {tr("boards.cancel")}
           </Button>
         </div>
       </div>
@@ -122,10 +127,12 @@ export function StatusCreateForm({ board }: { board: Board }) {
             onCheckedChange={setDone}
             disabled={disabled}
           />
-          <FieldLabel htmlFor={`${id}-done`}>Conta como concluído</FieldLabel>
+          <FieldLabel htmlFor={`${id}-done`}>
+            {tr("boards.countsAsCompleted")}
+          </FieldLabel>
         </Field>
         <FieldDescription id={`${id}-help`}>
-          Tarefas neste status são consideradas concluídas.
+          {tr("boards.tasksInThisStatusAreConsideredCompleted")}
         </FieldDescription>
       </div>
       {create.error && <Failure error={create.error} />}
@@ -143,7 +150,7 @@ export function StatusCreateForm({ board }: { board: Board }) {
       }}
     >
       <Plus data-icon="inline-start" />
-      Adicionar status
+      {tr("boards.addStatus")}
     </Button>
   );
 }

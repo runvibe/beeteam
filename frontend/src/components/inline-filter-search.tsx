@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useFilterRemoval } from "./use-filter-removal";
 import { useContext, useEffect, useId, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
@@ -19,6 +21,7 @@ export function InlineFilterSearch({
   value: string;
   onChange: (value: string) => void;
 }) {
+  useLocale();
   const [open, setOpen] = useState(false);
   const reduced = useReducedMotion();
   const input = useRef<HTMLInputElement>(null);
@@ -55,7 +58,7 @@ export function InlineFilterSearch({
         tabIndex={open ? 0 : -1}
         inert={!open}
         maxLength={200}
-        placeholder="Digite para filtrar…"
+        placeholder={tr("common.typeToFilter")}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={(event) => {
@@ -73,7 +76,11 @@ export function InlineFilterSearch({
             variant={value ? "secondary" : "ghost"}
             size="icon"
             className="filter-icon"
-            aria-label={open ? `Fechar ${label.toLowerCase()}` : label}
+            aria-label={
+              open
+                ? tr("common.closeSearch", { label: label.toLowerCase() })
+                : label
+            }
             aria-expanded={open}
             aria-controls={open ? id : undefined}
             data-active={!!value || undefined}
@@ -102,7 +109,7 @@ export function InlineFilterSearch({
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content className="navigation-tooltip" sideOffset={6}>
-            {open ? "Recolher busca" : label}
+            {open ? tr("common.collapseSearch") : label}
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>

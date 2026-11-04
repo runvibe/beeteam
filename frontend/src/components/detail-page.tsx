@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useRef, type ReactNode } from "react";
 import { ArrowUpLeft } from "lucide-react";
 import { goBack } from "@/routing/location";
@@ -15,6 +17,7 @@ export function DetailPage({
   fallback: string;
   children: ReactNode;
 }) {
+  useLocale();
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     heading.current?.focus();
@@ -27,7 +30,7 @@ export function DetailPage({
         onClick={() => goBack(fallback)}
       >
         <ArrowUpLeft />
-        Voltar
+        {tr("common.back")}
       </Button>
       <header className="sr-only">
         <h1 ref={heading} tabIndex={-1}>

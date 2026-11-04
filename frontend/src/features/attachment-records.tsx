@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useId, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -22,6 +24,7 @@ export function AttachmentRecords({
   taskId: string;
   children: (row: Resources["attachments"]) => ReactNode;
 }) {
+  useLocale();
   const [fileName, setName] = useUrlState<string>("attachments.fileName", "");
   const [mediaType, setType] = useUrlState<string>("attachments.mediaType", "");
   const [includeRemoved, setRemoved] = useUrlState<string>(
@@ -42,15 +45,15 @@ export function AttachmentRecords({
           }}
           search={
             <Search
-              label="Nome do arquivo"
+              label={tr("files.fileName")}
               value={fileName}
               onChange={setName}
             />
           }
         >
           <FilterPopover
-            label="Tipo de arquivo"
-            summary={mediaType || "Todos os tipos"}
+            label={tr("files.fileType")}
+            summary={mediaType || tr("files.allTypes")}
             active={!!mediaType}
             onClear={() => setType("")}
           >
@@ -62,12 +65,12 @@ export function AttachmentRecords({
             />
           </FilterPopover>
           <Choice
-            label="Arquivos removidos"
+            label={tr("files.removedFiles")}
             value={includeRemoved}
             onChange={setRemoved}
             options={[
-              { value: "false", label: "Somente disponíveis" },
-              { value: "true", label: "Incluir removidos" },
+              { value: "false", label: tr("files.availableOnly") },
+              { value: "true", label: tr("files.includeRemoved") },
             ]}
           />
         </FilterBar>
@@ -81,8 +84,8 @@ export function AttachmentRecords({
           mediaType: mediaType || undefined,
           includeRemoved: includeRemoved === "true",
         }}
-        empty="Nenhum arquivo encontrado"
-        emptyDescription="Ajuste os filtros ou aguarde o registro de arquivos nesta tarefa."
+        empty={tr("files.noFilesFound")}
+        emptyDescription={tr("files.adjustFiltersOrWaitForFilesToBeRecordedOn")}
       >
         {children}
       </TaskRecordList>
@@ -100,6 +103,7 @@ function MediaTypeInput({
   value: string;
   onApply: (value: string) => void;
 }) {
+  useLocale();
   const id = useId();
   const [draft, setDraft] = useState(value);
   const api = useApi();
@@ -110,10 +114,16 @@ function MediaTypeInput({
       const found = new Map<string, string>();
       let offset: number | undefined = 0;
       while (offset !== undefined) {
-        const page = await api.list("attachments", taskId, { offset, limit: 100, includeRemoved }, signal);
+        const page = await api.list(
+          "attachments",
+          taskId,
+          { offset, limit: 100, includeRemoved },
+          signal,
+        );
         pages.push(page);
-        for (const row of page.items) found.set(row.mediaType, row.originalName);
-        offset = nextPageOffset(page, pages, row => row.id);
+        for (const row of page.items)
+          found.set(row.mediaType, row.originalName);
+        offset = nextPageOffset(page, pages, (row) => row.id);
       }
       return [...found].sort(([a], [b]) => a.localeCompare(b));
     },
@@ -121,7 +131,14 @@ function MediaTypeInput({
   useEffect(() => setDraft(value), [value]);
   useEffect(() => {
     const next = draft.trim();
-    if (next === value || (next && !next.split(",").every(mime => /^[^\s/,;]+\/[^\s/,;]+$/.test(mime.trim())))) return;
+    if (
+      next === value ||
+      (next &&
+        !next
+          .split(",")
+          .every((mime) => /^[^\s/,;]+\/[^\s/,;]+$/.test(mime.trim())))
+    )
+      return;
     const timer = setTimeout(() => onApply(next), 300);
     return () => clearTimeout(timer);
   }, [draft, value, onApply]);
@@ -133,18 +150,69 @@ function MediaTypeInput({
         onApply(draft.trim());
       }}
     >
-      {!!types.data?.length && <div className="flex flex-wrap gap-2" role="group" aria-label="Tipos presentes nos arquivos">
-        {types.data.map(([mime, name]) => {
-          const Icon = categories[attachmentCategory(mime, name)].icon;
-          return <Button key={mime} type="button" size="sm" variant={value.split(",").map(v => v.trim().toLowerCase()).includes(mime.toLowerCase()) ? "secondary" : "outline"}
-            aria-label={`Filtrar ${mime}`} title={mime} aria-pressed={value.split(",").map(v => v.trim().toLowerCase()).includes(mime.toLowerCase())}
-            onClick={() => { const selected = value.split(",").map(v => v.trim()).filter(Boolean); const next = selected.some(v => v.toLowerCase() === mime.toLowerCase()) ? selected.filter(v => v.toLowerCase() !== mime.toLowerCase()) : [...selected, mime]; const text = next.join(", "); setDraft(text); onApply(text); }}><Icon aria-hidden="true" /><span>{name.includes(".") ? name.split(".").at(-1)!.toUpperCase() : mime.split("/").at(-1)}</span></Button>;
-        })}
-      </div>}
-      {types.isPending && <span role="status">Carregando tipos…</span>}
-      {types.isError && <span role="status">Não foi possível carregar os tipos. Digite o MIME abaixo.</span>}
+      {!!types.data?.length && (
+        <div
+          className="flex flex-wrap gap-2"
+          role="group"
+          aria-label={tr("files.typesPresentInFiles")}
+        >
+          {types.data.map(([mime, name]) => {
+            const Icon = categories[attachmentCategory(mime, name)].icon;
+            return (
+              <Button
+                key={mime}
+                type="button"
+                size="sm"
+                variant={
+                  value
+                    .split(",")
+                    .map((v) => v.trim().toLowerCase())
+                    .includes(mime.toLowerCase())
+                    ? "secondary"
+                    : "outline"
+                }
+                aria-label={tr("files.filterMime", { mime: mime })}
+                title={mime}
+                aria-pressed={value
+                  .split(",")
+                  .map((v) => v.trim().toLowerCase())
+                  .includes(mime.toLowerCase())}
+                onClick={() => {
+                  const selected = value
+                    .split(",")
+                    .map((v) => v.trim())
+                    .filter(Boolean);
+                  const next = selected.some(
+                    (v) => v.toLowerCase() === mime.toLowerCase(),
+                  )
+                    ? selected.filter(
+                        (v) => v.toLowerCase() !== mime.toLowerCase(),
+                      )
+                    : [...selected, mime];
+                  const text = next.join(", ");
+                  setDraft(text);
+                  onApply(text);
+                }}
+              >
+                <Icon aria-hidden="true" />
+                <span>
+                  {name.includes(".")
+                    ? name.split(".").at(-1)!.toUpperCase()
+                    : mime.split("/").at(-1)}
+                </span>
+              </Button>
+            );
+          })}
+        </div>
+      )}
+      {types.isPending && <span role="status">{tr("files.loadingTypes")}</span>}
+      {types.isError && (
+        <span role="status">
+          {tr("files.couldNotLoadTypesEnterTheMimeTypeBelow")}
+        </span>
+      )}
       <Field>
-        <FieldLabel htmlFor={id}>Tipo MIME exato</FieldLabel>
+        <FieldLabel htmlFor={id}>{tr("files.exactMimeType")}</FieldLabel>
         <Input
           id={id}
           value={draft}
@@ -154,7 +222,7 @@ function MediaTypeInput({
           placeholder="application/pdf"
         />
         <FieldDescription>
-          Separe os tipos por vírgula, por exemplo application/pdf, image/png.
+          {tr("files.separateTypesWithCommasForExampleApplicationPdfImagePng")}
         </FieldDescription>
       </Field>
     </form>

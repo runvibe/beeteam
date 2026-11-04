@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { SessionSnapshot } from "./session-snapshots";
 import { tokenCount } from "./usage-format";
 export { tokenCount } from "./usage-format";
@@ -10,151 +12,183 @@ import { OverviewAttribution } from "./overview-artifacts";
 import "./task-usage.css";
 
 export function TokenComponents({ value }: { value: Partial<UsageDelta> }) {
+  useLocale();
   return (
     <dl className="usage-components">
       <div>
-        <dt>Entrada</dt>
+        <dt>{tr("usage.input")}</dt>
         <dd>{tokenCount(value.inputTokens)}</dd>
       </div>
       <div>
-        <dt>Saída</dt>
+        <dt>{tr("usage.output")}</dt>
         <dd>{tokenCount(value.outputTokens)}</dd>
       </div>
       <div>
-        <dt>Cache (parte da entrada)</dt>
+        <dt>{tr("usage.cachePartOfInput")}</dt>
         <dd>{tokenCount(value.cachedInputTokens)}</dd>
       </div>
       <div>
-        <dt>Raciocínio (parte da saída)</dt>
+        <dt>{tr("usage.reasoningPartOfOutput")}</dt>
         <dd>{tokenCount(value.reasoningOutputTokens)}</dd>
       </div>
     </dl>
   );
 }
 const quality = {
-  measured: "Medido",
-  estimated: "Estimado",
-  unavailable: "Indisponível",
+  get measured() {
+    return tr("usage.measured");
+  },
+  get estimated() {
+    return tr("usage.estimated");
+  },
+  get unavailable() {
+    return tr("usage.unavailable");
+  },
 };
 const attribution = {
-  exact: "Exata",
-  shared: "Compartilhada",
-  unallocated: "Não atribuída",
+  get exact() {
+    return tr("usage.exact");
+  },
+  get shared() {
+    return tr("usage.shared");
+  },
+  get unallocated() {
+    return tr("usage.notAttributed");
+  },
 };
 const kinds = {
-  cumulative_snapshot: "Snapshot acumulado",
-  period_delta: "Delta de período",
-  unavailable: "Indisponível",
+  get cumulative_snapshot() {
+    return tr("usage.cumulativeSnapshot");
+  },
+  get period_delta() {
+    return tr("usage.periodDelta");
+  },
+  get unavailable() {
+    return tr("usage.unavailable");
+  },
 };
 const reasons = {
-  baseline_or_unavailable: "Referência inicial ou dados indisponíveis",
-  duplicate_reference: "Referência duplicada; não somada novamente",
-  attributed: "Atribuído",
-  shared_or_unallocated: "Compartilhado ou sem atribuição exata",
+  get baseline_or_unavailable() {
+    return tr("usage.initialReferenceOrUnavailableData");
+  },
+  get duplicate_reference() {
+    return tr("usage.duplicateReferenceNotAddedAgain");
+  },
+  get attributed() {
+    return tr("usage.attributed");
+  },
+  get shared_or_unallocated() {
+    return tr("usage.sharedOrWithoutExactAttribution");
+  },
 };
 function UsageEntryDetails({ entry }: { entry: UsageEntry }) {
+  useLocale();
   const o = entry.observation;
   return (
     <li className="usage-entry">
       <p>
-        <strong>{o.modelId || "Modelo não informado"}</strong> ·{" "}
-        {o.provider || "Provedor não informado"} · {o.harness}
+        <strong>{o.modelId || tr("tasks.modelNotProvided")}</strong> ·{" "}
+        {o.provider || tr("usage.providerNotProvided")} · {o.harness}
         {o.harnessVersion ? ` ${o.harnessVersion}` : ""}
       </p>
       <p className="small-note">
-        {quality[o.quality]} · Atribuição: {attribution[o.attribution]} ·{" "}
-        {kinds[o.reportKind]}
+        {quality[o.quality]} {tr("usage.attribution")}{" "}
+        {attribution[o.attribution]} · {kinds[o.reportKind]}
       </p>
       <p className="small-note">
-        Ator da observação:{" "}
+        {tr("usage.observationActor")}{" "}
         {o.actor.kind === "agent" && o.actor.id ? (
           <AgentName id={o.actor.id} />
         ) : o.actor.kind === "human" ? (
-          "Pessoa · identidade não informada"
+          tr("common.personIdentityNotProvided")
         ) : (
-          "Agente não identificado"
+          tr("common.unidentifiedAgent")
         )}{" "}
         ·{" "}
         {
           {
-            leader: "Líder",
-            collaborator: "Colaborador",
-            human: "Pessoa",
-            unknown: "Papel não informado",
+            leader: tr("common.leader"),
+            collaborator: tr("common.collaborator"),
+            human: tr("tasks.person"),
+            unknown: tr("usage.roleNotProvided"),
           }[o.actorRole]
         }
       </p>
       <SessionSnapshot observation={o} />
       <p>
-        Delta derivado: <strong>{tokenCount(entry.delta?.totalTokens)}</strong>
+        {tr("usage.derivedDelta")}{" "}
+        <strong>{tokenCount(entry.delta?.totalTokens)}</strong>
         {entry.counted
-          ? " · Incluído na agregação conforme qualidade"
-          : " · Não incluído no total"}
+          ? tr("usage.includedInAggregationAccordingToQuality")
+          : tr("usage.notIncludedInTotal")}
       </p>
       <p className="small-note">{reasons[entry.coverageReason]}</p>
       {entry.delta && <TokenComponents value={entry.delta} />}
       <details>
-        <summary>Observação original e proveniência</summary>
+        <summary>{tr("usage.originalObservationAndProvenance")}</summary>
         <p className="small-note">
-          {kinds[o.reportKind]}. Snapshots não são somados diretamente. Cache e
-          raciocínio já fazem parte de entrada e saída.
+          {kinds[o.reportKind]}
+          {tr("usage.snapshotsAreNotAddedDirectlyCacheAndReasoningAreAlready")}
         </p>
         <TokenComponents value={o} />
         <dl className="usage-provenance">
           <div>
-            <dt>Fonte</dt>
+            <dt>{tr("usage.source")}</dt>
             <dd>{o.source}</dd>
           </div>
           <div>
-            <dt>Superfície</dt>
+            <dt>{tr("usage.surface")}</dt>
             <dd>{o.surface}</dd>
           </div>
           <div>
-            <dt>Escopo</dt>
+            <dt>{tr("usage.scope")}</dt>
             <dd>
               {
                 {
-                  request: "Requisição",
-                  session: "Sessão",
-                  session_tree: "Sessão e descendentes",
+                  request: tr("usage.request"),
+                  session: tr("usage.session"),
+                  session_tree: tr("usage.sessionAndDescendants"),
                 }[o.scope]
               }
             </dd>
           </div>
           <div>
-            <dt>Observação coletada em</dt>
+            <dt>{tr("usage.observationCollectedAt")}</dt>
             <dd>{formatDate(o.observedAt)}</dd>
           </div>
           <div>
-            <dt>Período informado</dt>
+            <dt>{tr("usage.reportedPeriod")}</dt>
             <dd>
               {o.periodStart
                 ? formatDate(o.periodStart)
-                : "Início não informado"}{" "}
-              · {o.periodEnd ? formatDate(o.periodEnd) : "Fim não informado"}
+                : tr("usage.startNotProvided")}{" "}
+              ·{" "}
+              {o.periodEnd
+                ? formatDate(o.periodEnd)
+                : tr("usage.endNotProvided")}
             </dd>
           </div>
           <div>
-            <dt>Sessão / época</dt>
+            <dt>{tr("usage.sessionEpoch")}</dt>
             <dd>
               {o.sessionId} / {o.epoch}
             </dd>
           </div>
           <div>
-            <dt>Evidência</dt>
+            <dt>{tr("usage.evidence2")}</dt>
             <dd>{o.evidenceId}</dd>
           </div>
           <div>
-            <dt>Evidência anterior</dt>
-            <dd>{o.previousEvidenceId || "Não informada"}</dd>
+            <dt>{tr("usage.previousEvidence")}</dt>
+            <dd>{o.previousEvidenceId || tr("usage.notProvided")}</dd>
           </div>
           <div>
-            <dt>Resumo canônico</dt>
+            <dt>{tr("usage.canonicalSummary")}</dt>
             <dd>{entry.canonicalSummaryId}</dd>
           </div>
         </dl>
         <p className="small-note">
-          Reporte da entrada · revisão {entry.reportRevision}
+          {tr("usage.entryReportRevision")} {formatNumber(entry.reportRevision)}
         </p>
         <OverviewAttribution
           actor={entry.reportingActor}
@@ -179,31 +213,35 @@ export function SummaryUsage({
 }: {
   report?: SummaryUsageReport | null;
 }) {
+  useLocale();
   return (
-    <section className="summary-usage" aria-label="Modelos, harnesses e tokens">
-      <h3>Modelos, harnesses e tokens</h3>
+    <section
+      className="summary-usage"
+      aria-label={tr("usage.modelsHarnessesAndTokens")}
+    >
+      <h3>{tr("usage.modelsHarnessesAndTokens")}</h3>
       {!report ? (
         <p className="small-note">
-          Métricas não informadas neste resumo. Ausência não significa zero.
+          {tr("tasks.metricsNotProvidedInThisSummaryAbsenceDoesNotMean")}
         </p>
       ) : (
         <>
           <p className="small-note">
-            Reporte do resumo · revisão {report.revision}. Horário de reporte,
-            não de consumo.
+            {tr("usage.summaryReportRevision")} {formatNumber(report.revision)}
+            {tr("usage.reportTimeNotUsageTime")}
           </p>
           <OverviewAttribution
             actor={report.reportingActor}
             date={report.reportedAt}
           />
           <p className="small-note">
-            Status observado:{" "}
+            {tr("usage.observedStatus")}{" "}
             {report.statusObserved.name || report.statusObserved.id}
           </p>
           {report.reconciledAt && (
             <p className="small-note">
-              Reconciliado em {formatDate(report.reconciledAt)}. Entradas
-              posteriores preservam o registro original.
+              {tr("usage.reconciledAt")} {formatDate(report.reconciledAt)}
+              {tr("usage.laterEntriesPreserveTheOriginalRecord")}
             </p>
           )}
           <ul className="usage-entries">
@@ -212,9 +250,7 @@ export function SummaryUsage({
             ))}
           </ul>
           {!report.entries.length && (
-            <p className="small-note">
-              Nenhuma entrada de métricas disponível.
-            </p>
+            <p className="small-note">{tr("usage.noMetricEntriesAvailable")}</p>
           )}
         </>
       )}

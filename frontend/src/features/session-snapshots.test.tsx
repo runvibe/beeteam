@@ -105,5 +105,5 @@ it("retains explicit zero and legacy missing totals without fabricating a value"
   expect(screen.getByText(/Registro legado/)).toBeVisible();
   r.entries[0].observation.inputTokens = null;
   rerender(<SessionSnapshots report={r} />);
-  expect(screen.getByText(/Não informado tokens/)).toBeVisible();
+  expect(screen.getByText(/Não informado/)).toBeVisible();
 });

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { TaskOverviewData } from "@/api/task-overview";
 import {
   CompactNarrative,
@@ -56,6 +58,7 @@ export function TaskCompactHeader({
   visible: boolean;
   overview?: TaskOverviewData;
 }) {
+  useLocale();
   return (
     <div
       className="task-compact-header"
@@ -67,8 +70,8 @@ export function TaskCompactHeader({
         <div className="task-compact-body">
           <p className="task-compact-title">{task.title}</p>
           <CompactNarrative
-            label="Descrição"
-            text={task.description || "Nenhuma descrição registrada"}
+            label={tr("common.description")}
+            text={task.description || tr("tasks.noDescriptionRecorded")}
           >
             <TaskDescription task={task} />
           </CompactNarrative>
@@ -79,7 +82,7 @@ export function TaskCompactHeader({
             <div className="task-compact-blocked">
               <Ban aria-hidden="true" />
               <div>
-                <strong>Task bloqueada</strong>
+                <strong>{tr("tasks.taskBlocked")}</strong>
                 <div className="task-compact-reason" inert>
                   <Markdown headingOffset={2}>{task.block.reason}</Markdown>
                 </div>
@@ -87,8 +90,8 @@ export function TaskCompactHeader({
             </div>
           )}
           <CompactNarrative
-            label="Resumo atual do trabalho"
-            text={task.currentSummary || "Sem atualização registrada"}
+            label={tr("tasks.currentWorkSummary")}
+            text={task.currentSummary || tr("boards.noUpdateRecorded")}
           >
             <TaskCurrentSummary task={task} overview={overview} />
           </CompactNarrative>

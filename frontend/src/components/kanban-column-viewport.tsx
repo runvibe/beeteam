@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useInfiniteScroll } from "./use-infinite-scroll";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { LoadingIndicator } from "./loading-indicator";
@@ -26,6 +28,7 @@ export function KanbanColumnViewport({
   label: string;
   storageKey?: string;
 }) {
+  useLocale();
   const root = useRef<HTMLDivElement>(null);
   const position = useRef<Position>(
     storageKey
@@ -61,7 +64,7 @@ export function KanbanColumnViewport({
       ref={root}
       className="kanban-column-scroll"
       role="region"
-      aria-label={`Tarefas: ${label}`}
+      aria-label={tr("boards.columnTasks", { label: label })}
       tabIndex={0}
       onScroll={() => {
         const node = root.current;
@@ -85,13 +88,16 @@ export function KanbanColumnViewport({
       {children}
       <div ref={sentinel} className="kanban-column-end">
         {state.fetching && (
-          <LoadingIndicator label={`Carregando tarefas: ${label}`} compact />
+          <LoadingIndicator
+            label={tr("boards.loadingColumn", { label: label })}
+            compact
+          />
         )}
         {!!state.error && (
           <div role="alert">
-            Não foi possível carregar as tarefas.{" "}
+            {tr("common.couldNotLoadTasks")}{" "}
             <Button variant="ghost" onClick={() => void state.retry()}>
-              Tentar novamente
+              {tr("common.tryAgain")}
             </Button>
           </div>
         )}

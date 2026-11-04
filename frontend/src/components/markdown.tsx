@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { createElement, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -20,7 +22,7 @@ const baseComponents: Components = {
     <div
       className="markdown-table"
       role="region"
-      aria-label="Tabela"
+      aria-label={tr("common.table")}
       tabIndex={0}
     >
       <table>{children}</table>
@@ -55,6 +57,7 @@ export function Markdown({
   headingOffset?: 0 | 2;
   sectionDividers?: boolean;
 }) {
+  useLocale();
   return (
     <div className="markdown-content">
       <ReactMarkdown

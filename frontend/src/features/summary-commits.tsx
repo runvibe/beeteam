@@ -1,13 +1,19 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { CommitReport } from "@/api/generated/kanban/CommitReport";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { formatDate } from "@/components/shared";
 import { safeCommitUrl } from "./repository-links";
 export function SummaryCommits({ report }: { report?: CommitReport }) {
+  useLocale();
   if (!report?.hasCommits || !report.commits.length) return null;
   return (
-    <section className="task-reading-block" aria-label="Commits registrados">
-      <h4>Commits registrados</h4>
+    <section
+      className="task-reading-block"
+      aria-label={tr("tasks.recordedCommits")}
+    >
+      <h4>{tr("tasks.recordedCommits")}</h4>
       <ul className="flex flex-col gap-4">
         {report.commits.map((commit) => {
           const href = safeCommitUrl(commit);
@@ -15,8 +21,8 @@ export function SummaryCommits({ report }: { report?: CommitReport }) {
             commit.branch.state === "named"
               ? commit.branch.name
               : commit.branch.state === "detached"
-                ? "Detached HEAD"
-                : "Branch não identificada";
+                ? tr("tasks.detachedHead")
+                : tr("tasks.unidentifiedBranch");
           return (
             <li
               key={`${commit.repositoryKey}:${commit.hash}`}
@@ -40,15 +46,17 @@ export function SummaryCommits({ report }: { report?: CommitReport }) {
                 )}
                 <Badge variant="secondary">
                   {commit.availability === "local"
-                    ? "Somente local"
+                    ? tr("tasks.localOnly")
                     : commit.availability === "published"
-                      ? "Publicação declarada"
-                      : "Publicação não informada"}
+                      ? tr("tasks.publicationDeclared")
+                      : tr("tasks.publicationNotProvided")}
                 </Badge>
               </div>
               <Input
                 readOnly
-                aria-label={`Hash completo de ${commit.repository.name}`}
+                aria-label={tr("tasks.fullCommitHash", {
+                  name: commit.repository.name,
+                })}
                 value={commit.hash}
                 onFocus={(event) => event.currentTarget.select()}
               />
@@ -56,7 +64,7 @@ export function SummaryCommits({ report }: { report?: CommitReport }) {
                 commit.remoteVerifiedAt &&
                 Number.isFinite(Date.parse(commit.remoteVerifiedAt)) && (
                   <p className="small-note">
-                    Confirmação remota declarada em{" "}
+                    {tr("tasks.remoteConfirmationDeclaredAt")}{" "}
                     {formatDate(commit.remoteVerifiedAt)}.
                   </p>
                 )}

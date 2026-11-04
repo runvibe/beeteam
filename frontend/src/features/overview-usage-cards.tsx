@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { useQuery } from "@tanstack/react-query";
 import { Tooltip } from "radix-ui";
 import { Terminal } from "lucide-react";
@@ -15,6 +17,7 @@ export function OverviewUsageCards({
   taskId: string;
   version: number;
 }) {
+  useLocale();
   const api = useApi();
   const q = useQuery({
     queryKey: ["usage-presence", taskId, version],
@@ -25,9 +28,9 @@ export function OverviewUsageCards({
     <div className="overview-usage-cards" aria-busy={q.isPending}>
       <section
         className="usage-presence-card"
-        aria-label="Harnesses utilizados"
+        aria-label={tr("usage.harnessesUsed")}
       >
-        <h2>Harnesses utilizados</h2>
+        <h2>{tr("usage.harnessesUsed")}</h2>
         <Tooltip.Provider delayDuration={150}>
           <div className="harness-presence-list">
             {data?.harnesses.map((name) => (
@@ -58,37 +61,46 @@ export function OverviewUsageCards({
             {!data?.harnesses.length && (
               <p className="small-note">
                 {q.isPending
-                  ? "Carregando registros…"
+                  ? tr("usage.loadingRecords")
                   : q.error
-                    ? "Leitura indisponível"
-                    : "Nenhum harness registrado"}
+                    ? tr("usage.readingUnavailable")
+                    : tr("usage.noHarnessRecorded")}
               </p>
             )}
           </div>
         </Tooltip.Provider>
       </section>
-      <section className="usage-presence-card" aria-label="Modelos utilizados">
-        <h2>Modelos utilizados</h2>
+      <section
+        className="usage-presence-card"
+        aria-label={tr("usage.modelsUsed")}
+      >
+        <h2>{tr("usage.modelsUsed")}</h2>
         <ul className="model-presence-list">
           {data?.models.map((model) => (
             <li key={model.name}>
               <div>
                 <span>{model.name}</span>
                 <span
-                  aria-label={`${model.count} de ${data.summaries} resumos`}
+                  aria-label={tr("usage.summaryPresence", {
+                    shown: model.count,
+                    count: data.summaries,
+                  })}
                 >
-                  {model.count}
-                  <small> / {data.summaries}</small>
+                  {formatNumber(model.count)}
+                  <small> / {formatNumber(data.summaries)}</small>
                 </span>
               </div>
               <div
                 className="model-presence-track"
                 role="meter"
-                aria-label={`Presença de ${model.name}`}
+                aria-label={tr("usage.modelPresence", { name: model.name })}
                 aria-valuenow={model.count}
                 aria-valuemin={0}
                 aria-valuemax={data.summaries}
-                aria-valuetext={`${model.count} de ${data.summaries} resumos`}
+                aria-valuetext={tr("usage.summaryPresence", {
+                  shown: model.count,
+                  count: data.summaries,
+                })}
               >
                 <span
                   style={{ width: `${(100 * model.count) / data.summaries}%` }}
@@ -100,10 +112,10 @@ export function OverviewUsageCards({
         {!data?.models.length && (
           <p className="small-note">
             {q.isPending
-              ? "Carregando registros…"
+              ? tr("usage.loadingRecords")
               : q.error
-                ? "Leitura indisponível"
-                : "Nenhum modelo registrado"}
+                ? tr("usage.readingUnavailable")
+                : tr("usage.noModelRecorded")}
           </p>
         )}
       </section>

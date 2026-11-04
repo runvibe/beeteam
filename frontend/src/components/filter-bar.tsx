@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useCallback, useId, useState, type ReactNode } from "react";
 import { Tooltip } from "radix-ui";
 import {
@@ -30,6 +32,7 @@ export function FilterBar({
   trailingAction?: ReactNode;
   inHeader?: boolean;
 }) {
+  useLocale();
   const groupId = useId();
   const reduced = !!useReducedMotion();
   const [summaries, setSummaries] = useState<Record<string, ActiveFilter>>({});
@@ -43,7 +46,7 @@ export function FilterBar({
       )
         return current;
       const next = { ...current };
-      if (filter) next[id] = filter;
+      if (filter) next[id] = { ...filter, id };
       else delete next[id];
       return next;
     });
@@ -56,7 +59,7 @@ export function FilterBar({
             <div
               className="compact-filter-bar"
               role="group"
-              aria-label="Filtros"
+              aria-label={tr("common.filters")}
             >
               <LayoutGroup id={groupId}>
                 <motion.div className="filter-controls-row" layoutScroll>

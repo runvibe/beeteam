@@ -1,3 +1,5 @@
+import { LocalizedError, message, useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useMemo, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Failure } from "@/components/shared";
@@ -13,8 +15,10 @@ export function inspectPointPages(pages: PointPage[]) {
     total,
     complete: false,
     nextOffset: undefined,
-    error: new Error(
-      "Não foi possível completar os pontos: paginação inconsistente ou histórico alterado. Tente novamente.",
+    error: new LocalizedError(
+      message(
+        "execution.couldNotCompleteThePointsInconsistentPaginationOrChangedHistory",
+      ),
     ),
   });
   for (let index = 0; index < pages.length; index++) {
@@ -82,6 +86,7 @@ export function TimelinePointPages({
     failed: boolean,
   ) => ReactNode;
 }) {
+  useLocale();
   const q = useInfiniteQuery({
     queryKey: ["timeline-points", taskId, version],
     initialPageParam: 0,
@@ -97,16 +102,18 @@ export function TimelinePointPages({
     <section className="timeline-point-pages">
       {!state.complete && !error && (
         <p role="status">
-          Carregando todos os pontos…
+          {tr("execution.loadingAllPoints")}
           {state.total !== undefined
-            ? ` ${state.rows.length} de ${state.total}`
+            ? tr("execution.loadedPoints", {
+                shown: state.rows.length,
+                total: state.total,
+              })
             : ""}
         </p>
       )}
       {state.rows.length > 0 && (!state.complete || error) && (
         <p className="small-note">
-          Histórico parcial: {state.rows.length} pontos disponíveis nesta
-          leitura. A carga completa ainda não foi confirmada.
+          {tr("execution.partialPointCount", { count: state.rows.length })}
         </p>
       )}
       {error && <Failure error={error} retry={() => void q.refetch()} />}

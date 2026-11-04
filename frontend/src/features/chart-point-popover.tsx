@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { Hexagon } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Popover } from "radix-ui";
@@ -30,6 +32,7 @@ export function ChartPointPopover({
   children: ReactNode;
   showClose?: boolean;
 }) {
+  useLocale();
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const anchor = useRef<HTMLButtonElement>(null);
@@ -108,12 +111,14 @@ export function ChartPointPopover({
           }}
         >
           {children}
-          {showClose && <Popover.Close
-            className="usage-point-close"
-            aria-label="Fechar detalhes do ponto"
-          >
-            Fechar
-          </Popover.Close>}
+          {showClose && (
+            <Popover.Close
+              className="usage-point-close"
+              aria-label={tr("common.closePointDetails")}
+            >
+              {tr("common.close")}
+            </Popover.Close>
+          )}
           <Popover.Arrow className="usage-point-arrow" />
         </Popover.Content>
       </Popover.Portal>

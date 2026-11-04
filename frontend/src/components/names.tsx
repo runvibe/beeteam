@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEntity } from "@/api/context";
 import { useUi } from "@/state/ui";
 import { AgentAvatar } from "./agent-avatar";
@@ -9,6 +11,7 @@ export function AgentName({
   id: string | null;
   avatar?: boolean;
 }) {
+  useLocale();
   const q = useEntity("agents", id ?? "");
   const open = useUi((s) => s.openAgent);
   return id ? (
@@ -20,14 +23,16 @@ export function AgentName({
     >
       {avatar && q.data && <AgentAvatar agent={q.data} />}
       <span className="agent-name-label">
-        {q.data?.name ?? (q.error ? "Agente indisponível" : "Carregando…")}
+        {q.data?.name ??
+          (q.error ? tr("common.agentUnavailable") : tr("common.loading"))}
       </span>
     </Button>
   ) : (
-    <span>Usuário local</span>
+    <span>{tr("common.localUser")}</span>
   );
 }
 export function BoardName({ id }: { id: string }) {
+  useLocale();
   const q = useEntity("boards", id);
-  return <span>{q.data?.name ?? "Board"}</span>;
+  return <span>{q.data?.name ?? tr("common.board")}</span>;
 }

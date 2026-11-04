@@ -1,14 +1,19 @@
+import { t as tr } from "@/i18n";
 import type { Agent, Resources } from "@/api/types";
 export function conversationAuthor(
   comment: Resources["comments"],
   agent?: Agent,
 ) {
   if (comment.actorKind === "human")
-    return { name: "Pessoa", role: "Identidade não informada", leader: false };
+    return {
+      name: tr("tasks.person"),
+      role: tr("tasks.identityNotProvided"),
+      leader: false,
+    };
   if (!agent || agent.deletedAt)
     return {
-      name: "Agente indisponível",
-      role: "Papel não identificado",
+      name: tr("common.agentUnavailable"),
+      role: tr("tasks.unidentifiedRole"),
       leader: false,
     };
   const leader = !!agent.bindings.leaderTeamId;
@@ -16,9 +21,9 @@ export function conversationAuthor(
     name: agent.name,
     leader,
     role: leader
-      ? "Leader · papel atual"
+      ? tr("tasks.leaderCurrentRole")
       : agent.bindings.collaboratorTeamId
-        ? "Collaborator · papel atual"
-        : "Papel não identificado",
+        ? tr("tasks.collaboratorCurrentRole")
+        : tr("tasks.unidentifiedRole"),
   };
 }

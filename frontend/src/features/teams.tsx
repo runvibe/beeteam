@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { CardKindMark } from "@/components/card-kind-mark";
 import { TeamCardLinks } from "@/components/team-card-links";
 import { CardExcerpt } from "@/components/card-excerpt";
@@ -46,6 +48,7 @@ import {
   AutosaveFeedback,
 } from "@/components/settings-autosave";
 export function Teams() {
+  useLocale();
   const [name, setName] = useUrlState<string>("teams.name", ""),
     [offset, setOffset] = useUrlState<number>("teams.offset", 0),
     [archived, setArchived] = useUrlState<string>("teams.archived", "false", {
@@ -63,15 +66,15 @@ export function Teams() {
     <>
       <header className="page-heading listing-heading">
         <div className="sr-only">
-          <h1>Times</h1>
-          <p>Um líder por time. Uma identidade por agente.</p>
+          <h1>{tr("common.teams")}</h1>
+          <p>{tr("teams.oneLeaderPerTeamOneIdentityPerAgent")}</p>
         </div>
         <FilterBar
           inHeader
           search={
             <>
               <Search
-                label="Buscar times"
+                label={tr("teams.searchTeams")}
                 value={name}
                 onChange={(v) => {
                   setName(v);
@@ -88,20 +91,20 @@ export function Teams() {
           }}
         >
           <Choice
-            label="Cadastro"
+            label={tr("agents.registry")}
             value={archived}
             onChange={(v) => {
               setArchived(v);
               setOffset(0);
             }}
             options={[
-              { value: "false", label: "Ativos" },
-              { value: "true", label: "Arquivados" },
+              { value: "false", label: tr("agents.active") },
+              { value: "true", label: tr("agents.archived") },
             ]}
           />
         </FilterBar>
       </header>
-      <CardListViewport key={q.identity} state={q} label="Lista de times">
+      <CardListViewport key={q.identity} state={q} label={tr("teams.teamList")}>
         {q.items && (
           <>
             {q.items.length ? (
@@ -142,10 +145,10 @@ export function Teams() {
               <NoData
                 title={
                   name
-                    ? "Nenhum time corresponde aos filtros"
-                    : "Nenhum time neste cadastro"
+                    ? tr("teams.noTeamsMatchTheFilters")
+                    : tr("teams.noTeamsInThisRegistry")
                 }
-                description="Ajuste os filtros para consultar outros times."
+                description={tr("teams.adjustFiltersToBrowseOtherTeams")}
               />
             )}
           </>
@@ -155,10 +158,12 @@ export function Teams() {
   );
 }
 export function TeamPage() {
+  useLocale();
   const id = useUi((s) => s.teamId);
   return id ? <TeamDetail key={id} id={id} /> : null;
 }
 function TeamDetail({ id }: { id: string }) {
+  useLocale();
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   const q = useEntity("teams", id),
     [offset, setOffset] = useUrlState<number>("members.offset", 0),
@@ -181,9 +186,11 @@ function TeamDetail({ id }: { id: string }) {
   const openBoard = useUi((s) => s.openBoard);
   return (
     <DetailPage
-      label="Time"
-      title={q.data?.name ?? "Time"}
-      description="Composição e boards geridos. Tasks mantêm autor e executor independentemente do time."
+      label={tr("agents.team")}
+      title={q.data?.name ?? tr("agents.team")}
+      description={tr(
+        "teams.compositionAndManagedBoardsTasksRetainTheirAuthorAndExecutor",
+      )}
       fallback="/teams"
     >
       <QueryState query={q}>
@@ -193,7 +200,7 @@ function TeamDetail({ id }: { id: string }) {
               <TextBlock>{q.data.purpose}</TextBlock>
               <TextBlock>{q.data.context}</TextBlock>
             </div>
-            <h3>Agentes</h3>
+            <h3>{tr("common.agents")}</h3>
             <QueryState query={members}>
               {members.data && (
                 <>
@@ -201,7 +208,9 @@ function TeamDetail({ id }: { id: string }) {
                     <div key={m.agentId} className="record-row">
                       <AgentName id={m.agentId} />
                       <Badge variant="outline">
-                        {m.role === "leader" ? "Líder" : "Colaborador"}
+                        {m.role === "leader"
+                          ? tr("common.leader")
+                          : tr("common.collaborator")}
                       </Badge>
                     </div>
                   ))}
@@ -209,7 +218,7 @@ function TeamDetail({ id }: { id: string }) {
                 </>
               )}
             </QueryState>
-            <h3>Boards geridos</h3>
+            <h3>{tr("teams.managedBoards")}</h3>
             <QueryState query={boards}>
               {boards.data && (
                 <>
@@ -226,7 +235,7 @@ function TeamDetail({ id }: { id: string }) {
                     </Button>
                   ))}
                   {!boards.data.items.length && (
-                    <NoData title="Nenhum board vinculado" />
+                    <NoData title={tr("teams.noLinkedBoards")} />
                   )}
                   <Pager page={boards.data} onOffset={setBoardOffset} />
                 </>
@@ -238,7 +247,7 @@ function TeamDetail({ id }: { id: string }) {
                 navigate(`/teams/${q.data.slug}/settings${location.search}`)
               }
             >
-              Editar metadados do time
+              {tr("teams.editTeamMetadata")}
             </Button>
             <Dialog
               open={configuring}
@@ -248,9 +257,11 @@ function TeamDetail({ id }: { id: string }) {
             >
               <DialogContent className="detail-dialog">
                 <DialogHeader>
-                  <DialogTitle>Configurar {q.data.name}</DialogTitle>
+                  <DialogTitle>
+                    {tr("agents.configure")} {q.data.name}
+                  </DialogTitle>
                   <DialogDescription>
-                    Editar metadados do time.
+                    {tr("teams.editTeamMetadata2")}
                   </DialogDescription>
                 </DialogHeader>
                 <TeamForm key={q.data.id} team={q.data} />
@@ -263,6 +274,7 @@ function TeamDetail({ id }: { id: string }) {
   );
 }
 function TeamForm({ team: latest }: { team: Team }) {
+  useLocale();
   const api = useApi();
   const autosave = useSettingsAutosave({
     resource: "teams",
@@ -280,7 +292,7 @@ function TeamForm({ team: latest }: { team: Team }) {
     <form {...autosave.formProps} className="detail-section">
       <FieldGroup>
         <Field>
-          <FieldLabel htmlFor="team-name">Nome</FieldLabel>
+          <FieldLabel htmlFor="team-name">{tr("agents.name")}</FieldLabel>
           <Input
             id="team-name"
             required
@@ -290,7 +302,7 @@ function TeamForm({ team: latest }: { team: Team }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="team-purpose">Propósito</FieldLabel>
+          <FieldLabel htmlFor="team-purpose">{tr("teams.purpose")}</FieldLabel>
           <Textarea
             id="team-purpose"
             value={purpose}
@@ -298,7 +310,7 @@ function TeamForm({ team: latest }: { team: Team }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="team-context">Contexto</FieldLabel>
+          <FieldLabel htmlFor="team-context">{tr("teams.context")}</FieldLabel>
           <Textarea
             id="team-context"
             value={context}
@@ -308,9 +320,7 @@ function TeamForm({ team: latest }: { team: Team }) {
       </FieldGroup>
       {latest.version > autosave.version && (
         <p role="status" className="small-note">
-          Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado. Use Recarregar formulário após o conflito para descartar o
-          rascunho e carregar a versão atual.
+          {tr("agents.thisRecordWasUpdatedInAnotherSessionYourDraftWas")}
         </p>
       )}
       <AutosaveFeedback state={autosave} />

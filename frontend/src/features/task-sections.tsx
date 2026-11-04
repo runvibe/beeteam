@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,16 +7,17 @@ import { Button } from "@/components/ui/button";
 import "./task-sections.css";
 import { TaskFilterSlot } from "./task-filter-layout";
 
-const sections = [
-  ["overview", "Visão geral"],
-  ["specification", "Especificação"],
-  ["plans", "Planos"],
-  ["children", "Subtasks"],
-  ["comments", "Conversa"],
-  ["summaries", "Resumos"],
-  ["attachments", "Arquivos"],
-  ["timeline", "Timeline"],
-] as const;
+const sections = () =>
+  [
+    ["overview", tr("tasks.overview")],
+    ["specification", tr("tasks.specification")],
+    ["plans", tr("tasks.plans")],
+    ["children", tr("tasks.subtasksTab")],
+    ["comments", tr("tasks.conversation")],
+    ["summaries", tr("tasks.summariesTitle")],
+    ["attachments", tr("tasks.files")],
+    ["timeline", tr("tasks.timeline")],
+  ] as const;
 
 /** Reveal within this strip only: scrollIntoView would also move the task/document. */
 function reveal(viewport: HTMLElement, target: HTMLElement) {
@@ -26,6 +29,7 @@ function reveal(viewport: HTMLElement, target: HTMLElement) {
 }
 
 export function TaskSections({ value }: { value: string }) {
+  useLocale();
   const navigation = useRef<HTMLDivElement>(null);
   const viewport = useRef<HTMLDivElement>(null);
   const [edges, setEdges] = useState({
@@ -115,8 +119,11 @@ export function TaskSections({ value }: { value: string }) {
               reveal(viewport.current, event.target);
           }}
         >
-          <TabsList className="task-section-list" aria-label="Seção da tarefa">
-            {sections.map(([key, label]) => (
+          <TabsList
+            className="task-section-list"
+            aria-label={tr("tasks.taskSection")}
+          >
+            {sections().map(([key, label]) => (
               <TabsTrigger key={key} value={key}>
                 {label}
               </TabsTrigger>
@@ -126,7 +133,7 @@ export function TaskSections({ value }: { value: string }) {
         <Button
           className="task-section-arrow"
           variant="ghost"
-          aria-label="Mostrar abas anteriores"
+          aria-label={tr("tasks.showPreviousTabs")}
           aria-disabled={edges.start}
           onClick={() => move(-1)}
         >
@@ -135,7 +142,7 @@ export function TaskSections({ value }: { value: string }) {
         <Button
           className="task-section-arrow"
           variant="ghost"
-          aria-label="Mostrar próximas abas"
+          aria-label={tr("tasks.showNextTabs")}
           aria-disabled={edges.end}
           onClick={() => move(1)}
         >

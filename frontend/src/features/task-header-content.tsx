@@ -1,13 +1,19 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import type { Task } from "@/api/types";
 import type { TaskOverviewData } from "@/api/task-overview";
 import { Markdown } from "@/components/markdown";
 import { OverviewAttribution } from "./overview-artifacts";
 
 export function TaskDescription({ task }: { task: Task }) {
+  useLocale();
   return (
-    <section className="task-header-description" aria-label="Descrição">
+    <section
+      className="task-header-description"
+      aria-label={tr("common.description")}
+    >
       <Markdown headingOffset={2} sectionDividers>
-        {task.description || "Nenhuma descrição registrada"}
+        {task.description || tr("tasks.noDescriptionRecorded")}
       </Markdown>
     </section>
   );
@@ -21,12 +27,13 @@ export function TaskCurrentSummary({
   overview?: TaskOverviewData;
   relativeDate?: boolean;
 }) {
+  useLocale();
   return (
     <section
       className="task-summary-section"
-      aria-label="Resumo atual do trabalho"
+      aria-label={tr("tasks.currentWorkSummary")}
     >
-      <h2>Resumo atual do trabalho</h2>
+      <h2>{tr("tasks.currentWorkSummary")}</h2>
       {task.currentSummary &&
         overview &&
         overview.task.currentSummary === task.currentSummary &&
@@ -39,11 +46,11 @@ export function TaskCurrentSummary({
           />
         ) : (
           <p className="small-note">
-            Autoria e data desta síntese não disponíveis nos registros.
+            {tr("tasks.authorshipAndDateOfThisSynthesisAreNotAvailableIn")}
           </p>
         ))}
       <Markdown headingOffset={2} sectionDividers>
-        {task.currentSummary || "Sem atualização registrada"}
+        {task.currentSummary || tr("boards.noUpdateRecorded")}
       </Markdown>
     </section>
   );
@@ -57,6 +64,7 @@ export function CompactNarrative({
   children: React.ReactNode;
   text: string;
 }) {
+  useLocale();
   return (
     <div className="task-compact-narrative">
       <details>

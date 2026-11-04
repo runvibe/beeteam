@@ -1,3 +1,14 @@
+import { readTransferJob, persistTransferJob } from "./transfer-job-storage";
+import {
+  formatNumber,
+  formatPercent,
+  useLocale,
+  t as tr,
+  LocalizedError,
+  message,
+} from "@/i18n";
+import { LanguageControl } from "@/components/language-control";
+
 import { useEffect, useRef, useState } from "react";
 import { SlidersHorizontal } from "lucide-react";
 import { Tooltip } from "radix-ui";
@@ -19,10 +30,17 @@ import {
   type TransferJob,
 } from "@/api/transfers";
 import { hashFile } from "@/api/file-hash";
-const storageKey = "bee-transfer-job";
+
+import {
+  transferBusy,
+  transferState,
+  transferStage,
+  transferErrorText,
+} from "./transfer-labels";
 const ongoing = (state: string) =>
   ["running", "restoring", "queued"].includes(state);
 export function DataTransferSettings() {
+  useLocale();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -33,15 +51,15 @@ export function DataTransferSettings() {
               variant="ghost"
               size="icon"
               className="filter-icon"
-              aria-label="Configurações globais"
+              aria-label={tr("transfer.globalSettings")}
               onClick={() => setOpen(true)}
             >
-                <SlidersHorizontal aria-hidden="true" />
+              <SlidersHorizontal aria-hidden="true" />
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Portal>
             <Tooltip.Content className="navigation-tooltip" sideOffset={6}>
-              Configurações globais
+              {tr("transfer.globalSettings")}
             </Tooltip.Content>
           </Tooltip.Portal>
         </Tooltip.Root>
@@ -49,12 +67,14 @@ export function DataTransferSettings() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="detail-dialog">
           <DialogHeader>
-            <DialogTitle>Exportar e importar dados</DialogTitle>
+            <DialogTitle>{tr("transfer.exportAndImportData")}</DialogTitle>
             <DialogDescription>
-              Arquivo portátil da instalação Bee Team. A importação exige um
-              destino vazio.
+              {tr(
+                "transfer.portableArchiveOfThisBeeTeamInstallationImportRequiresAn",
+              )}
             </DialogDescription>
           </DialogHeader>
+          <LanguageControl />
           <DataTransferPanel />
         </DialogContent>
       </Dialog>
@@ -62,9 +82,10 @@ export function DataTransferSettings() {
   );
 }
 export function DataTransferPanel() {
+  useLocale();
   const client = useQueryClient();
-  const [jobId, setJobId] = useState(() => localStorage.getItem(storageKey));
-  const [error, setError] = useState("");
+  const [jobId, setJobId] = useState(readTransferJob);
+  const [error, setError] = useState<Error | null>(null);
   const [busy, setBusy] = useState("");
   const [percent, setPercent] = useState(0);
   const [confirmed, setConfirmed] = useState(false),
@@ -91,7 +112,7 @@ export function DataTransferPanel() {
   });
   const remember = (value: TransferJob) => {
     setJobId(value.id);
-    localStorage.setItem(storageKey, value.id);
+    persistTransferJob(value.id);
     client.setQueryData(["transfer-job", value.id], value);
     setConfirmed(false);
     setTruncate(false);
@@ -111,26 +132,30 @@ export function DataTransferPanel() {
   }, [job.data?.state, client]);
   const run = async (label: string, action: () => Promise<void>) => {
     setBusy(label);
-    setError("");
+    setError(null);
     try {
       await action();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Falha na transferência");
+      setError(
+        e instanceof Error
+          ? e
+          : new LocalizedError(message("transfer.transferFailed")),
+      );
       if (e instanceof TransferError && e.activeJobId) {
         setJobId(e.activeJobId);
-        localStorage.setItem(storageKey, e.activeJobId);
+        persistTransferJob(e.activeJobId);
       }
     } finally {
       setBusy("");
     }
   };
   const importFile = (file: File) =>
-    void run("Preparando arquivo", async () => {
+    void run("preparing", async () => {
       if (file.size > (info.data?.limits?.compressed ?? 0))
-        throw new Error("Arquivo excede o limite de upload.");
+        throw new LocalizedError(message("transfer.fileExceedsTheUploadLimit"));
       setPercent(0);
       const hash = await hashFile(file, setPercent);
-      setBusy("Enviando arquivo");
+      setBusy("uploading");
       setPercent(0);
       abort.current = new AbortController();
       remember(
@@ -146,39 +171,52 @@ export function DataTransferPanel() {
     });
   const active = !!busy || ongoing(job.data?.state ?? "");
   const preview = job.data?.preview;
-  if (info.isPending) return <p role="status">Consultando configuração…</p>;
+  if (info.isPending)
+    return <p role="status">{tr("transfer.checkingSettings")}</p>;
   if (info.error)
     return (
       <p role="alert">
-        Não foi possível consultar a API.{" "}
-        <Button onClick={() => void info.refetch()}>Tentar novamente</Button>
+        {tr("transfer.couldNotReachTheApi")}{" "}
+        <Button onClick={() => void info.refetch()}>
+          {tr("common.tryAgain")}
+        </Button>
       </p>
     );
   if (!info.data?.enabled)
     return (
       <p>
-        Transferência desativada nesta instalação. O administrador pode
-        habilitá-la no servidor.
+        {tr(
+          "transfer.transferIsDisabledOnThisInstallationAnAdministratorCanEnable",
+        )}
       </p>
     );
   return (
     <div className="transfer-settings">
       <p>
-        O arquivo inclui anexos, histórico, registros excluídos logicamente e
-        respostas de idempotência. Guarde-o em local apropriado.
+        {tr(
+          "transfer.theArchiveIncludesAttachmentsHistorySoftDeletedRecordsAndIdempotency",
+        )}
       </p>
       <p>
-        Limites: {Math.round(info.data.limits!.compressed / 1024 / 1024)} MiB
-        por upload; {Math.round(info.data.limits!.expanded / 1024 / 1024)} MiB
-        expandidos; {info.data.limits!.entries} entradas;{" "}
-        {info.data.limits!.seconds / 60} minutos. Arquivos disponíveis por{" "}
-        {info.data.retentionSeconds! / 3600} horas.
+        {tr("transfer.limitsDescription", {
+          upload: Math.round(info.data.limits!.compressed / 1024 / 1024),
+          expanded: Math.round(info.data.limits!.expanded / 1024 / 1024),
+          entries: tr("transfer.entryCount", {
+            count: info.data.limits!.entries,
+          }),
+          duration: tr("transfer.minuteCount", {
+            count: info.data.limits!.seconds / 60,
+          }),
+          retention: tr("transfer.hourCount", {
+            count: info.data.retentionSeconds! / 3600,
+          }),
+        })}
       </p>
       <div className="form-actions">
         <Button
           disabled={active}
           onClick={() =>
-            void run("Iniciando exportação", async () =>
+            void run("exporting", async () =>
               remember(
                 await transferRequest<TransferJob>(
                   "/exports",
@@ -189,12 +227,12 @@ export function DataTransferPanel() {
             )
           }
         >
-          Exportar dados
+          {tr("transfer.exportData")}
         </Button>
         <label>
-          Importar arquivo .beeteam.zip{" "}
+          {tr("transfer.importBeeteamZipArchive")}{" "}
           <input
-            aria-label="Arquivo de importação"
+            aria-label={tr("transfer.importArchive")}
             type="file"
             accept=".zip,.beeteam.zip"
             disabled={active}
@@ -208,39 +246,44 @@ export function DataTransferPanel() {
       </div>
       {busy && (
         <div role="status">
-          {busy} {percent > 0 ? `${percent}%` : ""}
-          {busy === "Enviando arquivo" && (
+          {transferBusy(busy)} {percent > 0 ? formatPercent(percent) : ""}
+          {busy === "uploading" && (
             <Button onClick={() => abort.current?.abort()}>
-              Cancelar upload
+              {tr("transfer.cancelUpload")}
             </Button>
           )}
         </div>
       )}
       {(error || job.error) && (
         <p role="alert">
-          {error || job.error?.message}
+          {error?.message || job.error?.message}
           <Button onClick={() => void job.refetch()}>
-            Consultar novamente
+            {tr("transfer.checkAgain")}
           </Button>
         </p>
       )}
       {job.data && (
-        <section aria-label="Transferência atual">
+        <section aria-label={tr("transfer.currentTransfer")}>
           <p role="status">
-            {job.data.state} · {job.data.stage} · {job.data.records} registros
+            {transferState(job.data.state)} · {transferStage(job.data.stage)} ·{" "}
+            {tr("transfer.recordCount", { count: job.data.records })}
           </p>
-          <small>Job: {job.data.id}</small>
-          {job.data.error && <p role="alert">{job.data.error}</p>}
+          <small>
+            {tr("transfer.job")} {job.data.id}
+          </small>
+          {job.data.error && (
+            <p role="alert">{transferErrorText(job.data.error)}</p>
+          )}
           {job.data.kind === "export" && job.data.state === "ready" && (
             <a href={`${transferBase()}/exports/${job.data.id}/file`} download>
-              Baixar .beeteam.zip
+              {tr("transfer.downloadBeeteamZip")}
             </a>
           )}
           {ongoing(job.data.state) && (
             <Button
               disabled={!!busy}
               onClick={() =>
-                void run("Cancelando", async () =>
+                void run("cancelling", async () =>
                   remember(
                     await transferRequest<TransferJob>(
                       `/jobs/${jobId}/cancel`,
@@ -251,21 +294,21 @@ export function DataTransferPanel() {
                 )
               }
             >
-              Cancelar transferência
+              {tr("transfer.cancelTransfer")}
             </Button>
           )}
           {preview && job.data.state === "ready" && (
             <div>
-              <h3>Prévia da importação</h3>
+              <h3>{tr("transfer.importPreview")}</h3>
               <p>
-                Origem: {preview.manifest.sourceDriver} · Snapshot:{" "}
-                {preview.manifest.snapshotAt}
+                {tr("transfer.source")} {preview.manifest.sourceDriver}{" "}
+                {tr("transfer.snapshot")} {preview.manifest.snapshotAt}
               </p>
               <p>
-                Destino: {preview.destinationDriver} ·{" "}
+                {tr("transfer.destination")} {preview.destinationDriver} ·{" "}
                 {preview.destinationEmpty
-                  ? "vazio"
-                  : "contém dados — importação bloqueada"}
+                  ? tr("transfer.empty")
+                  : tr("transfer.containsDataImportBlocked")}
               </p>
               <ul>
                 {Object.entries(preview.manifest.entries)
@@ -273,7 +316,7 @@ export function DataTransferPanel() {
                   .map(([name, entry]) => (
                     <li key={name}>
                       {name.replace("records/", "").replace(".jsonl", "")}:{" "}
-                      {entry.rows}
+                      {formatNumber(entry.rows)}
                     </li>
                   ))}
               </ul>
@@ -284,8 +327,9 @@ export function DataTransferPanel() {
                     checked={truncate}
                     onChange={(e) => setTruncate(e.target.checked)}
                   />{" "}
-                  Aceito truncar {preview.precisionChanges} timestamps para
-                  microssegundos. O conteúdo JSON e Markdown será preservado.
+                  {tr("transfer.truncateApproval", {
+                    count: preview.precisionChanges,
+                  })}
                 </label>
               )}
               <label>
@@ -294,8 +338,9 @@ export function DataTransferPanel() {
                   checked={confirmed}
                   onChange={(e) => setConfirmed(e.target.checked)}
                 />{" "}
-                Confirmo a restauração completa neste destino vazio, incluindo
-                dados excluídos e histórico.
+                {tr(
+                  "transfer.iConfirmACompleteRestoreToThisEmptyDestinationIncluding",
+                )}
               </label>
               <Button
                 disabled={
@@ -305,7 +350,7 @@ export function DataTransferPanel() {
                   (preview.precisionChanges > 0 && !truncate)
                 }
                 onClick={() =>
-                  void run("Restaurando", async () =>
+                  void run("restoring", async () =>
                     remember(
                       await transferRequest<TransferJob>(
                         `/imports/${jobId}/restore`,
@@ -323,7 +368,7 @@ export function DataTransferPanel() {
                   )
                 }
               >
-                Restaurar dados
+                {tr("transfer.restoreData")}
               </Button>
             </div>
           )}
@@ -332,11 +377,11 @@ export function DataTransferPanel() {
               variant="ghost"
               onClick={() => {
                 setJobId(null);
-                localStorage.removeItem(storageKey);
+                persistTransferJob(null);
                 actionKeys.current.clear();
               }}
             >
-              Nova transferência
+              {tr("transfer.newTransfer")}
             </Button>
           )}
         </section>

@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { Hexagon, Columns3, Users, Network } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
@@ -6,24 +8,47 @@ import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
 
 const sections = [
-  { area: "boards", label: "Tarefas", name: "Tarefas", Icon: Columns3 },
+  {
+    area: "boards",
+    get label() {
+      return tr("common.tasks");
+    },
+    get name() {
+      return tr("common.tasks");
+    },
+    Icon: Columns3,
+  },
   {
     area: "agents",
-    label: "Agentes",
-    name: "Recursos de Agentes",
+    get label() {
+      return tr("common.agents");
+    },
+    get name() {
+      return tr("common.agentResources");
+    },
     Icon: Users,
   },
-  { area: "teams", label: "Times", name: "Times", Icon: Network },
+  {
+    area: "teams",
+    get label() {
+      return tr("common.teams");
+    },
+    get name() {
+      return tr("common.teams");
+    },
+    Icon: Network,
+  },
 ] as const;
 
 export function NavigationRail() {
+  useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
   return (
     <aside className="navigation-rail">
       <a
         className="navigation-logo"
-        aria-label="Bee Team — ir para boards"
+        aria-label={tr("common.beeTeamGoToBoards")}
         title="Bee Team"
         href="/boards"
         onClick={(event) => {
@@ -42,7 +67,7 @@ export function NavigationRail() {
         <Hexagon aria-hidden="true" />
       </a>
       <Tooltip.Provider delayDuration={300}>
-        <nav aria-label="Navegação principal">
+        <nav aria-label={tr("common.mainNavigation")}>
           {sections.map(({ area: target, label, name, Icon }) => (
             <Tooltip.Root key={target}>
               <Tooltip.Trigger asChild>
@@ -71,7 +96,10 @@ export function NavigationRail() {
           ))}
         </nav>
       </Tooltip.Provider>
-      <div className="navigation-footer" aria-label="Preferências globais">
+      <div
+        className="navigation-footer"
+        aria-label={tr("common.globalPreferences")}
+      >
         <DataTransferSettings />
         <ThemeControl />
       </div>

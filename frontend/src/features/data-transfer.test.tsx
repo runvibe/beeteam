@@ -1,10 +1,19 @@
+import { setLocalePreference } from "@/i18n";
 import { afterEach, expect, it, vi } from "vitest";
-import { render, screen, waitFor, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  cleanup,
+  fireEvent,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { DataTransferPanel } from "./data-transfer";
+import { DataTransferPanel, DataTransferSettings } from "./data-transfer";
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
+  Reflect.deleteProperty(Element.prototype, "scrollIntoView");
   localStorage.clear();
   vi.unstubAllGlobals();
 });
@@ -93,4 +102,93 @@ it("shows disabled state without enabling import controls", async () => {
     await screen.findByText(/Transferência desativada/),
   ).toBeInTheDocument();
   expect(screen.queryByLabelText("Arquivo de importação")).toBeNull();
+});
+
+it.each(["getter", "methods"])(
+  "keeps the real global Settings language selector usable with denied storage (%s)",
+  async (denial) => {
+    setLocalePreference("en");
+    Object.defineProperty(Element.prototype, "scrollIntoView", {
+      configurable: true,
+      value: () => {},
+    });
+    const denied = () => {
+      throw new DOMException("Storage denied", "SecurityError");
+    };
+    if (denial === "getter")
+      vi.spyOn(window, "localStorage", "get").mockImplementation(denied);
+    else {
+      vi.spyOn(Storage.prototype, "getItem").mockImplementation(denied);
+      vi.spyOn(Storage.prototype, "setItem").mockImplementation(denied);
+    }
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => ({ ok: true, json: async () => ({ enabled: false }) })),
+    );
+    render(
+      <QueryClientProvider
+        client={
+          new QueryClient({ defaultOptions: { queries: { retry: false } } })
+        }
+      >
+        <DataTransferSettings />
+      </QueryClientProvider>,
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Global settings" }),
+    );
+    const selector = await screen.findByRole("combobox", { name: "Language" });
+    fireEvent.keyDown(selector, { key: "ArrowDown" });
+    fireEvent.click(await screen.findByRole("option", { name: "Português" }));
+    expect(
+      await screen.findByRole("combobox", { name: "Idioma" }),
+    ).toHaveTextContent("Português");
+    expect(screen.getByRole("dialog")).toBeVisible();
+    expect(await screen.findByText(/Transferência desativada/)).toBeVisible();
+  },
+);
+
+it("retains a successful export in the session when storage persistence is denied", async () => {
+  setLocalePreference("en");
+  vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+    throw new DOMException("Storage denied", "SecurityError");
+  });
+  const job = {
+    id: "session-export",
+    kind: "export",
+    state: "ready",
+    stage: "ready",
+    records: 1,
+    bytes: 1,
+    error: null,
+    preview: null,
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: string) => ({
+      ok: true,
+      json: async () =>
+        input.endsWith("/exports") || input.endsWith("/jobs/session-export")
+          ? job
+          : {
+              enabled: true,
+              limits: {
+                compressed: 1000,
+                expanded: 2000,
+                entries: 100,
+                line: 100,
+                seconds: 60,
+              },
+              retentionSeconds: 3600,
+            },
+    })),
+  );
+  mount();
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Export data" }),
+  );
+  expect(
+    await screen.findByRole("link", { name: "Download .beeteam.zip" }),
+  ).toHaveAttribute("href", expect.stringContaining("session-export"));
+  expect(screen.queryByRole("alert")).toBeNull();
 });

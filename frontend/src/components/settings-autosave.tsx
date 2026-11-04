@@ -1,3 +1,5 @@
+import { LocalizedError, message, useLocale, t as tr } from "@/i18n";
+
 import { useLayoutEffect, useRef, useSyncExternalStore } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -40,7 +42,7 @@ function createSession<D>(draft: D, version: number): Session<D> {
     listeners: new Set(),
     queued: null,
     write: async () => {
-      throw new Error("Autosave unavailable");
+      throw new LocalizedError(message("common.autosaveUnavailable"));
     },
     notify() {
       session.listeners.forEach((listener) => listener());
@@ -237,6 +239,7 @@ export function AutosaveFeedback({
     reload?: () => Promise<void>;
   };
 }) {
+  useLocale();
   if (!state.error) return null;
   return (
     <>
@@ -244,7 +247,7 @@ export function AutosaveFeedback({
         <>
           <Failure error={state.error} />
           <Button type="button" variant="outline" onClick={state.request}>
-            Tentar salvar novamente
+            {tr("common.retrySaving")}
           </Button>
           {state.reload && (
             <Button
@@ -252,7 +255,7 @@ export function AutosaveFeedback({
               variant="outline"
               onClick={() => void state.reload?.()}
             >
-              Recarregar formulário
+              {tr("common.reloadForm")}
             </Button>
           )}
         </>

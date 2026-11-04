@@ -59,7 +59,7 @@ it("opens a portal anchored to the hovered point with real author/status/date/to
     within(popup).getByText("Delta medido de sessão: 1.186.039 tokens"),
   ).toBeVisible();
   expect(
-    within(popup).getByText("Estimado de sessão: Não informado tokens"),
+    within(popup).getByText("Estimado de sessão: Não informado"),
   ).toBeVisible();
   expect(popup.querySelector("time")).toHaveAttribute(
     "datetime",
@@ -192,7 +192,7 @@ it("shows a session baseline snapshot without fabricating a delta or double-coun
     ),
   ).toBeVisible();
   expect(
-    within(popup).getByText("Delta medido de sessão: Não informado tokens"),
+    within(popup).getByText("Delta medido de sessão: Não informado"),
   ).toBeVisible();
   baseline.entries[0].observation.outputTokens = null;
   rerender(
@@ -210,7 +210,7 @@ it("shows a session baseline snapshot without fabricating a delta or double-coun
   );
   expect(
     within(popup).getByText(
-      "Acumulado registrado de sessão (medido): Não informado tokens",
+      "Acumulado registrado de sessão (medido): Não informado",
     ),
   ).toBeVisible();
   baseline.entries[0].observation.scope = "request";

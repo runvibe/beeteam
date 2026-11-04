@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -6,6 +8,7 @@ import {
   type LiveStatus,
 } from "./live-refresh";
 export function LiveUpdates({ source }: { source: ChangeSource }) {
+  useLocale();
   const client = useQueryClient();
   const [status, setStatus] = useState<LiveStatus>("connecting");
   useEffect(
@@ -25,8 +28,9 @@ export function LiveUpdates({ source }: { source: ChangeSource }) {
   );
   return status === "reconnecting" ? (
     <p role="status" className="small-note px-4 py-2">
-      Atualização ao vivo interrompida. Tentando reconectar; consulta a cada 15
-      segundos enquanto a página estiver visível.
+      {tr(
+        "errors.liveUpdatesInterruptedReconnectingPollingEvery15SecondsWhileThe",
+      )}
     </p>
   ) : null;
 }

@@ -1,3 +1,4 @@
+import { useLocale, t as tr } from "@/i18n";
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { Info } from "lucide-react";
 import { useLocation } from "@/routing/location";
@@ -23,6 +24,7 @@ export function useTaskContextView() {
   return isTaskDetailsView(useLocation()) && mobile;
 }
 export function TaskInfoButton() {
+  useLocale();
   const details = useTaskContextView();
   const trigger = useRef<HTMLButtonElement>(null);
   const previous = useRef(details);
@@ -38,8 +40,8 @@ export function TaskInfoButton() {
         className="task-info-button"
         variant="outline"
         size="icon"
-        aria-label="Detalhes da tarefa"
-        title="Detalhes da tarefa"
+        aria-label={tr("tasks.taskDetails")}
+        title={tr("tasks.taskDetails")}
         hidden={details}
         onClick={openTaskDetails}
       >

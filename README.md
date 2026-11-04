@@ -2,6 +2,24 @@
 
 Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harness executam o trabalho; Bee Team guarda configuração, autoria declarada, planos, arquivos e resultados. Não cria chats nem acessa provedores de IA.
 
+## Idiomas da interface
+
+A interface está disponível em inglês e português. O modo automático usa português
+quando o primeiro idioma preferido do navegador é `pt` ou `pt-*`; os demais usam
+inglês. Inglês também é o fallback de traduções ausentes. Em **Configurações globais →
+Idioma**, escolha automático, English ou Português. A preferência `auto/en/pt` fica
+em `localStorage["bee-locale"]` e tem prioridade sobre o navegador; se o armazenamento
+estiver indisponível, a escolha continua válida durante a sessão.
+
+A troca é imediata, inclusive em outras abas da mesma origem, sem recarregar a
+página, perder rascunhos ou alterar filtros/URLs. Datas, horários relativos,
+números, contadores e plurais seguem o idioma. Nomes, status criados pelo usuário,
+Markdown, resumos, identificadores e conteúdo externo são preservados.
+
+Os catálogos e as regras para novas mensagens estão em
+[Internacionalização e auditoria da interface](docs/frontend-i18n.md).
+No diretório `frontend`, execute `npm run audit:i18n`, `npm test` e `npm run build`.
+
 ## Executar
 
 O binário de distribuição inicia sem variáveis: SQLite em `~/.beeteam/beeteam.sql`,

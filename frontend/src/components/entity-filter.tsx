@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useUrlState, usePageSize } from "@/routing/query";
 import type { ComponentProps } from "react";
 import { TeamFilter } from "./team-filter";
@@ -12,14 +14,18 @@ function PaginatedEntityFilter({
   label,
   value,
   onChange,
+  scopeId = "Executor",
 }: {
   resource: "agents" | "teams";
   label: string;
   value: string;
   onChange: (id: string) => void;
+  scopeId?: string;
 }) {
+  useLocale();
   const compact = useCompactFilters();
-  const scope = `selector-${resource}-${label}`;
+  // Preserve the historical query key while keeping translated labels out of URLs.
+  const scope = `selector-${resource}-${scopeId}`;
   const [name, setName] = useUrlState<string>(`${scope}.name`, ""),
     [offset, setOffset] = useUrlState<number>(`${scope}.offset`, 0);
   const limit = usePageSize(scope, 25);
@@ -33,12 +39,15 @@ function PaginatedEntityFilter({
   const options =
     q.data?.items.map((i) => ({ value: i.id, label: i.name })) ?? [];
   if (value && !options.some((o) => o.value === value))
-    options.unshift({ value, label: selected.data?.name ?? "Selecionado" });
+    options.unshift({
+      value,
+      label: selected.data?.name ?? tr("common.selected"),
+    });
   const Options = compact ? FilterOptions : Choice;
   const content = (
     <div className="entity-filter">
       <Input
-        aria-label={`Buscar opções de ${label}`}
+        aria-label={tr("common.searchOptions", { label: label })}
         value={name}
         autoFocus={compact}
         onChange={(e) => {
@@ -53,14 +62,14 @@ function PaginatedEntityFilter({
               ?.focus();
           }
         }}
-        placeholder="Filtrar opções…"
+        placeholder={tr("common.filterOptions")}
       />
       <Options
         label={label}
         value={value}
         onChange={onChange}
         options={options}
-        all="Todos"
+        all={tr("common.all")}
       />
       {(q.data?.hasMore || offset > 0 || name) && (
         <div className="selector-pages">
@@ -78,7 +87,8 @@ function PaginatedEntityFilter({
       onClear={() => onChange("")}
       active={!!value}
       summary={
-        options.find((option) => option.value === value)?.label || "Todos"
+        options.find((option) => option.value === value)?.label ||
+        tr("common.all")
       }
     >
       {content}
@@ -90,6 +100,7 @@ function PaginatedEntityFilter({
 export function EntityFilter(
   props: ComponentProps<typeof PaginatedEntityFilter>,
 ) {
+  useLocale();
   return props.resource === "teams" ? (
     <TeamFilter {...props} />
   ) : (

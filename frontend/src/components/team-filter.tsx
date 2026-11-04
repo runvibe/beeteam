@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { useId, useState } from "react";
 import { Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -9,6 +11,7 @@ import { Button } from "./ui/button";
 
 type Props = { label: string; value: string; onChange: (id: string) => void };
 export function TeamFilter(props: Props) {
+  useLocale();
   const compact = useCompactFilters();
   const selected = useEntity("teams", props.value);
   const content = <TeamSuggestions {...props} autoFocus={compact} />;
@@ -16,7 +19,7 @@ export function TeamFilter(props: Props) {
     <FilterPopover
       label={props.label}
       active={!!props.value}
-      summary={selected.data?.name || "Time selecionado"}
+      summary={selected.data?.name || tr("teams.selectedTeam")}
       onClear={() => props.onChange("")}
     >
       {content}
@@ -31,6 +34,7 @@ function TeamSuggestions({
   onChange,
   autoFocus,
 }: Props & { autoFocus: boolean }) {
+  useLocale();
   const api = useApi();
   const id = useId();
   const [text, setText] = useState("");
@@ -67,7 +71,7 @@ function TeamSuggestions({
     <div className="team-autocomplete">
       <Input
         role="combobox"
-        aria-label={`Buscar opções de ${label}`}
+        aria-label={tr("common.searchOptions", { label: label })}
         aria-autocomplete="list"
         aria-controls={`${id}-list`}
         aria-expanded={items.length > 0}
@@ -78,7 +82,7 @@ function TeamSuggestions({
         autoFocus={autoFocus}
         value={text}
         maxLength={200}
-        placeholder="Digite o nome do time…"
+        placeholder={tr("teams.typeTheTeamName")}
         onChange={(e) => {
           setText(e.target.value);
           setActive(-1);
@@ -104,16 +108,16 @@ function TeamSuggestions({
       />
       <div id={`${id}-status`} role="status" className="small-note">
         {loading
-          ? "Buscando times…"
+          ? tr("teams.searchingTeams")
           : error
-            ? "Não foi possível buscar times."
+            ? tr("teams.couldNotSearchTeams")
             : !items.length
-              ? "Nenhum time encontrado."
+              ? tr("teams.noTeamsFound")
               : selectedOnly
                 ? ""
                 : !term
                   ? ""
-                  : `${items.length} sugestões disponíveis.`}
+                  : tr("teams.suggestions", { count: items.length })}
       </div>
       {error && (
         <Button
@@ -121,10 +125,14 @@ function TeamSuggestions({
             void (selectedOnly ? selected.refetch() : query.refetch())
           }
         >
-          Tentar novamente
+          {tr("common.tryAgain")}
         </Button>
       )}
-      <ul id={`${id}-list`} role="listbox" aria-label="Sugestões de times">
+      <ul
+        id={`${id}-list`}
+        role="listbox"
+        aria-label={tr("teams.teamSuggestions")}
+      >
         {items.map((item, index) => (
           <li
             key={item.id}

@@ -1,3 +1,11 @@
+import {
+  formatPercent,
+  formatNumber,
+  locale,
+  useLocale,
+  t as tr,
+} from "@/i18n";
+
 import { SubtaskStatusPie } from "./subtask-status-pie";
 import { currentUrl, navigate } from "@/routing/location";
 import { ChartPointPopover } from "./chart-point-popover";
@@ -22,20 +30,28 @@ export function SubtaskCharts({
   data: TaskOverviewData["directSubtasks"];
   onFilter: (filter: Filters) => void;
 }) {
+  useLocale();
   const multipleBoards =
     new Set(data.byStatus.map((status) => status.boardId)).size > 1;
   return (
     <>
-      <section className="overview-chart" aria-label="Subtarefas por status">
-        <h2>Subtarefas por status</h2>
+      <section
+        className="overview-chart"
+        aria-label={tr("tasks.subtasksByStatus")}
+      >
+        <h2>{tr("tasks.subtasksByStatus")}</h2>
         <p className="small-note">
-          Filhas diretas{data.archivedIncluded ? ", incluindo arquivadas" : ""}{" "}
-          · {data.total} no total
+          {tr("tasks.directChildren")}
+          {data.archivedIncluded ? tr("tasks.includingArchived") : ""} ·{" "}
+          {formatNumber(data.total)} {tr("common.inTotal")}
         </p>
-        <SubtaskStatusPie data={data} onSelect={statusId => onFilter({statusId})} />
+        <SubtaskStatusPie
+          data={data}
+          onSelect={(statusId) => onFilter({ statusId })}
+        />
         {!data.total ? (
           <>
-            <p className="small-note">Nenhuma subtarefa direta registrada.</p>
+            <p className="small-note">{tr("tasks.noDirectSubtasksRecorded")}</p>
           </>
         ) : (
           <>
@@ -46,8 +62,17 @@ export function SubtaskCharts({
                     variant="ghost"
                     className="overview-legend-button"
                     onClick={() => onFilter({ statusId: status.statusId })}
-                    aria-label={`${status.statusName}${multipleBoards ? ` (${status.boardName || status.boardId})` : ""}: ${status.total} subtarefas`}
-                    title={status.boardName || `Board ${status.boardId}`}
+                    aria-label={tr("tasks.subtaskStatusCount", {
+                      status: status.statusName,
+                      board: multipleBoards
+                        ? ` (${status.boardName || status.boardId})`
+                        : "",
+                      count: status.total,
+                    })}
+                    title={
+                      status.boardName ||
+                      tr("tasks.namedBoard", { id: status.boardId })
+                    }
                   >
                     <span
                       className="overview-swatch"
@@ -62,13 +87,25 @@ export function SubtaskCharts({
                         </small>
                       )}
                     </span>
-                    <strong>{status.total} · {((status.total / data.total) * 100).toLocaleString("pt-BR", {maximumFractionDigits: 1})}%</strong>
+                    <strong>
+                      {formatNumber(status.total)} ·{" "}
+                      {((status.total / data.total) * 100).toLocaleString(
+                        locale(),
+                        { maximumFractionDigits: 1 },
+                      )}
+                      %
+                    </strong>
                   </Button>
                 </li>
               ))}
             </ul>
             <p className="small-note">
-              {data.done} concluídas · {data.remaining} restantes
+              {tr("tasks.completionCounts", {
+                completed: tr("tasks.doneCount", { count: data.done }),
+                remaining: tr("tasks.remainingCount", {
+                  count: data.remaining,
+                }),
+              })}
             </p>
             {data.blocked > 0 && (
               <div className="overview-blocked-count">
@@ -76,11 +113,12 @@ export function SubtaskCharts({
                   variant="outline"
                   onClick={() => onFilter({ blocked: true })}
                 >
-                  {data.blocked}{" "}
-                  {data.blocked === 1 ? "bloqueada" : "bloqueadas"}
+                  {tr("tasks.blockedCount", { count: data.blocked })}
                 </Button>
                 <p className="small-note">
-                  Bloqueadas já estão incluídas nos status acima.
+                  {tr(
+                    "tasks.blockedSubtasksAreAlreadyIncludedInTheStatusesAbove",
+                  )}
                 </p>
               </div>
             )}
@@ -89,12 +127,13 @@ export function SubtaskCharts({
       </section>
       <section
         className="overview-chart"
-        aria-label="Subtarefas por responsável"
+        aria-label={tr("tasks.subtasksByAssignee")}
       >
-        <h2>Distribuição por responsável</h2>
+        <h2>{tr("tasks.distributionByAssignee")}</h2>
         <p className="small-note">
-          Contagem de subtarefas diretas. Não representa produtividade ou carga
-          estimada.
+          {tr(
+            "tasks.countOfDirectSubtasksDoesNotRepresentProductivityOrEstimated",
+          )}
         </p>
         {!data.byExecutor.length ? (
           <>
@@ -102,7 +141,7 @@ export function SubtaskCharts({
               className="overview-assignee-bar overview-empty-track"
               aria-hidden="true"
             />
-            <p className="small-note">Sem subtarefas para distribuir.</p>
+            <p className="small-note">{tr("tasks.noSubtasksToDistribute")}</p>
           </>
         ) : (
           <>
@@ -112,14 +151,14 @@ export function SubtaskCharts({
                   className="overview-swatch overview-done"
                   aria-hidden="true"
                 />
-                Concluídas
+                {tr("tasks.completed3")}
               </span>
               <span>
                 <i
                   className="overview-swatch overview-remaining"
                   aria-hidden="true"
                 />
-                Restantes
+                {tr("tasks.remaining2")}
               </span>
             </p>
             <ul className="overview-assignees">
@@ -132,7 +171,8 @@ export function SubtaskCharts({
                       onFilter({ executorAgentId: item.executorAgentId })
                     }
                   >
-                    {item.agentName || `Agente ${item.executorAgentId}`}
+                    {item.agentName ||
+                      tr("agents.unnamedAgent", { id: item.executorAgentId })}
                   </Button>
                   <div
                     className="overview-assignee-bar"
@@ -153,8 +193,13 @@ export function SubtaskCharts({
                     />
                   </div>
                   <p className="small-note">
-                    {item.done} concluídas · {item.remaining} restantes ·{" "}
-                    {item.total} total
+                    {tr("tasks.assigneeCounts", {
+                      completed: tr("tasks.doneCount", { count: item.done }),
+                      remaining: tr("tasks.remainingCount", {
+                        count: item.remaining,
+                      }),
+                      total: item.total,
+                    })}
                   </p>
                 </li>
               ))}
@@ -175,6 +220,7 @@ export function ProgressHistory({
   taskId?: string;
   mode?: "all" | "chart" | "table";
 }) {
+  useLocale();
   const title = useId(),
     description = useId();
   const points = data.items;
@@ -210,17 +256,17 @@ export function ProgressHistory({
     <section
       className={`overview-chart overview-progress-history progress-mode-${mode}`}
     >
-      {mode !== "table" && <h2>Evolução do progresso registrado</h2>}
+      {mode !== "table" && <h2>{tr("tasks.recordedProgressOverTime")}</h2>}
       {mode !== "table" && (
         <p className="small-note">
-          Registros explícitos da tarefa; independente da conclusão das
-          subtarefas.
+          {tr("tasks.explicitTaskRecordsIndependentOfSubtaskCompletion")}
         </p>
       )}
       {mode !== "table" && !points.length && (
         <p className="small-note">
-          Sem histórico explícito de progresso disponível. O percentual atual
-          não permite reconstruir o passado.
+          {tr(
+            "tasks.noExplicitProgressHistoryAvailableTheCurrentPercentageCannotReconstruct",
+          )}
         </p>
       )}
       <>
@@ -235,12 +281,10 @@ export function ProgressHistory({
                 aria-labelledby={`${title} ${description}`}
               >
                 <title id={title}>
-                  Evolução do progresso registrado: {points.length} registros
+                  {tr("tasks.progressHistoryTitle", { count: points.length })}
                 </title>
                 <desc id={description}>
-                  Cada ponto é uma atualização registrada. A linha conecta
-                  registros, sem estimar trabalho entre eles. Valores
-                  disponíveis na tabela de registros.
+                  {tr("tasks.eachPointIsARecordedUpdateTheLineConnectsRecords")}
                 </desc>
                 {[0, 50, 100].map((value) => (
                   <g key={value}>
@@ -252,7 +296,7 @@ export function ProgressHistory({
                       className="overview-gridline"
                     />
                     <text x="4" y={184 - value * 1.5}>
-                      {value}
+                      {formatNumber(value)}
                     </text>
                   </g>
                 ))}
@@ -272,19 +316,21 @@ export function ProgressHistory({
                   >
                     <title>
                       {formatDate(points[index].occurredAt)}:{" "}
-                      {points[index].percent}%
+                      {formatNumber(points[index].percent)}%
                     </title>
                   </circle>
                 ))}
                 <text x="40" y="208">
                   {points.length
-                    ? new Date(points[0].occurredAt).toLocaleDateString("pt-BR")
-                    : "Data do registro"}
+                    ? new Date(points[0].occurredAt).toLocaleDateString(
+                        locale(),
+                      )
+                    : tr("tasks.recordDate")}
                 </text>
                 {points.length > 1 && (
                   <text x={width - 32} y="208" textAnchor="end">
                     {new Date(points.at(-1)!.occurredAt).toLocaleDateString(
-                      "pt-BR",
+                      locale(),
                     )}
                   </text>
                 )}
@@ -309,28 +355,38 @@ export function ProgressHistory({
                   )}
                   className="overview-progress-hit"
                   label={`${formatDate(points[index].occurredAt)}: ${points[index].percent}%`}
-                  dialogLabel="Detalhes do progresso neste ponto"
+                  dialogLabel={tr("tasks.progressDetailsAtThisPoint")}
                   selected={selected?.eventId === points[index].eventId}
                   detailId={`${description}-detail`}
                   onSelect={() => setSelected(points[index].eventId)}
                 >
                   <strong>
-                    Progresso registrado: {points[index].percent}%
+                    {tr("tasks.recordedProgress")}{" "}
+                    {formatNumber(points[index].percent)}%
                   </strong>
                   <OverviewAttribution
                     actor={points[index]}
                     date={points[index].occurredAt}
                   />
                   {taskId && points[index].summaryId ? (
-                    <Button variant="outline" onClick={() => {
-                      const [path, search] = currentUrl().split("?");
-                      const query = new URLSearchParams(search);
-                      query.set("tab", "summaries");
-                      query.set("summaries.selected", points[index].summaryId!);
-                      navigate(`${path}?${query}`);
-                    }}>Ver resumo</Button>
-                  ) : <p>Sem resumo vinculado.</p>}
-
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        const [path, search] = currentUrl().split("?");
+                        const query = new URLSearchParams(search);
+                        query.set("tab", "summaries");
+                        query.set(
+                          "summaries.selected",
+                          points[index].summaryId!,
+                        );
+                        navigate(`${path}?${query}`);
+                      }}
+                    >
+                      {tr("tasks.viewSummary")}
+                    </Button>
+                  ) : (
+                    <p>{tr("tasks.noLinkedSummary")}</p>
+                  )}
                 </ChartPointPopover>
               ))}
             </div>
@@ -338,34 +394,37 @@ export function ProgressHistory({
           {mode !== "chart" && (
             <section
               className="overview-history-table"
-              aria-label="Registros de progresso"
+              aria-label={tr("tasks.progressRecords")}
             >
               <h3>
                 {data.truncated
-                  ? `${points.length} de ${data.total} registros`
-                  : `${points.length} registros`}
+                  ? tr("tasks.loadedRecords", {
+                      shown: points.length,
+                      count: data.total,
+                    })
+                  : tr("tasks.recordCount", { count: points.length })}
               </h3>
               <div
                 className="overview-table-scroll"
                 tabIndex={0}
                 role="region"
-                aria-label="Tabela de registros de progresso"
+                aria-label={tr("tasks.progressRecordsTable")}
               >
                 <table>
                   <caption className="sr-only">
-                    Valores de progresso registrados
+                    {tr("tasks.recordedProgressValues")}
                   </caption>
                   <thead>
                     <tr>
-                      <th>Data</th>
-                      <th>Progresso</th>
-                      <th>Nota registrada</th>
+                      <th>{tr("tasks.date")}</th>
+                      <th>{tr("tasks.progress")}</th>
+                      <th>{tr("tasks.recordedNote")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {!points.length && (
                       <tr>
-                        <td colSpan={3}>Sem registros de progresso.</td>
+                        <td colSpan={3}>{tr("tasks.noProgressRecords")}</td>
                       </tr>
                     )}
                     {points.map((point) => (
@@ -400,15 +459,17 @@ export function ProgressHistory({
                                 );
                                 navigate(`${path}?${query}`);
                               }}
-                              aria-label={`Abrir resumo do progresso ${point.percent}%`}
+                              aria-label={tr("tasks.openProgressSummary", {
+                                percent: point.percent,
+                              })}
                             >
-                              {point.percent}%
+                              {formatNumber(point.percent)}%
                             </button>
                           ) : (
-                            `${point.percent}%`
+                            formatPercent(point.percent)
                           )}
                         </td>
-                        <td>{point.note || "Sem nota"}</td>
+                        <td>{point.note || tr("tasks.noNote")}</td>
                       </tr>
                     ))}
                   </tbody>

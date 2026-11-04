@@ -1,132 +1,147 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import type { TaskExecutionInterval } from "@/api/generated/kanban/TaskExecutionInterval";
 import { formatDate } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { observedDuration } from "./interval-format";
-import { tokenCount } from "./usage-format";
+import { tokenCount, tokenAmount } from "./usage-format";
 import { SessionSnapshot } from "./session-snapshots";
 import { TokenComponents } from "./summary-usage";
 import { RecordedSummary } from "./recorded-summary";
 export const intervalState = (state: string) =>
   ({
-    open: "Aberto",
-    closed: "Encerrado",
-    incomplete: "Incompleto",
-    invalid: "Inválido",
-    complete: "Completa",
+    open: tr("execution.open"),
+    closed: tr("execution.closed"),
+    incomplete: tr("execution.incomplete"),
+    invalid: tr("usage.invalid"),
+    complete: tr("execution.complete"),
   })[state] ?? state;
 export function ExecutionIntervalDetail({
   interval: i,
 }: {
   interval: TaskExecutionInterval;
 }) {
+  useLocale();
   return (
     <div className="execution-interval-detail">
       <h4>
-        Intervalo {intervalState(i.state)} · revisão {i.revision}
+        {tr("usage.interval")} {intervalState(i.state)} {tr("usage.revision")}{" "}
+        {formatNumber(i.revision)}
       </h4>
       <p>
         <AgentName id={i.agentId} /> ·{" "}
-        {i.models.join(" · ") || "Modelos não informados"}
+        {i.models.join(" · ") || tr("usage.modelsNotProvided")}
       </p>
       <p>
-        Tokens do intervalo: {tokenCount(i.totalTokens)} · Parcial:{" "}
-        {tokenCount(i.partialTokens)}
+        {tr("usage.intervalTokens")} {tokenCount(i.totalTokens)}{" "}
+        {tr("usage.partial")} {tokenCount(i.partialTokens)}
       </p>
-      <p>Duração observada: {observedDuration(i.observedDurationMs)}</p>
       <p>
-        Cobertura: {intervalState(i.coverage)}
-        {i.coverageLost ? " · Há perda de cobertura declarada" : ""}
+        {tr("usage.observedDuration")} {observedDuration(i.observedDurationMs)}
+      </p>
+      <p>
+        {tr("usage.coverage")} {intervalState(i.coverage)}
+        {i.coverageLost ? tr("usage.declaredCoverageLoss") : ""}
       </p>
       {i.reason && <p>{i.reason}</p>}
       <p className="small-note">
-        Fonte: {i.source} · Sessão: {i.sessionId} ·{" "}
-        {i.scope === "session_tree" ? "Sessão e descendentes" : "Sessão"}
+        {tr("execution.source")} {i.source} {tr("execution.session")}{" "}
+        {i.sessionId} ·{" "}
+        {i.scope === "session_tree"
+          ? tr("usage.sessionAndDescendants")
+          : tr("usage.session")}
       </p>
       <p className="small-note">
         {i.counterMode === "global"
-          ? "Contador global: modelos envolvidos não indicam divisão exata do consumo por modelo."
-          : "Contadores por modelo declarados disjuntos."}
+          ? tr("usage.globalCounterInvolvedModelsDoNotIndicateAnExactBreakdown")
+          : tr("usage.perModelCountersDeclaredDisjoint")}
       </p>
       <dl className="usage-totals">
         <div>
-          <dt>Início observado</dt>
+          <dt>{tr("usage.observedStart")}</dt>
           <dd>{formatDate(i.startObservedAt)}</dd>
         </div>
         <div>
-          <dt>Fim observado</dt>
+          <dt>{tr("usage.observedEnd")}</dt>
           <dd>
             {i.endObservedAt
               ? formatDate(i.endObservedAt)
-              : "Sem encerramento observado"}
+              : tr("usage.noObservedClosure")}
           </dd>
         </div>
         <div>
-          <dt>Última coleta</dt>
+          <dt>{tr("usage.lastCollection")}</dt>
           <dd>{formatDate(i.latestObservedAt)}</dd>
         </div>
         <div>
-          <dt>Início recebido</dt>
+          <dt>{tr("usage.startReceived")}</dt>
           <dd>{formatDate(i.startReceivedAt)}</dd>
         </div>
         <div>
-          <dt>Fim recebido</dt>
+          <dt>{tr("usage.endReceived")}</dt>
           <dd>
-            {i.endReceivedAt ? formatDate(i.endReceivedAt) : "Não recebido"}
+            {i.endReceivedAt
+              ? formatDate(i.endReceivedAt)
+              : tr("usage.notReceived")}
           </dd>
         </div>
       </dl>
       <div>
-        <h5>Resumo de início</h5>
+        <h5>{tr("usage.startingSummary")}</h5>
         <RecordedSummary taskId={i.taskId} summaryId={i.startSummaryId} />
       </div>
       {i.endSummaryId && (
         <div>
-          <h5>Resumo de encerramento</h5>
+          <h5>{tr("usage.closingSummary")}</h5>
           <RecordedSummary taskId={i.taskId} summaryId={i.endSummaryId} />
         </div>
       )}
       {!i.endSummaryId && (
         <p className="small-note">
-          Sem resumo de encerramento. Checkpoints não encerram o intervalo.
+          {tr("usage.noClosingSummaryCheckpointsDoNotCloseTheInterval")}
         </p>
       )}
       <details>
-        <summary>Fronteiras e diferenças dos contadores</summary>
-        {!i.counters.length && <p>Fronteiras de consumo indisponíveis.</p>}
+        <summary>{tr("usage.counterBoundariesAndDifferences")}</summary>
+        {!i.counters.length && <p>{tr("usage.usageBoundariesUnavailable")}</p>}
         {i.counters.map((counter) => (
           <section key={counter.counterKey} className="execution-counter">
-            <h5>Contador {counter.counterKey}</h5>
-            {counter.incomplete && <p>Cobertura incompleta.</p>}
+            <h5>
+              {tr("usage.counter")} {counter.counterKey}
+            </h5>
+            {counter.incomplete && <p>{tr("usage.incompleteCoverage")}</p>}
             {counter.segments.map((segment, index) => (
               <div key={`${segment.start.id}-${index}`}>
                 <strong>
-                  Segmento {index + 1} ·{" "}
-                  {segment.complete ? "Comparável" : "Incompleto"}
+                  {tr("usage.segment")} {formatNumber(index + 1)} ·{" "}
+                  {segment.complete
+                    ? tr("usage.comparable")
+                    : tr("execution.incomplete")}
                 </strong>
                 {segment.reason && <p>{segment.reason}</p>}
-                <h5>Fronteira inicial</h5>
+                <h5>{tr("usage.initialBoundary")}</h5>
                 <SessionSnapshot observation={segment.start.observation} />
                 <p className="small-note">
-                  Evidência: {segment.start.observation.evidenceId} · Epoch:{" "}
-                  {segment.start.observation.epoch}
+                  {tr("usage.evidence")} {segment.start.observation.evidenceId}{" "}
+                  {tr("usage.epoch")} {segment.start.observation.epoch}
                 </p>
                 <RecordedSummary
                   taskId={i.taskId}
                   summaryId={segment.startSummaryId}
                 />
-                <h5>Última fronteira registrada</h5>
+                <h5>{tr("usage.lastRecordedBoundary")}</h5>
                 <SessionSnapshot observation={segment.latest.observation} />
                 <p className="small-note">
-                  Evidência: {segment.latest.observation.evidenceId} · Epoch:{" "}
-                  {segment.latest.observation.epoch}
+                  {tr("usage.evidence")} {segment.latest.observation.evidenceId}{" "}
+                  {tr("usage.epoch")} {segment.latest.observation.epoch}
                 </p>
                 <RecordedSummary
                   taskId={i.taskId}
                   summaryId={segment.latestSummaryId}
                 />
                 <p>
-                  Diferença calculada pela API:{" "}
-                  {tokenCount(segment.delta?.totalTokens)} tokens
+                  {tr("usage.differenceCalculatedByTheApi")}{" "}
+                  {tokenAmount(segment.delta?.totalTokens)}
                 </p>
                 {segment.delta && <TokenComponents value={segment.delta} />}
               </div>
@@ -135,8 +150,7 @@ export function ExecutionIntervalDetail({
         ))}
       </details>
       <p className="small-note">
-        Somente fronteiras explícitas. Ausência não é zero; não somar deltas
-        intermediários ao final nem contadores de árvore aos filhos.
+        {tr("usage.explicitBoundariesOnlyAbsenceIsNotZeroDoNotAdd")}
       </p>
     </div>
   );

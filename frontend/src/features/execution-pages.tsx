@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import { ApiError } from "@/api/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -15,14 +17,17 @@ export function ExecutionPages<T extends { id: string }>({
   fetchPage,
   label,
   showCount = true,
+  countLabel,
   children,
 }: {
   queryKey: (string | number)[];
   fetchPage: (offset: number, signal: AbortSignal) => Promise<Page<T>>;
   label: string;
   showCount?: boolean;
+  countLabel?: (count: number) => string;
   children: (rows: T[], loading: boolean, failed: boolean) => ReactNode;
 }) {
+  useLocale();
   const q = useInfiniteQuery({
     queryKey,
     initialPageParam: 0,
@@ -42,7 +47,9 @@ export function ExecutionPages<T extends { id: string }>({
   ];
   return (
     <section className="execution-records">
-      {q.isPending && <p role="status">Carregando {label}…</p>}
+      {q.isPending && (
+        <p role="status">{tr("common.loadingCollection", { label })}</p>
+      )}
       {q.error &&
         (q.error instanceof ApiError && q.error.status === 501 ? (
           <p className="small-note">{q.error.message}</p>
@@ -56,13 +63,18 @@ export function ExecutionPages<T extends { id: string }>({
         ))}
       {showCount && q.data && (
         <p className="small-note">
-          {rows.length} de {q.data.pages[0].total} {label}
+          {tr("common.loadedCollection", {
+            shown: rows.length,
+            total: q.data.pages[0].total,
+            label: countLabel?.(q.data.pages[0].total) ?? label,
+          })}
         </p>
       )}
       {q.hasNextPage && (
         <p className="small-note">
-          Histórico parcial: apenas registros carregados. Totais globais
-          independem desta página.
+          {tr(
+            "execution.partialHistoryLoadedRecordsOnlyGlobalTotalsAreIndependentOf",
+          )}
         </p>
       )}
       {children(rows, q.isPending, !!q.error && !q.data)}
@@ -72,7 +84,7 @@ export function ExecutionPages<T extends { id: string }>({
           disabled={q.isFetching}
           onClick={() => void q.fetchNextPage()}
         >
-          Carregar mais {label}
+          {tr("common.loadMoreCollection", { label })}
         </Button>
       )}
     </section>

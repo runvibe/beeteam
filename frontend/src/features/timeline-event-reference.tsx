@@ -1,3 +1,11 @@
+import {
+  formatNumber,
+  LocalizedError,
+  message,
+  useLocale,
+  t as tr,
+} from "@/i18n";
+
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import type { Page, Resources } from "@/api/types";
@@ -20,7 +28,9 @@ async function findReference<T extends { id: string }>(
     const next = nextPageOffset(page, pages, (row) => row.id);
     if (next === undefined) {
       if (page.hasMore)
-        throw new Error("Paginação incompleta do conteúdo referenciado.");
+        throw new LocalizedError(
+          message("execution.incompletePaginationOfReferencedContent"),
+        );
       return null;
     }
     offset = next;
@@ -31,6 +41,7 @@ export function TimelineEventReference({
 }: {
   event: Resources["timeline"];
 }) {
+  useLocale();
   const api = useApi(),
     d = event.data;
   const q = useQuery({
@@ -88,36 +99,47 @@ export function TimelineEventReference({
       return null;
     },
   });
-  if (q.isPending) return <p role="status">Carregando conteúdo do evento…</p>;
+  if (q.isPending)
+    return <p role="status">{tr("execution.loadingEventContent")}</p>;
   if (q.error)
     return (
       <div>
-        <p className="small-note">Conteúdo referenciado indisponível.</p>
+        <p className="small-note">
+          {tr("execution.referencedContentUnavailable")}
+        </p>
         <Failure error={q.error} retry={() => void q.refetch()} />
       </div>
     );
   if (!q.data)
     return (
       <p className="small-note">
-        Conteúdo referenciado indisponível ou não registrado.
+        {tr("execution.referencedContentUnavailableOrNotRecorded")}
       </p>
     );
   if (q.data.kind === "attachment") return <Attachment item={q.data.value} />;
   if (q.data.kind === "comment")
     return (
-      <section className="task-reading-block" aria-label="Comentário">
+      <section
+        className="task-reading-block"
+        aria-label={tr("execution.comment")}
+      >
         <Markdown headingOffset={2} sectionDividers>
           {q.data.value.body}
         </Markdown>
       </section>
     );
   return (
-    <section className="task-reading-block" aria-label="Revisão do plano">
+    <section
+      className="task-reading-block"
+      aria-label={tr("execution.planRevision")}
+    >
       <h4>{q.data.value.title}</h4>
-      <p className="small-note">Revisão {q.data.value.revision}</p>
+      <p className="small-note">
+        {tr("tasks.revision")} {formatNumber(q.data.value.revision)}
+      </p>
       {q.data.value.changeSummary && (
-        <section aria-label="Motivo da revisão">
-          <h5>Alteração registrada</h5>
+        <section aria-label={tr("execution.revisionReason")}>
+          <h5>{tr("execution.recordedChange")}</h5>
           <Markdown headingOffset={2}>{q.data.value.changeSummary}</Markdown>
         </section>
       )}

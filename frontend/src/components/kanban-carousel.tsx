@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useReducedMotion } from "motion/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -12,6 +14,7 @@ export function KanbanCarousel({
   columns: Column[];
   children: ReactNode;
 }) {
+  useLocale();
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const current = useRef(0);
@@ -49,12 +52,12 @@ export function KanbanCarousel({
     <>
       <nav
         className="kanban-mobile-navigation"
-        aria-label="Navegação entre colunas"
+        aria-label={tr("common.columnNavigation")}
       >
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Coluna anterior"
+          aria-label={tr("common.previousColumn")}
           disabled={index === 0}
           onClick={() => move(index - 1, reduced ? "instant" : "smooth")}
         >
@@ -63,13 +66,13 @@ export function KanbanCarousel({
         <div aria-live="polite" aria-atomic="true">
           <span className="kanban-current-name">{columns[index]?.name}</span>
           <span className="kanban-current-total">
-            {columns[index]?.total ?? 0}
+            {formatNumber(columns[index]?.total ?? 0)}
           </span>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Próxima coluna"
+          aria-label={tr("common.nextColumn")}
           disabled={index === last}
           onClick={() => move(index + 1, reduced ? "instant" : "smooth")}
         >
@@ -80,7 +83,7 @@ export function KanbanCarousel({
         ref={root}
         className="kanban kanban-carousel"
         role="region"
-        aria-label="Quadro de tarefas"
+        aria-label={tr("common.taskBoard")}
         tabIndex={0}
         onScroll={(event) => {
           const node = event.currentTarget;

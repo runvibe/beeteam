@@ -1,4 +1,6 @@
 import { TaskInfoButton, useTaskContextView } from "./task-context-view";
+import { useLocale, t as tr } from "@/i18n";
+
 import { TimelineEventCard } from "./timeline-event-card";
 import { TaskSpecification } from "./task-specification";
 import { SummaryCommits } from "./summary-commits";
@@ -44,15 +46,17 @@ import { useTaskHeaderVisibility } from "./task-scroll-header";
 import { TaskProgress } from "./task-progress";
 import { TaskFilterProvider, TaskFilters } from "./task-filter-layout";
 export function TaskPage() {
+  useLocale();
   const id = useUi((s) => s.taskId);
   return id ? (
-    <section className="task-page" aria-label="Task">
+    <section className="task-page" aria-label={tr("tasks.task")}>
       <TaskDetail key={id} id={id} />
     </section>
   ) : null;
 }
 function TaskDetail({ id }: { id: string }) {
   const contextView = useTaskContextView();
+  useLocale();
   const q = useEntity("tasks", id);
   const api = useApi();
   const overview = useQuery({
@@ -93,23 +97,28 @@ function TaskDetail({ id }: { id: string }) {
         <div className="task-detail-hero" ref={hero}>
           <header className="task-detail-heading">
             <h1 ref={heading} tabIndex={-1}>
-              {q.data?.title ?? "Detalhes da task"}
+              {q.data?.title ?? tr("tasks.taskDetails2")}
             </h1>
           </header>
           {q.data && <TaskDescription task={q.data} />}
           {q.data && (
             <>
-              <div className="task-detail-state" aria-label="Estado da tarefa">
+              <div
+                className="task-detail-state"
+                aria-label={tr("tasks.taskState")}
+              >
                 <TaskProgress percent={q.data.progress?.percent} />
                 {q.data.archivedAt && (
-                  <Badge variant="secondary">Arquivada: somente leitura</Badge>
+                  <Badge variant="secondary">
+                    {tr("tasks.archivedReadOnly")}
+                  </Badge>
                 )}
               </div>
               {q.data.block.blocked && (
                 <Alert variant="destructive" className="task-blocked-alert">
                   <Ban className="size-9" aria-hidden="true" />
                   <div className="task-blocked-message">
-                    <AlertTitle>Task bloqueada</AlertTitle>
+                    <AlertTitle>{tr("tasks.taskBlocked")}</AlertTitle>
                     <AlertDescription>
                       <Markdown headingOffset={2}>
                         {q.data.block.reason}
@@ -229,6 +238,7 @@ function TaskDetail({ id }: { id: string }) {
   );
 }
 function Children({ task }: { task: Task }) {
+  useLocale();
   const api = useApi();
   const overview = useQuery({
     queryKey: ["task-overview", task.id, task.version],
@@ -305,8 +315,8 @@ function Children({ task }: { task: Task }) {
           blocked: blocked ? blocked === "true" : undefined,
           includeArchived: includeArchived === "true",
         }}
-        empty="Sem subtasks"
-        emptyDescription="Esta tarefa ainda não tem subtasks diretas."
+        empty={tr("tasks.noSubtasks2")}
+        emptyDescription={tr("tasks.thisTaskHasNoDirectSubtasksYet2")}
       >
         {(child) => <ChildRow task={child} />}
       </TaskRecordList>
@@ -315,6 +325,7 @@ function Children({ task }: { task: Task }) {
 }
 type RecordKind = "attachments" | "summaries" | "timeline";
 function Records({ resource, task }: { resource: RecordKind; task: Task }) {
+  useLocale();
   const [offset, setOffset] = useUrlState<number>(`${resource}.offset`, 0);
   const [includeChildren, setInclude] = useUrlState<string>(
     "timeline.includeChildren",
@@ -335,8 +346,10 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
       resource={resource}
       scope={task.id}
       filters={{ offset, limit, ...scopeFilters }}
-      empty="Nenhum registro nesta seção"
-      emptyDescription="Os registros vinculados à tarefa serão exibidos aqui quando disponíveis."
+      empty={tr("tasks.noRecordsInThisSection")}
+      emptyDescription={tr(
+        "tasks.recordsLinkedToTheTaskWillAppearHereWhenAvailable",
+      )}
     >
       {(row) => <RecordContent kind={resource} row={row} />}
     </TaskRecordList>
@@ -358,15 +371,15 @@ function Records({ resource, task }: { resource: RecordKind; task: Task }) {
           }}
           filterControls={
             <Choice
-              label="Eventos"
+              label={tr("tasks.events2")}
               value={includeChildren}
               onChange={(value) => {
                 setInclude(value);
                 setOffset(0);
               }}
               options={[
-                { value: "false", label: "Somente esta task" },
-                { value: "true", label: "Incluir toda a descendência" },
+                { value: "false", label: tr("tasks.thisTaskOnly") },
+                { value: "true", label: tr("tasks.includeAllDescendants") },
               ]}
             />
           }
@@ -386,6 +399,7 @@ function RecordContent({
   kind: RecordKind;
   row: Resources[RecordKind];
 }) {
+  useLocale();
   if (kind === "attachments")
     return <Attachment item={row as Resources["attachments"]} />;
   if (kind === "summaries") {
@@ -393,18 +407,18 @@ function RecordContent({
     return (
       <Card
         role="article"
-        aria-label={`Resumo de ${formatDate(r.createdAt)}`}
+        aria-label={tr("tasks.summaryFrom", { date: formatDate(r.createdAt) })}
         className="task-execution-summary"
       >
         <CardHeader className="summary-record-header">
-          <CardTitle>Resumo do trabalho</CardTitle>
+          <CardTitle>{tr("tasks.workSummary")}</CardTitle>
           <Author id={r.actorId} date={r.createdAt} />
           <Badge variant="secondary">
             {
               {
-                progress: "Em progresso",
-                completed: "Concluída",
-                blocked: "Bloqueada",
+                progress: tr("tasks.inProgress"),
+                completed: tr("tasks.completed"),
+                blocked: tr("boards.blocked2"),
               }[r.outcome]
             }
           </Badge>
@@ -412,7 +426,7 @@ function RecordContent({
         <CardContent className="summary-record-content">
           <section
             className="task-reading-block"
-            aria-label="Conteúdo do resumo"
+            aria-label={tr("tasks.summaryContent")}
           >
             <Markdown headingOffset={2} sectionDividers>
               {r.summary}
@@ -420,8 +434,11 @@ function RecordContent({
           </section>
           <SummaryCommits report={r.commitReport} />
           <SummaryUsage report={r.usageReport} />
-          <section className="task-reading-block" aria-label="Entregas">
-            <h4>Entregas</h4>
+          <section
+            className="task-reading-block"
+            aria-label={tr("tasks.deliverables")}
+          >
+            <h4>{tr("tasks.deliverables")}</h4>
             {r.deliverables.length ? (
               r.deliverables.map((d, i) => (
                 <div key={i}>
@@ -435,11 +452,14 @@ function RecordContent({
                 </div>
               ))
             ) : (
-              <p className="small-note">Nenhuma entrega registrada.</p>
+              <p className="small-note">{tr("tasks.noDeliverablesRecorded")}</p>
             )}
           </section>
-          <section className="task-reading-block" aria-label="Pendências">
-            <h4>Pendências</h4>
+          <section
+            className="task-reading-block"
+            aria-label={tr("tasks.pendingWork")}
+          >
+            <h4>{tr("tasks.pendingWork")}</h4>
             {r.pending.length ? (
               <ul className="list-disc pl-5">
                 {r.pending.map((p, i) => (
@@ -449,7 +469,7 @@ function RecordContent({
                 ))}
               </ul>
             ) : (
-              <p className="small-note">Sem pendências registradas.</p>
+              <p className="small-note">{tr("tasks.noPendingWorkRecorded")}</p>
             )}
           </section>
         </CardContent>
@@ -459,6 +479,7 @@ function RecordContent({
   return <TimelineEventCard event={row as Resources["timeline"]} />;
 }
 function Author({ id, date }: { id: string | null; date: string }) {
+  useLocale();
   return (
     <div className="record-author">
       <AgentName id={id} />

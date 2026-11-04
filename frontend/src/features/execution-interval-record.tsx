@@ -1,3 +1,11 @@
+import {
+  formatNumber,
+  LocalizedError,
+  message,
+  useLocale,
+  t as tr,
+} from "@/i18n";
+
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { TaskExecutionInterval } from "@/api/generated/kanban/TaskExecutionInterval";
@@ -12,6 +20,7 @@ export function ExecutionIntervalRecord({
 }: {
   interval: TaskExecutionInterval;
 }) {
+  useLocale();
   const api = useApi();
   const [revisions, setRevisions] = useState(false);
   return (
@@ -22,7 +31,7 @@ export function ExecutionIntervalRecord({
         aria-expanded={revisions}
         onClick={() => setRevisions(!revisions)}
       >
-        Histórico de revisões
+        {tr("usage.revisionHistory")}
       </Button>
       {revisions && (
         <ExecutionPages
@@ -40,17 +49,19 @@ export function ExecutionIntervalRecord({
               signal,
             )
           }
-          label="revisões"
+          label={tr("usage.revisions")}
+          countLabel={(count) => tr("usage.revisionNoun", { count })}
         >
           {(rows, loading, failed) => (
             <>
               {!loading && !failed && !rows.length && (
-                <p>Nenhuma revisão anterior registrada.</p>
+                <p>{tr("usage.noPreviousRevisionsRecorded")}</p>
               )}
               {rows.map((row) => (
                 <details key={row.id}>
                   <summary>
-                    Revisão anterior {row.revision} · {row.reason}
+                    {tr("usage.previousRevision")} {formatNumber(row.revision)}{" "}
+                    · {row.reason}
                   </summary>
                   <OverviewAttribution
                     actor={row.reportingActor}
@@ -75,6 +86,7 @@ export function ExecutionIntervalLookup({
   intervalId: string;
   version: number;
 }) {
+  useLocale();
   const host = useRef<HTMLElement>(null);
   useEffect(() => {
     host.current?.focus();
@@ -101,14 +113,14 @@ export function ExecutionIntervalLookup({
           break;
         offset = page.nextOffset;
       }
-      throw new Error(
-        "Intervalo referenciado não encontrado nos registros disponíveis.",
+      throw new LocalizedError(
+        message("usage.referencedIntervalNotFoundInTheAvailableRecords"),
       );
     },
   });
   return (
-    <section ref={host} tabIndex={-1} aria-label="Intervalo selecionado">
-      {q.isPending && <p role="status">Carregando intervalo…</p>}
+    <section ref={host} tabIndex={-1} aria-label={tr("usage.selectedInterval")}>
+      {q.isPending && <p role="status">{tr("usage.loadingInterval")}</p>}
       {q.error && <Failure error={q.error} retry={() => void q.refetch()} />}
       {q.data && <ExecutionIntervalRecord interval={q.data} />}
     </section>

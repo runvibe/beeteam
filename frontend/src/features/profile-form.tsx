@@ -1,3 +1,5 @@
+import { useLocale, t as tr } from "@/i18n";
+
 import {
   useSettingsAutosave,
   AutosaveFeedback,
@@ -13,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 export function ProfileForm({ agent: latest }: { agent: Agent }) {
+  useLocale();
   const api = useApi();
   const autosave = useSettingsAutosave({
     resource: "agents",
@@ -63,9 +66,9 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
   return (
     <form className="detail-section profile-form" {...autosave.formProps}>
       <FieldGroup>
-        <h3>Identidade</h3>
+        <h3>{tr("agents.identity")}</h3>
         <Field>
-          <FieldLabel htmlFor="agent-name">Nome</FieldLabel>
+          <FieldLabel htmlFor="agent-name">{tr("agents.name")}</FieldLabel>
           <Input
             id="agent-name"
             required
@@ -75,16 +78,18 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="agent-role">Atuação</FieldLabel>
+          <FieldLabel htmlFor="agent-role">{tr("agents.activity")}</FieldLabel>
           <Textarea
             id="agent-role"
             value={role}
             onChange={(e) => autosave.change("roleDescription", e.target.value)}
           />
         </Field>
-        <h3>Orientações de trabalho</h3>
+        <h3>{tr("agents.workGuidelines")}</h3>
         <Field>
-          <FieldLabel htmlFor="agent-style">Estilo de trabalho</FieldLabel>
+          <FieldLabel htmlFor="agent-style">
+            {tr("agents.workingStyle")}
+          </FieldLabel>
           <Textarea
             id="agent-style"
             value={style}
@@ -92,7 +97,9 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="agent-instructions">Instruções</FieldLabel>
+          <FieldLabel htmlFor="agent-instructions">
+            {tr("agents.instructions")}
+          </FieldLabel>
           <Textarea
             id="agent-instructions"
             value={instructions}
@@ -102,7 +109,9 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
           />
         </Field>
         <Field>
-          <FieldLabel htmlFor="agent-rules">Regras · uma por linha</FieldLabel>
+          <FieldLabel htmlFor="agent-rules">
+            {tr("agents.rulesOnePerLine")}
+          </FieldLabel>
           <Textarea
             id="agent-rules"
             value={rules}
@@ -111,7 +120,7 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
         </Field>
         <Field>
           <FieldLabel htmlFor="agent-limits">
-            Limites de acesso · um por linha
+            {tr("agents.accessLimitsOnePerLine")}
           </FieldLabel>
           <Textarea
             id="agent-limits"
@@ -119,14 +128,13 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
             onChange={(e) => autosave.change("accessLimits", e.target.value)}
           />
           <FieldDescription>
-            Orientações de atuação; as permissões reais são definidas no
-            harness.
+            {tr("agents.workGuidelinesActualPermissionsAreDefinedInTheHarness")}
           </FieldDescription>
         </Field>
-        <h3>Contexto e imagem</h3>
+        <h3>{tr("agents.contextAndImage")}</h3>
         <Field>
           <FieldLabel htmlFor="agent-context">
-            Contexto resumido explícito
+            {tr("agents.explicitBriefContext")}
           </FieldLabel>
           <Textarea
             id="agent-context"
@@ -134,11 +142,13 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
             onChange={(e) => autosave.change("contextSummary", e.target.value)}
           />
           <FieldDescription>
-            Não inclua transcrições de conversas.
+            {tr("agents.doNotIncludeConversationTranscripts")}
           </FieldDescription>
         </Field>
         <Field>
-          <FieldLabel htmlFor="agent-image">URL HTTPS da imagem</FieldLabel>
+          <FieldLabel htmlFor="agent-image">
+            {tr("agents.imageHttpsUrl")}
+          </FieldLabel>
           <Input
             id="agent-image"
             type="url"
@@ -150,13 +160,11 @@ export function ProfileForm({ agent: latest }: { agent: Agent }) {
         </Field>
       </FieldGroup>
       {agent.archivedAt && (
-        <p className="small-note">Perfil arquivado: somente leitura.</p>
+        <p className="small-note">{tr("agents.archivedProfileReadOnly")}</p>
       )}
       {latest.version > autosave.version && (
         <p role="status" className="small-note">
-          Este registro foi atualizado em outra sessão. Seu rascunho foi
-          preservado. Use Recarregar formulário após o conflito para descartar o
-          rascunho e carregar a versão atual.
+          {tr("agents.thisRecordWasUpdatedInAnotherSessionYourDraftWas")}
         </p>
       )}
       <AutosaveFeedback state={autosave} />

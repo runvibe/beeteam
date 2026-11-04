@@ -1,9 +1,12 @@
+import { message } from "@/i18n";
 import type { BeeApi, Resources, Filters } from "./types";
 import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
 import { createTransport, type HttpOptions } from "./http-transport";
 const segment = encodeURIComponent;
-function query(filters: Filters & { kind?: "model" | "harness"; summaryId?: string } = {}) {
+function query(
+  filters: Filters & { kind?: "model" | "harness"; summaryId?: string } = {},
+) {
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(filters))
     if (value !== undefined && value !== null && value !== "")
@@ -35,8 +38,16 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const request = createTransport(options);
   return {
-    timelinePoints: (taskId, pagination={}, signal) => request(`/tasks/${segment(taskId)}/timeline-points`+query({...pagination,sortBy:"sequence",sortOrder:"asc"}),{signal}),
-    comment: (taskId, commentId, signal) => request(`/tasks/${segment(taskId)}/comments/${segment(commentId)}`, { signal }),
+    timelinePoints: (taskId, pagination = {}, signal) =>
+      request(
+        `/tasks/${segment(taskId)}/timeline-points` +
+          query({ ...pagination, sortBy: "sequence", sortOrder: "asc" }),
+        { signal },
+      ),
+    comment: (taskId, commentId, signal) =>
+      request(`/tasks/${segment(taskId)}/comments/${segment(commentId)}`, {
+        signal,
+      }),
     openProject: (taskId, projectKey, application) =>
       request(
         `/tasks/${segment(taskId)}/projects/${segment(projectKey)}/open`,
@@ -93,7 +104,7 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
         throw new ApiError(
           400,
           "invalid_request",
-          "Board do status não informado.",
+          message("errors.theStatusBoardWasNotProvided"),
         );
       const path =
         resource === "statuses"

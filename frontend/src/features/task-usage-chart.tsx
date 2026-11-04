@@ -1,3 +1,5 @@
+import { formatNumber, useLocale, t as tr } from "@/i18n";
+
 import { RecordedSummary } from "./recorded-summary";
 import { SessionSnapshots } from "./session-snapshots";
 import { UsageCheckpointPoint } from "./usage-checkpoint-point";
@@ -6,6 +8,7 @@ import type { SummaryUsageTimelineItem } from "@/api/generated/kanban/SummaryUsa
 import { formatDate } from "@/components/shared";
 import { OverviewAttribution } from "./overview-artifacts";
 import { SummaryUsage, tokenCount } from "./summary-usage";
+import { tokenAmount } from "./usage-format";
 import "./task-usage-chart.css";
 
 export function UsageCheckpointChart({
@@ -15,6 +18,7 @@ export function UsageCheckpointChart({
   items: SummaryUsageTimelineItem[];
   taskId: string;
 }) {
+  useLocale();
   const id = useId();
   const host = useRef<HTMLElement>(null);
   const [availableWidth, setAvailableWidth] = useState(480);
@@ -65,24 +69,20 @@ export function UsageCheckpointChart({
   const hasValues = values.some((value) => value !== null);
   return (
     <section ref={host} className="usage-chart" aria-labelledby={id}>
-      <h3 id={id}>Evolução dos resumos</h3>
+      <h3 id={id}>{tr("usage.summariesOverTime")}</h3>
       <p className="small-note">
-        Um ponto por resumo, no horário em que foi registrado. Altura: delta
-        medido de sessão (tokens), não progresso nem valor numérico de status. O
-        detalhe mostra o status histórico daquele resumo. Lacunas e referências
-        iniciais não são zero; a linha conecta apenas pontos consecutivos com
-        valor.
+        {tr("usage.onePointPerSummaryAtTheTimeItWasRecorded")}
       </p>
       {points.length > 0 &&
         points.every((point) => !point.recordedSessionUsage) && (
           <p className="small-note">
-            Delta de sessão por resumo não disponível nesta resposta.
+            {tr("usage.sessionDeltaPerSummaryIsNotAvailableInThisResponse")}
           </p>
         )}
       <div
         className="usage-chart-scroll"
         role="group"
-        aria-label="Pontos dos resumos; selecione para consultar"
+        aria-label={tr("usage.summaryPointsSelectToInspect")}
       >
         <div className="usage-chart-plot" style={{ width }}>
           <svg viewBox={`0 0 ${width} 270`} aria-hidden="true">
@@ -97,7 +97,9 @@ export function UsageCheckpointChart({
               />
             ))}
             <text x="8" y="28">
-              {hasValues ? tokenCount(maxValue.toString()) : "Tokens"}
+              {hasValues
+                ? tokenCount(maxValue.toString())
+                : tr("usage.tokensTitle")}
             </text>
             {hasValues && (
               <text x="8" y="179">
@@ -105,7 +107,7 @@ export function UsageCheckpointChart({
               </text>
             )}
             <text x="8" y="240">
-              Sem delta
+              {tr("usage.noDelta")}
             </text>
             {positions.map((p, i) =>
               i > 0 && values[i] !== null && values[i - 1] !== null ? (
@@ -122,7 +124,7 @@ export function UsageCheckpointChart({
             <text x="50" y="264">
               {points.length
                 ? formatDate(points[0].reportedAt)
-                : "Horário do resumo"}
+                : tr("usage.summaryTime")}
             </text>
             {points.length > 1 && (
               <text x={width - 50} y="264" textAnchor="end">
@@ -131,7 +133,9 @@ export function UsageCheckpointChart({
             )}
           </svg>
           {!points.length && (
-            <p className="usage-chart-empty">Sem resumos disponíveis</p>
+            <p className="usage-chart-empty">
+              {tr("usage.noSummariesAvailable")}
+            </p>
           )}
           {points.map((point, i) => (
             <UsageCheckpointPoint
@@ -148,15 +152,15 @@ export function UsageCheckpointChart({
       {selected && (
         <>
           <label className="usage-chart-selection">
-            Checkpoint
+            {tr("execution.checkpoint")}
             <select
-              aria-label="Checkpoint"
+              aria-label={tr("execution.checkpoint")}
               value={selected.summaryId}
               onChange={(e) => setSelected(e.target.value)}
             >
               {points.map((p, i) => (
                 <option key={p.summaryId} value={p.summaryId}>
-                  {i + 1}. {formatDate(p.reportedAt)} ·{" "}
+                  {formatNumber(i + 1)}. {formatDate(p.reportedAt)} ·{" "}
                   {tokenCount(
                     p.recordedSessionUsage?.measuredTotalTokens ?? null,
                   )}
@@ -170,35 +174,37 @@ export function UsageCheckpointChart({
             aria-live="polite"
             aria-atomic="true"
           >
-            <span className="small-note">Autor do resumo</span>
+            <span className="small-note">{tr("execution.summaryAuthor")}</span>
             <OverviewAttribution
               actor={selected.reportingActor}
               date={selected.reportedAt}
             />
             <p>
-              Status no momento do resumo:{" "}
-              {selected.statusObserved?.name ?? "Não registrado"}
+              {tr("execution.statusWhenTheSummaryWasRecorded")}{" "}
+              {selected.statusObserved?.name ?? tr("execution.notRecorded")}
             </p>
             <p>
-              Delta medido: {tokenCount(session?.measuredTotalTokens ?? null)} ·
-              Estimado: {tokenCount(session?.estimatedTotalTokens ?? null)}{" "}
-              tokens
+              {tr("usage.measuredDelta")}{" "}
+              {tokenAmount(session?.measuredTotalTokens)}{" "}
+              {tr("usage.estimated2")}{" "}
+              {tokenAmount(session?.estimatedTotalTokens)}
             </p>
             {!!session?.coverage.baselineEntries && (
               <p className="small-note">
-                Referência inicial presente: snapshot informacional, excluído do
-                delta.
+                {tr(
+                  "usage.initialReferencePresentInformationalSnapshotExcludedFromDelta",
+                )}
               </p>
             )}
             <SessionSnapshots report={selected.usageReport} />
             <p className="small-note">
-              Executor histórico da tarefa: não registrado.
+              {tr("usage.historicalTaskExecutorNotRecorded")}
             </p>
             {[
               ...new Set(
                 selected.usageReport?.entries.map(
                   (entry) =>
-                    `${entry.observation.modelId || "Modelo não informado"} · ${entry.observation.harness || "Harness não informado"}`,
+                    `${entry.observation.modelId || tr("tasks.modelNotProvided")} · ${entry.observation.harness || tr("usage.harnessNotProvided")}`,
                 ) ?? [],
               ),
             ].map((label) => (
@@ -208,7 +214,7 @@ export function UsageCheckpointChart({
             ))}
           </div>
           <details>
-            <summary>Evidências deste checkpoint</summary>
+            <summary>{tr("usage.evidenceForThisCheckpoint")}</summary>
             <SummaryUsage report={selected.usageReport} />
           </details>
           <RecordedSummary

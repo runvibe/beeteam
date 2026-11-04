@@ -1,3 +1,5 @@
+import { t as tr, useLocale } from "@/i18n";
+
 import { AnimatePresence } from "motion/react";
 import { AnimatedFilterContent } from "./filter-motion";
 import { useFilterRemoval } from "./use-filter-removal";
@@ -29,24 +31,24 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
-const icons: Record<string, LucideIcon> = {
-  "Tipo de arquivo": FileType,
-  "Arquivos removidos": Trash2,
-  "Status da subtarefa": CircleDot,
-  "Responsável da subtarefa": UserRound,
-  "Bloqueio das subtarefas": Ban,
-  "Subtarefas arquivadas": Archive,
-  "Time gestor": Users,
-  Time: Users,
-  Executor: UserRound,
-  "Autor da fala": UserRound,
-  Cadastro: Archive,
-  Papel: Briefcase,
-  Bloqueio: LockKeyhole,
-  "Atualizadas desde": CalendarDays,
-  Relação: GitBranch,
-  Eventos: GitBranch,
-};
+const icons: readonly (readonly [string, LucideIcon])[] = [
+  ["files.fileType", FileType],
+  ["files.removedFiles", Trash2],
+  ["tasks.subtaskStatus", CircleDot],
+  ["tasks.subtaskAssignee", UserRound],
+  ["tasks.subtaskBlocking", Ban],
+  ["tasks.archivedSubtasks", Archive],
+  ["boards.managingTeam", Users],
+  ["agents.team", Users],
+  ["boards.executor", UserRound],
+  ["tasks.speaker", UserRound],
+  ["agents.registry", Archive],
+  ["agents.role", Briefcase],
+  ["boards.block", LockKeyhole],
+  ["boards.updatedSince", CalendarDays],
+  ["agents.relationship", GitBranch],
+  ["tasks.events2", GitBranch],
+];
 export function FilterPopover({
   label,
   active = false,
@@ -62,10 +64,13 @@ export function FilterPopover({
   summary?: string;
   onClear?: () => void;
 }) {
+  useLocale();
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLButtonElement>(null);
   const remove = useFilterRemoval(onClear);
-  const Icon = search ? Search : icons[label] || ListFilter;
+  const Icon = search
+    ? Search
+    : icons.find(([key]) => tr(key) === label)?.[1] || ListFilter;
   const heading = useId();
   const register = useContext(FilterSummaryContext);
   useEffect(() => {
@@ -134,6 +139,7 @@ export function FilterOptions({
   options: { value: string; label: string }[];
   all?: string;
 }) {
+  useLocale();
   const items = all ? [{ value: "", label: all }, ...options] : options;
   return (
     <RadioGroup.Root

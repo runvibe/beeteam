@@ -1,3 +1,6 @@
+import { demoResumeNotice } from "@/i18n/system-notices";
+import { message } from "@/i18n";
+
 import { patchRecord, addStatus, orderStatuses } from "./configuration";
 import { projectTask, descendantIds } from "./projections";
 import { ApiError } from "./types";
@@ -23,7 +26,11 @@ export function paginate<T>(rows: T[], f: Filters = {}): Page<T> {
     limit < 1 ||
     limit > 100
   )
-    throw new ApiError(400, "invalid_request", "Paginação inválida.");
+    throw new ApiError(
+      400,
+      "invalid_request",
+      message("errors.invalidPagination"),
+    );
   const items = rows.slice(offset, offset + limit),
     hasMore = offset + items.length < rows.length;
   return {
@@ -55,7 +62,7 @@ export function createMockApi(
       throw new ApiError(
         503,
         "unavailable",
-        "Falha simulada. Tente novamente.",
+        message("errors.simulatedFailureTryAgain"),
       );
   };
   function filtered<K extends keyof Resources>(
@@ -71,7 +78,7 @@ export function createMockApi(
       throw new ApiError(
         400,
         "invalid_request",
-        "Use archived ou includeArchived, não ambos.",
+        message("errors.useArchivedOrIncludearchivedNotBoth"),
       );
     let source: unknown[] = db[resource];
     if (resource === "members")
@@ -131,7 +138,13 @@ export function createMockApi(
         (row) =>
           matches(row.originalName, f.fileName) &&
           (!f.mediaType ||
-            f.mediaType.split(",").some(mime => String(row.mediaType).toLowerCase() === mime.trim().toLowerCase())),
+            f.mediaType
+              .split(",")
+              .some(
+                (mime) =>
+                  String(row.mediaType).toLowerCase() ===
+                  mime.trim().toLowerCase(),
+              )),
       );
     }
     if (resource === "comments" && f.text)
@@ -216,7 +229,7 @@ export function createMockApi(
         throw new ApiError(
           400,
           "invalid_request",
-          "Intervalo de datas inválido.",
+          message("errors.invalidDateRange"),
         );
       rows = rows.filter((r) => {
         const value = String(r[`${field}At`] ?? r.taskUpdatedAt ?? "");
@@ -267,62 +280,80 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
-    async timelinePoints(taskId,pagination={},signal) {
-      const page=await api.list("timeline",taskId,{...pagination,sortBy:"sequence",sortOrder:"asc"},signal);
-      return {...page,items:page.items.map(({id,taskId,type,occurredAt,sequence})=>({id,taskId,type,occurredAt,sequence}))};
+    async timelinePoints(taskId, pagination = {}, signal) {
+      const page = await api.list(
+        "timeline",
+        taskId,
+        { ...pagination, sortBy: "sequence", sortOrder: "asc" },
+        signal,
+      );
+      return {
+        ...page,
+        items: page.items.map(({ id, taskId, type, occurredAt, sequence }) => ({
+          id,
+          taskId,
+          type,
+          occurredAt,
+          sequence,
+        })),
+      };
     },
     async comment(taskId, commentId) {
-      const row = db.comments.find(row => row.taskId === taskId && row.id === commentId && !row.deletedAt);
-      if (!row) throw new ApiError(404, "not_found", "Comentário não encontrado.");
+      const row = db.comments.find(
+        (row) =>
+          row.taskId === taskId && row.id === commentId && !row.deletedAt,
+      );
+      if (!row)
+        throw new ApiError(404, "not_found", message("errors.commentNotFound"));
       return structuredClone(row);
     },
     async openProject() {
       throw new ApiError(
         501,
         "local_action_unavailable",
-        "A abertura local de projetos exige conexão com a API do Bee Team.",
+        message("errors.openingLocalProjectsRequiresAConnectionToTheBeeTeam"),
       );
     },
     async executionIntervalUsage() {
       throw new ApiError(
         501,
         "unavailable",
-        "Intervalos disponíveis apenas na API conectada.",
+        message("errors.intervalsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async executionIntervals() {
       throw new ApiError(
         501,
         "unavailable",
-        "Intervalos disponíveis apenas na API conectada.",
+        message("errors.intervalsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async executionTrackingEvents() {
       throw new ApiError(
         501,
         "unavailable",
-        "Intervalos disponíveis apenas na API conectada.",
+        message("errors.intervalsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async executionIntervalRevisions() {
       throw new ApiError(
         501,
         "unavailable",
-        "Intervalos disponíveis apenas na API conectada.",
+        message("errors.intervalsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async usage() {
       throw new ApiError(
         501,
         "unavailable",
-        "Métricas disponíveis apenas na API conectada.",
+        message("errors.metricsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async usageDimensions() {
       throw new ApiError(
         501,
         "unavailable",
-        "Métricas disponíveis apenas na API conectada.",
+        message("errors.metricsAreOnlyAvailableWithTheConnectedApi"),
       );
     },
     async participants(taskId, pagination = {}) {
@@ -345,14 +376,14 @@ export function createMockApi(
       await wait();
       const row = db[resource].find((r) => r.slug === slug && !r.deletedAt);
       if (!row)
-        throw new ApiError(404, "not_found", "Registro não encontrado.");
+        throw new ApiError(404, "not_found", message("errors.recordNotFound"));
       return { id: row.id, slug: row.slug };
     },
     async get<K extends keyof Entities>(resource: K, id: string) {
       await wait();
       const row = db[resource].find((r) => r.id === id && !r.deletedAt);
       if (!row)
-        throw new ApiError(404, "not_found", "Registro não encontrado.");
+        throw new ApiError(404, "not_found", message("errors.recordNotFound"));
       return clone(
         resource === "tasks" ? projectTask(row as Entities["tasks"], db) : row,
       ) as Entities[K];
@@ -447,15 +478,18 @@ export function createMockApi(
         chatReferencesPath: `/api/v1/agents/${agentId}/chat-references`,
         taskIds: [],
         generatedAt: new Date().toISOString(),
-        notice:
-          "Contexto demonstrativo. Não inicia chats nem confirma atividade ao vivo.",
+        notice: demoResumeNotice,
       };
     },
     async image(agentId) {
       await wait();
       const agent = db.agents.find((a) => a.id === agentId && !a.deletedAt);
       if (agent?.image?.kind !== "upload" || agent.image.deletedAt)
-        throw new ApiError(404, "not_found", "Imagem não disponível.");
+        throw new ApiError(
+          404,
+          "not_found",
+          message("errors.imageUnavailable"),
+        );
       // Explicit one-pixel PNG fixture; no real file/network storage in this adapter.
       const bytes = Uint8Array.from(
         atob(
@@ -472,7 +506,7 @@ export function createMockApi(
           (a) => a.taskId === taskId && a.id === attachmentId && !a.deletedAt,
         )
       )
-        throw new ApiError(404, "not_found", "Arquivo não disponível.");
+        throw new ApiError(404, "not_found", message("errors.fileUnavailable"));
       return new Blob(
         [
           "Dados demonstrativos Bee Team.\nPontos de entrada: boards, tarefas e recursos de agentes.\n",

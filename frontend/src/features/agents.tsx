@@ -1,3 +1,6 @@
+import { resumeNotice } from "@/i18n/system-notices";
+import { useLocale, t as tr } from "@/i18n";
+
 import { CardKindMark } from "@/components/card-kind-mark";
 import { CardSymbol } from "@/components/card-symbol";
 import { RelativeTime } from "@/components/relative-time";
@@ -46,6 +49,7 @@ import {
 } from "@/components/shared";
 import { ProfileForm } from "./profile-form";
 export function Agents() {
+  useLocale();
   const [name, setName] = useUrlState<string>("agents.name", ""),
     [role, setRole] = useUrlState<string>("agents.role", "", {
       values: ["", "leader", "collaborator"],
@@ -69,15 +73,17 @@ export function Agents() {
     <>
       <header className="page-heading listing-heading">
         <div className="sr-only">
-          <h1>Agentes</h1>
-          <p>Perfis, instruções e contexto para continuar de onde parou.</p>
+          <h1>{tr("common.agents")}</h1>
+          <p>
+            {tr("agents.profilesInstructionsAndContextToPickUpWhereYouLeft")}
+          </p>
         </div>
         <FilterBar
           inHeader
           search={
             <>
               <Search
-                label="Buscar agentes"
+                label={tr("agents.searchAgents")}
                 value={name}
                 onChange={(v) => {
                   setName(v);
@@ -97,7 +103,7 @@ export function Agents() {
         >
           <EntityFilter
             resource="teams"
-            label="Time"
+            label={tr("agents.team")}
             value={teamId}
             onChange={(v) => {
               setTeam(v);
@@ -105,33 +111,37 @@ export function Agents() {
             }}
           />
           <Choice
-            label="Papel"
+            label={tr("agents.role")}
             value={role}
             onChange={(v) => {
               setRole(v);
               setOffset(0);
             }}
             options={[
-              { value: "leader", label: "Líder" },
-              { value: "collaborator", label: "Colaborador" },
+              { value: "leader", label: tr("common.leader") },
+              { value: "collaborator", label: tr("common.collaborator") },
             ]}
-            all="Todos"
+            all={tr("common.all")}
           />
           <Choice
-            label="Cadastro"
+            label={tr("agents.registry")}
             value={archived}
             onChange={(v) => {
               setArchived(v);
               setOffset(0);
             }}
             options={[
-              { value: "false", label: "Ativos" },
-              { value: "true", label: "Arquivados" },
+              { value: "false", label: tr("agents.active") },
+              { value: "true", label: tr("agents.archived") },
             ]}
           />
         </FilterBar>
       </header>
-      <CardListViewport key={q.identity} state={q} label="Lista de agentes">
+      <CardListViewport
+        key={q.identity}
+        state={q}
+        label={tr("agents.agentList")}
+      >
         {q.items && (
           <>
             {q.items.length ? (
@@ -178,10 +188,10 @@ export function Agents() {
               <NoData
                 title={
                   name || teamId || role
-                    ? "Nenhum agente corresponde aos filtros"
-                    : "Nenhum agente neste cadastro"
+                    ? tr("agents.noAgentsMatchTheFilters")
+                    : tr("agents.noAgentsInThisRegistry")
                 }
-                description="Ajuste os filtros para consultar outros agentes."
+                description={tr("agents.adjustTheFiltersToBrowseOtherAgents")}
               />
             )}
           </>
@@ -191,10 +201,12 @@ export function Agents() {
   );
 }
 export function AgentPage() {
+  useLocale();
   const id = useUi((s) => s.agentId);
   return id ? <AgentDetail key={id} id={id} /> : null;
 }
 function AgentDetail({ id }: { id: string }) {
+  useLocale();
   const q = useEntity("agents", id);
   const [tab, setTab] = useUrlState<string>("agent.tab", "profile", {
     values: ["profile", "activities", "chats", "resume"],
@@ -202,9 +214,11 @@ function AgentDetail({ id }: { id: string }) {
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   return (
     <DetailPage
-      label="Agente"
-      title={q.data?.name ?? "Perfil do agente"}
-      description={q.data?.roleDescription ?? "Perfil e contexto registrados."}
+      label={tr("agents.agent")}
+      title={q.data?.name ?? tr("agents.agentProfile")}
+      description={
+        q.data?.roleDescription ?? tr("agents.recordedProfileAndContext")
+      }
       fallback="/agents"
     >
       <QueryState query={q}>
@@ -214,10 +228,12 @@ function AgentDetail({ id }: { id: string }) {
               <AgentAvatar agent={q.data} />
               <div>
                 <Badge variant="secondary">
-                  {q.data.archivedAt ? "Arquivado" : "Cadastro ativo"}
+                  {q.data.archivedAt
+                    ? tr("common.archived")
+                    : tr("agents.activeProfile")}
                 </Badge>
                 <p className="small-note">
-                  Última atualização: {formatDate(q.data.updatedAt)}
+                  {tr("agents.lastUpdated")} {formatDate(q.data.updatedAt)}
                 </p>
               </div>
               <Button
@@ -226,15 +242,19 @@ function AgentDetail({ id }: { id: string }) {
                   navigate(`/agents/${q.data.slug}/settings${location.search}`)
                 }
               >
-                Configurar
+                {tr("agents.configure")}
               </Button>
             </div>
             <Tabs value={tab} onValueChange={setTab}>
               <TabsList className="detail-tabs">
-                <TabsTrigger value="profile">Perfil</TabsTrigger>
-                <TabsTrigger value="activities">Tasks</TabsTrigger>
-                <TabsTrigger value="chats">Chats</TabsTrigger>
-                <TabsTrigger value="resume">Retomada</TabsTrigger>
+                <TabsTrigger value="profile">
+                  {tr("agents.profile")}
+                </TabsTrigger>
+                <TabsTrigger value="activities">
+                  {tr("agents.tasks")}
+                </TabsTrigger>
+                <TabsTrigger value="chats">{tr("agents.chats")}</TabsTrigger>
+                <TabsTrigger value="resume">{tr("agents.resume")}</TabsTrigger>
               </TabsList>
               <TabsContent value="profile">
                 <Profile agent={q.data} />
@@ -259,7 +279,7 @@ function AgentDetail({ id }: { id: string }) {
                 <DialogHeader>
                   <DialogTitle>{q.data.name}</DialogTitle>
                   <DialogDescription>
-                    Configurações do perfil do agente.
+                    {tr("agents.agentProfileSettings")}
                   </DialogDescription>
                 </DialogHeader>
                 <ProfileForm key={q.data.id} agent={q.data} />
@@ -272,43 +292,51 @@ function AgentDetail({ id }: { id: string }) {
   );
 }
 function Profile({ agent }: { agent: Agent }) {
+  useLocale();
   return (
     <div className="detail-section">
-      <h3>Vínculos</h3>
+      <h3>{tr("agents.associations")}</h3>
       {agent.bindings.leaderTeamId && (
-        <TeamLink id={agent.bindings.leaderTeamId} role="Líder" />
+        <TeamLink id={agent.bindings.leaderTeamId} role={tr("common.leader")} />
       )}
       {agent.bindings.collaboratorTeamId && (
-        <TeamLink id={agent.bindings.collaboratorTeamId} role="Colaborador" />
+        <TeamLink
+          id={agent.bindings.collaboratorTeamId}
+          role={tr("common.collaborator")}
+        />
       )}
       {!agent.bindings.leaderTeamId && !agent.bindings.collaboratorTeamId && (
-        <p className="small-note">Sem vínculos atuais.</p>
+        <p className="small-note">{tr("agents.noCurrentAssociations")}</p>
       )}
-      <h3>Estilo de trabalho</h3>
+      <h3>{tr("agents.workingStyle")}</h3>
       <TextBlock>{agent.workStyle}</TextBlock>
-      <h3>Instruções</h3>
+      <h3>{tr("agents.instructions")}</h3>
       <TextBlock>{agent.workInstructions}</TextBlock>
-      <h3>Regras</h3>
+      <h3>{tr("agents.rules")}</h3>
       <TextBlock>{agent.rules.join("\n")}</TextBlock>
-      <h3>Limites de acesso</h3>
+      <h3>{tr("agents.accessLimits")}</h3>
       <TextBlock>{agent.accessLimits.join("\n")}</TextBlock>
-      <p className="small-note">As permissões reais pertencem ao harness.</p>
-      <h3>Contexto resumido</h3>
+      <p className="small-note">
+        {tr("agents.actualPermissionsBelongToTheHarness")}
+      </p>
+      <h3>{tr("agents.briefContext")}</h3>
       <TextBlock>{agent.contextSummary}</TextBlock>
     </div>
   );
 }
 function TeamLink({ id, role }: { id: string; role: string }) {
+  useLocale();
   const q = useEntity("teams", id),
     open = useUi((s) => s.openTeam);
   return (
     <Button variant="outline" onClick={() => open(id)}>
-      {role} · {q.data?.name ?? "Time"}
+      {role} · {q.data?.name ?? tr("agents.team")}
       <ArrowUpRight data-icon="inline-end" />
     </Button>
   );
 }
 function Activities({ agentId }: { agentId: string }) {
+  useLocale();
   const [offset, setOffset] = useUrlState<number>("activities.offset", 0),
     [relation, setRelation] = useUrlState<string>(
       "activities.relation",
@@ -337,7 +365,7 @@ function Activities({ agentId }: { agentId: string }) {
                 setTitle(v);
                 setOffset(0);
               }}
-              label="Buscar tasks do agente"
+              label={tr("agents.searchAgentTasks")}
             />
           </>
         }
@@ -349,17 +377,17 @@ function Activities({ agentId }: { agentId: string }) {
         }}
       >
         <Choice
-          label="Relação"
+          label={tr("agents.relationship")}
           value={relation}
           onChange={(v) => {
             setRelation(v);
             setOffset(0);
           }}
           options={[
-            { value: "any", label: "Todas" },
-            { value: "authored", label: "Autoria" },
-            { value: "executing", label: "Executor atual" },
-            { value: "worked", label: "Com resumo próprio" },
+            { value: "any", label: tr("agents.all") },
+            { value: "authored", label: tr("agents.authorship") },
+            { value: "executing", label: tr("agents.currentExecutor") },
+            { value: "worked", label: tr("agents.withOwnSummary") },
           ]}
         />
       </FilterBar>
@@ -374,8 +402,8 @@ function Activities({ agentId }: { agentId: string }) {
                 <div className="flex gap-2">
                   <Badge variant="outline">
                     {a.isCurrentExecutor
-                      ? "Executor atual"
-                      : "Histórico preservado"}
+                      ? tr("agents.currentExecutor")
+                      : tr("agents.historyPreserved")}
                   </Badge>
                   <span className="small-note">
                     {formatDate(a.taskUpdatedAt)}
@@ -385,8 +413,10 @@ function Activities({ agentId }: { agentId: string }) {
             ))}
             {!q.data.items.length && (
               <NoData
-                title="Nenhuma task corresponde aos filtros"
-                description="Ajuste a busca ou a relação com este agente."
+                title={tr("agents.noTasksMatchTheFilters")}
+                description={tr(
+                  "agents.adjustTheSearchOrRelationshipWithThisAgent",
+                )}
               />
             )}
             <Pager page={q.data} onOffset={setOffset} />
@@ -397,13 +427,16 @@ function Activities({ agentId }: { agentId: string }) {
   );
 }
 function Chats({ agentId }: { agentId: string }) {
+  useLocale();
   const [offset, setOffset] = useUrlState<number>("chats.offset", 0);
   const limit = usePageSize("chats", 10);
   const q = useList("chats", agentId, { offset, limit });
   return (
     <div className="detail-section">
       <p className="muted-copy">
-        Referências externas registradas. Não indicam sessões em execução.
+        {tr(
+          "agents.recordedExternalReferencesTheyDoNotIndicateRunningSessions",
+        )}
       </p>
       <QueryState query={q}>
         {q.data && (
@@ -416,13 +449,13 @@ function Chats({ agentId }: { agentId: string }) {
                 </p>
                 {safeUrl(c.url) && (
                   <a href={safeUrl(c.url)} target="_blank" rel="noreferrer">
-                    Abrir referência <ExternalLink size={14} />
+                    {tr("agents.openReference")} <ExternalLink size={14} />
                   </a>
                 )}
               </article>
             ))}
             {!q.data.items.length && (
-              <NoData title="Sem referências de chats" />
+              <NoData title={tr("agents.noChatReferences")} />
             )}
             <Pager page={q.data} onOffset={setOffset} />
           </>
@@ -432,6 +465,7 @@ function Chats({ agentId }: { agentId: string }) {
   );
 }
 function Resume({ agentId }: { agentId: string }) {
+  useLocale();
   const api = useApi();
   const q = useQuery({
     queryKey: ["resume", agentId],
@@ -442,10 +476,10 @@ function Resume({ agentId }: { agentId: string }) {
       <QueryState query={q}>
         {q.data && (
           <>
-            <p className="muted-copy">{q.data.notice}</p>
-            <h3>Instruções para retomada</h3>
+            <p className="muted-copy">{resumeNotice(q.data.notice)}</p>
+            <h3>{tr("agents.resumptionInstructions")}</h3>
             <TextBlock>{q.data.agent.workInstructions}</TextBlock>
-            <h3>Contexto resumido</h3>
+            <h3>{tr("agents.briefContext")}</h3>
             <TextBlock>{q.data.agent.contextSummary}</TextBlock>
             {q.data.teamContexts.map((t) => (
               <article className="record" key={t.teamId}>
@@ -455,8 +489,8 @@ function Resume({ agentId }: { agentId: string }) {
               </article>
             ))}
             <p className="small-note">
-              Contexto consultado em {formatDate(q.data.generatedAt)}.
-              Resultados e pendências continuam nas tasks.
+              {tr("agents.contextRetrievedAt")} {formatDate(q.data.generatedAt)}
+              {tr("agents.resultsAndPendingWorkRemainInTasks")}
             </p>
           </>
         )}

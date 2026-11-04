@@ -1,3 +1,5 @@
+import { LocalizedError, message, useLocale, t as tr } from "@/i18n";
+
 import { useRef, useState } from "react";
 import { FolderOpen } from "lucide-react";
 import vscodeIcon from "@/assets/vscode.svg";
@@ -14,6 +16,7 @@ export function TaskProjectActions({
   projectKey: string;
   projectName: string;
 }) {
+  useLocale();
   const api = useApi();
   return (
     <ProjectActions
@@ -33,21 +36,24 @@ export function ProjectActions({
   projectName: string;
   onOpen: (application: ProjectApplication) => Promise<void>;
 }) {
+  useLocale();
   const busy = useRef(false);
   const [pending, setPending] = useState<ProjectApplication | null>(null);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<Error | null>(null);
   const open = async (application: ProjectApplication) => {
     if (busy.current) return;
     busy.current = true;
     setPending(application);
-    setError("");
+    setError(null);
     try {
       await onOpen(application);
     } catch (cause) {
       setError(
         cause instanceof Error
-          ? cause.message
-          : "Não foi possível abrir a pasta neste aplicativo.",
+          ? cause
+          : new LocalizedError(
+              message("common.couldNotOpenTheFolderInThisApplication"),
+            ),
       );
     } finally {
       busy.current = false;
@@ -57,7 +63,7 @@ export function ProjectActions({
   return (
     <div
       role="group"
-      aria-label={`Ações do projeto ${projectName}`}
+      aria-label={tr("tasks.projectActions", { name: projectName })}
       className="project-actions"
       aria-busy={pending !== null}
     >
@@ -66,8 +72,8 @@ export function ProjectActions({
           variant="outline"
           size="icon"
           disabled={pending !== null}
-          aria-label="Abrir no Explorer"
-          title="Abrir no Explorer"
+          aria-label={tr("common.openInExplorer")}
+          title={tr("common.openInExplorer")}
           onClick={() => void open("explorer")}
         >
           <FolderOpen aria-hidden="true" />
@@ -76,8 +82,8 @@ export function ProjectActions({
           variant="outline"
           size="icon"
           disabled={pending !== null}
-          aria-label="Abrir no VS Code"
-          title="Abrir no VS Code"
+          aria-label={tr("common.openInVsCode")}
+          title={tr("common.openInVsCode")}
           onClick={() => void open("vscode")}
         >
           <img src={vscodeIcon} alt="" aria-hidden="true" className="size-4" />
@@ -85,7 +91,7 @@ export function ProjectActions({
       </div>
       {error && (
         <p role="alert" className="small-note">
-          {error}
+          {error.message}
         </p>
       )}
     </div>
