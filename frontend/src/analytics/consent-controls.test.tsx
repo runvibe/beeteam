@@ -20,10 +20,14 @@ it("rejects analytics without creating a network frame or gating the app", () =>
 });
 
 it("waits for legal readiness and allows managing and withdrawing a prior choice", () => {
-  render(<AnalyticsConsent product="app" />);
+  const view = render(<AnalyticsConsent product="app" />);
   expect(screen.queryByRole("link", { name: "Aviso de privacidade" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Aceitar analytics" }));
+  expect(screen.queryByRole("button", { name: "Aceitar analytics" })).toBeNull();
+  expect(localStorage.getItem(consentKey)).toBeNull();
   expect(document.querySelector("iframe")).toBeNull();
+  view.rerender(<AnalyticsConsent product="app" legalReady />);
+  fireEvent.click(screen.getByRole("button", { name: "Aceitar analytics" }));
+  expect(document.querySelector("iframe")).not.toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Preferências de cookies" }));
   expect(screen.getByRole("checkbox")).toBeChecked();
   fireEvent.click(screen.getByRole("button", { name: "Retirar consentimento" }));

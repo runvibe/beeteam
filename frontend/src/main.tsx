@@ -24,7 +24,7 @@ async function start() {
     : createChangeSource(runtimeConfig.apiBaseUrl);
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <AnalyticsConsent product="app" legalReady={false} />
+      <AnalyticsConsent product="app" legalReady />
       {runtimeConfig.mock ? (
         <ApiProvider api={api}>
           <PwaUpdate />

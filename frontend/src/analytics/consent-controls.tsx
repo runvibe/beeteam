@@ -48,6 +48,7 @@ export function AnalyticsConsent({ product, path, legalReady = false }: {
     store.choose(accepted ? "accepted" : "rejected");
     setManage(false);
   }
+  if (!legalReady) return null;
   if (choice !== "unknown" && !manage) return (
     <div className="analytics-preferences-trigger">
       <Button variant="outline" size="sm" onClick={() => { setDraft(choice === "accepted"); setManage(true); }}>
