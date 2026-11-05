@@ -45,6 +45,10 @@ pub fn create_router_with_frontend(
     config: &AppConfig,
     mode: crate::services::frontend::FrontendMode,
 ) -> Router {
+    let state = state.with_api_info(
+        cfg!(feature = "mcp") && config.mcp.enabled,
+        config.host.is_loopback(),
+    );
     let (api_router, api) = utoipa_axum::router::OpenApiRouter::with_openapi(ApiDoc::openapi())
         .merge(system::router())
         .split_for_parts();

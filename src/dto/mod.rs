@@ -3,6 +3,7 @@ pub mod usage;
 pub mod contracts;
 pub mod echo;
 pub mod health;
+pub mod api_info;
 
 pub mod mcp;
 pub mod mcp_language;
