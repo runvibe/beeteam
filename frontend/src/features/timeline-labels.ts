@@ -7,6 +7,9 @@ export const eventLabels: Record<string, string> = {
   get "task.updated"() {
     return tr("execution.taskUpdated");
   },
+  get "task.parent_changed"() {
+    return tr("execution.taskParentChanged");
+  },
   get "assignment.changed"() {
     return tr("execution.executorChanged");
   },

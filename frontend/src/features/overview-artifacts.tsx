@@ -168,6 +168,9 @@ const eventNames: Record<string, string> = {
   get "task.updated"() {
     return tr("common.taskUpdated");
   },
+  get "task.parent_changed"() {
+    return tr("execution.taskParentChanged");
+  },
   get "assignment.changed"() {
     return tr("common.assigneeChanged");
   },

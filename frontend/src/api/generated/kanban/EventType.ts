@@ -13,4 +13,5 @@ export type EventType =
   | "execution.recorded"
   | "task.archived"
   | "task.restored"
-  | "subtask.created";
+  | "subtask.created"
+  | "task.parent_changed";
