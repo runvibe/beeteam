@@ -134,7 +134,7 @@ pub fn source_hash(root: &Path) -> String {
             )
         })
         .collect();
-    for name in ["docs/team-role-icons.json", "Cargo.toml"] {
+    for name in ["docs/team-role-icons.json", "docs/mcp-catalog.json", "Cargo.toml"] {
         let path = root.parent().unwrap().join(name);
         assert_eq!(fs::canonicalize(&path).unwrap(), fs::canonicalize(root).unwrap().parent().unwrap().join(name), "external embedded UI inputs cannot traverse symlinks");
         assert!(!fs::symlink_metadata(&path).unwrap().file_type().is_symlink());

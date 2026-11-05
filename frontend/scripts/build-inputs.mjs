@@ -4,7 +4,7 @@ import { resolve, relative } from 'node:path';
 
 export const frontendInputs = ['src','public','scripts','package.json','package-lock.json','index.html','vite.config.ts','tsconfig.json','tsconfig.app.json','tsconfig.node.json'];
 // Stable frontend-relative names are hashed identically by build_frontend.rs.
-export const externalInputs = ['../docs/team-role-icons.json','../Cargo.toml'];
+export const externalInputs = ['../docs/team-role-icons.json','../docs/mcp-catalog.json','../Cargo.toml'];
 
 export function files(path) {
   if (lstatSync(path).isSymbolicLink()) throw new Error('Symlinks are not embedded build inputs: '+path);

@@ -103,6 +103,9 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
     if matches!(path, "/" | "/app" | "/app/") {
         return crate::services::frontend::asset("/index.html");
     }
+    if prefix(path, "/guide") && path.trim_end_matches('/').split('/').skip(1).all(alias) {
+        return crate::services::frontend::asset("/index.html");
+    }
     let route = path.strip_prefix("/app/").unwrap_or(path.strip_prefix('/')?);
     let parts: Vec<_> = route
         .trim_end_matches('/')

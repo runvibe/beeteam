@@ -80,6 +80,7 @@ export function ConnectedHome() {
         </ol>
       </section>
       <nav className="home-destinations" aria-label={t("common.homeExplore")}>
+        <Button asChild variant="outline"><a href="/guide/">{t("common.guideDocumentation")}</a></Button>
         <Button variant="outline" onClick={() => navigate("/teams")}>
           {t("common.homeOpenTeams")}
         </Button>

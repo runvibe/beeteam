@@ -12,6 +12,8 @@ import executionEn from "./catalogs/execution.en.json";
 import executionPt from "./catalogs/execution.pt.json";
 import filesEn from "./catalogs/files.en.json";
 import filesPt from "./catalogs/files.pt.json";
+import guideEn from "./catalogs/guide.en.json";
+import guidePt from "./catalogs/guide.pt.json";
 import settingsEn from "./catalogs/settings.en.json";
 import settingsPt from "./catalogs/settings.pt.json";
 import tasksEn from "./catalogs/tasks.en.json";
@@ -32,6 +34,7 @@ export const resources = {
       errors: errorsEn,
       execution: executionEn,
       files: filesEn,
+      guide: guideEn,
       settings: settingsEn,
       tasks: tasksEn,
       teams: teamsEn,
@@ -48,6 +51,7 @@ export const resources = {
       errors: errorsPt,
       execution: executionPt,
       files: filesPt,
+      guide: guidePt,
       settings: settingsPt,
       tasks: tasksPt,
       teams: teamsPt,

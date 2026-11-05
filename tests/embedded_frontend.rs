@@ -40,6 +40,9 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
     for path in [
         "/",
         "/app/",
+        "/guide/",
+        "/guide/reference/mcp/tools",
+        "/guide/first-team?harness=codex",
         "/app/tasks/task-alias",
         "/app/boards/example/settings",
         "/boards",
@@ -63,6 +66,7 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
     for path in [
         "/api/v1/unknown",
         "/assets/missing.js",
+        "/guide/missing.js",
         "/app/assets/missing.js",
         "/missing.png",
         "/boards/missing.js",
