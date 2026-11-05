@@ -1,0 +1,47 @@
+name: Distribution candidates
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing vCargoVersion tag to validate (no publication)
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  native:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build same-version embedded distribution
+        run: node scripts/build-distribution.mjs
+      - name: Test packaging and archive native executable
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          python scripts/test-package-release.py
+          binary=target/release/beeteam
+          if [ "$RUNNER_OS" = Windows ]; then binary="$binary.exe"; fi
+          python scripts/package-release.py --binary "$binary" --output .local/release-candidate --tag "$RELEASE_TAG"
+          for metadata in .local/release-candidate/*.json; do
+            python scripts/smoke-distribution.py --metadata "$metadata"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidate-${{ runner.os }}-${{ runner.arch }}
+          path: .local/release-candidate/*
+          if-no-files-found: error

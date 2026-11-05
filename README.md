@@ -1124,3 +1124,5 @@ the role rename without counting them twice.
 MCP lists only `beeteam://skills/worker` and `beeteam://references/worker-bootstrap`,
 `worker-workflow`, `worker-resumption`. The four former Collaborator URIs are supported
 as unlisted read aliases. `/openapi/ra.json` and `/openapi/kanban.json` describe v2.
+
+Native release candidates, archive integrity checks and the three-system workflow are documented in [release distribution](docs/release-distribution.md).
