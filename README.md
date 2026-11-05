@@ -6,6 +6,9 @@ Marca: **Get Bee Team**. Domínio de referência: `getbee.team`; não substitui 
 
 ## Idiomas da interface
 
+No Kanban, tarefas bloqueadas recebem fundo avermelhado, além da indicação textual.
+As colunas preenchem a altura disponível da página e mantêm rolagem independente das tarefas.
+
 A interface está disponível em inglês e português. O modo automático usa português
 quando o primeiro idioma preferido do navegador é `pt` ou `pt-*`; os demais usam
 inglês. Inglês também é o fallback de traduções ausentes. Em **Configurações globais →

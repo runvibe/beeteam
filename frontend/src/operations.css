@@ -286,7 +286,7 @@ main:has(> .kanban) > * {
   box-shadow: var(--shadow-sm);
 }
 .task-card[data-blocked="true"] {
-  background: color-mix(in oklab, var(--destructive) 9%, var(--card));
+  background: color-mix(in oklab, var(--destructive) 20%, var(--card));
   border: 1px solid color-mix(in oklab, var(--destructive) 40%, var(--border));
 }
 .task-card [data-slot="card-header"],

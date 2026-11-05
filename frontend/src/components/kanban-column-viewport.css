@@ -1,7 +1,8 @@
 .kanban > .kanban-column {
   min-height: 0;
   overflow: hidden;
-  height: 100%;
+  height: auto;
+  align-self: stretch;
 }
 .kanban-column > .column-heading {
   flex-shrink: 0;
@@ -28,6 +29,7 @@
 }
 main > .kanban {
   overflow-y: hidden;
+  align-content: stretch;
   grid-template-rows: minmax(0, 1fr);
 }
 
