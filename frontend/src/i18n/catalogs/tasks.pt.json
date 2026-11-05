@@ -83,7 +83,7 @@
   "identityNotProvided": "Identidade não informada",
   "unidentifiedRole": "Papel não identificado",
   "leaderCurrentRole": "Leader · papel atual",
-  "collaboratorCurrentRole": "Collaborator · papel atual",
+  "workerCurrentRole": "Worker · papel atual",
   "searchConversationText": "Buscar texto na conversa",
   "authorType": "Tipo de autor",
   "people": "Pessoas",

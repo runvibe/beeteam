@@ -79,7 +79,7 @@ export interface Filters {
   rootOnly?: boolean;
   archived?: boolean;
   blocked?: boolean;
-  role?: "leader" | "collaborator";
+  role?: "leader" | "worker";
   relation?: "authored" | "executing" | "worked" | "any";
   harness?: string;
   includeChildren?: boolean;
@@ -106,7 +106,9 @@ export interface BeeApi {
   agentLatestActivity(
     agentId: string,
     signal?: AbortSignal,
-  ): Promise<import("./generated/ra/AgentLatestActivity").AgentLatestActivity>;
+  ): Promise<
+    import("./generated/ra/AgentLatestActivity").AgentLatestActivity
+  >;
   timelinePoints(
     taskId: string,
     pagination?: Pick<Filters, "offset" | "limit">,
@@ -182,7 +184,10 @@ export interface BeeApi {
     filters?: Filters,
     signal?: AbortSignal,
   ): Promise<Page<Resources[K]>>;
-  get<K extends keyof Entities>(resource: K, id: string): Promise<Entities[K]>;
+  get<K extends keyof Entities>(
+    resource: K,
+    id: string,
+  ): Promise<Entities[K]>;
   board(id: string, filters?: Filters): Promise<BoardView>;
   patch<K extends keyof Patches>(
     resource: K,
@@ -206,7 +211,9 @@ export interface BeeApi {
     boardId: string,
     statusIds: string[],
     version: number,
-  ): Promise<import("./generated/kanban/StatusOrderResult").StatusOrderResult>;
+  ): Promise<
+    import("./generated/kanban/StatusOrderResult").StatusOrderResult
+  >;
   download(taskId: string, attachmentId: string): Promise<Blob>;
   image(agentId: string): Promise<Blob>;
 }

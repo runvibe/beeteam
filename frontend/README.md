@@ -36,7 +36,7 @@ O board de origem da raiz governa a cadeia: manual força manual; automatic for�
 
 ## Contratos e adapter
 
-`contracts/` contém uma cópia de referência dos seis documentos fonte revisados em 27/10/2026. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os 88 schemas em módulos pequenos em `src/api/generated/`.
+`contracts/` contém cópias de referência dos contratos oficiais. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os schemas RA, Kanban e System em módulos pequenos em `src/api/generated/`; os arquivos gerados não são editados manualmente.
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.
 
@@ -83,7 +83,7 @@ O novo CSS enviado em 27/10 substitui as adaptacoes monocromaticas anteriores: t
 
 Veja [ROUTES.md](ROUTES.md) para paths, query strings e defaults. Filtros, pagina e abas sao reconstruidos da URL; Voltar conserva origem de board/perfil e navegacao recursiva. Sem origem interna valida, task retorna ao seu board. Cards abrem pela area nao interativa ou link do titulo; controles internos conservam suas acoes.
 
-Task.currentSummary vem do contrato final: sintese cumulativa fornecida pelo colaborador, exibida em ate quatro linhas no card e completa na pagina. Vazio mostra "Sem atualizacao registrada". Nao derivamos texto da descricao, progress.note ou historico. Fixtures sao demonstrativas. O mock valida currentSummary nao vazio/ate 16384 bytes UTF-8 no patch e exige quando progress muda; configuracao administrativa preserva resumo. Nao existe editor operacional de progresso nem API real nesta UI.
+Task.currentSummary vem do contrato final: sintese cumulativa fornecida pelo Worker, exibida em ate quatro linhas no card e completa na pagina. Vazio mostra "Sem atualizacao registrada". Nao derivamos texto da descricao, progress.note ou historico. Fixtures sao demonstrativas. O mock valida currentSummary nao vazio/ate 16384 bytes UTF-8 no patch e exige quando progress muda; configuracao administrativa preserva resumo. Nao existe editor operacional de progresso nem API real nesta UI.
 
 Cards de boards compartilham a navegacao dos cards de tasks: area nao interativa abre a rota, titulo e texto; card e link real com suporte a teclado/nova aba, selecao de texto nao navega. Breadcrumb Boards recupera filtros e paginacao da listagem de origem pela URL.
 
@@ -138,7 +138,7 @@ A rolagem incremental de cards, colunas Kanban, navegação de planos e históri
 
 ## Conversa de tarefas
 
-A aba **Conversa** mantém `tab=comments` e os contratos de comentários. Renderiza Markdown seguro, avatar, nome, data e papel **atual** do agente: Leader à direita (prioritário quando há ambos os vínculos), Collaborator à esquerda; humanos e autores indisponíveis têm tratamento neutro. O contrato não registra o papel histórico.
+A aba **Conversa** mantém `tab=comments` e os contratos de comentários. Renderiza Markdown seguro, avatar, nome, data e papel **atual** do agente: Leader à direita (prioritário quando há ambos os vínculos), Worker à esquerda; humanos e autores indisponíveis têm tratamento neutro. O contrato não registra o papel histórico.
 
 Abre na janela recente por padrão sem deslocar a rolagem vertical ao entrar na aba; `comments.offset` explícito preserva links legados. Páginas anteriores/seguintes usam a base compartilhada de scroll infinito, dedupe por ID, cancelamento por identidade e âncora de leitura; há ações acessíveis por teclado. A âncora vale durante a leitura da conversa montada, sem reaplicar uma posição antiga ao reabrir. Autofill abaixo do cabeçalho preserva a posição da página; prepend durante leitura preserva a mensagem visível. A altura do painel anterior fica reservada somente até a carga inicial terminar, evitando encurtamento transitório. A ação explícita de novas mensagens continua acompanhando o fim. Não há compositor nem envio de mensagens.
 
@@ -158,3 +158,14 @@ ResizeObserver propaga a altura real das abas para o scroll-padding do documento
 Conteúdos descritivos do detalhe são Markdown GFM seguro: `currentSummary`, `description`, `progress.note`, `block.reason`, `specification`, conteúdo e `changeSummary` de planos/revisões, corpo dos comentários, `ExecutionSummary.summary`, cada pendência e descrição de anexos. O componente compartilhado ignora HTML e bloqueia protocolos inseguros; títulos Markdown ficam abaixo do título da página. Tabelas e código têm overflow local. O eco compacto do bloqueio é limitado visualmente e inert, sem links focáveis escondidos. Código/citações mantêm contraste no alerta vermelho em ambos os temas.
 
 Títulos, nomes, status, rótulos das entregas, arquivos, IDs, datas e JSON da Timeline permanecem literais. Entregas não possuem campo descritivo no contrato atual (somente label, attachmentId e URL); não se inventa um campo. Campos não exibidos, como contextos estruturados de revisão, não foram adicionados. Esta alteração afeta apresentação; não transforma o texto armazenado, os limites, os contratos ou a edição. Previews de cards fora do detalhe permanecem no escopo anterior.
+
+
+## Worker e compatibilidade de APIs
+
+Worker/Workers é o nome canônico do papel em EN e PT, inclusive filtros, membros, vínculos, ícones e autoria atual nas conversas. O modelo interno usa `workerTeamId`, `workerCount`, `workerIconId`, `roleIcons.worker` e `role=worker`. Conteúdo autoral (nomes, descrições, comentários, histórico textual, IDs e evidências) permanece literal.
+
+O cliente compartilha a descoberta em `/api/v1/info` e usa `/api/v2` para RA/Kanban quando a API anuncia simultaneamente contrato `v2` e capability `roles.worker`. Instalações antigas usam `/api/v1` com o adaptador explícito `legacy-worker.ts`: apenas campos e enums estruturados conhecidos são convertidos, incluindo evidências de resumos/intervalos. PATCH de ícone do Worker é convertido para o campo legado somente nesse transporte; não há substituição recursiva de strings, replay de writes nem fallback para mock. Falhas transitórias preservam a última negociação válida; a ação Verificar novamente permite atualizar a negociação.
+
+Os helpers de descoberta, mudanças SSE, transferência de dados e abertura local de projetos mantêm suas URLs anteriores. Links novos usam `agents.role=worker`; bookmarks com `agents.role=collaborator` continuam legíveis, sem alteração automática de URL, paginação ou histórico. Nomes antigos ficam restritos ao adaptador v1, seus testes, bookmarks legados e documentação histórica em `PROGRESS.md`. A interface não adiciona criação/composição operacional de times: esses fluxos continuam na API/harness.
+
+Validation for the Worker migration: 586 frontend tests in 128 files passed; production build, TypeScript, i18n audit and lint passed (existing lint/bundle warnings remain). Isolated browser QA covered 16 combinations: Worker v2 and legacy v1, EN/PT, desktop/mobile and light/dark. It exercised persisted role icons, filtering/bookmarks, authored conversation text, and API-driven membership removal/relinking reflected in the UI. The harness deliberately disabled SSE; these checks do not claim live SSE or product rollout acceptance.

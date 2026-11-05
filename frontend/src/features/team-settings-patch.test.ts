@@ -7,7 +7,7 @@ it("keeps legacy metadata writes free of unsupported icon fields", () => {
     purpose: "Purpose",
     context: "Draft context",
     leaderIconId: "bot",
-    collaboratorIconId: "music",
+    workerIconId: "music",
   } as const;
   expect(teamSettingsPatch(draft, false)).toEqual({
     name: draft.name,

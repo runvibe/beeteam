@@ -21,7 +21,7 @@ export type UsageObservation = {
         id: null;
       };
   /** @enum {string} */
-  actorRole: "leader" | "collaborator" | "human" | "unknown";
+  actorRole: "leader" | "worker" | "human" | "unknown";
   provider: string | null;
   modelId: string | null;
   /** @enum {string} */

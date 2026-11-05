@@ -39,7 +39,7 @@ servers:
   - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
-  /api/v1/tasks/by-slug/{slug}:
+  /api/v2/tasks/by-slug/{slug}:
     get:
       operationId: resolveTaskSlug
       summary: Resolver slug de Task para UUID interno
@@ -71,7 +71,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/boards:
+  /api/v2/boards:
     parameters: []
     post:
       operationId: createBoard
@@ -259,7 +259,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/boards/{boardId}:
+  /api/v2/boards/{boardId}:
     parameters:
       - name: boardId
         in: path
@@ -388,7 +388,7 @@ paths:
                 summary: Transferir gestão mantendo tasks inalteradas
                 value:
                   teamId: 10000000-0000-7000-8000-000000000031
-  /api/v1/boards/{boardId}/statuses:
+  /api/v2/boards/{boardId}/statuses:
     parameters:
       - name: boardId
         in: path
@@ -532,7 +532,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/StatusInput"
-  /api/v1/boards/{boardId}/statuses/{statusId}:
+  /api/v2/boards/{boardId}/statuses/{statusId}:
     parameters:
       - name: boardId
         in: path
@@ -606,7 +606,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PatchStatus"
-  /api/v1/boards/{boardId}/status-order:
+  /api/v2/boards/{boardId}/status-order:
     parameters:
       - name: boardId
         in: path
@@ -662,7 +662,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/StatusOrder"
-  /api/v1/boards/{boardId}/view:
+  /api/v2/boards/{boardId}/view:
     parameters:
       - name: boardId
         in: path
@@ -760,7 +760,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/boards/{boardId}/tasks:
+  /api/v2/boards/{boardId}/tasks:
     parameters:
       - name: boardId
         in: path
@@ -1024,7 +1024,7 @@ paths:
                 mode: manual
                 conversationRef: chat-1
                 approvalRef: msg-1
-  /api/v1/tasks/{taskId}:
+  /api/v2/tasks/{taskId}:
     parameters:
       - name: taskId
         in: path
@@ -1183,7 +1183,7 @@ paths:
               $ref: "#/components/schemas/PatchTask"
             example:
               autonomyMode: automatic
-  /api/v1/tasks/{taskId}/assignment:
+  /api/v2/tasks/{taskId}/assignment:
     parameters:
       - name: taskId
         in: path
@@ -1280,7 +1280,7 @@ paths:
                 mode: manual
                 conversationRef: chat-1
                 approvalRef: msg-2
-  /api/v1/tasks/{taskId}/position:
+  /api/v2/tasks/{taskId}/position:
     parameters:
       - name: taskId
         in: path
@@ -1369,7 +1369,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Position"
-  /api/v1/tasks/{taskId}/block:
+  /api/v2/tasks/{taskId}/block:
     parameters:
       - name: taskId
         in: path
@@ -1458,7 +1458,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Block"
-  /api/v1/tasks/{taskId}/plans:
+  /api/v2/tasks/{taskId}/plans:
     parameters:
       - name: taskId
         in: path
@@ -1604,7 +1604,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreatePlan"
-  /api/v1/tasks/{taskId}/overview:
+  /api/v2/tasks/{taskId}/overview:
     parameters:
       - name: taskId
         in: path
@@ -1632,7 +1632,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/participants:
+  /api/v2/tasks/{taskId}/participants:
     parameters:
       - name: taskId
         in: path
@@ -1663,7 +1663,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/comments/{commentId}:
+  /api/v2/tasks/{taskId}/comments/{commentId}:
     parameters:
       - name: taskId
         in: path
@@ -1697,7 +1697,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/comments:
+  /api/v2/tasks/{taskId}/comments:
     parameters:
       - name: taskId
         in: path
@@ -1846,7 +1846,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateComment"
-  /api/v1/tasks/{taskId}/attachments:
+  /api/v2/tasks/{taskId}/attachments:
     parameters:
       - name: taskId
         in: path
@@ -1886,12 +1886,12 @@ paths:
         - name: mediaType
           in: query
           required: false
-          description: Correspondência exata case-insensitive do media type armazenado, sem parâmetros.
+          description: Um ou mais tipos MIME separados por vírgula (OR), com correspondência exata case-insensitive, sem parâmetros.
           schema:
             type: string
             minLength: 1
             maxLength: 200
-            pattern: ^[^\s/;]+/[^\s/;]+$
+            pattern: ^[^\s/,;]+/[^\s/,;]+(\s*,\s*[^\s/,;]+/[^\s/,;]+)*$
         - name: includeRemoved
           in: query
           required: false
@@ -2013,7 +2013,7 @@ paths:
         description: Um arquivo, até 20 MiB; corpo multipart até 21 MiB. Nome não é caminho; bytes não ficam
           na raiz web.
         x-maxBytes: 22020096
-  /api/v1/tasks/{taskId}/execution-summaries:
+  /api/v2/tasks/{taskId}/execution-summaries:
     parameters:
       - name: taskId
         in: path
@@ -2179,7 +2179,7 @@ paths:
               $ref: "#/components/schemas/RecordExecution"
             example:
               commitReport: {hasCommits: false, commits: []}
-              usageReport: {"entries": [{"source": "documentation-example", "harness": "example-harness", "surface": "api", "harnessVersion": null, "sessionId": "example-session", "epoch": "example-epoch", "evidenceId": "example-snapshot-1", "previousEvidenceId": null, "actor": {"kind": "agent", "id": "10000000-0000-7000-8000-000000000010"}, "actorRole": "collaborator", "provider": null, "modelId": "example-observed-model", "scope": "session", "reportKind": "cumulative_snapshot", "quality": "measured", "attribution": "unallocated", "observedAt": "2026-10-31T00:00:00Z", "periodStart": null, "periodEnd": null, "inputTokens": "100", "outputTokens": "20", "cachedInputTokens": null, "reasoningOutputTokens": null, "discovery": null, "totalTokens": "120"}]}
+              usageReport: {"entries": [{"source": "documentation-example", "harness": "example-harness", "surface": "api", "harnessVersion": null, "sessionId": "example-session", "epoch": "example-epoch", "evidenceId": "example-snapshot-1", "previousEvidenceId": null, "actor": {"kind": "agent", "id": "10000000-0000-7000-8000-000000000010"}, "actorRole": "worker", "provider": null, "modelId": "example-observed-model", "scope": "session", "reportKind": "cumulative_snapshot", "quality": "measured", "attribution": "unallocated", "observedAt": "2026-10-31T00:00:00Z", "periodStart": null, "periodEnd": null, "inputTokens": "100", "outputTokens": "20", "cachedInputTokens": null, "reasoningOutputTokens": null, "discovery": null, "totalTokens": "120"}]}
               currentSummary: Implementação realizada; validação em andamento; revisão pendente.
               summary: Atividade concluída
               outcome: progress
@@ -2189,7 +2189,7 @@ paths:
               executionContext:
                 rootTaskId: 10000000-0000-7000-8000-000000000002
                 originBoardId: 10000000-0000-7000-8000-000000000001
-  /api/v1/tasks/{taskId}/plans/{planId}/revisions:
+  /api/v2/tasks/{taskId}/plans/{planId}/revisions:
     parameters:
       - name: taskId
         in: path
@@ -2332,7 +2332,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/attachments/{attachmentId}/content:
+  /api/v2/tasks/{taskId}/attachments/{attachmentId}/content:
     parameters:
       - name: taskId
         in: path
@@ -2381,7 +2381,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/attachments/{attachmentId}:
+  /api/v2/tasks/{taskId}/attachments/{attachmentId}:
     parameters:
       - name: taskId
         in: path
@@ -2433,7 +2433,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/timeline:
+  /api/v2/tasks/{taskId}/timeline:
     parameters:
       - name: taskId
         in: path
@@ -2544,7 +2544,118 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/archive:
+  /api/v2/tasks/{taskId}/timeline-points:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        description: ""
+        schema:
+          type: string
+          format: uuid
+          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+    get:
+      operationId: getTimelinePoints
+      summary: Consultar pontos leves da timeline
+      description: Projeção leve sem data, Markdown ou evidências. Consumir nextOffset até hasMore=false antes de apresentar o histórico como completo. Cada página usa snapshot próprio; novos eventos são obtidos por atualização da consulta. Timeline disponível a todos. includeChildren=true reúne toda a descendência recursiva,
+        inclusive cross-board, sem limite fixo de níveis; preservar taskId/autor de cada evento, sem
+        duplicação. Ordenar por sequence e paginar offset/limit.
+      x-contract-status: proposed
+      parameters:
+        - name: id
+          in: query
+          required: false
+          description: UUIDv7 exato do evento, combinado com o escopo da tarefa (e includeChildren) e demais filtros no banco antes de contagem e paginação. Evento inexistente, excluído ou fora do escopo retorna página vazia.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: includeChildren
+          in: query
+          required: false
+          description: ""
+          schema:
+            type: boolean
+            default: false
+        - name: actorId
+          in: query
+          required: false
+          description: Filtra autoria já registrada, sem definir a identidade do solicitante.
+          schema:
+            type: string
+            format: uuid
+            pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        - name: types
+          in: query
+          required: false
+          description: Lista CSV de tipos; OR entre tipos, AND com demais filtros.
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/EventType"
+            minItems: 1
+            uniqueItems: true
+          style: form
+          explode: false
+        - name: occurredFrom
+          in: query
+          required: false
+          description: Limite inferior inclusivo de occurredAt, RFC3339 com timezone.
+          schema:
+            type: string
+            format: date-time
+        - name: occurredBefore
+          in: query
+          required: false
+          description: Limite superior exclusivo de occurredAt, RFC3339 com timezone. From deve ser
+            estritamente anterior a Before.
+          schema:
+            type: string
+            format: date-time
+        - name: sortBy
+          in: query
+          required: false
+          description: Campo da allowlist; desempate obrigatório por id na mesma direção.
+          schema:
+            type: string
+            enum:
+              - sequence
+            default: sequence
+        - name: sortOrder
+          in: query
+          required: false
+          description: Direção do campo principal e do desempate por id.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - $ref: "#/components/parameters/Offset"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Consultar pontos leves da timeline
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelinePointPage"
+              example:
+                items: []
+                offset: 0
+                limit: 50
+                total: 0
+                hasMore: false
+                nextOffset: null
+        "400":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+        "503":
+          $ref: "#/components/responses/503"
+  /api/v2/tasks/{taskId}/archive:
     parameters:
       - name: taskId
         in: path
@@ -2633,7 +2744,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Archive"
-  /api/v1/tasks:
+  /api/v2/tasks:
     parameters: []
     get:
       operationId: listAllTasks
@@ -2789,18 +2900,18 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/tasks/{taskId}/usage: {"get": {"operationId": "getTaskUsage", "summary": "Read known usage totals and summary checkpoints", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskUsage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/usage: {"get": {"operationId": "getTaskUsage", "summary": "Read known usage totals and summary checkpoints", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskUsage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
 
-  /api/v1/tasks/{taskId}/usage/dimensions: {"get": {"operationId": "listTaskUsageDimensions", "summary": "List every reported model or harness with pagination", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "kind", "in": "query", "required": true, "schema": {"type": "string", "enum": ["model", "harness"]}}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UsageDimensionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/usage/dimensions: {"get": {"operationId": "listTaskUsageDimensions", "summary": "List every reported model or harness with pagination", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "kind", "in": "query", "required": true, "schema": {"type": "string", "enum": ["model", "harness"]}}], "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UsageDimensionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
 
-  /api/v1/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions: {"post": {"operationId": "reconcileSummaryUsage", "summary": "Append late usage evidence without changing task state or summary Markdown", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "summaryId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SummaryUsageInput"}}}}, "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExecutionSummary"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions: {"post": {"operationId": "reconcileSummaryUsage", "summary": "Append late usage evidence without changing task state or summary Markdown", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "summaryId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SummaryUsageInput"}}}}, "responses": {"200": {"description": "Usage read model; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ExecutionSummary"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
 
-  /api/v1/tasks/{taskId}/executions: {"get": {"operationId": "listTaskExecutions", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "state", "in": "query", "required": false, "schema": {"type": "string"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
-  /api/v1/tasks/{taskId}/execution-intervals: {"get": {"operationId": "listTaskExecutionIntervals", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "state", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "executionId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
-  /api/v1/tasks/{taskId}/execution-tracking-events: {"get": {"operationId": "listTaskExecutionTrackingEvents", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "summaryId", "in": "query", "required": false, "description": "Exact explicit summary reference; filtered before count and pagination within this task.", "schema": {"type": "string", "format": "uuid"}}, {"name": "executionId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionTrackingEventPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
-  /api/v1/tasks/{taskId}/execution-interval-usage: {"get": {"operationId": "getTaskExecutionIntervalUsage", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalUsage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
-  /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions: {"get": {"operationId": "listTaskExecutionIntervalRevisions", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalRevisionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}, "post": {"operationId": "reconcileTaskExecutionInterval", "summary": "Explicit audit-preserving correction or invalidation of closed interval. If-Match is interval version. No source evidence mutation.", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReconcileExecutionInterval"}}}}, "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionInterval"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
-  /api/v1/execution-intervals: {"get": {"operationId": "listOpenExecutionIntervals", "summary": "Recover open intervals before starting or resuming work; no automatic closure", "parameters": [{"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "source", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "sessionId", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "coverageRootSessionId", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "agentId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/executions: {"get": {"operationId": "listTaskExecutions", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "state", "in": "query", "required": false, "schema": {"type": "string"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/execution-intervals: {"get": {"operationId": "listTaskExecutionIntervals", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "state", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "executionId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/execution-tracking-events: {"get": {"operationId": "listTaskExecutionTrackingEvents", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "summaryId", "in": "query", "required": false, "description": "Exact explicit summary reference; filtered before count and pagination within this task.", "schema": {"type": "string", "format": "uuid"}}, {"name": "executionId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionTrackingEventPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/execution-interval-usage: {"get": {"operationId": "getTaskExecutionIntervalUsage", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalUsage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/tasks/{taskId}/execution-intervals/{intervalId}/revisions: {"get": {"operationId": "listTaskExecutionIntervalRevisions", "summary": "Read explicit execution intervals without inferred boundaries", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalRevisionPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}, "post": {"operationId": "reconcileTaskExecutionInterval", "summary": "Explicit audit-preserving correction or invalidation of closed interval. If-Match is interval version. No source evidence mutation.", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"name": "intervalId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReconcileExecutionInterval"}}}}, "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionInterval"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/execution-intervals: {"get": {"operationId": "listOpenExecutionIntervals", "summary": "Recover open intervals before starting or resuming work; no automatic closure", "parameters": [{"$ref": "#/components/parameters/Limit"}, {"$ref": "#/components/parameters/Offset"}, {"name": "source", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "sessionId", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "coverageRootSessionId", "in": "query", "required": false, "schema": {"type": "string"}}, {"name": "agentId", "in": "query", "required": false, "schema": {"type": "string", "format": "uuid"}}], "responses": {"200": {"description": "Explicit execution tracking state; absence is not zero", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TaskExecutionIntervalPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
 
 components:
   parameters:
@@ -2958,7 +3069,7 @@ components:
     CurrentSummary:
       type: string
       x-maxBytes: 16384
-      description: Síntese cumulativa atual escrita pelo colaborador (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.
+      description: Síntese cumulativa atual escrita pelo worker (feito, trabalho atual e pendências/próximo passo). Vazio significa ainda não informado. Nunca inferida da descrição, nota de progresso ou histórico.
     CurrentSummaryInput:
       type: string
       minLength: 1
@@ -4521,6 +4632,8 @@ components:
         - task.archived
         - task.restored
         - subtask.created
+    TimelinePoint: {"type": "object", "properties": {"id": {"type": "string", "format": "uuid"}, "taskId": {"type": "string", "format": "uuid"}, "type": {"$ref": "#/components/schemas/EventType"}, "occurredAt": {"type": "string", "format": "date-time"}, "sequence": {"type": "integer", "minimum": 1}}, "required": ["id", "taskId", "type", "occurredAt", "sequence"], "additionalProperties": false}
+    TimelinePointPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TimelinePoint"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1}, "hasMore": {"type": "boolean"}, "nextOffset": {"type": ["integer", "null"], "minimum": 0}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     Event:
       type: object
       properties:
@@ -5072,7 +5185,7 @@ components:
         - occurredAt
         - deletedAt
       additionalProperties: false
-    UsageObservation: {"type": "object", "additionalProperties": false, "properties": {"source": {"type": "string", "minLength": 1, "maxLength": 200}, "harness": {"type": "string", "minLength": 1, "maxLength": 200}, "surface": {"type": "string", "minLength": 1, "maxLength": 200}, "harnessVersion": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "sessionId": {"type": "string", "minLength": 1, "maxLength": 200}, "epoch": {"type": "string", "minLength": 1, "maxLength": 200}, "evidenceId": {"type": "string", "minLength": 1, "maxLength": 200}, "previousEvidenceId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "actor": {"oneOf": [{"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "agent"}, "id": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, "required": ["kind", "id"]}, {"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "human"}, "id": {"type": "null"}}, "required": ["kind", "id"]}]}, "actorRole": {"type": "string", "enum": ["leader", "collaborator", "human", "unknown"]}, "provider": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "modelId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "scope": {"type": "string", "enum": ["request", "session", "session_tree"]}, "reportKind": {"type": "string", "enum": ["cumulative_snapshot", "period_delta", "unavailable"]}, "quality": {"type": "string", "enum": ["measured", "estimated", "unavailable"]}, "attribution": {"type": "string", "enum": ["exact", "shared", "unallocated"]}, "observedAt": {"type": "string", "format": "date-time"}, "periodStart": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "periodEnd": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "inputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "outputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "cachedInputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "reasoningOutputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "discovery": {"anyOf": [{"type": "object", "additionalProperties": false, "properties": {"reason": {"type": "string", "minLength": 1, "maxLength": 2000}, "attempts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "minItems": 1, "maxItems": 12}}, "required": ["reason", "attempts"]}, {"type": "null"}]}, "totalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}], "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."}}, "required": ["source", "harness", "surface", "harnessVersion", "sessionId", "epoch", "evidenceId", "previousEvidenceId", "actor", "actorRole", "provider", "modelId", "scope", "reportKind", "quality", "attribution", "observedAt", "periodStart", "periodEnd", "inputTokens", "outputTokens", "cachedInputTokens", "reasoningOutputTokens", "discovery"], "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets."}
+    UsageObservation: {"type": "object", "additionalProperties": false, "properties": {"source": {"type": "string", "minLength": 1, "maxLength": 200}, "harness": {"type": "string", "minLength": 1, "maxLength": 200}, "surface": {"type": "string", "minLength": 1, "maxLength": 200}, "harnessVersion": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "sessionId": {"type": "string", "minLength": 1, "maxLength": 200}, "epoch": {"type": "string", "minLength": 1, "maxLength": 200}, "evidenceId": {"type": "string", "minLength": 1, "maxLength": 200}, "previousEvidenceId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "actor": {"oneOf": [{"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "agent"}, "id": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, "required": ["kind", "id"]}, {"type": "object", "additionalProperties": false, "properties": {"kind": {"const": "human"}, "id": {"type": "null"}}, "required": ["kind", "id"]}]}, "actorRole": {"type": "string", "enum": ["leader", "worker", "human", "unknown"]}, "provider": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "modelId": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 200}, {"type": "null"}]}, "scope": {"type": "string", "enum": ["request", "session", "session_tree"]}, "reportKind": {"type": "string", "enum": ["cumulative_snapshot", "period_delta", "unavailable"]}, "quality": {"type": "string", "enum": ["measured", "estimated", "unavailable"]}, "attribution": {"type": "string", "enum": ["exact", "shared", "unallocated"]}, "observedAt": {"type": "string", "format": "date-time"}, "periodStart": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "periodEnd": {"anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]}, "inputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "outputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "cachedInputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "reasoningOutputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "discovery": {"anyOf": [{"type": "object", "additionalProperties": false, "properties": {"reason": {"type": "string", "minLength": 1, "maxLength": 2000}, "attempts": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}, "minItems": 1, "maxItems": 12}}, "required": ["reason", "attempts"]}, {"type": "null"}]}, "totalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}], "description": "Explicit inclusive input+output cumulative total. Required for new summaries; optional in legacy evidence. Never add cache/reasoning twice or sum successive snapshots."}}, "required": ["source", "harness", "surface", "harnessVersion", "sessionId", "epoch", "evidenceId", "previousEvidenceId", "actor", "actorRole", "provider", "modelId", "scope", "reportKind", "quality", "attribution", "observedAt", "periodStart", "periodEnd", "inputTokens", "outputTokens", "cachedInputTokens", "reasoningOutputTokens", "discovery"], "description": "Historical/general evidence schema. New summaries use SessionUsageObservation; legacy/late evidence can retain partial or unavailable observations. No transcripts or secrets."}
 
     UsageDelta: {"type": "object", "additionalProperties": false, "properties": {"inputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "outputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "cachedInputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "reasoningOutputTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}, "totalTokens": {"anyOf": [{"type": "string", "pattern": "^(0|[1-9][0-9]{0,18})$"}, {"type": "null"}]}}, "required": ["inputTokens", "outputTokens", "cachedInputTokens", "reasoningOutputTokens", "totalTokens"]}
 

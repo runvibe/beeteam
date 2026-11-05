@@ -23,7 +23,9 @@ describe("OpenAPI response conformance", () => {
   const ajv = new Ajv({ strict: false, allErrors: true });
   addFormats(ajv);
   for (const domain of ["kanban", "ra"]) {
-    const doc = parse(readFileSync(`contracts/${domain}-openapi.yaml`, "utf8"));
+    const doc = parse(
+      readFileSync(`contracts/${domain}-openapi.yaml`, "utf8"),
+    );
     ajv.addSchema({ $id: domain, components: doc.components });
   }
   for (const [resource, schema] of Object.entries(schemas))
@@ -131,9 +133,9 @@ describe("OpenAPI response conformance", () => {
         expect.objectContaining({ keyword: "minItems" }),
       ]),
     );
-    expect(validate({ entries: Array.from({ length: 33 }, () => ({})) })).toBe(
-      false,
-    );
+    expect(
+      validate({ entries: Array.from({ length: 33 }, () => ({})) }),
+    ).toBe(false);
     expect(validate.errors).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ keyword: "maxItems" }),
@@ -160,7 +162,7 @@ describe("OpenAPI response conformance", () => {
       evidenceId: "first",
       previousEvidenceId: null,
       actor: { kind: "agent", id: makeSeed().agents[0].id },
-      actorRole: "collaborator",
+      actorRole: "worker",
       provider: null,
       modelId: "model",
       scope: "session",
@@ -273,8 +275,11 @@ describe("OpenAPI response conformance", () => {
   it("projections conform after querying", async () => {
     const api = createMockApi({ delay: 0 });
     for (const [schema, value] of [
-      ["ra#/components/schemas/AgentLatestActivity", await api.agentLatestActivity(ids.agent)],
-      ["ra#/components/schemas/AgentLatestActivity", {activity:null}],
+      [
+        "ra#/components/schemas/AgentLatestActivity",
+        await api.agentLatestActivity(ids.agent),
+      ],
+      ["ra#/components/schemas/AgentLatestActivity", { activity: null }],
       [
         "ra#/components/schemas/ActivityLinkPage",
         await api.list("activities", ids.agent),

@@ -15,7 +15,9 @@ it("keeps the same trigger while entering and leaving the tag stack repeatedly",
     />,
   );
   const trigger = screen.getByRole("button");
-  const list = document.getElementById(trigger.getAttribute("aria-controls")!)!;
+  const list = document.getElementById(
+    trigger.getAttribute("aria-controls")!,
+  )!;
   for (let index = 0; index < 5; index++) {
     await user.hover(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
@@ -39,7 +41,9 @@ it("supports touch toggling, keyboard focus and Escape without changing filters"
     />,
   );
   const toggle = screen.getByRole("button");
-  const list = document.getElementById(toggle.getAttribute("aria-controls")!)!;
+  const list = document.getElementById(
+    toggle.getAttribute("aria-controls")!,
+  )!;
   expect(list).toHaveAttribute("inert");
   fireEvent.pointerEnter(toggle, { pointerType: "touch" });
   expect(toggle).toHaveAttribute("aria-expanded", "false");
@@ -69,7 +73,9 @@ it("keeps an expanded stack during successive removals and transfers keyboard fo
               label,
               value: label,
               onRemove: () =>
-                setItems((current) => current.filter((item) => item !== label)),
+                setItems((current) =>
+                  current.filter((item) => item !== label),
+                ),
             }))}
           />
         )}
@@ -80,7 +86,9 @@ it("keeps an expanded stack during successive removals and transfers keyboard fo
   await user.hover(
     screen.getByRole("button", { name: "Expandir 3 filtros ativos" }),
   );
-  await user.click(screen.getByRole("button", { name: "Remover filtro B: B" }));
+  await user.click(
+    screen.getByRole("button", { name: "Remover filtro B: B" }),
+  );
   expect(
     screen.getByRole("button", { name: "Recolher 2 filtros ativos" }),
   ).toBeInTheDocument();
@@ -106,7 +114,7 @@ it("returns focus to the toggle before collapsing a focused tag on Escape", asyn
     <FilterSummary
       filters={[
         { label: "Busca", value: "Projeto" },
-        { label: "Papel", value: "Colaborador", onRemove: () => {} },
+        { label: "Papel", value: "Worker", onRemove: () => {} },
       ]}
     />,
   );

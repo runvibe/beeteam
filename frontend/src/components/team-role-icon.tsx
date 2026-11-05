@@ -14,13 +14,13 @@ import {
 import { Tooltip } from "radix-ui";
 
 export const teamRoleIcons = catalog;
-export type TeamRole = "leader" | "collaborator";
+export type TeamRole = "leader" | "worker";
 export function roleIconId(
   team: Team | undefined,
   role: TeamRole,
 ): TeamRoleIconId {
   return (
-    (role === "leader" ? team?.leaderIconId : team?.collaboratorIconId) ??
+    (role === "leader" ? team?.leaderIconId : team?.workerIconId) ??
     (role === "leader" ? "crown" : "user-round")
   );
 }
@@ -47,7 +47,7 @@ export function AgentRoleSymbol({
 }) {
   useLocale();
   const team = useEntity("teams", teamId);
-  const label = tr(`common.${role}`);
+  const label = tr(role === "leader" ? "common.leader" : "common.worker");
   return (
     <Tooltip.Provider delayDuration={200}>
       <Tooltip.Root>
@@ -84,7 +84,7 @@ export function RoleIconSelect({
 }) {
   useLocale();
   const label = tr(
-    role === "leader" ? "teams.leaderIcon" : "teams.collaboratorIcon",
+    role === "leader" ? "teams.leaderIcon" : "teams.workerIcon",
   );
   return (
     <Field>

@@ -4,17 +4,17 @@ Atualizada em 27 de outubro de 2026. Revisão documental autorizada; implementa�
 
 ## Objetivo e execução local
 
-Organizar, para uso pessoal, equipes de colaboradores de IA para desenvolvimento, tesouraria, planejamento financeiro, pesquisa, planilhas e outras demandas. O produto reúne uma skill coordenadora e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos.
+Organizar, para uso pessoal, equipes de workers de IA para desenvolvimento, tesouraria, planejamento financeiro, pesquisa, planilhas e outras demandas. O produto reúne uma skill coordenadora e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos.
 
 Bee Team é instalado no computador do usuário como servidor local com interface web, API e MCP. A IA no Codex ou outro harness consulta configurações e registra trabalho. Bee Team não acessa diretamente recursos da IA, não inicia/controla chats e não executa tarefas por conta própria. A skill orienta o uso dos recursos disponíveis no harness; capacidades ausentes devem ser explicitadas.
 
 ## Modelo final
 
 - **Board:** organiza tasks e status configuráveis. Identifica obrigatoriamente seu criador e preserva essa autoria. Tem exatamente um time responsável pela gestão, transferível para outro time. Um time pode gerir vários boards. Transferir gestão não altera autoria, executor, hierarquia ou histórico das tasks.
-- **Task:** pertence a um board; tem autor/dono obrigatório (agente que a escreveu) e executor obrigatório (agente que a executará). Ambos podem atuar como líder ou colaborador. Autor é preservado; executor pode ser reatribuído pelo usuário.
+- **Task:** pertence a um board; tem autor/dono obrigatório (agente que a escreveu) e executor obrigatório (agente que a executará). Ambos podem atuar como líder ou worker. Autor é preservado; executor pode ser reatribuído pelo usuário.
 - **Subtask:** é Task com parentId. Recursão sem limite fixo de níveis, executor próprio obrigatório, podendo ser diferente do pai, e board próprio, podendo ser diferente do pai. Ciclos parentais são inválidos. Checklist é projeção dos filhos, sem duplicar estado.
 - **Time:** grupo organizacional de agentes que o líder utiliza para distribuir demandas. Pode gerir boards, mas tasks não têm vínculo direto de pertencimento ao time. Cada time tem exatamente um líder.
-- **Agente:** perfil e identidade persistentes, independentes de chats. No máximo um vínculo como colaborador e um como líder, em times diferentes. Sem papel especial de gerente.
+- **Agente:** perfil e identidade persistentes, independentes de chats. No máximo um vínculo como worker e um como líder, em times diferentes. Sem papel especial de gerente.
 - **Chat:** sessão externa referenciada; não é identidade permanente do agente.
 
 Informações e histórico das tasks estão disponíveis a todos. Mudar o time de um agente não muda suas tarefas, autoria ou acesso ao histórico das tasks. Transferir uma task muda somente seu executor; não copia o histórico interno do agente anterior. Autoria do board é registrada a partir do contexto declarado da criação; detalhes de representação HTTP estão no contrato.
@@ -35,7 +35,7 @@ O contexto de execução é o board que originou a task principal. rootTaskId id
 
 Sem contexto de execução, manter aprovação. Bee Team armazena configurações e informa o contexto/modo efetivo; o harness executa e cumpre aprovações. O servidor não é um engine executor.
 
-Colaborador trabalha nas tasks que executa. O líder distribui demandas usando agentes geridos, mas não existe 'líder do time da task'. O alcance de edição do líder sobre tasks de executores geridos ainda aguarda decisão; não tratá-lo como permissão confirmada. Não há autenticação ou política de segurança implícita nessa descrição.
+Worker trabalha nas tasks que executa. O líder distribui demandas usando agentes geridos, mas não existe 'líder do time da task'. O alcance de edição do líder sobre tasks de executores geridos ainda aguarda decisão; não tratá-lo como permissão confirmada. Não há autenticação ou política de segurança implícita nessa descrição.
 
 ## Interface: Tarefas e RA
 
@@ -51,7 +51,7 @@ Referências de chats e contexto de retomada reutilizam perfil e leituras de tas
 
 ## Times, transferência e cópia
 
-Arquivar time preserva time, colaboradores, vínculos e histórico. Não libera vínculos automaticamente. Transferência explícita de agente para outro time é permitida inclusive saindo de time arquivado, mantendo identidade e tasks. Validar cardinalidades de papéis no estado final da transação; não mover nem reatribuir tasks durante essa transferência.
+Arquivar time preserva time, workers, vínculos e histórico. Não libera vínculos automaticamente. Transferência explícita de agente para outro time é permitida inclusive saindo de time arquivado, mantendo identidade e tasks. Validar cardinalidades de papéis no estado final da transação; não mover nem reatribuir tasks durante essa transferência.
 
 Cópia solicitada cria identidade independente, reutilizando perfil e contexto resumido apenas quando pedido. Não duplica autoria de atividades, tasks, chats ou histórico interno. Os detalhes técnicos de cópia de imagem e referência de resumo são propostas no contrato RA.
 
@@ -79,9 +79,9 @@ Pendência material encaminhada: edição de task pelo líder via executor gerid
 
 ## Anexo A — exemplos de organização de equipes
 
-A skill deverá incluir exemplos de diferentes casos de uso. Cada exemplo explicará a demanda inicial, a distribuição proposta, o motivo da divisão, as dependências, as entregas e os critérios para reutilizar colaboradores ou propor novos.
+A skill deverá incluir exemplos de diferentes casos de uso. Cada exemplo explicará a demanda inicial, a distribuição proposta, o motivo da divisão, as dependências, as entregas e os critérios para reutilizar workers ou propor novos.
 
-As organizações abaixo são referências adaptáveis. Não impõem departamentos ou quantidades fixas de colaboradores; uma demanda pequena pode ficar com apenas um responsável. A distribuição segue o modo de autonomia configurado, com aprovação como padrão.
+As organizações abaixo são referências adaptáveis. Não impõem departamentos ou quantidades fixas de workers; uma demanda pequena pode ficar com apenas um responsável. A distribuição segue o modo de autonomia configurado, com aprovação como padrão.
 
 | Área | Demanda de exemplo | Possível organização | Dependências e entregas |
 |---|---|---|---|
@@ -90,12 +90,30 @@ As organizações abaixo são referências adaptáveis. Não impõem departament
 | Planejamento financeiro | Elaborar orçamento e analisar custos | Estruturação da planilha, análise de orçamento versus realizado e elaboração de cenários. | Usar períodos e categorias compatíveis; entregar planilha, análise e premissas dos cenários. |
 | Análise de mercado | Avaliar uma oportunidade | Pesquisa de concorrentes, análise de clientes e segmentos e consolidação das conclusões. | Definir escopo comum de pesquisa; entregar análise com fontes e incertezas. |
 
-Os exemplos completos da skill deverão mostrar quando o contexto existente favorece reutilizar um colaborador e quando uma frente independente justifica propor outro.
+Os exemplos completos da skill deverão mostrar quando o contexto existente favorece reutilizar um worker e quando uma frente independente justifica propor outro.
 
 ## Resumo atual cumulativo (implementado)
 
-Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do colaborador, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
+Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do worker, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
 
 PatchTask aceita currentSummary não vazio e o exige quando progress é enviado. Position (operação moveTask) o exige ao mudar status, não ao reordenar no mesmo status. RecordExecution exige currentSummary; mantém summary como registro histórico de atividade e salva ambos atomicamente. MCP simples segue os mesmos DTOs; record_progress aceita currentSummary no topo e por descendente, obrigatório com progress; close_activity exige execution.currentSummary. Título/descrição/modo podem ser editados sem enviar resumo; preservam o existente.
 
 Persistência reutiliza tasks.data JSONB (migration 202610270004); nenhuma tabela duplicada ou query por card. Backend não calcula síntese nem cliente precisa ler toda história. Erro de versão, conteúdo, contexto ou descendente reverte todas as alterações compostas; idempotência cobre o texto enviado. Sem alterações na política de edição do líder.
+
+## Especificação própria e Markdown
+
+`Task.specification` é texto Markdown (máximo 65536 bytes UTF-8), sempre presente em leitura/listagem/quadro/contexto MCP. Criação aceita campo opcional, com padrão `""`; PATCH aceita substituição integral, inclusive `""` para limpar. Null/tipo incorreto/excesso de bytes são rejeitados. Migration005 preenche legadas/tombstones sem inventar conteúdo, preservando as especificações existentes.
+
+Especificação define entrega, requisitos, regras e critérios de aceite. `description` apresenta a tarefa, `PlanRevision.content` descreve execução versionada, `currentSummary` relata estado cumulativo atual. Nenhum substitui o outro. Alteração apenas de specification é administrativa e não exige currentSummary; progress conjunto mantém sua exigência. Timeline mantém antes/depois via task.updated. Replays legados recebem vazio explícito no snapshot, mantendo versão e conteúdo anterior.
+
+Especificações e planos/revisões conservam o texto recebido, incluindo Markdown, Unicode, quebras de linha e trechos de código/HTML literais. O backend não renderiza HTML, executa ou transforma conteúdo. Planos continuam com content Markdown limitado a 65536 bytes, revisões imutáveis e conflitos baseRevision existentes. Sem nova entidade ou versionamento exclusivo de especificação. Clientes devem tratar conteúdo como dados e renderizar com segurança quando necessário.
+
+## Slugs de agentes, times e tasks
+
+Agent.slug, Team.slug e Task.slug (incluindo subtasks) são gerados, sempre presentes e não editáveis. UUIDv7 permanece identidade interna e parâmetro das APIs existentes. Boards não possuem slug. Resolvers GET /api/v1/agents/by-slug/{slug}, /teams/by-slug/{slug}, /tasks/by-slug/{slug} retornam {id,slug}; no MCP: resolveAgentSlug/resolveTeamSlug/resolveTaskSlug com params.slug. Usar o UUID retornado nas APIs/prompts seguintes; não enviar slug onde se exige UUID. Retorno404 para ausente/excluído; arquivados continuam resolvendo. Formato inválido ou não canônico retorna400; não há redirect/normalização implícita no resolver.
+
+Normalização única no PostgreSQL: lowercase+NFKD, remoção de marcas combinantes U+0300..036F, ß/æ/œ para ss/ae/oe, demais caracteres fora de a-z0-9 viram separador, hifens colapsados/sem bordas. Nomes sem caracteres úteis usam agent/team/task; não há transliteração universal de alfabetos não latinos. Máximo80 caracteres ASCII, truncando base para caber sufixos -2,-3... . Reservados new/edit/create/by-slug/resolve/search/archive/settings/api/mcp/agents/teams/tasks e strings em formato UUID recebem prefixo agent-/team-/task-.
+
+Slugs são estáveis ao renomear e únicos por tipo, inclusive archived/deleted. Excluídos nunca liberam o nome para outra identidade; cópia cria novo slug. Migration006 usa created_at,id para backfill determinístico, incluindo tombstones sem alterar conteúdo prévio, versão ou datas. Coluna gerada/index único/trigger de imutabilidade e lock transacional coordenam concorrência. Resolvers consultam índice diretamente, sem snapshot completo ou enumeração de listas. A geração e o backfill compartilham a mesma função SQL, sem algoritmos divergentes.
+
+Replays históricos sem slug ganham o slug canônico imutável do registro correspondente, inclusive tombstones; conservam a versão e demais campos do snapshot original. Não se reconstrói slug pelo nome antigo nem atual. Sem auth/políticas novas; alteração visual/integração frontend não validada nesta frente.

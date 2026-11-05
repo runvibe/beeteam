@@ -1,3 +1,4 @@
+import { legacyFetch } from "@/api/legacy-fetch.fixture";
 import { expect, it, vi } from "vitest";
 import { createMockApi } from "./mock";
 import { createHttpApi } from "./http";
@@ -9,7 +10,9 @@ it("reads explicit latest activity without querying related tasks", async () => 
       new Response(JSON.stringify({ activity: null }), { status: 200 }),
     );
   expect(
-    await createHttpApi({ fetch: fetcher }).agentLatestActivity(ids.agent),
+    await createHttpApi({ fetch: legacyFetch(fetcher) }).agentLatestActivity(
+      ids.agent,
+    ),
   ).toEqual({ activity: null });
   expect(fetcher).toHaveBeenCalledTimes(1);
   expect(fetcher.mock.calls[0][0]).toBe(
@@ -57,7 +60,9 @@ it("does not infer activity from profile/task updates and handles missing agent 
   const seed = makeSeed();
   seed.timeline = [];
   const api = createMockApi({ delay: 0, seed });
-  expect(await api.agentLatestActivity(ids.agent)).toEqual({ activity: null });
+  expect(await api.agentLatestActivity(ids.agent)).toEqual({
+    activity: null,
+  });
   await expect(api.agentLatestActivity(uuid(999))).rejects.toMatchObject({
     status: 404,
   });

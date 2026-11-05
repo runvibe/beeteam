@@ -1,3 +1,4 @@
+import { legacyFetch } from "@/api/legacy-fetch.fixture";
 import { expect, it, vi } from "vitest";
 import { createHttpApi } from "./http";
 it("sends independent exact Event and Summary identifiers to their scoped endpoints", async () => {
@@ -14,7 +15,7 @@ it("sends independent exact Event and Summary identifiers to their scoped endpoi
         }),
       ),
   );
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await api.list("timeline", "task", {
     id: "event-id",
     includeChildren: true,

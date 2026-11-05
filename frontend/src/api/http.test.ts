@@ -1,3 +1,4 @@
+import { legacyFetch } from "@/api/legacy-fetch.fixture";
 import { it, expect, vi } from "vitest";
 import { createHttpApi } from "./http";
 const response = (value: unknown, status = 200) =>
@@ -6,8 +7,10 @@ const response = (value: unknown, status = 200) =>
     headers: { "Content-Type": "application/json" },
   });
 it("requests one authoritative task overview snapshot", async () => {
-  const fetcher = vi.fn().mockResolvedValue(response({ task: { id: "task" } }));
-  await createHttpApi({ fetch: fetcher }).overview("task");
+  const fetcher = vi
+    .fn()
+    .mockResolvedValue(response({ task: { id: "task" } }));
+  await createHttpApi({ fetch: legacyFetch(fetcher) }).overview("task");
   expect(fetcher.mock.calls[0][0]).toBe("/api/v1/tasks/task/overview");
 });
 it("reads discovery relative to the configured API base", async () => {
@@ -28,7 +31,7 @@ it("reads discovery relative to the configured API base", async () => {
 });
 it("requests task participants with pagination only", async () => {
   const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
-  await createHttpApi({ fetch: fetcher }).participants("task", {
+  await createHttpApi({ fetch: legacyFetch(fetcher) }).participants("task", {
     offset: 100,
     limit: 100,
   });
@@ -47,7 +50,8 @@ it("propagates list cancellation to fetch without reporting a timeout", async ()
         );
       }),
   );
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
+  await api.info().catch(() => undefined);
   const controller = new AbortController();
   const request = api.list("boards", "", {}, controller.signal);
   controller.abort();
@@ -58,7 +62,7 @@ it("maps scoped/global resources and preserves exact query semantics", async () 
   const fetcher = vi
     .fn()
     .mockImplementation(async () => response({ items: [] }));
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await api.list("tasks", "", {
     parentId: "parent",
     offset: 20,
@@ -76,13 +80,15 @@ it("maps scoped/global resources and preserves exact query semantics", async () 
     "/api/v1/tasks/task/execution-summaries",
   );
   await api.list("chats", "agent");
-  expect(fetcher.mock.calls[3][0]).toBe("/api/v1/agents/agent/chat-references");
+  expect(fetcher.mock.calls[3][0]).toBe(
+    "/api/v1/agents/agent/chat-references",
+  );
 });
 it("writes human attribution, strong versions, status board scope and stable creation keys", async () => {
   const fetcher = vi
     .fn()
     .mockImplementation(async () => response({ version: 2 }));
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await api.patch("statuses", "status", { name: "Revisão" }, 3, "board");
   const [url, init] = fetcher.mock.calls[0];
   expect(url).toBe("/api/v1/boards/board/statuses/status");
@@ -119,7 +125,7 @@ it("preserves backend errors and reports non-json/network failures without mock 
     )
     .mockResolvedValueOnce(new Response("<html>bad</html>", { status: 503 }))
     .mockRejectedValueOnce(new TypeError("offline"));
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await expect(api.get("agents", "a")).rejects.toMatchObject({
     status: 412,
     code: "version_conflict",
@@ -138,7 +144,7 @@ it("reads resolvers and binary content through the transport", async () => {
     .mockResolvedValueOnce(
       new Response("bytes", { headers: { "Content-Type": "image/png" } }),
     );
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   expect(await api.resolveSlug("agents", "lia")).toEqual({
     id: "id",
     slug: "lia",
@@ -153,7 +159,7 @@ it("requests usage and dimension pages without client-side aggregation", async (
     .mockImplementation(
       async () => new Response(JSON.stringify({}), { status: 200 }),
     );
-  const api = createHttpApi({ fetch: fetcher });
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await api.usage("task", { offset: 20, limit: 20 });
   await api.usageDimensions("task", "model", { offset: 100, limit: 100 });
   expect(fetcher.mock.calls[0][0]).toBe(
@@ -166,11 +172,15 @@ it("requests usage and dimension pages without client-side aggregation", async (
 
 it("requests exact summary ID within the task collection", async () => {
   const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
-  await createHttpApi({ fetch: fetcher }).list("summaries", "task", {
-    id: "summary",
-    offset: 0,
-    limit: 10,
-  });
+  await createHttpApi({ fetch: legacyFetch(fetcher) }).list(
+    "summaries",
+    "task",
+    {
+      id: "summary",
+      offset: 0,
+      limit: 10,
+    },
+  );
   expect(fetcher.mock.calls[0][0]).toBe(
     "/api/v1/tasks/task/execution-summaries?id=summary&offset=0&limit=10",
   );
@@ -178,13 +188,17 @@ it("requests exact summary ID within the task collection", async () => {
 
 it("encodes attachment filename literally and combines exact MIME and removed filters", async () => {
   const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
-  await createHttpApi({ fetch: fetcher }).list("attachments", "task", {
-    fileName: "100%_a\\b",
-    mediaType: "application/pdf",
-    includeRemoved: true,
-    limit: 10,
-    offset: 10,
-  });
+  await createHttpApi({ fetch: legacyFetch(fetcher) }).list(
+    "attachments",
+    "task",
+    {
+      fileName: "100%_a\\b",
+      mediaType: "application/pdf",
+      includeRemoved: true,
+      limit: 10,
+      offset: 10,
+    },
+  );
   const url = new URL(fetcher.mock.calls[0][0], "http://localhost");
   expect(url.pathname).toBe("/api/v1/tasks/task/attachments");
   expect(Object.fromEntries(url.searchParams)).toEqual({
