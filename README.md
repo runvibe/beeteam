@@ -185,6 +185,8 @@ Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reu
 
 ## Get Bee Team skills
 
+For a new installation, use [Setup Bee Team](skills/setup-bee-team/SKILL.md) before invoking either role skill. The [bootstrap guide](skills/setup-bee-team/references/bootstrap.md) gives separate Codex, Claude Code and GitHub Copilot CLI commands for the three skills at the GitHub release tag identified by `/install.json`. A fresh app can use the hosted site with a local API/MCP; the local panel is opt-in. Setup checks the actual local service, verifies the selected package and preserves earlier versions and user data. Availability of a GitHub release, a skills.sh listing, or a running local API must be verified separately.
+
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
 The skills now apply the approved workflows through concise entrypoints and complete local references; backend MCP snapshots require separate synchronization and verification.
