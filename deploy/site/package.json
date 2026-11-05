@@ -1,0 +1,10 @@
+{
+  "name": "get-bee-team-site-deploy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "preview": "wrangler dev --local",
+    "check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {"wrangler": "4.157.0"}
+}

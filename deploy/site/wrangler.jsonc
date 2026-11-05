@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "get-bee-team-site",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-05",
+  "workers_dev": true,
+  "observability": {"enabled": true, "traces": {"enabled": true}},
+  "assets": {
+    "directory": "../../.local/site-candidate",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "none",
+    "html_handling": "none"
+  }
+}
