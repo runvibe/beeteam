@@ -62,6 +62,8 @@ fn mime(path: &str) -> &'static str {
         "js" | "mjs" => "text/javascript; charset=utf-8",
         "css" => "text/css; charset=utf-8",
         "json" | "map" => "application/json",
+        "webmanifest" => "application/manifest+json",
+        "xml" => "application/xml",
         "svg" => "image/svg+xml",
         "png" => "image/png",
         "jpg" | "jpeg" => "image/jpeg",
@@ -100,11 +102,12 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
     if matches!(path, "/install" | "/install/") {
         return crate::services::frontend::asset("/install/index.html");
     }
-    if matches!(path, "/" | "/app" | "/app/") {
-        return crate::services::frontend::asset("/index.html");
+    if !path.rsplit('/').next().unwrap_or("").contains('.') {
+        let document = format!("{}/index.html",path.trim_end_matches('/'));
+        if let Some(asset) = crate::services::frontend::asset(&document) { return Some(asset); }
     }
-    if prefix(path, "/guide") && path.trim_end_matches('/').split('/').skip(1).all(alias) {
-        return crate::services::frontend::asset("/index.html");
+    if matches!(path, "/app" | "/app/") {
+        return crate::services::frontend::asset("/app/index.html");
     }
     let route = path.strip_prefix("/app/").unwrap_or(path.strip_prefix('/')?);
     let parts: Vec<_> = route
@@ -118,7 +121,7 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
         _ => false,
     };
     known
-        .then(|| crate::services::frontend::asset("/index.html"))
+        .then(|| crate::services::frontend::asset("/app/index.html"))
         .flatten()
 }
 fn alias(value: &str) -> bool {

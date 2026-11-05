@@ -1,0 +1,168 @@
+[
+  {
+    "label": ["Trace SDK settings", "Configuração do SDK de traces"],
+    "rows": [
+      [
+        "OTEL_RESOURCE_ATTRIBUTES",
+        "[]",
+        "Comma-separated key=value pairs attached to the trace resource. Malformed pairs are ignored.",
+        "Pares chave=valor separados por vírgula no recurso de traces. Pares inválidos são ignorados."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_ENDPOINT",
+        "http://localhost:4317 (gRPC), http://localhost:4318 (HTTP)",
+        "Collector base URL; HTTP adds /v1/traces. A trace-specific endpoint takes precedence.",
+        "URL base do coletor; HTTP acrescenta /v1/traces. O endpoint específico de traces tem prioridade."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+        "→ OTEL_EXPORTER_OTLP_ENDPOINT",
+        "Full trace URL, including /v1/traces for HTTP. A wrong endpoint prevents delivery.",
+        "URL completa dos traces, incluindo /v1/traces em HTTP. Um endpoint incorreto impede a entrega."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_HEADERS",
+        "[]",
+        "Comma-separated key=value request headers. The trace-specific setting takes precedence. Keep credentials outside shared examples.",
+        "Cabeçalhos chave=valor separados por vírgula. A configuração específica de traces tem prioridade. Mantenha credenciais fora de exemplos compartilhados."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_TRACES_HEADERS",
+        "→ OTEL_EXPORTER_OTLP_HEADERS",
+        "Headers for trace export; malformed pairs are skipped.",
+        "Cabeçalhos de exportação de traces; pares malformados são ignorados."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_TIMEOUT",
+        "10000 ms",
+        "Unsigned millisecond timeout per export. Invalid text falls back to the SDK default.",
+        "Timeout por exportação em milissegundos sem sinal. Texto inválido usa o padrão do SDK."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_TRACES_TIMEOUT",
+        "→ OTEL_EXPORTER_OTLP_TIMEOUT",
+        "Trace timeout in milliseconds. A valid trace value overrides the generic timeout.",
+        "Timeout de traces em milissegundos. Valor válido prevalece sobre o genérico."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_COMPRESSION",
+        "—",
+        "Compression for the OTLP exporter. Leave unset with this build; unsupported algorithms or missing codec features can fail initialization.",
+        "Compressão do exportador OTLP. Deixe ausente nesta compilação; algoritmos incompatíveis ou codecs ausentes podem impedir a inicialização."
+      ],
+      [
+        "OTEL_EXPORTER_OTLP_TRACES_COMPRESSION",
+        "→ OTEL_EXPORTER_OTLP_COMPRESSION",
+        "Trace-specific compression overrides the generic value.",
+        "A compressão específica de traces prevalece sobre o valor genérico."
+      ],
+      [
+        "OTEL_TRACES_SAMPLER",
+        "parentbased_always_on",
+        "always_on, always_off, traceidratio or the parentbased_ form of each. Unknown values select the default sampler.",
+        "always_on, always_off, traceidratio ou cada variante com prefixo parentbased_. Valores desconhecidos usam o padrão."
+      ],
+      [
+        "OTEL_TRACES_SAMPLER_ARG",
+        "1.0",
+        "For ratio sampling use a probability from 0 to 1. Missing or unparseable values use 1.0.",
+        "Em amostragem por proporção, use probabilidade de 0 a 1. Valor ausente ou ilegível usa 1.0."
+      ],
+      [
+        "OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT",
+        "128",
+        "Maximum attributes retained per span. Unsigned integer; invalid input uses the default.",
+        "Máximo de atributos por span. Inteiro sem sinal; entrada inválida usa o padrão."
+      ],
+      [
+        "OTEL_SPAN_EVENT_COUNT_LIMIT",
+        "128",
+        "Maximum events retained per span. Unsigned integer; invalid input uses the default.",
+        "Máximo de eventos por span. Inteiro sem sinal; entrada inválida usa o padrão."
+      ],
+      [
+        "OTEL_SPAN_LINK_COUNT_LIMIT",
+        "128",
+        "Maximum links retained per span. Unsigned integer; invalid input uses the default.",
+        "Máximo de links por span. Inteiro sem sinal; entrada inválida usa o padrão."
+      ],
+      [
+        "OTEL_BSP_MAX_QUEUE_SIZE",
+        "2048",
+        "Batch processor: spans queued. Unparseable values keep the default.",
+        "Processamento em lotes: spans na fila. Valores ilegíveis usam o padrão."
+      ],
+      [
+        "OTEL_BSP_MAX_EXPORT_BATCH_SIZE",
+        "512",
+        "Batch processor: spans in one batch, capped by queue size. Unparseable values keep the default.",
+        "Processamento em lotes: spans por lote, limitado ao tamanho da fila. Valores ilegíveis usam o padrão."
+      ],
+      [
+        "OTEL_BSP_SCHEDULE_DELAY",
+        "5000",
+        "Batch processor: milliseconds between scheduled exports. Unparseable values keep the default.",
+        "Processamento em lotes: milissegundos entre exportações agendadas. Valores ilegíveis usam o padrão."
+      ],
+      [
+        "OTEL_BSP_EXPORT_TIMEOUT",
+        "30000",
+        "Batch processor: milliseconds (processor configuration; use the OTLP timeout for exporter I/O). Unparseable values keep the default.",
+        "Processamento em lotes: milissegundos (configuração do processador; use o timeout OTLP para E/S). Valores ilegíveis usam o padrão."
+      ],
+      [
+        "OTEL_BSP_MAX_CONCURRENT_EXPORTS",
+        "1",
+        "Batch processor: concurrent exports (processor setting; applicability depends on processor implementation). Unparseable values keep the default.",
+        "Processamento em lotes: exportações simultâneas (a aplicação depende do processador). Valores ilegíveis usam o padrão."
+      ]
+    ]
+  },
+  {
+    "label": ["Operating system inputs", "Entradas do sistema operacional"],
+    "rows": [
+      [
+        "HOME",
+        "Unix",
+        "User home for default SQLite; OS account lookup may supply the home.",
+        "Pasta pessoal para SQLite; o sistema pode obtê-la da conta."
+      ],
+      [
+        "USERPROFILE",
+        "Windows",
+        "User home for default SQLite; set DATABASE_URL if home lookup fails.",
+        "Pasta pessoal para SQLite; defina DATABASE_URL se a busca falhar."
+      ],
+      [
+        "PATH",
+        "",
+        "Git executable discovery. Missing Git leaves project discovery unavailable.",
+        "Localização do Git. A ausência do Git impede a descoberta do repositório."
+      ],
+      [
+        "SystemRoot",
+        "Windows",
+        "Explorer location and environment forwarded to Git.",
+        "Local do Explorer e ambiente encaminhado ao Git."
+      ],
+      [
+        "WINDIR",
+        "Windows",
+        "Forwarded to the isolated Git process when present.",
+        "Encaminhado ao processo isolado do Git quando presente."
+      ],
+      [
+        "TEMP / TMP",
+        "",
+        "Temporary locations passed through to Git when present.",
+        "Locais temporários encaminhados ao Git quando presentes."
+      ],
+      [
+        "LOCALAPPDATA / ProgramFiles / ProgramFiles(x86)",
+        "Windows",
+        "Checked in that order for installed VS Code. Missing candidates are skipped.",
+        "Verificados nessa ordem na busca do VS Code. Candidatos ausentes são ignorados."
+      ]
+    ]
+  }
+]

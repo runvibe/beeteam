@@ -41,6 +41,8 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
         "/",
         "/app/",
         "/guide/",
+        "/pt/",
+        "/pt/guide/about",
         "/guide/reference/mcp/tools",
         "/guide/first-team?harness=codex",
         "/app/tasks/task-alias",
@@ -72,6 +74,8 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
         "/boards/missing.js",
         "/tasks/mcp/unknown",
         "/unknown",
+        "/guide/unknown",
+        "/pt/guide/unknown",
     ] {
         let response = app
             .clone()
@@ -109,7 +113,7 @@ async fn assets_have_mime_etag_cache_and_head_semantics() {
     let asset = html
         .split("src=\"")
         .filter_map(|s| s.split('"').next())
-        .find(|s| s.starts_with("/assets/"))
+        .find(|s| s.starts_with("/site-assets/") || s.starts_with("/assets/"))
         .unwrap();
     let response = app
         .clone()
@@ -237,4 +241,17 @@ async fn css_and_fonts_keep_mime_and_build_manifest_is_private() {
         .await
         .unwrap();
     assert_eq!(response.status(), 404);
+}
+
+#[tokio::test]
+async fn pwa_entrypoints_revalidate_with_correct_mime() {
+    for (path, mime) in [
+        ("/app/sw.js", "text/javascript; charset=utf-8"),
+        ("/app/manifest.webmanifest", "application/manifest+json"),
+    ] {
+        let response = app().oneshot(Request::builder().uri(path).body(Body::empty()).unwrap()).await.unwrap();
+        assert_eq!(response.status(), 200, "{path}");
+        assert_eq!(response.headers()["content-type"], mime);
+        assert_eq!(response.headers()["cache-control"], "no-cache");
+    }
 }

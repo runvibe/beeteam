@@ -1,0 +1,17 @@
+.pwa-update {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  max-width: min(25rem, calc(100vw - 2rem));
+  padding: 1rem;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+.pwa-update p {
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+}

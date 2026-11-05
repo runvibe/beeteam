@@ -1,0 +1,110 @@
+/* Exact source values and explicit role adaptations: docs/design/theme-palettes.md. */
+
+/* Codex entity listings share secondary-button surfaces; Kanban cards keep --card. */
+:root[data-palette="codex"] .balanced-card-grid .board-card {
+  background-color: var(--secondary);
+}
+
+:root[data-palette="claude-code"]:not(.dark) {
+  --background: hsl(48 33.3% 97.1%);
+  --foreground: hsl(60 2.6% 7.6%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(60 2.6% 7.6%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(60 2.6% 7.6%);
+  --secondary: hsl(53 28.6% 94.5%);
+  --secondary-foreground: hsl(60 2.6% 7.6%);
+  --muted: hsl(53 28.6% 94.5%);
+  --muted-foreground: hsl(60 2.5% 23.3%);
+  --accent: hsl(48 25% 92.2%);
+  --accent-foreground: hsl(60 2.6% 7.6%);
+  --sidebar: hsl(53 28.6% 94.5%);
+  --sidebar-foreground: hsl(60 2.6% 7.6%);
+  --sidebar-accent: hsl(48 25% 92.2%);
+  --sidebar-accent-foreground: hsl(60 2.6% 7.6%);
+  --primary: hsl(60 2.6% 7.6%);
+  --primary-foreground: hsl(48 33.3% 97.1%);
+  --sidebar-primary: hsl(60 2.6% 7.6%);
+  --sidebar-primary-foreground: hsl(48 33.3% 97.1%);
+  --border: hsl(30 3.3% 11.8% / 0.2);
+  --input: hsl(30 3.3% 11.8% / 0.3);
+  --sidebar-border: hsl(30 3.3% 11.8% / 0.2);
+}
+
+:root[data-palette="claude-code"].dark {
+  --background: hsl(60 2.7% 14.5%);
+  --foreground: hsl(48 33.3% 97.1%);
+  --card: hsl(60 2.1% 18.4%);
+  --card-foreground: hsl(48 33.3% 97.1%);
+  --popover: hsl(60 2.1% 18.4%);
+  --popover-foreground: hsl(48 33.3% 97.1%);
+  --secondary: hsl(30 3.3% 11.8%);
+  --secondary-foreground: hsl(48 33.3% 97.1%);
+  --muted: hsl(30 3.3% 11.8%);
+  --muted-foreground: hsl(50 9% 73.7%);
+  --accent: hsl(60 2.6% 7.6%);
+  --accent-foreground: hsl(48 33.3% 97.1%);
+  --sidebar: hsl(30 3.3% 11.8%);
+  --sidebar-foreground: hsl(48 33.3% 97.1%);
+  --sidebar-accent: hsl(60 2.6% 7.6%);
+  --sidebar-accent-foreground: hsl(48 33.3% 97.1%);
+  --primary: hsl(48 33.3% 97.1%);
+  --primary-foreground: hsl(60 2.7% 14.5%);
+  --sidebar-primary: hsl(48 33.3% 97.1%);
+  --sidebar-primary-foreground: hsl(60 2.7% 14.5%);
+  --border: hsl(51 16.5% 84.5% / 0.2);
+  --input: hsl(51 16.5% 84.5% / 0.3);
+  --sidebar-border: hsl(51 16.5% 84.5% / 0.2);
+}
+
+:root[data-palette="copilot"]:not(.dark) {
+  --foreground: #1f2328;
+  --card-foreground: #1f2328;
+  --popover-foreground: #1f2328;
+  --secondary-foreground: #1f2328;
+  --accent-foreground: #1f2328;
+  --sidebar-foreground: #1f2328;
+  --sidebar-accent-foreground: #1f2328;
+  --muted-foreground: #59636e;
+  --primary: #8250df;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #8250df;
+  --sidebar-primary-foreground: #ffffff;
+}
+
+:root[data-palette="copilot"].dark {
+  --foreground: #cdd9e5;
+  --card-foreground: #cdd9e5;
+  --popover-foreground: #cdd9e5;
+  --secondary-foreground: #cdd9e5;
+  --accent-foreground: #cdd9e5;
+  --sidebar-foreground: #cdd9e5;
+  --sidebar-accent-foreground: #cdd9e5;
+  --muted-foreground: #8794a2;
+  --primary: #b083f0;
+  --primary-foreground: #010409;
+  --sidebar-primary: #b083f0;
+  --sidebar-primary-foreground: #010409;
+}
+
+:root[data-palette="codex"]:not(.dark) {
+  --background: #ffffff;
+  --foreground: #0d0d0d;
+  --card-foreground: #0d0d0d;
+  --popover-foreground: #0d0d0d;
+  --primary: #0d0d0d;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #0d0d0d;
+  --sidebar-primary-foreground: #ffffff;
+}
+
+:root[data-palette="codex"].dark {
+  --background: #181818;
+  --foreground: #ffffff;
+  --card-foreground: #ffffff;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #181818;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #181818;
+}

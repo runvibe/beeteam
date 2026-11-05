@@ -1,0 +1,75 @@
+.launch-story.tour {
+  display: block;
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+.tour > header {
+  display: grid;
+  gap: 1rem;
+  max-width: 54rem;
+  margin-bottom: clamp(1.5rem, 4vw, 4rem);
+}
+.launch-page .tour > header h2 {
+  max-width: none;
+  font-size: clamp(2.6rem, 5.4vw, 5.5rem);
+  font-weight: 450;
+  line-height: 0.99;
+  letter-spacing: -0.065em;
+}
+.tour header p {
+  max-width: 49ch;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+}
+.tour-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.74fr) minmax(0, 1.26fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+  padding-block: clamp(2rem, 3.8vw, 4.5rem);
+  border-top: 1px solid var(--border);
+}
+.tour-copy h3 {
+  font-size: clamp(1.8rem, 3.2vw, 3.4rem);
+  max-width: 15ch;
+  font-weight: 450;
+  letter-spacing: -0.055em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+.tour-copy p {
+  margin-top: 1rem;
+  max-width: 38ch;
+}
+.tour-scene {
+  min-width: 0;
+  color: var(--foreground);
+}
+.tour-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.tour-art :is(path, rect, circle) {
+  vector-effect: non-scaling-stroke;
+}
+.tour-fine-outline,
+.tour-fine-outline .lucide-hexagon {
+  stroke-width: 1px;
+}
+.tour-art text {
+  fill: currentColor;
+  stroke: none;
+  font: 500 18px var(--font-sans, sans-serif);
+}
+.tour-secondary-line {
+  color: var(--muted-foreground);
+}
+@media (max-width: 767px) {
+  .tour-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+  .tour-copy h3 {
+    max-width: none;
+  }
+}

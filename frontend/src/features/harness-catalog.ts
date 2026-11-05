@@ -18,7 +18,7 @@ const catalog: Record<string, string> = {
 export function harnessIcon(name: string) {
   const key = name.trim().toLocaleLowerCase();
   const icon = Object.hasOwn(catalog, key) ? catalog[key] : undefined;
-  return icon ? `/harness-icons/${icon}.svg` : undefined;
+  return icon ? `${import.meta.env.BASE_URL}harness-icons/${icon}.svg` : undefined;
 }
 export function canonicalHarness(name: string) {
   const key = name.trim().toLocaleLowerCase();

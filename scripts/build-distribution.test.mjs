@@ -51,3 +51,16 @@ test('staging rejects a junction in the external source or destination path', t=
   symlinkSync(source+'-actual',source,'junction');
   assert.throws(()=>sourceHash(resolve(root,'frontend')),/symlink/);
 });
+
+test('site staging includes its root build helper and canonical sibling inputs', t=>{
+  const root=fixture(t);
+  mkdirSync(resolve(root,'site/scripts'),{recursive:true});
+  writeFileSync(resolve(root,'site/package.json'),'{}');
+  writeFileSync(resolve(root,'site/scripts/build.mjs'),"import '../../scripts/compose-ui.mjs';");
+  mkdirSync(resolve(root,'scripts'));
+  writeFileSync(resolve(root,'scripts/compose-ui.mjs'),'export const fixture=true;');
+  const staged=stageFrontend(root);
+  assert.equal(readFileSync(resolve(staged,'../scripts/compose-ui.mjs'),'utf8'),'export const fixture=true;');
+  assert.equal(readFileSync(resolve(staged,'../site/scripts/build.mjs'),'utf8'),"import '../../scripts/compose-ui.mjs';");
+  assert.equal(readFileSync(resolve(staged,'scripts/fixture.txt'),'utf8'),'scripts');
+});

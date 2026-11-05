@@ -257,5 +257,10 @@
   "mermaidUnsafe": "Este diagrama usa configuração ou conteúdo incorporado não suportado. O código-fonte original está abaixo.",
   "installChatNamed": "Siga as instruções de https://getbee.team/install para instalar o Bee Team no meu computador usando {{harness}}. Verifique a versão publicada e confirme que a API local está funcionando.",
   "installChatOther": "Siga as instruções de https://getbee.team/install para instalar o Bee Team no meu computador usando este assistente. Verifique a versão publicada e confirme que a API local está funcionando.",
-  "copyChatPrompt": "Copiar pedido"
+  "copyChatPrompt": "Copiar pedido",
+  "pwaUpdateTitle": "Atualização do app pronta",
+  "pwaUpdateBody": "Uma nova versão do app está pronta. Salve seu trabalho em todas as abas do app antes de recarregar.",
+  "pwaReload": "Recarregar app",
+  "pwaUpdateFailed": "A atualização continua pendente. Recarregue quando seu trabalho estiver salvo.",
+  "pwaOtherTabs": "Salve seu trabalho e feche as outras abas do app Bee Team. Depois, recarregue aqui."
 }

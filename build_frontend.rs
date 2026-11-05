@@ -44,6 +44,7 @@ pub fn generate() {
         ))
         .unwrap();
     verify_source_hash(&manifest, &root);
+    verify_site_sources(&manifest, root.parent().unwrap());
     assert_eq!(manifest["nodeEnv"], "production");
     assert_eq!(manifest["apiMode"], "http");
     assert_eq!(manifest["apiBase"], "/api/v1");
@@ -76,7 +77,7 @@ pub fn generate() {
             entry["sha256"], digest,
             "Frontend bytes changed; rebuild frontend"
         );
-        let immutable = name.starts_with("assets/") && !root.join("public").join(name).exists();
+        let immutable = (name.starts_with("assets/") || name.starts_with("app/assets/") || name.starts_with("site-assets/")) && !root.join("public").join(name).exists();
         output.push_str(&format!(
             "Asset {{ path: {:?}, bytes: include_bytes!({:?}), etag: {:?}, immutable: {} }},\n",
             format!("/{name}"),
@@ -155,4 +156,31 @@ pub fn source_hash(root: &Path) -> String {
         .map(|b| format!("{b:02x}"))
         .collect();
     source
+}
+
+pub fn verify_site_sources(manifest: &serde_json::Value, root: &Path) {
+    let Some(entries) = manifest["siteSources"].as_array() else { return; };
+    let mut paths = Vec::new();
+    site_files(&root.join("site"), &mut paths);
+    paths.push(root.join("docs/mcp-catalog.json"));
+    paths.push(root.join("Cargo.toml"));
+    assert_eq!(paths.len(), entries.len(), "Site sources changed; rebuild the UI");
+    for entry in entries {
+        let name = entry["path"].as_str().unwrap();
+        assert!((name.starts_with("site/") || name == "docs/mcp-catalog.json" || name == "Cargo.toml") && !name.contains('\\') && name.split('/').all(|p| !p.is_empty() && p != "." && p != ".."));
+        let path = root.join(name);
+        assert!(paths.contains(&path), "Unexpected site source");
+        println!("cargo:rerun-if-changed={}",path.display());
+        assert_eq!(entry["sha256"], hash(&fs::read(path).unwrap()), "Stale site build");
+    }
+}
+fn site_files(path: &Path, out: &mut Vec<PathBuf>) {
+    assert!(!fs::symlink_metadata(path).unwrap().file_type().is_symlink(), "Site inputs cannot be symlinks");
+    if path.is_dir() {
+        for entry in fs::read_dir(path).unwrap() {
+            let path = entry.unwrap().path();
+            if ["node_modules","dist",".vite",".git"].iter().any(|n| path.file_name().unwrap() == *n) { continue; }
+            site_files(&path,out);
+        }
+    } else { out.push(path.into()); }
 }

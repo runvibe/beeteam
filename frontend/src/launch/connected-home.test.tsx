@@ -68,12 +68,8 @@ it("resumes the original URL including tab and filters from Home", async () => {
     }),
   ).toBeNull();
 });
-it("checks the API only after the visitor enters the panel", async () => {
-  vi.stubGlobal("IntersectionObserver", class {
-    observe() {}
-    disconnect() {}
-  });
-  locationAt("/");
+it("checks the local API on app entry and retries before opening the panel", async () => {
+  locationAt("/app/");
   const api = createMockApi({ delay: 0 });
   api.info = vi
     .fn()
@@ -84,12 +80,8 @@ it("checks the API only after the visitor enters the panel", async () => {
       capabilities: ["roles.worker"],
     });
   render(<LaunchRoot api={api} />);
-  expect(api.info).not.toHaveBeenCalled();
-  expect(screen.queryByText("Conectar Bee Team")).toBeNull();
-  expect(screen.getByRole("link", { name: "Como funciona" })).toHaveAttribute("href", "#how-it-works");
-  const open = screen.getByRole("link", { name: "Abrir app" });
-  act(() => locationAt(open.getAttribute("href")!));
   await screen.findByText("Não foi possível verificar a aplicação local.");
+  expect(api.info).toHaveBeenCalledOnce();
   fireEvent.click(
     screen.getByRole("button", { name: "Verificar conexão novamente" }),
   );
