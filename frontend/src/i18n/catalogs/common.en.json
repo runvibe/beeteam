@@ -97,7 +97,7 @@
   "launchCopied": "Request copied.",
   "launchCopyFailed": "Select the request and copy it manually.",
   "launchFooter": "Have your own team of agentic bees.",
-  "launchFooterNotice": "© {{year}} Bee Team. The app is free and open source. The Bee Team brand and its visual identity are proprietary.",
+  "launchFooterNotice": "© {{year}} Bee Team contributors. Free, open-source software under Apache 2.0. Bee Team branding is reserved separately.",
   "languageEnglish": "English",
   "languagePortuguese": "Português",
   "optionalUpdate": "Optional update",

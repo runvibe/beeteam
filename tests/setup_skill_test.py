@@ -60,6 +60,38 @@ class PackageTests(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), b"custom")
                 self.assertEqual(data_file.read_bytes(), b"preserve")
 
+    def test_release_legal_notices_survive_install_and_tampering_is_not_overwritten(self):
+        for fmt in ("zip", "tar.gz"):
+            raw, manifest = fixture(fmt)
+            updated = io.BytesIO(raw)
+            if fmt == "zip":
+                with zipfile.ZipFile(updated, "a") as archive:
+                    for name in release.LEGAL_FILES:
+                        archive.writestr(name, b"license notice")
+                    archive.writestr("../outside.txt", b"never install")
+            else:
+                updated = io.BytesIO()
+                with tarfile.open(fileobj=updated, mode="w:gz") as archive:
+                    for name in ["beeteam", *release.LEGAL_FILES, "../outside.txt"]:
+                        content = b"license notice"
+                        info = tarfile.TarInfo(name)
+                        info.size = len(content)
+                        archive.addfile(info, io.BytesIO(content))
+            raw = updated.getvalue()
+            item = manifest["artifacts"][0]
+            item.update(size=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+            target = item["os"], "x64"
+            with tempfile.TemporaryDirectory() as tmp:
+                binary = release.stage(manifest, "1.0.0", tmp, io.BytesIO(raw), target)
+                for name in release.LEGAL_FILES:
+                    self.assertEqual((binary.parent / name).read_bytes(), b"license notice")
+                self.assertFalse((Path(tmp) / "outside.txt").exists())
+                self.assertEqual(binary, release.stage(manifest, "1.0.0", tmp, io.BytesIO(raw), target))
+                (binary.parent / "LICENSE").write_bytes(b"changed")
+                with self.assertRaises(ValueError):
+                    release.stage(manifest, "1.0.0", tmp, io.BytesIO(raw), target)
+                self.assertEqual((binary.parent / "LICENSE").read_bytes(), b"changed")
+
     def test_hash_size_and_missing_root_never_activate(self):
         for failure in ("hash", "size", "traversal"):
             raw, m = fixture(extra=failure == "traversal")

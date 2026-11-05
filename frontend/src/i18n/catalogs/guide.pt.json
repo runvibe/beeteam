@@ -5,7 +5,7 @@
   "whoDoesWhat": "Quem faz o quê",
   "yourHarnessRunsTheAgentsThe": "Seu harness executa os agentes. O líder combina o plano e atribui as tarefas. Os workers consultam as referências relevantes para suas sessões e registram avanços ou bloqueios. Assim podem trabalhar em paralelo e recuperar decisões sem repetir todos os chats.",
   "costAndSourceCode": "Custo e código-fonte",
-  "beeTeamIsFreeToUse": "O Bee Team é gratuito e tem como proposta a distribuição de código aberto. Seu harness e provedor de modelos têm seus próprios preços. Consulte no repositório a situação da licença do software e dos termos da marca.",
+  "beeTeamIsFreeToUse": "O Bee Team é gratuito para usar, modificar e redistribuir sob Apache 2.0, inclusive comercialmente. O nome, a logo e os elementos de marca identificados têm termos separados. Seu harness e provedor de modelos têm seus próprios preços.",
   "licenseAndBrand": "Licença e marca",
   "checkTheServiceIdentityAndVersion": "Confira a identidade e a versão do serviço antes de conectar ou atualizar.",
   "readTheServiceVersion": "Consulte a versão do serviço",

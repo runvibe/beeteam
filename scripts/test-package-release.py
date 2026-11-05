@@ -12,7 +12,7 @@ spec.loader.exec_module(packaging)
 
 
 class PackageTests(unittest.TestCase):
-    def test_platforms_contain_only_executable_and_real_integrity_metadata(self):
+    def test_platforms_contain_executable_legal_notices_and_real_integrity_metadata(self):
         for os_name in ['windows', 'linux', 'macos']:
             with self.subTest(os=os_name), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
@@ -24,11 +24,16 @@ class PackageTests(unittest.TestCase):
                 self.assertEqual(result['size'], archive.stat().st_size)
                 if os_name == 'windows':
                     with zipfile.ZipFile(archive) as stream:
-                        self.assertEqual(stream.namelist(), ['beeteam.exe'])
+                        self.assertEqual(set(stream.namelist()), {'beeteam.exe', *packaging.LEGAL_FILES})
+                        for name, source in packaging.LEGAL_FILES.items():
+                            self.assertEqual(stream.read(name), (packaging.SOURCE_ROOT / source).read_bytes())
                         self.assertEqual(stream.read('beeteam.exe'), binary.read_bytes())
                 else:
                     with tarfile.open(archive) as stream:
-                        self.assertEqual(stream.getnames(), ['beeteam'])
+                        self.assertEqual(set(stream.getnames()), {'beeteam', *packaging.LEGAL_FILES})
+                        for name, source in packaging.LEGAL_FILES.items():
+                            self.assertEqual(stream.extractfile(name).read(), (packaging.SOURCE_ROOT / source).read_bytes())
+                            self.assertEqual(stream.getmember(name).mode, 0o644)
                         self.assertEqual(stream.getmember('beeteam').mode, 0o755)
                         self.assertEqual(stream.extractfile('beeteam').read(), binary.read_bytes())
                 with self.assertRaises(ValueError):

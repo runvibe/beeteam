@@ -15,6 +15,10 @@ ARG TARGETARCH
 ARG BIN_NAME=beeteam
 ENV BIN_NAME=${BIN_NAME}
 COPY ./artifacts/${BIN_NAME}/${TARGETARCH}/${BIN_NAME} /app/${BIN_NAME}
+COPY LICENSE NOTICE TRADEMARKS.md BRAND-ASSETS.md /app/legal/
+COPY docs/team-role-icons-LICENSE /app/legal/third-party/Lucide-LICENSE
+COPY frontend/public/harness-icons/LICENSE.txt /app/legal/third-party/harness-icons-LICENSE.txt
+LABEL org.opencontainers.image.licenses="Apache-2.0"
 
 EXPOSE 59865
 
