@@ -5,6 +5,7 @@ import { createMockApi } from "@/api/mock";
 import { useList } from "@/api/context";
 import { ApiVersionGate } from "./api-version-gate";
 import { onlineManager } from "@tanstack/react-query";
+import { setLocalePreference } from "@/i18n";
 beforeEach(() =>
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline"))),
 );
@@ -79,4 +80,23 @@ it("recovers from discovery failure only after exact equality", async () => {
   );
   await screen.findByText("Business panel");
   expect(list).toHaveBeenCalledTimes(1);
+});
+
+it.each([
+  ["en", "Install Bee Team", "Can't connect", ""],
+  ["pt", "Instalar Bee Team", "Não consigo conectar", "/pt"],
+] as const)("offers direct localized installation and connection help in %s", async (locale, installLabel, helpLabel, prefix) => {
+  setLocalePreference(locale);
+  const api = createMockApi({ delay: 0 });
+  api.info = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+  render(
+    <ApiProvider api={api}>
+      <ApiVersionGate expectedVersion="1.2.3"><Business /></ApiVersionGate>
+    </ApiProvider>,
+  );
+  const install = await screen.findByRole("link", { name: installLabel });
+  expect(install).toHaveAttribute("href", `https://getbee.team${prefix}/guide/installation`);
+  expect(install).toHaveAttribute("data-slot", "button");
+  expect(screen.getByRole("link", { name: helpLabel })).toHaveAttribute("href", `https://getbee.team${prefix}/guide/local-connection`);
+  expect(screen.queryByText("Business panel")).toBeNull();
 });

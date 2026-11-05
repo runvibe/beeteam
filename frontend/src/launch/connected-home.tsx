@@ -6,7 +6,7 @@ import { navigate, safeOrigin, useLocation } from "@/routing/location";
 import "./connected-home.css";
 
 export function ConnectedHome() {
-  useLocale();
+  const locale = useLocale();
   const url = useLocation();
   const { info } = useApiCompatibility();
   const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
@@ -88,7 +88,7 @@ export function ConnectedHome() {
           {t("common.homeOpenAgents")}
         </Button>
         <Button asChild variant="ghost">
-          <a href="https://getbee.team/#install">{t("common.homeReviewSetup")}</a>
+          <a href={`https://getbee.team${locale === "pt-BR" ? "/pt" : ""}/guide/installation`}>{t("common.homeReviewSetup")}</a>
         </Button>
       </nav>
     </section>
