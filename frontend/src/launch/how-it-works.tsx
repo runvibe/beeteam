@@ -62,18 +62,12 @@ function ScenePlayer({
   }
   return (
     <div ref={frame} className="tour-player" role="group" aria-label={title}>
-      <div className="tour-film-title">
-        <Hexagon size={13} aria-hidden="true" />
-        {t(
-          [
-            "common.tourTeamName",
-            "common.tourTeamName",
-            "common.tourBoardName",
-            "common.tourTaskName",
-            "common.tourTaskName",
-          ][index],
-        )}
-      </div>
+      {index >= 3 && (
+        <div className="tour-film-title">
+          <Hexagon size={13} aria-hidden="true" />
+          {t("common.tourTaskName")}
+        </div>
+      )}
       <AbstractScene step={index} progress={progress} />
       {index === 4 && (
         <div className="tour-receipt">

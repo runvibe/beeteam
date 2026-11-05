@@ -19,7 +19,6 @@
   "tourHandoffBody": "QA registra o que descobriu. Frontend abre a mesma tarefa, lê o resumo e continua dali.",
   "tourChat": "Crie um time para cuidar da instalação do Bee Team.",
   "tourTeamName": "Instalação",
-  "tourBoardName": "Instalação no celular",
   "tourTaskName": "Corrigir cópia do pedido no celular",
   "tourSummary": "Resumo de QA",
   "tourFinding": "A cópia falha quando o navegador bloqueia a área de transferência.",

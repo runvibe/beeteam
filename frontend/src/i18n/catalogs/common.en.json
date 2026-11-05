@@ -19,7 +19,6 @@
   "tourHandoffBody": "QA records its findings. Frontend opens the same task, reads the summary and picks up from there.",
   "tourChat": "Create a team to look after Bee Team installation.",
   "tourTeamName": "Installation",
-  "tourBoardName": "Mobile installation",
   "tourTaskName": "Fix copying the request on mobile",
   "tourSummary": "QA summary",
   "tourFinding": "Copying fails when the browser blocks clipboard access.",

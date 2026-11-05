@@ -47,25 +47,7 @@
   border-radius: 15px;
   border: 1px solid var(--border);
   color: var(--foreground);
-  background: radial-gradient(
-    ellipse at 47% 34%,
-    color-mix(in srgb, var(--foreground) 8%, var(--background)),
-    var(--background) 83%
-  );
-}
-.tour-player::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background-image: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--foreground) 16%, transparent) 0.8px,
-    transparent 1px
-  );
-  background-size: 11px 11px;
-  mask-image: radial-gradient(ellipse at center, #000 15%, transparent 78%);
+  background: var(--background);
 }
 .tour-film-title {
   display: flex;
@@ -81,10 +63,16 @@
   height: auto;
   overflow: visible;
 }
-.tour-label {
-  fill: var(--foreground);
-  font: 500 17px var(--font-sans, sans-serif);
-  letter-spacing: -0.025em;
+.tour-art :is(path, rect, circle) {
+  vector-effect: non-scaling-stroke;
+}
+.tour-art text {
+  fill: currentColor;
+  stroke: none;
+  font: 500 18px var(--font-sans, sans-serif);
+}
+.tour-secondary-line {
+  color: var(--muted-foreground);
 }
 .tour-receipt {
   margin: 0 clamp(1rem, 2.5vw, 1.6rem) 1rem;
@@ -94,27 +82,6 @@
 }
 .tour-receipt p {
   margin-top: 0.25rem;
-}
-.tour-tray-title {
-  fill: #f5f5f3;
-  font: 500 14px var(--font-sans, sans-serif);
-}
-.tour-slip-title {
-  fill: #19191a;
-  font: 600 11px var(--font-sans, sans-serif);
-}
-.tour-channel,
-.tour-trace {
-  fill: none;
-  stroke-linecap: round;
-}
-.tour-channel {
-  stroke: var(--border);
-  stroke-width: 4;
-}
-.tour-trace {
-  stroke: var(--foreground);
-  stroke-width: 1.5;
 }
 .tour-controls {
   display: flex;
