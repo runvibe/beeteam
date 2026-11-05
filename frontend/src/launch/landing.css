@@ -155,7 +155,8 @@
 .launch-signal-core { display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 18px; background: var(--background); border: 1px solid var(--border); }
 .launch-signal-core :is(img, svg) { width: 2.3rem; height: 2.3rem; }
 .dark .launch-signal-core img { filter: invert(1); }
-.launch-command > a { display: inline-flex; align-items: center; gap: .25rem; font-size: .875rem; }
+.launch-guide-link { display: flex; justify-content: flex-end; margin-top: 1rem; }
+.launch-guide-link a { display: inline-flex; align-items: center; gap: .35rem; font-size: .875rem; color: var(--muted-foreground); }
 @media (prefers-reduced-motion: no-preference) {
   .launch-signal-core, .launch-chat-prompt { animation: launch-appear .4s ease-out both; }
   .launch-signal-ring.inner { animation: launch-lock .65s ease-out both; }
@@ -170,8 +171,10 @@
 .launch-picker :is(img,svg) { width: 1.5rem; height: 1.5rem; }
 .dark .launch-picker img { filter: invert(1); }
 .launch-picker button[aria-pressed=true] { border-color: var(--foreground); background: var(--muted); }
-.launch-chat-prompt p { padding: 1rem; background: var(--muted); border-radius: var(--radius); }
-.launch-picker + a, .launch-chat-prompt + a { display: inline-block; margin-top: 1rem; }
+.launch-chat-prompt { margin-top: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--background); border-radius: var(--radius); }
+.launch-copy-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; font-size: .95rem; }
+.launch-copy-heading strong { flex: 1 1 14rem; }
+.launch-command .launch-chat-prompt p { margin: .75rem 0 0; line-height: 1.65; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .launch-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .launch-command pre {
   max-width: 100%;

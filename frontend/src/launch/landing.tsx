@@ -152,11 +152,14 @@ export function Landing() {
               })}
             </fieldset>
             {command && <div className="launch-chat-prompt">
-              <p aria-live="polite">{command}</p>
-              <Button onClick={() => void copy()}>
+              <div className="launch-copy-heading">
+                <strong>{t("common.installCopyHint")}</strong>
+                <Button size="sm" onClick={() => void copy()}>
                 {copyState === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
                 {t("common.copyChatPrompt")}
-              </Button>
+                </Button>
+              </div>
+              <p aria-live="polite">{command}</p>
             </div>}
             {copyState !== "idle" && (
               <p role="status">
@@ -165,14 +168,14 @@ export function Landing() {
                   : t("common.launchCopyFailed")}
               </p>
             )}
-            <a
+            <div className="launch-guide-link"><a
               href="/install"
               target="_blank"
               rel="noreferrer"
             >
               {t("common.launchManualInstructions")}
               <ArrowUpRight size={14} aria-hidden="true" />
-            </a>
+            </a></div>
           </div>
         </section>
       </main>
