@@ -1,4 +1,12 @@
 {
+  "heroJourney": "Mapear a jornada de primeiro uso",
+  "heroErrors": "Documentar erros da API",
+  "heroContracts": "Definir contratos da API",
+  "heroPagination": "Validar paginação da API",
+  "heroHypotheses": "Descrever hipóteses da jornada",
+  "heroNavigation": "Construir navegação dos boards",
+  "heroEntryPoints": "Inventariar pontos de entrada",
+  "heroTaskNote": "Sem atualização registrada",
   "heroPlay": "Reproduzir animação do board",
   "heroPause": "Pausar animação do board",
   "launchOpenPanel": "Abrir meu painel",

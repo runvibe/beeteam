@@ -1,8 +1,11 @@
 .launch-page {
   --launch-accent: #b75629;
-  max-width: 1600px;
+  --launch-gutter: max(clamp(1.25rem, 5vw, 5rem), calc((100% - 1440px) / 2));
   margin: auto;
-  padding-inline: clamp(1.25rem, 5vw, 5rem);
+}
+.launch-page > :is(header, footer),
+.launch-page > main > :not(.launch-hero) {
+  margin-inline: var(--launch-gutter);
 }
 .launch-page > main {
   padding: 0;

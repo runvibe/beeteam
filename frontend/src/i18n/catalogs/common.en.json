@@ -1,4 +1,12 @@
 {
+  "heroJourney": "Map the first-use journey",
+  "heroErrors": "Document API errors",
+  "heroContracts": "Define API contracts",
+  "heroPagination": "Validate API pagination",
+  "heroHypotheses": "Outline journey hypotheses",
+  "heroNavigation": "Build board navigation",
+  "heroEntryPoints": "Map entry points",
+  "heroTaskNote": "No update recorded",
   "heroPlay": "Play board animation",
   "heroPause": "Pause board animation",
   "launchOpenPanel": "Open my panel",

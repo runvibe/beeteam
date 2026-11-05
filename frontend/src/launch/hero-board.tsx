@@ -1,9 +1,9 @@
 import { useState, type CSSProperties } from "react";
 import { Pause, Play } from "lucide-react";
-import { t } from "@/i18n";
+import { t, useLocale } from "@/i18n";
 import "./hero-board.css";
 
-// Each tile is a strip of two actual demo cards. One tile of travel makes the loop seamless.
+// Each repeating pair travels its own height to loop without a jump.
 const lanes = [
   [0, 565, 45, -19], [2, 614, 62, -37], [1, 565, 54, -12],
   [3, 592, 72, -52], [0, 565, 51, -33], [2, 614, 66, -8],
@@ -11,17 +11,28 @@ const lanes = [
 ];
 
 export function HeroBoard() {
+  useLocale();
   const [paused, setPaused] = useState(false);
   const label = t(paused ? "common.heroPlay" : "common.heroPause");
+  const titles = [t("common.heroJourney"), t("common.heroErrors"), t("common.heroContracts"),
+    t("common.heroPagination"), t("common.heroHypotheses"), t("common.heroNavigation"),
+    t("common.heroEntryPoints"), t("common.demoLearnTask")];
   return <>
     <div className="hero-board" aria-hidden="true" data-paused={paused}>
       <div className="hero-board-plane">
         {lanes.map(([tile, height, duration, delay], i) => (
           <div className="hero-board-track" key={i}>
             <div className="hero-board-strip" style={{
-              "--tile": `url(/launch/hero-lane-${tile}.png)`,
               "--height": `${height}px`, "--duration": `${duration}s`, "--delay": `${delay}s`,
-            } as CSSProperties} />
+            } as CSSProperties}>
+              {Array.from({ length: 8 }, (_, index) => (
+                <div className="hero-board-card" key={index}>
+                  <strong>{titles[tile * 2 + index % 2]}</strong>
+                  <small>{t("common.heroTaskNote")}</small>
+                  <i /><span>{t(index % 2 ? "common.leader" : "common.worker")}</span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
       </div>
