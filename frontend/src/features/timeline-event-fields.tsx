@@ -49,6 +49,39 @@ const labels: Record<string, string> = {
   get parentId() {
     return tr("execution.parentTaskId");
   },
+  get linkedTaskId() {
+    return tr("execution.linkedTaskId");
+  },
+  get previousParentId() {
+    return tr("execution.previousParentTaskId");
+  },
+  get previousExecutionContext() {
+    return tr("execution.previousExecutionContext");
+  },
+  get executionContext() {
+    return tr("execution.executionContext");
+  },
+  get rootTaskId() {
+    return tr("execution.rootTaskId");
+  },
+  get originBoardId() {
+    return tr("execution.originBoardId");
+  },
+  get originBoardMode() {
+    return tr("execution.originBoardMode");
+  },
+  get effectiveMode() {
+    return tr("execution.effectiveMode");
+  },
+  get mode() {
+    return tr("execution.coordinationMode");
+  },
+  get conversationRef() {
+    return tr("execution.conversationReference");
+  },
+  get approvalRef() {
+    return tr("execution.approvalReference");
+  },
   get boardId() {
     return tr("execution.boardId");
   },
@@ -156,14 +189,22 @@ export function EventValue({
       );
     if (field.endsWith("Id") || field === "rootPath")
       return <span className="timeline-literal">{value}</span>;
-    if (field === "autonomyMode")
+    if (
+      ["autonomyMode", "originBoardMode", "effectiveMode", "mode"].includes(
+        field,
+      )
+    )
       return (
         <span>
           {value === "manual"
             ? tr("common.manual")
             : value === "automatic"
-              ? tr("execution.automatic")
-              : value}
+              ? field === "autonomyMode"
+                ? tr("execution.automatic")
+                : tr("common.automatic")
+              : value === "standard"
+                ? tr("common.standard")
+                : value}
         </span>
       );
     return <Markdown headingOffset={2}>{value}</Markdown>;

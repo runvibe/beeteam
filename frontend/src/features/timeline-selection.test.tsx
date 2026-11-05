@@ -60,6 +60,7 @@ it("preserves all timeline event types and keeps the chart independent of select
     "plan.revised",
     "task.updated",
     "execution.recorded",
+    "task.parent_changed",
   ].map((type, index) => ({
     ...makeSeed().timeline[0],
     id: `event-${index}`,
@@ -79,8 +80,11 @@ it("preserves all timeline event types and keeps the chart independent of select
   await waitFor(() =>
     expect(
       container.querySelectorAll(".execution-timeline-point"),
-    ).toHaveLength(4),
+    ).toHaveLength(5),
   );
+  expect(
+    screen.getByRole("button", { name: /Vínculo da tarefa alterado:/ }),
+  ).toBeInTheDocument();
   await userEvent.click(
     screen.getByRole("button", { name: /Comentário registrado:/ }),
   );
@@ -89,7 +93,7 @@ it("preserves all timeline event types and keeps the chart independent of select
     "event-0",
   );
   expect(container.querySelectorAll(".execution-timeline-point")).toHaveLength(
-    4,
+    5,
   );
   expect(list).toHaveBeenCalledTimes(1);
 });

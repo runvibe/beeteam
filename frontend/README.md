@@ -54,6 +54,8 @@ Sem workspace. Board tem um time gestor e criador preservado. Tasks têm authorA
 
 O board de origem da raiz governa a cadeia: manual força manual; automatic força automático; standard usa a flag da task atual sem herdar a do pai. O cálculo não altera flags dos destinos. A UI diferencia configuração salva de modo efetivo. Mudar a flag sob origem manual/automatic não modifica essa precedência.
 
+O evento de auditoria `task.parent_changed` aparece como “Vínculo da tarefa alterado” na timeline, nos previews e nas atividades recentes. Seus IDs, pai anterior/nova referência e contextos históricos são exibidos separadamente e o JSON original continua acessível. O filtro de descendentes existente permanece disponível; esta integração de leitura não adiciona controles para vincular tarefas.
+
 ## Contratos e adapter
 
 `contracts/` contém cópias de referência dos contratos oficiais. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os schemas RA, Kanban e System em módulos pequenos em `src/api/generated/`; os arquivos gerados não são editados manualmente.
