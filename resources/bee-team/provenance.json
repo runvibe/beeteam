@@ -1,19 +1,19 @@
 {
-  "sourceCommit": "10d5218428ec042e32c0470a73ab41aa11cd8b63",
-  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data.",
+  "sourceCommit": "e47ad7f271bafeac4d27e95712bd098fb93c4fdc",
+  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data.",
   "files": [
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "61bb325c3cec68839e6098e2a9493d7f8e509a7aa1780024635cc7d54a3eb963",
-      "bundledSha256": "845b0e3bb7bab9b4206da996fde23690bd6219dc29b6416a3cd746e5564e64a7",
+      "sourceSha256": "daef73c5801a4952d38134783c9ce171ab19b439f3a1eb65eb407e7c8e5e4c29",
+      "bundledSha256": "7af7b2cc1cee2ac551281503a6911e9d40cdc572d2ba3b7a3f1e1ee01eea6069",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "ac5064ae5096ac725c191c25f7b08a0faf4814b91736be962ccabd7d1fe42b28",
-      "bundledSha256": "4c9cb1636fb2e3fd717a3fd8e8f2a67948de3a2fc5e8a61a8ff8469535da6ec0",
+      "sourceSha256": "3e644352da050491df7e12d9cf4a21b3b719d26dc31ae903680ba4faa6c2c20b",
+      "bundledSha256": "16ec14c98d64316fa3441d6413fb882de2b4273242c77a9bb88e20187e0487d4",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
@@ -26,8 +26,8 @@
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
-      "sourceSha256": "2ed051f1b8f8e4286416d727ccf749773c83eadb47af6adb692fb7251666723e",
-      "bundledSha256": "829f144123200852825001424d77044b99ed3a229c6cc98ebf02a82d18ff4fc5",
+      "sourceSha256": "f24538f69099294ecb4e060af43788955c091437d7d990bbc6f8a9eb7369d388",
+      "bundledSha256": "b6549dae60bb6d4f513c71b02070ba5e87f06df0c1ec2bce44937bed157a9d7f",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
@@ -75,8 +75,8 @@
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
-      "sourceSha256": "a86e5668fe4777aea13e04a32e1684a0fb7060b026294a37c02c8b266ed2d284",
-      "bundledSha256": "ab997689301c79fe50cd284d5e40d9888c21fb0d56c6815fe08b35da3814ea1b",
+      "sourceSha256": "5a9d4f36c3a45f3fea9a9f7ab80bdf36d1d32a55224cd8e05bc4e4864660564f",
+      "bundledSha256": "4d1f5379aada135577fec879db90f69064ed9ae377291695da5c030be7616b33",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {

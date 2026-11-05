@@ -8,6 +8,10 @@ description: Use when a human or Bee Team Leader asks this chat to act as Worker
 Adopt the functional profile and execute only work that is actually registered and assigned. A persistent identity is not a chat, and activating the skill is not authorization to perform business work.
 
 
+## Embedded browser connection recovery
+
+If the hosted panel fails in the assistant's embedded browser without offering local-network permission, read [integration recovery](beeteam://references/integration) and coordinate recovery through the Leader. The local app uses `BEE_FRONTEND_MODE=embedded` in the existing launcher, preserving storage and configuration. Do not navigate the user's panel or restart services outside your assigned scope; the Leader verifies the real local browser view. Do not reinstall a healthy API or weaken browser protections.
+
 ## Real projects, repositories, and commits
 
 Read [repository evidence](beeteam://references/repository-evidence). Provide the required project name and absolute root only for folders/worktrees actually involved. Do not supply repositories/remotes/branch as scope input: Bee Team discovers them locally; read the actual result/IDs. A project without Git is legitimate; inaccessible paths mean pending/unavailable discovery. Do not invent data. For commit evidence, inspect real Git state and keep scope independent from specification. Each new summary declares whether the reported work produced a commit: false with an empty list is legitimate; true requires a real repository/contextual branch/full hash under the contract. Do not create commits to fill in the form, automatically attribute an existing HEAD, or confuse local with published. Detached HEAD/no remote must use the contract representation, never an invented value. Preserve legacy data, idempotency, and task/commentID notifications; do not anticipate fields/APIs.
