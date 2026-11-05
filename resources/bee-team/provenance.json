@@ -1,5 +1,5 @@
 {
-  "sourceCommit": "e47ad7f271bafeac4d27e95712bd098fb93c4fdc",
+  "sourceCommit": "ce484c9f6c2e303532b61027ea2b69146b055aa2",
   "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data.",
   "files": [
     {
@@ -26,8 +26,8 @@
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
-      "sourceSha256": "f24538f69099294ecb4e060af43788955c091437d7d990bbc6f8a9eb7369d388",
-      "bundledSha256": "b6549dae60bb6d4f513c71b02070ba5e87f06df0c1ec2bce44937bed157a9d7f",
+      "sourceSha256": "b68ce46cbb0658f265d7257cea22d9b6ffddf6e3eadf07467df99b082f80ab82",
+      "bundledSha256": "e5798dafc3a3be8f7255dbf272dce5fe9a96a61664a8de86c53afbf70e8fbddf",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
@@ -75,8 +75,8 @@
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
-      "sourceSha256": "5a9d4f36c3a45f3fea9a9f7ab80bdf36d1d32a55224cd8e05bc4e4864660564f",
-      "bundledSha256": "4d1f5379aada135577fec879db90f69064ed9ae377291695da5c030be7616b33",
+      "sourceSha256": "9abbdfe880bd58776fdc8f9e9f34ccd10c404b88689c9436c9be6bc2267fdf46",
+      "bundledSha256": "1ed258ca0d192c94ec67443c122db28e97c0cac94aa3e0188d98e4f441966db9",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {

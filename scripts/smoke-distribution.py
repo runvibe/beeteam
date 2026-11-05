@@ -71,7 +71,7 @@ def smoke(archive, metadata):
                             status = response.status
                     except urllib.error.HTTPError as error:
                         status = error.code
-                    assert status == (200 if mode == 'embedded' else 404)
+                    assert status == (200 if mode in (None, 'embedded') else 404)
                     rpc = json.dumps(dict(jsonrpc='2.0', id=1, method='initialize', params=dict(protocolVersion='2025-11-25', capabilities={}, clientInfo=dict(name='distribution-smoke', version='1')))).encode()
                     request = urllib.request.Request(base + '/mcp', data=rpc, headers={'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'})
                     with urllib.request.urlopen(request, timeout=5) as response:

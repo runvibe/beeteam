@@ -31,7 +31,7 @@
       ],
       [
         "BEE_FRONTEND_MODE",
-        "disabled",
+        "embedded (embedded-ui) / disabled",
         "disabled serves API and MCP only. embedded serves the bundled panel at /app/ and requires a binary compiled with embedded-ui. Other values fail startup.",
         "disabled serve a API e o MCP. embedded serve o painel em /app/ e exige binário compilado com embedded-ui. Outros valores impedem a inicialização."
       ]
