@@ -20,16 +20,18 @@ def smoke(archive, metadata):
         assert hashlib.file_digest(stream, 'sha256').hexdigest() == metadata['sha256'], 'Checksum mismatch'
     assert archive.stat().st_size == metadata['size'], 'Size mismatch'
     executable = 'beeteam.exe' if metadata['os'] == 'windows' else 'beeteam'
+    legal_names = {'LICENSE', 'NOTICE', 'TRADEMARKS.md', 'BRAND-ASSETS.md', 'third-party/Lucide-LICENSE', 'third-party/harness-icons-LICENSE.txt'}
+    expected_names = {executable, *legal_names}
     with tempfile.TemporaryDirectory(prefix='beeteam-distribution-smoke-') as tmp:
         root = Path(tmp)
         binary = root / executable
         if metadata['format'] == 'zip':
             with zipfile.ZipFile(archive) as packed:
-                assert packed.namelist() == [executable], 'Unexpected archive layout'
+                assert set(packed.namelist()) == expected_names and len(packed.namelist()) == len(expected_names), 'Unexpected archive layout'
                 binary.write_bytes(packed.read(executable))
         else:
             with tarfile.open(archive) as packed:
-                assert packed.getnames() == [executable], 'Unexpected archive layout'
+                assert set(packed.getnames()) == expected_names and len(packed.getnames()) == len(expected_names), 'Unexpected archive layout'
                 assert packed.getmember(executable).isfile(), 'Executable must be a regular file'
                 binary.write_bytes(packed.extractfile(executable).read())
         binary.chmod(0o755)

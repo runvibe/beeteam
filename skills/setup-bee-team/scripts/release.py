@@ -17,6 +17,8 @@ MANIFEST = "https://getbee.team/install.json"
 REPO = "https://github.com/runvibe/beeteam"
 NAMES = {"setup-bee-team", "get-a-team-lead", "get-a-worker"}
 MAX_FILE = 512 * 1024 * 1024
+LEGAL_FILES = {"LICENSE", "NOTICE", "TRADEMARKS.md", "BRAND-ASSETS.md", "third-party/Lucide-LICENSE", "third-party/harness-icons-LICENSE.txt"}
+MAX_NOTICE = 1024 * 1024
 SEMVER = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?", re.ASCII)
 
 
@@ -102,8 +104,8 @@ def copy_verified(source, dest, item):
 
 
 def unpack(archive, dest, fmt, exe):
-    # Never extract archives into a directory. Only stream the single approved
-    # root executable; notes/licenses (and their paths) are never installed.
+    # Never extract arbitrary archive paths. Stream the executable and a closed
+    # allowlist of legal notices to application-owned paths.
     if fmt == "zip":
         with zipfile.ZipFile(archive) as z:
             members = [i for i in z.infolist() if i.filename == exe]
@@ -112,6 +114,17 @@ def unpack(archive, dest, fmt, exe):
             require(stat.S_IFMT(info.external_attr >> 16) in (0, stat.S_IFREG) and 0 < info.file_size <= MAX_FILE, "Invalid executable member")
             with z.open(info) as src, dest.open("xb") as out:
                 shutil.copyfileobj(src, out)
+            for name in LEGAL_FILES:
+                notices = [i for i in z.infolist() if i.filename == name]
+                require(len(notices) <= 1, "Duplicate legal notice")
+                if not notices:
+                    continue  # Legacy archives may not contain legal documents.
+                info = notices[0]
+                require(stat.S_IFMT(info.external_attr >> 16) in (0, stat.S_IFREG) and 0 < info.file_size <= MAX_NOTICE, "Invalid legal notice")
+                target = dest.parent / name
+                target.parent.mkdir(exist_ok=True)
+                with z.open(info) as src, target.open("xb") as out:
+                    shutil.copyfileobj(src, out)
     else:
         # Bound the decompressed stream, including ignored members and padding.
         import gzip
@@ -125,6 +138,17 @@ def unpack(archive, dest, fmt, exe):
                 require(len(members) == 1 and members[0].isreg() and 0 < members[0].size <= MAX_FILE, "Invalid or missing root executable")
                 with t.extractfile(members[0]) as src, dest.open("xb") as out:
                     shutil.copyfileobj(src, out)
+                for name in LEGAL_FILES:
+                    notices = [i for i in t.getmembers() if i.name == name]
+                    require(len(notices) <= 1, "Duplicate legal notice")
+                    if not notices:
+                        continue
+                    info = notices[0]
+                    require(info.isreg() and 0 < info.size <= MAX_NOTICE, "Invalid legal notice")
+                    target = dest.parent / name
+                    target.parent.mkdir(exist_ok=True)
+                    with t.extractfile(info) as src, target.open("xb") as out:
+                        shutil.copyfileobj(src, out)
     dest.chmod(0o755)
 
 
@@ -152,10 +176,16 @@ def stage(data, version, root, source, target):
         package.mkdir()
         unpack(archive, package / exe, item["format"], exe)
         receipt = {"version": version, "artifactSha256": item["sha256"].lower(), "binarySha256": digest(package / exe)}
+        legal_hashes = {name: digest(package / name) for name in sorted(LEGAL_FILES) if (package / name).is_file()}
+        if legal_hashes:
+            receipt["legalSha256"] = legal_hashes
         (package / "receipt.json").write_text(json.dumps(receipt), encoding="utf-8")
         if final.exists() or final.is_symlink():
             require(not final.is_symlink() and not final.is_junction() and not (final / exe).is_symlink() and
-                    json.loads((final / "receipt.json").read_bytes()) == receipt and digest(final / exe) == receipt["binarySha256"],
+                    json.loads((final / "receipt.json").read_bytes()) == receipt and digest(final / exe) == receipt["binarySha256"] and
+                    all((final / name).is_file() and not (final / name).is_symlink() and
+                        not any(p.is_symlink() or p.is_junction() for p in (final / name).parents if p != final.parent) and
+                        digest(final / name) == expected for name, expected in legal_hashes.items()),
                     "Existing installation differs; preserve and reconcile it")
         else:
             package.rename(final)

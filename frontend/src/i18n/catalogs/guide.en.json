@@ -5,7 +5,7 @@
   "whoDoesWhat": "Who does what",
   "yourHarnessRunsTheAgentsThe": "Your harness runs the agents. The lead agrees on the work and assigns tasks. Workers use the references relevant to their sessions and record progress or blockers. This lets them work concurrently and retrieve decisions without replaying every chat.",
   "costAndSourceCode": "Cost and source code",
-  "beeTeamIsFreeToUse": "Bee Team is free to use and intended for open-source distribution. Your harness and model provider have their own pricing. Consult the repository for the current software license and separate brand terms.",
+  "beeTeamIsFreeToUse": "Bee Team is free to use, modify and redistribute under Apache 2.0, including commercial use. The Bee Team name, logo and identified brand assets have separate terms. Your harness and model provider have their own pricing.",
   "licenseAndBrand": "License and brand",
   "checkTheServiceIdentityAndVersion": "Check the service identity and version before connecting or upgrading.",
   "readTheServiceVersion": "Read the service version",

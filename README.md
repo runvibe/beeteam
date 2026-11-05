@@ -77,6 +77,6 @@ Start with service identity, port and version. If those checks pass, inspect the
 
 ## License and brand
 
-The repository contains a [license for the Lucide role artwork](docs/team-role-icons-LICENSE). The project owner still needs to supply the governing software license and brand terms before publication. The panel identifies the Bee Team name and visual identity as proprietary.
+Bee Team is free to use. Its software and documentation are licensed under the [Apache License 2.0](LICENSE), including commercial use, modification and redistribution under its terms. The Bee Team name, logo and identified brand assets are reserved separately: see [the trademark policy](TRADEMARKS.md), [brand asset permissions](BRAND-ASSETS.md) and [NOTICE](NOTICE). Forks may reuse the code while using their own product identity. Third-party materials retain their own licenses, including the [Lucide artwork notice](docs/team-role-icons-LICENSE). Native release archives include the license, notices and brand terms; the setup helper preserves the allowlisted legal documents alongside the installed executable.
 
 [Documentation index](docs/README.md)
