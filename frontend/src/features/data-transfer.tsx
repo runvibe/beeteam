@@ -8,6 +8,7 @@ import {
   message,
 } from "@/i18n";
 import { AppearanceSettings } from "@/components/appearance-settings";
+import { ApiCompatibilityDetails } from "@/components/api-compatibility";
 import { LanguageControl } from "@/components/language-control";
 
 import { useEffect, useRef, useState } from "react";
@@ -75,6 +76,7 @@ export function DataTransferSettings() {
           </DialogHeader>
           <AppearanceSettings />
           <LanguageControl />
+          <ApiCompatibilityDetails />
           <section className="detail-section">
             <h3>{tr("transfer.exportAndImportData")}</h3>
             <p className="small-note">

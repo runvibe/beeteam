@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import openapiTS, { astToString } from "openapi-typescript";
 import ts from "typescript";
 import { format } from "prettier";
-for (const domain of ["kanban", "ra"]) {
+for (const domain of ["kanban", "ra", "system"]) {
   const source = astToString(
     await openapiTS(
       new URL(`../contracts/${domain}-openapi.yaml`, import.meta.url),
