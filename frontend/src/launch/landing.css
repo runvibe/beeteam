@@ -136,9 +136,15 @@
   padding-left: 1rem;
 }
 .launch-install {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
   border-block: 1px solid var(--border);
   background: linear-gradient(155deg, var(--muted), var(--background) 65%);
-  scroll-margin-top: 1.5rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.launch-page), body:has(.launch-page), #root:has(.launch-page) { scroll-behavior: smooth; }
 }
 .launch-install p + p {
   margin-top: 1rem;
