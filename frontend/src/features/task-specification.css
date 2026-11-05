@@ -8,6 +8,9 @@
 .specification-scope > * {
   min-width: 0;
 }
+.task-detail-reading .task-specification .markdown-content {
+  max-width: none;
+}
 .specification-scope {
   display: grid;
   gap: 16px;
