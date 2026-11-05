@@ -1,6 +1,6 @@
 import { useLocale, t as tr } from "@/i18n";
 
-import { Hexagon, Columns3, Users, Network, House } from "lucide-react";
+import { BookOpen, Hexagon, Columns3, Users, Network, House } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
@@ -129,6 +129,11 @@ export function NavigationRail({
         className="navigation-footer"
         aria-label={tr("common.globalPreferences")}
       >
+        <Button asChild variant="ghost" size="icon">
+          <a href="/guide/" aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
+            <BookOpen aria-hidden="true" />
+          </a>
+        </Button>
         <DataTransferSettings />
         <ThemeControl />
       </div>

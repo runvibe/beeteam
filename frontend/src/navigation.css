@@ -89,6 +89,7 @@
   gap: 4px;
 }
 .navigation-footer > button,
+.navigation-footer > a,
 .navigation-footer button.filter-icon {
   width: 44px;
   height: 44px;
@@ -96,7 +97,7 @@
   padding: 0;
   color: var(--muted-foreground);
 }
-.navigation-footer button svg {
+.navigation-footer :is(button, a) svg {
   width: 17px;
   height: 17px;
 }
