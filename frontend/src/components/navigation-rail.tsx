@@ -6,6 +6,8 @@ import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
+import { useDemo } from "./demo-context";
+import { demoHref } from "@/routing/location";
 
 const sections = [
   {
@@ -43,6 +45,7 @@ const sections = [
 export function NavigationRail() {
   useLocale();
   const area = useUi((state) => state.area);
+  const demo = useDemo();
   const setArea = useUi((state) => state.setArea);
   return (
     <aside className="navigation-rail">
@@ -50,7 +53,7 @@ export function NavigationRail() {
         className="navigation-logo"
         aria-label={tr("common.beeTeamGoToBoards")}
         title="Get Bee Team"
-        href="/boards"
+        href={demoHref("/boards")}
         onClick={(event) => {
           if (
             event.button ||
@@ -100,7 +103,7 @@ export function NavigationRail() {
         className="navigation-footer"
         aria-label={tr("common.globalPreferences")}
       >
-        <DataTransferSettings />
+        {!demo && <DataTransferSettings />}
         <ThemeControl />
       </div>
     </aside>

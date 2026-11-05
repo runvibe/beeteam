@@ -1,6 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
 import { t, useLocale } from "@/i18n";
-import { parseInstallManifest } from "@/api/install-manifest";
+import { usePublicManifest } from "@/launch/public-manifest";
 import { newerStableRelease } from "@/api/version-policy";
 
 export function ReleaseNotice({
@@ -9,23 +8,7 @@ export function ReleaseNotice({
   installedVersion: string;
 }) {
   useLocale();
-  const query = useQuery({
-    queryKey: ["public-install-manifest"],
-    meta: { scope: "public" },
-    queryFn: async ({ signal }) => {
-      const timeout = AbortSignal.timeout(5000);
-      const response = await fetch(
-        import.meta.env.VITE_INSTALL_MANIFEST_URL ||
-          "https://getbee.team/install.json",
-        { signal: AbortSignal.any([signal, timeout]), credentials: "omit" },
-      );
-      if (!response.ok) throw new Error("install_manifest_unavailable");
-      return parseInstallManifest(await response.json());
-    },
-    retry: false,
-    staleTime: 300_000,
-    refetchInterval: 300_000,
-  });
+  const query = usePublicManifest();
   if (
     !query.data ||
     !newerStableRelease(installedVersion, query.data.appVersion)

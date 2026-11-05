@@ -15,7 +15,8 @@
 .api-version-card > * + * {
   margin-top: 1rem;
 }
-.api-version-card h1 {
+.api-version-card h1,
+.api-version-card h2 {
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -24,6 +25,14 @@
   flex-wrap: wrap;
   gap: 0.75rem;
 }
-.release-notice { padding: .75rem 1rem; background: var(--muted); border-bottom: 1px solid var(--border); }
-.release-notice summary { cursor: pointer; }
-.release-notice a { text-decoration: underline; }
+.release-notice {
+  padding: 0.75rem 1rem;
+  background: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.release-notice summary {
+  cursor: pointer;
+}
+.release-notice a {
+  text-decoration: underline;
+}

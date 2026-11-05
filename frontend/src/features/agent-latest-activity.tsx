@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
-import { useLocation, currentUrl } from "@/routing/location";
+import { useLocation, currentUrl, demoHref } from "@/routing/location";
 import { eventLabels } from "./timeline-labels";
 import { useLocale, t as tr } from "@/i18n";
 import { RelativeTime } from "@/components/relative-time";
@@ -39,7 +39,7 @@ export function AgentLatestActivityView({
             {activity.label} · <RelativeTime value={activity.occurredAt} />
           </p>
           <a
-            href={activity.href}
+            href={demoHref(activity.href)}
             onClick={openCardLink}
             className="break-words"
           >
