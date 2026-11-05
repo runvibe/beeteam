@@ -1,6 +1,6 @@
 # Bee Team brand assets
 
-The Bee Team name, wordmark and project-specific logo are reserved brand identifiers under [TRADEMARKS.md](TRADEMARKS.md). Original copyrightable brand artwork identified below is excluded from the repository's Apache 2.0 grant. Rights are reserved by the respective rights holders, subject to the limited permission below and any applicable third-party rights.
+The Bee Team name, wordmark and project-specific logo are reserved brand identifiers under [TRADEMARKS.md](TRADEMARKS.md). Original copyrightable brand artwork identified below is excluded from the repository's Apache 2.0 grant. Rights in original Bee Team brand artwork are reserved by Philippe Ferreira Assis Tecnologia da Informação LTDA (trade name: Philtech), CNPJ 59.845.514/0001-90, subject to the limited permission below and any applicable third-party rights.
 
 ## Identified files and uses
 
