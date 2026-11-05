@@ -1,12 +1,12 @@
 {
-  "sourceCommit": "88de10703fa773c1c50804f614009009636da7fd",
+  "sourceCommit": "e6c1c0252ffa7c180f8a51c4b892b173954c53e1",
   "scope": "Call a Worker and canonical Worker materials; v2 RA/Kanban guidance with explicit v1 compatibility. Preserve Leader workflow, authorization, cardinality, historical authorship and user data.",
   "files": [
     {
       "resourcePath": "call-a-team-lead/SKILL.md",
       "sourcePath": "skills/call-a-team-lead/SKILL.md",
-      "sourceSha256": "0d09b66c3abf65c34397c0db66fe6c46faf5ac0fde8db7ae079dbdf578972be4",
-      "bundledSha256": "f97e7ba820c3e4192ce7b5c4343e0c9fa01142ade91b6cbb1982e7e03c49b3f6",
+      "sourceSha256": "8378b8f8f83f221ddbc5a12fc28b7f578975f9ace6049709d71e61f74b8abd40",
+      "bundledSha256": "b61a2588ffed9872efc302c6cf0b965116dbb13c871602d33361477e03c1c5e5",
       "localOverlay": "Map relative links to canonical allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Worker vocabulary and v2 RA/Kanban guidance come from the exact source commit; preserve driver-aware local startup instructions."
     },
     {
@@ -126,7 +126,7 @@
     "date": "2026-11-04",
     "contract": "Worker v2 RA/Kanban and canonical MCP fields/enums; explicit v1 legacy facade, typed compatibility and unadvertised read-only resource aliases. Auxiliary endpoints retain existing URLs.",
     "documentation": "docs/mcp-catalog.md",
-    "skillsSnapshotStatus": "Source 88de10703fa773c1c50804f614009009636da7fd; explicit allowlisted link mapping and driver-aware startup guidance.",
+    "skillsSnapshotStatus": "Source e6c1c0252ffa7c180f8a51c4b892b173954c53e1; explicit allowlisted link mapping and driver-aware startup guidance.",
     "skillNameMigration": "Call a Worker / call-a-worker; beeteam://skills/worker and worker reference URIs. Global installation and runtime activation are separate Leader actions."
   }
 }
