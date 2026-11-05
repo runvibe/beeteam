@@ -22,8 +22,6 @@
   --sidebar-foreground: hsl(60 2.6% 7.6%);
   --sidebar-accent: hsl(48 25% 92.2%);
   --sidebar-accent-foreground: hsl(60 2.6% 7.6%);
-  --ring: hsl(210 73.7% 40.2%);
-  --sidebar-ring: hsl(210 73.7% 40.2%);
   --primary: hsl(60 2.6% 7.6%);
   --primary-foreground: hsl(48 33.3% 97.1%);
   --sidebar-primary: hsl(60 2.6% 7.6%);
@@ -50,8 +48,6 @@
   --sidebar-foreground: hsl(48 33.3% 97.1%);
   --sidebar-accent: hsl(60 2.6% 7.6%);
   --sidebar-accent-foreground: hsl(48 33.3% 97.1%);
-  --ring: hsl(210 65.5% 67.1%);
-  --sidebar-ring: hsl(210 65.5% 67.1%);
   --primary: hsl(48 33.3% 97.1%);
   --primary-foreground: hsl(60 2.7% 14.5%);
   --sidebar-primary: hsl(48 33.3% 97.1%);
@@ -74,8 +70,6 @@
   --primary-foreground: #ffffff;
   --sidebar-primary: #8250df;
   --sidebar-primary-foreground: #ffffff;
-  --ring: #0969da;
-  --sidebar-ring: #0969da;
 }
 
 :root[data-palette="copilot"].dark {
@@ -91,8 +85,6 @@
   --primary-foreground: #010409;
   --sidebar-primary: #b083f0;
   --sidebar-primary-foreground: #010409;
-  --ring: #539bf5;
-  --sidebar-ring: #539bf5;
 }
 
 :root[data-palette="codex"]:not(.dark) {
@@ -102,8 +94,6 @@
   --popover-foreground: #0d0d0d;
   --primary: #0d0d0d;
   --primary-foreground: #ffffff;
-  --ring: #0285ff;
-  --sidebar-ring: #0285ff;
   --sidebar-primary: #0d0d0d;
   --sidebar-primary-foreground: #ffffff;
 }
@@ -115,8 +105,6 @@
   --popover-foreground: #ffffff;
   --primary: #ffffff;
   --primary-foreground: #181818;
-  --ring: #339cff;
-  --sidebar-ring: #339cff;
   --sidebar-primary: #ffffff;
   --sidebar-primary-foreground: #181818;
 }

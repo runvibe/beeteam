@@ -18,10 +18,12 @@ button {
 button:disabled {
   cursor: default;
 }
-button:focus-visible,
-a:focus-visible {
+:is(button, a, input, textarea, select, summary, [role="button"]):focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
+}
+:is(input, select, textarea) {
+  accent-color: var(--primary);
 }
 a {
   color: var(--primary);
