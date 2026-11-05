@@ -1,8 +1,8 @@
 # Bee Team integration: contracts and recovery
 
-Read before querying or changing data. Functional source: [specification](../../bee-team-spec.md). Proposed HTTP contracts: [Kanban](../../docs/kanban-openapi.yaml) and [RA](../../docs/ra-openapi.yaml). Supplementary plans: [Kanban](../../docs/kanban-api-plan.md) and [RA](../../docs/ra-api-plan.md). Plans may contain older proposals; explicit instructions take precedence. Report operational incompatibilities before dependent actions.
+Read before querying or changing data. Functional source: specification (repository reference: `../../bee-team-spec.md`). Proposed HTTP contracts: Kanban (repository reference: `../../docs/kanban-openapi.yaml`) and RA (repository reference: `../../docs/ra-openapi.yaml`). Supplementary plans: Kanban (repository reference: `../../docs/kanban-api-plan.md`) and RA (repository reference: `../../docs/ra-api-plan.md`). Plans may contain older proposals; explicit instructions take precedence. Report operational incompatibilities before dependent actions.
 
-Before using the links, check the revision: this package requires direct `/boards`, `/tasks`, `/agents`, `/teams` collections, `authorAgentId`/`executorAgentId` fields and `Task.executionContext`. If linked files still include workspaces, task ownership by a team or autonomy without all three modes, they are incompatible snapshots: consult the revision supplied by the contract owner or report the dependency. Do not fill gaps with old bindings. The reference revision and its hashes are in [validation](../validation.md).
+Before using the links, check the revision: this package requires direct `/boards`, `/tasks`, `/agents`, `/teams` collections, `authorAgentId`/`executorAgentId` fields and `Task.executionContext`. If linked files still include workspaces, task ownership by a team or autonomy without all three modes, they are incompatible snapshots: consult the revision supplied by the contract owner or report the dependency. Do not fill gaps with old bindings. The reference revision and its hashes are in validation (repository reference: `../validation.md`).
 
 ## Discover actual capabilities
 

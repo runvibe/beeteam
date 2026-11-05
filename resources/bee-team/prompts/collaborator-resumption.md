@@ -1,6 +1,6 @@
 Prepare task continuity for agent `{{agentId}}` on task `{{taskId}}`, without starting work or writing to the server.
 
-Read the Bee Team Collaborator skill and briefing/closure reference. Consult the agent profile and limits, task, current executor, plans, decisions, summaries, deliverables, and pending items. Confirm whether `executorAgentId` matches the specified agent. If they differ, provide context and flag the pending assignment; do not reassign yourself or execute as if the transfer were approved.
+Read the Call a Collaborator skill and briefing/closure reference. Consult the agent profile and limits, task, current executor, plans, decisions, summaries, deliverables, and pending items. Confirm whether `executorAgentId` matches the specified agent. If they differ, provide context and flag the pending assignment; do not reassign yourself or execute as if the transfer were approved.
 
 Retrieve `executionContext`, preserving `rootTaskId` and `originBoardId` through subtasks on other boards. Manual origin forces manual; standard uses only the current individual flag; automatic covers the chain. Do not derive authorization from the destination board or parent. Without context, retain the approval requirement until the context is confirmed.
 
