@@ -99,6 +99,8 @@ function Board({ progress }: { progress: Progress }) {
 }
 function Assign({ progress }: { progress: Progress }) {
   const offset = useTransform(progress, (p) => -100 * p);
+  const firstLine = useTransform(progress, [0, 0.25, 0.56, 1], [0, 100, 0, 0]);
+  const secondLine = useTransform(progress, [0, 0.25, 0.56, 0.8, 1], [0, 100, 100, 0, 0]);
   const card = { x: 224, y: 113, width: 152, height: 84, rx: 10 };
   return (
     <g>
@@ -109,7 +111,10 @@ function Assign({ progress }: { progress: Progress }) {
         strokeDasharray="25 75"
         style={{ strokeDashoffset: offset }}
       />
-      <g transform="translate(300 155)"><Cell size={30} /></g>
+      <g className="tour-fine-outline">
+        <motion.path d="M247 148h95" pathLength="100" strokeDasharray="100 100" style={{ strokeDashoffset: firstLine }} />
+        <motion.path d="M247 163h62" pathLength="100" strokeDasharray="100 100" style={{ strokeDashoffset: secondLine }} />
+      </g>
     </g>
   );
 }
@@ -119,7 +124,7 @@ function Handoff({ progress }: { progress: Progress }) {
   const offset = useTransform(progress, (p) => 18 - 118 * p);
   const link = "M228.5 155H371.5";
   return (
-    <g>
+    <g className="tour-fine-outline">
       <g transform="translate(200 155)"><Cell /></g>
       <g transform="translate(400 155)"><Cell /></g>
       <path d={link} opacity=".25" />
