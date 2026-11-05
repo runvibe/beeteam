@@ -7,6 +7,7 @@ import { bootstrapCommand, type Harness } from "./bootstrap";
 import { usePublicManifest } from "./public-manifest";
 import { navigate, currentUrl } from "@/routing/location";
 import "./landing.css";
+import { HeroBoard } from "./hero-board";
 
 export function Landing({ connection }: { connection?: ReactNode }) {
   const language = useLocale();
@@ -61,6 +62,7 @@ export function Landing({ connection }: { connection?: ReactNode }) {
       </header>
       <main>
         <section className="launch-hero">
+          <HeroBoard />
           <div className="launch-intro">
             <p className="launch-eyebrow">{t("common.launchEyebrow")}</p>
             <h1>{t("common.launchHeadline")}</h1>
@@ -83,15 +85,6 @@ export function Landing({ connection }: { connection?: ReactNode }) {
             </div>
             <p className="launch-caption">{t("common.launchLocalOpen")}</p>
           </div>
-          <figure className="launch-product">
-            <img
-              src="/launch/board.png"
-              alt={t("common.launchBoardImage")}
-              width="1280"
-              height="860"
-            />
-            <figcaption>{t("common.launchProductCaption")}</figcaption>
-          </figure>
         </section>
         <section
           className="launch-story"

@@ -1,0 +1,55 @@
+.launch-page .launch-hero {
+  position: relative;
+  isolation: isolate;
+  grid-template-columns: minmax(0, 1fr);
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin-inline: calc(-1 * clamp(1.25rem, 5vw, 5rem));
+  padding: clamp(2rem, 5vw, 5rem) clamp(1.25rem, 5vw, 5rem);
+  overflow: clip;
+}
+.launch-hero .launch-intro { position: relative; max-width: 43rem; }
+.launch-hero .launch-eyebrow { color: var(--muted-foreground); }
+.launch-hero .launch-intro h1 { max-width: 17ch; }
+.hero-board { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.hero-board-plane {
+  position: absolute; inset: -24% -12%; display: flex; justify-content: center; gap: 12px;
+  transform: rotate(-7deg); filter: grayscale(1) blur(1.2px); opacity: .58;
+}
+.dark .hero-board-plane { filter: grayscale(1) invert(1) blur(1.2px); }
+.hero-board::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--background), transparent 22%),
+    linear-gradient(90deg, var(--background) 2%, color-mix(in srgb, var(--background) 95%, transparent) 27%, transparent 79%);
+}
+.hero-board-track { flex: 0 0 230px; position: relative; overflow: hidden; }
+.hero-board-strip {
+  position: absolute; inset: 0 0 calc(-1 * var(--height));
+  background: var(--tile) center top / 230px var(--height) repeat-y;
+}
+.hero-board-track:nth-child(3n) .hero-board-strip::after {
+  content: ""; position: absolute; top: 44%; left: 9px; right: 11px; height: 46px;
+  border-radius: 8px; background: linear-gradient(140deg, transparent 18%, #fff9 50%, transparent 81%);
+  opacity: 0;
+}
+.hero-board-toggle {
+  position: absolute; right: clamp(1.25rem, 5vw, 5rem); bottom: 2rem;
+  display: grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 50%; border: 1px solid var(--border); background: var(--background); cursor: pointer;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-board-strip { animation: hero-board-drift var(--duration) linear var(--delay) infinite; }
+  .hero-board-track:nth-child(even) .hero-board-strip { animation-direction: reverse; }
+  .hero-board-track:nth-child(3n) .hero-board-strip::after { animation: hero-board-glint 12s ease-in-out var(--delay) infinite; }
+  .hero-board[data-paused="true"] .hero-board-strip,
+  .hero-board[data-paused="true"] .hero-board-strip::after { animation-play-state: paused; }
+}
+@keyframes hero-board-drift { to { transform: translateY(calc(-1 * var(--height))); } }
+@keyframes hero-board-glint { 0%, 28%, 100% { opacity: 0; } 14% { opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .hero-board-toggle { display: none; } }
+@media (max-width: 600px) {
+  .hero-board-plane { opacity: .36; }
+  .hero-board::after { background: linear-gradient(to top, var(--background), transparent 22%),
+    linear-gradient(90deg, color-mix(in srgb, var(--background) 95%, transparent), color-mix(in srgb, var(--background) 55%, transparent)); }
+}
