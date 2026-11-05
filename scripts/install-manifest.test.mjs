@@ -39,3 +39,14 @@ test('missing manifest cannot fall back to HTML; HEAD and methods are explicit',
  assert.equal(await (await worker.fetch(new Request('https://site.test/tasks/a',{method:'HEAD'}),env)).text(),'');
  assert.equal((await worker.fetch(new Request('https://site.test/',{method:'POST'}),env)).status,405);
 });
+
+test('installation guide serves static instructions to clients without JavaScript',async()=>{
+ const guide={ASSETS:{async fetch(request){
+   assert.equal(new URL(request.url).pathname,'/install/index.html');
+   return new Response('Install Bee Team',{headers:{'Content-Type':'text/html'}});
+ }}};
+ for(const path of ['/install','/install/']){
+   const response=await worker.fetch(new Request('https://getbee.team'+path),guide);
+   assert.equal(await response.text(),'Install Bee Team');
+ }
+});

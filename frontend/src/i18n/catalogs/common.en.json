@@ -55,7 +55,7 @@
   "launchEvidenceBenefit": "Read plans, decisions, files and progress together.",
   "launchContextBenefit": "Resume work with the context already recorded.",
   "launchInstallTitle": "Start with your assistant.",
-  "launchInstallBody": "Choose the harness you use. Install the skills in your project, then ask your assistant to run setup-bee-team.",
+  "launchInstallBody": "Choose your assistant, copy the request and paste it into its chat.",
   "launchNodeHelp": "The command uses npx. If Node.js is not available, install it first or follow the manual instructions.",
   "launchNodeDownload": "Download Node.js",
   "launchHarness": "Your harness",
@@ -69,8 +69,8 @@
   "launchManualHarness": "Use the manual instructions to copy the skills into your harness's supported directory.",
   "launchReleaseUnavailable": "A published release could not be verified. Installation commands will appear when release metadata is available.",
   "launchManualInstructions": "Read the skills instructions",
-  "launchCopied": "Command copied.",
-  "launchCopyFailed": "Copy was unavailable. Select the command above to copy it manually.",
+  "launchCopied": "Request copied.",
+  "launchCopyFailed": "Select the request and copy it manually.",
   "launchFooter": "Your agents work in your assistant. Their shared context lives here.",
   "demoBanner": "Demonstration · Sample data · Read only",
   "demoReadonly": "The demonstration is read only.",
@@ -231,5 +231,8 @@
   "mermaidLoading": "Loading diagram…",
   "mermaidError": "Could not render this diagram. The original source is shown below.",
   "mermaidLimit": "This diagram exceeds the display limit. The original source is shown below.",
-  "mermaidUnsafe": "This diagram uses unsupported configuration or embedded content. The original source is shown below."
+  "mermaidUnsafe": "This diagram uses unsupported configuration or embedded content. The original source is shown below.",
+  "installChatNamed": "Read https://getbee.team/install and follow the instructions to install Bee Team for {{harness}} on my computer. Verify the release and confirm that my local API is running.",
+  "installChatOther": "Read https://getbee.team/install and help me install Bee Team on my computer using this assistant. Verify the release and confirm that my local API is running.",
+  "copyChatPrompt": "Copy request"
 }

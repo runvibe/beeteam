@@ -3,6 +3,10 @@ export default {
   async fetch(request,env) {
     if(!['GET','HEAD'].includes(request.method))return new Response(null,{status:405,headers:{Allow:'GET, HEAD'}});
     const url=new URL(request.url),path=url.pathname;
+    if(path==='/install'||path==='/install/') {
+      const guide=await env.ASSETS.fetch(new Request(new URL('/install/index.html',url),request));
+      return new Response(request.method==='HEAD'?null:guide.body,{status:guide.status,headers:guide.headers});
+    }
     if(/^\/(api|mcp)(\/|$)/.test(path))return new Response(null,{status:404});
     let response=await env.ASSETS.fetch(request);
     if(path==='/install.json') {

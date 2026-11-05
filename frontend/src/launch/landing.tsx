@@ -1,24 +1,33 @@
 import { useState, type ReactNode } from "react";
-import { Hexagon, ArrowUpRight, Check, Copy } from "lucide-react";
+import { Hexagon, ArrowUpRight, Check, Copy, Terminal } from "lucide-react";
 import { t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { ThemeControl } from "@/components/theme-control";
-import { bootstrapCommand, type Harness } from "./bootstrap";
-import { usePublicManifest } from "./public-manifest";
+import { harnesses, type Harness } from "./bootstrap";
+import { harnessIcon } from "@/features/harness-catalog";
+import { themeController } from "@/state/theme-runtime";
 import { navigate, currentUrl } from "@/routing/location";
 import "./landing.css";
 import { HeroBoard } from "./hero-board";
 
 export function Landing({ connection }: { connection?: ReactNode }) {
   const language = useLocale();
-  const manifest = usePublicManifest();
-  const [harness, setHarness] = useState<Harness>("codex");
+  const [harness, setHarness] = useState<Harness | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
-  const command = manifest.data
-    ? bootstrapCommand(manifest.data, harness)
-    : null;
+  const names = {
+    codex: t("common.harnessCodex"),
+    "claude-code": t("common.harnessClaude"),
+    "github-copilot": t("common.harnessCopilot"),
+    other: t("common.harnessOther"),
+  };
+  const command = harness ? (harness === "other" ? t("common.installChatOther") : t("common.installChatNamed", { harness: names[harness] })) : null;
+  function selectHarness(choice: Harness) {
+    setHarness(choice);
+    setCopyState("idle");
+    themeController.store.getState().setPreset(choice === "other" ? "default" : choice === "github-copilot" ? "copilot" : choice);
+  }
   const copy = async () => {
     if (!command) return;
     try {
@@ -108,57 +117,26 @@ export function Landing({ connection }: { connection?: ReactNode }) {
           <div>
             <h2 id="launch-install-title">{t("common.launchInstallTitle")}</h2>
             <p>{t("common.launchInstallBody")}</p>
-            <p>
-              {t("common.launchNodeHelp")}{" "}
-              <a
-                href="https://nodejs.org/en/download"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t("common.launchNodeDownload")}
-              </a>
-            </p>
           </div>
           <div className="launch-command">
-            <label htmlFor="launch-harness">{t("common.launchHarness")}</label>
-            <select
-              id="launch-harness"
-              value={harness}
-              onChange={(event) => {
-                setHarness(event.target.value as Harness);
-                setCopyState("idle");
-              }}
-            >
-              <option value="codex">{t("common.harnessCodex")}</option>
-              <option value="claude-code">{t("common.harnessClaude")}</option>
-              <option value="github-copilot">
-                {t("common.harnessCopilot")}
-              </option>
-              <option value="other">{t("common.harnessOther")}</option>
-            </select>
-            {command ? (
-              <>
-                <pre tabIndex={0}>
-                  <code>{command}</code>
-                </pre>
-                <Button onClick={() => void copy()}>
-                  {copyState === "copied" ? (
-                    <Check aria-hidden="true" />
-                  ) : (
-                    <Copy aria-hidden="true" />
-                  )}
-                  {t("common.launchCopyCommand")}
-                </Button>
-                <p>{t("common.launchProjectScope")}</p>
-                <p>{t("common.launchAskSetup")}</p>
-              </>
-            ) : (
-              <p role="status">
-                {harness === "other"
-                  ? t("common.launchManualHarness")
-                  : t("common.launchReleaseUnavailable")}
-              </p>
-            )}
+            <fieldset className="launch-picker">
+              <legend>{t("common.launchHarness")}</legend>
+              {harnesses.map((choice) => {
+                const icon = harnessIcon(choice.replaceAll("-", " "));
+                return <button type="button" key={choice} aria-pressed={harness === choice}
+                  onClick={() => selectHarness(choice)}>
+                  {icon ? <img src={icon} alt="" /> : <Terminal aria-hidden="true" />}
+                  <span>{names[choice]}</span>
+                </button>;
+              })}
+            </fieldset>
+            {command && <div className="launch-chat-prompt">
+              <p aria-live="polite">{command}</p>
+              <Button onClick={() => void copy()}>
+                {copyState === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+                {t("common.copyChatPrompt")}
+              </Button>
+            </div>}
             {copyState !== "idle" && (
               <p role="status">
                 {copyState === "copied"
@@ -167,11 +145,7 @@ export function Landing({ connection }: { connection?: ReactNode }) {
               </p>
             )}
             <a
-              href={
-                manifest.data
-                  ? `${manifest.data.skills.repository}/tree/${encodeURIComponent(manifest.data.skills.ref)}/skills`
-                  : "https://github.com/runvibe/beeteam"
-              }
+              href="/install"
               target="_blank"
               rel="noreferrer"
             >

@@ -55,7 +55,7 @@
   "launchEvidenceBenefit": "Leia planos, decisões, arquivos e andamento no mesmo lugar.",
   "launchContextBenefit": "Retome o trabalho com o contexto já registrado.",
   "launchInstallTitle": "Comece pelo seu assistente.",
-  "launchInstallBody": "Escolha o harness que você usa. Instale as skills no seu projeto e peça ao assistente para executar setup-bee-team.",
+  "launchInstallBody": "Escolha o assistente, copie o pedido e cole no chat dele.",
   "launchNodeHelp": "O comando usa npx. Se o Node.js não estiver disponível, instale primeiro ou siga as instruções manuais.",
   "launchNodeDownload": "Baixar Node.js",
   "launchHarness": "Seu harness",
@@ -69,8 +69,8 @@
   "launchManualHarness": "Siga as instruções manuais para copiar as skills para o diretório aceito pelo seu harness.",
   "launchReleaseUnavailable": "Não foi possível verificar uma release publicada. Os comandos de instalação aparecerão quando os metadados estiverem disponíveis.",
   "launchManualInstructions": "Ler instruções das skills",
-  "launchCopied": "Comando copiado.",
-  "launchCopyFailed": "Não foi possível copiar. Selecione o comando acima para copiar manualmente.",
+  "launchCopied": "Pedido copiado.",
+  "launchCopyFailed": "Selecione o pedido e copie manualmente.",
   "launchFooter": "Os agentes trabalham no seu assistente. O contexto compartilhado fica aqui.",
   "demoBanner": "Demonstração · Dados de exemplo · Somente leitura",
   "demoReadonly": "A demonstração permite apenas leitura.",
@@ -231,5 +231,8 @@
   "mermaidLoading": "Carregando diagrama…",
   "mermaidError": "Não foi possível renderizar este diagrama. O código-fonte original está abaixo.",
   "mermaidLimit": "Este diagrama excede o limite de exibição. O código-fonte original está abaixo.",
-  "mermaidUnsafe": "Este diagrama usa configuração ou conteúdo incorporado não suportado. O código-fonte original está abaixo."
+  "mermaidUnsafe": "Este diagrama usa configuração ou conteúdo incorporado não suportado. O código-fonte original está abaixo.",
+  "installChatNamed": "Leia https://getbee.team/install e siga as instruções para instalar o Bee Team para {{harness}} no meu computador. Verifique a release e confirme que minha API local está funcionando.",
+  "installChatOther": "Leia https://getbee.team/install e me ajude a instalar o Bee Team no meu computador usando este assistente. Verifique a release e confirme que minha API local está funcionando.",
+  "copyChatPrompt": "Copiar pedido"
 }
