@@ -1,6 +1,7 @@
 import { message } from "@/i18n";
 import { ApiError } from "./types";
 export type HttpOptions = {
+  expectedAppVersion?: string;
   baseUrl?: string;
   fetch?: typeof fetch;
   timeoutMs?: number;
