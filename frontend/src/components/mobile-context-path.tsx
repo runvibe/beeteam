@@ -33,6 +33,7 @@ export function MobileContextPath() {
         : boardId
           ? board.data?.name
           : {
+              home: tr("common.home"),
               boards: tr("common.boards"),
               agents: tr("common.agents"),
               teams: tr("common.teams"),

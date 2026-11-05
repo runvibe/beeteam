@@ -66,6 +66,8 @@ O evento de auditoria `task.parent_changed` aparece como “Vínculo da tarefa a
 
 ## Contratos e adapter
 
+Após validar a conexão e a versão, a raiz abre `/home` por substituição de histórico e conserva a query. Links diretos de tarefas/listas abrem seu destino. A Home oferece primeiros passos, pedido copiável para usar `get-a-team-lead`, acesso às listas e retorno à apresentação. A ação da navegação para Home registra `from`; “Retomar de onde parei” restaura esse caminho local completo, incluindo aba/filtros. A Home não exige conclusão de tutorial nem cria registros operacionais. O estado mostrado vem da API verificada; a demonstração continua identificada como tal.
+
 O frontend incorpora a versão de `Cargo.toml` no build/dev. A entrada HTTP verifica `/api/v1/info` antes de montar o painel ou abrir SSE. Versões diferentes e falhas de descoberta mostram recuperação/retry; o transporte também recusa operações até confirmar igualdade e contrato suportado. A descoberta usa timeout de três segundos e verificação periódica.
 
 Uma release estável maior em `https://getbee.team/install.json` gera aviso opcional. Configure `VITE_INSTALL_MANIFEST_URL` para previews controlados. A consulta tem timeout e cache de cinco minutos; falhas remotas permitem usar o par local compatível. O consumidor valida schemaVersion1, SemVer, artefatos GitHub HTTPS com hash/tamanho e skills na tag `v<appVersion>`. Downloads são listados por sistema/arquitetura.

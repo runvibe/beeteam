@@ -110,6 +110,7 @@ export function AppPath() {
     );
   /* origin search is shared with task ancestors */
   const label = {
+    home: tr("common.home"),
     boards: tr("common.boards"),
     agents: tr("common.agents"),
     teams: tr("common.teams"),
@@ -118,7 +119,7 @@ export function AppPath() {
     <nav aria-label={tr("common.path")} className="context-path">
       <ol>
         <li>
-          <button onClick={() => setArea("boards")}>Get Bee Team</button>
+          <button onClick={() => setArea("boards")}>Bee Team</button>
         </li>
         <li>
           {boardId && area === "boards" ? (

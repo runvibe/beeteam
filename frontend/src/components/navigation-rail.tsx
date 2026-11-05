@@ -1,13 +1,18 @@
 import { useLocale, t as tr } from "@/i18n";
 
-import { Hexagon, Columns3, Users, Network } from "lucide-react";
+import { Hexagon, Columns3, Users, Network, House } from "lucide-react";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
 import { useDemo } from "./demo-context";
-import { demoHref } from "@/routing/location";
+import {
+  demoHref,
+  destination,
+  navigate,
+  currentUrl,
+} from "@/routing/location";
 
 const sections = [
   {
@@ -42,18 +47,28 @@ const sections = [
   },
 ] as const;
 
-export function NavigationRail() {
+export function NavigationRail({
+  homeEnabled = false,
+}: { homeEnabled?: boolean } = {}) {
   useLocale();
   const area = useUi((state) => state.area);
   const demo = useDemo();
   const setArea = useUi((state) => state.setArea);
+  const homeHref = area === "home" ? currentUrl() : destination("/home");
+  const openHome = () => {
+    if (area !== "home") navigate(homeHref);
+  };
   return (
     <aside className="navigation-rail">
       <a
         className="navigation-logo"
-        aria-label={tr("common.beeTeamGoToBoards")}
-        title="Get Bee Team"
-        href={demoHref("/boards")}
+        aria-label={
+          homeEnabled
+            ? tr("common.getBeeTeamGoHome")
+            : tr("common.beeTeamGoToBoards")
+        }
+        title="Bee Team"
+        href={demoHref(homeEnabled ? homeHref : "/boards")}
         onClick={(event) => {
           if (
             event.button ||
@@ -64,13 +79,26 @@ export function NavigationRail() {
           )
             return;
           event.preventDefault();
-          setArea("boards");
+          if (homeEnabled) openHome();
+          else setArea("boards");
         }}
       >
         <Hexagon aria-hidden="true" />
       </a>
       <Tooltip.Provider delayDuration={300}>
         <nav aria-label={tr("common.mainNavigation")}>
+          {homeEnabled && (
+            <Button
+              className="navigation-button"
+              variant={area === "home" ? "secondary" : "ghost"}
+              size="icon"
+              aria-label={tr("common.home")}
+              aria-current={area === "home" ? "page" : undefined}
+              onClick={openHome}
+            >
+              <House aria-hidden="true" />
+            </Button>
+          )}
           {sections.map(({ area: target, label, name, Icon }) => (
             <Tooltip.Root key={target}>
               <Tooltip.Trigger asChild>
