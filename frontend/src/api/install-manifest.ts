@@ -1,4 +1,4 @@
-import { valid } from "semver";
+import { isCanonicalVersion } from "./version-policy";
 
 export interface InstallArtifact {
   os: "windows" | "linux" | "macos";
@@ -37,7 +37,7 @@ export function parseInstallManifest(value: unknown): InstallManifest {
   if (
     data.schemaVersion !== 1 ||
     typeof data.appVersion !== "string" ||
-    !valid(data.appVersion) ||
+    !isCanonicalVersion(data.appVersion) ||
     !Array.isArray(data.artifacts) ||
     data.artifacts.length === 0
   )

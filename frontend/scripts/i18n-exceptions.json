@@ -1,5 +1,10 @@
 [
   {
+    "file": "src/launch/bootstrap.ts",
+    "text": "npx skills@1.7.6 add https://github.com/runvibe/beeteam/tree/{{value1}}/skills --skill setup-bee-team get-a-team-lead get-a-worker -a {{value2}} --copy",
+    "reason": "Verified CLI syntax with immutable release tag and closed harness identifier; command tokens are technical."
+  },
+  {
     "file": "src/components/release-notice.tsx",
     "text": "noopener noreferrer",
     "reason": "HTML link relationship security tokens are technical attributes, not interface prose."

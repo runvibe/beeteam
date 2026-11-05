@@ -7,7 +7,7 @@ import { ApiProvider } from "./api/context";
 import { createHttpApi } from "./api/http";
 import { runtimeConfig } from "./runtime";
 import { appVersion } from "./app-version";
-import { ApiVersionGate } from "./components/api-version-gate";
+import { LaunchRoot } from "./launch/launch-root";
 async function start() {
   const api = runtimeConfig.mock
     ? (await import("./api/mock")).createMockApi()
@@ -20,15 +20,13 @@ async function start() {
     : createChangeSource(runtimeConfig.apiBaseUrl);
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <ApiProvider api={api}>
-        {runtimeConfig.mock ? (
+      {runtimeConfig.mock ? (
+        <ApiProvider api={api}>
           <App />
-        ) : (
-          <ApiVersionGate expectedVersion={appVersion} changes={changes}>
-            <App />
-          </ApiVersionGate>
-        )}
-      </ApiProvider>
+        </ApiProvider>
+      ) : (
+        <LaunchRoot api={api} changes={changes} />
+      )}
     </StrictMode>,
   );
 }

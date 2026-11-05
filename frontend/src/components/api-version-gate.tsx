@@ -9,15 +9,20 @@ import { t, useLocale } from "@/i18n";
 import { Button } from "./ui/button";
 import "./api-version-gate.css";
 import { ReleaseNotice } from "./release-notice";
+import { navigate } from "@/routing/location";
 
 export function ApiVersionGate({
   expectedVersion,
   children,
   changes,
+  renderBlocked,
+  introduction = false,
 }: {
   expectedVersion: string;
   children: ReactNode;
   changes?: ChangeSource;
+  renderBlocked?: (connection: ReactNode) => ReactNode;
+  introduction?: boolean;
 }) {
   useLocale();
   const api = useApi();
@@ -30,7 +35,7 @@ export function ApiVersionGate({
       state.state.error
         ? Math.min(
             30_000,
-            3_000 * 2 ** Math.min(state.state.fetchFailureCount, 3),
+              3_000 * 2 ** Math.min(Math.max(0, state.state.errorUpdateCount - 1), 4),
           )
         : 15_000,
     refetchOnWindowFocus: true,
@@ -38,7 +43,7 @@ export function ApiVersionGate({
   const agreement = query.data
     ? assessApiVersion(expectedVersion, query.data)
     : undefined;
-  if (!query.error && agreement === "compatible")
+  if (!introduction && !query.error && agreement === "compatible")
     return (
       <>
         <ReleaseNotice installedVersion={expectedVersion} />
@@ -47,19 +52,24 @@ export function ApiVersionGate({
       </>
     );
   const checking = !query.data && query.isPending;
-  const message = checking
-    ? t("common.connectionChecking")
-    : query.error
-      ? t("common.connectionUnavailable")
-      : agreement === "api-older"
-        ? t("common.localUpdateRequired")
-        : agreement === "frontend-older"
-          ? t("common.frontendUpdateRequired")
-          : t("common.versionAgreementRequired");
-  return (
-    <main className="api-version-gate">
+  const message =
+    !query.error && agreement === "compatible"
+      ? t("common.connectionReady")
+      : checking
+        ? t("common.connectionChecking")
+        : query.error
+          ? t("common.connectionUnavailable")
+          : agreement === "api-older"
+            ? t("common.localUpdateRequired")
+            : agreement === "frontend-older"
+              ? t("common.frontendUpdateRequired")
+              : t("common.versionAgreementRequired");
+  const Container = renderBlocked ? "section" : "main";
+  const Heading = renderBlocked ? "h2" : "h1";
+  const connection = (
+    <Container className="api-version-gate">
       <section className="api-version-card" aria-labelledby="connection-title">
-        <h1 id="connection-title">{t("common.connectGetBeeTeam")}</h1>
+        <Heading id="connection-title">{t("common.connectGetBeeTeam")}</Heading>
         <p role="status">{message}</p>
         {query.data && (
           <p>
@@ -77,6 +87,11 @@ export function ApiVersionGate({
           >
             {t("common.checkConnectionAgain")}
           </Button>
+          {agreement === "compatible" && !query.error && (
+            <Button onClick={() => navigate("/?demo=0")}>
+              {t("common.launchOpenPanel")}
+            </Button>
+          )}
           {agreement === "frontend-older" && (
             <Button variant="outline" onClick={() => window.location.reload()}>
               {t("common.reloadFrontend")}
@@ -84,6 +99,7 @@ export function ApiVersionGate({
           )}
         </div>
       </section>
-    </main>
+    </Container>
   );
+  return renderBlocked ? renderBlocked(connection) : connection;
 }
