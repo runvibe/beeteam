@@ -89,7 +89,7 @@ export function ApiVersionGate({
             {t("common.checkConnectionAgain")}
           </Button>
           {agreement === "compatible" && !query.error && (
-            <Button onClick={() => navigate("/?demo=0")}>
+            <Button onClick={() => navigate("/app/")}>
               {t("common.launchOpenPanel")}
             </Button>
           )}

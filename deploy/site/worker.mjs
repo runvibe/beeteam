@@ -14,7 +14,7 @@ export default {
       const headers=new Headers(response.headers);headers.set('Cache-Control','public, max-age=60, must-revalidate');
       return new Response(request.method==='HEAD'?null:response.body,{status:response.status,headers});
     }
-    if(response.status===404&&/^\/(?:$|home\/?$|(?:boards|tasks|teams|agents|settings|demo)(?:\/[^.]*)?\/?$)/.test(path)) {
+    if(response.status===404&&/^\/(?:$|(?:app\/?)?$|(?:app\/)?(?:home|boards|tasks|teams|agents|settings|demo)(?:\/[^.]*)?\/?$)/.test(path)) {
       const index=new URL('/index.html',url);
       response=await env.ASSETS.fetch(new Request(index,request));
     }

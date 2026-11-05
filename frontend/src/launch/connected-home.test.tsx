@@ -68,7 +68,7 @@ it("resumes the original URL including tab and filters from Home", async () => {
     }),
   ).toBeNull();
 });
-it("transitions from discovery to Home after a valid local response", async () => {
+it("keeps the landing at root after discovery and enters Home on request", async () => {
   locationAt("/");
   const api = createMockApi({ delay: 0 });
   api.info = vi
@@ -84,10 +84,13 @@ it("transitions from discovery to Home after a valid local response", async () =
   fireEvent.click(
     screen.getByRole("button", { name: "Verificar conexão novamente" }),
   );
+  const open = await screen.findByRole("button", { name: "Abrir meu painel" });
+  expect(location.pathname).toBe("/");
+  fireEvent.click(open);
   await screen.findByRole("heading", {
     name: "O próximo passo começa com uma conversa.",
   });
-  expect(location.pathname).toBe("/home");
+  expect(location.pathname).toBe("/app/");
   act(() => setLocalePreference("en"));
   expect(
     screen.getByRole("heading", {

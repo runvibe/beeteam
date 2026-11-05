@@ -39,6 +39,9 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
     let app = app();
     for path in [
         "/",
+        "/app/",
+        "/app/tasks/task-alias",
+        "/app/boards/example/settings",
         "/boards",
         "/boards/example/settings",
         "/tasks/task-alias",
@@ -60,6 +63,7 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
     for path in [
         "/api/v1/unknown",
         "/assets/missing.js",
+        "/app/assets/missing.js",
         "/missing.png",
         "/boards/missing.js",
         "/tasks/mcp/unknown",

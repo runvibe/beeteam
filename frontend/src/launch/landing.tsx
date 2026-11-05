@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Hexagon, ArrowUpRight, Check, Copy, Terminal } from "lucide-react";
 import { t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,17 @@ import "./landing.css";
 import { HeroBoard } from "./hero-board";
 
 export function Landing({ connection }: { connection?: ReactNode }) {
+  const header = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const el = header.current;
+    if (!el) return;
+    const measure = () => el.parentElement?.style.setProperty("--launch-header-height", `${el.getBoundingClientRect().height}px`);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const language = useLocale();
   const [harness, setHarness] = useState<Harness | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">(
@@ -39,12 +50,13 @@ export function Landing({ connection }: { connection?: ReactNode }) {
   };
   return (
     <div className="launch-page">
-      <header className="launch-header">
-        <a href="/?demo=0" className="launch-brand">
+      <header className="launch-header" ref={header}>
+        <a href="/" className="launch-brand">
           <Hexagon aria-hidden="true" />
           <span>{t("common.getBeeTeamBrand")}</span>
         </a>
         <nav aria-label={t("common.launchNavigation")}>
+          <a href="/app/">{t("common.launchOpenPanel")}</a>
           <a href="#install">{t("common.launchInstall")}</a>
           <a
             href="https://github.com/runvibe/beeteam"
@@ -85,7 +97,7 @@ export function Landing({ connection }: { connection?: ReactNode }) {
                 variant="outline"
                 onClick={() =>
                   navigate(
-                    `/boards?${new URLSearchParams({ demo: "1", returnTo: currentUrl() })}`,
+                    `/app/boards?${new URLSearchParams({ demo: "1", returnTo: currentUrl() })}`,
                   )
                 }
               >

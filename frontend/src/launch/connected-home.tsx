@@ -90,7 +90,7 @@ export function ConnectedHome() {
         <Button variant="outline" onClick={() => navigate("/agents")}>
           {t("common.homeOpenAgents")}
         </Button>
-        <Button variant="ghost" onClick={() => navigate("/?intro=1")}>
+        <Button variant="ghost" onClick={() => navigate("/")}>
           {t("common.homeReviewSetup")}
         </Button>
       </nav>

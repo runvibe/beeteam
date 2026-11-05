@@ -30,7 +30,7 @@ export function LaunchRoot({
       <ApiVersionGate
         expectedVersion={appVersion}
         changes={changes}
-        introduction={params.get("intro") === "1"}
+        introduction={url.split("?")[0] === "/" || params.get("intro") === "1"}
         renderBlocked={(connection) => <Landing connection={connection} />}
       >
         <ConnectedApp />

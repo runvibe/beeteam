@@ -27,7 +27,7 @@ const env={ASSETS:{fetch:async req=>{
  return new Response(null,{status:404});
 }}};
 test('Worker keeps deep links, protocol errors, assets and manifest distinct',async()=>{
- for(const [path,status] of [['/tasks/example',200],['/api/v1/info',404],['/mcp',404],['/assets/missing.js',404],['/install.json',200]]){
+ for(const [path,status] of [['/tasks/example',200],['/app/',200],['/app/tasks/example',200],['/app/assets/missing.js',404],['/api/v1/info',404],['/mcp',404],['/assets/missing.js',404],['/install.json',200]]){
   const r=await worker.fetch(new Request('https://site.test'+path),env);assert.equal(r.status,status,path);
  }
  assert.match((await worker.fetch(new Request('https://site.test/install.json'),env)).headers.get('cache-control'),/max-age=60/);

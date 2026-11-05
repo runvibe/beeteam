@@ -1,6 +1,21 @@
 import { useEffect, useSyncExternalStore } from "react";
 const eventName = "beeteam:navigate";
-export const currentUrl = () => location.pathname + location.search;
+// Components parse logical routes; only the browser history and hrefs carry the mount path.
+function logicalPath(path: string) {
+  if (/^\/app\/?(?:\?|#|$)/.test(path)) return path.replace(/^\/app\/?/, "/home");
+  return path.replace(/^\/app(?=\/)/, "");
+}
+const mounted = () => /^\/app(?:\/|$)/.test(location.pathname);
+export function appHref(to: string) {
+  if (/^\/home\/?(?:[?#]|$)/.test(to)) return to.replace(/^\/home\/?/, "/app/");
+  return /^\/(boards|tasks|agents|teams|settings)(?:\/|[?#]|$)/.test(to) ? "/app" + to : to;
+}
+export function canonicalizeEntry() {
+  let next = appHref(location.pathname);
+  if (next === "/app" || /^\/app\/home\/?$/.test(next)) next = "/app/";
+  if (next !== location.pathname) history.replaceState(history.state, "", next + location.search + location.hash);
+}
+export const currentUrl = () => logicalPath(location.pathname) + location.search;
 export function demoHref(to: string) {
   if (!to.startsWith("/") || to.startsWith("//")) return to;
   const url = new URL(to, location.origin);
@@ -16,7 +31,8 @@ export function demoHref(to: string) {
     !url.searchParams.has("returnTo")
   )
     url.searchParams.set("returnTo", returnTo);
-  return url.pathname + url.search + url.hash;
+  const path = mounted() ? appHref(url.pathname) : url.pathname;
+  return path + url.search + url.hash;
 }
 function subscribe(notify: () => void) {
   window.addEventListener("popstate", notify);
@@ -44,7 +60,8 @@ function savePosition(url: string) {
   });
 }
 export function navigate(to: string, replace = false) {
-  to = demoHref(to);
+  const href = demoHref(to);
+  to = logicalPath(href);
   savePosition(currentUrl());
   const previous = currentUrl();
   if (to === previous) return;
@@ -60,7 +77,7 @@ export function navigate(to: string, replace = false) {
   let old = window.history.state;
   if (!old?.bee) {
     old = { bee: true, index: 0 };
-    window.history.replaceState(old, "", previous);
+    window.history.replaceState(old, "");
   }
 
   const from = safeOrigin(new URLSearchParams(to.split("?")[1]).get("from"));
@@ -82,10 +99,11 @@ export function navigate(to: string, replace = false) {
         ? old.detailReturn
         : undefined,
   };
-  window.history[replace ? "replaceState" : "pushState"](next, "", to);
+  window.history[replace ? "replaceState" : "pushState"](next, "", href);
   window.dispatchEvent(new Event(eventName));
 }
 export function safeOrigin(value: string | null): string | null {
+  if (value) value = logicalPath(value);
   if (
     !value ||
     (!/^\/(boards|tasks|agents|teams|home)(\/|\?|$)/.test(value) &&
@@ -108,7 +126,8 @@ export function destination(path: string) {
 }
 /** Canonical identity replacement must not create a navigation or lose return indexes. */
 export function replaceCanonicalUrl(to: string) {
-  to = demoHref(to);
+  const href = demoHref(to);
+  to = logicalPath(href);
   const previous = currentUrl();
   if (to === previous) return;
   savePosition(previous);
@@ -124,7 +143,7 @@ export function replaceCanonicalUrl(to: string) {
         }
       : state,
     "",
-    to,
+    href,
   );
   window.dispatchEvent(new Event(eventName));
 }

@@ -3,8 +3,8 @@
   isolation: isolate;
   grid-template-columns: minmax(0, 1fr);
   box-sizing: border-box;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: calc(100vh - var(--launch-header-height, 5rem));
+  min-height: calc(100dvh - var(--launch-header-height, 5rem));
   margin-inline: 0;
   padding: clamp(2rem, 5vw, 5rem) var(--launch-gutter);
   overflow: clip;

@@ -8,7 +8,9 @@ import { createHttpApi } from "./api/http";
 import { runtimeConfig } from "./runtime";
 import { appVersion } from "./app-version";
 import { LaunchRoot } from "./launch/launch-root";
+import { canonicalizeEntry } from "./routing/location";
 async function start() {
+  canonicalizeEntry();
   const api = runtimeConfig.mock
     ? (await import("./api/mock")).createMockApi()
     : createHttpApi({

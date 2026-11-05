@@ -97,16 +97,19 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
     if let Some(asset) = crate::services::frontend::asset(path) {
         return Some(asset);
     }
-    if path == "/" {
+    if matches!(path, "/install" | "/install/") {
+        return crate::services::frontend::asset("/install/index.html");
+    }
+    if matches!(path, "/" | "/app" | "/app/") {
         return crate::services::frontend::asset("/index.html");
     }
-    let parts: Vec<_> = path
+    let route = path.strip_prefix("/app/").unwrap_or(path.strip_prefix('/')?);
+    let parts: Vec<_> = route
         .trim_end_matches('/')
-        .strip_prefix('/')?
         .split('/')
         .collect();
     let known = match parts.as_slice() {
-        ["boards" | "agents" | "teams"] => true,
+        ["home" | "boards" | "agents" | "teams"] => true,
         ["boards" | "agents" | "teams" | "tasks", id] => alias(id),
         ["boards" | "agents" | "teams", id, "settings"] => alias(id),
         _ => false,
