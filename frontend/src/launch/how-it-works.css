@@ -52,6 +52,10 @@
 .tour-art :is(path, rect, circle) {
   vector-effect: non-scaling-stroke;
 }
+.tour-fine-outline,
+.tour-fine-outline .lucide-hexagon {
+  stroke-width: 1px;
+}
 .tour-art text {
   fill: currentColor;
   stroke: none;

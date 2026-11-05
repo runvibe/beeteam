@@ -38,7 +38,7 @@ const neighbors: Point[] = [
 ];
 function Hive({ progress }: { progress: Progress }) {
   return (
-    <g transform="translate(300 156)">
+    <g className="tour-fine-outline" transform="translate(300 156)">
       <g className="tour-secondary-line">
         {neighbors.map((point, index) => (
           <JoiningCell key={index} point={point} progress={progress} />
@@ -53,7 +53,7 @@ function Hive({ progress }: { progress: Progress }) {
 function Team({ progress }: { progress: Progress }) {
   const phase = useTransform(progress, (p) => -100 * p);
   return (
-    <g>
+    <g className="tour-fine-outline">
       <g transform="translate(300 82)">
         <Cell />
         <Cell size={26} />
