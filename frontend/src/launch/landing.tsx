@@ -129,7 +129,7 @@ export function Landing() {
           <div className="launch-command">
             <div className="launch-signal" aria-hidden="true">
               <div className="launch-signal-field" />
-              <Hexagon className="launch-signal-ring" strokeWidth={0.35} />
+              <Hexagon className="launch-signal-ring" strokeWidth={1} />
               <Hexagon key={`ring-${harness ?? "initial"}`} className="launch-signal-ring inner" strokeWidth={0.55} />
               <div className="launch-signal-core" key={harness ?? "initial"}>
                 {chosenIcon ? <img alt="" src={chosenIcon} /> : harness ? <Terminal /> : <Hexagon />}
