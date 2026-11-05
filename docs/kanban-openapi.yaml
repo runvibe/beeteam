@@ -32,7 +32,6 @@ info:
   x-pending-proposals:
     - leader-edit-scope-via-managed-executor
     - declared-author-header-format
-    - reparenting-not-exposed
     - archive-agent-rules
     - planning-revisions-and-payload-limits
 servers:
@@ -926,11 +925,11 @@ paths:
     post:
       operationId: createTask
       summary: Criar tarefa ou subtarefa
-      description: Autor e executor obrigatórios; parentId opcional. Filho pode estar em outro board e ter
-        outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
-        rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
-        pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
-        nesta revisão. New tasks require workScope.projects with at least one named absolute folder; repositories and discovery are server-owned. Local Git inspection is bounded and read-only, never fetches or enumerates other worktrees. No Git or inaccessible paths still register the project with discovery status. Exact legacy replays retain their original response. See beeteam://references/repository-evidence.
+      description: Author and executor are required; parentId is optional. A child may use another board
+        and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own
+        id and boardId as rootTaskId and originBoardId; children follow their parent's context.
+        PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent;
+        boardId remains immutable. New tasks require workScope.projects with at least one named absolute folder; repositories and discovery are server-owned. Local Git inspection is bounded and read-only, never fetches or enumerates other worktrees. No Git or inaccessible paths still register the project with discovery status. Exact legacy replays retain their original response. See beeteam://references/repository-evidence.
       x-contract-status: proposed
       parameters:
         - $ref: "#/components/parameters/IdempotencyKey"
@@ -1183,6 +1182,59 @@ paths:
               $ref: "#/components/schemas/PatchTask"
             example:
               autonomyMode: automatic
+  /api/v2/tasks/{taskId}/parent/link:
+    parameters:
+      - name: taskId
+        in: path
+        required: true
+        schema: {type: string, format: uuid, pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'}
+    post:
+      operationId: linkTaskToParent
+      summary: Link an existing task to a parent
+      description: >-
+        Atomically links or reparents an existing subtree without recreating tasks or changing
+        board, status, executor, authored content or historical evidence. Requires the task
+        If-Match, parentVersion and previousParentVersion when already linked. Touches all
+        subtree tasks and both direct parents. Current root/origin follow the new ancestry;
+        historical summaries and execution evidence retain their recorded context. Requires
+        manual coordination if either parent or any subtree task requires manual coordination
+        before or after the change; otherwise automatic. Rejects cycles, inactive ancestry,
+        inactive descendants and open subtree execution intervals. An unchanged parent is a
+        validated no-op. One idempotency key covers the complete transaction and exact replay.
+      parameters:
+        - $ref: '#/components/parameters/IfMatch'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/ActorKind'
+        - $ref: '#/components/parameters/ActorId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LinkTaskToParent'}
+      responses:
+        '200':
+          description: Linked task with its current execution context
+          headers:
+            ETag:
+              description: Current task version
+              schema: {type: string}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Task'}
+        '400':
+          $ref: '#/components/responses/400'
+        '404':
+          $ref: '#/components/responses/404'
+        '409':
+          $ref: '#/components/responses/409'
+        '412':
+          $ref: '#/components/responses/412'
+        '428':
+          $ref: '#/components/responses/428'
+        '500':
+          $ref: '#/components/responses/500'
+        '503':
+          $ref: '#/components/responses/503'
   /api/v2/tasks/{taskId}/assignment:
     parameters:
       - name: taskId
@@ -3115,6 +3167,22 @@ components:
             - blocked
             - reason
           additionalProperties: false
+    LinkTaskToParent:
+      type: object
+      additionalProperties: false
+      required: [parentId, parentVersion, coordinationContext]
+      properties:
+        parentId:
+          type: string
+          format: uuid
+          pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$'
+        parentVersion: {type: integer, minimum: 1}
+        previousParentVersion:
+          type: integer
+          minimum: 1
+          description: Required only when the task already has a parent, including unchanged-parent requests.
+        coordinationContext:
+          $ref: '#/components/schemas/CoordinationContext'
     CoordinationContext:
       oneOf:
         - type: object
@@ -3704,11 +3772,11 @@ components:
         - authorAgentId
         - executorAgentId
       additionalProperties: false
-      description: Autor e executor obrigatórios; parentId opcional. Filho pode estar em outro board e ter
-        outro executor. Sem limite fixo de níveis; recusar autorreferência/ciclo. Se raiz,
-        rootTaskId=id gerado e originBoardId=boardId; filho conserva rootTaskId/originBoardId do
-        pai. parentId e boardId não são editados pelo PATCH existente, sem criar API de reparenting
-        nesta revisão.
+      description: Author and executor are required; parentId is optional. A child may use another board
+        and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own
+        id and boardId as rootTaskId and originBoardId; children follow their parent's context.
+        PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent;
+        boardId remains immutable.
     PatchTask:
       type: object
       properties:
@@ -4632,6 +4700,7 @@ components:
         - task.archived
         - task.restored
         - subtask.created
+        - task.parent_changed
     TimelinePoint: {"type": "object", "properties": {"id": {"type": "string", "format": "uuid"}, "taskId": {"type": "string", "format": "uuid"}, "type": {"$ref": "#/components/schemas/EventType"}, "occurredAt": {"type": "string", "format": "date-time"}, "sequence": {"type": "integer", "minimum": 1}}, "required": ["id", "taskId", "type", "occurredAt", "sequence"], "additionalProperties": false}
     TimelinePointPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/TimelinePoint"}}, "total": {"type": "integer", "minimum": 0}, "offset": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1}, "hasMore": {"type": "boolean"}, "nextOffset": {"type": ["integer", "null"], "minimum": 0}}, "required": ["items", "total", "offset", "limit", "hasMore", "nextOffset"], "additionalProperties": false}
     Event:
@@ -5055,6 +5124,7 @@ components:
             - usage_attribution_conflict
             - usage_policy_conflict
             - parent_cycle
+            - active_execution_interval
             - execution_context_mismatch
         details:
           type: object

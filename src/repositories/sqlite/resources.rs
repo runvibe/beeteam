@@ -209,14 +209,16 @@ impl SqliteWork {
                 .await?;
             }
         }
+        let ordered_tasks = super::super::task_order::tasks(&records)?;
         // Write tombstones first, then live rows; all foreign key targets precede dependents.
         for deleted in [true, false] {
             for &table in TABLES {
-                for r in records
-                    .rows
-                    .values()
-                    .filter(|r| r.table == table && r.deleted_at.is_some() == deleted)
-                {
+                let rows: Vec<_> = if table == "tasks" {
+                    ordered_tasks.iter().copied().filter(|r| r.deleted_at.is_some() == deleted).collect()
+                } else {
+                    records.rows.values().filter(|r| r.table == table && r.deleted_at.is_some() == deleted).collect()
+                };
+                for r in rows {
                     if self.original.rows.get(&(table, r.id)) == Some(r) {
                         continue;
                     }
