@@ -223,7 +223,7 @@ No retorno, o Worker salva primeiro na task progresso, currentSummary, comentár
 | Candidato encontrado, inclusive nome igual ou semelhante | Incluir na proposta conjunta continuar no candidato ou criar outro | Reutilizar somente após escolha explícita, mesmo no automático; consulta permitida pode preceder escolha, mas nenhuma instrução é enviada ao candidato não escolhido. |
 | Nome do chat precisa de ajuste | Novo chat autorizado já recebe 🐝; no existente, Worker ajusta ao assumir | Marca do papel obrigatória, complemento útil livre; identidade e registros preservados. |
 | Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
-| Contextualização concluída | Apresentar resumo curto antes de agir | Colaboradores, boards, tarefas em andamento, bloqueios e lacunas visíveis ao usuário. |
+| Contextualização concluída | Apresentar resumo curto antes de agir | Workers, boards, tarefas em andamento, bloqueios e lacunas visíveis ao usuário. |
 | Handoff de inicialização | Confirmar identidade/perfil prontos | Uso de Worker e identidade/time explícitos; fallback novo autorizado; não autoriza trabalho sem task. |
 | Task registrada e atribuída | Confirmar compreensão e pendências | Referência real e contexto de origem conferidos; Leader registra/atribui antes de pedir execução. |
 | Retorno do Worker | Salvar na task antes de comunicar | Persistência e envio confirmados separadamente; falhas declaradas sem sucesso fictício. |
