@@ -19,9 +19,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.release_tag }}
-          submodules: recursive
-          # Private site repository requires a read token with access to both repos.
-          token: ${{ secrets.BEETEAM_SITE_READ_TOKEN || github.token }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

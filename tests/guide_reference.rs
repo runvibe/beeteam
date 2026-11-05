@@ -28,7 +28,7 @@ fn guide_lists_every_application_setting_read_from_the_environment() {
     // EnvFilter::try_from_default_env reads RUST_LOG in tracing-subscriber.
     actual.insert("RUST_LOG".into());
     let groups: Value = serde_json::from_str(include_str!(
-        "../frontend/src/guide/environment-settings.json"
+        "../docs/runtime-environment-settings.json"
     ))
     .unwrap();
     let documented: BTreeSet<_> = groups
@@ -77,7 +77,7 @@ fn platform_discovery_inputs_are_documented() {
     );
 
     let groups: Value = serde_json::from_str(include_str!(
-        "../frontend/src/guide/environment-dependencies.json"
+        "../docs/runtime-platform-inputs.json"
     ))
     .unwrap();
     let platform = groups

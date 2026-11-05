@@ -52,18 +52,11 @@ test('staging rejects a junction in the external source or destination path', t=
   assert.throws(()=>sourceHash(resolve(root,'frontend')),/symlink/);
 });
 
-test('site staging is standalone and excludes submodule metadata', t=>{
+test('application staging never reads or copies a separate site checkout', t=>{
   const root=fixture(t);
-  mkdirSync(resolve(root,'site/scripts'),{recursive:true});
-  writeFileSync(resolve(root,'site/package.json'),'{}');
-  writeFileSync(resolve(root,'site/scripts/build.mjs'),"import './build-inputs.mjs';");
-  mkdirSync(resolve(root,'site/reference'));
-  writeFileSync(resolve(root,'site/reference/mcp-catalog.json'),'{"tools":[]}');
-  writeFileSync(resolve(root,'site/.git'),'gitdir: ../.git/modules/site');
+  mkdirSync(resolve(root,'site'),{recursive:true});
+  writeFileSync(resolve(root,'site/DO-NOT-BUNDLE'),'private site checkout');
   const staged=stageFrontend(root);
-  assert.equal(existsSync(resolve(staged,'../scripts/compose-ui.mjs')),false);
-  assert.equal(existsSync(resolve(staged,'../site/.git')),false);
-  assert.equal(readFileSync(resolve(staged,'../site/scripts/build.mjs'),'utf8'),"import './build-inputs.mjs';");
-  assert.equal(readFileSync(resolve(staged,'../site/reference/mcp-catalog.json'),'utf8'),'{"tools":[]}');
+  assert.equal(existsSync(resolve(staged,'../site')),false);
   assert.equal(readFileSync(resolve(staged,'scripts/fixture.txt'),'utf8'),'scripts');
 });

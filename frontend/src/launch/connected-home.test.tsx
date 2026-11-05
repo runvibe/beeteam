@@ -40,6 +40,8 @@ it("enters Home from the connected root and leaves direct list links intact", as
   expect(document.querySelector(".mobile-context-path")).toHaveTextContent("Início");
   expect(location.search).toContain("boards.name=preserved");
   expect(list).not.toHaveBeenCalled();
+  for (const link of screen.getAllByRole("link", { name: "Documentação" })) expect(link).toHaveAttribute("href", "https://getbee.team/guide/");
+  expect(screen.getByRole("link", { name: "Rever apresentação e instalação" })).toHaveAttribute("href", "https://getbee.team/#install");
   fireEvent.click(screen.getByRole("button", { name: "Abrir boards" }));
   await screen.findByRole("link", { name: "Lançamento do produto" });
   expect(location.pathname).toBe("/boards");

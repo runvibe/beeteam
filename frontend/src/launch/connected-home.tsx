@@ -80,15 +80,15 @@ export function ConnectedHome() {
         </ol>
       </section>
       <nav className="home-destinations" aria-label={t("common.homeExplore")}>
-        <Button asChild variant="outline"><a href="/guide/">{t("common.guideDocumentation")}</a></Button>
+        <Button asChild variant="outline"><a href="https://getbee.team/guide/">{t("common.guideDocumentation")}</a></Button>
         <Button variant="outline" onClick={() => navigate("/teams")}>
           {t("common.homeOpenTeams")}
         </Button>
         <Button variant="outline" onClick={() => navigate("/agents")}>
           {t("common.homeOpenAgents")}
         </Button>
-        <Button variant="ghost" onClick={() => navigate("/")}>
-          {t("common.homeReviewSetup")}
+        <Button asChild variant="ghost">
+          <a href="https://getbee.team/#install">{t("common.homeReviewSetup")}</a>
         </Button>
       </nav>
     </section>

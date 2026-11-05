@@ -40,11 +40,6 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
     for path in [
         "/",
         "/app/",
-        "/guide/",
-        "/pt/",
-        "/pt/guide/about",
-        "/guide/reference/mcp/tools",
-        "/guide/first-team?harness=codex",
         "/app/tasks/task-alias",
         "/app/boards/example/settings",
         "/boards",
@@ -69,6 +64,10 @@ async fn deep_links_get_html_but_missing_assets_and_reserved_routes_do_not() {
         "/api/v1/unknown",
         "/assets/missing.js",
         "/guide/missing.js",
+        "/guide/",
+        "/pt/",
+        "/guide/reference/mcp/tools",
+        "/install",
         "/app/assets/missing.js",
         "/missing.png",
         "/boards/missing.js",
@@ -113,7 +112,7 @@ async fn assets_have_mime_etag_cache_and_head_semantics() {
     let asset = html
         .split("src=\"")
         .filter_map(|s| s.split('"').next())
-        .find(|s| s.starts_with("/site-assets/") || s.starts_with("/assets/"))
+        .find(|s| s.starts_with("/app/assets/"))
         .unwrap();
     let response = app
         .clone()

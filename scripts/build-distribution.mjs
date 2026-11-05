@@ -1,5 +1,4 @@
 // Build tooling only. The executable has no runtime Node or filesystem-assets dependency.
-import { compose, siteSources } from "./compose-ui.mjs";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
@@ -45,27 +44,6 @@ export function stageFrontend(root) {
   }
   if (sourceHash(staging) !== expectedHash)
     throw new Error("Build sources changed while staging");
-  const site = resolve(root, "site"),
-    siteStaging = resolve(root, ".local", "distribution", "site");
-  if (existsSync(site)) {
-    const snapshot = siteSources(root);
-    directory(siteStaging);
-    // Exact source snapshot: remove retired site modules from isolated staging too.
-    rmSync(siteStaging, { recursive: true, force: true });
-    directory(siteStaging);
-    for (const entry of snapshot) {
-      const target = resolve(root, ".local", "distribution", entry.path);
-      directory(dirname(target));
-      if (existsSync(target) && lstatSync(target).isSymbolicLink())
-        throw new Error("Site staging cannot be a symlink");
-      cpSync(resolve(root, entry.path), target);
-    }
-    if (
-      JSON.stringify(siteSources(resolve(root, ".local", "distribution"))) !==
-      JSON.stringify(snapshot)
-    )
-      throw new Error("Site inputs changed during staging");
-  }
   return staging;
 }
 
@@ -87,31 +65,10 @@ if (
     );
   else run("npm", ["ci", "--include=dev"], staging);
   run(process.execPath, ["scripts/build-embedded.mjs"], staging);
-  const site = resolve(staging, "../site");
-  if (process.platform === "win32")
-    run(
-      process.env.ComSpec ?? "cmd.exe",
-      ["/d", "/s", "/c", "npm ci --include=dev"],
-      site,
-    );
-  else run("npm", ["ci", "--include=dev"], site);
-  if (process.platform === "win32")
-    run(
-      process.env.ComSpec ?? "cmd.exe",
-      ["/d", "/s", "/c", "npm run build"],
-      site,
-    );
-  else run("npm", ["run", "build"], site);
-  const combined = compose(
-    root,
-    resolve(staging, "dist"),
-    resolve(site, "dist/client"),
-    resolve(root, ".local/distribution/combined"),
-  );
   run(
     "cargo",
     ["build", "--locked", "--release", "--features", "mcp,embedded-ui"],
     root,
-    { ...process.env, BEE_FRONTEND_DIST: combined },
+    { ...process.env, BEE_FRONTEND_DIST: resolve(staging, "dist") },
   );
 }

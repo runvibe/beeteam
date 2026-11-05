@@ -1,4 +1,0 @@
-{
-  "powershell": "$binary = (Resolve-Path '.\\target\\release\\beeteam.exe').Path\n$dir = New-Item -ItemType Directory -Path (Join-Path ([IO.Path]::GetTempPath()) ([guid]::NewGuid()))\nSet-Location -LiteralPath $dir.FullName\n$env:APP_HOST = '127.0.0.1'\n$env:APP_PORT = '59875'\n$env:BEE_FRONTEND_MODE = 'embedded'\n$env:DATABASE_DRIVER = 'sqlite'\n$env:DATABASE_URL = 'sqlite://' + ($dir.FullName -replace '\\\\','/') + '/demo.sql'\n& $binary",
-  "posix": "binary=\"$PWD/target/release/beeteam\"\ndir=$(mktemp -d) && cd \"$dir\" || exit 1\nexport APP_HOST=127.0.0.1 APP_PORT=59875 BEE_FRONTEND_MODE=embedded\nexport DATABASE_DRIVER=sqlite DATABASE_URL=\"sqlite://$dir/demo.sql\"\n\"$binary\""
-}
