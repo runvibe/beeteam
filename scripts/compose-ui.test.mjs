@@ -36,6 +36,7 @@ test("composed binary metadata checks source and output hashes for both products
   for (const n of ["app-dist", "site-dist", "site", ".local"])
     mkdirSync(resolve(root, n));
   writeFileSync(resolve(root, "site/package.json"), "{}");
+  writeFileSync(resolve(root, "site/.git"), "gitdir: ../.git/modules/site");
   const output = (name, text) => {
     writeFileSync(resolve(root, name, "index.html"), text);
     return [
@@ -73,7 +74,7 @@ test("composed binary metadata checks source and output hashes for both products
     readFileSync(resolve(out, ".beeteam-build.json")),
   );
   assert.equal(manifest.files.length, 2);
-  assert.equal(manifest.siteSources.length, 3);
+  assert.equal(manifest.siteSources.length, 1);
   writeFileSync(resolve(root, "site-dist/index.html"), "tampered");
   assert.throws(
     () =>

@@ -49,17 +49,6 @@ export function stageFrontend(root) {
     siteStaging = resolve(root, ".local", "distribution", "site");
   if (existsSync(site)) {
     const snapshot = siteSources(root);
-    const helper = resolve(root, "scripts/compose-ui.mjs");
-    if (realpathSync(helper) !== helper || lstatSync(helper).isSymbolicLink())
-      throw new Error("Site build helper cannot traverse a link");
-    const stagedHelper = resolve(
-      root,
-      ".local/distribution/scripts/compose-ui.mjs",
-    );
-    directory(dirname(stagedHelper));
-    if (existsSync(stagedHelper) && lstatSync(stagedHelper).isSymbolicLink())
-      throw new Error("Site helper staging cannot be a link");
-    cpSync(helper, stagedHelper);
     directory(siteStaging);
     // Exact source snapshot: remove retired site modules from isolated staging too.
     rmSync(siteStaging, { recursive: true, force: true });

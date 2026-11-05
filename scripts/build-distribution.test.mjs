@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,realpathSync,renameSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,rmSync,realpathSync,renameSync,symlinkSync,existsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,dirname,basename} from 'node:path';
 import {frontendInputs,sourceHash} from '../frontend/scripts/build-inputs.mjs';
@@ -52,15 +52,18 @@ test('staging rejects a junction in the external source or destination path', t=
   assert.throws(()=>sourceHash(resolve(root,'frontend')),/symlink/);
 });
 
-test('site staging includes its root build helper and canonical sibling inputs', t=>{
+test('site staging is standalone and excludes submodule metadata', t=>{
   const root=fixture(t);
   mkdirSync(resolve(root,'site/scripts'),{recursive:true});
   writeFileSync(resolve(root,'site/package.json'),'{}');
-  writeFileSync(resolve(root,'site/scripts/build.mjs'),"import '../../scripts/compose-ui.mjs';");
-  mkdirSync(resolve(root,'scripts'));
-  writeFileSync(resolve(root,'scripts/compose-ui.mjs'),'export const fixture=true;');
+  writeFileSync(resolve(root,'site/scripts/build.mjs'),"import './build-inputs.mjs';");
+  mkdirSync(resolve(root,'site/reference'));
+  writeFileSync(resolve(root,'site/reference/mcp-catalog.json'),'{"tools":[]}');
+  writeFileSync(resolve(root,'site/.git'),'gitdir: ../.git/modules/site');
   const staged=stageFrontend(root);
-  assert.equal(readFileSync(resolve(staged,'../scripts/compose-ui.mjs'),'utf8'),'export const fixture=true;');
-  assert.equal(readFileSync(resolve(staged,'../site/scripts/build.mjs'),'utf8'),"import '../../scripts/compose-ui.mjs';");
+  assert.equal(existsSync(resolve(staged,'../scripts/compose-ui.mjs')),false);
+  assert.equal(existsSync(resolve(staged,'../site/.git')),false);
+  assert.equal(readFileSync(resolve(staged,'../site/scripts/build.mjs'),'utf8'),"import './build-inputs.mjs';");
+  assert.equal(readFileSync(resolve(staged,'../site/reference/mcp-catalog.json'),'utf8'),'{"tools":[]}');
   assert.equal(readFileSync(resolve(staged,'scripts/fixture.txt'),'utf8'),'scripts');
 });
