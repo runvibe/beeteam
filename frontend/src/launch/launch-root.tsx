@@ -19,6 +19,7 @@ export function LaunchRoot({
 }) {
   const url = useLocation();
   const params = new URLSearchParams(url.split("?")[1]);
+  if (url.split("?")[0] === "/") return <Landing />;
   if (params.get("demo") === "1")
     return (
       <Suspense fallback={null}>
@@ -30,8 +31,6 @@ export function LaunchRoot({
       <ApiVersionGate
         expectedVersion={appVersion}
         changes={changes}
-        introduction={url.split("?")[0] === "/" || params.get("intro") === "1"}
-        renderBlocked={(connection) => <Landing connection={connection} />}
       >
         <ConnectedApp />
       </ApiVersionGate>

@@ -68,7 +68,7 @@ it("resumes the original URL including tab and filters from Home", async () => {
     }),
   ).toBeNull();
 });
-it("keeps the landing at root after discovery and enters Home on request", async () => {
+it("checks the API only after the visitor enters the panel", async () => {
   locationAt("/");
   const api = createMockApi({ delay: 0 });
   api.info = vi
@@ -80,13 +80,14 @@ it("keeps the landing at root after discovery and enters Home on request", async
       capabilities: ["roles.worker"],
     });
   render(<LaunchRoot api={api} />);
+  expect(api.info).not.toHaveBeenCalled();
+  expect(screen.queryByText("Conectar Bee Team")).toBeNull();
+  const open = screen.getByRole("link", { name: "Abrir meu painel" });
+  act(() => locationAt(open.getAttribute("href")!));
   await screen.findByText("Não foi possível verificar a aplicação local.");
   fireEvent.click(
     screen.getByRole("button", { name: "Verificar conexão novamente" }),
   );
-  const open = await screen.findByRole("button", { name: "Abrir meu painel" });
-  expect(location.pathname).toBe("/");
-  fireEvent.click(open);
   await screen.findByRole("heading", {
     name: "O próximo passo começa com uma conversa.",
   });

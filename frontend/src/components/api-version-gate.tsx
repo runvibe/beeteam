@@ -82,6 +82,7 @@ export function ApiVersionGate({
         )}
         {query.error != null && <p>{t("common.connectionGuidance")}</p>}
         <div className="api-version-actions">
+          <a href="/#install">{t("common.launchInstall")}</a>
           <Button
             disabled={query.isFetching}
             onClick={() => void query.refetch()}

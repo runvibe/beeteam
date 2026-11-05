@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Hexagon, ArrowUpRight, Check, Copy, Terminal } from "lucide-react";
 import { t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { navigate, currentUrl } from "@/routing/location";
 import "./landing.css";
 import { HeroBoard } from "./hero-board";
 
-export function Landing({ connection }: { connection?: ReactNode }) {
+export function Landing() {
   const header = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = header.current;
@@ -165,14 +165,6 @@ export function Landing({ connection }: { connection?: ReactNode }) {
             </a>
           </div>
         </section>
-        {connection && (
-          <section
-            className="launch-connection"
-            aria-label={t("common.connectGetBeeTeam")}
-          >
-            {connection}
-          </section>
-        )}
       </main>
       <footer className="launch-footer">
         <span>{t("common.getBeeTeamBrand")}</span>
