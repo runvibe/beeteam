@@ -151,16 +151,18 @@ export function Landing() {
                 </button>;
               })}
             </fieldset>
-            {command && <div className="launch-chat-prompt">
+            {command && <>
+              <strong className="launch-copy-hint">{t("common.installCopyHint")}</strong>
+              <div className="launch-chat-prompt">
               <div className="launch-copy-heading">
-                <strong>{t("common.installCopyHint")}</strong>
                 <Button size="sm" onClick={() => void copy()}>
                 {copyState === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
                 {t("common.copyChatPrompt")}
                 </Button>
               </div>
               <p aria-live="polite">{command}</p>
-            </div>}
+              </div>
+            </>}
             {copyState === "failed" && (
               <p role="status">
                 {t("common.launchCopyFailed")}

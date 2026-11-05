@@ -171,9 +171,9 @@
 .launch-picker :is(img,svg) { width: 1.5rem; height: 1.5rem; }
 .dark .launch-picker img { filter: invert(1); }
 .launch-picker button[aria-pressed=true] { border-color: var(--foreground); background: var(--muted); }
-.launch-chat-prompt { margin-top: 1rem; padding: 1rem; border: 1px solid var(--border); background: var(--background); border-radius: var(--radius); }
-.launch-copy-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; font-size: .95rem; }
-.launch-copy-heading strong { flex: 1 1 14rem; }
+.launch-copy-hint { display: block; margin: 1rem 0 .5rem; font-size: .95rem; }
+.launch-chat-prompt { padding: 1rem; border: 1px solid var(--border); background: var(--background); border-radius: var(--radius); }
+.launch-copy-heading { display: flex; justify-content: flex-end; }
 .launch-command .launch-chat-prompt p { margin: .75rem 0 0; line-height: 1.65; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .launch-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .launch-command pre {
