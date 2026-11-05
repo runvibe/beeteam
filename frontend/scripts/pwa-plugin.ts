@@ -2,6 +2,7 @@ import type { Plugin } from "vite";
 import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { createHash } from "node:crypto";
+import { readAppVersion } from "./app-version.mjs";
 
 export function pwa(): Plugin {
   let directory = "";
@@ -51,6 +52,7 @@ export function pwa(): Plugin {
       writeFileSync(
         join(directory, "sw.js"),
         template
+          .replace("__APP_VERSION__", JSON.stringify(readAppVersion()))
           .replace("__CACHE_VERSION__", hash.digest("hex").slice(0, 20))
           .replace("__PRECACHE__", JSON.stringify(names)),
       );

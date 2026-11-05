@@ -26,10 +26,19 @@ function worker() {
     },
   };
   const source = readFileSync(new URL("./service-worker.js",import.meta.url),"utf8")
-    .replace("__CACHE_VERSION__","test").replace("__PRECACHE__",JSON.stringify(precache));
+    .replace("__CACHE_VERSION__","test").replace("__APP_VERSION__",JSON.stringify("1.2.4")).replace("__PRECACHE__",JSON.stringify(precache));
   vm.runInNewContext(source,context);
   return {events,context};
 }
+
+test("reports its own compiled version without activating the update",()=>{
+  const {events,context}=worker();
+  let reply;
+  events.message({data:{type:"GET_APP_VERSION"},source:{postMessage(value){reply=value}}});
+  assert.equal(reply.type,"APP_UPDATE_VERSION");
+  assert.equal(reply.version,"1.2.4");
+  assert.equal(context.activated,undefined);
+});
 
 test("excludes API, MCP, streaming, public-site HTML and manifest traffic in a controlled app tab",()=>{
   const {events}=worker();

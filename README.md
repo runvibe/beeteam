@@ -64,7 +64,7 @@ Start with service identity, port and version. If those checks pass, inspect the
 
 The disconnected app screen links directly to the [installation guide](https://getbee.team/guide/installation) and [local connection walkthrough](https://getbee.team/guide/local-connection). The walkthrough covers starting the local service, browser permission and the expected port; both links follow the interface language.
 
-PWA updates are detected in the background, but their reload notice appears only after the local API connection and version have been verified. Connection and version-blocking screens hide that notice.
+PWA updates are detected in the background, but their reload notice appears only after the local API connection and version have been verified. Connection and version-blocking screens hide that notice. Update notices show the version currently loaded and the available version; the waiting service worker reports its own compiled application version for a PWA update.
 
 ## License and brand
 

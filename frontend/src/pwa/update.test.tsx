@@ -1,3 +1,4 @@
+import { appVersion } from "@/app-version";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { PwaUpdate } from "./update";
@@ -30,6 +31,24 @@ function Disconnect() {
   const client = useQueryClient();
   return <button onClick={() => void client.invalidateQueries({ queryKey: apiInfoKey })}>Disconnect</button>;
 }
+
+it("shows the loaded app version and only accepts version details from the waiting worker", async () => {
+  const serviceWorker = waitingUpdate();
+  const registration = await serviceWorker.register();
+  render(<PwaUpdate />);
+  await screen.findByRole("region", { name: "Atualização do app pronta" });
+  expect(registration.waiting.postMessage).toHaveBeenCalledWith({ type: "GET_APP_VERSION" });
+  expect(screen.getByText(`Versão em uso: ${appVersion} · Versão disponível: Verificando…`)).toBeVisible();
+  const report = (source: unknown, version: string) => act(() => {
+    serviceWorker.dispatchEvent(Object.assign(new Event("message"), { source, data: { type: "APP_UPDATE_VERSION", version } }));
+  });
+  report({}, "9.9.9");
+  expect(screen.queryByText(/9\.9\.9/)).toBeNull();
+  report(registration.waiting, "invalid");
+  expect(screen.queryByText(/invalid/)).toBeNull();
+  report(registration.waiting, "1.2.4");
+  expect(screen.getByText(`Versão em uso: ${appVersion} · Versão disponível: 1.2.4`)).toBeVisible();
+});
 
 it("keeps update detection active while hiding the notice until allowed", async () => {
   const worker = waitingUpdate();

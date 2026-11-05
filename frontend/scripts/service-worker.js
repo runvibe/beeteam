@@ -1,6 +1,7 @@
 /* Generated with a closed build-time allowlist. Application data is network-only. */
 const CACHE = "beeteam-app-__CACHE_VERSION__";
 const PRECACHE = __PRECACHE__;
+const APP_VERSION = __APP_VERSION__;
 const ALLOWED = new Set(PRECACHE);
 self.addEventListener("install", event => {
   event.waitUntil((async()=>{
@@ -20,6 +21,10 @@ self.addEventListener("activate",event=>{
   })());
 });
 self.addEventListener("message",event=>{
+  if(event.data?.type==="GET_APP_VERSION") {
+    event.source?.postMessage({type:"APP_UPDATE_VERSION",version:APP_VERSION});
+    return;
+  }
   if(event.data?.type!=="ACTIVATE_APP_UPDATE") return;
   event.waitUntil((async()=>{
     const windows=await self.clients.matchAll({type:"window",includeUncontrolled:true});

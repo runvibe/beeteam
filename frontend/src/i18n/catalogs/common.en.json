@@ -261,6 +261,8 @@
   "copyChatPrompt": "Copy request",
   "pwaUpdateTitle": "App update ready",
   "pwaUpdateBody": "A new version of the app is ready. Save your work in every open app tab before reloading.",
+  "updateVersionDetails": "Current version: {{current}} · Available version: {{available}}",
+  "updateVersionChecking": "Checking…",
   "pwaReload": "Reload the app",
   "pwaUpdateFailed": "The update is still pending. Reload when your work is saved.",
   "pwaOtherTabs": "Save your work and close the other Bee Team app tabs, then reload here.",
