@@ -472,3 +472,7 @@ The product brand is **Get Bee Team**, with brand domain `getbee.team`. Skills a
 **Get a Team Lead** (`$get-a-team-lead`) and **Get a Worker** (`$get-a-worker`).
 Technical tool names, `beeteam://` resource URIs, HTTP paths and stored authored
 content are unchanged. Resource reads use the renamed bundled package paths.
+
+## Existing task parent links
+
+`linkTaskToParent` atomically links an existing subtree to a parent using task/parent versions, one idempotency key, and coordination required by all affected contexts. Historical evidence stays unchanged. See [task parent links](task-parent-link.md) for the HTTP/MCP contract, context changes, no-op and conflict semantics.

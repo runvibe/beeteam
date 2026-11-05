@@ -8,6 +8,7 @@ pub mod changes;
 pub mod contracts;
 mod errors;
 pub mod records;
+mod task_order;
 
 pub mod query;
 mod reads;

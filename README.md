@@ -107,7 +107,13 @@ Primeiro crie agentes por `POST /api/v1/agents`, depois um time com líder e um 
 
 ## Modelo
 
-Cada board tem um time gestor transferível e criador preservado. Um time pode gerir vários boards. Tasks têm autor e executor obrigatórios, sem time próprio. Subtasks são tasks recursivas com `parentId`, inclusive entre boards e executores distintos. Não existe endpoint de reparenting.
+Tarefas existentes podem ser vinculadas a uma tarefa principal com
+`POST /api/v2/tasks/{taskId}/parent/link` ou MCP `linkTaskToParent`, preservando IDs,
+slugs, planos, comentários, anexos e histórico. A operação exige versões e
+coordenação compatível com os contextos afetados e atualiza a origem corrente dos
+descendentes atomicamente. Veja [contrato e regras do vínculo](docs/task-parent-link.md).
+
+Cada board tem um time gestor transferível e criador preservado. Um time pode gerir vários boards. Tasks têm autor e executor obrigatórios, sem time próprio. Subtasks são tasks recursivas com `parentId`, inclusive entre boards e executores distintos.
 
 O board da raiz governa o contexto de execução: `manual` força manual; `automatic` força automático; `standard` considera somente `autonomyMode` da task atual. Modo do board de destino e flag do pai não substituem essa regra. Mudança do modo de origem invalida versões das tasks afetadas sem alterar suas flags individuais.
 

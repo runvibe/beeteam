@@ -16,6 +16,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             board(unit, c).await
         }
         "createTask" => create_task(unit, c).await,
+        "linkTaskToParent" => super::task_parent::link(unit, c).await,
         _ => mutate_task(unit, c).await,
     }
 }

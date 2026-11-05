@@ -3442,7 +3442,7 @@
           },
           "body": {
             "additionalProperties": false,
-            "description": "Author and executor are required; parentId is optional. A child may be on another board with another executor. No fixed depth limit; reject self-reference and cycles. For a root, rootTaskId is the generated id and originBoardId is boardId; a child retains its parent's rootTaskId/originBoardId. The existing PATCH does not edit parentId or boardId; this revision adds no reparenting API.",
+            "description": "Author and executor are required; parentId is optional. A child may use another board and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own id and boardId as rootTaskId and originBoardId; children follow their parent's context. PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent; boardId remains immutable.",
             "properties": {
               "authorAgentId": {
                 "format": "uuid",
@@ -25168,7 +25168,8 @@
                             "execution.recorded",
                             "task.archived",
                             "task.restored",
-                            "subtask.created"
+                            "subtask.created",
+                            "task.parent_changed"
                           ],
                           "type": "string"
                         }
@@ -26910,6 +26911,735 @@
               "nextStep",
               "decisions",
               "usage"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": false
+      },
+      "description": "POST /api/v2/tasks/{taskId}/parent/link. Link an existing task to a parent. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "coordinationContext": {
+                "description": "mode must match the effective execution-context mode. Manual requires an approval reference; automatic does not request new coordination approval within scope. References are not authentication.",
+                "oneOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "approvalRef": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "conversationRef": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "mode": {
+                        "const": "manual"
+                      }
+                    },
+                    "required": [
+                      "mode",
+                      "conversationRef",
+                      "approvalRef"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "conversationRef": {
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "mode": {
+                        "const": "automatic"
+                      }
+                    },
+                    "required": [
+                      "mode",
+                      "conversationRef"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "parentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "parentVersion": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "previousParentVersion": {
+                "description": "Required only when the task already has a parent, including unchanged-parent requests.",
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "parentId",
+              "parentVersion",
+              "coordinationContext"
+            ],
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "taskId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "taskId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "actor",
+          "idempotencyKey",
+          "body"
+        ],
+        "type": "object"
+      },
+      "name": "linkTaskToParent",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "description": "Recursive task with required author and executor, both agents. parentId references another Task without a fixed depth limit; board and executor may differ from the parent. No team ownership. Author/history are preserved after reassignment/agent transfer. Checklist is a projection of children.",
+            "properties": {
+              "archivedAt": {
+                "format": "date-time",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "authorAgentId": {
+                "description": "Required, immutable author/owner: the agent that wrote the task. Independent of the declared actor submitting the request.",
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "autonomyMode": {
+                "default": "manual",
+                "description": "Individual task mode, used only when the context's origin board is in standard mode.",
+                "enum": [
+                  "manual",
+                  "automatic"
+                ],
+                "type": "string"
+              },
+              "block": {
+                "oneOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "blocked": {
+                        "const": true
+                      },
+                      "reason": {
+                        "maxLength": 2000,
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "blocked",
+                      "reason"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "blocked": {
+                        "const": false
+                      },
+                      "reason": {
+                        "type": "null"
+                      }
+                    },
+                    "required": [
+                      "blocked",
+                      "reason"
+                    ],
+                    "type": "object"
+                  }
+                ]
+              },
+              "boardId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "childSummary": {
+                "additionalProperties": false,
+                "properties": {
+                  "done": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "total": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "total",
+                  "done"
+                ],
+                "type": "object"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "currentSummary": {
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "type": "string",
+                "x-maxBytes": 16384
+              },
+              "deletedAt": {
+                "description": "Soft deletion: corresponds to deleted_at in PostgreSQL; does not physically remove data.",
+                "format": "date-time",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "description": {
+                "description": "Markdown, maximum 65536 UTF-8 bytes.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
+              "executionContext": {
+                "additionalProperties": false,
+                "description": "The root task's origin board governs the entire recursive chain, including cross-board descendants. originBoardMode=manual forces effectiveMode=manual; automatic forces automatic; standard uses only the current task's autonomyMode. Do not inherit the parent flag or consult the destination board mode. Do not modify persisted settings. rootTaskId/originBoardId are derived from the chain and carried by the harness; the server does not execute tasks.",
+                "properties": {
+                  "effectiveMode": {
+                    "enum": [
+                      "manual",
+                      "automatic"
+                    ],
+                    "type": "string"
+                  },
+                  "originBoardId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "originBoardMode": {
+                    "default": "manual",
+                    "description": "manual = fully manual; standard = default behavior respecting each task's individual flag; automatic = fully automatic. Initial default is manual, distinct from the name standard.",
+                    "enum": [
+                      "manual",
+                      "standard",
+                      "automatic"
+                    ],
+                    "type": "string"
+                  },
+                  "rootTaskId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  }
+                },
+                "readOnly": true,
+                "required": [
+                  "rootTaskId",
+                  "originBoardId",
+                  "originBoardMode",
+                  "effectiveMode"
+                ],
+                "type": "object"
+              },
+              "executorAgentId": {
+                "description": "Required executor, reassignable by the user without a team restriction.",
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "latestExecutionSummaryId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "parentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "parentReference": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "format": "uuid",
+                        "type": "string"
+                      },
+                      "slug": {
+                        "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
+                        "maxLength": 80,
+                        "minLength": 1,
+                        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "title",
+                      "slug"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Compact parent reference, including a parent on another board; null for a root. Additive read-only field, without changing parentId."
+              },
+              "position": {
+                "description": "Opaque rank generated by the server.",
+                "type": "string"
+              },
+              "progress": {
+                "additionalProperties": false,
+                "properties": {
+                  "note": {
+                    "description": "Markdown, maximum 65536 UTF-8 bytes.",
+                    "type": "string",
+                    "x-maxBytes": 65536
+                  },
+                  "percent": {
+                    "maximum": 100,
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "percent",
+                  "note"
+                ],
+                "type": "object"
+              },
+              "slug": {
+                "description": "Generated URL identifier, lowercase ASCII, stable across renames and unique per type including deleted records. Collisions use -2/-3; clients cannot write it.",
+                "maxLength": 80,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+                "type": "string"
+              },
+              "specification": {
+                "description": "Markdown text preserved without rendering/conversion. Defines delivery, requirements, rules and acceptance criteria. Independent of the short description, execution plan and current synthesis. Empty means not yet defined; null is not accepted.",
+                "type": "string",
+                "x-maxBytes": 65536
+              },
+              "statusId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "title": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "workScope": {
+                "additionalProperties": false,
+                "properties": {
+                  "projects": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "discovery": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "branch": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "name": {
+                                      "anyOf": [
+                                        {
+                                          "maxLength": 1024,
+                                          "minLength": 1,
+                                          "pattern": "\\S",
+                                          "type": "string"
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "state": {
+                                      "enum": [
+                                        "named",
+                                        "detached",
+                                        "unknown"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "state",
+                                    "name"
+                                  ],
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "checkedAt": {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            "checkoutRoot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "commonDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "gitDirectory": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "headHash": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "isWorktree": {
+                              "type": [
+                                "boolean",
+                                "null"
+                              ]
+                            },
+                            "reason": {
+                              "enum": [
+                                null,
+                                "path_unavailable",
+                                "git_unavailable",
+                                "timeout",
+                                "output_limit",
+                                "inspection_failed"
+                              ]
+                            },
+                            "remotes": {
+                              "items": {
+                                "additionalProperties": false,
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "url": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "url"
+                                ],
+                                "type": "object"
+                              },
+                              "maxItems": 100,
+                              "type": "array"
+                            },
+                            "repositoryKey": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "status": {
+                              "enum": [
+                                "detected",
+                                "not_git",
+                                "unavailable"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "status",
+                            "reason",
+                            "checkedAt",
+                            "checkoutRoot",
+                            "gitDirectory",
+                            "commonDirectory",
+                            "isWorktree",
+                            "branch",
+                            "headHash",
+                            "repositoryKey",
+                            "remotes"
+                          ],
+                          "type": "object"
+                        },
+                        "key": {
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                          "type": "string"
+                        },
+                        "name": {
+                          "maxLength": 200,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "rootPath": {
+                          "maxLength": 4096,
+                          "minLength": 1,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "name",
+                        "rootPath"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 100,
+                    "type": "array"
+                  },
+                  "repositories": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                          "type": "string"
+                        },
+                        "name": {
+                          "maxLength": 200,
+                          "minLength": 1,
+                          "pattern": "\\S",
+                          "type": "string"
+                        },
+                        "projectKeys": {
+                          "items": {
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$",
+                            "type": "string"
+                          },
+                          "maxItems": 100,
+                          "minItems": 1,
+                          "type": "array",
+                          "uniqueItems": true
+                        },
+                        "provider": {
+                          "enum": [
+                            "github",
+                            "gitlab",
+                            "other"
+                          ]
+                        },
+                        "remoteUrl": {
+                          "anyOf": [
+                            {
+                              "maxLength": 2048,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "webUrl": {
+                          "anyOf": [
+                            {
+                              "maxLength": 2048,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "name",
+                        "remoteUrl",
+                        "webUrl",
+                        "provider",
+                        "projectKeys"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 100,
+                    "type": "array"
+                  },
+                  "status": {
+                    "enum": [
+                      "identified",
+                      "to_identify",
+                      "not_applicable"
+                    ]
+                  }
+                },
+                "required": [
+                  "status",
+                  "projects",
+                  "repositories"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "slug",
+              "id",
+              "boardId",
+              "parentId",
+              "title",
+              "description",
+              "specification",
+              "executorAgentId",
+              "statusId",
+              "position",
+              "currentSummary",
+              "progress",
+              "block",
+              "childSummary",
+              "latestExecutionSummaryId",
+              "archivedAt",
+              "version",
+              "createdAt",
+              "updatedAt",
+              "deletedAt",
+              "autonomyMode",
+              "executionContext",
+              "authorAgentId"
             ],
             "type": "object"
           },
@@ -29000,7 +29730,8 @@
                     "execution.recorded",
                     "task.archived",
                     "task.restored",
-                    "subtask.created"
+                    "subtask.created",
+                    "task.parent_changed"
                   ],
                   "type": "string"
                 },
@@ -29121,7 +29852,8 @@
                         "execution.recorded",
                         "task.archived",
                         "task.restored",
-                        "subtask.created"
+                        "subtask.created",
+                        "task.parent_changed"
                       ],
                       "type": "string"
                     }
@@ -29324,7 +30056,8 @@
                     "execution.recorded",
                     "task.archived",
                     "task.restored",
-                    "subtask.created"
+                    "subtask.created",
+                    "task.parent_changed"
                   ],
                   "type": "string"
                 },
@@ -29413,7 +30146,8 @@
                         "execution.recorded",
                         "task.archived",
                         "task.restored",
-                        "subtask.created"
+                        "subtask.created",
+                        "task.parent_changed"
                       ],
                       "type": "string"
                     }
@@ -39932,7 +40666,7 @@
             },
             "CreateTask": {
               "additionalProperties": false,
-              "description": "Author and executor are required; parentId is optional. A child may be on another board with another executor. No fixed depth limit; reject self-reference and cycles. For a root, rootTaskId is the generated id and originBoardId is boardId; a child retains its parent's rootTaskId/originBoardId. The existing PATCH does not edit parentId or boardId; this revision adds no reparenting API.",
+              "description": "Author and executor are required; parentId is optional. A child may use another board and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own id and boardId as rootTaskId and originBoardId; children follow their parent's context. PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent; boardId remains immutable.",
               "properties": {
                 "authorAgentId": {
                   "format": "uuid",
@@ -40096,6 +40830,7 @@
                     "usage_attribution_conflict",
                     "usage_policy_conflict",
                     "parent_cycle",
+                    "active_execution_interval",
                     "execution_context_mismatch"
                   ],
                   "type": "string"
@@ -40246,7 +40981,8 @@
                 "execution.recorded",
                 "task.archived",
                 "task.restored",
-                "subtask.created"
+                "subtask.created",
+                "task.parent_changed"
               ],
               "type": "string"
             },
@@ -40670,6 +41406,34 @@
               "required": [
                 "summaryId",
                 "evidenceId"
+              ],
+              "type": "object"
+            },
+            "LinkTaskToParent": {
+              "additionalProperties": false,
+              "properties": {
+                "coordinationContext": {
+                  "$ref": "#/components/schemas/CoordinationContext"
+                },
+                "parentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "parentVersion": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "previousParentVersion": {
+                  "description": "Required only when the task already has a parent, including unchanged-parent requests.",
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "parentId",
+                "parentVersion",
+                "coordinationContext"
               ],
               "type": "object"
             },
@@ -48155,7 +48919,7 @@
             },
             "CreateTask": {
               "additionalProperties": false,
-              "description": "Author and executor are required; parentId is optional. A child may be on another board with another executor. No fixed depth limit; reject self-reference and cycles. For a root, rootTaskId is the generated id and originBoardId is boardId; a child retains its parent's rootTaskId/originBoardId. The existing PATCH does not edit parentId or boardId; this revision adds no reparenting API.",
+              "description": "Author and executor are required; parentId is optional. A child may use another board and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own id and boardId as rootTaskId and originBoardId; children follow their parent's context. PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent; boardId remains immutable.",
               "properties": {
                 "authorAgentId": {
                   "format": "uuid",
@@ -48319,6 +49083,7 @@
                     "usage_attribution_conflict",
                     "usage_policy_conflict",
                     "parent_cycle",
+                    "active_execution_interval",
                     "execution_context_mismatch"
                   ],
                   "type": "string"
@@ -48469,7 +49234,8 @@
                 "execution.recorded",
                 "task.archived",
                 "task.restored",
-                "subtask.created"
+                "subtask.created",
+                "task.parent_changed"
               ],
               "type": "string"
             },
@@ -48893,6 +49659,34 @@
               "required": [
                 "summaryId",
                 "evidenceId"
+              ],
+              "type": "object"
+            },
+            "LinkTaskToParent": {
+              "additionalProperties": false,
+              "properties": {
+                "coordinationContext": {
+                  "$ref": "#/components/schemas/CoordinationContext"
+                },
+                "parentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "parentVersion": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "previousParentVersion": {
+                  "description": "Required only when the task already has a parent, including unchanged-parent requests.",
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "parentId",
+                "parentVersion",
+                "coordinationContext"
               ],
               "type": "object"
             },
@@ -56160,7 +56954,7 @@
             },
             "CreateTask": {
               "additionalProperties": false,
-              "description": "Author and executor are required; parentId is optional. A child may be on another board with another executor. No fixed depth limit; reject self-reference and cycles. For a root, rootTaskId is the generated id and originBoardId is boardId; a child retains its parent's rootTaskId/originBoardId. The existing PATCH does not edit parentId or boardId; this revision adds no reparenting API.",
+              "description": "Author and executor are required; parentId is optional. A child may use another board and executor. No fixed depth limit; reject self-reference and cycles. A root uses its own id and boardId as rootTaskId and originBoardId; children follow their parent's context. PATCH cannot change parentId or boardId. Link existing tasks with linkTaskToParent; boardId remains immutable.",
               "properties": {
                 "authorAgentId": {
                   "format": "uuid",
@@ -56324,6 +57118,7 @@
                     "usage_attribution_conflict",
                     "usage_policy_conflict",
                     "parent_cycle",
+                    "active_execution_interval",
                     "execution_context_mismatch"
                   ],
                   "type": "string"
@@ -56474,7 +57269,8 @@
                 "execution.recorded",
                 "task.archived",
                 "task.restored",
-                "subtask.created"
+                "subtask.created",
+                "task.parent_changed"
               ],
               "type": "string"
             },
@@ -56898,6 +57694,34 @@
               "required": [
                 "summaryId",
                 "evidenceId"
+              ],
+              "type": "object"
+            },
+            "LinkTaskToParent": {
+              "additionalProperties": false,
+              "properties": {
+                "coordinationContext": {
+                  "$ref": "#/components/schemas/CoordinationContext"
+                },
+                "parentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "parentVersion": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "previousParentVersion": {
+                  "description": "Required only when the task already has a parent, including unchanged-parent requests.",
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "parentId",
+                "parentVersion",
+                "coordinationContext"
               ],
               "type": "object"
             },
