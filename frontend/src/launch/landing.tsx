@@ -129,12 +129,8 @@ export function Landing() {
         <section
           id="install"
           className="launch-install"
-          aria-labelledby="launch-install-title"
+          aria-label={t("common.launchInstallTitle")}
         >
-          <div>
-            <h2 id="launch-install-title">{t("common.launchInstallTitle")}</h2>
-            <p>{t("common.launchInstallBody")}</p>
-          </div>
           <div className="launch-command">
             <div className="launch-signal" key={harness ?? "initial"} aria-hidden="true">
               <div className="launch-signal-field" />

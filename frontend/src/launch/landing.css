@@ -136,15 +136,9 @@
   padding-left: 1rem;
 }
 .launch-install {
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: 4rem;
   padding-block: 4rem;
   border-top: 1px solid var(--border);
   scroll-margin-top: 1.5rem;
-}
-.launch-install h2 + p {
-  margin-top: 1rem;
 }
 .launch-install p + p {
   margin-top: 1rem;
@@ -156,8 +150,6 @@
   border-radius: var(--radius);
   background: linear-gradient(155deg, var(--muted), var(--background) 65%);
 }
-.launch-install { align-items: center; }
-.launch-install > div:first-child h2 { font-size: clamp(2.4rem, 5vw, 5rem); max-width: 13ch; }
 .launch-signal { display: grid; place-items: center; position: relative; isolation: isolate; overflow: hidden; height: clamp(9rem, 18vw, 14rem); }
 .launch-signal > * { grid-area: 1 / 1; }
 .launch-signal-field { position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at center, var(--border) 1px, transparent 1.5px) 0 0 / 14px 14px; mask-image: radial-gradient(ellipse, black 15%, transparent 72%); }
@@ -253,8 +245,7 @@
   .launch-intro h1 {
     max-width: 16ch;
   }
-  .launch-story,
-  .launch-install {
+  .launch-story {
     gap: 2rem;
   }
 }
@@ -272,8 +263,7 @@
   .launch-preferences {
     margin-left: auto;
   }
-  .launch-story,
-  .launch-install {
+  .launch-story {
     grid-template-columns: 1fr;
   }
   .launch-footer {
