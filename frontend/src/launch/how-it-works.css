@@ -64,13 +64,6 @@
 .tour-secondary-line {
   color: var(--muted-foreground);
 }
-.tour-demo {
-  display: inline-flex;
-  gap: 0.5rem;
-  align-items: center;
-  padding-block: 0.5rem;
-  font-weight: 550;
-}
 @media (max-width: 767px) {
   .tour-row {
     grid-template-columns: minmax(0, 1fr);

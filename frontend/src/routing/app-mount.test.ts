@@ -1,5 +1,5 @@
 import { afterEach, expect, it } from "vitest";
-import { canonicalizeEntry, currentUrl, demoHref, navigate } from "./location";
+import { canonicalizeEntry, currentUrl, safeOrigin, navigationHref, navigate } from "./location";
 
 afterEach(() => history.replaceState(null, "", "/"));
 
@@ -10,9 +10,22 @@ it("keeps the landing at root and preserves legacy task context", () => {
   canonicalizeEntry();
   expect(location.pathname + location.search + location.hash).toBe("/app/tasks/example?tab=plans#details");
   expect(currentUrl()).toBe("/tasks/example?tab=plans");
-  expect(demoHref("/boards")).toBe("/app/boards");
+  expect(navigationHref("/boards")).toBe("/app/boards");
   navigate("/home");
   expect(location.pathname).toBe("/app/");
   navigate("/");
   expect(location.pathname).toBe("/");
+});
+
+it("accepts and preserves a root-route return destination", () => {
+  expect(safeOrigin("/?intro=1&boards.name=Launch")).toBe(
+    "/?intro=1&boards.name=Launch",
+  );
+  expect(safeOrigin("//external.test/?intro=1")).toBeNull();
+});
+
+it("sends retired demo bookmarks to the public tour", () => {
+  history.replaceState(null, "", "/app/boards?demo=1&returnTo=%2Fagents");
+  canonicalizeEntry();
+  expect(location.pathname + location.search + location.hash).toBe("/#how-it-works");
 });

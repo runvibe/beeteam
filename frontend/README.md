@@ -14,11 +14,11 @@ npm run dev -- --host 127.0.0.1
 
 A API local deve estar ativa em http://127.0.0.1:59865. O Vite encaminha `/api` para esse endereço. Copie `.env.example` para `.env.local` se precisar ajustar `BEE_API_TARGET` (destino do proxy) ou `VITE_API_BASE_URL` (base HTTP do cliente). O servidor não cria nem apaga dados automaticamente. O bootstrap e o startup pertencem ao backend.
 
-Para demonstração isolada, defina `VITE_API_MODE=mock` e reinicie o Vite; nesse modo, alterações são perdidas ao recarregar. Não há fallback automático quando a API falha.
+Para desenvolvimento com dados em memória, defina `VITE_API_MODE=mock` e reinicie o Vite; nesse modo, alterações são perdidas ao recarregar. Não há fallback automático quando a API falha.
 
-A landing aparece enquanto a API local é verificada. Em hosts públicos/preview, a descoberta padrão aponta para `http://127.0.0.1:59865/api/v1`; localhost usa a mesma origem/proxy. `VITE_API_BASE_URL` continua sendo a configuração explícita. Permissões de acesso local pertencem ao navegador.
+A landing pública fica em `/`. A verificação da API local acontece ao abrir `/app/`. Em hosts públicos/preview, a descoberta padrão aponta para `http://127.0.0.1:59865/api/v1`; localhost usa a mesma origem/proxy. `VITE_API_BASE_URL` continua sendo a configuração explícita. Permissões de acesso local pertencem ao navegador.
 
-O botão de demonstração abre `demo=1` com quatro boards e um adapter em memória somente leitura. O modo acompanha links e navegação; `returnTo` conserva o destino real anterior e a saída explícita retorna a ele. A demo tem cache independente, dispensa API/SSE e esconde transferência de dados. O screenshot da landing é capturado dessa demo, sem dados de instalações reais. `intro=1` permite rever a apresentação quando a aplicação já está conectada.
+Na hero, “Como funciona” leva à seção animada da própria página. Links antigos da demonstração também levam a essa seção.
 
 Comandos de bootstrap usam a CLI verificada `skills@1.7.6`, o seletor fechado codex/claude-code/github-copilot e a tag imutável validada de `/install.json`. A instalação oferecida é por projeto; outros harnesses e ausência de Node têm instruções manuais. A interface oferece comando somente com release verificável e orienta executar `setup-bee-team` após instalar as skills.
 

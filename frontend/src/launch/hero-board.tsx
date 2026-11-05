@@ -16,7 +16,7 @@ export function HeroBoard() {
   const label = t(paused ? "common.heroPlay" : "common.heroPause");
   const titles = [t("common.heroJourney"), t("common.heroErrors"), t("common.heroContracts"),
     t("common.heroPagination"), t("common.heroHypotheses"), t("common.heroNavigation"),
-    t("common.heroEntryPoints"), t("common.demoLearnTask")];
+    t("common.heroEntryPoints"), t("common.heroLearnTask")];
   return <>
     <div className="hero-board" aria-hidden="true" data-paused={paused}>
       <div className="hero-board-plane">

@@ -15,7 +15,6 @@
   align-items: center;
   gap: 2rem;
   min-height: 5rem;
-  border-bottom: 1px solid var(--border);
 }
 .launch-brand {
   display: flex;
@@ -38,7 +37,7 @@
   display: flex;
   align-items: center;
 }
-.launch-github { display: inline-flex; align-items: center; gap: .45rem; }
+.launch-github { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; min-height: 2rem; }
 .launch-github span { width: 1.05rem; height: 1.05rem; background: currentColor; mask: url("/launch/github.svg") center / contain no-repeat; }
 .launch-hero {
   display: grid;
@@ -205,7 +204,6 @@
   max-width: 100%;
 }
 .launch-footer {
-  border-top: 1px solid var(--border);
   padding-block: 2rem;
   display: flex;
   justify-content: space-between;
@@ -213,35 +211,10 @@
   color: var(--muted-foreground);
   font-size: 0.8rem;
 }
-.demo-banner {
+.launch-footer-links {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.65rem 1rem;
-  background: var(--muted);
-  border-bottom: 1px solid var(--border);
-}
-.demo-session {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.demo-session .demo-banner {
-  flex-shrink: 0;
-}
-.demo-session > .app-shell.icon-navigation {
-  position: relative;
-  inset: auto;
-  height: auto;
-  min-height: 0;
-  flex: 1;
-  overflow: auto;
-}
-.demo-session .navigation-rail {
-  height: 100%;
+  gap: 1rem;
 }
 @media (max-width: 900px) {
   .launch-hero {

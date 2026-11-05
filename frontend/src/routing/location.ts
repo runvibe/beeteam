@@ -11,26 +11,18 @@ export function appHref(to: string) {
   return /^\/(boards|tasks|agents|teams|settings)(?:\/|[?#]|$)/.test(to) ? "/app" + to : to;
 }
 export function canonicalizeEntry() {
+  if (new URLSearchParams(location.search).get("demo") === "1") {
+    history.replaceState(null, "", "/#how-it-works");
+    return;
+  }
   let next = appHref(location.pathname);
   if (next === "/app" || /^\/app\/home\/?$/.test(next)) next = "/app/";
   if (next !== location.pathname) history.replaceState(history.state, "", next + location.search + location.hash);
 }
 export const currentUrl = () => logicalPath(location.pathname) + location.search;
-export function demoHref(to: string) {
+export function navigationHref(to: string) {
   if (!to.startsWith("/") || to.startsWith("//")) return to;
   const url = new URL(to, location.origin);
-  if (
-    !url.searchParams.has("demo") &&
-    new URLSearchParams(location.search).get("demo") === "1"
-  )
-    url.searchParams.set("demo", "1");
-  const returnTo = new URLSearchParams(location.search).get("returnTo");
-  if (
-    url.searchParams.get("demo") === "1" &&
-    returnTo &&
-    !url.searchParams.has("returnTo")
-  )
-    url.searchParams.set("returnTo", returnTo);
   const path = mounted() ? appHref(url.pathname) : url.pathname;
   return path + url.search + url.hash;
 }
@@ -60,7 +52,7 @@ function savePosition(url: string) {
   });
 }
 export function navigate(to: string, replace = false) {
-  const href = demoHref(to);
+  const href = navigationHref(to);
   to = logicalPath(href);
   savePosition(currentUrl());
   const previous = currentUrl();
@@ -122,11 +114,11 @@ export function safeOrigin(value: string | null): string | null {
   }
 }
 export function destination(path: string) {
-  return demoHref(`${path}?${new URLSearchParams({ from: currentUrl() })}`);
+  return navigationHref(`${path}?${new URLSearchParams({ from: currentUrl() })}`);
 }
 /** Canonical identity replacement must not create a navigation or lose return indexes. */
 export function replaceCanonicalUrl(to: string) {
-  const href = demoHref(to);
+  const href = navigationHref(to);
   to = logicalPath(href);
   const previous = currentUrl();
   if (to === previous) return;

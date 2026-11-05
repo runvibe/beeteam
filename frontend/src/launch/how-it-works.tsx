@@ -5,10 +5,8 @@ import {
   useMotionValue,
   useReducedMotion,
 } from "motion/react";
-import { ArrowUpRight } from "lucide-react";
 import { t, useLocale } from "@/i18n";
 import { AbstractScene } from "./abstract-scene";
-import { currentUrl, navigate } from "@/routing/location";
 import "./how-it-works.css";
 
 const scenes = [
@@ -74,20 +72,6 @@ export function HowItWorks() {
           <WorkflowScene scene={scene} index={index} />
         </article>
       ))}
-      <a
-        className="tour-demo"
-        href="/app/boards?demo=1"
-        onClick={(event) => {
-          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
-            return;
-          event.preventDefault();
-          navigate(
-            `/app/boards?${new URLSearchParams({ demo: "1", returnTo: currentUrl() })}`,
-          );
-        }}
-      >
-        {t("common.launchExploreDemo")} <ArrowUpRight size={16} />
-      </a>
     </section>
   );
 }

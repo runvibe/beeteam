@@ -7,10 +7,19 @@ import { ThemeControl } from "@/components/theme-control";
 import { harnesses, type Harness } from "./bootstrap";
 import { harnessIcon } from "@/features/harness-catalog";
 import { themeController } from "@/state/theme-runtime";
-import { navigate, currentUrl } from "@/routing/location";
 import "./landing.css";
 import { HeroBoard } from "./hero-board";
 import { HowItWorks } from "./how-it-works";
+
+function RepositoryLink() {
+  const label = t("common.launchSource");
+  return (
+    <a className="launch-github" href="https://github.com/runvibe/beeteam"
+      aria-label={label} title={label} target="_blank" rel="noreferrer">
+      <span aria-hidden="true" />
+    </a>
+  );
+}
 
 export function Landing() {
   const reducedMotion = useReducedMotion();
@@ -63,15 +72,7 @@ export function Landing() {
         <nav aria-label={t("common.launchNavigation")}>
           <a href="/app/">{t("common.launchOpenPanel")}</a>
           <a href="#install">{t("common.launchInstall")}</a>
-          <a
-            className="launch-github"
-            href="https://github.com/runvibe/beeteam"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span aria-hidden="true" />
-            {t("common.launchSource")}
-          </a>
+          <RepositoryLink />
         </nav>
         <div className="launch-preferences">
           <Button
@@ -101,15 +102,8 @@ export function Landing() {
                 {t("common.launchInstall")}
                 <ArrowUpRight aria-hidden="true" />
               </a>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  navigate(
-                    `/app/boards?${new URLSearchParams({ demo: "1", returnTo: currentUrl() })}`,
-                  )
-                }
-              >
-                {t("common.launchExploreDemo")}
+              <Button asChild variant="outline">
+                <a href="#how-it-works">{t("common.tourTitle")}</a>
               </Button>
             </div>
             <p className="launch-caption">{t("common.launchLocalOpen")}</p>
@@ -179,8 +173,11 @@ export function Landing() {
         </section>
       </main>
       <footer className="launch-footer">
-        <span>{t("common.getBeeTeamBrand")}</span>
-        <p>{t("common.launchFooter")}</p>
+        <span className="launch-brand"><Hexagon aria-hidden="true" />{t("common.getBeeTeamBrand")}</span>
+        <div className="launch-footer-links">
+          <p>{t("common.launchFooter")}</p>
+          <RepositoryLink />
+        </div>
       </footer>
     </div>
   );

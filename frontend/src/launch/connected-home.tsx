@@ -2,7 +2,6 @@ import { useState } from "react";
 import { t, useLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { useApiCompatibility } from "@/api/compatibility";
-import { useDemo } from "@/components/demo-context";
 import { navigate, safeOrigin, useLocation } from "@/routing/location";
 import "./connected-home.css";
 
@@ -10,7 +9,6 @@ export function ConnectedHome() {
   useLocale();
   const url = useLocation();
   const { info } = useApiCompatibility();
-  const demo = useDemo() || info?.apiVersion === "demo";
   const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
   const origin = safeOrigin(new URLSearchParams(url.split("?")[1]).get("from"));
   const resume =
@@ -30,9 +28,7 @@ export function ConnectedHome() {
     <section className="connected-home" aria-labelledby="home-title">
       <header>
         <p className="small-note">
-          {demo
-            ? t("common.demoBanner")
-            : info
+          {info
               ? t("common.homeConnection", { version: info.apiVersion })
               : t("common.connectionChecking")}
         </p>

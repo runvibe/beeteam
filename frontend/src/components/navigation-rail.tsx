@@ -6,9 +6,8 @@ import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
-import { useDemo } from "./demo-context";
 import {
-  demoHref,
+  navigationHref,
   destination,
   navigate,
   currentUrl,
@@ -52,7 +51,6 @@ export function NavigationRail({
 }: { homeEnabled?: boolean } = {}) {
   useLocale();
   const area = useUi((state) => state.area);
-  const demo = useDemo();
   const setArea = useUi((state) => state.setArea);
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
@@ -68,7 +66,7 @@ export function NavigationRail({
             : tr("common.beeTeamGoToBoards")
         }
         title="Bee Team"
-        href={demoHref(homeEnabled ? homeHref : "/boards")}
+        href={navigationHref(homeEnabled ? homeHref : "/boards")}
         onClick={(event) => {
           if (
             event.button ||
@@ -131,7 +129,7 @@ export function NavigationRail({
         className="navigation-footer"
         aria-label={tr("common.globalPreferences")}
       >
-        {!demo && <DataTransferSettings />}
+        <DataTransferSettings />
         <ThemeControl />
       </div>
     </aside>
