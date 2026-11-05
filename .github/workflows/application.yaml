@@ -2,17 +2,7 @@ name: Application artifact
 on:
   workflow_dispatch:
   push:
-    paths:
-      - 'frontend/**'
-      - 'deploy/app/**'
-      - 'scripts/build-cloudflare-app.mjs'
-      - 'package.json'
-      - 'package-lock.json'
-      - 'wrangler.jsonc'
-      - 'docs/team-role-icons.json'
-      - 'docs/mcp-catalog.json'
-      - 'Cargo.toml'
-      - '.github/workflows/application.yaml'
+  pull_request:
 permissions:
   contents: read
 jobs:

@@ -25,34 +25,20 @@ The harness runs the agents and opens their chats. Bee Team stores profiles, tea
 
 ## Quick start
 
-From a checkout with Rust 1.94 or later, a native build toolchain and Node.js 22.20+ with npm, run:
+Open the [installation guide](https://getbee.team/guide/installation), choose your harness, and copy its request into your assistant's chat. The same assistant-first flow starts with this prompt:
 
-```sh
-node scripts/build-distribution.mjs
+```text
+Follow https://getbee.team/install to install Bee Team on my computer using this assistant. Verify the published release and confirm that the local API is running.
 ```
 
-Start the local panel from the repository root. Use an available loopback port and an intended database. On a fresh install, Bee Team creates a SQLite file in your home directory.
-
-**Windows PowerShell**
-
-```powershell
-$env:BEE_FRONTEND_MODE = 'embedded'
-.\target\release\beeteam.exe
-```
-
-**macOS or Linux**
-
-```sh
-BEE_FRONTEND_MODE=embedded ./target/release/beeteam
-```
-
-1. Check [local service info](http://127.0.0.1:59865/api/v1/info) and open the [local panel](http://127.0.0.1:59865/app/).
-2. [Connect your harness](docs/guides/mcp.md) and [install the role skills](docs/guides/skills.md). In a lead chat, ask it to use **Get a Team Lead** to create a release team and board in your chosen project.
-3. Approve a worker chat for release notes. After it confirms its profile and team, ask the lead to assign **Draft release notes** and record a comment describing the expected draft. Open that task on the board and follow its plan, comments and progress. [Continue to the second worker and review](docs/guides/first-team.md).
+1. Your assistant reads the [setup instructions](https://getbee.team/install), identifies your harness and platform, and installs **Setup Bee Team**, **Get a Team Lead** and **Get a Worker** from the same immutable GitHub release tag as the app.
+2. **Setup Bee Team** downloads the ready-to-run native binary, verifies its size and SHA-256, installs or updates it while preserving your data, and starts or reuses the local service. This path does not require a source checkout or compiling the application. If a verified package is unavailable, the assistant must report that limitation instead of substituting an unverified download.
+3. Open the [Bee Team app](https://getbee.team/app/), allow browser access to the local service if prompted, and check the connection. On a fresh default installation, Bee Team creates a SQLite file in your home directory. The [local connection walkthrough](https://getbee.team/guide/local-connection) explains startup, browser permission and the default port.
+4. In a lead chat, ask **Get a Team Lead** to create a team and board in your chosen project. Approve a worker chat and let the lead assign its first task after the worker confirms its profile and team. Follow the task's plan, comments and progress. [Continue with a two-worker example](https://getbee.team/guide/first-team).
 
 ## Supported platforms
 
-The release workflow targets Windows, Linux and macOS. On November 5, 2026 the repository had no GitHub Releases. Use the source build from a checkout you can access. See [installation and platform evidence](docs/guides/installation.md).
+Native release packages target Windows, Linux and macOS. Availability depends on the operating system and architecture listed in the [published GitHub release](https://github.com/runvibe/beeteam/releases) and verified by the [installation manifest](https://getbee.team/install.json). The setup skill selects the matching artifact; an unsupported platform or missing release is reported explicitly. See the [installation guide](https://getbee.team/guide/installation) for the current user workflow.
 
 ## Connect your harness
 
@@ -94,4 +80,4 @@ The bundled monochrome Bee Team hexagon supplies SVG and multi-size ICO favicons
 
 The repository-root `wrangler.jsonc` deploys the hosted PWA to the existing `beeteam` Worker, using routes `getbee.team/app` and `getbee.team/app/*`. Landing and documentation remain in the separate site Worker. Configure Cloudflare Builds with repository root `/`, build `npm run build`, deploy `npx wrangler deploy`, and preview `npx wrangler preview`. Node.js 22 or newer is required.
 
-The root build installs the locked frontend dependencies and builds in an isolated temporary directory and stages only app assets under `.local/cloudflare/app/app/`. It sets the API URL to `http://127.0.0.1:59865/api/v1`; the API and MCP are not hosted by this Worker. Browser permission for local network access may be required. Run `npm run test:worker` and `npm run deploy:check` before deployment. The embedded binary build remains `node scripts/build-distribution.mjs`, with its own same-origin API settings.
+The root build installs the locked frontend dependencies and builds in an isolated temporary directory and stages only app assets under `.local/cloudflare/app/app/`. It sets the API URL to `http://127.0.0.1:59865/api/v1`; the API and MCP are not hosted by this Worker. Browser permission for local network access may be required. Run `npm run test:worker` and `npm run deploy:check` before deployment. Contributor-only embedded binary build instructions, with their own same-origin API settings, are documented in [Development and tests](docs/guides/development.md).

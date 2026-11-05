@@ -1,0 +1,193 @@
+name: Native public release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Stable vCargoVersion tag to publish (never overwritten)
+        required: true
+        default: v0.1.0
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-release-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  source:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+      version: ${{ steps.source.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Cargo version, repository and immutable source tag
+        id: source
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = runvibe/beeteam
+          test "$(gh api "repos/$GITHUB_REPOSITORY" --jq .visibility)" = public
+          version=$(python scripts/release-candidate.py source --tag "$RELEASE_TAG")
+          sha=$(git rev-parse HEAD)
+          if git rev-parse --verify "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$sha"
+          fi
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'A release already exists; refusing to overwrite final or draft assets.' >&2
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  native:
+    needs: source
+    name: Native ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Link the Windows C runtime into the standalone executable
+        if: runner.os == 'Windows'
+        shell: bash
+        run: echo 'RUSTFLAGS=-C target-feature=+crt-static' >> "$GITHUB_ENV"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: native-release-${{ matrix.runner }}
+      - name: Verify guide contracts and archive tests
+        run: |
+          cargo test --release --locked --features mcp --test guide_reference
+          python scripts/test-package-release.py
+      - name: Build same-version embedded executable on native runner
+        run: node scripts/build-distribution.mjs
+      - name: Package and smoke the actual native executable
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary=target/release/beeteam
+          if [ "$RUNNER_OS" = Windows ]; then binary="$binary.exe"; fi
+          python scripts/package-release.py --binary "$binary" --output .local/native-release --tag "$RELEASE_TAG"
+          for metadata in .local/native-release/*.json; do
+            python scripts/smoke-distribution.py --metadata "$metadata"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-native-${{ runner.os }}-${{ runner.arch }}
+          path: .local/native-release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  skills:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test manifest and self-contained Skills packaging
+        run: python scripts/test-release-candidate.py
+      - name: Package the three Skills from this exact source
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: python scripts/release-candidate.py skills --tag "$RELEASE_TAG" --directory .local/release-skills
+      - name: Discover packaged Skills with isolated harness directories
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: python scripts/validate-release-skills.py --tag "$RELEASE_TAG" --directory .local/release-skills
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-skills
+          path: .local/release-skills/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: [source, native, skills]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: .local/release
+          merge-multiple: true
+      - name: Compose manifest from verified native archives and Skills
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: python scripts/release-candidate.py compose --tag "$RELEASE_TAG" --directory .local/release
+      - name: Tag exact source, stage draft, verify downloaded assets, publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          SOURCE_SHA: ${{ needs.source.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo 'Refusing to overwrite an existing final or draft release.' >&2
+            exit 1
+          fi
+          if git rev-parse --verify "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            test "$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")" = "$SOURCE_SHA"
+          else
+            git tag "$RELEASE_TAG" "$SOURCE_SHA"
+            git push origin "refs/tags/$RELEASE_TAG"
+          fi
+          gh release create "$RELEASE_TAG" .local/release/* --draft --verify-tag --target "$SOURCE_SHA" \
+            --title "Bee Team $RELEASE_TAG" \
+            --notes "Native Windows, Linux and macOS packages built and smoke-tested on their own runners. Includes the embedded app, three self-contained Skills packages, legal notices, SHA-256 checksums and installation manifest."
+          gh release download "$RELEASE_TAG" --dir .local/draft-readback
+          python scripts/release-candidate.py compare --directory .local/release --downloaded .local/draft-readback
+          test "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" = true
+          gh release edit "$RELEASE_TAG" --draft=false --latest
+          gh release view "$RELEASE_TAG" --json url,isDraft,tagName
+      - uses: actions/upload-artifact@v4
+        with:
+          name: published-install-manifest
+          path: |
+            .local/release/install.json
+            .local/release/skills-packages.json
+          if-no-files-found: error
