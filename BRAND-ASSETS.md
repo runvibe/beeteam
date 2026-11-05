@@ -26,3 +26,5 @@ You may copy and display the identified assets as supplied when using or redistr
 Bee Team's present hexagon presentation uses Lucide artwork. Lucide's own geometry and assets retain their existing open-source licenses; this document does not revoke or narrow those grants or claim exclusive ownership of the underlying shape. See the Lucide notice in `docs/team-role-icons-LICENSE` in the application repository and the installed Lucide package notices.
 
 Harness icons, GitHub artwork, fonts and other third-party assets belong to their respective rights holders and retain their own licenses. See `frontend/public/harness-icons/LICENSE.txt` in the app and `public/harness-icons/LICENSE.txt` in the site. Do not interpret the Bee Team brand reservation as ownership of those materials.
+
+Browser identity assets also include the Bee Team favicon SVG/ICO/PNG files and all Bee Team artwork under `frontend/public/icons/`. Existing third-party Lucide geometry retains its original license.

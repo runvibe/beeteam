@@ -12,7 +12,8 @@
     "typecheck": "tsc -b",
     "generate:types": "node scripts/generate-types.mjs",
     "build:embedded": "node scripts/build-embedded.mjs",
-    "audit:i18n": "node scripts/i18n-audit.mjs"
+    "audit:i18n": "node scripts/i18n-audit.mjs",
+    "generate:icons": "node scripts/generate-brand-icons.mjs"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
@@ -43,6 +44,7 @@
     "zustand": "^5.0.16"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",

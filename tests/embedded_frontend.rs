@@ -254,3 +254,18 @@ async fn pwa_entrypoints_revalidate_with_correct_mime() {
         assert_eq!(response.headers()["cache-control"], "no-cache");
     }
 }
+
+#[tokio::test]
+async fn brand_icons_are_served_as_images_under_the_app_scope() {
+    for (path, mime) in [
+        ("/app/favicon.ico", "image/x-icon"),
+        ("/app/favicon.svg", "image/svg+xml"),
+        ("/app/icons/apple-touch-icon.png", "image/png"),
+        ("/app/icons/bee-maskable-192.png", "image/png"),
+    ] {
+        let response = app().oneshot(Request::builder().uri(path).body(Body::empty()).unwrap()).await.unwrap();
+        assert_eq!(response.status(), 200, "{path}");
+        assert_eq!(response.headers()["content-type"], mime, "{path}");
+        assert!(!response.into_body().collect().await.unwrap().to_bytes().is_empty());
+    }
+}
