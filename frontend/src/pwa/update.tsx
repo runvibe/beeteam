@@ -92,13 +92,13 @@ export function PwaUpdate({ visible = true }: { visible?: boolean }) {
     navigator.serviceWorker.addEventListener("controllerchange", onController);
     waiting.postMessage({ type: "ACTIVATE_APP_UPDATE" });
   }
-  if (!visible || !waiting) return null;
+  if (!visible || !waiting || !availableVersion || availableVersion === appVersion) return null;
   return (
     <section className="pwa-update" aria-label={t("common.pwaUpdateTitle")}>
       <p>{t("common.pwaUpdateBody")}</p>
       <p>{t("common.updateVersionDetails", {
         current: appVersion,
-        available: availableVersion ?? t("common.updateVersionChecking"),
+        available: availableVersion,
       })}</p>
       <Button onClick={reload}>{t("common.pwaReload")}</Button>
       {otherTabs && <p role="status">{t("common.pwaOtherTabs")}</p>}
