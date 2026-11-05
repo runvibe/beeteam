@@ -1126,3 +1126,5 @@ MCP lists only `beeteam://skills/worker` and `beeteam://references/worker-bootst
 as unlisted read aliases. `/openapi/ra.json` and `/openapi/kanban.json` describe v2.
 
 Native release candidates, archive integrity checks and the three-system workflow are documented in [release distribution](docs/release-distribution.md).
+
+The verified public install manifest and Workers preview/promotion procedure are documented in [install manifest](docs/install-manifest.md).
