@@ -4,7 +4,7 @@
   margin: auto;
 }
 .launch-page > :is(header, footer),
-.launch-page > main > :not(.launch-hero) {
+.launch-page > main > .launch-story {
   margin-inline: var(--launch-gutter);
 }
 .launch-page > main {
@@ -136,8 +136,8 @@
   padding-left: 1rem;
 }
 .launch-install {
-  padding-block: 4rem;
-  border-top: 1px solid var(--border);
+  border-block: 1px solid var(--border);
+  background: linear-gradient(155deg, var(--muted), var(--background) 65%);
   scroll-margin-top: 1.5rem;
 }
 .launch-install p + p {
@@ -145,10 +145,7 @@
 }
 .launch-command {
   min-width: 0;
-  border: 1px solid var(--border);
-  padding: clamp(1rem, 3vw, 2.5rem);
-  border-radius: var(--radius);
-  background: linear-gradient(155deg, var(--muted), var(--background) 65%);
+  padding: clamp(1rem, 3vw, 2.5rem) var(--launch-gutter);
 }
 .launch-signal { display: grid; place-items: center; position: relative; isolation: isolate; overflow: hidden; height: clamp(9rem, 18vw, 14rem); }
 .launch-signal > * { grid-area: 1 / 1; }
