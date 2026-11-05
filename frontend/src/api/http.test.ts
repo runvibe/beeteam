@@ -10,6 +10,22 @@ it("requests one authoritative task overview snapshot", async () => {
   await createHttpApi({ fetch: fetcher }).overview("task");
   expect(fetcher.mock.calls[0][0]).toBe("/api/v1/tasks/task/overview");
 });
+it("reads discovery relative to the configured API base", async () => {
+  const value = {
+    apiVersion: "1.2.3",
+    supportedContractVersions: ["v1"],
+    capabilities: [],
+  };
+  const fetcher = vi.fn().mockResolvedValue(response(value));
+  expect(
+    await createHttpApi({
+      baseUrl: "http://localhost:1234/api/v1/",
+      fetch: fetcher,
+    }).info(),
+  ).toEqual(value);
+  expect(fetcher.mock.calls[0][0]).toBe("http://localhost:1234/api/v1/info");
+  expect(fetcher.mock.calls[0][1].credentials).toBe("omit");
+});
 it("requests task participants with pagination only", async () => {
   const fetcher = vi.fn().mockResolvedValue(response({ items: [] }));
   await createHttpApi({ fetch: fetcher }).participants("task", {

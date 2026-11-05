@@ -1,4 +1,5 @@
 import { useLocale, t as tr } from "@/i18n";
+import { ApiCompatibilityBanner } from "./components/api-compatibility";
 
 import { motion, MotionConfig } from "motion/react";
 import {
@@ -44,6 +45,7 @@ export function App() {
         <div className="app-shell icon-navigation">
           <NavigationRail />
           <div className="main-shell">
+            <ApiCompatibilityBanner />
             <header className="topbar">
               <AppPath />
               <MobileContextPath />

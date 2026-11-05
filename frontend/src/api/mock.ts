@@ -279,6 +279,11 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    info: async () => ({
+      apiVersion: "demo",
+      supportedContractVersions: ["v1"],
+      capabilities: ["teams.role-icons"],
+    }),
     async agentLatestActivity(agentId) {
       await api.get("agents", agentId);
       const event = db.timeline
