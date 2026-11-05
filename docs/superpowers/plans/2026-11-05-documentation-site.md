@@ -38,7 +38,7 @@ Use one release preparation scenario throughout:
 
 ## Implementation sequence and ownership
 
-1. **Documentation Worker:** map the guide articles to the English README and guides in PR #31. Reconcile that PR before importing content. Keep one maintained source per factual instruction and a tested set of harness variants. Coordinate PT translations of reader-facing prose.
+1. **Documentation Worker:** map the guide articles to the English README and guides merged in PR #31. Use the versions on main when importing content. Keep one maintained source per factual instruction and a tested set of harness variants. Coordinate PT translations of reader-facing prose.
 2. **Frontend Worker:** build the guide layout and accessible navigation, integrate links from landing/app, and implement route, locale, preference and anchor handling. Reuse existing Markdown and copy controls where compatible with links, code blocks and diagrams.
 3. **Documentation + Frontend:** integrate the download guide and tutorial. Only offer a binary when the manifest has a verified asset for that OS/architecture. When a release is missing, show the source-build path. Use the approved setup skill instructions as the command source.
 4. **Distribution:** ensure guide deep links work on Cloudflare Workers, Vite and the embedded distribution. Resolve static assets and links from nested pages. Verify that guides remain readable when the local API is offline and that Swagger, install instructions and the release manifest still return their intended content.
