@@ -1,6 +1,8 @@
-# Bee Team
+# Get Bee Team
 
-Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harness executam o trabalho; Bee Team guarda configuração, autoria declarada, planos, arquivos e resultados. Não cria chats nem acessa provedores de IA.
+Servidor local Rust para perfis/times de agentes e boards/tasks. A IA e o harness executam o trabalho; Get Bee Team guarda configuração, autoria declarada, planos, arquivos e resultados. Não cria chats nem acessa provedores de IA.
+
+Marca: **Get Bee Team**. Domínio de referência: `getbee.team`; não substitui o endpoint local configurado nem comprova publicação pública.
 
 ## Idiomas da interface
 
@@ -99,7 +101,7 @@ Não há workspace, autenticação, login ou tokens. Escritas declaram `X-Actor-
 - `/api/v1`: 32 operações Kanban e 23 RA, sem prefixo workspace.
 - `/mcp`: SDK **rmcp 2.0.0**, Streamable HTTP stateless JSON, protocolo 2025-11-25.
 
-[Catálogo MCP](docs/mcp-catalog.md): 55 tools equivalentes às APIs, 3 compostas (`prepare_execution`, `record_progress`, `close_activity`) e 2 tools de sistema. Schemas de entrada/saída completos estão no [catálogo JSON](docs/mcp-catalog.json), exportado do mesmo código de `tools/list`. Skills são resources com allowlist; prompts usam templates Bee Team empacotados, sem instalação global ou execução automática.
+[Catálogo MCP](docs/mcp-catalog.md): 55 tools equivalentes às APIs, 3 compostas (`prepare_execution`, `record_progress`, `close_activity`) e 2 tools de sistema. Schemas de entrada/saída completos estão no [catálogo JSON](docs/mcp-catalog.json), exportado do mesmo código de `tools/list`. Skills são resources com allowlist; prompts usam templates Get Bee Team empacotados, sem instalação global ou execução automática.
 
 Primeiro crie agentes por `POST /api/v1/agents`, depois um time com líder e um board com `teamId` gestor. POST requer `Idempotency-Key` UUID; versões individuais usam ETag/`If-Match: "N"`. Há exemplos completos nos [contratos Kanban](docs/kanban-openapi.yaml) e [RA](docs/ra-openapi.yaml). A descrição histórica de revisão/pausa nos documentos não substitui o estado de implementação registrado aqui.
 
@@ -175,7 +177,7 @@ Build e39 testes Rust passaram no banco isolado, incluindo paridade dos workflow
 
 Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reutiliza tarefa de coordenação atribuída a si antes de planejamento substantivo, salva decisões incrementalmente e trata bootstrap sem circularidade; Collaborator não se autoautoriza. Discovery permanece autoritativo, sem contagem fixa nas instruções. Build e39 testes Rust aprovados. API reiniciada isoladamente para PID59996, backup `.local/api-runtime/beeteam-before-7b14ebf.exe` preservado. Na verificação atual foram descobertos13 resources iguais ao commit fonte, links mapeados,3 prompts renderizados e60 tools; health e painel200. Coleções completas pré/pós/proxy iguais:1board,2tasks,3agents,2teams. Sem dados de negócio criados, seed/reset ou alteração pessoal; PostgreSQL/frontend preservados. Validação comprova conteúdo/transporte e persistência, não execução das decisões de IA.
 
-## Bee Team skills
+## Get Bee Team skills
 
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
@@ -183,9 +185,9 @@ The skills now apply the approved workflows through concise entrypoints and comp
 The [Worker workflow](docs/worker-workflow.md) documents preparation,
 execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
-Versioned guidance is available in [team leader](skills/call-a-team-lead/SKILL.md)
-and [worker](skills/call-a-worker/SKILL.md), with shared references
-under `skills/references/` and [multidisciplinary examples](skills/call-a-team-lead/references/team-examples.md).
+Versioned guidance is available in [team leader](skills/get-a-team-lead/SKILL.md)
+and [worker](skills/get-a-worker/SKILL.md), with shared references
+under `skills/references/` and [multidisciplinary examples](skills/get-a-team-lead/references/team-examples.md).
 These are portable instructions. The backend MCP catalog documents the implemented
 server capabilities; this checkout supplies editorial content for its snapshots.
 
@@ -196,7 +198,7 @@ and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
-that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-worker`.
+that supports skill discovery, invoke `$get-a-team-lead` or `$get-a-worker`.
 Each skill folder is self-contained: copy its SKILL.md and references/ together.
 The complete workflows, integration, handoff, connection procedure and prompts live
 inside each package. Shared editorial sources remain under skills/references and
@@ -213,7 +215,7 @@ executor, with no team ownership; each board has one managing team. See
 ## Local readiness managed by the leader
 
 Before substantive planning, the Leader reuses or creates its own coordination task
-and records conversation decisions incrementally in Bee Team. New-team bootstrap
+and records conversation decisions incrementally in Get Bee Team. New-team bootstrap
 materializes the collected context as soon as approved identity/team/board exist.
 This does not allow Workers to create tasks to authorize themselves.
 
@@ -239,13 +241,13 @@ manual handoff, not an alternative launcher. PostgreSQL 18 remains supported thr
 the default described below. Data conversion is outside its scope.
 
 
-## Bee Team frontend
+## Get Bee Team frontend
 
 Boards, agents and teams use a dedicated card scroller; navigation, breadcrumbs and filters remain outside it. Small desktop collections grow in balanced centered rows (1–3 in one row, then ceil(sqrt(count)) columns), centered vertically while they fit. At horizontal capacity or vertical overflow they use a normal top/left grid. Mobile keeps one card per row. Kanban columns retain their existing behavior.
 
 These three lists prefetch approximately one measured viewport at a time (API limit at most 100), with a one-row threshold and reserved footer space. The first request estimates capacity; later requests measure rendered cards. Existing explicit URL limits remain supported. The URL stores all loaded exact `offset:limit` blocks in `<resource>.window` and the window start in `<resource>.offset`; resizing affects only the next block. Reload/back restores those blocks and the saved visible-card anchor from session storage. Loaded blocks remain available when scrolling back to the first card; loading more never evicts earlier cards. Filter changes reset the window and abort obsolete HTTP requests; refreshes deduplicate IDs and retain visible records. Loading, retry, a keyboard-accessible “Carregar mais” fallback and the actual end of records replace previous/next pagination on these lists.
 
-The common loading indicator uses the Bee Team hexagon with rotation, including the next-page footer while more records are available; reduced-motion mode keeps it static. The branding logo is unchanged. Mobile breadcrumbs use an accessible return button and only the current name, with measured overflow panning and edge fades; reduced motion uses ellipsis and the complete accessible name. Theme and global settings stay on the same top row.
+The common loading indicator uses the Get Bee Team hexagon with rotation, including the next-page footer while more records are available; reduced-motion mode keeps it static. The branding logo is unchanged. Mobile breadcrumbs use an accessible return button and only the current name, with measured overflow panning and edge fades; reduced motion uses ellipsis and the complete accessible name. Theme and global settings stay on the same top row.
 
 Listing filters and actions sit at the top right; breadcrumbs identify pages, with page headings retained for assistive technology instead of visible introductory headers. Active filters (including search) appear as a compact, absolutely positioned tag stack below the icons. The trigger and list hit areas keep stable geometry during animation; only the tag visuals animate, with a light fixed shadow. Mouse hover or keyboard focus expands the stack; its button toggles it on touch, and reduced-motion preferences disable the elastic transition. Search expands inline from its circle into a rounded input capsule; its X or Escape closes it without clearing the URL value, and reopening restores focus and text. Clear filters preserves existing URL and pagination behavior. The final gear icon on a board opens its existing settings panel and is never counted as a filter. Global settings use a distinct sliders icon with the existing import/export dialog.
 
@@ -535,7 +537,7 @@ Board, agent and team listing cards include a consistent decorative filled type 
 Agent listing cards use a centered 56px profile avatar above the centered name, with the decorative type mark at the top left. The 272px card height, description fade and footer remain consistent; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
-Na coordenação Bee Team, toda demanda Leader→Worker é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
+Na coordenação Get Bee Team, toda demanda Leader→Worker é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
 
 Ao ativar Leader ou Worker, o próprio chat recebe respectivamente 👑 ou 🐝, antes mesmo da resolução da identidade. Mudanças de papel substituem a marca inicial sem acumular; nome/contexto útil são preservados. Leader já nomeia novos chats Workers autorizados com 🐝. Somente títulos de chat mudam, nunca agentes/times/slugs.
 
@@ -914,7 +916,7 @@ usam somente vínculos explícitos `summaryId` no histórico disponível: ausên
 ou de cobertura aparece vazia, distinguida de progresso registrado em 0%.
 
 No mobile, o índice lateral de Resumos fica oculto. O filtro padrão mantém suas opções com scroll infinito próprio, compartilhando o cache do índice e buscando páginas apenas conforme a área visível exige. Seleção pela URL, tags removíveis e docking continuam disponíveis.
-As skills orientam projeto obrigatório com nome/raiz absoluta separado da especificação Markdown, somente nas pastas/worktrees envolvidas. Repositórios são descobertos pelo Bee Team, não informados pelo agente; coleta Git real sustenta evidências de commits por resumo. Investigação sem commit é válida; nunca criar commit apenas para preencher declaração. Raiz do checkout, remotes sem credenciais, branch histórica, hash completo e publicação confirmada permanecem fatos distintos, sujeitos ao contrato Backend.
+As skills orientam projeto obrigatório com nome/raiz absoluta separado da especificação Markdown, somente nas pastas/worktrees envolvidas. Repositórios são descobertos pelo Get Bee Team, não informados pelo agente; coleta Git real sustenta evidências de commits por resumo. Investigação sem commit é válida; nunca criar commit apenas para preencher declaração. Raiz do checkout, remotes sem credenciais, branch histórica, hash completo e publicação confirmada permanecem fatos distintos, sujeitos ao contrato Backend.
 
 A aba Especificação apresenta `Task.workScope` em cards Projetos (nome/pasta raiz) e
 Repositórios (nome/link web e relações explícitas com projetos), ao lado do Markdown no
@@ -967,7 +969,7 @@ compartilhado não são apresentados como projetos envolvidos. Commits históric
 usando seus snapshots originais, independentemente de novas descobertas.
 
 Os botões **Abrir no Explorer** e **Abrir no VS Code** enviam uma ação explícita para
-o computador Windows onde a API Bee Team está rodando. A API resolve a pasta pela
+o computador Windows onde a API Get Bee Team está rodando. A API resolve a pasta pela
 task UUID e chave do projeto cadastrado; o navegador não envia caminho nem comando.
 O card mostra espera e erro e evita cliques concorrentes. A confirmação significa
 solicitação enviada ao processo, não comprovação de uma janela visível. A demonstração
@@ -1036,7 +1038,7 @@ A consulta `GET /api/v1/tasks/{taskId}/execution-tracking-events` aceita `summar
 
 O gráfico pode carregar todos os pontos por `GET /api/v1/tasks/{taskId}/timeline-points` (`getTimelinePoints` no MCP), seguindo `nextOffset` automaticamente até `hasMore=false`. Cada ponto contém somente `id` (Event.id), `taskId`, `type`, `occurredAt` e `sequence`; o endpoint mantém filtros/escopo da timeline e páginas de até 100 itens. A projeção ocorre no banco sem carregar o payload completo dos eventos. Cards e detalhes continuam independentes em `timeline`/`timeline?id=...`. Uma página parcial ou com erro não representa o histórico completo; cada página tem snapshot próprio e eventos novos exigem atualização da consulta.
 
-O conteúdo editorial anunciado pelo MCP (ferramentas, schemas, prompts e recursos Bee Team) é fornecido em inglês. As descrições dos contratos HTTP compartilhados permanecem na fonte original e recebem tradução somente na apresentação MCP. Nomes técnicos, valores de contrato e dados fornecidos pelos usuários, inclusive contexto persistido anexado a prompts, não são traduzidos.
+O conteúdo editorial anunciado pelo MCP (ferramentas, schemas, prompts e recursos Get Bee Team) é fornecido em inglês. As descrições dos contratos HTTP compartilhados permanecem na fonte original e recebem tradução somente na apresentação MCP. Nomes técnicos, valores de contrato e dados fornecidos pelos usuários, inclusive contexto persistido anexado a prompts, não são traduzidos.
 # Criação de status no frontend
 
 Nas configurações do board, **Adicionar status** revela o formulário e foca o nome. **Salvar** cria o status e recolhe o formulário; falhas mantêm o rascunho para nova tentativa. **Cancelar** ou Escape descartam o rascunho sem gravar. Durante o envio, os controles ficam desabilitados para evitar duplicação. Criação e edição usam **Conta como concluído**, com a mesma semântica do campo `isDone`.
@@ -1087,7 +1089,7 @@ Capacidades HTTP anunciadas: `agents.latest-activity`, `teams.role-icons`, `task
 
 Consumidores devem ignorar identificadores desconhecidos e testar a presença do recurso necessário. Em servidores legados, 404 significa compatibilidade desconhecida; erros de rede/servidor significam indisponibilidade, não ausência de um recurso. Nenhum caminho, credencial, configuração de banco ou dado de usuário é exposto. Novos identificadores são aditivos; mudanças incompatíveis exigem novo identificador/contrato.
 
-Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-worker` (**Call a Worker**). Worker replaces the former role vocabulary while preserving assignment, cardinality and authorization rules. The Leader installs integrated packages using the [guarded migration procedure](docs/skills-installation.md), with verified backups and no duplicate legacy skill aliases. Bundle synchronization, runtime activation and adoption by existing chats are separate checks.
+Skill invocation names are `$get-a-team-lead` (**Get a Team Lead**) and `$get-a-worker` (**Get a Worker**). Worker replaces the former role vocabulary while preserving assignment, cardinality and authorization rules. The Leader installs integrated packages using the [guarded migration procedure](docs/skills-installation.md), with verified backups and no duplicate legacy skill aliases. Bundle synchronization, runtime activation and adoption by existing chats are separate checks.
 
 ## Worker API contract migration
 

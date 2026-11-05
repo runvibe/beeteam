@@ -1,4 +1,4 @@
-# Bee Team materials in MCP
+# Get Bee Team materials in MCP
 
 The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, including the validated currentSummary revision: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. This reference documents content and packaging; it does not maintain a competing catalog. Operational instructions and examples are in [integration](integration.md), available as `beeteam://references/integration`.
 
@@ -6,12 +6,12 @@ The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, includ
 
 | Reference URI to confirm in resources/list | Editorial source |
 |---|---|
-| beeteam://skills/leader | skills/call-a-team-lead/SKILL.md |
-| beeteam://skills/worker | skills/call-a-worker/SKILL.md |
+| beeteam://skills/leader | skills/get-a-team-lead/SKILL.md |
+| beeteam://skills/worker | skills/get-a-worker/SKILL.md |
 | beeteam://references/integration | skills/references/integration.md |
 | beeteam://references/handoff | skills/references/handoff.md |
 | beeteam://references/codex | skills/references/codex.md |
-| beeteam://references/team-examples | skills/call-a-team-lead/references/team-examples.md |
+| beeteam://references/team-examples | skills/get-a-team-lead/references/team-examples.md |
 
 Use resources/list/read; unknown URIs or arbitrary filesystem access are rejected. Content is an editorial snapshot in `resources/bee-team`, without global installation. Updates in this workstream must be incorporated by the backend before appearing on the server. Do not expose validation/progress notes, secrets or files outside the allowlist. Relative links are editorial: use advertised URIs, never filesystem exploration. Discover whether this guide is advertised in the current catalog and use the returned URI, without fixing its presence/absence based on this reference.
 
@@ -46,7 +46,7 @@ resolveAgentSlug, resolveTeamSlug and resolveTaskSlug resolve readable reference
 
 ## Operational workflows in self-contained packages
 
-Both call-a-team-lead and call-a-worker folders contain a concise SKILL.md and references/ with complete workflows (text and Mermaid), integration, handoff, Codex, examples and templates. Local links stay within each package. Workflows derive from documents approved in commit 01e77b9; operational copies remove the historical warning that the skill does not yet apply those decisions, without claiming an updated runtime.
+Both get-a-team-lead and get-a-worker folders contain a concise SKILL.md and references/ with complete workflows (text and Mermaid), integration, handoff, Codex, examples and templates. Local links stay within each package. Workflows derive from documents approved in commit 01e77b9; operational copies remove the historical warning that the skill does not yet apply those decisions, without claiming an updated runtime.
 
 When synchronizing MCP, incorporate both entrypoints, workflows and their reachable references; do not publish entrypoints with inaccessible links as though workflows were available. The backend must expose this content through actually advertised resources or content aggregated into the corresponding resource, and validate discovery/reads and prompts. This workstream defines no new runtime URIs. The table above describes the previous catalog; check resources/list after updating. Briefing/resumption/review templates now preserve mandatory assignment, two confirmations and saving before notification, without changing UUID arguments or making prompts mutative.
 

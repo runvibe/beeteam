@@ -24,7 +24,7 @@
 - HTTP and MCP adapt the same DTO validation and business services; compound MCP writes must use one database transaction and one idempotency key.
 - The checked-in Kanban/RA OpenAPIs define the current boards/tasks model; never restore workspace or task/team ownership from older notes.
 - Actor context is declared metadata, not authentication. Do not introduce a leader editing restriction while that product policy remains unresolved.
-- MCP resources/prompts use an explicit bundled Bee Team allowlist under resources/bee-team. Never expose arbitrary files or imply global skill installation. Update provenance when refreshing the Skills snapshot.
+- MCP resources/prompts use an explicit bundled Get Bee Team allowlist under resources/bee-team. Never expose arbitrary files or imply global skill installation. Update provenance when refreshing the Skills snapshot.
 - Regenerate docs/mcp-catalog.json using `cargo run --locked --features mcp --example mcp_catalog` after catalog/schema changes.
 - Integration tests use an isolated PostgreSQL >=18 instance via BEE_TEST_DATABASE_URL (CREATEDB required for HTTP/MCP tests). Windows Docker wrappers calling WSL may require this URL instead of native Testcontainers. Never point tests at product data.
 
