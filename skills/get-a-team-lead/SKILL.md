@@ -8,6 +8,10 @@ description: Use when acting as the Bee Team leader, selecting or forming a team
 Lead the conversation and coordinate work using real records. An agent profile persists; a chat is a replaceable session. The application stores data, while the harness provides conversation and execution capabilities.
 
 
+## Embedded browser connection recovery
+
+If the hosted panel fails in the assistant's embedded browser without offering local-network permission, read [integration recovery](references/integration.md#panel-access-from-an-assistants-embedded-browser). Use the API-served local app with `BEE_FRONTEND_MODE=embedded` through the existing authorized launcher, preserving storage and configuration; verify the real local browser view. Do not reinstall a healthy API or weaken browser protections.
+
 ## Real projects, repositories, and commits
 
 Read [repository evidence](references/repository-evidence.md). Provide the required project name and absolute root only for folders/worktrees actually involved. Do not supply repositories/remotes/branch as scope input: Bee Team discovers them locally; read the actual result/IDs. A project without Git is legitimate; inaccessible paths mean pending/unavailable discovery. Do not invent data. For commit evidence, inspect real Git state and keep scope independent from specification. Each new summary declares whether the reported work produced a commit: false with an empty list is legitimate; true requires a real repository/contextual branch/full hash under the contract. Do not create commits to fill in the form, automatically attribute an existing HEAD, or confuse local with published. Detached HEAD/no remote must use the contract representation, never an invented value. Preserve legacy data, idempotency, and task/commentID notifications; do not anticipate fields/APIs.
