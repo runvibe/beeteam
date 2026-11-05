@@ -74,7 +74,7 @@
   "launchManualInstructions": "Read the skills instructions",
   "launchCopied": "Request copied.",
   "launchCopyFailed": "Select the request and copy it manually.",
-  "launchFooter": "Your agents work in your assistant. Their shared context lives here.",
+  "launchFooter": "Many agents. One team.",
   "demoBanner": "Demonstration · Sample data · Read only",
   "demoReadonly": "The demonstration is read only.",
   "demoConnectLocal": "Connect my local application",
