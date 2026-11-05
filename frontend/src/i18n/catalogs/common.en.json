@@ -1,4 +1,6 @@
 {
+  "switchEnglish": "Switch to English",
+  "switchPortuguese": "Switch to Portuguese",
   "heroJourney": "Map the first-use journey",
   "heroErrors": "Document API errors",
   "heroContracts": "Define API contracts",
@@ -31,7 +33,7 @@
   "homeOpenTeams": "View teams",
   "homeOpenAgents": "View agents",
   "homeReviewSetup": "Review presentation and installation",
-  "launchOpenPanel": "Open my panel",
+  "launchOpenPanel": "Open app",
   "demoContentBoard": "Content & communication",
   "demoQualityBoard": "Quality & operations",
   "demoPrepareTask": "Prepare the next delivery",

@@ -82,7 +82,7 @@ it("checks the API only after the visitor enters the panel", async () => {
   render(<LaunchRoot api={api} />);
   expect(api.info).not.toHaveBeenCalled();
   expect(screen.queryByText("Conectar Bee Team")).toBeNull();
-  const open = screen.getByRole("link", { name: "Abrir meu painel" });
+  const open = screen.getByRole("link", { name: "Abrir app" });
   act(() => locationAt(open.getAttribute("href")!));
   await screen.findByText("Não foi possível verificar a aplicação local.");
   fireEvent.click(

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import { Hexagon, ArrowUpRight, Check, Copy, Terminal } from "lucide-react";
+import { Hexagon, ArrowUpRight, Check, Copy, Globe, Terminal } from "lucide-react";
 import { t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { ThemeControl } from "@/components/theme-control";
@@ -34,6 +34,8 @@ export function Landing() {
     other: t("common.harnessOther"),
   };
   const command = harness ? (harness === "other" ? t("common.installChatOther") : t("common.installChatNamed", { harness: names[harness] })) : null;
+  const chosenIcon = harness && harnessIcon(harness.replaceAll("-", " "));
+  const languageAction = t(language === "pt-BR" ? "common.switchEnglish" : "common.switchPortuguese");
   function selectHarness(choice: Harness) {
     setHarness(choice);
     setCopyState("idle");
@@ -59,10 +61,12 @@ export function Landing() {
           <a href="/app/">{t("common.launchOpenPanel")}</a>
           <a href="#install">{t("common.launchInstall")}</a>
           <a
+            className="launch-github"
             href="https://github.com/runvibe/beeteam"
             target="_blank"
             rel="noreferrer"
           >
+            <span aria-hidden="true" />
             {t("common.launchSource")}
           </a>
         </nav>
@@ -70,13 +74,14 @@ export function Landing() {
           <Button
             variant="ghost"
             size="sm"
+            title={languageAction}
+            aria-label={languageAction}
             onClick={() =>
               setLocalePreference(language === "pt-BR" ? "en" : "pt")
             }
           >
-            {language === "pt-BR"
-              ? t("common.languageEnglish")
-              : t("common.languagePortuguese")}
+            <Globe size={16} aria-hidden="true" />
+            <span>{language.slice(0, 2).toUpperCase()}</span>
           </Button>
           <ThemeControl />
         </div>
@@ -131,6 +136,14 @@ export function Landing() {
             <p>{t("common.launchInstallBody")}</p>
           </div>
           <div className="launch-command">
+            <div className="launch-signal" key={harness ?? "initial"} aria-hidden="true">
+              <div className="launch-signal-field" />
+              <Hexagon className="launch-signal-ring" strokeWidth={0.35} />
+              <Hexagon className="launch-signal-ring inner" strokeWidth={0.55} />
+              <div className="launch-signal-core">
+                {chosenIcon ? <img alt="" src={chosenIcon} /> : harness ? <Terminal /> : <Hexagon />}
+              </div>
+            </div>
             <fieldset className="launch-picker">
               <legend>{t("common.launchHarness")}</legend>
               {harnesses.map((choice) => {
@@ -142,7 +155,7 @@ export function Landing() {
                 </button>;
               })}
             </fieldset>
-            {command && <div className="launch-chat-prompt">
+            {command && <div className="launch-chat-prompt" key={harness}>
               <p aria-live="polite">{command}</p>
               <Button onClick={() => void copy()}>
                 {copyState === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
@@ -162,6 +175,7 @@ export function Landing() {
               rel="noreferrer"
             >
               {t("common.launchManualInstructions")}
+              <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>
         </section>

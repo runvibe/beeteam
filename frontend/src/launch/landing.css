@@ -38,6 +38,8 @@
   display: flex;
   align-items: center;
 }
+.launch-github { display: inline-flex; align-items: center; gap: .45rem; }
+.launch-github span { width: 1.05rem; height: 1.05rem; background: currentColor; mask: url("/launch/github.svg") center / contain no-repeat; }
 .launch-hero {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
@@ -82,6 +84,12 @@
 }
 .launch-primary svg {
   width: 1rem;
+}
+.launch-actions > :is(a, button) {
+  box-sizing: border-box;
+  height: 2.75rem;
+  padding-block: 0;
+  align-items: center;
 }
 .launch-caption,
 .launch-product figcaption {
@@ -144,9 +152,29 @@
 .launch-command {
   min-width: 0;
   border: 1px solid var(--border);
-  padding: 1.5rem;
+  padding: clamp(1rem, 3vw, 2.5rem);
   border-radius: var(--radius);
+  background: linear-gradient(155deg, var(--muted), var(--background) 65%);
 }
+.launch-install { align-items: center; }
+.launch-install > div:first-child h2 { font-size: clamp(2.4rem, 5vw, 5rem); max-width: 13ch; }
+.launch-signal { display: grid; place-items: center; position: relative; isolation: isolate; overflow: hidden; height: clamp(9rem, 18vw, 14rem); }
+.launch-signal > * { grid-area: 1 / 1; }
+.launch-signal-field { position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at center, var(--border) 1px, transparent 1.5px) 0 0 / 14px 14px; mask-image: radial-gradient(ellipse, black 15%, transparent 72%); }
+.launch-signal-ring { width: 95%; height: 95%; color: var(--muted-foreground); opacity: .5; }
+.launch-signal-ring.inner { height: 68%; transform: rotate(30deg); opacity: .8; color: var(--foreground); }
+.launch-signal-core { display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 18px; background: var(--background); border: 1px solid var(--border); }
+.launch-signal-core :is(img, svg) { width: 2.3rem; height: 2.3rem; }
+.dark .launch-signal-core img { filter: invert(1); }
+.launch-command > a { display: inline-flex; align-items: center; gap: .25rem; font-size: .875rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .launch-signal-core, .launch-chat-prompt { animation: launch-appear .4s ease-out both; }
+  .launch-signal-ring.inner { animation: launch-lock .65s ease-out both; }
+  .launch-picker button { transition: transform .2s ease, background-color .2s ease; }
+  .launch-picker button:hover { transform: translateY(-2px); }
+}
+@keyframes launch-appear { from { opacity: .2; transform: translateY(6px); } }
+@keyframes launch-lock { from { transform: rotate(-30deg) scale(.84); opacity: .2; } }
 .launch-picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; min-width: 0; }
 .launch-picker legend { margin-bottom: .75rem; font-weight: 600; }
 .launch-picker button { display: grid; place-items: center; align-content: center; gap: .4rem; padding: .65rem .2rem; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; font-size: .8rem; }
