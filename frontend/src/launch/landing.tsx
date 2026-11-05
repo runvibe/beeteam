@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Hexagon, ArrowUpRight, Check, Copy, Globe, Terminal } from "lucide-react";
-import { t, useLocale, setLocalePreference } from "@/i18n";
+import { i18n, t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { ThemeControl } from "@/components/theme-control";
 import { harnesses, type Harness } from "./bootstrap";
@@ -23,6 +23,17 @@ function RepositoryLink() {
 
 export function Landing() {
   const reducedMotion = useReducedMotion();
+  useLayoutEffect(() => {
+    const updateTitle = () => {
+      document.title = `${t("common.getBeeTeamBrand")} | ${t("common.launchFooter")}`;
+    };
+    updateTitle();
+    i18n.on("languageChanged", updateTitle);
+    return () => {
+      i18n.off("languageChanged", updateTitle);
+      document.title = t("settings.documentTitle");
+    };
+  }, []);
   const header = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = header.current;

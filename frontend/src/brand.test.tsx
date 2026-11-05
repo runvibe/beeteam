@@ -49,7 +49,7 @@ it("identifies the official domain in static metadata without redirecting this i
     readFileSync("index.html", "utf8"),
     "text/html",
   );
-  expect(html.title).toBe("Bee Team - Tasks and agents");
+  expect(html.title).toBe("Bee Team | Have your own team of agentic bees.");
   expect(
     html
       .querySelector('meta[name="application-name"]')
