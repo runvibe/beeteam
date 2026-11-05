@@ -18,6 +18,7 @@ function fixture(t) {
     if(['src','public','scripts'].includes(name)){mkdirSync(path,{recursive:true});writeFileSync(resolve(path,'fixture.txt'),name);}
     else writeFileSync(path,name);
   }
+  writeFileSync(resolve(root,'Cargo.toml'),'[package]\nversion="0.1.0"\n');
   mkdirSync(resolve(root,'docs'));
   writeFileSync(resolve(root,'docs/team-role-icons.json'),'[{"id":"crown"}]\n');
   return root;
