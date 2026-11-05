@@ -20,8 +20,12 @@ export function LiveUpdates({ source }: { source: ChangeSource }) {
         refresh: async () => {
           // Discard requests started before this event, including initial loads.
           // Their responses may represent a snapshot taken before the commit.
-          await client.cancelQueries();
-          await client.invalidateQueries({ refetchType: "active" });
+          const local = {
+            predicate: (query: { meta?: Record<string, unknown> }) =>
+              query.meta?.scope !== "public",
+          };
+          await client.cancelQueries(local);
+          await client.invalidateQueries({ ...local, refetchType: "active" });
         },
       }),
     [source, client],

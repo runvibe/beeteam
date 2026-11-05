@@ -22,11 +22,12 @@ export function ApiProvider({
       new QueryClient({
         defaultOptions: {
           queries: {
+            networkMode: "always",
             retry: false,
             staleTime: 15000,
             refetchOnWindowFocus: false,
           },
-          mutations: { retry: false },
+          mutations: { retry: false, networkMode: "always" },
         },
       }),
   );

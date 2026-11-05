@@ -1,5 +1,10 @@
 [
   {
+    "file": "src/components/release-notice.tsx",
+    "text": "noopener noreferrer",
+    "reason": "HTML link relationship security tokens are technical attributes, not interface prose."
+  },
+  {
     "file": "src/api/context.tsx",
     "text": "ApiProvider required",
     "reason": "Developer-only invariant for missing React API context; not a product-facing state."

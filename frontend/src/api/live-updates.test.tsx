@@ -6,6 +6,37 @@ import { ApiProvider } from "./context";
 import { createMockApi } from "./mock";
 import { ids } from "./seed";
 import type { ChangeSource } from "./live-refresh";
+import { useQuery } from "@tanstack/react-query";
+it("refreshes local data while keeping the public manifest cache", async () => {
+  const local = vi.fn(async () => "local");
+  const published = vi.fn(async () => "public");
+  let events!: Parameters<ChangeSource>[0];
+  function Probe() {
+    useQuery({ queryKey: ["boards"], queryFn: local });
+    useQuery({
+      queryKey: ["public-install-manifest"],
+      queryFn: published,
+      meta: { scope: "public" },
+      staleTime: 300000,
+    });
+    return null;
+  }
+  render(
+    <ApiProvider
+      api={createMockApi({ delay: 0 })}
+      changes={(handlers) => {
+        events = handlers;
+        return () => {};
+      }}
+    >
+      <Probe />
+    </ApiProvider>,
+  );
+  await waitFor(() => expect(published).toHaveBeenCalledTimes(1));
+  act(() => events.change());
+  await waitFor(() => expect(local).toHaveBeenCalledTimes(2));
+  expect(published).toHaveBeenCalledTimes(1);
+});
 it("refreshes an external edit without replacing a focused draft or URL and rejects stale overwrite", async () => {
   const api = createMockApi({ delay: 0 });
   const agent = await api.get("agents", ids.agent);
