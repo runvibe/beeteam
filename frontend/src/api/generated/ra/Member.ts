@@ -4,7 +4,7 @@ export type Member = {
   agentId: string;
   name: string;
   /** @enum {string} */
-  role: "leader" | "collaborator";
+  role: "leader" | "worker";
   /** Format: date-time */
   agentArchivedAt: string | null;
 };

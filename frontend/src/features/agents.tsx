@@ -57,19 +57,25 @@ import { ProfileForm } from "./profile-form";
 export function Agents() {
   useLocale();
   const [name, setName] = useUrlState<string>("agents.name", ""),
-    [role, setRole] = useUrlState<string>("agents.role", "", {
-      values: ["", "leader", "collaborator"],
+    [rawRole, setRole] = useUrlState<string>("agents.role", "", {
+      values: ["", "leader", "worker", "collaborator"],
     }),
     [teamId, setTeam] = useUrlState<string>("agents.teamId", ""),
-    [archived, setArchived] = useUrlState<string>("agents.archived", "false", {
-      values: booleanValues,
-    }),
+    [archived, setArchived] = useUrlState<string>(
+      "agents.archived",
+      "false",
+      {
+        values: booleanValues,
+      },
+    ),
     [offset, setOffset] = useUrlState<number>("agents.offset", 0);
+  // Keep old bookmarked URLs readable without resetting pagination or history.
+  const role = rawRole === "collaborator" ? "worker" : rawRole;
   const limit = usePageSize("agents", 12);
   const q = useCardPages("agents", {
     name: name || undefined,
     teamId: teamId || undefined,
-    role: (role as "leader" | "collaborator") || undefined,
+    role: (role as "leader" | "worker") || undefined,
     archived: archived === "" ? undefined : archived === "true",
     offset,
     limit,
@@ -125,7 +131,7 @@ export function Agents() {
             }}
             options={[
               { value: "leader", label: tr("common.leader") },
-              { value: "collaborator", label: tr("common.collaborator") },
+              { value: "worker", label: tr("common.worker") },
             ]}
             all={tr("common.all")}
           />
@@ -177,14 +183,14 @@ export function Agents() {
                               role="leader"
                             />
                           )}
-                          {a.bindings.collaboratorTeamId && (
+                          {a.bindings.workerTeamId && (
                             <AgentRoleSymbol
-                              teamId={a.bindings.collaboratorTeamId}
-                              role="collaborator"
+                              teamId={a.bindings.workerTeamId}
+                              role="worker"
                             />
                           )}
                           {!a.bindings.leaderTeamId &&
-                            !a.bindings.collaboratorTeamId && (
+                            !a.bindings.workerTeamId && (
                               <CardSymbol kind="unbound" />
                             )}
                         </div>
@@ -274,7 +280,9 @@ function AgentDetail({ id }: { id: string }) {
               <Button
                 variant="outline"
                 onClick={() =>
-                  navigate(`/agents/${q.data.slug}/settings${location.search}`)
+                  navigate(
+                    `/agents/${q.data.slug}/settings${location.search}`,
+                  )
                 }
               >
                 {tr("agents.configure")}
@@ -286,14 +294,11 @@ function AgentDetail({ id }: { id: string }) {
               {q.data.bindings.leaderTeamId && (
                 <TeamLink id={q.data.bindings.leaderTeamId} role="leader" />
               )}
-              {q.data.bindings.collaboratorTeamId && (
-                <TeamLink
-                  id={q.data.bindings.collaboratorTeamId}
-                  role="collaborator"
-                />
+              {q.data.bindings.workerTeamId && (
+                <TeamLink id={q.data.bindings.workerTeamId} role="worker" />
               )}
               {!q.data.bindings.leaderTeamId &&
-                !q.data.bindings.collaboratorTeamId && (
+                !q.data.bindings.workerTeamId && (
                   <p className="small-note">
                     {tr("agents.noCurrentAssociations")}
                   </p>
@@ -438,7 +443,9 @@ function Activities({ agentId }: { agentId: string }) {
                   ? tr("agents.currentExecutor")
                   : tr("agents.historyPreserved")}
               </Badge>
-              <span className="small-note">{formatDate(a.taskUpdatedAt)}</span>
+              <span className="small-note">
+                {formatDate(a.taskUpdatedAt)}
+              </span>
             </div>
           </article>
         )}

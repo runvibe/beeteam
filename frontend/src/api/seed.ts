@@ -54,7 +54,7 @@ export function makeSeed(): Database {
       purpose: "Transformar necessidades em software confiável.",
       context: "Ciclos curtos, decisões documentadas e revisão de entregas.",
       leaderId: uuid(31),
-      collaboratorCount: 2,
+      workerCount: 2,
       ...lifecycle,
     },
     {
@@ -63,7 +63,7 @@ export function makeSeed(): Database {
       purpose: "Investigar oportunidades e consolidar evidências.",
       context: "Priorizar fontes primárias e explicitar incertezas.",
       leaderId: uuid(33),
-      collaboratorCount: 1,
+      workerCount: 1,
       ...lifecycle,
     },
   ];
@@ -72,31 +72,31 @@ export function makeSeed(): Database {
       id: ids.agent,
       name: "Lia",
       roleDescription: "Engenharia de produto",
-      bindings: { collaboratorTeamId: ids.team, leaderTeamId: null },
+      bindings: { workerTeamId: ids.team, leaderTeamId: null },
     },
     {
       id: uuid(31),
       name: "Theo",
       roleDescription: "Team leader · Produto & engenharia",
-      bindings: { collaboratorTeamId: null, leaderTeamId: ids.team },
+      bindings: { workerTeamId: null, leaderTeamId: ids.team },
     },
     {
       id: uuid(32),
       name: "Maya",
       roleDescription: "Design e experiência",
-      bindings: { collaboratorTeamId: ids.team, leaderTeamId: null },
+      bindings: { workerTeamId: ids.team, leaderTeamId: null },
     },
     {
       id: uuid(33),
       name: "Noah",
       roleDescription: "Team leader · Pesquisa",
-      bindings: { collaboratorTeamId: null, leaderTeamId: uuid(21) },
+      bindings: { workerTeamId: null, leaderTeamId: uuid(21) },
     },
     {
       id: uuid(34),
       name: "Eva",
       roleDescription: "Pesquisa de mercado",
-      bindings: { collaboratorTeamId: uuid(21), leaderTeamId: null },
+      bindings: { workerTeamId: uuid(21), leaderTeamId: null },
     },
   ].map((a) => ({
     ...a,
@@ -137,51 +137,53 @@ export function makeSeed(): Database {
     "Validar paginação da API",
     "Preparar critérios de aceite",
   ];
-  const tasks: Omit<Resources["tasks"], "slug">[] = titles.map((title, i) => ({
-    id: uuid(100 + i),
-    boardId: ids.board,
-    authorAgentId: uuid(31),
-    parentId: null,
-    title,
-    description:
-      i === 0
-        ? "Entender as etapas de entrada e identificar pontos de fricção.\n\nEntregável: mapa da jornada com oportunidades priorizadas."
-        : "Registrar a solução, validar os critérios de aceite e documentar as decisões que orientam a entrega.",
-    specification:
-      i === 0
-        ? '## Requisitos\n\n- Mapear a entrada e os pontos de fricção.\n- Preservar evidências das entrevistas.\n\n## Critérios de aceite\n\n| Entrega | Aceite |\n| --- | --- |\n| Mapa da jornada | Revisado pelo time |\n\nConsulte a [referência de Markdown](https://commonmark.org/).\n\n```json\n{ "entrega": "mapa-da-jornada", "aceite": "Etapas e oportunidades revisadas pelo time, com evidências e prioridade registradas." }\n```'
-        : "",
-    currentSummary:
-      i === 0
-        ? "Jornada inicial mapeada. Agora validando pontos de fricção. Pendente: priorizar oportunidades com o time."
-        : i === 2
-          ? "Estrutura dos boards pronta. Agora revisando os nomes de navegação. Pendente: confirmar nomenclatura e concluir os testes."
+  const tasks: Omit<Resources["tasks"], "slug">[] = titles.map(
+    (title, i) => ({
+      id: uuid(100 + i),
+      boardId: ids.board,
+      authorAgentId: uuid(31),
+      parentId: null,
+      title,
+      description:
+        i === 0
+          ? "Entender as etapas de entrada e identificar pontos de fricção.\n\nEntregável: mapa da jornada com oportunidades priorizadas."
+          : "Registrar a solução, validar os critérios de aceite e documentar as decisões que orientam a entrega.",
+      specification:
+        i === 0
+          ? '## Requisitos\n\n- Mapear a entrada e os pontos de fricção.\n- Preservar evidências das entrevistas.\n\n## Critérios de aceite\n\n| Entrega | Aceite |\n| --- | --- |\n| Mapa da jornada | Revisado pelo time |\n\nConsulte a [referência de Markdown](https://commonmark.org/).\n\n```json\n{ "entrega": "mapa-da-jornada", "aceite": "Etapas e oportunidades revisadas pelo time, com evidências e prioridade registradas." }\n```'
           : "",
-    executorAgentId: i % 2 === 0 ? ids.agent : uuid(32),
-    statusId: uuid(50 + (i % 5)),
-    position: String(i).padStart(4, "0"),
-    progress: {
-      percent: [0, 15, 55, 90, 100][i % 5],
-      note: "Último progresso registrado pelo colaborador.",
-    },
-    block:
-      i === 2
-        ? {
-            blocked: true,
-            reason: "Aguardando definição dos nomes de navegação.",
-          }
-        : { blocked: false, reason: null },
-    childSummary: { total: i === 0 ? 2 : 0, done: i === 0 ? 1 : 0 },
-    latestExecutionSummaryId: i === 0 ? uuid(400) : null,
-    autonomyMode: "manual",
-    executionContext: {
-      rootTaskId: uuid(100 + i),
-      originBoardId: ids.board,
-      originBoardMode: "standard",
-      effectiveMode: "manual",
-    },
-    ...lifecycle,
-  }));
+      currentSummary:
+        i === 0
+          ? "Jornada inicial mapeada. Agora validando pontos de fricção. Pendente: priorizar oportunidades com o time."
+          : i === 2
+            ? "Estrutura dos boards pronta. Agora revisando os nomes de navegação. Pendente: confirmar nomenclatura e concluir os testes."
+            : "",
+      executorAgentId: i % 2 === 0 ? ids.agent : uuid(32),
+      statusId: uuid(50 + (i % 5)),
+      position: String(i).padStart(4, "0"),
+      progress: {
+        percent: [0, 15, 55, 90, 100][i % 5],
+        note: "Último progresso registrado pelo Worker.",
+      },
+      block:
+        i === 2
+          ? {
+              blocked: true,
+              reason: "Aguardando definição dos nomes de navegação.",
+            }
+          : { blocked: false, reason: null },
+      childSummary: { total: i === 0 ? 2 : 0, done: i === 0 ? 1 : 0 },
+      latestExecutionSummaryId: i === 0 ? uuid(400) : null,
+      autonomyMode: "manual",
+      executionContext: {
+        rootTaskId: uuid(100 + i),
+        originBoardId: ids.board,
+        originBoardMode: "standard",
+        effectiveMode: "manual",
+      },
+      ...lifecycle,
+    }),
+  );
   tasks.push(
     ...[0, 1].map((i) => ({
       ...tasks[0],
@@ -298,7 +300,9 @@ export function makeSeed(): Database {
         "Pontos de entrada inventariados. O principal risco é apresentar dados antigos como atividade atual.",
       outcome: "progress",
       statusId: uuid(50),
-      deliverables: [{ label: "Notas da descoberta", attachmentId: uuid(450) }],
+      deliverables: [
+        { label: "Notas da descoberta", attachmentId: uuid(450) },
+      ],
       pending: [
         "Validar hipóteses com o líder.",
         "Consolidar mapa da jornada.",

@@ -5,5 +5,5 @@ export type TeamComposition = {
   expectedVersion: number;
   /** Format: uuid */
   leaderId: string;
-  collaboratorIds: string[];
+  workerIds: string[];
 };

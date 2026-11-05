@@ -26,7 +26,10 @@ function setup(url: string, mobile = false) {
 }
 it("shows the agent heading and context while preserving all three tabs across language changes", async () => {
   setup(`/agents/${ids.agent}?agent.tab=chats`);
-  const heading = await screen.findByRole("heading", { name: "Lia", level: 1 });
+  const heading = await screen.findByRole("heading", {
+    name: "Lia",
+    level: 1,
+  });
   expect(heading.closest(".sr-only")).toBeNull();
   expect(
     screen.getByRole("complementary", { name: "Detalhes do agente" }),
@@ -35,7 +38,9 @@ it("shows the agent heading and context while preserving all three tabs across l
   const tab = screen.getByRole("tab", { name: "Chats" });
   await userEvent.click(tab);
   act(() => setLocalePreference("en"));
-  expect(screen.getByRole("heading", { name: "Lia", level: 1 })).toBe(heading);
+  expect(screen.getByRole("heading", { name: "Lia", level: 1 })).toBe(
+    heading,
+  );
   expect(screen.getByRole("tab", { name: "Chats" })).toBe(tab);
   expect(tab).toHaveFocus();
   expect(location.search).toContain("agent.tab=chats");
@@ -92,7 +97,9 @@ it("keeps mobile settings accessible and the same draft through a locale change"
   await userEvent.click(
     within(screen.getByRole("dialog")).getByRole("button", { name: "Close" }),
   );
-  expect(screen.getByRole("heading", { name: "Agent details" })).toBeVisible();
+  expect(
+    screen.getByRole("heading", { name: "Agent details" }),
+  ).toBeVisible();
   expect(location.search).toContain("agent.view=details");
 });
 it("returns from direct mobile team details to the same team with independent pager queries", async () => {
@@ -101,7 +108,9 @@ it("returns from direct mobile team details to the same team with independent pa
     true,
   );
   await screen.findByRole("heading", { name: "Detalhes do time" });
-  await userEvent.click(screen.getByRole("button", { name: "Voltar ao time" }));
+  await userEvent.click(
+    screen.getByRole("button", { name: "Voltar ao time" }),
+  );
   expect(
     await screen.findByRole("heading", {
       name: "Produto & engenharia",
@@ -121,7 +130,9 @@ it.each([
   async (resource, id, label) => {
     setup(`/${resource}/${id}`);
     const region = await screen.findByRole("region", { name: label });
-    expect(within(region).queryByRole("button", { name: "Voltar" })).toBeNull();
+    expect(
+      within(region).queryByRole("button", { name: "Voltar" }),
+    ).toBeNull();
     const compact = screen.getByRole("navigation", {
       name: "Caminho compacto",
     });
@@ -153,7 +164,7 @@ it.each([false, true])(
       within(context).getByRole("heading", { name: "Vínculos" }),
     ).toBeVisible();
     expect(
-      await within(context).findByRole("button", { name: /Colaborador/ }),
+      await within(context).findByRole("button", { name: /Worker/ }),
     ).toBeVisible();
   },
 );

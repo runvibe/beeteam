@@ -17,7 +17,7 @@ it("opens latest comments, prepends previous pages and renders safe Markdown wit
   history.replaceState({}, "", "/tasks/test?tab=comments&comments.limit=2");
   const seed = makeSeed();
   seed.agents[0].bindings.leaderTeamId = uuid(123);
-  seed.agents[0].bindings.collaboratorTeamId = uuid(124);
+  seed.agents[0].bindings.workerTeamId = uuid(124);
   const taskId = seed.tasks[0].id;
   seed.comments = Array.from({ length: 5 }, (_, index) => ({
     id: uuid(8000 + index),
@@ -42,10 +42,9 @@ it("opens latest comments, prepends previous pages and renders safe Markdown wit
   expect(screen.getByText("Texto seguro").tagName).toBe("STRONG");
   expect(document.querySelector("script")).toBeNull();
   await waitFor(() =>
-    expect(screen.getByText("Texto seguro").closest("article")).toHaveAttribute(
-      "data-side",
-      "right",
-    ),
+    expect(
+      screen.getByText("Texto seguro").closest("article"),
+    ).toHaveAttribute("data-side", "right"),
   );
   expect(screen.getByText("Mensagem 4").closest("article")).toHaveAttribute(
     "data-side",
@@ -57,7 +56,9 @@ it("opens latest comments, prepends previous pages and renders safe Markdown wit
     ".conversation-timestamp",
   );
   expect(timestamp).toBeTruthy();
-  expect(timestamp?.querySelector("time")?.textContent).toMatch(/há|agora|em /);
+  expect(timestamp?.querySelector("time")?.textContent).toMatch(
+    /há|agora|em /,
+  );
   fireEvent.focus(timestamp!);
   expect(await screen.findByRole("tooltip")).toHaveTextContent("30/10/2026");
   fireEvent.click(timestamp!);
@@ -65,16 +66,22 @@ it("opens latest comments, prepends previous pages and renders safe Markdown wit
     await screen.findByRole("dialog", { name: "Data e hora da mensagem" }),
   ).toBeInTheDocument();
   fireEvent.keyDown(document.activeElement!, { key: "Escape" });
-  fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Carregar anteriores" }),
+  );
   await screen.findByText("Mensagem 1");
-  fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Carregar anteriores" }),
+  );
   await screen.findByText("Mensagem 0");
   await waitFor(() =>
     expect(
       screen.queryByRole("button", { name: "Carregar anteriores" }),
     ).toBeNull(),
   );
-  expect(document.querySelectorAll("article[data-comment-id]")).toHaveLength(5);
+  expect(document.querySelectorAll("article[data-comment-id]")).toHaveLength(
+    5,
+  );
 });
 
 it("preserves an explicit legacy offset and loads following comments on demand", async () => {
@@ -145,7 +152,9 @@ it("retains existing messages on previous-page errors and retries the same range
     </ApiProvider>,
   );
   await screen.findByText("Retry 1");
-  fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Carregar anteriores" }),
+  );
   await screen.findByRole("alert");
   expect(screen.getByText("Retry 1")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Tentar novamente" }));
@@ -180,7 +189,9 @@ it("filters the entire server conversation by literal text and author before pag
   await screen.findByText("Alvo 100%_literal 2");
   expect(screen.queryByText("Distante 14")).toBeNull();
   expect(screen.queryByText("Alvo 100%_literal 1")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Carregar anteriores" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Carregar anteriores" }),
+  );
   await screen.findByText("Alvo 100%_literal 0");
   expect(
     list.mock.calls
@@ -225,7 +236,9 @@ it("cancels obsolete comment requests when the filter identity changes", async (
   );
   await waitFor(() => expect(signal).toBeDefined());
   act(() =>
-    navigate("/tasks/cancel?tab=comments&comments.offset=0&comments.text=new"),
+    navigate(
+      "/tasks/cancel?tab=comments&comments.offset=0&comments.text=new",
+    ),
   );
   await screen.findByText("Nenhum comentário registrado");
   expect(signal?.aborted).toBe(true);
@@ -251,7 +264,8 @@ it("keeps the current DOM on refresh and offers new messages without replacing t
     if (args[0] !== "comments") return original(...args);
     const offset = args[2]?.offset ?? 0,
       limit = args[2]?.limit ?? 1;
-    const ordered = args[2]?.sortOrder === "desc" ? [...rows].reverse() : rows;
+    const ordered =
+      args[2]?.sortOrder === "desc" ? [...rows].reverse() : rows;
     const items = ordered.slice(offset, offset + limit);
     return Promise.resolve({
       items,

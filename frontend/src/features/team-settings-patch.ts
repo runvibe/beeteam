@@ -8,7 +8,7 @@ export function teamSettingsPatch(
   if (iconsSupported) return draft;
   const {
     leaderIconId: _leader,
-    collaboratorIconId: _collaborator,
+    workerIconId: _worker,
     ...metadata
   } = draft;
   return metadata;

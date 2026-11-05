@@ -45,7 +45,7 @@ export function evidence(id = "evidence", total = "1600"): UsageEntry {
       evidenceId: id,
       previousEvidenceId: null,
       actor: { kind: "agent", id: makeSeed().agents[0].id },
-      actorRole: "collaborator",
+      actorRole: "worker",
       provider: null,
       modelId: "model-A",
       scope: "session",

@@ -1,7 +1,7 @@
 // Generated from contracts/ra-openapi.yaml. Do not edit.
 export type CreateTeam = {
   leaderIconId?: import("./TeamRoleIconId").TeamRoleIconId;
-  collaboratorIconId?: import("./TeamRoleIconId").TeamRoleIconId;
+  workerIconId?: import("./TeamRoleIconId").TeamRoleIconId;
   name: string;
   /** @description Máximo 64 KiB UTF-8; texto, não transcrição integral. */
   purpose?: string;
@@ -9,6 +9,6 @@ export type CreateTeam = {
   context?: string;
   /** Format: uuid */
   leaderId: string;
-  collaboratorIds?: string[];
+  workerIds?: string[];
   coordinationContext: import("./ApprovalCoordinationContext").ApprovalCoordinationContext;
 };

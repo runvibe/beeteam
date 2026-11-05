@@ -1,3 +1,4 @@
+import { legacyFetch } from "@/api/legacy-fetch.fixture";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
@@ -21,7 +22,7 @@ function setup(summaryId?: string, summary: object = {}) {
     ),
   );
   render(
-    <ApiProvider api={createHttpApi({ fetch: fetcher })}>
+    <ApiProvider api={createHttpApi({ fetch: legacyFetch(fetcher) })}>
       {summaryId ? (
         <ProgressSummary taskId="task" summaryId={summaryId} />
       ) : (

@@ -46,7 +46,9 @@ describe("locale resolution", () => {
   it("tolerates absent, invalid and unavailable storage", () => {
     expect(readPreference()).toBe("auto");
     expect(readPreference({ getItem: () => null })).toBe("auto");
-    expect(readPreference({ getItem: () => '{"language":"pt"}' })).toBe("auto");
+    expect(readPreference({ getItem: () => '{"language":"pt"}' })).toBe(
+      "auto",
+    );
     expect(readPreference({ getItem: () => "es" })).toBe("auto");
     expect(
       readPreference({
@@ -111,17 +113,17 @@ it("formats huge counters without losing precision and refreshes helpers/constan
 });
 it("supports grammatical plural and numeric interpolation", () => {
   setLocalePreference("en");
-  expect(
-    t("teams.collaborators", { count: 1, name: "Equipe do usuário" }),
-  ).toBe("1 collaborator in team Equipe do usuário");
-  expect(
-    t("teams.collaborators", { count: 1000, name: "Equipe do usuário" }),
-  ).toBe("1,000 collaborators in team Equipe do usuário");
-  setLocalePreference("pt");
-  expect(t("teams.collaborators", { count: 0, name: "My team" })).toBe(
-    "0 colaboradores do time My team",
+  expect(t("teams.workers", { count: 1, name: "Equipe do usuário" })).toBe(
+    "1 Worker in team Equipe do usuário",
   );
-  expect(t("teams.collaborators", { count: 1, name: "My team" })).toBe(
-    "1 colaborador do time My team",
+  expect(t("teams.workers", { count: 1000, name: "Equipe do usuário" })).toBe(
+    "1,000 Workers in team Equipe do usuário",
+  );
+  setLocalePreference("pt");
+  expect(t("teams.workers", { count: 0, name: "My team" })).toBe(
+    "0 Workers do time My team",
+  );
+  expect(t("teams.workers", { count: 1, name: "My team" })).toBe(
+    "1 Worker do time My team",
   );
 });

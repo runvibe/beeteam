@@ -86,7 +86,9 @@ it("keeps team leader action separate and returns from board and settings to the
   );
   const dialog = await screen.findByRole("dialog");
   expect(within(dialog).queryByText("Boards geridos")).toBeNull();
-  await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
+  await userEvent.click(
+    within(dialog).getByRole("button", { name: "Fechar" }),
+  );
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(location.pathname).toBe("/teams/produto-engenharia");
   await userEvent.click(
@@ -106,7 +108,9 @@ it("restores a direct settings URL to its profile with tab and pagination intact
     `/agents/${ids.agent}/settings?agent.tab=activities&activities.limit=1&activities.offset=1`,
   );
   const dialog = await screen.findByRole("dialog");
-  await userEvent.click(within(dialog).getByRole("button", { name: "Fechar" }));
+  await userEvent.click(
+    within(dialog).getByRole("button", { name: "Fechar" }),
+  );
   expect(screen.getByRole("tab", { name: "Tasks" })).toHaveAttribute(
     "data-state",
     "active",
@@ -115,21 +119,21 @@ it("restores a direct settings URL to its profile with tab and pagination intact
   expect(screen.queryByRole("dialog")).toBeNull();
 });
 
-it("opens collaborators from a team footer with team and role filters and a return URL", async () => {
+it("opens workers from a team footer with team and role filters and a return URL", async () => {
   setup("/teams?teams.name=Produto");
   const teamLink = await screen.findByRole("link", {
     name: "Produto & engenharia",
   });
   const card = teamLink.closest("[data-slot=card]") as HTMLElement;
   const shortcut = within(card).getByRole("link", {
-    name: /colaboradores do time Produto/,
+    name: /Workers do time Produto/,
   });
   expect(shortcut.closest("a")?.parentElement?.closest("a")).toBeNull();
   await userEvent.click(shortcut);
   expect(location.pathname).toBe("/agents");
   const params = new URLSearchParams(location.search);
   expect(params.get("agents.teamId")).toBe(ids.team);
-  expect(params.get("agents.role")).toBe("collaborator");
+  expect(params.get("agents.role")).toBe("worker");
   expect(params.get("from")).toBe("/teams?teams.name=Produto");
   await userEvent.click(
     await screen.findByRole("button", { name: "Expandir 2 filtros ativos" }),

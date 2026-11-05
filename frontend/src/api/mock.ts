@@ -91,12 +91,12 @@ export function createMockApi(
                 agentArchivedAt: a.archivedAt,
               },
             ]
-          : a.bindings.collaboratorTeamId === scope
+          : a.bindings.workerTeamId === scope
             ? [
                 {
                   agentId: a.id,
                   name: a.name,
-                  role: "collaborator",
+                  role: "worker",
                   agentArchivedAt: a.archivedAt,
                 },
               ]
@@ -122,8 +122,8 @@ export function createMockApi(
           lastWorkedAt: latestOwnSummary(t.id, scope)?.createdAt ?? null,
           taskUpdatedAt: t.updatedAt,
           latestOwnSummaryId: latestOwnSummary(t.id, scope)?.id ?? null,
-          taskPath: `/api/v1/tasks/${t.id}`,
-          summariesPath: `/api/v1/tasks/${t.id}/execution-summaries?actorId=${scope}`,
+          taskPath: `/api/v2/tasks/${t.id}`,
+          summariesPath: `/api/v2/tasks/${t.id}/execution-summaries?actorId=${scope}`,
           archivedAt: t.archivedAt,
           deletedAt: t.deletedAt,
         }));
@@ -281,14 +281,16 @@ export function createMockApi(
   const api: BeeApi = {
     info: async () => ({
       apiVersion: "demo",
-      supportedContractVersions: ["v1"],
-      capabilities: ["teams.role-icons"],
+      supportedContractVersions: ["v1", "v2"],
+      capabilities: ["teams.role-icons", "roles.worker"],
     }),
     async agentLatestActivity(agentId) {
       await api.get("agents", agentId);
       const event = db.timeline
         .filter((e) => {
-          const task = db.tasks.find((t) => t.id === e.taskId && !t.deletedAt);
+          const task = db.tasks.find(
+            (t) => t.id === e.taskId && !t.deletedAt,
+          );
           return (
             e.actorKind === "agent" &&
             e.actorId === agentId &&
@@ -333,13 +335,15 @@ export function createMockApi(
       );
       return {
         ...page,
-        items: page.items.map(({ id, taskId, type, occurredAt, sequence }) => ({
-          id,
-          taskId,
-          type,
-          occurredAt,
-          sequence,
-        })),
+        items: page.items.map(
+          ({ id, taskId, type, occurredAt, sequence }) => ({
+            id,
+            taskId,
+            type,
+            occurredAt,
+            sequence,
+          }),
+        ),
       };
     },
     async comment(taskId, commentId) {
@@ -348,7 +352,11 @@ export function createMockApi(
           row.taskId === taskId && row.id === commentId && !row.deletedAt,
       );
       if (!row)
-        throw new ApiError(404, "not_found", message("errors.commentNotFound"));
+        throw new ApiError(
+          404,
+          "not_found",
+          message("errors.commentNotFound"),
+        );
       return structuredClone(row);
     },
     async openProject() {
@@ -420,16 +428,26 @@ export function createMockApi(
       await wait();
       const row = db[resource].find((r) => r.slug === slug && !r.deletedAt);
       if (!row)
-        throw new ApiError(404, "not_found", message("errors.recordNotFound"));
+        throw new ApiError(
+          404,
+          "not_found",
+          message("errors.recordNotFound"),
+        );
       return { id: row.id, slug: row.slug };
     },
     async get<K extends keyof Entities>(resource: K, id: string) {
       await wait();
       const row = db[resource].find((r) => r.id === id && !r.deletedAt);
       if (!row)
-        throw new ApiError(404, "not_found", message("errors.recordNotFound"));
+        throw new ApiError(
+          404,
+          "not_found",
+          message("errors.recordNotFound"),
+        );
       return clone(
-        resource === "tasks" ? projectTask(row as Entities["tasks"], db) : row,
+        resource === "tasks"
+          ? projectTask(row as Entities["tasks"], db)
+          : row,
       ) as Entities[K];
     },
     async board(id, f = {}) {
@@ -527,7 +545,11 @@ export function createMockApi(
           (a) => a.taskId === taskId && a.id === attachmentId && !a.deletedAt,
         )
       )
-        throw new ApiError(404, "not_found", message("errors.fileUnavailable"));
+        throw new ApiError(
+          404,
+          "not_found",
+          message("errors.fileUnavailable"),
+        );
       return new Blob(
         [
           "Dados demonstrativos Bee Team.\nPontos de entrada: boards, tarefas e recursos de agentes.\n",
