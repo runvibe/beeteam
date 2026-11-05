@@ -161,11 +161,9 @@ export function Landing() {
               </div>
               <p aria-live="polite">{command}</p>
             </div>}
-            {copyState !== "idle" && (
+            {copyState === "failed" && (
               <p role="status">
-                {copyState === "copied"
-                  ? t("common.launchCopied")
-                  : t("common.launchCopyFailed")}
+                {t("common.launchCopyFailed")}
               </p>
             )}
             <div className="launch-guide-link"><a
