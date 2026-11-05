@@ -4,17 +4,17 @@ Atualizada em 27 de outubro de 2026. Revisão documental autorizada; implementa�
 
 ## Objetivo e execução local
 
-Organizar, para uso pessoal, equipes de colaboradores de IA para desenvolvimento, tesouraria, planejamento financeiro, pesquisa, planilhas e outras demandas. O produto reúne uma skill coordenadora e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos.
+Organizar, para uso pessoal, equipes de workers de IA para desenvolvimento, tesouraria, planejamento financeiro, pesquisa, planilhas e outras demandas. O produto reúne uma skill coordenadora e uma aplicação que preserva perfis, tarefas, decisões, entregas e resumos.
 
 Bee Team é instalado no computador do usuário como servidor local com interface web, API e MCP. A IA no Codex ou outro harness consulta configurações e registra trabalho. Bee Team não acessa diretamente recursos da IA, não inicia/controla chats e não executa tarefas por conta própria. A skill orienta o uso dos recursos disponíveis no harness; capacidades ausentes devem ser explicitadas.
 
 ## Modelo final
 
 - **Board:** organiza tasks e status configuráveis. Identifica obrigatoriamente seu criador e preserva essa autoria. Tem exatamente um time responsável pela gestão, transferível para outro time. Um time pode gerir vários boards. Transferir gestão não altera autoria, executor, hierarquia ou histórico das tasks.
-- **Task:** pertence a um board; tem autor/dono obrigatório (agente que a escreveu) e executor obrigatório (agente que a executará). Ambos podem atuar como líder ou colaborador. Autor é preservado; executor pode ser reatribuído pelo usuário.
+- **Task:** pertence a um board; tem autor/dono obrigatório (agente que a escreveu) e executor obrigatório (agente que a executará). Ambos podem atuar como líder ou worker. Autor é preservado; executor pode ser reatribuído pelo usuário.
 - **Subtask:** é Task com parentId. Recursão sem limite fixo de níveis, executor próprio obrigatório, podendo ser diferente do pai, e board próprio, podendo ser diferente do pai. Ciclos parentais são inválidos. Checklist é projeção dos filhos, sem duplicar estado.
 - **Time:** grupo organizacional de agentes que o líder utiliza para distribuir demandas. Pode gerir boards, mas tasks não têm vínculo direto de pertencimento ao time. Cada time tem exatamente um líder.
-- **Agente:** perfil e identidade persistentes, independentes de chats. No máximo um vínculo como colaborador e um como líder, em times diferentes. Sem papel especial de gerente.
+- **Agente:** perfil e identidade persistentes, independentes de chats. No máximo um vínculo como worker e um como líder, em times diferentes. Sem papel especial de gerente.
 - **Chat:** sessão externa referenciada; não é identidade permanente do agente.
 
 Informações e histórico das tasks estão disponíveis a todos. Mudar o time de um agente não muda suas tarefas, autoria ou acesso ao histórico das tasks. Transferir uma task muda somente seu executor; não copia o histórico interno do agente anterior. Autoria do board é registrada a partir do contexto declarado da criação; detalhes de representação HTTP estão no contrato.
@@ -35,7 +35,7 @@ O contexto de execução é o board que originou a task principal. rootTaskId id
 
 Sem contexto de execução, manter aprovação. Bee Team armazena configurações e informa o contexto/modo efetivo; o harness executa e cumpre aprovações. O servidor não é um engine executor.
 
-Colaborador trabalha nas tasks que executa. O líder distribui demandas usando agentes geridos, mas não existe 'líder do time da task'. O alcance de edição do líder sobre tasks de executores geridos ainda aguarda decisão; não tratá-lo como permissão confirmada. Não há autenticação ou política de segurança implícita nessa descrição.
+Worker trabalha nas tasks que executa. O líder distribui demandas usando agentes geridos, mas não existe 'líder do time da task'. O alcance de edição do líder sobre tasks de executores geridos ainda aguarda decisão; não tratá-lo como permissão confirmada. Não há autenticação ou política de segurança implícita nessa descrição.
 
 ## Interface: Tarefas e RA
 
@@ -51,7 +51,7 @@ Referências de chats e contexto de retomada reutilizam perfil e leituras de tas
 
 ## Times, transferência e cópia
 
-Arquivar time preserva time, colaboradores, vínculos e histórico. Não libera vínculos automaticamente. Transferência explícita de agente para outro time é permitida inclusive saindo de time arquivado, mantendo identidade e tasks. Validar cardinalidades de papéis no estado final da transação; não mover nem reatribuir tasks durante essa transferência.
+Arquivar time preserva time, workers, vínculos e histórico. Não libera vínculos automaticamente. Transferência explícita de agente para outro time é permitida inclusive saindo de time arquivado, mantendo identidade e tasks. Validar cardinalidades de papéis no estado final da transação; não mover nem reatribuir tasks durante essa transferência.
 
 Cópia solicitada cria identidade independente, reutilizando perfil e contexto resumido apenas quando pedido. Não duplica autoria de atividades, tasks, chats ou histórico interno. Os detalhes técnicos de cópia de imagem e referência de resumo são propostas no contrato RA.
 
@@ -79,9 +79,9 @@ Pendência material encaminhada: edição de task pelo líder via executor gerid
 
 ## Anexo A — exemplos de organização de equipes
 
-A skill deverá incluir exemplos de diferentes casos de uso. Cada exemplo explicará a demanda inicial, a distribuição proposta, o motivo da divisão, as dependências, as entregas e os critérios para reutilizar colaboradores ou propor novos.
+A skill deverá incluir exemplos de diferentes casos de uso. Cada exemplo explicará a demanda inicial, a distribuição proposta, o motivo da divisão, as dependências, as entregas e os critérios para reutilizar workers ou propor novos.
 
-As organizações abaixo são referências adaptáveis. Não impõem departamentos ou quantidades fixas de colaboradores; uma demanda pequena pode ficar com apenas um responsável. A distribuição segue o modo de autonomia configurado, com aprovação como padrão.
+As organizações abaixo são referências adaptáveis. Não impõem departamentos ou quantidades fixas de workers; uma demanda pequena pode ficar com apenas um responsável. A distribuição segue o modo de autonomia configurado, com aprovação como padrão.
 
 | Área | Demanda de exemplo | Possível organização | Dependências e entregas |
 |---|---|---|---|
@@ -90,11 +90,11 @@ As organizações abaixo são referências adaptáveis. Não impõem departament
 | Planejamento financeiro | Elaborar orçamento e analisar custos | Estruturação da planilha, análise de orçamento versus realizado e elaboração de cenários. | Usar períodos e categorias compatíveis; entregar planilha, análise e premissas dos cenários. |
 | Análise de mercado | Avaliar uma oportunidade | Pesquisa de concorrentes, análise de clientes e segmentos e consolidação das conclusões. | Definir escopo comum de pesquisa; entregar análise com fontes e incertezas. |
 
-Os exemplos completos da skill deverão mostrar quando o contexto existente favorece reutilizar um colaborador e quando uma frente independente justifica propor outro.
+Os exemplos completos da skill deverão mostrar quando o contexto existente favorece reutilizar um worker e quando uma frente independente justifica propor outro.
 
 ## Resumo atual cumulativo (implementado)
 
-Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do colaborador, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
+Task.currentSummary é string sempre presente em item/listagens/view, inicialmente vazia (incluindo backfill de legadas). Texto explícito do worker, máximo 16384 bytes UTF-8, com feito/concluído, trabalho atual e pendências/próximo passo; não se infere descrição, nota de progresso ou histórico. Escrita substitui a síntese inteira, preservando antes/depois nos eventos existentes da timeline.
 
 PatchTask aceita currentSummary não vazio e o exige quando progress é enviado. Position (operação moveTask) o exige ao mudar status, não ao reordenar no mesmo status. RecordExecution exige currentSummary; mantém summary como registro histórico de atividade e salva ambos atomicamente. MCP simples segue os mesmos DTOs; record_progress aceita currentSummary no topo e por descendente, obrigatório com progress; close_activity exige execution.currentSummary. Título/descrição/modo podem ser editados sem enviar resumo; preservam o existente.
 

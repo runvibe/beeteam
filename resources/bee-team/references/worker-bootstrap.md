@@ -1,16 +1,16 @@
-# Collaborator bootstrap: chat before registration
+# Worker bootstrap: chat before registration
 
 ## Leader prepares and waits
 
-After the applicable approval of team composition and chat creation, first create the new Collaborator's CHAT. Do not preregister its profile or announce it as ready. In the created chat, explicitly request use of the call-a-collaborator skill to identify/create/configure itself in Bee Team. Provide the approved role/context, actual team and its confirmed UUID, existing identity when available, and the authorization limits for creation/linking. The team and Leader identity may be prepared beforehand; this order concerns the Collaborator's profile.
+After the applicable approval of team composition and chat creation, first create the new Worker's CHAT. Do not preregister its profile or announce it as ready. In the created chat, explicitly request use of the call-a-worker skill to identify/create/configure itself in Bee Team. Provide the approved role/context, actual team and its confirmed UUID, existing identity when available, and the authorization limits for creation/linking. The team and Leader identity may be prepared beforehand; this order concerns the Worker's profile.
 
-Request the actual NAME when ready, accompanied by agentId, teamId, and readiness in a readable structure. The name serves the human; confirmed IDs are the association keys. If only a slug is available, resolve it through the typed endpoint/tool; do not derive a UUID or slug from a name/title. The initial title uses the destination team's resolved collaborator Unicode (🐝 only as an explicitly unresolved/no-team fallback) and proposed role/name, without treating it as a persisted identity; the Collaborator itself adjusts it to the confirmed name.
+Request the actual NAME when ready, accompanied by agentId, teamId, and readiness in a readable structure. The name serves the human; confirmed IDs are the association keys. If only a slug is available, resolve it through the typed endpoint/tool; do not derive a UUID or slug from a name/title. The initial title uses the destination team's resolved worker Unicode (🐝 only as an explicitly unresolved/no-team fallback) and proposed role/name, without treating it as a persisted identity; the Worker itself adjusts it to the confirmed name.
 
 Chat creation is asynchronous and does not prove registration or readiness. Wait for an actual response through the permitted channel and verify the registration/link through Bee Team before assigning work. If there is only a name, a missing ID, a mismatched link, or pending status, do not associate by similarity or assume readiness. Reconcile only the missing step, without duplicating the profile/chat. Only after confirmation, record/assign the task and send the work notification with commentID. A ready profile does not confirm understanding of the task.
 
-## Collaborator configures its own identity
+## Worker configures its own identity
 
-Use the corresponding skill within the received chat. Look up the identity/team and actual contracts; reuse a confirmed existing profile and preserve its instructions, history, and links. A similar name does not authorize assuming an identity. When a new profile is explicitly authorized and there is no registration to reuse, the Collaborator itself creates/configures its registration and team link using actual DTOs/versions/idempotency. Do not create another identity to bypass the team limit. Confirm persistence and read back the profile/link before returning ready.
+Use the corresponding skill within the received chat. Look up the identity/team and actual contracts; reuse a confirmed existing profile and preserve its instructions, history, and links. A similar name does not authorize assuming an identity. When a new profile is explicitly authorized and there is no registration to reuse, the Worker itself creates/configures its registration and team link using actual DTOs/versions/idempotency. Do not create another identity to bypass the team limit. Confirm persistence and read back the profile/link before returning ready.
 
 This authorized registration setup does not require a business task and does not allow creating a task to self-authorize work. If Bee Team access, permission, an unambiguous identity, or a valid link is missing, return pending with the factual impediment and IDs only if already confirmed; do not announce a proposed name as a created registration. Timeout/retry requires checking the result before repeating creation. Do not install integrations or change permissions implicitly.
 
@@ -24,6 +24,6 @@ The skill does not authorize a chat tool by itself. Respect harness requirements
 
 ## Example initial instruction (do not execute when reading)
 
-“Use the call-a-collaborator skill in this chat. Configure your identity in Bee Team for the approved role/context and the provided team with a confirmed UUID. Look up and reuse the existing profile if indicated; create a new one only within the authorization received. When persistence and the link are confirmed, return your actual NAME along with agentId, teamId, and readiness. If there is an impediment, return pending with the reason. Wait for a recorded assignment before working.”
+“Use the call-a-worker skill in this chat. Configure your identity in Bee Team for the approved role/context and the provided team with a confirmed UUID. Look up and reuse the existing profile if indicated; create a new one only within the authorization received. When persistence and the link are confirmed, return your actual NAME along with agentId, teamId, and readiness. If there is an impediment, return pending with the reason. Wait for a recorded assignment before working.”
 
 Replace references only with actual values; this example does not create a chat, profile, or task. MCP briefing/resumption/review prompts remain read-only and do not perform bootstrap or produce actual readiness confirmation.
