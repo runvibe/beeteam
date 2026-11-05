@@ -20,6 +20,6 @@ When an app update is ready, follow the reload prompt after saving your work. Re
 
 For application development, use Vite in `frontend/` and open `/app/`. Run the public site independently when working on public pages. Hosting composition and editorial promotion scripts belong to the public-site repository and consume promoted app artifacts rather than application source.
 
-The binary build uses `node scripts/build-distribution.mjs`. Only the application is embedded for optional local UI serving; the Rust service requires no Node process at runtime. Enable the local interface with `BEE_FRONTEND_MODE=embedded`. Its default API/MCP-only mode is available independently. Local documentation/help links open the public website.
+The binary build uses `node scripts/build-distribution.mjs`. Only the application is embedded for optional local UI serving; the Rust service requires no Node process at runtime. Distribution binaries serve the local panel at `/app/` by default. Set `BEE_FRONTEND_MODE=disabled` for API/MCP only. Local documentation/help links open the public website.
 
 Before publishing, inspect the generated HTML with JavaScript disabled, exercise direct article URLs in both languages, and verify the selected harness after hydration. Install the app in a supported browser, test offline/reconnect and multiple open tabs, and confirm API/MCP responses never come from a service-worker cache. Repeat route checks on the composed Cloudflare preview and an isolated embedded binary.

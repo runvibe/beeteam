@@ -6,7 +6,11 @@ pub enum FrontendMode {
 }
 impl Default for FrontendMode {
     fn default() -> Self {
-        Self::Disabled
+        if cfg!(feature = "embedded-ui") {
+            Self::Embedded
+        } else {
+            Self::Disabled
+        }
     }
 }
 impl FrontendMode {
@@ -34,7 +38,10 @@ mod tests {
     use super::*;
     #[test]
     fn modes_are_explicit() {
-        assert_eq!(FrontendMode::default(), FrontendMode::Disabled);
+        assert_eq!(
+            FrontendMode::default() == FrontendMode::Embedded,
+            cfg!(feature = "embedded-ui")
+        );
         assert!(FrontendMode::parse("invalid").is_err());
         assert_eq!(
             FrontendMode::parse("disabled").unwrap(),

@@ -66,6 +66,8 @@ The disconnected app screen links directly to the [installation guide](https://g
 
 PWA updates are detected in the background, but their reload notice appears only after the local API connection and version have been verified. Connection and version-blocking screens hide that notice. Update notices show the version currently loaded and the available version; the waiting service worker reports its own compiled application version for a PWA update.
 
+Distribution binaries serve the app at `http://127.0.0.1:59865/app/` by default. Set `BEE_FRONTEND_MODE=disabled` for API/MCP only.
+
 If an assistant's embedded browser cannot grant the hosted app access to the local service, Setup Bee Team can enable the API-served panel with `BEE_FRONTEND_MODE=embedded` and open `http://127.0.0.1:<configured-port>/app/`. It preserves the existing storage and launch configuration, uses the normal service restart procedure, and verifies the local browser view. See the [embedded-browser recovery steps](skills/setup-bee-team/references/bootstrap.md#assistants-embedded-browser).
 
 ## License and brand

@@ -11,7 +11,7 @@ The hosted-site design connects the browser to the user's local service. Grant t
 | Setting | Default | Effect |
 | --- | --- | --- |
 | `APP_HOST`, `APP_PORT` | `127.0.0.1`, `59865` | Bind address and port |
-| `BEE_FRONTEND_MODE` | `disabled` | `embedded` requires a build containing the UI |
+| `BEE_FRONTEND_MODE` | `embedded` with bundled UI, otherwise `disabled` | `embedded` requires a build containing the UI |
 | `MCP_ENABLED`, `MCP_PATH` | `true` with MCP compiled, `/mcp` | Enable and route MCP |
 | `OTEL_ENABLED` | `false` | Opt in to telemetry with an available collector |
 | `BEE_API_TARGET` | `http://127.0.0.1:59865` | Vite's development proxy target for `/api` |

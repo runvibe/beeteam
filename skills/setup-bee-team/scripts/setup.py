@@ -65,7 +65,9 @@ def start(root, version, port, embedded):
     exe = target / ("beeteam.exe" if os.name == "nt" else "beeteam")
     receipt = json.loads((target / "receipt.json").read_bytes())
     require(receipt.get("version") == version and not exe.is_symlink() and digest(exe) == receipt.get("binarySha256"), "Installed executable differs from its receipt")
-    env = {**os.environ, "APP_HOST": "127.0.0.1", "APP_PORT": str(port), "BEE_FRONTEND_MODE": "embedded" if embedded else "disabled"}
+    env = {**os.environ, "APP_HOST": "127.0.0.1", "APP_PORT": str(port)}
+    if embedded:
+        env["BEE_FRONTEND_MODE"] = "embedded"
     log = target.parent / f"start-{time.time_ns()}.log"
     with log.open("xb") as output:
         proc = subprocess.Popen([str(exe)], env=env, cwd=target, stdin=subprocess.DEVNULL, stdout=output, stderr=subprocess.STDOUT,
