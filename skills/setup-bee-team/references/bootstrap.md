@@ -29,6 +29,20 @@ If Python is unavailable, use native download/hash/archive tools without install
 
 Start with the intended existing data/config/environment, on the confirmed loopback port. A fresh distribution defaults to API/MCP only; set `BEE_FRONTEND_MODE=embedded` explicitly for the optional local panel. Read `/health` (status and version) and `/api/v1/info` (apiVersion, supportedContractVersions and recognized capabilities); verify exact version and service identity. A browser's permission and successful connection must be checked separately.
 
+## Assistant's embedded browser
+
+Use this recovery when the hosted app fails only in the assistant's embedded browser, especially when Chrome/Edge work after local-network permission but the embedded browser never offers that prompt. Do not assume every embedded browser is unsupported. First confirm the configured loopback API identity/version with `/health` and `/api/v1/info`; a failed hosted connection alone is not a missing installation.
+
+1. Check whether `http://127.0.0.1:<actual-port>/app/` already serves the local panel. Use the actual configured loopback address and port, not the public site, a Vite server, or an assumed default. If it works, reuse the service unchanged.
+2. If the panel is disabled, inspect the actual binary and launcher/service manager. Use a verified distribution containing `embedded-ui`. Configure `BEE_FRONTEND_MODE=embedded` in that launcher's environment. Preserve its database driver/URL, storage paths, service user, working directory, port and other environment values. No database conversion, reset, duplicate backend or blanket browser-security exception is needed.
+3. For an existing service, apply the change using its authorized normal graceful restart/relaunch procedure. Changing an environment variable in a different shell does not update an already running process. If the manager or stop procedure is unknown, identify it before proceeding; do not kill an unknown process. Keep the previous launch configuration for rollback.
+4. For a new or stopped helper-managed installation, use the existing verified version/root/port with `python scripts/setup.py start --version <verified-version> --port <actual-port> --embedded`. The helper sets `BEE_FRONTEND_MODE=embedded`. If it returns `already-running` / `mode: unchanged`, the existing service was reused: this does **not** confirm embedded UI was enabled. Reconcile its launch configuration instead of repeatedly running `start`.
+5. Verify the running API's identity and exact version again, then read `/app/` as HTML and its actual referenced JS/CSS assets. Open the local `/app/` URL in the assistant's embedded browser and confirm the connection screen gives way to the real app and a read-only API-backed view loads. A 200 response or HTML shell alone is not browser acceptance. Keep panel/API version checks and MCP configuration intact; report limitations if browser control is unavailable.
+
+For an ordinary direct launch after the existing process has been gracefully stopped, resolve the real executable path and preserve the same environment first. PowerShell example: `$env:BEE_FRONTEND_MODE='embedded'; & '<verified-executable-path>'`. macOS/Linux example: `BEE_FRONTEND_MODE=embedded /verified/path/beeteam`. These are examples for the existing launch context, not instructions to start a second process or migrate a managed service into a shell.
+
+If the binary reports that `embedded-ui` is unavailable, obtain an appropriate verified prebuilt distribution using the normal installation/update flow; do not silently compile, downgrade, reset data or install a separate Node server. A cloud assistant without access to the user's machine must report that boundary rather than claiming it started the user's local service. Do not disable TLS, CORS or local-network protections, expose the API publicly, or create a tunnel for this recovery.
+
 ## Connect the selected harness
 
 Confirm the actual MCP endpoint and scope. Default for a fresh desktop service is `http://127.0.0.1:59865/mcp`; do not replace a working registration or publish local config. Examples for a default install:

@@ -4,6 +4,12 @@ Bee Team is the product brand; its reference domain is `getbee.team`. This is no
 
 Read before querying or changing data. Use current contracts and schemas advertised by the installed backend. Require direct boards/tasks/agents/teams collections, author/executor and origin context; snapshots with workspaces or task ownership by a team are incompatible. Do not invent bindings to fill gaps. This package includes operational guidance, does not depend on worktree files and does not incorporate old contracts as a current source.
 
+## Panel access from an assistant's embedded browser
+
+When the hosted app cannot connect to a verified local API and the assistant's browser does not offer local-network permission, use the API-served local panel. Prefer an already working `http://127.0.0.1:<actual-port>/app/`; otherwise use Setup Bee Team's embedded-browser recovery to enable `BEE_FRONTEND_MODE=embedded` in the existing launch configuration. A new/helper-managed launch uses `start --embedded`; `already-running` with `mode: unchanged` does not change the running service. Do not assume the default port, change storage/DB settings, start a duplicate backend, or bypass browser security.
+
+Identify the existing manager and authorized graceful restart path; a new shell environment does not affect a running process. Use a verified binary with embedded-ui support. Preserve the service's environment, identity, paths and port, then verify health/info, actual `/app/` assets, exact panel/API versions and a real read-only view in the embedded browser. Keep API/MCP-only mode as the default for other usage. A successful native probe or HTML shell alone is not browser acceptance. If the host cannot run local processes, or the launcher cannot be identified, report that concrete limitation instead of claiming recovery. Workers follow their assigned scope and coordinate service changes through the Leader; this guidance does not grant permission to navigate the user's panel or restart another service.
+
 ## Worker contract and legacy installations
 
 The canonical RA/Kanban HTTP contract uses `/api/v2`; MCP keeps operation names and uses Worker schemas. Confirm `roles.worker` and `supportedContractVersions` through the read-only `/api/v1/info` endpoint, plus the actual MCP tool schema. Canonical names are `bindings.workerTeamId`, `workerCount`, `workerIds`, `workerIconId`, `roleIcons.worker`, the `workerId` filter, `role=worker` and `actorRole=worker`. No assignment, role cardinality or authorization rule changes.
