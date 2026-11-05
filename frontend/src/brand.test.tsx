@@ -8,7 +8,7 @@ import { makeSeed } from "./api/seed";
 import { setLocalePreference } from "./i18n";
 
 it.each(["en", "pt"] as const)(
-  "uses the Get brand in %s while preserving authored names",
+  "uses the Bee Team brand in %s while preserving authored names",
   async (locale) => {
     setLocalePreference(locale);
     const seed = makeSeed();
@@ -22,10 +22,10 @@ it.each(["en", "pt"] as const)(
     const brand = screen.getByRole("link", {
       name:
         locale === "en"
-          ? "Get Bee Team - go to boards"
-          : "Get Bee Team - ir para boards",
+          ? "Bee Team - go to boards"
+          : "Bee Team - ir para boards",
     });
-    expect(brand).toHaveAttribute("title", "Get Bee Team");
+    expect(brand).toHaveAttribute("title", "Bee Team");
     expect(brand).toHaveAttribute("href", "/boards");
     expect(
       await screen.findByRole("link", { name: "Bee Team" }),
@@ -37,8 +37,8 @@ it.each(["en", "pt"] as const)(
     await waitFor(() =>
       expect(document.title).toBe(
         locale === "en"
-          ? "Get Bee Team - Tasks and agents"
-          : "Get Bee Team - Tarefas e agentes",
+          ? "Bee Team - Tasks and agents"
+          : "Bee Team - Tarefas e agentes",
       ),
     );
   },
@@ -49,12 +49,12 @@ it("identifies the official domain in static metadata without redirecting this i
     readFileSync("index.html", "utf8"),
     "text/html",
   );
-  expect(html.title).toBe("Get Bee Team - Tasks and agents");
+  expect(html.title).toBe("Bee Team - Tasks and agents");
   expect(
     html
       .querySelector('meta[name="application-name"]')
       ?.getAttribute("content"),
-  ).toBe("Get Bee Team");
+  ).toBe("Bee Team");
   expect(
     html.querySelector('meta[name="description"]')?.getAttribute("content"),
   ).toContain("getbee.team");

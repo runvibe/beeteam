@@ -1,0 +1,65 @@
+.connected-home {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 4vw, 4rem) clamp(0.5rem, 3vw, 2rem);
+}
+.connected-home header {
+  max-width: 44rem;
+}
+.connected-home h1 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  font-weight: 550;
+  margin-block: 1rem;
+  text-wrap: balance;
+}
+.home-lead {
+  color: var(--muted-foreground);
+  line-height: 1.7;
+  font-size: 1.05rem;
+}
+.home-actions,
+.home-destinations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block: 1.5rem;
+}
+.home-getting-started {
+  margin-top: 3rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem;
+}
+.home-getting-started h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.home-getting-started ol {
+  display: grid;
+  gap: 2rem;
+  margin-block: 1.5rem;
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.home-getting-started h3 {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.home-getting-started li > p {
+  color: var(--muted-foreground);
+  line-height: 1.7;
+  max-width: 48rem;
+}
+.home-getting-started blockquote {
+  padding-left: 1rem;
+  border-left: 2px solid var(--border);
+  line-height: 1.6;
+  margin-block: 1rem;
+  max-width: 42rem;
+}
+.home-destinations {
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}

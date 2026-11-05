@@ -1,7 +1,7 @@
 {
   "globalSettings": "Global settings",
   "exportAndImportData": "Export and import data",
-  "portableArchiveOfThisBeeTeamInstallationImportRequiresAn": "Portable archive of this Get Bee Team installation. Import requires an empty destination.",
+  "portableArchiveOfThisBeeTeamInstallationImportRequiresAn": "Portable archive of this Bee Team installation. Import requires an empty destination.",
   "transferFailed": "Transfer failed",
   "preparingArchive": "Preparing archive",
   "fileExceedsTheUploadLimit": "File exceeds the upload limit.",

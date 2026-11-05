@@ -77,8 +77,8 @@ it.each(["en", "pt"] as const)(
     );
     await screen.findByText(
       locale === "en"
-        ? /Update Get Bee Team to configure/
-        : /Atualize o Get Bee Team para configurar/,
+        ? /Update Bee Team to configure/
+        : /Atualize o Bee Team para configurar/,
     );
     expect(
       screen.getByRole("combobox", {

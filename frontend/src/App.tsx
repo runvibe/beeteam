@@ -24,10 +24,11 @@ import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
+import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
 import "./scrollbars.css";
-export function App() {
+export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   useLocale();
   const [filterTarget, setFilterTarget] = useState<HTMLDivElement | null>(null);
   useRestorePosition();
@@ -43,7 +44,7 @@ export function App() {
     <MotionConfig reducedMotion="user">
       <HeaderFiltersContext.Provider value={filterTarget}>
         <div className="app-shell icon-navigation">
-          <NavigationRail />
+          <NavigationRail homeEnabled={homeEnabled} />
           <div className="main-shell">
             <ApiCompatibilityBanner />
             <header className="topbar">
@@ -73,6 +74,8 @@ export function App() {
                 <AgentPage />
               ) : teamId ? (
                 <TeamPage />
+              ) : area === "home" ? (
+                <ConnectedHome />
               ) : area === "boards" ? (
                 <Boards />
               ) : area === "agents" ? (
