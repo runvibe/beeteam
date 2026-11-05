@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: Bee Team installation discovery
+  title: Get Bee Team installation discovery
   version: v1
 paths:
   /api/v1/info:
