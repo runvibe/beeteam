@@ -1,6 +1,6 @@
 # Bee Team trademark policy
 
-The Bee Team name, wordmark, logo and distinctive brand identifiers identify the official Bee Team project. Rights remain with their respective rights holders. This policy does not assert that a mark is registered.
+The Bee Team name, wordmark, logo and distinctive brand identifiers identify the official Bee Team project. The Bee Team brand owner is Philippe Ferreira Assis Tecnologia da Informação LTDA (trade name: Philtech), CNPJ 59.845.514/0001-90. Rights in third-party materials remain with their respective holders. This policy does not assert that a mark is registered.
 
 ## Software rights and brand rights
 
