@@ -2,7 +2,7 @@
 
 ## Leader prepares and waits
 
-After the applicable approval of team composition and chat creation, first create the new Collaborator's CHAT. Do not preregister its profile or announce it as ready. In the created chat, explicitly request use of the bee-team-collaborator skill to identify/create/configure itself in Bee Team. Provide the approved role/context, actual team and its confirmed UUID, existing identity when available, and the authorization limits for creation/linking. The team and Leader identity may be prepared beforehand; this order concerns the Collaborator's profile.
+After the applicable approval of team composition and chat creation, first create the new Collaborator's CHAT. Do not preregister its profile or announce it as ready. In the created chat, explicitly request use of the call-a-collaborator skill to identify/create/configure itself in Bee Team. Provide the approved role/context, actual team and its confirmed UUID, existing identity when available, and the authorization limits for creation/linking. The team and Leader identity may be prepared beforehand; this order concerns the Collaborator's profile.
 
 Request the actual NAME when ready, accompanied by agentId, teamId, and readiness in a readable structure. The name serves the human; confirmed IDs are the association keys. If only a slug is available, resolve it through the typed endpoint/tool; do not derive a UUID or slug from a name/title. The initial title uses the destination team's resolved collaborator Unicode (🐝 only as an explicitly unresolved/no-team fallback) and proposed role/name, without treating it as a persisted identity; the Collaborator itself adjusts it to the confirmed name.
 
@@ -24,6 +24,6 @@ The skill does not authorize a chat tool by itself. Respect harness requirements
 
 ## Example initial instruction (do not execute when reading)
 
-“Use the bee-team-collaborator skill in this chat. Configure your identity in Bee Team for the approved role/context and the provided team with a confirmed UUID. Look up and reuse the existing profile if indicated; create a new one only within the authorization received. When persistence and the link are confirmed, return your actual NAME along with agentId, teamId, and readiness. If there is an impediment, return pending with the reason. Wait for a recorded assignment before working.”
+“Use the call-a-collaborator skill in this chat. Configure your identity in Bee Team for the approved role/context and the provided team with a confirmed UUID. Look up and reuse the existing profile if indicated; create a new one only within the authorization received. When persistence and the link are confirmed, return your actual NAME along with agentId, teamId, and readiness. If there is an impediment, return pending with the reason. Wait for a recorded assignment before working.”
 
 Replace references only with actual values; this example does not create a chat, profile, or task. MCP briefing/resumption/review prompts remain read-only and do not perform bootstrap or produce actual readiness confirmation.

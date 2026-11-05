@@ -1,6 +1,6 @@
 Prepare a briefing for task `{{taskId}}`. This request prepares context; it does not start execution, create a chat, assign an executor, or write data.
 
-Read the Bee Team Leader skill and briefing reference in the provided package. Consult the current task, plan, author/executor, executor profile, decisions, deliverables, pending items, cross-board children, and `executionContext`. Use only resources/tools actually advertised by the server. `prepare_execution` gathers these reads when advertised by the server; its response is neither approval nor the start of an activity.
+Read the Call a Team Lead skill and briefing reference in the provided package. Consult the current task, plan, author/executor, executor profile, decisions, deliverables, pending items, cross-board children, and `executionContext`. Use only resources/tools actually advertised by the server. `prepare_execution` gathers these reads when advertised by the server; its response is neither approval nor the start of an activity.
 
 Produce a faithful briefing with the objective, authorized scope, accepted/rejected decisions, limits, acceptance/review, existing evidence, dependencies, gaps, and next step. Include `rootTaskId`, `originBoardId`, `originBoardMode`, `effectiveMode`, and current individual mode according to the consulted data. Preserve root origin rather than replacing it with the destination board: manual forces manual; standard uses the current task's flag without inheriting from its parent; automatic covers the chain. Do not change settings to prepare the briefing.
 
