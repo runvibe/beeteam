@@ -3,7 +3,7 @@ import { t, useLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import "./update.css";
 
-export function PwaUpdate() {
+export function PwaUpdate({ visible = true }: { visible?: boolean }) {
   useLocale();
   const [waiting, setWaiting] = useState<ServiceWorker | null>(null);
   const [failed, setFailed] = useState(false);
@@ -77,7 +77,7 @@ export function PwaUpdate() {
     navigator.serviceWorker.addEventListener("controllerchange", onController);
     waiting.postMessage({ type: "ACTIVATE_APP_UPDATE" });
   }
-  if (!waiting) return null;
+  if (!visible || !waiting) return null;
   return (
     <section className="pwa-update" aria-label={t("common.pwaUpdateTitle")}>
       <p>{t("common.pwaUpdateBody")}</p>

@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import "./api-version-gate.css";
 import { ReleaseNotice } from "./release-notice";
 import { navigate } from "@/routing/location";
+import { PwaUpdate } from "@/pwa/update";
 
 export function ApiVersionGate({
   expectedVersion,
@@ -47,11 +48,14 @@ export function ApiVersionGate({
     : undefined;
   if (!introduction && !query.error && agreement === "compatible")
     return (
-      <div className="connected-session">
-        <ReleaseNotice installedVersion={expectedVersion} />
-        {changes && <LiveUpdates source={changes} />}
-        {children}
-      </div>
+      <>
+        <PwaUpdate visible />
+        <div className="connected-session">
+          <ReleaseNotice installedVersion={expectedVersion} />
+          {changes && <LiveUpdates source={changes} />}
+          {children}
+        </div>
+      </>
     );
   const checking = !query.data && query.isPending;
   const message =
@@ -115,5 +119,10 @@ export function ApiVersionGate({
       </section>
     </Container>
   );
-  return renderBlocked ? renderBlocked(connection) : connection;
+  return (
+    <>
+      <PwaUpdate visible={false} />
+      {renderBlocked ? renderBlocked(connection) : connection}
+    </>
+  );
 }
