@@ -39,15 +39,9 @@
   margin-top: 1rem;
   max-width: 38ch;
 }
-.tour-player {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+.tour-scene {
   min-width: 0;
-  border-radius: 15px;
-  border: 1px solid var(--border);
   color: var(--foreground);
-  background: var(--background);
 }
 .tour-film-title {
   display: flex;
@@ -83,34 +77,6 @@
 .tour-receipt p {
   margin-top: 0.25rem;
 }
-.tour-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0 clamp(1rem, 2.5vw, 1.6rem) 0.65rem;
-}
-.tour-controls button {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  flex-shrink: 0;
-  border-radius: 50%;
-  cursor: pointer;
-}
-.tour-controls button:hover {
-  background: var(--muted);
-}
-.tour-track {
-  flex: 1;
-  height: 2px;
-  background: var(--border);
-}
-.tour-track div {
-  height: 100%;
-  background: var(--muted-foreground);
-  transform-origin: left;
-}
 .tour-demo {
   display: inline-flex;
   gap: 0.5rem;
@@ -125,8 +91,5 @@
   }
   .tour-copy h3 {
     max-width: none;
-  }
-  .tour-player {
-    border-radius: 12px;
   }
 }

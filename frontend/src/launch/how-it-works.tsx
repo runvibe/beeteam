@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   animate,
   motion,
   useInView,
   useMotionValue,
   useReducedMotion,
+  useTransform,
 } from "motion/react";
-import { ArrowUpRight, Hexagon, Pause, Play, RotateCcw } from "lucide-react";
+import { ArrowUpRight, Hexagon } from "lucide-react";
 import { t, useLocale } from "@/i18n";
 import { AbstractScene } from "./abstract-scene";
 import { currentUrl, navigate } from "@/routing/location";
@@ -20,7 +21,7 @@ const scenes = [
   { labelKey: "common.tourHandoff", body: "common.tourHandoffBody" },
 ] as const;
 
-function ScenePlayer({
+function WorkflowScene({
   scene,
   index,
 }: {
@@ -30,72 +31,41 @@ function ScenePlayer({
   const frame = useRef<HTMLDivElement>(null);
   const visible = useInView(frame, { amount: 0.4 });
   const reduce = useReducedMotion();
-  const [paused, setPaused] = useState(false);
-  const [finished, setFinished] = useState(false);
   const progress = useMotionValue(0);
+  const opacity = useTransform(progress, [0, 0.08, 0.92, 1], [0, 1, 1, 0]);
   useEffect(() => {
     if (reduce) {
       progress.set(1);
       return;
     }
-    if (!visible || paused || finished) return;
-    const animation = animate(progress, 1, {
-      duration: 4.5 * (1 - progress.get()),
-      ease: "easeInOut",
-      onComplete: () => setFinished(true),
+    if (!visible) return;
+    const animation = animate(progress, [0, 1], {
+      duration: 6,
+      ease: "linear",
+      repeat: Infinity,
     });
     return () => animation.stop();
-  }, [visible, paused, finished, reduce, progress]);
+  }, [visible, reduce, progress]);
 
   const title = t(scene.labelKey);
-  const action = finished
-    ? t("common.tourReplay")
-    : paused
-      ? t("common.tourPlay")
-      : t("common.tourPause");
-  function toggle() {
-    if (finished) {
-      progress.set(0);
-      setFinished(false);
-      setPaused(false);
-    } else setPaused(!paused);
-  }
   return (
-    <div ref={frame} className="tour-player" role="group" aria-label={title}>
+    <div ref={frame} className="tour-scene" role="group" aria-label={title}>
       {index >= 3 && (
         <div className="tour-film-title">
           <Hexagon size={13} aria-hidden="true" />
           {t("common.tourTaskName")}
         </div>
       )}
-      <AbstractScene step={index} progress={progress} />
+      <motion.div style={{ opacity: reduce ? 1 : opacity }}>
+        <AbstractScene step={index} progress={progress} />
+      </motion.div>
       {index === 4 && (
         <div className="tour-receipt">
           <strong>{t("common.tourSummary")}</strong>
           <p>{t("common.tourFinding")}</p>
         </div>
       )}
-      {!reduce && (
-        <div className="tour-controls">
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label={action}
-            title={action}
-          >
-            {finished ? (
-              <RotateCcw size={15} />
-            ) : paused ? (
-              <Play size={15} />
-            ) : (
-              <Pause size={15} />
-            )}
-          </button>
-          <div className="tour-track" aria-hidden="true">
-            <motion.div style={{ scaleX: progress }} />
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }
@@ -118,7 +88,7 @@ export function HowItWorks() {
             <h3>{t(scene.labelKey)}</h3>
             <p>{t(scene.body)}</p>
           </div>
-          <ScenePlayer scene={scene} index={index} />
+          <WorkflowScene scene={scene} index={index} />
         </article>
       ))}
       <a
