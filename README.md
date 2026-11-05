@@ -183,9 +183,9 @@ The skills now apply the approved workflows through concise entrypoints and comp
 The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
 execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
-Versioned guidance is available in [team leader](skills/bee-team-leader/SKILL.md)
-and [collaborator](skills/bee-team-collaborator/SKILL.md), with shared references
-under `skills/references/` and [multidisciplinary examples](skills/bee-team-leader/references/team-examples.md).
+Versioned guidance is available in [team leader](skills/call-a-team-lead/SKILL.md)
+and [collaborator](skills/call-a-collaborator/SKILL.md), with shared references
+under `skills/references/` and [multidisciplinary examples](skills/call-a-team-lead/references/team-examples.md).
 These are portable instructions. The backend MCP catalog documents the implemented
 server capabilities; this checkout supplies editorial content for its snapshots.
 
@@ -196,7 +196,7 @@ and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
-that supports skill discovery, invoke `$bee-team-leader` or `$bee-team-collaborator`.
+that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-collaborator`.
 Each skill folder is self-contained: copy its SKILL.md and references/ together.
 The complete workflows, integration, handoff, connection procedure and prompts live
 inside each package. Shared editorial sources remain under skills/references and
@@ -1086,3 +1086,5 @@ In Codex, board/team/agent listing cards use the secondary-button surface in bot
 Capacidades HTTP anunciadas: `agents.latest-activity`, `teams.role-icons`, `tasks.execution-intervals`, `tasks.timeline-points`, `tasks.participants` e `tasks.work-scope`. `mcp` exige compilação com a feature e configuração habilitada; `data-transfer` exige serviço presente e administrativamente habilitado; `local-projects.open` exige listener loopback, preservando as verificações locais de peer, origin e header. Uma capacidade não equivale a autorização para uma operação ou à existência de dados.
 
 Consumidores devem ignorar identificadores desconhecidos e testar a presença do recurso necessário. Em servidores legados, 404 significa compatibilidade desconhecida; erros de rede/servidor significam indisponibilidade, não ausência de um recurso. Nenhum caminho, credencial, configuração de banco ou dado de usuário é exposto. Novos identificadores são aditivos; mudanças incompatíveis exigem novo identificador/contrato.
+
+Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-collaborator` (**Call a Collaborator**). Leader/Collaborator behavior is unchanged. The public MCP URIs `beeteam://skills/leader` and `beeteam://skills/collaborator` remain stable. Replace old local installations using the [guarded migration procedure](docs/skills-installation.md); do not install duplicate legacy aliases.

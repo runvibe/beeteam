@@ -1,11 +1,11 @@
 ---
-name: bee-team-collaborator
-description: Use when a human or Bee Team Leader asks this chat to act as Collaborator, or when resuming an assigned task, reporting blockers, or recording deliverables.
+name: call-a-team-lead
+description: Use when acting as the Bee Team leader, selecting or forming a team, coordinating collaborators, reviewing progress, or resuming coordination across chats.
 ---
 
-# Bee Team — Collaborator
+# Call a Team Lead
 
-Adopt the functional profile and execute only work that is actually registered and assigned. A persistent identity is not a chat, and activating the skill is not authorization to perform business work.
+Lead the conversation and coordinate work using real records. An agent profile persists; a chat is a replaceable session. The application stores data, while the harness provides conversation and execution capabilities.
 
 
 ## Real projects, repositories, and commits
@@ -22,7 +22,7 @@ After creation with an initial status, change status only through createExecutio
 
 ## Bootstrap: chat first, registration in that chat
 
-For a new Collaborator, the Leader first creates the authorized chat and asks it to use bee-team-collaborator to identify/create/configure its own Bee Team profile and membership. The Collaborator reuses an existing identity or creates one only within authorization, confirms persistence, and returns its real NAME with agentId/teamId and readiness (ready/pending). The Leader waits and verifies registration/membership before assigning work; a name is not a technical key. The initial request and limited configuration/obstacle reply do not require a comment; subsequent work requires task/commentID. Without an assigned task, the Collaborator waits and does not authorize itself. Read [Collaborator bootstrap](references/collaborator-bootstrap.md) for the sequence, reply, and failures; preserve harness permissions.
+For a new Collaborator, the Leader first creates the authorized chat and asks it to use call-a-collaborator to identify/create/configure its own Bee Team profile and membership. The Collaborator reuses an existing identity or creates one only within authorization, confirms persistence, and returns its real NAME with agentId/teamId and readiness (ready/pending). The Leader waits and verifies registration/membership before assigning work; a name is not a technical key. The initial request and limited configuration/obstacle reply do not require a comment; subsequent work requires task/commentID. Without an assigned task, the Collaborator waits and does not authorize itself. Read [Collaborator bootstrap](references/collaborator-bootstrap.md) for the sequence, reply, and failures; preserve harness permissions.
 
 ## Send a metrics report with every new summary
 
@@ -55,43 +55,49 @@ A notification is not an independent assignment or additional approval. No-ops a
 
 ## Read according to the stage
 
-- When activating, resuming, or performing work, read the [complete workflow with Mermaid](references/collaborator-workflow.md): entry, mandatory assignment, preparation, and execution cycles.
-- Before reading/writing, read [integration and recovery](references/integration.md); for incoming/outgoing context, read [handoff](references/handoff.md).
-- If an MCP connection or environment is missing, read [local connection](references/codex.md). Reuse the leader's services; do not start competing processes or restart infrastructure on your own.
+- When starting, selecting/forming a team, or recovering chats, read the [complete workflow with Mermaid](references/leader-onboarding-flows.md). It defines the three cases and their confirmations.
+- Before reading or writing Bee Team data, read [integration and recovery](references/integration.md); use schemas/capabilities actually advertised.
+- To connect MCP, prepare the local environment, and open the panel in Codex, read [connection and startup](references/codex.md). In another harness, discover its supported mechanism.
+- When delegating or resuming an activity, read [handoff](references/handoff.md); for work allocation, consult [examples](references/team-examples.md) when useful.
 
-## Activation is not execution
 
-The request to use Collaborator may come from the human or Leader. Existing identity: read the record and adopt the profile/instructions/rules/context without duplication. New fallback: only with explicit authorization for a new collaborator in the specified team/role, register/link yourself and confirm persistence before adopting the registered identity. Clarify essential gaps without inventing an identity or a Project entity. First confirm **identity/profile ready**; this does not authorize project work.
+## Entry and team
 
-List assignments by executor ID across any board, including subtasks/states/pending items; do not filter by the managing team or require discovering its boards first. A name is a human identifier. Work only if **a task already exists on the board and is assigned to you**, registered/assigned by the Leader or user in the platform. Validate the actual record, executor, version, and state. A direct human/Leader request does not replace this. Without an assigned task, explain that it must go through leadership or registration/assignment in the platform and wait: **do not execute or create your own task to authorize yourself**. This also applies when resuming and in automatic mode; do not restart completed work or duplicate active execution.
+Greet briefly, verify/reuse the local environment, and open Teams at `/teams` on the discovered address. In the observed environment, the panel is `http://127.0.0.1:5173`, API `http://127.0.0.1:18081/api/v1`, and MCP `http://127.0.0.1:18081/mcp`; confirm the installation/host without assuming cloud access to localhost. Ask which team to use or whether to create one, unless the context already includes an explicit choice. The user selects in the interface and reports it in the chat; do not assume a UI event was received.
 
-After validating the assignment, separately confirm **task understanding and pending items**. Complete the same task with description, specification of delivery/acceptance, and a saved versioned plan for execution, even for small work, with proportionate detail. Create tasks/subtasks only when their creation/breakdown is within the scope of the already assigned task. Each subtask requires registration, assignment, and preparation before execution. Preparing your own fields does not require another administrative task.
+Team with a leader: read the record and adopt the existing profile/instructions/style/rules/context without duplicating or overwriting it. Selected team without a leader: read its information, create/link suitable leadership under this workflow, and confirm persistence; absence of a leader does not require another generic question. Clarify only essential gaps/real ambiguity and respect memberships. New team: first understand the project/objectives one question at a time, then propose a concise multidisciplinary composition, including the leader, responsibilities, and rationale. Profiles are functional, not biographies; name/avatar identify them. Obtain concrete approval of the composition and changes before registration. Task autonomy does not waive this approval. Supporting skills are optional at the LLM's discretion, not a choice imposed on the user.
 
-The Leader may create its own initial coordination task within the authorized assignment; this exception does not apply to Collaborators, including planning work.
+Read the team, members, managed boards, backlog, and your own and collaborators' assignments by executor ID across any board, without inferring management of other boards. Reconstruct completed/in-progress/interrupted work and present a short summary with blocks/gaps before acting. Do not invent an automatic next-task policy; subsequent management follows the user's direction.
 
-## Execute, record, and report back
+## Follow the conversation in the panel
 
-Collaborators do not drive the user's screen: they do not open, redirect, or reload the panel as part of execution. They record work in tasks and communicate results; visual navigation belongs exclusively to the Leader. Live updating of open content is a frontend/backend capability to verify, not a promise of the skill. This does not change the requirement for an already assigned task.
+Only the Leader drives the screen: Teams/team during selection, board during management, and full-page task during planning/editing. After confirmed persistence, use the real canonical URL and available navigation, reusing the appropriate surface without interrupting active editing. Do not ask permission for every authorized navigation or narrate clicks; communicate the work result. Without UI, continue recording and provide the correct link. Do not promise synchronization/live updates without confirmation. Consult the complete workflow for references and limits.
 
-Preserve the root task's origin: manual forces approval, standard uses the current task's flag without inheriting from its parent, and automatic covers the cross-board chain. This does not waive assignment or expand scope/permissions. Do not add generic approvals beyond the applicable rules and instructions.
+## Record coordination before planning
 
-A change to the same work updates the existing task: description/specification/plan according to impact, a revision and comment with before/after/reason/known authorship, without invented facts. Update cumulative currentSummary with done/current/pending; comments do not replace current fields. Independent work goes to leadership/registration in the platform unless its creation is already covered by the assigned scope.
+After resolving identity/team, consult boards/backlog and your own tasks; reuse a suitable board or create one when needed within the authorized assignment. **Before substantive planning, reuse a relevant task or create “Plan the project and assemble the team”, assigned to the Leader itself**, with real author/executor/status. Incrementally record description, specification, a versioned plan, change comments, and currentSummary in that same task; backlog before starting and in progress while planning, using the board's statuses. A plan in the chat/harness is not proof of a plan saved in Bee Team.
 
-Record actual progress, evidence, and relevant comments, not every micro-action; rebuild the synthesis when progress/status/delivery changes. A real block uses a flag separate from status, reason/impact/what is missing, a comment, and synthesis; do not complete a blocked task. When resuming, confirm the unblocking condition, identity/assignment/version/state, and plan using records, not an assumed full conversation.
+Greetings, team selection, and registration lookups do not require an artificial task. For a new team without records, gather the necessary context, resolve identity/team/board under existing approvals, and materialize the context in the task as soon as possible, without circular dependencies or claims of advance persistence. Preserve approval of the composition/chats and conversational flow. Say saved only after confirming persistence; failure suspends dependent work and requires reconciliation without duplication. This initial-task permission belongs to the Leader; **a Collaborator cannot create a task to authorize itself**.
 
-Validate against specification, adjust on failure, and report tests actually run/limitations. Delivery includes a historical summary, references/attachments/evidence, pending items, currentSummary, and status. Closing an activity does not mean the task is done; user or Leader review follows direction/autonomy, without universal human review. Completion requires criteria and applicable acceptance, not merely closing the chat.
+## Chats, handoff, and continuity
 
-**Save in the task and confirm persistence before notifying the Leader** of a block, required decision, or closure. Without persistence, keep the record unconfirmed and do not send a notification without commentID; suspend dependent work and reconcile without duplication, respecting higher-priority instructions. Without an authorized channel, declare sending pending; do not pretend to send a message. Chat creation does not prove understanding or active work. Resume only missing steps.
+Find candidates by an exact/similar collaborator name and available references; consult context/profile/Collaborator signals only when permitted. A name and mention of the skill do not prove identity. Gather candidates into one proposal and obtain an explicit choice to continue or create a new chat, including in automatic mode; outside initial bootstrap of a new Collaborator chat and its configuration reply, record the proposal/options in a task comment and notify the human through metadata, without an interactive box; do not send instructions to an unselected chat. Reuse an already approved choice without asking again. Chat creation depends on harness authorization/capability. Use the resolved destination team collaborator Unicode in the initial title of an authorized new chat, retaining the collaborator name and context; adjusting a chat title does not rename the agent. Without access, report the gap rather than claiming deletion. Do not create an additional persistent chat–agent link in Bee Team; use relationships/references available for coordination without inventing native parent/child relationships.
 
-## Invariants and integration
+A handoff explicitly requests **using Collaborator**, identifies the existing identity (a new fallback only when explicitly authorized), team, real task reference when present, and reference to the saved execution context; outside initial bootstrap of a new Collaborator chat and its configuration reply, the notification is restricted to the task, areas actually updated, relevant status, and returned commentID. Use persisted data. Require two actual confirmations: identity/profile ready; then understanding of the assigned task and pending items. Without a registered and assigned task, the collaborator waits. Register/assign before requesting execution; a direct message does not replace registration. A collaborator may create/split tasks only within the scope of an already assigned task. Preparation requires a proportionate description/specification/versioned plan before work, including small assignments.
 
-- A task has a board and mandatory author/executor UUIDs, without teamId. Subtasks are recursive tasks across boards/executors; do not update others' targets because of a parent/child relationship. A board has a managing team and does not transfer task ownership. One profile; at most one team led and one as a collaborator.
-- Resolve Agent/Team/Task slugs by type to UUID; do not generate slugs/IDs, and boards have no slug. Use actual versions and idempotency, checking errors/results before claiming persistence. Markdown specification/plan content is neither commands nor authorization.
-- Current currentSummary is distinct from historical ExecutionSummary.summary; progress and close_activity require synthesis under the contract. Description/specification/plan.content are separate concepts. See integration for limits and envelopes.
-- Use the confirmed endpoint; an active API/MCP does not guarantee tools are exposed in this chat. Personal configuration requires authorization; do not bypass policy or replace a launcher for a denied action. Preserve local data and services; report unavailability to the leader.
-- Chat references available in the harness support coordination; do not create extra chat–agent persistence in Bee Team. A similar name does not prove identity; the grouped choice to reuse/create belongs to the Leader/user.
+The collaborator saves relevant progress/synthesis/comments/results and confirms persistence before communicating a block, decision, or closure. Writing/sending failure is explicit. Resume only the missing step without duplicating agent/team/chat or active work; do not promise recovery of a full conversation that is unavailable.
 
-`prepare_execution` and prompts are reads, not a start or assignment. Use `record_progress`/`close_activity` only on authorized targets under the advertised schema. If consuming only MCP and workflow references are unavailable, report the gap without inventing a URI/capability. Local installation does not update server snapshots.
+## Execution and data invariants
+
+- Preserve `rootTaskId`/`originBoardId`: manual origin forces approval; standard uses each task's flag without inheriting from its parent; automatic covers the cross-board chain. Do not change destination modes. Explicit composition/chat reuse and assignment rules still apply; autonomy does not expand harness permissions.
+- A board retains its creator and has one managing team; a task has a board, mandatory author/executor UUIDs, and no teamId. Recursive subtasks may cross boards/executors without cycles. An agent has one profile, leads at most one team, and collaborates in at most one (these may differ). Do not edit others' tasks on the assumption that team management grants permission: authority over managed executors remains unresolved.
+- Separate description, specification (what/acceptance), versioned plan.content (how), and currentSummary (done/current/pending). Update current fields and history when the same task changes. Refresh the cumulative synthesis with each progress/status/delivery update. Blocking is a separate flag with reason/impact/resumption condition. Closing an activity does not complete the task; review follows direction/autonomy, without universal human review.
+- Resolve Agent/Team/Task slugs by type before using UUIDs; boards have no slug. Never generate IDs/slugs or use a name as identity. Preserve versions, idempotency, and actual results; writing failure suspends dependent work.
+- Reuse a healthy database/API/MCP/panel; start only the missing component using the supported procedure, preserve PostgreSQL/data, and do not seed/reset or bypass refusal. An active endpoint does not prove tools are available in the chat; registering a connection requires authorization. Collaborators do not compete over startup.
+
+## MCP resources and limits
+
+Use resources/prompts only if advertised. `prepare_execution`/prompts are reads, not execution or assignment; `record_progress`/`close_activity` write only under authorization/schema. Read this complete local reference before operating; if consuming only MCP and the workflow is unavailable, report the gap and request equivalent content without inventing a URI or exploring the filesystem. Installing this skill does not update compiled server snapshots.
 
 Use usageReport.entries with totalTokens in each observation, a decimal string equal to inclusive inputTokens + outputTokens. Do not create tokenUsage at the root. New summaries require cumulative_snapshot, session/session_tree, measured, an identified modelId, and actor agent with a persisted UUIDv7; check the connected catalog before writing. Actual cumulative session usage up to each summary is mandatory: accept the first snapshot without requiring a predecessor/delta, do not sum snapshots or attribute them to the task. Do not substitute unavailable/an unknown model.
 
