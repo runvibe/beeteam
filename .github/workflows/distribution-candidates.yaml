@@ -26,6 +26,8 @@ jobs:
         with:
           python-version: '3.12'
       - uses: dtolnay/rust-toolchain@stable
+      - name: Verify guide reference against release source
+        run: cargo test --locked --features mcp --test guide_reference
       - name: Build same-version embedded distribution
         run: node scripts/build-distribution.mjs
       - name: Test packaging and archive native executable

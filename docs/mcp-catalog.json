@@ -26,103 +26,103 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Structured projects and commit evidence",
       "uri": "beeteam://references/repository-evidence"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Explicit task session intervals",
       "uri": "beeteam://references/execution-intervals"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker chat-first bootstrap",
       "uri": "beeteam://references/worker-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Get a Team Lead",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/worker. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/worker. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Get a Worker",
       "uri": "beeteam://skills/worker"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker workflow",
       "uri": "beeteam://references/worker-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker task continuity template",
       "uri": "beeteam://references/worker-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit 9339e3916fa9c79ad9749477686c55dbb67d7249 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit 10d5218428ec042e32c0470a73ab41aa11cd8b63 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
