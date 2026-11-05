@@ -24,7 +24,8 @@ export function ApiVersionGate({
   renderBlocked?: (connection: ReactNode) => ReactNode;
   introduction?: boolean;
 }) {
-  useLocale();
+  const locale = useLocale();
+  const documentation = `https://getbee.team${locale === "pt-BR" ? "/pt" : ""}/guide`;
   const api = useApi();
   const query = useQuery({
     queryKey: apiInfoKey,
@@ -82,7 +83,11 @@ export function ApiVersionGate({
         )}
         {query.error != null && <p>{t("common.connectionGuidance")}</p>}
         <div className="api-version-actions">
-          <a href="https://getbee.team/#install">{t("common.launchInstall")}</a>
+          <Button asChild variant="outline">
+            <a href={`${documentation}/installation`}>
+              {t("common.launchInstall")}
+            </a>
+          </Button>
           <Button
             disabled={query.isFetching}
             onClick={() => void query.refetch()}
@@ -100,6 +105,13 @@ export function ApiVersionGate({
             </Button>
           )}
         </div>
+        <p className="api-version-help">
+          <Button asChild variant="link" className="h-auto p-0 text-sm">
+            <a href={`${documentation}/local-connection`}>
+              {t("common.connectionHelp")}
+            </a>
+          </Button>
+        </p>
       </section>
     </Container>
   );

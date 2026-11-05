@@ -1,7 +1,7 @@
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 import { readAppVersion } from "./scripts/app-version.mjs";
 import { pwa } from "./scripts/pwa-plugin.js";
@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
       alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
     },
     test: {
+      exclude: [...configDefaults.exclude, "scripts/**"],
       environment: "jsdom",
       setupFiles: ["./src/test/setup.ts"],
       css: false,
