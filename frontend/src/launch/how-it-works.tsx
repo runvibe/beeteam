@@ -5,7 +5,7 @@ import {
   useMotionValue,
   useReducedMotion,
 } from "motion/react";
-import { ArrowUpRight, Hexagon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { t, useLocale } from "@/i18n";
 import { AbstractScene } from "./abstract-scene";
 import { currentUrl, navigate } from "@/routing/location";
@@ -48,19 +48,7 @@ function WorkflowScene({
   const title = t(scene.labelKey);
   return (
     <div ref={frame} className="tour-scene" role="group" aria-label={title}>
-      {index === 4 && (
-        <div className="tour-film-title">
-          <Hexagon size={13} aria-hidden="true" />
-          {t("common.tourTaskName")}
-        </div>
-      )}
       <AbstractScene step={index} progress={progress} />
-      {index === 4 && (
-        <div className="tour-receipt">
-          <strong>{t("common.tourSummary")}</strong>
-          <p>{t("common.tourFinding")}</p>
-        </div>
-      )}
     </div>
   );
 }

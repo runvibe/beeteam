@@ -43,14 +43,6 @@
   min-width: 0;
   color: var(--foreground);
 }
-.tour-film-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: clamp(0.8rem, 2vw, 1.35rem) clamp(1rem, 2.5vw, 1.6rem) 0;
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-}
 .tour-art {
   display: block;
   width: 100%;
@@ -67,15 +59,6 @@
 }
 .tour-secondary-line {
   color: var(--muted-foreground);
-}
-.tour-receipt {
-  margin: 0 clamp(1rem, 2.5vw, 1.6rem) 1rem;
-  border-inline-start: 2px solid var(--muted-foreground);
-  padding-inline-start: 0.8rem;
-  font-size: 0.9rem;
-}
-.tour-receipt p {
-  margin-top: 0.25rem;
 }
 .tour-demo {
   display: inline-flex;
