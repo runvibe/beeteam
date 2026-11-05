@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/manrope";
 @import "@fontsource-variable/playfair-display";
 @import "@fontsource-variable/jetbrains-mono";
 
@@ -43,7 +43,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --font-sans: "Inter Variable", ui-sans-serif, sans-serif, system-ui;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
   --font-serif: "Playfair Display Variable", ui-serif, serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   --radius: 0.625rem;
@@ -103,7 +103,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.275 0 0);
   --sidebar-ring: oklch(0.439 0 0);
-  --font-sans: "Inter Variable", ui-sans-serif, sans-serif, system-ui;
   --font-serif: "Playfair Display Variable", ui-serif, serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
   --radius: 0.625rem;

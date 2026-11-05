@@ -1,8 +1,4 @@
-@import "@fontsource-variable/manrope";
-
 .launch-page {
-  --font-sans: "Manrope Variable", system-ui, sans-serif;
-  font-family: var(--font-sans);
   font-weight: 400;
   --launch-accent: #b75629;
   --launch-gutter: max(clamp(1.25rem, 5vw, 5rem), calc((100% - 1440px) / 2));
