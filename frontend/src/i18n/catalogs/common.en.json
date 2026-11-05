@@ -263,5 +263,20 @@
   "pwaUpdateBody": "A new version of the app is ready. Save your work in every open app tab before reloading.",
   "pwaReload": "Reload the app",
   "pwaUpdateFailed": "The update is still pending. Reload when your work is saved.",
-  "pwaOtherTabs": "Save your work and close the other Bee Team app tabs, then reload here."
+  "pwaOtherTabs": "Save your work and close the other Bee Team app tabs, then reload here.",
+  "analyticsTitle": "Your choice about analytics",
+  "analyticsDescription": "Bee Team works without analytics. With your permission, Google Analytics receives limited usage statistics, such as which section you open. Your tasks, chats and local content are not sent.",
+  "analyticsOptional": "Allow optional usage analytics",
+  "analyticsStorage": "We remember your choice in this browser when storage is available. You can change or withdraw permission at any time.",
+  "analyticsSessionOnly": "Browser storage is unavailable. Your choice applies only until this page is closed.",
+  "analyticsLegal": "Privacy and terms",
+  "analyticsPrivacy": "Privacy notice",
+  "analyticsTerms": "Terms of use",
+  "analyticsSave": "Save preferences",
+  "analyticsWithdraw": "Withdraw consent",
+  "analyticsClose": "Close preferences",
+  "analyticsAccept": "Accept analytics",
+  "analyticsReject": "Reject analytics",
+  "analyticsManage": "Cookie preferences",
+  "analyticsFrameTitle": "Usage analytics"
 }

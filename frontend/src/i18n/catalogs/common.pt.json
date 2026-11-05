@@ -263,5 +263,20 @@
   "pwaUpdateBody": "Uma nova versão do app está pronta. Salve seu trabalho em todas as abas do app antes de recarregar.",
   "pwaReload": "Recarregar app",
   "pwaUpdateFailed": "A atualização continua pendente. Recarregue quando seu trabalho estiver salvo.",
-  "pwaOtherTabs": "Salve seu trabalho e feche as outras abas do app Bee Team. Depois, recarregue aqui."
+  "pwaOtherTabs": "Salve seu trabalho e feche as outras abas do app Bee Team. Depois, recarregue aqui.",
+  "analyticsTitle": "Sua escolha sobre analytics",
+  "analyticsDescription": "O Bee Team funciona sem analytics. Com sua permissão, o Google Analytics recebe estatísticas limitadas de uso, como a seção que você abre. Suas tarefas, conversas e conteúdos locais não são enviados.",
+  "analyticsOptional": "Permitir estatísticas opcionais de uso",
+  "analyticsStorage": "Lembramos sua escolha neste navegador quando o armazenamento está disponível. Você pode alterar ou retirar a permissão a qualquer momento.",
+  "analyticsSessionOnly": "O armazenamento do navegador está indisponível. Sua escolha vale apenas até esta página ser fechada.",
+  "analyticsLegal": "Privacidade e termos",
+  "analyticsPrivacy": "Aviso de privacidade",
+  "analyticsTerms": "Termos de uso",
+  "analyticsSave": "Salvar preferências",
+  "analyticsWithdraw": "Retirar consentimento",
+  "analyticsClose": "Fechar preferências",
+  "analyticsAccept": "Aceitar analytics",
+  "analyticsReject": "Rejeitar analytics",
+  "analyticsManage": "Preferências de cookies",
+  "analyticsFrameTitle": "Estatísticas de uso"
 }
