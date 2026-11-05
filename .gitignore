@@ -3,3 +3,7 @@ target
 backend-*.log
 .local/
 __pycache__/
+
+# Cloudflare deployment tooling
+/node_modules/
+.wrangler/
