@@ -64,7 +64,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 80);
+    assert_eq!(tools.len(), 81);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -408,7 +408,14 @@ async fn exact_comment_lookup_and_compound_receipts() {
     assert_eq!(created["data"]["id"], cid);
     let args = json!({"params":{"taskId":id(task),"commentId":cid}});
     let found = success(&app, "getComment", args.clone()).await;
-    assert_eq!(found["data"], created["data"]);
+    // PostgreSQL persists row timestamps in microseconds, while the immediate
+    // mutation response can retain nanoseconds. All other data stays exact.
+    let mut expected = created["data"].clone();
+    let written = chrono::DateTime::parse_from_rfc3339(expected["createdAt"].as_str().unwrap()).unwrap();
+    let stored = chrono::DateTime::parse_from_rfc3339(found["data"]["createdAt"].as_str().unwrap()).unwrap();
+    assert_eq!(written.timestamp_micros(), stored.timestamp_micros());
+    expected["createdAt"] = found["data"]["createdAt"].clone();
+    assert_eq!(found["data"], expected);
     assert_eq!(found["version"], 1);
     assert!(found["createdId"].is_null());
     assert_eq!(
@@ -489,7 +496,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let app = app().await;
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 80);
+    assert_eq!(tools.len(), 81);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"]).unwrap();
         if let Some(schema) = tool.get("outputSchema") {

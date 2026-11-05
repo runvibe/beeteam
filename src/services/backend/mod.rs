@@ -2,6 +2,7 @@ pub mod composite;
 mod files;
 pub mod hierarchy;
 mod kanban;
+mod task_parent;
 mod overview;
 mod usage;
 mod commit_report;

@@ -22,3 +22,4 @@ pub mod agent_activity;
 pub mod team_role_icons;
 
 pub mod worker_contract;
+pub mod task_parent;
