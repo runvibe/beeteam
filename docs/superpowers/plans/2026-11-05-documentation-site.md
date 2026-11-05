@@ -12,10 +12,25 @@ Use the Bee Team logo, Manrope, theme and language controls, thin icons, and a l
 
 | Menu group | Articles | Reader outcome |
 | --- | --- | --- |
-| Start here | Overview; How Bee Team works | Understand the lead, independent worker chats, the shared board and what each worker records. |
+| Start here | What is Bee Team?; How Bee Team works | Understand the problem, purpose, expected benefits and free/open-source distribution model, then learn the roles and shared records. |
 | Installation | Download and install; Connect your harness; Verify or update | Choose an OS and CPU, find a verified release or source build, run the local service, connect MCP and check readiness. |
 | Using Bee Team | Your first team; Coordinate parallel tasks; Review results | Activate the skills, create the team and board, assign work, and review the recorded results. |
 | Reference | Runtime and storage; Troubleshooting | Locate SQLite data, choose hosted or local UI, and diagnose common setup problems. Link to the existing API reference where appropriate. |
+| Advanced | Binary configuration; MCP integration; MCP tool catalog | Look up every runtime setting and its effects, connect a client, and discover the tools available in a given release. |
+
+## What is Bee Team?
+
+Make `/guide/about` the first article under Start here. Explain why Bee Team was built: teams can divide work across several agent chats, but a decision made in one chat can be missed by another. A lead assigns independent tasks, each worker keeps the context of its own session, and the board records the plan, results and decisions that affect other workers. Use one concrete example: a worker verifying a build records a packaging issue that the worker preparing release notes needs to know about.
+
+Explain what users can expect: independent tasks can advance simultaneously, decisions have a traceable home, and workers can consult the information they need instead of replaying every chat. Present better use of time and tokens as design goals; substantiate numerical claims with measurements. Explain that Bee Team itself is free and is intended for open-source distribution. Distinguish this from the cost of a user's harness or model provider. Link the governing software license and separate brand terms when published; until then, state their status as in the README. Preserve the approved slogan.
+
+## Advanced reference
+
+- **Binary configuration** (`/guide/reference/environment`): inventory every supported runtime environment variable, including indirect reads through parsing helpers, logging and telemetry configuration, and OS-dependent location discovery. Distinguish first-class settings from platform environment inputs and build/test-only settings. For each supported setting document the exact name, accepted values, units, default when absent, behavior on invalid input, dependencies or precedence, when it takes effect, and an observable result. Cover HTTP binding and CORS, body limits, SQLite/PostgreSQL, embedded UI, MCP transport, telemetry, and portable-transfer paths, limits and retention. Include PowerShell and POSIX examples for changing the port, enabling the panel, and selecting a database. Explain startup and restart using an isolated example configuration. Verify entries against the release source and flag additions or removed keys in CI.
+- **MCP integration** (`/guide/reference/mcp`): trace one real request from the harness to the local binary and back. Document transport, default and customized endpoint, feature/enablement requirements, origin settings, client registration, discovery, and a read-only first call. Explain tools, resources and prompts, declared actor metadata, version conflicts and idempotency where applicable. Link to the existing harness-specific installation steps.
+- **MCP tool catalog** (`/guide/reference/mcp/tools`): generate a searchable, grouped index and stable per-tool anchors from the release's checked-in `docs/mcp-catalog.json`. Publish every tool's exact name, purpose, input schema, required fields, read/write behavior and side effects. Supplement with verified return examples and errors from the service contracts. Show which operations depend on optional capabilities and how to check the tools advertised by the running server. List resources and prompts separately. Validate the generated catalog against `cargo run --locked --features mcp --example mcp_catalog` and test representative calls with temporary data. Embed the reference in the site build so it is readable before installation.
+
+**Editorial acceptance:** both locales link the About article to the first-team tutorial. The environment reference accounts for every discovered runtime setting; the tool index matches the release catalog by name and schema. A reader can change the binary port and reconnect their harness using only the guide, then look up a tool directly by name.
 
 ## Adaptive harness instructions
 
