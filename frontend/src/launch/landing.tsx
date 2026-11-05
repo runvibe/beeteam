@@ -132,11 +132,11 @@ export function Landing() {
           aria-label={t("common.launchInstallTitle")}
         >
           <div className="launch-command">
-            <div className="launch-signal" key={harness ?? "initial"} aria-hidden="true">
+            <div className="launch-signal" aria-hidden="true">
               <div className="launch-signal-field" />
               <Hexagon className="launch-signal-ring" strokeWidth={0.35} />
               <Hexagon className="launch-signal-ring inner" strokeWidth={0.55} />
-              <div className="launch-signal-core">
+              <div className="launch-signal-core" key={harness ?? "initial"}>
                 {chosenIcon ? <img alt="" src={chosenIcon} /> : harness ? <Terminal /> : <Hexagon />}
               </div>
             </div>
@@ -151,7 +151,7 @@ export function Landing() {
                 </button>;
               })}
             </fieldset>
-            {command && <div className="launch-chat-prompt" key={harness}>
+            {command && <div className="launch-chat-prompt">
               <p aria-live="polite">{command}</p>
               <Button onClick={() => void copy()}>
                 {copyState === "copied" ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
