@@ -79,7 +79,7 @@ async fn bundled_resources_are_english() {
         // These are editorial words, not persisted status names, tool names or identifiers.
         for word in text.split(|c: char| !c.is_alphabetic()) {
             // Existing Mermaid node ID; its displayed label is translated in the source snapshot.
-            if resource["uri"] == "beeteam://references/collaborator-workflow" && word == "RETOMADA" {
+            if resource["uri"] == "beeteam://references/worker-workflow" && word == "RETOMADA" {
                 continue;
             }
             assert!(!["não", "tarefa", "tarefas", "usuário", "obrigatório", "retomada"].contains(&word.to_lowercase().as_str()), "Untranslated resource {}: {word}",resource["uri"]);

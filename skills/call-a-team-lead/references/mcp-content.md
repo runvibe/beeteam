@@ -7,7 +7,7 @@ The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, includ
 | Reference URI to confirm in resources/list | Editorial source |
 |---|---|
 | beeteam://skills/leader | skills/call-a-team-lead/SKILL.md |
-| beeteam://skills/collaborator | skills/call-a-collaborator/SKILL.md |
+| beeteam://skills/worker | skills/call-a-worker/SKILL.md |
 | beeteam://references/integration | skills/references/integration.md |
 | beeteam://references/handoff | skills/references/handoff.md |
 | beeteam://references/codex | skills/references/codex.md |
@@ -46,7 +46,7 @@ resolveAgentSlug, resolveTeamSlug and resolveTaskSlug resolve readable reference
 
 ## Operational workflows in self-contained packages
 
-Both call-a-team-lead and call-a-collaborator folders contain a concise SKILL.md and references/ with complete workflows (text and Mermaid), integration, handoff, Codex, examples and templates. Local links stay within each package. Workflows derive from documents approved in commit 01e77b9; operational copies remove the historical warning that the skill does not yet apply those decisions, without claiming an updated runtime.
+Both call-a-team-lead and call-a-worker folders contain a concise SKILL.md and references/ with complete workflows (text and Mermaid), integration, handoff, Codex, examples and templates. Local links stay within each package. Workflows derive from documents approved in commit 01e77b9; operational copies remove the historical warning that the skill does not yet apply those decisions, without claiming an updated runtime.
 
 When synchronizing MCP, incorporate both entrypoints, workflows and their reachable references; do not publish entrypoints with inaccessible links as though workflows were available. The backend must expose this content through actually advertised resources or content aggregated into the corresponding resource, and validate discovery/reads and prompts. This workstream defines no new runtime URIs. The table above describes the previous catalog; check resources/list after updating. Briefing/resumption/review templates now preserve mandatory assignment, two confirmations and saving before notification, without changing UUID arguments or making prompts mutative.
 

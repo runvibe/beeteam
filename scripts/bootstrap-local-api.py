@@ -47,14 +47,14 @@ def main():
     global state
     state = json.loads(STATE.read_text(encoding='utf-8')) if STATE.exists() else {'keys': {}, 'results': {}, 'requests': {}}
     context = {'mode': 'manual', 'conversationRef': 'local-integration-preview', 'approvalRef': 'user-authorized-local-integration'}
-    leader = once('leader', 'POST', '/api/v1/agents', {'name': 'Líder local', 'roleDescription': 'Fixture de integração local, sem execução automática.'})
-    worker = once('worker', 'POST', '/api/v1/agents', {'name': 'Colaborador local', 'roleDescription': 'Fixture para validar edição e relações na interface.'})
-    team = once('team', 'POST', '/api/v1/teams', {'name': 'Equipe de integração local', 'purpose': 'Dados reais de preview para verificar transporte e persistência.', 'leaderId': leader['id'], 'collaboratorIds': [worker['id']], 'coordinationContext': context})
-    board = once('board', 'POST', '/api/v1/boards', {'name': 'Bee Team local', 'description': 'Quadro de validação local da interface/API.', 'teamId': team['id']})
-    task = once('task', 'POST', f"/api/v1/boards/{board['id']}/tasks", {'title': 'Validar integração real', 'description': 'Fixture identificada de preview local.', 'specification': '# Entrega\n\nConectar a interface à API local.\n\n## Aceite\n- [ ] Edições persistem após recarregar.\n- [ ] Relações e links por slug funcionam.\n', 'authorAgentId': leader['id'], 'executorAgentId': worker['id'], 'coordinationContext': context})
-    task_path = f"/api/v1/tasks/{task['id']}"
+    leader = once('leader', 'POST', '/api/v2/agents', {'name': 'Líder local', 'roleDescription': 'Fixture de integração local, sem execução automática.'})
+    worker = once('worker', 'POST', '/api/v2/agents', {'name': 'Worker local', 'roleDescription': 'Fixture para validar edição e relações na interface.'})
+    team = once('team', 'POST', '/api/v2/teams', {'name': 'Equipe de integração local', 'purpose': 'Dados reais de preview para verificar transporte e persistência.', 'leaderId': leader['id'], 'workerIds': [worker['id']], 'coordinationContext': context})
+    board = once('board', 'POST', '/api/v2/boards', {'name': 'Bee Team local', 'description': 'Quadro de validação local da interface/API.', 'teamId': team['id']})
+    task = once('task', 'POST', f"/api/v2/boards/{board['id']}/tasks", {'title': 'Validar integração real', 'description': 'Fixture identificada de preview local.', 'specification': '# Entrega\n\nConectar a interface à API local.\n\n## Aceite\n- [ ] Edições persistem após recarregar.\n- [ ] Relações e links por slug funcionam.\n', 'authorAgentId': leader['id'], 'executorAgentId': worker['id'], 'coordinationContext': context})
+    task_path = f"/api/v2/tasks/{task['id']}"
     current = call('GET', task_path)
-    child = once('child', 'POST', f"/api/v1/boards/{board['id']}/tasks", {'title': 'Conferir persistência pelo frontend', 'parentId': task['id'], 'specification': '## Verificação\nEditar pela UI e recarregar a mesma URL.\n', 'authorAgentId': leader['id'], 'executorAgentId': worker['id'], 'coordinationContext': context}, current['version'])
+    child = once('child', 'POST', f"/api/v2/boards/{board['id']}/tasks", {'title': 'Conferir persistência pelo frontend', 'parentId': task['id'], 'specification': '## Verificação\nEditar pela UI e recarregar a mesma URL.\n', 'authorAgentId': leader['id'], 'executorAgentId': worker['id'], 'coordinationContext': context}, current['version'])
     current = call('GET', task_path)
     plan = once('plan', 'POST', task_path + '/plans', {'title': 'Plano da integração local', 'content': '# Plano\n1. Ler dados reais.\n2. Editar e recarregar.\n3. Conferir slug e relações.\n'}, current['version'])
     current = call('GET', task_path)

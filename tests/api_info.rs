@@ -71,7 +71,7 @@ async fn info_is_public_small_and_independent_of_database_and_health() {
     assert_eq!(status, 200);
     assert_eq!(headers["cache-control"], "no-store");
     assert_eq!(body["apiVersion"], env!("CARGO_PKG_VERSION"));
-    assert_eq!(body["supportedContractVersions"], json!(["v1"]));
+    assert_eq!(body["supportedContractVersions"], json!(["v1", "v2"]));
     assert_eq!(
         body.as_object().unwrap().keys().collect::<Vec<_>>(),
         vec!["apiVersion", "capabilities", "supportedContractVersions"]

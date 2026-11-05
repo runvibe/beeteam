@@ -122,7 +122,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     );
     let fid = unit.records.insert(file);
     if is_image {
-        unit.records.get_mut("agents", id)?.data["image"] = json!({"kind":"upload","imageId":fid,"mediaType":media_type,"sizeBytes":upload.bytes.len(),"contentPath":format!("/api/v1/agents/{id}/image/content"),"deletedAt":null});
+        unit.records.get_mut("agents", id)?.data["image"] = json!({"kind":"upload","imageId":fid,"mediaType":media_type,"sizeBytes":upload.bytes.len(),"contentPath":format!("/api/v2/agents/{id}/image/content"),"deletedAt":null});
     } else {
         event(unit, c, id, "attachment.added", json!({"attachmentId":fid})).await?;
     }

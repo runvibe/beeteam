@@ -23,7 +23,7 @@ No diretório `frontend`, execute `npm run audit:i18n`, `npm test` e `npm run bu
 ## Ícones dos papéis do time
 
 Em **Time → Editar metadados**, os seletores **Ícone do líder** e **Ícone do
-colaborador** salvam automaticamente escolhas independentes, com prévia SVG e
+worker** salvam automaticamente escolhas independentes, com prévia SVG e
 Unicode. Listas, membros e vínculos de agentes usam a configuração do respectivo
 time; o avatar pessoal permanece separado. O catálogo fechado tem 24 opções:
 `crown`, `user-round`, `star`, `shield`, `rocket`, `compass`, `wrench`, `lightbulb`,
@@ -34,8 +34,8 @@ as oito opções originais e os defaults mantêm seus IDs e representações.
 
 HTTP `GET /api/v1/team-role-icons` e MCP `listTeamRoleIcons` expõem o mesmo catálogo
 com nome inglês, prefixo Unicode seguro e SVG monocromático Lucide. Criação/PATCH
-de time aceitam `leaderIconId` e `collaboratorIconId`; leituras devolvem também
-`roleIcons.leader` e `roleIcons.collaborator`. Apenas IDs são persistidos. Times
+de time aceitam `leaderIconId` e `workerIconId`; leituras devolvem também
+`roleIcons.leader` e `roleIcons.worker`. Apenas IDs são persistidos. Times
 antigos recebem `crown`/👑 e `user-round`/👤 na leitura, sem migração ou alteração do
 banco, inclusive após transferência portátil. Snapshots legados de idempotência
 podem não conter os campos aditivos; uma leitura atual resolve a configuração.
@@ -131,7 +131,7 @@ Os novos testes HTTP/MCP criam bancos isolados de nomes aleatórios na instânci
 
 ### Resumo atual nos cards
 
-Todas as tasks/subtasks expõem `currentSummary`, síntese cumulativa fornecida pelo colaborador (feito, andamento e pendências/próximo passo), separada da descrição e dos registros históricos. Ausência inicial/legada é `""`; o backend não inventa texto. Progresso e mudança de status exigem síntese não vazia; edições administrativas a preservam. `record_progress` aceita `currentSummary` por task; `close_activity` exige `execution.currentSummary`, com transação/idempotência compartilhadas. Listagens e quadro já incluem o campo, sem consulta de histórico por card. Regras e exemplos: [catálogo MCP](docs/mcp-catalog.md) e [contrato Kanban](docs/kanban-openapi.yaml).
+Todas as tasks/subtasks expõem `currentSummary`, síntese cumulativa fornecida pelo worker (feito, andamento e pendências/próximo passo), separada da descrição e dos registros históricos. Ausência inicial/legada é `""`; o backend não inventa texto. Progresso e mudança de status exigem síntese não vazia; edições administrativas a preservam. `record_progress` aceita `currentSummary` por task; `close_activity` exige `execution.currentSummary`, com transação/idempotência compartilhadas. Listagens e quadro já incluem o campo, sem consulta de histórico por card. Regras e exemplos: [catálogo MCP](docs/mcp-catalog.md) e [contrato Kanban](docs/kanban-openapi.yaml).
 
 ## Especificação própria e Markdown
 
@@ -180,23 +180,23 @@ Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reu
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
 The skills now apply the approved workflows through concise entrypoints and complete local references; backend MCP snapshots require separate synchronization and verification.
-The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
+The [Worker workflow](docs/worker-workflow.md) documents preparation,
 execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
 Versioned guidance is available in [team leader](skills/call-a-team-lead/SKILL.md)
-and [collaborator](skills/call-a-collaborator/SKILL.md), with shared references
+and [worker](skills/call-a-worker/SKILL.md), with shared references
 under `skills/references/` and [multidisciplinary examples](skills/call-a-team-lead/references/team-examples.md).
 These are portable instructions. The backend MCP catalog documents the implemented
 server capabilities; this checkout supplies editorial content for its snapshots.
 
-Reusable task briefing, collaborator resumption, and delivery review templates live
+Reusable task briefing, worker resumption, and delivery review templates live
 under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
 for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`
 and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
-that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-collaborator`.
+that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-worker`.
 Each skill folder is self-contained: copy its SKILL.md and references/ together.
 The complete workflows, integration, handoff, connection procedure and prompts live
 inside each package. Shared editorial sources remain under skills/references and
@@ -215,7 +215,7 @@ executor, with no team ownership; each board has one managing team. See
 Before substantive planning, the Leader reuses or creates its own coordination task
 and records conversation decisions incrementally in Bee Team. New-team bootstrap
 materializes the collected context as soon as approved identity/team/board exist.
-This does not allow Collaborators to create tasks to authorize themselves.
+This does not allow Workers to create tasks to authorize themselves.
 
 The leader starts by asking which team to use unless the context already identifies
 one. It loads the existing leader's profile and context. For a new team, it first
@@ -230,7 +230,7 @@ they do not change personal Codex configuration or install skills.
 
 The leader skill now checks and reuses the database, API, MCP and real frontend,
 starts only missing components through the installation's supported procedure,
-and provides a verified clickable panel URL. Collaborators reuse that environment
+and provides a verified clickable panel URL. Workers reuse that environment
 and report failures without starting competing processes. See the
 [Windows/Codex procedure](skills/references/codex.md) and
 [readiness checks](skills/references/integration.md). Startup does not run preview
@@ -251,7 +251,7 @@ Listing filters and actions sit at the top right; breadcrumbs identify pages, wi
 
 The React frontend lives in `frontend/`. Run `npm ci` and `npm run dev` there. The normal preview uses the real API through a Vite `/api` proxy to `http://127.0.0.1:59865`; see `frontend/.env.example` and `frontend/README.md` for configuration. Mock mode is explicit opt-in (`VITE_API_MODE=mock`), with no automatic fallback.
 
-A skill Leader acompanha a conversa no painel (time, board e task em página inteira), com URLs reais e preservação de edição ativa. Collaborators registram trabalho sem conduzir a tela. Sem UI, o Leader mantém o registro e fornece link; atualização ao vivo depende da implementação frontend/backend verificada.
+A skill Leader acompanha a conversa no painel (time, board e task em página inteira), com URLs reais e preservação de edição ativa. Workers registram trabalho sem conduzir a tela. Sem UI, o Leader mantém o registro e fornece link; atualização ao vivo depende da implementação frontend/backend verificada.
 
 ## Atualização ao vivo
 
@@ -501,7 +501,7 @@ Entity filter popovers place search above options and focus it on opening. Typin
 Agent option lists scroll below their search field; team selectors use the five-result autocomplete described below. The icon rail reserves 56px (44px targets plus 6px padding), with 8px content padding to avoid an unused lateral gap.
 Team filters now use a true API-backed combobox: empty input shows the five most recently created teams (createdAt desc, ID tie-break), each term searches all teams with limit 5/offset 0, and no catalog scrolling or pagination is shown. Suggestions support arrow keys/Enter, selected labels and clearing; obsolete queries are aborted and cannot replace current results.
 At the end of card listings, the footer keeps only 1rem of bottom breathing space and a screen-reader status announcement; no visible end/count text or large reserved band remains.
-Team card footers link the leadership icon directly to the resolved agent slug and the collaborator count to agents filtered by team UUID and collaborator role. Both shortcuts preserve a return URL and do not activate the enclosing team card; absent/unavailable leaders have no fabricated link.
+Team card footers link the leadership icon directly to the resolved agent slug and the worker count to agents filtered by team UUID and worker role. Both shortcuts preserve a return URL and do not activate the enclosing team card; absent/unavailable leaders have no fabricated link.
 
 Configuration editing autosaves text on blur and options on change. Board metadata, profiles, team metadata, existing statuses and task autonomy share a serialized, coalescing write queue with If-Match versions. Unchanged and invalid forms are not sent. Focused fields flush on panel close; failed/in-flight drafts survive reopening within the same app session, with explicit retry and reload controls. Creation, import/export and destructive actions remain explicit. Live refresh does not replace an active draft or silently adopt a conflicting metadata version.
 The header is a single 48px breadcrumb/filter row. Global settings and theme controls live at the bottom of the navigation rail as circular 44px targets; board settings stays with contextual filters. Mobile filter controls scroll horizontally without wrapping; list scrolling still reaches the viewport bottom. The two explanatory board captions were removed without changing tasks, subtasks or history.
@@ -535,13 +535,13 @@ Board, agent and team listing cards include a consistent decorative filled type 
 Agent listing cards use a centered 56px profile avatar above the centered name, with the decorative type mark at the top left. The 272px card height, description fade and footer remain consistent; task assignee avatars are unchanged.
 
 Kanban column anchors also survive opening a task and returning, keyed by board, status and filters. When all loaded cards fit the viewport and more exist, loading continues only until overflow appears or the data ends; further pages require scroll progress. Pending requests and errors stop this bounded fill.
-Na coordenação Bee Team, toda demanda Leader→Collaborator é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
+Na coordenação Bee Team, toda demanda Leader→Worker é registrada e atribuída antes da execução. Perguntas, respostas, decisões e entregas ficam na tarefa; chats transportam apenas notificações com referência e tipo de mudança após persistência confirmada, sem ciclos de confirmação.
 
-Ao ativar Leader ou Collaborator, o próprio chat recebe respectivamente 👑 ou 🐝, antes mesmo da resolução da identidade. Mudanças de papel substituem a marca inicial sem acumular; nome/contexto útil são preservados. Leader já nomeia novos chats Collaborators autorizados com 🐝. Somente títulos de chat mudam, nunca agentes/times/slugs.
+Ao ativar Leader ou Worker, o próprio chat recebe respectivamente 👑 ou 🐝, antes mesmo da resolução da identidade. Mudanças de papel substituem a marca inicial sem acumular; nome/contexto útil são preservados. Leader já nomeia novos chats Workers autorizados com 🐝. Somente títulos de chat mudam, nunca agentes/times/slugs.
 
 Após bootstrap de identidade/time, cada interação substantiva entre agentes atualiza campos pertinentes e salva comentário completo antes da notificação. O aviso contém task, áreas realmente atualizadas, status pertinente e commentID retornado; receptor lê esse comentário por ID via MCP e o estado atual antes de agir. Validação humana pendente não implica tarefa concluída.
 
-A Leader é a interface humana do trabalho: fora do bootstrap inicial de novo chat Collaborator e de seu retorno de configuração, perguntas, escolhas, pedidos, confirmações e relatos substantivos iniciados pelo Collaborator passam por comentário e notificação à Leader, sem diálogo direto ou caixas interativas ao humano. Isso preserva metainstruções legítimas, aprovações obrigatórias do harness e trabalho independente autorizado.
+A Leader é a interface humana do trabalho: fora do bootstrap inicial de novo chat Worker e de seu retorno de configuração, perguntas, escolhas, pedidos, confirmações e relatos substantivos iniciados pelo Worker passam por comentário e notificação à Leader, sem diálogo direto ou caixas interativas ao humano. Isso preserva metainstruções legítimas, aprovações obrigatórias do harness e trabalho independente autorizado.
 
 A regra também vale para a Leader: decisões humanas são solicitadas por pergunta/opções registradas na tarefa e aviso referencial, sem caixas interativas. A resposta humana legítima é persistida antes de agir/delegar; não há encaminhamento para outra liderança nem ciclos. Bootstrap e controles obrigatórios do harness permanecem preservados.
 ### Kanban blocked-state presentation
@@ -550,11 +550,11 @@ Blocked task cards keep their lock badge and use a soft destructive-color backgr
 
 ## Leader chat title snapshot — 2026-10-30
 
-Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Collaborator chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
+Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Worker chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
 
 ## Both chat role marks — 2026-10-30
 
-Current bundled source `e73c21be0263374a26ce5ea5e655e185e7cdfea2` supersedes the earlier Leader-only rule: Leader uses 👑 and Collaborator uses 🐝 from skill activation, including existing chats and role switches. Initial role marks are replaced/normalized rather than accumulated; useful title context is preserved, and normalized discovery does not establish identity. Only chat titles are affected; agent/team names, slugs and Bee Team data are unchanged. Task-authoritative communication and the three local SQLite startup/readiness paragraphs remain intact. The 13-resource allowlist and three prompt contracts are unchanged. This is a source snapshot update; no running service or release executable is updated here, so runtime activation remains pending.
+Current bundled source `e73c21be0263374a26ce5ea5e655e185e7cdfea2` supersedes the earlier Leader-only rule: Leader uses 👑 and Worker uses 🐝 from skill activation, including existing chats and role switches. Initial role marks are replaced/normalized rather than accumulated; useful title context is preserved, and normalized discovery does not establish identity. Only chat titles are affected; agent/team names, slugs and Bee Team data are unchanged. Task-authoritative communication and the three local SQLite startup/readiness paragraphs remain intact. The 13-resource allowlist and three prompt contracts are unchanged. This is a source snapshot update; no running service or release executable is updated here, so runtime activation remains pending.
 
 ## Exact comment lookup (2026-10-30)
 
@@ -694,7 +694,7 @@ No card da síntese, título fica à esquerda e autoria/data reais à direita; n
 
 A autoria do card usa `RelativeTime` (o mesmo de Boards/Agentes), com relógio compartilhado, texto relativo em português e data absoluta no `title`/`datetime`. A sidebar mantém a data absoluta.
 
-A autoria no card reutiliza o ícone UserRound dos agentes/colaboradores; o texto preserva o tipo real (agente ou pessoa), sem criar uma nova ação.
+A autoria no card reutiliza o ícone UserRound dos agentes/workers; o texto preserva o tipo real (agente ou pessoa), sem criar uma nova ação.
 Resumos históricos podem trazer `usageReport` opcional como metadados separados do Markdown. A interface distingue métricas ausentes de zero, snapshots originais de deltas derivados, qualidade medida/estimada/indisponível e atribuição exata/compartilhada/não atribuída. Proveniência e revisões ficam em detalhes expansíveis; contadores decimais são formatados com BigInt, sem perda de precisão.
 
 A Visão geral mostra `TaskOverview.usage` como agregação autoritativa: total conhecido e estimado separados, componentes medidos, cobertura/lacunas, modelos/harnesses distintos e checkpoints de resumos com horário de reporte e status observado. `GET /tasks/{id}/usage` e `/usage/dimensions` paginam checkpoints/dimensões via Carregar mais, sem somar páginas/snapshots nem substituir o total pelo último reporte. Cache/raciocínio são subconjuntos de entrada/saída. Respostas antigas continuam exibindo ausência de agregação; resumos sem métricas permanecem válidos. Nenhuma coleta, credencial ou métrica de demonstração é criada pelo frontend; o adaptador de demonstração não sintetiza agregações de uso.
@@ -731,12 +731,12 @@ O menu global esquerdo usa padding horizontal de 12px por lado (antes 6px) e col
 O cabeçalho da tarefa usa 8 px entre título e descrição e 12 px entre os demais blocos, com padding de 12 px no resumo. O espaçamento interno do Markdown e a apresentação compacta da sidebar são preservados.
 
 O contrato de novos resumos exige `RecordExecution.usageReport` não nulo, com 1 a 32 entradas. A leitura de `ExecutionSummary` mantém o campo opcional/nulo para legado. O frontend atual apenas consulta resumos e atividades: não expõe formulário nem adaptador de criação de resumo ou `close_activity`. Nenhuma declaração de indisponibilidade ou tentativa de coleta é gerada automaticamente.
-Novo Collaborator é configurado no próprio chat: Leader cria primeiro o chat autorizado e solicita sua skill; ele identifica/reutiliza ou cria o perfil e vínculo aprovados, confirma persistência e retorna nome real com agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. A exceção inicial sem comentário cobre somente pedido/retorno de bootstrap; trabalho posterior mantém task/commentID e permissões do harness.
-## Collaborator bootstrap bundle — 2026-11-02
+Novo Worker é configurado no próprio chat: Leader cria primeiro o chat autorizado e solicita sua skill; ele identifica/reutiliza ou cria o perfil e vínculo aprovados, confirma persistência e retorna nome real com agentId/teamId e prontidão. Leader verifica antes de atribuir trabalho. A exceção inicial sem comentário cobre somente pedido/retorno de bootstrap; trabalho posterior mantém task/commentID e permissões do harness.
+## Worker bootstrap bundle — 2026-11-02
 
 Bundled Skills source `5fd5f0b280865609ab7de7a2770fefa092c21fd4` adds
-`beeteam://references/collaborator-bootstrap`. The Leader first creates an authorized
-Collaborator chat; that chat confirms/reuses or creates/configures its own profile
+`beeteam://references/worker-bootstrap`. The Leader first creates an authorized
+Worker chat; that chat confirms/reuses or creates/configures its own profile
 and team binding, then returns the real name, agentId/teamId and ready/pending.
 The Leader verifies persisted identity/binding before assigning business work.
 Only initial bootstrap, its readiness/blocker reply and strictly necessary registry
@@ -1087,4 +1087,31 @@ Capacidades HTTP anunciadas: `agents.latest-activity`, `teams.role-icons`, `task
 
 Consumidores devem ignorar identificadores desconhecidos e testar a presença do recurso necessário. Em servidores legados, 404 significa compatibilidade desconhecida; erros de rede/servidor significam indisponibilidade, não ausência de um recurso. Nenhum caminho, credencial, configuração de banco ou dado de usuário é exposto. Novos identificadores são aditivos; mudanças incompatíveis exigem novo identificador/contrato.
 
-Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-collaborator` (**Call a Collaborator**). Leader/Collaborator behavior is unchanged. The public MCP URIs `beeteam://skills/leader` and `beeteam://skills/collaborator` remain stable. Replace old local installations using the [guarded migration procedure](docs/skills-installation.md); do not install duplicate legacy aliases.
+Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-worker` (**Call a Worker**). Worker replaces the former role vocabulary while preserving assignment, cardinality and authorization rules. The Leader installs integrated packages using the [guarded migration procedure](docs/skills-installation.md), with verified backups and no duplicate legacy skill aliases. Bundle synchronization, runtime activation and adoption by existing chats are separate checks.
+
+## Worker API contract migration
+
+RA/Kanban operations use `/api/v2` and canonical Worker fields: `bindings.workerTeamId`,
+`workerCount`, `workerIds`, `workerIconId`, `roleIcons.worker`, query `workerId`,
+`role=worker`, and usage `actorRole=worker`. MCP advertises the same canonical schemas
+under unchanged operation names. Discover `roles.worker` and `v2` through `/api/v1/info`.
+Auxiliary discovery, changes, local-project and portable-transfer URLs remain unchanged.
+
+`/api/v1` is an explicit compatibility facade returning the former Collaborator vocabulary.
+Legacy input aliases are accepted on both versions and MCP, but supplying both alias and
+canonical field is rejected, even when values match. Canonical output schemas never
+advertise the aliases. Existing memberships, IDs, versions, role/cardinality rules and icon
+choices are retained. Old team JSON is read with a localized fallback; its next metadata update
+writes the canonical icon field. No database reset or applied-migration modification occurs.
+
+Conversion follows only schema-declared fields/enums and server-generated API paths.
+Names, Markdown, comments, arbitrary JSON and historical authored text are unchanged.
+Raw saved replay and portable-transfer snapshots remain unchanged; v2/MCP project typed
+historical fields to Worker, while v1 projects legacy names. Idempotency uses the stable
+legacy-normalized request representation, so equivalent v1/v2/MCP retries share identity.
+Usage evidence identity and duplicate comparisons preserve existing observations across
+the role rename without counting them twice.
+
+MCP lists only `beeteam://skills/worker` and `beeteam://references/worker-bootstrap`,
+`worker-workflow`, `worker-resumption`. The four former Collaborator URIs are supported
+as unlisted read aliases. `/openapi/ra.json` and `/openapi/kanban.json` describe v2.

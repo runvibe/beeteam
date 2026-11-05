@@ -2,7 +2,7 @@
 
 ## Required project, repositories discovered by Bee Team
 
-Leader and Collaborator identify the projects actually involved in the work and provide their name and absolute root folder. A project is required; do not substitute a generic not-applicable indication or a fictitious root. The Markdown specification continues to describe requirements/deliverables/acceptance, independently of structured metadata. Do not infer associations automatically from the text.
+Leader and Worker identify the projects actually involved in the work and provide their name and absolute root folder. A project is required; do not substitute a generic not-applicable indication or a fictitious root. The Markdown specification continues to describe requirements/deliverables/acceptance, independently of structured metadata. Do not infer associations automatically from the text.
 
 Provide only the project folders and worktrees used in the request. Do not enumerate or register every worktree of a repository merely because they share Git objects. The root is the concrete working folder; it is neither a list of changed files nor the common Git metadata directory. A worktree with .git as a file is valid. Confirm the available absolute path and its relationship to the task; ambiguity or a missing root must be resolved before filling in the project, without inventing a directory.
 

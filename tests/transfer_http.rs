@@ -290,7 +290,7 @@ async fn restored_database_reopens_and_serves_domain_http_and_mcp() {
     let key = Uuid::new_v4();
     let (status, agent) = request(
         &source_app,
-        "/api/v1/agents",
+        "/api/v2/agents",
         None,
         Some(json!({"name":"Portable agent"})),
         key,
@@ -333,7 +333,7 @@ async fn restored_database_reopens_and_serves_domain_http_and_mcp() {
     let reopened = app(dest_dir.path()).await;
     let (status, restored) = request(
         &reopened,
-        &format!("/api/v1/agents/{}", agent["id"].as_str().unwrap()),
+        &format!("/api/v2/agents/{}", agent["id"].as_str().unwrap()),
         None,
         None,
         key,

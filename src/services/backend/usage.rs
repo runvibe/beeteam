@@ -115,7 +115,7 @@ pub(super) fn report(
         let mut counted = false;
         let mut reason = "baseline_or_unavailable";
         if let Some((sid, owner, entry)) = duplicate {
-            if entry["observation"] != *observation {
+            if crate::dto::worker_contract::observation(entry["observation"].clone()) != crate::dto::worker_contract::observation(observation.clone()) {
                 return Err(Failure::new(
                     "idempotency_conflict",
                     "Evidence identity was already recorded with different content",

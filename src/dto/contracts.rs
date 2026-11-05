@@ -148,6 +148,7 @@ fn validate_bytes(doc: &Value, schema: &Value, value: &Value) -> Result<()> {
     Ok(())
 }
 pub fn query(op: &Operation, raw: Vec<(String, String)>) -> Result<BTreeMap<String, Value>> {
+    let raw = super::worker_contract::query(op, raw)?;
     let explicit_archived = raw.iter().any(|(key, _)| key == "archived");
     let mut result = BTreeMap::new();
     for (key, value) in raw {

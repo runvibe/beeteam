@@ -48,18 +48,18 @@ Advertised reads (check the catalog and params/query envelopes before calling):
 
 | Need | HTTP GET | MCP operation |
 | --- | --- | --- |
-| Task executions | /api/v1/tasks/{taskId}/executions | listTaskExecutions |
-| Task intervals | /api/v1/tasks/{taskId}/execution-intervals | listTaskExecutionIntervals |
-| Explicit events | /api/v1/tasks/{taskId}/execution-tracking-events | listTaskExecutionTrackingEvents |
-| Complete total, independent of the page | /api/v1/tasks/{taskId}/execution-interval-usage | getTaskExecutionIntervalUsage |
-| Open intervals across tasks | /api/v1/execution-intervals | listOpenExecutionIntervals |
-| Auditable revisions | /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions | listTaskExecutionIntervalRevisions |
+| Task executions | /api/v2/tasks/{taskId}/executions | listTaskExecutions |
+| Task intervals | /api/v2/tasks/{taskId}/execution-intervals | listTaskExecutionIntervals |
+| Explicit events | /api/v2/tasks/{taskId}/execution-tracking-events | listTaskExecutionTrackingEvents |
+| Complete total, independent of the page | /api/v2/tasks/{taskId}/execution-interval-usage | getTaskExecutionIntervalUsage |
+| Open intervals across tasks | /api/v2/execution-intervals | listOpenExecutionIntervals |
+| Auditable revisions | /api/v2/tasks/{taskId}/execution-intervals/{intervalId}/revisions | listTaskExecutionIntervalRevisions |
 
 The global query uses source/sessionId/coverageRootSessionId/agentId and returns open intervals by default. listTaskExecutions filters state; listTaskExecutionIntervals filters state/executionId. Lists and revisions accept offset/limit; events and totals use the parameters advertised in the catalog, without invented filters. To detect overlap, do not restrict the search to your own agent if that would hide the same source in use by another. Paginate offset/limit with items/total/hasMore/nextOffset; IDs and startSummaryId/endSummaryId provide links, not timestamps. Also keep evidence IDs and confirmed boundary coverage.
 
 Totals: validTotalTokens excludes open/incomplete/invalid intervals; known portions go into partialTotalTokens. Durations observedDurationMs (sum) and elapsedDurationMs (union of closed periods) are distinct. Values are decimal strings; absence is null, actual zero is "0". Use the complete aggregate, do not sum only the listed page. coverage includes counts of valid, open, incomplete, invalid intervals and untracked summaries.
 
-reconcileTaskExecutionInterval corresponds to POST /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions: it references boundaries by summaryId/evidenceId, reason, and expectedVersion, preserving the previous revision. The ReconcileExecutionInterval body accepts reason, invalidate, startEvidence, and endEvidence; boundaries are arrays of {summaryId,evidenceId}, if provided. expectedVersion belongs in the envelope/If-Match, not the body. Check the catalog before sending. Correction does not change the original evidence/summary or silently reopen a closed interval; it preserves identity/non-overlap. Lost coverage does not become zero or presumed backfill.
+reconcileTaskExecutionInterval corresponds to POST /api/v2/tasks/{taskId}/execution-intervals/{intervalId}/revisions: it references boundaries by summaryId/evidenceId, reason, and expectedVersion, preserving the previous revision. The ReconcileExecutionInterval body accepts reason, invalidate, startEvidence, and endEvidence; boundaries are arrays of {summaryId,evidenceId}, if provided. expectedVersion belongs in the envelope/If-Match, not the body. Check the catalog before sending. Correction does not change the original evidence/summary or silently reopen a closed interval; it preserves identity/non-overlap. Lost coverage does not become zero or presumed backfill.
 
 ## Sequence examples (without invented payloads)
 
@@ -102,7 +102,7 @@ Do not execute these examples or copy IDs, names, counters, or sources into actu
           "kind": "agent",
           "id": "10000000-0000-7000-8000-000000000002"
         },
-        "actorRole": "collaborator",
+        "actorRole": "worker",
         "provider": "example-provider",
         "modelId": "example-observed-model",
         "scope": "session",

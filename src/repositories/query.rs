@@ -36,8 +36,8 @@ fn projection(table: &str, c: &Command) -> String {
         "listTeamMembers" => "jsonb_build_object('agentId',r.id,'name',r.data->'name','role',member.role,'agentArchivedAt',r.archived_at)".into(),
         "listAgentActivities" => format!("{base} || jsonb_build_object('_archived',{},'taskId',r.id,'isCurrentExecutor',r.executor_agent_id=actor.id,'lastWorkedAt',own.created_at,'latestOwnSummaryId',own.id,'taskUpdatedAt',r.updated_at,'_worked',own.id IS NOT NULL,'_authored',r.author_agent_id=actor.id)", archived()),
         _ if table=="tasks" => format!("{base} || jsonb_build_object('_archived',{})",archived()),
-        _ if table=="agents" => format!("{base} || jsonb_build_object('bindings',jsonb_build_object('leaderTeamId',(SELECT id FROM teams WHERE leader_id=r.id AND deleted_at IS NULL),'collaboratorTeamId',(SELECT team_id FROM memberships WHERE agent_id=r.id AND deleted_at IS NULL)))"),
-        _ if table=="teams" => format!("{base} || jsonb_build_object('collaboratorCount',(SELECT count(*) FROM memberships WHERE team_id=r.id AND deleted_at IS NULL))"),
+        _ if table=="agents" => format!("{base} || jsonb_build_object('bindings',jsonb_build_object('leaderTeamId',(SELECT id FROM teams WHERE leader_id=r.id AND deleted_at IS NULL),'workerTeamId',(SELECT team_id FROM memberships WHERE agent_id=r.id AND deleted_at IS NULL)))"),
+        _ if table=="teams" => format!("{base} || jsonb_build_object('workerCount',(SELECT count(*) FROM memberships WHERE team_id=r.id AND deleted_at IS NULL))"),
         _ => base.into(),
     }
 }
@@ -53,7 +53,7 @@ fn base(c: &Command, table: &'static str) -> Result<QueryBuilder<Postgres>> {
         .push(" r ");
     if c.operation == "listTeamMembers" {
         q.push("JOIN (SELECT leader_id AS id,'leader' AS role FROM teams WHERE id=").push_bind(c.id("teamId")?)
-            .push(" UNION ALL SELECT agent_id,'collaborator' FROM memberships WHERE deleted_at IS NULL AND team_id=").push_bind(c.id("teamId")?)
+            .push(" UNION ALL SELECT agent_id,'worker' FROM memberships WHERE deleted_at IS NULL AND team_id=").push_bind(c.id("teamId")?)
             .push(") member ON member.id=r.id ");
     }
     if c.operation == "listAgentActivities" {
@@ -85,7 +85,7 @@ fn base(c: &Command, table: &'static str) -> Result<QueryBuilder<Postgres>> {
         q.push(" AND NOT EXISTS(SELECT 1 FROM plan_revisions newer WHERE newer.plan_id=r.plan_id AND newer.deleted_at IS NULL AND (newer.data->>'revision')::bigint > (r.data->>'revision')::bigint)");
     }
     if table == "teams" {
-        if let Some(id) = c.query.get("collaboratorId") {
+        if let Some(id) = c.query.get("workerId") {
             q.push(" AND EXISTS(SELECT 1 FROM memberships WHERE team_id=r.id AND deleted_at IS NULL AND data->'agentId'=").push_bind(id.clone()).push(")");
         }
     }
@@ -113,8 +113,8 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
         let role = c.q("role");
         let fields: &[&str] = match role.as_str() {
             Some("leader") => &["leaderTeamId"],
-            Some("collaborator") => &["collaboratorTeamId"],
-            _ => &["leaderTeamId", "collaboratorTeamId"],
+            Some("worker") => &["workerTeamId"],
+            _ => &["leaderTeamId", "workerTeamId"],
         };
         q.push(" AND (");
         for (i, f) in fields.iter().enumerate() {
@@ -141,7 +141,7 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
                 | "includeRemoved"
                 | "limitPerColumn"
                 | "relation"
-                | "collaboratorId"
+                | "workerId"
         ) || (c.operation == "listAgents" && matches!(key.as_str(), "role" | "teamId"))
         {
             continue;
@@ -260,7 +260,7 @@ pub(super) async fn select(tx: &mut Transaction<'_, Postgres>, c: &Command) -> R
             | "sequence"
             | "progress"
             | "version"
-            | "collaboratorCount"
+            | "workerCount"
             | "sizeBytes"
     ) {
         q.push("(");

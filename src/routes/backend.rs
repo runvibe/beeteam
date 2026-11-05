@@ -28,6 +28,7 @@ pub fn router(json_limit: usize) -> Router<AppState> {
             _ => continue,
         };
         router = router.route(&op.path, on(method, dispatch));
+        router = router.route(&op.path.replacen("/api/v2", "/api/v1", 1), on(method, dispatch));
     }
     router
         .layer(axum::extract::DefaultBodyLimit::max(22 * 1024 * 1024))
@@ -108,9 +109,11 @@ async fn handle(
     request: Request,
     json_limit: usize,
 ) -> Result<Response> {
+    let legacy = path.starts_with("/api/v1/");
+    let canonical_path = path.replacen("/api/v1", "/api/v2", 1);
     let op = OPERATIONS
         .iter()
-        .find(|o| o.path == path && o.method == request.method().as_str())
+        .find(|o| o.path == canonical_path && o.method == request.method().as_str())
         .ok_or_else(Failure::missing)?;
     let headers = request.headers();
     for name in ["X-Actor-Kind", "X-Actor-Id", "If-Match", "Idempotency-Key"] {
@@ -210,7 +213,8 @@ async fn handle(
         idempotency_key,
         upload,
     };
-    let result = state.backend().execute(command).await?;
+    let mut result = state.backend().execute(command).await?;
+    if legacy { crate::dto::worker_contract::response(op, &mut result.data, true)?; }
     let mut response = if let Some(file) = result.file {
         let mut response = Response::new(Body::from(file.bytes));
         let name: String = file
@@ -253,13 +257,13 @@ async fn handle(
     }
     if op.status == 201 {
         if let Some(id) = result.created_id {
-            let mut location = op.path.clone();
+            let mut location = path.clone();
             for (key, value) in params {
                 location = location.replace(&format!("{{{key}}}"), &value);
             }
             location = match op.name.as_str() {
                 "createAgent" | "createTeam" | "createBoard" => format!("{location}/{id}"),
-                "createTask" => format!("/api/v1/tasks/{id}"),
+                "createTask" => format!("/api/{}/tasks/{id}", if legacy { "v1" } else { "v2" }),
                 "uploadAgentImage" => location,
                 _ => format!("{location}#{id}"),
             };

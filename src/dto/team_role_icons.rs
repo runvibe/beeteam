@@ -17,7 +17,7 @@ pub static CATALOG: LazyLock<Vec<TeamRoleIcon>> = LazyLock::new(|| {
 });
 
 pub const LEADER_DEFAULT: &str = "crown";
-pub const COLLABORATOR_DEFAULT: &str = "user-round";
+pub const WORKER_DEFAULT: &str = "user-round";
 
 pub fn icon(id: &str) -> Option<&'static TeamRoleIcon> {
     CATALOG.iter().find(|icon| icon.id == id)
