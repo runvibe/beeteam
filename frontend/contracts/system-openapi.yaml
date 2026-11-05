@@ -1,0 +1,31 @@
+openapi: 3.1.0
+info:
+  title: Bee Team installation discovery
+  version: v1
+paths:
+  /api/v1/info:
+    get:
+      operationId: getApiInfo
+      responses:
+        '200':
+          description: Installed software and enabled capabilities; additive identifiers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+components:
+  schemas:
+    ApiInfo:
+      type: object
+      required: [apiVersion, supportedContractVersions, capabilities]
+      properties:
+        apiVersion:
+          type: string
+        supportedContractVersions:
+          type: array
+          items:
+            type: string
+        capabilities:
+          type: array
+          items:
+            type: string

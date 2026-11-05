@@ -4,6 +4,8 @@ import boardsEn from "./catalogs/boards.en.json";
 import boardsPt from "./catalogs/boards.pt.json";
 import commonEn from "./catalogs/common.en.json";
 import commonPt from "./catalogs/common.pt.json";
+import compatibilityEn from "./catalogs/compatibility.en.json";
+import compatibilityPt from "./catalogs/compatibility.pt.json";
 import errorsEn from "./catalogs/errors.en.json";
 import errorsPt from "./catalogs/errors.pt.json";
 import executionEn from "./catalogs/execution.en.json";
@@ -26,6 +28,7 @@ export const resources = {
       agents: agentsEn,
       boards: boardsEn,
       common: commonEn,
+      compatibility: compatibilityEn,
       errors: errorsEn,
       execution: executionEn,
       files: filesEn,
@@ -41,6 +44,7 @@ export const resources = {
       agents: agentsPt,
       boards: boardsPt,
       common: commonPt,
+      compatibility: compatibilityPt,
       errors: errorsPt,
       execution: executionPt,
       files: filesPt,

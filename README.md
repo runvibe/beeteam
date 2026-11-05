@@ -48,6 +48,22 @@ não há renomeação automática de chats existentes. Sem time/consulta dispon�
 local não instala nem atualiza skills globais. Catálogo e licença dos SVGs ficam
 em `docs/team-role-icons.json` e `docs/team-role-icons-LICENSE`.
 
+## Compatibilidade da interface e API
+
+A interface consulta `GET /api/v1/info` e mantém uma leitura compartilhada de
+`apiVersion` (software instalado), `supportedContractVersions` e `capabilities`.
+A compatibilidade depende do contrato `v1` e dos identificadores de recursos,
+nunca da comparação de releases. Configurações globais mostram a versão, os
+contratos e os recursos anunciados. Identificadores novos são aceitos.
+
+Contrato incompatível, descoberta indisponível (404) e falha de conexão/servidor
+recebem avisos distintos EN/PT com nova tentativa. Os fluxos existentes continuam
+montados, preservando rascunhos. Os seletores de ícones exigem `teams.role-icons`;
+sem suporte confirmado, apenas esses controles ficam indisponíveis e o autosave
+de metadados omite os campos de ícones. Uma falha transitória de atualização mantém
+o último suporte verificado e exibe o aviso de conexão. Isso não atualiza nem
+reinicia a API e não muda hospedagem, CORS ou autenticação.
+
 ## Executar
 
 O binário de distribuição inicia sem variáveis: SQLite em `~/.beeteam/beeteam.sql`,

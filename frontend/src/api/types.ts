@@ -100,6 +100,9 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  info(
+    signal?: AbortSignal,
+  ): Promise<import("./generated/system/ApiInfo").ApiInfo>;
   agentLatestActivity(
     agentId: string,
     signal?: AbortSignal,

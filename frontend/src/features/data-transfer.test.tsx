@@ -10,6 +10,8 @@ import {
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { DataTransferPanel, DataTransferSettings } from "./data-transfer";
+import { ApiProvider } from "@/api/context";
+import { createMockApi } from "@/api/mock";
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -131,7 +133,9 @@ it.each(["getter", "methods"])(
           new QueryClient({ defaultOptions: { queries: { retry: false } } })
         }
       >
-        <DataTransferSettings />
+        <ApiProvider api={createMockApi({ delay: 0 })}>
+          <DataTransferSettings />
+        </ApiProvider>
       </QueryClientProvider>,
     );
     await userEvent.click(

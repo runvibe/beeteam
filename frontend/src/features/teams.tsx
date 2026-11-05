@@ -4,6 +4,8 @@ import {
   roleIconId,
 } from "@/components/team-role-icon";
 import { DetailRecordList } from "./detail-record-list";
+import { useApiCompatibility } from "@/api/compatibility";
+import { teamSettingsPatch } from "./team-settings-patch";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -306,6 +308,8 @@ function TeamDetail({ id }: { id: string }) {
 export function TeamForm({ team: latest }: { team: Team }) {
   useLocale();
   const api = useApi();
+  const compatibility = useApiCompatibility();
+  const iconsSupported = compatibility.supports("teams.role-icons");
   const autosave = useSettingsAutosave({
     resource: "teams",
     load: () => api.get("teams", latest.id),
@@ -317,22 +321,52 @@ export function TeamForm({ team: latest }: { team: Team }) {
       leaderIconId: roleIconId(team, "leader"),
       collaboratorIconId: roleIconId(team, "collaborator"),
     }),
-    save: (draft, version) => api.patch("teams", latest.id, draft, version),
+    save: (draft, version) =>
+      api.patch(
+        "teams",
+        latest.id,
+        teamSettingsPatch(draft, iconsSupported),
+        version,
+      ),
   });
   const { name, purpose, context } = autosave.draft;
   return (
     <form {...autosave.formProps} className="detail-section">
       <FieldGroup>
         <RoleIconSelect
+          disabled={!iconsSupported}
           role="leader"
           value={autosave.draft.leaderIconId}
           onChange={(id) => autosave.change("leaderIconId", id, true)}
         />
         <RoleIconSelect
+          disabled={!iconsSupported}
           role="collaborator"
           value={autosave.draft.collaboratorIconId}
           onChange={(id) => autosave.change("collaboratorIconId", id, true)}
         />
+        {!iconsSupported && (
+          <div>
+            <p className="small-note" role="status">
+              {tr(
+                compatibility.status === "compatible"
+                  ? "compatibility.iconsMissing"
+                  : "compatibility.iconsUnverified",
+              )}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              aria-disabled={compatibility.isFetching}
+              onClick={() => {
+                if (!compatibility.isFetching) void compatibility.refetch();
+              }}
+            >
+              {tr("compatibility.retry")}
+            </Button>
+          </div>
+        )}
         <Field>
           <FieldLabel htmlFor="team-name">{tr("agents.name")}</FieldLabel>
           <Input

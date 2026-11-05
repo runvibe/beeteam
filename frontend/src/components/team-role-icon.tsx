@@ -75,10 +75,12 @@ export function RoleIconSelect({
   role,
   value,
   onChange,
+  disabled = false,
 }: {
   role: TeamRole;
   value: TeamRoleIconId;
   onChange: (value: TeamRoleIconId) => void;
+  disabled?: boolean;
 }) {
   useLocale();
   const label = tr(
@@ -88,6 +90,7 @@ export function RoleIconSelect({
     <Field>
       <FieldLabel htmlFor={`team-${role}-icon`}>{label}</FieldLabel>
       <Select
+        disabled={disabled}
         value={value}
         onValueChange={(id) => onChange(id as TeamRoleIconId)}
       >
