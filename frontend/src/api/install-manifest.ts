@@ -46,9 +46,12 @@ export function parseInstallManifest(value: unknown): InstallManifest {
   const artifacts = data.artifacts.map((value) => {
     const item = object(value);
     if (
-      !["windows", "linux", "macos"].includes(String(item.os)) ||
-      !["x64", "arm64"].includes(String(item.arch)) ||
-      !["zip", "tar.gz"].includes(String(item.format)) ||
+      typeof item.os !== "string" ||
+      !["windows", "linux", "macos"].includes(item.os) ||
+      typeof item.arch !== "string" ||
+      !["x64", "arm64"].includes(item.arch) ||
+      typeof item.format !== "string" ||
+      !["zip", "tar.gz"].includes(item.format) ||
       typeof item.fileName !== "string" ||
       !item.fileName ||
       /[/\\]/.test(item.fileName) ||
@@ -73,6 +76,8 @@ export function parseInstallManifest(value: unknown): InstallManifest {
     skills.ref !== `v${data.appVersion}` ||
     skills.path !== "skills" ||
     !Array.isArray(names) ||
+    names.length !== 3 ||
+    new Set(names).size !== 3 ||
     !names.every((name) => typeof name === "string") ||
     !["setup-bee-team", "get-a-team-lead", "get-a-worker"].every((name) =>
       names.includes(name),

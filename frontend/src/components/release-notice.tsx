@@ -11,6 +11,7 @@ export function ReleaseNotice({
   useLocale();
   const query = useQuery({
     queryKey: ["public-install-manifest"],
+    meta: { scope: "public" },
     queryFn: async ({ signal }) => {
       const timeout = AbortSignal.timeout(5000);
       const response = await fetch(

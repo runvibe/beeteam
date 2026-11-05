@@ -25,6 +25,13 @@ it("accepts a published release and preserves its verified metadata", () => {
   expect(parseInstallManifest(example)).toEqual(example);
 });
 it.each([
+  { ...example, artifacts: [{ ...example.artifacts[0], os: ["windows"] }] },
+  { ...example, artifacts: [{ ...example.artifacts[0], arch: ["x64"] }] },
+  { ...example, artifacts: [{ ...example.artifacts[0], format: ["zip"] }] },
+  {
+    ...example,
+    skills: { ...example.skills, names: [...example.skills.names, "extra"] },
+  },
   { ...example, schemaVersion: 2 },
   { ...example, appVersion: "invalid" },
   { ...example, artifacts: [] },

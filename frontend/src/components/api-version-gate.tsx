@@ -23,6 +23,7 @@ export function ApiVersionGate({
   const api = useApi();
   const query = useQuery({
     queryKey: apiInfoKey,
+    networkMode: "always",
     queryFn: async ({ signal }) => parseApiInfo(await api.info(signal)),
     retry: false,
     refetchInterval: (state) =>
