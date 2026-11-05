@@ -178,6 +178,9 @@ export function Landing() {
           <p>{t("common.launchFooter")}</p>
           <RepositoryLink />
         </div>
+        <small className="launch-footer-notice">
+          {t("common.launchFooterNotice", { year: String(new Date().getFullYear()) })}
+        </small>
       </footer>
     </div>
   );
