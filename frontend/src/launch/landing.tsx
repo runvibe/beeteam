@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { Hexagon, ArrowUpRight, Check, Copy, Globe, Terminal } from "lucide-react";
 import { t, useLocale, setLocalePreference } from "@/i18n";
 import { Button } from "@/components/ui/button";
@@ -9,8 +10,10 @@ import { themeController } from "@/state/theme-runtime";
 import { navigate, currentUrl } from "@/routing/location";
 import "./landing.css";
 import { HeroBoard } from "./hero-board";
+import { HowItWorks } from "./how-it-works";
 
 export function Landing() {
+  const reducedMotion = useReducedMotion();
   const header = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
     const el = header.current;
@@ -112,20 +115,7 @@ export function Landing() {
             <p className="launch-caption">{t("common.launchLocalOpen")}</p>
           </div>
         </section>
-        <section
-          className="launch-story"
-          aria-labelledby="launch-workflow-title"
-        >
-          <h2 id="launch-workflow-title">{t("common.launchWorkflowTitle")}</h2>
-          <div>
-            <p>{t("common.launchWorkflowBody")}</p>
-            <ul>
-              <li>{t("common.launchTeamBenefit")}</li>
-              <li>{t("common.launchEvidenceBenefit")}</li>
-              <li>{t("common.launchContextBenefit")}</li>
-            </ul>
-          </div>
-        </section>
+        <HowItWorks />
         <section
           id="install"
           className="launch-install"
@@ -151,7 +141,12 @@ export function Landing() {
                 </button>;
               })}
             </fieldset>
-            {command && <>
+            {command && <motion.div
+              initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              transition={{ duration: reducedMotion ? 0 : 0.34, ease: "easeOut" }}
+              style={{ overflow: "hidden" }}
+            >
               <strong className="launch-copy-hint">{t("common.installCopyHint")}</strong>
               <div className="launch-chat-prompt">
               <div className="launch-copy-heading">
@@ -160,9 +155,13 @@ export function Landing() {
                 {t("common.copyChatPrompt")}
                 </Button>
               </div>
-              <p aria-live="polite">{command}</p>
+              <motion.p key={harness} aria-live="polite"
+                initial={reducedMotion ? false : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reducedMotion ? 0 : 0.24 }}
+              >{command}</motion.p>
               </div>
-            </>}
+            </motion.div>}
             {copyState === "failed" && (
               <p role="status">
                 {t("common.launchCopyFailed")}

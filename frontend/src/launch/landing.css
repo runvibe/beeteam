@@ -164,7 +164,7 @@
 .launch-guide-link { display: flex; justify-content: flex-end; margin-top: 1rem; }
 .launch-guide-link a { display: inline-flex; align-items: center; gap: .35rem; font-size: .875rem; color: var(--muted-foreground); }
 @media (prefers-reduced-motion: no-preference) {
-  .launch-signal-core, .launch-chat-prompt { animation: launch-appear .4s ease-out both; }
+  .launch-signal-core { animation: launch-appear .4s ease-out both; }
   .launch-signal-ring.inner { animation: launch-lock .65s ease-out both; }
   .launch-picker button { transition: transform .2s ease, background-color .2s ease; }
   .launch-picker button:hover { transform: translateY(-2px); }
