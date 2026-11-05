@@ -2,13 +2,32 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
-import { useEffect } from "react";
-import { useApi } from "@/api/context";
+import { useList } from "@/api/context";
 import { ApiVersionGate } from "./api-version-gate";
+import { onlineManager } from "@tanstack/react-query";
 beforeEach(() =>
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline"))),
 );
 afterEach(() => vi.unstubAllGlobals());
+it("discovers loopback and loads business data while the browser reports offline", async () => {
+  onlineManager.setOnline(false);
+  try {
+    const api = createMockApi({ delay: 0 });
+    api.info = vi.fn().mockResolvedValue(info("1.2.3"));
+    const list = vi.spyOn(api, "list");
+    render(
+      <ApiProvider api={api}>
+        <ApiVersionGate expectedVersion="1.2.3">
+          <Business />
+        </ApiVersionGate>
+      </ApiProvider>,
+    );
+    await screen.findByText("Business panel");
+    expect(list).toHaveBeenCalledTimes(1);
+  } finally {
+    onlineManager.setOnline(true);
+  }
+});
 
 const info = (apiVersion: string) => ({
   apiVersion,
@@ -16,10 +35,7 @@ const info = (apiVersion: string) => ({
   capabilities: ["roles.worker"],
 });
 function Business() {
-  const api = useApi();
-  useEffect(() => {
-    void api.list("boards");
-  }, [api]);
+  useList("boards");
   return <p>Business panel</p>;
 }
 it.each(["1.2.2", "1.2.4", "invalid"])(
