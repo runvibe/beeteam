@@ -1,7 +1,7 @@
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
-  title: Bee Team Kanban — contrato proposto
+  title: Get Bee Team Kanban — contrato proposto
   version: 0.1.0-draft
   description: Revisão documental final. Domínio boards, tasks, times e agentes. Board tem um time
     gestor obrigatório e transferível; Task não tem vínculo direto com time. Times agrupam agentes e
@@ -11,10 +11,10 @@ info:
     disponíveis a todos. Contexto é o board que originou a task principal, preservado por toda a
     cadeia recursiva, mesmo em outros boards. Origem manual força manual; origem automatic força
     automatic; origem standard usa somente autonomyMode da task atual, sem herança da flag do pai.
-    Board de destino não interfere. Cálculo não altera configurações persistidas; Bee Team não
+    Board de destino não interfere. Cálculo não altera configurações persistidas; Get Bee Team não
     executa tarefas. Sem autenticação, autoria declarada não verificada. Backend Rust/PostgreSQL
     >=18; IDs persistidos UUID v7, referências externas opacas; exclusão lógica deleted_at/JSON
-    deletedAt, archivedAt separado. offset/limit e filtros. Harness executa, Bee Team
+    deletedAt, archivedAt separado. offset/limit e filtros. Harness executa, Get Bee Team
     armazena/consulta; frontend/backend/skills seguem pausados nesta revisão.
   x-confirmed-decisions:
     - board-creator-preserved

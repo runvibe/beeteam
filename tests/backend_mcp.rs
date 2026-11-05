@@ -56,6 +56,10 @@ async fn success(app: &Router, name: &str, args: Value) -> Value {
 async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let (app, pool) = app_with_pool().await;
     let init=rpc(&app,"initialize",json!({"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}})).await;
+    assert_eq!(init["result"]["serverInfo"]["name"],"beeteam-mcp");
+    let instructions = init["result"]["instructions"].as_str().unwrap();
+    assert!(instructions.starts_with("Get Bee Team local storage."));
+    assert!(!instructions.contains("Get Get Bee Team"));
     assert!(init["result"]["capabilities"].get("resources").is_some());
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
@@ -114,11 +118,11 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
-            "beeteam://skills/leader" => "call-a-team-lead/SKILL.md".to_owned(),
-            "beeteam://skills/worker" => "call-a-worker/SKILL.md".to_owned(),
+            "beeteam://skills/leader" => "get-a-team-lead/SKILL.md".to_owned(),
+            "beeteam://skills/worker" => "get-a-worker/SKILL.md".to_owned(),
             "beeteam://references/content-manifest" => "prompts/content-manifest.json".to_owned(),
             "beeteam://references/team-examples" => {
-                "call-a-team-lead/references/team-examples.md".to_owned()
+                "get-a-team-lead/references/team-examples.md".to_owned()
             }
             _ => {
                 let name = uri.rsplit('/').next().unwrap();
@@ -496,13 +500,13 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     for (uri, name, invocation) in [
         (
             "beeteam://skills/leader",
-            "Call a Team Lead",
-            "call-a-team-lead",
+            "Get a Team Lead",
+            "get-a-team-lead",
         ),
         (
             "beeteam://skills/worker",
-            "Call a Worker",
-            "call-a-worker",
+            "Get a Worker",
+            "get-a-worker",
         ),
     ] {
         let matches: Vec<_> = resources["result"]["resources"]
@@ -531,8 +535,8 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();
         let uri = match path {
-            "call-a-team-lead/SKILL.md" => "beeteam://skills/leader".to_owned(),
-            "call-a-worker/SKILL.md" => "beeteam://skills/worker".to_owned(),
+            "get-a-team-lead/SKILL.md" => "beeteam://skills/leader".to_owned(),
+            "get-a-worker/SKILL.md" => "beeteam://skills/worker".to_owned(),
             "prompts/content-manifest.json" => "beeteam://references/content-manifest".to_owned(),
             _ => format!(
                 "beeteam://references/{}",

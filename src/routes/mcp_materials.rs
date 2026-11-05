@@ -24,13 +24,13 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     ),
     (
         "beeteam://skills/leader",
-        "Call a Team Lead",
-        include_str!("../../resources/bee-team/call-a-team-lead/SKILL.md"),
+        "Get a Team Lead",
+        include_str!("../../resources/bee-team/get-a-team-lead/SKILL.md"),
     ),
     (
         "beeteam://skills/worker",
-        "Call a Worker",
-        include_str!("../../resources/bee-team/call-a-worker/SKILL.md"),
+        "Get a Worker",
+        include_str!("../../resources/bee-team/get-a-worker/SKILL.md"),
     ),
     (
         "beeteam://references/integration",
@@ -50,7 +50,7 @@ pub const MATERIALS: &[(&str, &str, &str)] = &[
     (
         "beeteam://references/team-examples",
         "Team examples",
-        include_str!("../../resources/bee-team/call-a-team-lead/references/team-examples.md"),
+        include_str!("../../resources/bee-team/get-a-team-lead/references/team-examples.md"),
     ),
     (
         "beeteam://references/leader-onboarding-flows",
@@ -95,7 +95,7 @@ pub fn resources() -> Value {
     let source = provenance["sourceCommit"]
         .as_str()
         .expect("bundled source commit");
-    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled English Skills commit {source} plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
+    json!({"resources":MATERIALS.iter().map(|(uri,name,_)|json!({"uri":uri,"name":name,"mimeType":if uri.ends_with("content-manifest") { "application/json" } else { "text/markdown" },"description":format!("Discover current resources through resources/list. Bundled English Skills commit {source} plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{{name}}; workflow and prompt templates are listed resources. Resource: {}. No filesystem access or global installation.", uri)})).collect::<Vec<_>>()})
 }
 pub fn read(uri: &str) -> Result<Value> {
     let canonical = match uri {
