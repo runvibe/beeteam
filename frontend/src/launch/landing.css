@@ -154,6 +154,9 @@
 .launch-signal-ring.inner { height: 68%; transform: rotate(30deg); opacity: .8; color: var(--foreground); }
 .launch-signal-core { display: grid; place-items: center; width: 4.25rem; height: 4.25rem; border-radius: 18px; background: var(--background); border: 1px solid var(--border); }
 .launch-signal-core :is(img, svg) { width: 2.3rem; height: 2.3rem; }
+@media (max-width: 767px) {
+  .launch-signal-core { background: transparent; border: 0; }
+}
 .dark .launch-signal-core img { filter: invert(1); }
 .launch-guide-link { display: flex; justify-content: flex-end; margin-top: 1rem; }
 .launch-guide-link a { display: inline-flex; align-items: center; gap: .35rem; font-size: .875rem; color: var(--muted-foreground); }
