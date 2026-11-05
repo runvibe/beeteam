@@ -21,6 +21,7 @@ export function ReleaseNotice({
           version: query.data.appVersion,
         })}
       </p>
+      <p>{t("common.updateVersionDetails", { current: installedVersion, available: query.data.appVersion })}</p>
       <details>
         <summary>{t("common.updateDownloads")}</summary>
         <p>{t("common.setupUpdateGuidance")}</p>

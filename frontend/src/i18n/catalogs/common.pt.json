@@ -261,6 +261,8 @@
   "copyChatPrompt": "Copiar pedido",
   "pwaUpdateTitle": "Atualização do app pronta",
   "pwaUpdateBody": "Uma nova versão do app está pronta. Salve seu trabalho em todas as abas do app antes de recarregar.",
+  "updateVersionDetails": "Versão em uso: {{current}} · Versão disponível: {{available}}",
+  "updateVersionChecking": "Verificando…",
   "pwaReload": "Recarregar app",
   "pwaUpdateFailed": "A atualização continua pendente. Recarregue quando seu trabalho estiver salvo.",
   "pwaOtherTabs": "Salve seu trabalho e feche as outras abas do app Bee Team. Depois, recarregue aqui.",
