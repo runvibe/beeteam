@@ -11,7 +11,7 @@
 .launch-page .tour > header h2 {
   max-width: none;
   font-size: clamp(2.6rem, 5.4vw, 5.5rem);
-  font-weight: 425;
+  font-weight: 450;
   line-height: 0.99;
   letter-spacing: -0.065em;
 }
@@ -30,7 +30,7 @@
 .tour-copy h3 {
   font-size: clamp(1.8rem, 3.2vw, 3.4rem);
   max-width: 15ch;
-  font-weight: 425;
+  font-weight: 450;
   letter-spacing: -0.055em;
   line-height: 1.04;
   text-wrap: balance;

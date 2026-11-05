@@ -1,5 +1,9 @@
+@import "@fontsource-variable/manrope";
+
 .launch-page {
-  font-weight: 375;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 400;
   --launch-accent: #b75629;
   --launch-gutter: max(clamp(1.25rem, 5vw, 5rem), calc((100% - 1440px) / 2));
   margin: auto;
@@ -60,7 +64,7 @@
 }
 .launch-intro h1 {
   font-size: clamp(2.75rem, 4.6vw, 5rem);
-  font-weight: 425;
+  font-weight: 450;
   line-height: 1.04;
   letter-spacing: -0.045em;
   max-width: 11ch;
@@ -96,6 +100,7 @@
   height: 2.75rem;
   padding-block: 0;
   align-items: center;
+  font-weight: 500;
 }
 .launch-caption,
 .launch-product figcaption {
@@ -124,7 +129,7 @@
 }
 .launch-page h2 {
   font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 425;
+  font-weight: 450;
   line-height: 1.2;
   letter-spacing: -0.03em;
   max-width: 18ch;
