@@ -59,7 +59,7 @@ function Team({ progress }: { progress: Progress }) {
         <Cell size={26} />
       </g>
       {[160, 440].map((x, i) => {
-        const d = `M300 113.7V135L${x} 189V213.3`;
+        const d = `M300 113.7 C300 157 ${x} 169 ${x} 213.3`;
         return (
           <g key={x}>
             <path d={d} className="tour-secondary-line" />
