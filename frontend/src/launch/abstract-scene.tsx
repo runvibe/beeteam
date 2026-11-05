@@ -83,16 +83,6 @@ function Team({ progress }: { progress: Progress }) {
     </g>
   );
 }
-// This outlined task mark stays identical when it moves across the board and between workers.
-function TaskMark() {
-  return (
-    <g>
-      <rect x="-32" y="-20" width="64" height="40" rx="5" />
-      <path d="M-19 -6h26m-26 11h17" />
-    </g>
-  );
-}
-
 function Board({ progress }: { progress: Progress }) {
   const offset = useTransform(progress, (p) => -100 * p);
   return (
@@ -114,38 +104,40 @@ function Board({ progress }: { progress: Progress }) {
     </g>
   );
 }
-// Both ends of the cycle meet at the same pose.
 function Assign({ progress }: { progress: Progress }) {
-  const slide = useTransform(progress, p => (1 - Math.cos(2 * Math.PI * p)) / 2);
-  const x = useTransform(slide, [0,.15,.8,1], [148,148,368,368]);
-  const y = useTransform(slide, [0,.15,.5,.8,1], [156,156,134,156,156]);
-  const lock = useTransform(slide, [.75,.95], [0,1]);
-  return <g>
-    <g transform="translate(148 156)" className="tour-secondary-line">
-      <path d="M-42 -10v-20q0-5 5-5h58 M-37 -12v-14q0-4 4-4h58"/>
-      <rect x="-32" y="-20" width="64" height="40" rx="5" strokeDasharray="2 5"/>
+  const offset = useTransform(progress, (p) => -100 * p);
+  const card = { x: 224, y: 113, width: 152, height: 84, rx: 10 };
+  return (
+    <g>
+      <rect {...card} opacity=".25" />
+      <motion.rect
+        {...card}
+        pathLength="100"
+        strokeDasharray="25 75"
+        style={{ strokeDashoffset: offset }}
+      />
+      <g transform="translate(300 155)"><Cell size={30} /></g>
     </g>
-    <g transform="translate(443 156)"><Cell/><circle r="8"/></g>
-    <path d="M400 156h11" className="tour-secondary-line"/>
-    <motion.g style={{x,y}}><TaskMark/></motion.g>
-    <motion.path d="M327 142v-15h15m52 0h15v15m0 28v15h-15m-52 0h-15v-15" style={{opacity:lock}}/>
-  </g>;
+  );
 }
 
-function Handoff({ progress }: {progress:Progress}) {
-  const phase=useTransform(progress,p=>(1-Math.cos(2*Math.PI*p))/2);
-  const left=useTransform(phase,[0,.65],[1,.16]);
-  const right=useTransform(phase,[.35,1],[.16,1]);
-  const packetX=useTransform(phase,[0,1],[149,451]);
-  return <g>
-    <g transform="translate(115 155)"><Cell/><circle r="8"/></g>
-    <g transform="translate(485 155)"><Cell/><path d="m-9 0 9-9 9 9-9 9Z"/></g>
-    <motion.path d="M147 155h95" style={{opacity:left}}/>
-    <motion.path d="M358 155h95" style={{opacity:right}}/>
-    <g transform="translate(300 155) scale(1.8)"><TaskMark/></g>
-    <path d="M148 200H452" className="tour-secondary-line" strokeDasharray="2 7"/>
-    <motion.g style={{x:packetX}}><g transform="translate(0 200)"><Cell size={18}/></g></motion.g>
-  </g>;
+function Handoff({ progress }: { progress: Progress }) {
+  // Leave room for the pulse to exit before it reappears at the first worker.
+  const offset = useTransform(progress, (p) => 18 - 118 * p);
+  const link = "M228.5 155H371.5";
+  return (
+    <g>
+      <g transform="translate(200 155)"><Cell /></g>
+      <g transform="translate(400 155)"><Cell /></g>
+      <path d={link} opacity=".25" />
+      <motion.path
+        d={link}
+        pathLength="100"
+        strokeDasharray="18 100"
+        style={{ strokeDashoffset: offset }}
+      />
+    </g>
+  );
 }
 export function AbstractScene({
   step,
