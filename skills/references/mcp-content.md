@@ -1,4 +1,4 @@
-# Get Bee Team materials in MCP
+# Bee Team materials in MCP
 
 The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, including the validated currentSummary revision: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. This reference documents content and packaging; it does not maintain a competing catalog. Operational instructions and examples are in [integration](integration.md), available as `beeteam://references/integration`.
 

@@ -1,4 +1,4 @@
-"""Inspect, stage or start Get Bee Team without changing a harness or database."""
+"""Inspect, stage or start Bee Team without changing a harness or database."""
 import argparse
 import json
 import os
@@ -39,7 +39,7 @@ def probe(port):
     precedence(version)
     require(health.get("status") == "ok" and health.get("version") == version and
             isinstance(info.get("supportedContractVersions"), list) and "v1" in info["supportedContractVersions"] and
-            isinstance(info.get("capabilities"), list) and "tasks.work-scope" in info["capabilities"], "Not the expected Get Bee Team service")
+            isinstance(info.get("capabilities"), list) and "tasks.work-scope" in info["capabilities"], "Not the expected Bee Team service")
     return info
 
 

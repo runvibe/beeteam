@@ -1,6 +1,6 @@
 ---
 name: setup-bee-team
-description: Install, verify or update the local Get Bee Team application and its MCP connection from a versioned release, including when the panel and API versions differ.
+description: Install, verify or update the local Bee Team application and its MCP connection from a versioned release, including when the panel and API versions differ.
 ---
 
 # Setup Bee Team

@@ -1,4 +1,4 @@
-"""Get Bee Team release contract and verified package staging (Python 3.12+)."""
+"""Bee Team release contract and verified package staging (Python 3.12+)."""
 import hashlib
 import json
 import platform
