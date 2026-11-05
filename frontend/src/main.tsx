@@ -23,9 +23,9 @@ async function start() {
     : createChangeSource(runtimeConfig.apiBaseUrl);
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <PwaUpdate />
       {runtimeConfig.mock ? (
         <ApiProvider api={api}>
+          <PwaUpdate />
           <App />
         </ApiProvider>
       ) : (
