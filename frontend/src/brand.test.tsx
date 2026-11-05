@@ -60,3 +60,9 @@ it("identifies the official domain in static metadata without redirecting this i
   ).toContain("getbee.team");
   expect(html.querySelector('meta[http-equiv="refresh"]')).toBeNull();
 });
+
+it("provides scoped browser and Apple icons", () => {
+ const html = new DOMParser().parseFromString(readFileSync("index.html", "utf8"), "text/html");
+ expect(html.querySelector('link[type="image/svg+xml"]')?.getAttribute("href")).toBe("%BASE_URL%favicon.svg");
+ expect(html.querySelector('link[rel="apple-touch-icon"]')?.getAttribute("sizes")).toBe("180x180");
+});

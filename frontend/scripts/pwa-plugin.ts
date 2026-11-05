@@ -21,6 +21,11 @@ export function pwa(): Plugin {
       const assetPaths = collect(join(directory, "assets")).filter((file) =>
         /\.(?:js|css|woff2?|svg|png)$/.test(file),
       );
+      assetPaths.push(
+        join(directory, "manifest.webmanifest"),
+        ...collect(join(directory, "icons")),
+        ...readdirSync(directory).filter((name) => /^favicon.*\.(ico|svg|png)$/.test(name)).map((name) => join(directory, name)),
+      );
       const total = assetPaths.reduce(
         (sum, file) => sum + statSync(file).size,
         0,

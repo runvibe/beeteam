@@ -81,3 +81,7 @@ Bee Team is free to use. Its software and documentation are licensed under the [
 The Bee Team brand owner is Philippe Ferreira Assis Tecnologia da Informação LTDA (trade name: Philtech), CNPJ 59.845.514/0001-90. Third-party rights and contributor attribution remain unchanged.
 
 [Documentation index](docs/README.md)
+
+### Browser and installation icons
+
+The bundled monochrome Bee Team hexagon supplies SVG and multi-size ICO favicons, 16/32/48/96 px PNG favicons, a 180 px Apple touch icon, and 192/512 px regular and maskable manifest icons. Regenerate with `npm run generate:icons` in `frontend/`. The SVG source is `public/icons/bee-logo.svg`; `node scripts/generate-brand-icons.mjs --check` verifies reproducibility. The public site and guide use browser display mode; only the app owns the `/app/` PWA scope.
