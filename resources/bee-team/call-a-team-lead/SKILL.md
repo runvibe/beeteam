@@ -1,32 +1,32 @@
 ---
-name: bee-team-leader
+name: call-a-team-lead
 description: Use when acting as the Bee Team leader, selecting or forming a team, coordinating collaborators, reviewing progress, or resuming coordination across chats.
 ---
 
-# Bee Team — Leader
+# Call a Team Lead
 
 Lead the conversation and coordinate work using real records. An agent profile persists; a chat is a replaceable session. The application stores data, while the harness provides conversation and execution capabilities.
 
 
 ## Real projects, repositories, and commits
 
-Read [repository evidence](references/repository-evidence.md). Provide the required project name and absolute root only for folders/worktrees actually involved. Do not supply repositories/remotes/branch as scope input: Bee Team discovers them locally; read the actual result/IDs. A project without Git is legitimate; inaccessible paths mean pending/unavailable discovery. Do not invent data. For commit evidence, inspect real Git state and keep scope independent from specification. Each new summary declares whether the reported work produced a commit: false with an empty list is legitimate; true requires a real repository/contextual branch/full hash under the contract. Do not create commits to fill in the form, automatically attribute an existing HEAD, or confuse local with published. Detached HEAD/no remote must use the contract representation, never an invented value. Preserve legacy data, idempotency, and task/commentID notifications; do not anticipate fields/APIs.
+Read [repository evidence](beeteam://references/repository-evidence). Provide the required project name and absolute root only for folders/worktrees actually involved. Do not supply repositories/remotes/branch as scope input: Bee Team discovers them locally; read the actual result/IDs. A project without Git is legitimate; inaccessible paths mean pending/unavailable discovery. Do not invent data. For commit evidence, inspect real Git state and keep scope independent from specification. Each new summary declares whether the reported work produced a commit: false with an empty list is legitimate; true requires a real repository/contextual branch/full hash under the contract. Do not create commits to fill in the form, automatically attribute an existing HEAD, or confuse local with published. Detached HEAD/no remote must use the contract representation, never an invented value. Preserve legacy data, idempotency, and task/commentID notifications; do not anticipate fields/APIs.
 
 ## Record intervals before executing
 
-Read [executions and intervals](references/execution-intervals.md). Check the active interval when resuming, before creating another. Collect cumulative counters and record the start before working; confirm and preserve the returned taskId/executionId/intervalId. A checkpoint preserves the start; pausing before switching tasks closes the interval; resume opens another within the same execution; finish is independent of acceptance/final status. Do not infer pairs from text/time, sum checkpoints, or open overlapping intervals for the same source. If collection is unavailable, record the obstacle/comment and notify without pretending to close anything. Use only the confirmed HTTP/MCP contract, without invented APIs or IDs.
+Read [executions and intervals](beeteam://references/execution-intervals). Check the active interval when resuming, before creating another. Collect cumulative counters and record the start before working; confirm and preserve the returned taskId/executionId/intervalId. A checkpoint preserves the start; pausing before switching tasks closes the interval; resume opens another within the same execution; finish is independent of acceptance/final status. Do not infer pairs from text/time, sum checkpoints, or open overlapping intervals for the same source. If collection is unavailable, record the obstacle/comment and notify without pretending to close anything. Use only the confirmed HTTP/MCP contract, without invented APIs or IDs.
 
 ## Status changes through summary recording
 
-After creation with an initial status, change status only through createExecutionSummary; close_activity is valid only when it records the same summary through the shared service in the same operation. Summary/status/statusObserved/usageReport are atomic. Do not change status through updateTask/moveTask/record_progress or separate writes. Progress percentage can be updated separately, with currentSummary when required. Starting, resuming, reviewing, or completing also requires a summary and actual cumulative session tokens, an identified model, harness, agent, and source. On error, do not announce a change or bypass the record; preserve comments/commentID and legacy replays. See [integration](references/integration.md).
+After creation with an initial status, change status only through createExecutionSummary; close_activity is valid only when it records the same summary through the shared service in the same operation. Summary/status/statusObserved/usageReport are atomic. Do not change status through updateTask/moveTask/record_progress or separate writes. Progress percentage can be updated separately, with currentSummary when required. Starting, resuming, reviewing, or completing also requires a summary and actual cumulative session tokens, an identified model, harness, agent, and source. On error, do not announce a change or bypass the record; preserve comments/commentID and legacy replays. See [integration](beeteam://references/integration).
 
 ## Bootstrap: chat first, registration in that chat
 
-For a new Collaborator, the Leader first creates the authorized chat and asks it to use bee-team-collaborator to identify/create/configure its own Bee Team profile and membership. The Collaborator reuses an existing identity or creates one only within authorization, confirms persistence, and returns its real NAME with agentId/teamId and readiness (ready/pending). The Leader waits and verifies registration/membership before assigning work; a name is not a technical key. The initial request and limited configuration/obstacle reply do not require a comment; subsequent work requires task/commentID. Without an assigned task, the Collaborator waits and does not authorize itself. Read [Collaborator bootstrap](references/collaborator-bootstrap.md) for the sequence, reply, and failures; preserve harness permissions.
+For a new Collaborator, the Leader first creates the authorized chat and asks it to use call-a-collaborator to identify/create/configure its own Bee Team profile and membership. The Collaborator reuses an existing identity or creates one only within authorization, confirms persistence, and returns its real NAME with agentId/teamId and readiness (ready/pending). The Leader waits and verifies registration/membership before assigning work; a name is not a technical key. The initial request and limited configuration/obstacle reply do not require a comment; subsequent work requires task/commentID. Without an assigned task, the Collaborator waits and does not authorize itself. Read [Collaborator bootstrap](beeteam://references/collaborator-bootstrap) for the sequence, reply, and failures; preserve harness permissions.
 
 ## Send a metrics report with every new summary
 
-At the start, read [per-summary metrics](references/usage-report.md), investigate a permitted source for the correct session, and record the strategy/provenance for reuse until relevant changes occur. Before each new historical summary, consult current data and submit the required usageReport with actual cumulative session tokens up to that summary, an identified model, and verifiable harness, agent, and source under the contract. unavailable or an explanation does not replace measurement. Without a reliable source, record the obstacle and actual attempts in a comment and notify with commentID, without claiming the summary/status was saved; do not invent zero or IDs. Validation/persistence errors do not authorize announcing a saved summary. Missing does not mean zero. Preserve the distinctions between effective/configured model, consumption/context/credits, and snapshots/deltas without duplication. Do not install collectors or make paid calls to measure usage.
+At the start, read [per-summary metrics](beeteam://references/usage-report), investigate a permitted source for the correct session, and record the strategy/provenance for reuse until relevant changes occur. Before each new historical summary, consult current data and submit the required usageReport with actual cumulative session tokens up to that summary, an identified model, and verifiable harness, agent, and source under the contract. unavailable or an explanation does not replace measurement. Without a reliable source, record the obstacle and actual attempts in a comment and notify with commentID, without claiming the summary/status was saved; do not invent zero or IDs. Validation/persistence errors do not authorize announcing a saved summary. Missing does not mean zero. Preserve the distinctions between effective/configured model, consumption/context/credits, and snapshots/deltas without duplication. Do not install collectors or make paid calls to measure usage.
 
 
 ## The Leader is the human interface for the work
@@ -55,10 +55,10 @@ A notification is not an independent assignment or additional approval. No-ops a
 
 ## Read according to the stage
 
-- When starting, selecting/forming a team, or recovering chats, read the [complete workflow with Mermaid](references/leader-onboarding-flows.md). It defines the three cases and their confirmations.
-- Before reading or writing Bee Team data, read [integration and recovery](references/integration.md); use schemas/capabilities actually advertised.
-- To connect MCP, prepare the local environment, and open the panel in Codex, read [connection and startup](references/codex.md). In another harness, discover its supported mechanism.
-- When delegating or resuming an activity, read [handoff](references/handoff.md); for work allocation, consult [examples](references/team-examples.md) when useful.
+- When starting, selecting/forming a team, or recovering chats, read the [complete workflow with Mermaid](beeteam://references/leader-onboarding-flows). It defines the three cases and their confirmations.
+- Before reading or writing Bee Team data, read [integration and recovery](beeteam://references/integration); use schemas/capabilities actually advertised.
+- To connect MCP, prepare the local environment, and open the panel in Codex, read [connection and startup](beeteam://references/codex). In another harness, discover its supported mechanism.
+- When delegating or resuming an activity, read [handoff](beeteam://references/handoff); for work allocation, consult [examples](beeteam://references/team-examples) when useful.
 
 
 ## Entry and team

@@ -145,12 +145,12 @@ nunca comandos executados pelo servidor.
 
 | URI | Fonte empacotada |
 |---|---|
-| `beeteam://skills/leader` | bee-team-leader/SKILL.md |
-| `beeteam://skills/collaborator` | bee-team-collaborator/SKILL.md |
+| `beeteam://skills/leader` | call-a-team-lead/SKILL.md |
+| `beeteam://skills/collaborator` | call-a-collaborator/SKILL.md |
 | `beeteam://references/integration` | references/integration.md |
 | `beeteam://references/handoff` | references/handoff.md |
 | `beeteam://references/codex` | references/codex.md |
-| `beeteam://references/team-examples` | bee-team-leader/references/team-examples.md |
+| `beeteam://references/team-examples` | call-a-team-lead/references/team-examples.md |
 
 Os links relativos dos textos referem-se ao pacote editorial; na integraÃ§Ã£o MCP,
 use os URIs acima e as tools anunciadas, nÃ£o resoluÃ§Ã£o livre de paths.
@@ -234,7 +234,7 @@ Supersedes the historical snapshot descriptions above. Ten approved materials fr
 
 The 13-resource allowlist and three read-only prompt names/arguments are unchanged. Relative links remain resolvable through their listed reference basename. Task records carry questions, answers, decisions, scope changes, blockers and deliveries; authorized chat notifications carry only persisted references and change type. Identity activation remains possible without a task. Persistence failures, repeated notifications and harness permissions cannot authorize execution or notification loops. This is a compiled package update, not evidence of activation in an existing runtime.
 
-Links ending in `bee-team-leader/SKILL.md` or `bee-team-collaborator/SKILL.md` map to `beeteam://skills/leader` and `beeteam://skills/collaborator`, respectively, rather than a references/SKILL URI.
+Links ending in `call-a-team-lead/SKILL.md` or `call-a-collaborator/SKILL.md` map to `beeteam://skills/leader` and `beeteam://skills/collaborator`, respectively, rather than a references/SKILL URI.
 
 ## Leader chat title snapshot — 2026-10-30
 

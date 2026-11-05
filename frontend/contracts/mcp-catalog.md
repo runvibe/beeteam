@@ -146,12 +146,12 @@ nunca comandos executados pelo servidor.
 
 | URI | Fonte empacotada |
 |---|---|
-| `beeteam://skills/leader` | bee-team-leader/SKILL.md |
-| `beeteam://skills/collaborator` | bee-team-collaborator/SKILL.md |
+| `beeteam://skills/leader` | call-a-team-lead/SKILL.md |
+| `beeteam://skills/collaborator` | call-a-collaborator/SKILL.md |
 | `beeteam://references/integration` | references/integration.md |
 | `beeteam://references/handoff` | references/handoff.md |
 | `beeteam://references/codex` | references/codex.md |
-| `beeteam://references/team-examples` | bee-team-leader/references/team-examples.md |
+| `beeteam://references/team-examples` | call-a-team-lead/references/team-examples.md |
 
 Os links relativos dos textos referem-se ao pacote editorial; na integraÃ§Ã£o MCP,
 use os URIs acima e as tools anunciadas, nÃ£o resoluÃ§Ã£o livre de paths.
