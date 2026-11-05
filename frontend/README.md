@@ -48,6 +48,8 @@ O SVG é sanitizado e exibido como imagem estática, sem inserir SVG no DOM da a
 
 Limites por documento: oito diagramas, 16.000 caracteres e 300 linhas por diagrama; o motor limita a 100 arestas. Sintaxe inválida, conteúdo não suportado ou limites excedidos mostram aviso EN/PT com a fonte literal, sem interromper a página. Diagramas iniciam ajustados à largura; “Ampliar diagrama” permite ler os detalhes com rolagem interna por teclado/toque, com altura máxima de 36rem, sem ampliar a página no mobile. As restrições são de visualização e não truncam ou reescrevem os dados persistidos.
 
+“Maximizar diagrama” abre a mesma imagem em um diálogo que ocupa a tela. É possível ampliar o desenho dentro do diálogo e fechar pelo botão ou com Esc. Ao fechar, o foco retorna ao controle de origem sem deslocar a leitura do documento.
+
 ## Domínio e autonomia
 
 Sem workspace. Board tem um time gestor e criador preservado. Tasks têm authorAgentId/executorAgentId obrigatórios, sem teamId. Os filhos podem pertencer a outros boards e executores, sem limite fixo de profundidade. O mock deriva a raiz iterativamente e detecta ciclos, sem duplicar estado de checklist.

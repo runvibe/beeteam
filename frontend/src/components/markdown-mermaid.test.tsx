@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { Markdown } from "./markdown";
 import { themeController } from "@/state/theme-runtime";
@@ -61,6 +61,38 @@ it("isolates multiple diagrams and retains the image on an unchanged parent refr
   expect(engine.render).toHaveBeenCalledTimes(2);
 });
 
+it("maximizes only the selected static image and restores keyboard focus after Escape or Close", async () => {
+  const user = userEvent.setup();
+  render(
+    <Markdown>
+      {[fence("graph LR\n A --> B"), fence("graph TD\n C --> D")].join("\n\n")}
+    </Markdown>,
+  );
+  await waitFor(() => expect(screen.getAllByRole("img")).toHaveLength(2));
+  const images = screen.getAllByRole("img");
+  const triggers = screen.getAllByRole("button", {
+    name: "Maximizar diagrama",
+  });
+  for (const [index, trigger] of triggers.entries()) {
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    const dialog = await screen.findByRole("dialog", {
+      name: "Diagrama Mermaid",
+    });
+    expect(within(dialog).getByRole("img")).toHaveAttribute(
+      "src",
+      images[index].getAttribute("src"),
+    );
+    expect(dialog.querySelector("svg:not(.lucide)")).toBeNull();
+    if (index === 0) await user.keyboard("{Escape}");
+    else
+      await user.click(within(dialog).getByRole("button", { name: "Fechar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(trigger).toHaveFocus());
+  }
+  expect(engine.render).toHaveBeenCalledTimes(2);
+});
+
 it("updates theme/content and localizes controls without replacing authored source", async () => {
   const view = render(<Markdown>{fence("flowchart TD\n A --> B")}</Markdown>);
   await screen.findByRole("img");
@@ -81,14 +113,37 @@ it("updates theme/content and localizes controls without replacing authored sour
   await screen.findByRole("img", { name: "Mermaid diagram" });
 });
 
+it("returns focus to the owning figure if Escape closes fullscreen during a theme render", async () => {
+  const user = userEvent.setup();
+  const view = render(<Markdown>{fence("graph TD\n A --> B")}</Markdown>);
+  await user.click(
+    await screen.findByRole("button", { name: "Maximizar diagrama" }),
+  );
+  let reject!: (error: Error) => void;
+  engine.render.mockImplementationOnce(
+    () =>
+      new Promise((_, fail) => {
+        reject = fail;
+      }),
+  );
+  act(() => themeController.store.getState().setPreference("dark"));
+  await waitFor(() => expect(engine.render).toHaveBeenCalledTimes(2));
+  await user.keyboard("{Escape}");
+  try {
+    await waitFor(() =>
+      expect(view.container.querySelector("figure")).toHaveFocus(),
+    );
+  } finally {
+    await act(async () => reject(new Error("render unavailable")));
+  }
+});
+
 it("falls back to literal source when rendering fails", async () => {
   engine.render.mockRejectedValue(
     new Error("Untrusted <script>parser error</script>"),
   );
   const view = render(<Markdown>{fence("invalid Mermaid")}</Markdown>);
-  expect(await screen.findByRole("status")).toHaveTextContent(
-    "Não foi possível renderizar",
-  );
+  await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Não foi possível renderizar"));
   expect(view.container.querySelector("details")).toHaveAttribute("open");
   expect(view.container.querySelector("code")).toHaveTextContent(
     "invalid Mermaid",
