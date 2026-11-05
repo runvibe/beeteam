@@ -14,7 +14,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function waitingUpdate() {
+function waitingUpdate(autoReply = true) {
   vi.stubEnv("PROD", true);
   const registration = Object.assign(new EventTarget(), {
     waiting: { state: "installed", postMessage: vi.fn() },
@@ -23,6 +23,7 @@ function waitingUpdate() {
   const serviceWorker = Object.assign(new EventTarget(), {
     register: vi.fn().mockResolvedValue(registration),
   });
+  if (autoReply) registration.waiting.postMessage.mockImplementation(() => serviceWorker.dispatchEvent(Object.assign(new Event("message"), { source: registration.waiting, data: { type: "APP_UPDATE_VERSION", version: "1.2.4" } })));
   vi.stubGlobal("navigator", { serviceWorker, onLine: true });
   return serviceWorker;
 }
@@ -33,15 +34,17 @@ function Disconnect() {
 }
 
 it("shows the loaded app version and only accepts version details from the waiting worker", async () => {
-  const serviceWorker = waitingUpdate();
+  const serviceWorker = waitingUpdate(false);
   const registration = await serviceWorker.register();
   render(<PwaUpdate />);
-  await screen.findByRole("region", { name: "Atualização do app pronta" });
+  await act(async () => { await Promise.resolve(); });
   expect(registration.waiting.postMessage).toHaveBeenCalledWith({ type: "GET_APP_VERSION" });
-  expect(screen.getByText(`Versão em uso: ${appVersion} · Versão disponível: Verificando…`)).toBeVisible();
+  expect(screen.queryByRole("region")).toBeNull();
   const report = (source: unknown, version: string) => act(() => {
     serviceWorker.dispatchEvent(Object.assign(new Event("message"), { source, data: { type: "APP_UPDATE_VERSION", version } }));
   });
+  report(registration.waiting, appVersion);
+  expect(screen.queryByRole("region")).toBeNull();
   report({}, "9.9.9");
   expect(screen.queryByText(/9\.9\.9/)).toBeNull();
   report(registration.waiting, "invalid");
