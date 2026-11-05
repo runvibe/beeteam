@@ -88,7 +88,7 @@ export function navigate(to: string, replace = false) {
 export function safeOrigin(value: string | null): string | null {
   if (
     !value ||
-    (!/^\/(boards|tasks|agents|teams)(\/|\?|$)/.test(value) &&
+    (!/^\/(boards|tasks|agents|teams|home)(\/|\?|$)/.test(value) &&
       value !== "/" &&
       !value.startsWith("/?")) ||
     value.startsWith("//")
@@ -173,7 +173,7 @@ export function subroute(path: string) {
   return path + `?${params}`;
 }
 export function isKnownRoute(url: string) {
-  return /^\/(?:boards(?:\/[^/]+(?:\/settings)?)?|tasks\/[^/]+|agents(?:\/[^/]+(?:\/settings)?)?|teams(?:\/[^/]+(?:\/settings)?)?)?\/?$/.test(
+  return /^\/(?:home|boards(?:\/[^/]+(?:\/settings)?)?|tasks\/[^/]+|agents(?:\/[^/]+(?:\/settings)?)?|teams(?:\/[^/]+(?:\/settings)?)?)?\/?$/.test(
     url.split("?")[0],
   );
 }

@@ -110,6 +110,7 @@ export function AppPath() {
     );
   /* origin search is shared with task ancestors */
   const label = {
+    home: tr("common.home"),
     boards: tr("common.boards"),
     agents: tr("common.agents"),
     teams: tr("common.teams"),

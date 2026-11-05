@@ -35,7 +35,8 @@ export function ApiVersionGate({
       state.state.error
         ? Math.min(
             30_000,
-              3_000 * 2 ** Math.min(Math.max(0, state.state.errorUpdateCount - 1), 4),
+            3_000 *
+              2 ** Math.min(Math.max(0, state.state.errorUpdateCount - 1), 4),
           )
         : 15_000,
     refetchOnWindowFocus: true,
@@ -45,11 +46,11 @@ export function ApiVersionGate({
     : undefined;
   if (!introduction && !query.error && agreement === "compatible")
     return (
-      <>
+      <div className="connected-session">
         <ReleaseNotice installedVersion={expectedVersion} />
         {changes && <LiveUpdates source={changes} />}
         {children}
-      </>
+      </div>
     );
   const checking = !query.data && query.isPending;
   const message =

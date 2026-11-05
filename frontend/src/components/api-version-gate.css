@@ -36,3 +36,25 @@
 .release-notice a {
   text-decoration: underline;
 }
+.connected-session:has(> .release-notice, > p[role="status"]) {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.connected-session .release-notice,
+.connected-session > p[role="status"] {
+  flex-shrink: 0;
+}
+.connected-session:has(> .release-notice, > p[role="status"])
+  > .app-shell.icon-navigation {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  overflow: auto;
+}
+.connected-session:has(> .release-notice, > p[role="status"]) .navigation-rail {
+  height: 100%;
+}

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import App from "@/App";
+import { ConnectedApp } from "./connected-app";
 import { ApiProvider } from "@/api/context";
 import { ApiVersionGate } from "@/components/api-version-gate";
 import type { BeeApi } from "@/api/types";
@@ -33,7 +33,7 @@ export function LaunchRoot({
         introduction={params.get("intro") === "1"}
         renderBlocked={(connection) => <Landing connection={connection} />}
       >
-        <App />
+        <ConnectedApp />
       </ApiVersionGate>
     </ApiProvider>
   );
