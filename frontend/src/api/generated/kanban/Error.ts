@@ -24,6 +24,7 @@ export type Error = {
     | "usage_attribution_conflict"
     | "usage_policy_conflict"
     | "parent_cycle"
+    | "active_execution_interval"
     | "execution_context_mismatch";
   details: {
     [key: string]: unknown;

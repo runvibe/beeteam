@@ -28,11 +28,33 @@ Acesse http://127.0.0.1:5173. Produção estática: `npm run build`; prévia: `n
 
 Não há despacho, criação/atribuição de tasks, composição operacional de times ou botão de aprovação. Essas ações permanecem na conversa/harness. As datas são registros, não heartbeats. A UI não simula identidade autenticada ou permissões de líder ainda pendentes.
 
+## Diagramas nos campos Markdown
+
+Blocos cercados com linguagem `mermaid` são renderizados pelo componente compartilhado `Markdown`. O texto original continua no servidor e em “Código-fonte do diagrama”; outros blocos de código permanecem literais. O motor é importado apenas quando um diagrama se aproxima da área visível. Mudanças de conteúdo e de tema claro/escuro renderizam uma nova imagem, descartando resultados obsoletos; atualizações sem mudança de conteúdo preservam o elemento.
+
+Inventário de superfícies que usam esse renderer (não há outro parser Markdown no app):
+
+| Superfície | Componentes |
+| --- | --- |
+| Especificação | `task-specification` |
+| Planos atuais/históricos e descrição da revisão | `plans`, `plan-history` |
+| Descrição, síntese atual, progresso e bloqueio, inclusive contexto compacto | `task-header-content`, `task-detail-layout`, `task-scroll-header`, `tasks` |
+| Resumos históricos e pendências | `recorded-summary`, `tasks` |
+| Conversa | `task-conversation` |
+| Descrição de arquivos/anexos | `attachment-item` |
+| Alterações antes/depois e referências históricas na timeline | `timeline-event-fields`, `timeline-event-reference` |
+
+O SVG é sanitizado e exibido como imagem estática, sem inserir SVG no DOM da aplicação nem associar callbacks. A [configuração estrita do Mermaid](https://mermaid.js.org/config/schema-docs/config-properties-securitylevel.html) desativa cliques e HTML. Para impedir que conteúdo autoral altere a configuração ou carregue recursos durante a medição, frontmatter, diretivas, HTML, imagens incorporadas, URLs em CSS, `@import` e escapes com barra invertida não são renderizados; nesses casos o código original permanece visível. Links/callbacks de diagramas não são navegáveis. Preferir labels textuais e `accTitle`/`accDescr` para acessibilidade.
+
+Limites por documento: oito diagramas, 16.000 caracteres e 300 linhas por diagrama; o motor limita a 100 arestas. Sintaxe inválida, conteúdo não suportado ou limites excedidos mostram aviso EN/PT com a fonte literal, sem interromper a página. Diagramas iniciam ajustados à largura; “Ampliar diagrama” permite ler os detalhes com rolagem interna por teclado/toque, com altura máxima de 36rem, sem ampliar a página no mobile. As restrições são de visualização e não truncam ou reescrevem os dados persistidos.
+
 ## Domínio e autonomia
 
 Sem workspace. Board tem um time gestor e criador preservado. Tasks têm authorAgentId/executorAgentId obrigatórios, sem teamId. Os filhos podem pertencer a outros boards e executores, sem limite fixo de profundidade. O mock deriva a raiz iterativamente e detecta ciclos, sem duplicar estado de checklist.
 
 O board de origem da raiz governa a cadeia: manual força manual; automatic força automático; standard usa a flag da task atual sem herdar a do pai. O cálculo não altera flags dos destinos. A UI diferencia configuração salva de modo efetivo. Mudar a flag sob origem manual/automatic não modifica essa precedência.
+
+O evento de auditoria `task.parent_changed` aparece como “Vínculo da tarefa alterado” na timeline, nos previews e nas atividades recentes. Seus IDs, pai anterior/nova referência e contextos históricos são exibidos separadamente e o JSON original continua acessível. O filtro de descendentes existente permanece disponível; esta integração de leitura não adiciona controles para vincular tarefas.
 
 ## Contratos e adapter
 
