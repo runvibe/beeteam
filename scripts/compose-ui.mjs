@@ -24,14 +24,10 @@ export function inventory(root, exclude = new Set()) {
   });
 }
 export function siteSources(root) {
-  return [
-    ...inventory(
-      resolve(root, "site"),
-      new Set(["node_modules", "dist", ".vite", ".git"]),
-    ),
-    resolve(root, "docs/mcp-catalog.json"),
-    resolve(root, "Cargo.toml"),
-  ]
+  return inventory(
+    resolve(root, "site"),
+    new Set(["node_modules", "dist", ".vite", ".git"]),
+  )
     .map((path) => ({
       path: relative(root, path).replaceAll("\\", "/"),
       sha256: digest(path),

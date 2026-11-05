@@ -1,12 +1,16 @@
 # Public site and installable application
 
-Bee Team has two frontend entry points in the same repository. The Vike site renders the landing and documentation into HTML during its build. The React/Vite app runs under `/app/`, connects to the local service and checks the full application version before allowing work.
+Bee Team has two frontend entry points in separate repositories. The [Vike public site](https://github.com/runvibe/beeteam-site) renders the landing and documentation into HTML during its build. This application repository pins that repository as the `site/` Git submodule for combined previews and embedded binary distribution. The React/Vite app remains in `frontend/`, runs under `/app/`, connects to the local service and checks the full application version before allowing work.
+
+Clone with `git clone --recurse-submodules`, or run `git submodule update --init --recursive` in an existing checkout. This checks out the exact site revision recorded by the application repository; updating that pin is a separate reviewed change. The API and standalone app build do not require the site checkout. Combined builds do require it and fail if it is missing.
+
+While the site repository is private, developers need GitHub SSH read access. The distribution-candidates workflow needs a `BEETEAM_SITE_READ_TOKEN` Actions secret with read access to both repositories for recursive checkout. The ordinary `GITHUB_TOKEN` only covers this repository and cannot fetch a different private repository. No token is stored in the submodule URL. The public-site build and publication workflow belongs to the site repository.
 
 ## Public pages
 
 English pages use `/` and `/guide/<topic>`. Portuguese pages use `/pt/` and `/pt/guide/<topic>`. Each article has a canonical URL, language alternatives and indexable text. Harness selection changes the instructions inside an article and is preserved in its query string. The standalone `/install` document and `/install.json` retain their installation roles.
 
-From `site/`, run `npm ci` and `npm run build` to generate `dist/client`. Use `npm run dev` while editing the public site. A public-site release can refresh editorial content while the promoted app remains at its current Cargo version. The environment and MCP references describe the contracts used by that site's build.
+From `site/`, run `npm ci` and `npm run build` to generate `dist/client`. The site can also be cloned and built independently. Use `npm run dev` while editing the public site. A public-site release can refresh editorial content while the promoted app remains at its current Cargo version. The environment and MCP references are versioned snapshots owned by the site repository; refreshing them from an application release is explicit. Combined build source verification inventories the pinned site's own files, excluding Git metadata and generated output.
 
 ## Application and PWA
 

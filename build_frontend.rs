@@ -162,12 +162,10 @@ pub fn verify_site_sources(manifest: &serde_json::Value, root: &Path) {
     let Some(entries) = manifest["siteSources"].as_array() else { return; };
     let mut paths = Vec::new();
     site_files(&root.join("site"), &mut paths);
-    paths.push(root.join("docs/mcp-catalog.json"));
-    paths.push(root.join("Cargo.toml"));
     assert_eq!(paths.len(), entries.len(), "Site sources changed; rebuild the UI");
     for entry in entries {
         let name = entry["path"].as_str().unwrap();
-        assert!((name.starts_with("site/") || name == "docs/mcp-catalog.json" || name == "Cargo.toml") && !name.contains('\\') && name.split('/').all(|p| !p.is_empty() && p != "." && p != ".."));
+        assert!(name.starts_with("site/") && !name.contains('\\') && name.split('/').all(|p| !p.is_empty() && p != "." && p != ".."));
         let path = root.join(name);
         assert!(paths.contains(&path), "Unexpected site source");
         println!("cargo:rerun-if-changed={}",path.display());
