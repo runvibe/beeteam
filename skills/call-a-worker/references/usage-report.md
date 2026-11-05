@@ -59,7 +59,7 @@ Do not execute or copy the IDs/values as actual evidence. The example assumes a 
           "kind": "agent",
           "id": "10000000-0000-7000-8000-000000000002"
         },
-        "actorRole": "collaborator",
+        "actorRole": "worker",
         "provider": "example-provider",
         "modelId": "example-observed-model",
         "scope": "session",

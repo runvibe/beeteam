@@ -180,23 +180,23 @@ Snapshot `7b14ebf926e648c35ac1a593e48c7e17a61e0100` servido: Leader registra/reu
 The approved next onboarding behavior is documented in
 [Leader onboarding: three team flows](docs/leader-onboarding-flows.md).
 The skills now apply the approved workflows through concise entrypoints and complete local references; backend MCP snapshots require separate synchronization and verification.
-The [Collaborator workflow](docs/collaborator-workflow.md) documents preparation,
+The [Worker workflow](docs/worker-workflow.md) documents preparation,
 execution, changes, blockers, validation and delivery with an inline Mermaid flow.
 
 Versioned guidance is available in [team leader](skills/call-a-team-lead/SKILL.md)
-and [collaborator](skills/call-a-collaborator/SKILL.md), with shared references
+and [worker](skills/call-a-worker/SKILL.md), with shared references
 under `skills/references/` and [multidisciplinary examples](skills/call-a-team-lead/references/team-examples.md).
 These are portable instructions. The backend MCP catalog documents the implemented
 server capabilities; this checkout supplies editorial content for its snapshots.
 
-Reusable task briefing, collaborator resumption, and delivery review templates live
+Reusable task briefing, worker resumption, and delivery review templates live
 under [skills/prompts](skills/prompts/content-manifest.json). See [MCP content usage](skills/references/mcp-content.md)
 for packaging, discovery, parameters, and integration checks. Public MCP names match the backend catalog: `task_briefing`
 and `delivery_review`; runtime registration remains owned by the backend.
 
 To use from this checkout, ask the harness to read the selected `SKILL.md` by its
 full local path and follow it for the authorized demand. If installed in a harness
-that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-collaborator`.
+that supports skill discovery, invoke `$call-a-team-lead` or `$call-a-worker`.
 Each skill folder is self-contained: copy its SKILL.md and references/ together.
 The complete workflows, integration, handoff, connection procedure and prompts live
 inside each package. Shared editorial sources remain under skills/references and
@@ -1087,4 +1087,4 @@ Capacidades HTTP anunciadas: `agents.latest-activity`, `teams.role-icons`, `task
 
 Consumidores devem ignorar identificadores desconhecidos e testar a presença do recurso necessário. Em servidores legados, 404 significa compatibilidade desconhecida; erros de rede/servidor significam indisponibilidade, não ausência de um recurso. Nenhum caminho, credencial, configuração de banco ou dado de usuário é exposto. Novos identificadores são aditivos; mudanças incompatíveis exigem novo identificador/contrato.
 
-Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-collaborator` (**Call a Collaborator**). Leader/Collaborator behavior is unchanged. The public MCP URIs `beeteam://skills/leader` and `beeteam://skills/collaborator` remain stable. Replace old local installations using the [guarded migration procedure](docs/skills-installation.md); do not install duplicate legacy aliases.
+Skill invocation names are `$call-a-team-lead` (**Call a Team Lead**) and `$call-a-worker` (**Call a Worker**). Worker replaces the former role vocabulary while preserving assignment, cardinality and authorization rules. The Leader installs integrated packages using the [guarded migration procedure](docs/skills-installation.md), with verified backups and no duplicate legacy skill aliases. Bundle synchronization, runtime activation and adoption by existing chats are separate checks.
