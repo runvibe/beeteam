@@ -3,6 +3,7 @@ import { motion, useTransform, type MotionValue } from "motion/react";
 
 type Progress = MotionValue<number>;
 type Point = readonly [number, number];
+const tourStrokeWidth = 1.65;
 
 // Use the same rounded hexagon as the Bee Team wordmark.
 function Cell({ size = 76 }: { size?: number }) {
@@ -65,6 +66,7 @@ function Team({ progress }: { progress: Progress }) {
               d={d}
               pathLength="100"
               strokeDasharray="14 86"
+              strokeWidth={tourStrokeWidth}
               style={{ strokeDashoffset: phase }}
             />
             <g transform={`translate(${x} 245)`}>
@@ -151,7 +153,7 @@ export function AbstractScene({
       aria-hidden="true"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.65"
+      strokeWidth={tourStrokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
     >
