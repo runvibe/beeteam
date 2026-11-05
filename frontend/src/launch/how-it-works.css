@@ -1,18 +1,165 @@
-.launch-story.tour { display: block; padding-block: clamp(3rem, 7vw, 6rem); }
-.tour header p { max-width: 56ch; margin-top: .75rem; }
-.tour-row { display: grid; grid-template-columns: minmax(0,.75fr) minmax(0,1.5fr); gap: clamp(1rem,5vw,5rem); align-items: center; padding-block: clamp(2rem,4vw,4rem); border-bottom: 1px solid var(--border); }
-.tour-copy h3 { font-size: clamp(1.4rem,2.6vw,2.5rem); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
-.tour-copy p { margin-top: 1rem; max-width: 40ch; }
-.tour-player { overflow: hidden; border-radius: var(--radius); border: 1px solid var(--border); background: var(--muted); }
-.tour-art { display: block; width: 100%; height: auto; color: var(--foreground); background: radial-gradient(circle at center,var(--background),var(--muted)); }
-.tour-art text { fill: currentColor; text-anchor: middle; font: 14px var(--font-sans, sans-serif); }
-.tour-cell,.tour-lane { fill: var(--background); stroke: var(--muted-foreground); stroke-width: 1.2; }
-.tour-wire,.tour-token-ink { fill: none; stroke: currentColor; stroke-width: 1.5; }
-.tour-token { fill: var(--background); stroke: currentColor; stroke-width: 1.6; }
-.tour-dot { fill: currentColor; }
-.tour-controls { display: flex; align-items: center; gap: .5rem; padding-inline: .4rem 1rem; }
-.tour-controls button { display: grid; place-items: center; height: 2.75rem; width: 2.75rem; cursor: pointer; }
-.tour-track { flex: 1; height: 2px; background: var(--border); }
-.tour-track div { height: 100%; background: var(--foreground); transform-origin: left; }
-.tour-demo { display: inline-flex; gap: .5rem; align-items: center; margin-top: 1.5rem; font-weight: 550; }
-@media(max-width:767px) { .tour-row { grid-template-columns: 1fr; } }
+.launch-story.tour {
+  display: block;
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+.tour > header {
+  display: grid;
+  gap: 1rem;
+  max-width: 54rem;
+  margin-bottom: clamp(1.5rem, 4vw, 4rem);
+}
+.launch-page .tour > header h2 {
+  max-width: none;
+  font-size: clamp(2.6rem, 5.4vw, 5.5rem);
+  font-weight: 540;
+  line-height: 0.99;
+  letter-spacing: -0.065em;
+}
+.tour header p {
+  max-width: 49ch;
+  font-size: clamp(1rem, 1.4vw, 1.2rem);
+}
+.tour-row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.74fr) minmax(0, 1.26fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+  padding-block: clamp(2rem, 3.8vw, 4.5rem);
+  border-top: 1px solid var(--border);
+}
+.tour-copy h3 {
+  font-size: clamp(1.8rem, 3.2vw, 3.4rem);
+  max-width: 15ch;
+  font-weight: 540;
+  letter-spacing: -0.055em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+.tour-copy p {
+  margin-top: 1rem;
+  max-width: 38ch;
+}
+.tour-player {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+  border-radius: 15px;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  background: radial-gradient(
+    ellipse at 47% 34%,
+    color-mix(in srgb, var(--foreground) 8%, var(--background)),
+    var(--background) 83%
+  );
+}
+.tour-player::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--foreground) 16%, transparent) 0.8px,
+    transparent 1px
+  );
+  background-size: 11px 11px;
+  mask-image: radial-gradient(ellipse at center, #000 15%, transparent 78%);
+}
+.tour-film-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: clamp(0.8rem, 2vw, 1.35rem) clamp(1rem, 2.5vw, 1.6rem) 0;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.tour-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.tour-label {
+  fill: var(--foreground);
+  font: 500 17px var(--font-sans, sans-serif);
+  letter-spacing: -0.025em;
+}
+.tour-receipt {
+  margin: 0 clamp(1rem, 2.5vw, 1.6rem) 1rem;
+  border-inline-start: 2px solid var(--muted-foreground);
+  padding-inline-start: 0.8rem;
+  font-size: 0.9rem;
+}
+.tour-receipt p {
+  margin-top: 0.25rem;
+}
+.tour-tray-title {
+  fill: #f5f5f3;
+  font: 500 14px var(--font-sans, sans-serif);
+}
+.tour-slip-title {
+  fill: #19191a;
+  font: 600 11px var(--font-sans, sans-serif);
+}
+.tour-channel,
+.tour-trace {
+  fill: none;
+  stroke-linecap: round;
+}
+.tour-channel {
+  stroke: var(--border);
+  stroke-width: 4;
+}
+.tour-trace {
+  stroke: var(--foreground);
+  stroke-width: 1.5;
+}
+.tour-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0 clamp(1rem, 2.5vw, 1.6rem) 0.65rem;
+}
+.tour-controls button {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.tour-controls button:hover {
+  background: var(--muted);
+}
+.tour-track {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+}
+.tour-track div {
+  height: 100%;
+  background: var(--muted-foreground);
+  transform-origin: left;
+}
+.tour-demo {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding-block: 0.5rem;
+  font-weight: 550;
+}
+@media (max-width: 767px) {
+  .tour-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+  .tour-copy h3 {
+    max-width: none;
+  }
+  .tour-player {
+    border-radius: 12px;
+  }
+}
