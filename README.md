@@ -28,7 +28,6 @@ The harness runs the agents and opens their chats. Bee Team stores profiles, tea
 From a checkout with Rust 1.94 or later, a native build toolchain and Node.js 22.20+ with npm, run:
 
 ```sh
-git submodule update --init --recursive
 node scripts/build-distribution.mjs
 ```
 
@@ -67,7 +66,7 @@ The public guide includes a binary environment reference at `/guide/reference/en
 
 ## Development
 
-The public site lives in [runvibe/beeteam-site](https://github.com/runvibe/beeteam-site), pinned here as the `site/` Git submodule. It uses Vike to pre-render the landing page and documentation in English and Portuguese. Clone with `git clone --recurse-submodules`, or initialize an existing checkout with `git submodule update --init --recursive`. Access to that repository is required while it is private. The React/Vite application in `frontend/` mounts at `/app/` and has its own build and PWA update lifecycle. Public articles can be updated independently of the app/API version. See [the product boundaries and verification steps](docs/guides/site-and-app.md).
+The public site lives in [runvibe/beeteam-site](https://github.com/runvibe/beeteam-site), maintained independently of this application repository. It uses Vike to pre-render the landing page and documentation in English and Portuguese. Application and binary builds do not fetch or bundle that repository. The React/Vite application in `frontend/` mounts at `/app/` and has its own build and PWA update lifecycle. Public articles can be updated independently of the app/API version. See [the product boundaries and verification steps](docs/guides/site-and-app.md).
 
 Run the backend and Vite separately for frontend development, or build the embedded distribution for a single executable. [Development and tests](docs/guides/development.md) · [Runtime modes](docs/guides/runtime.md).
 

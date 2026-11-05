@@ -99,15 +99,14 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
     if let Some(asset) = crate::services::frontend::asset(path) {
         return Some(asset);
     }
-    if matches!(path, "/install" | "/install/") {
-        return crate::services::frontend::asset("/install/index.html");
+    // The build is application-only; /app is a URL mount, not a disk directory.
+    if let Some(relative) = path.strip_prefix("/app/") {
+        if let Some(asset) = crate::services::frontend::asset(&format!("/{relative}")) {
+            return Some(asset);
+        }
     }
-    if !path.rsplit('/').next().unwrap_or("").contains('.') {
-        let document = format!("{}/index.html",path.trim_end_matches('/'));
-        if let Some(asset) = crate::services::frontend::asset(&document) { return Some(asset); }
-    }
-    if matches!(path, "/app" | "/app/") {
-        return crate::services::frontend::asset("/app/index.html");
+    if matches!(path, "/" | "/app" | "/app/") {
+        return crate::services::frontend::asset("/index.html");
     }
     let route = path.strip_prefix("/app/").unwrap_or(path.strip_prefix('/')?);
     let parts: Vec<_> = route
@@ -121,7 +120,7 @@ fn select(path: &str, mcp_path: &str) -> Option<Asset> {
         _ => false,
     };
     known
-        .then(|| crate::services::frontend::asset("/app/index.html"))
+        .then(|| crate::services::frontend::asset("/index.html"))
         .flatten()
 }
 fn alias(value: &str) -> bool {

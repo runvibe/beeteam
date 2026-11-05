@@ -130,7 +130,7 @@ export function NavigationRail({
         aria-label={tr("common.globalPreferences")}
       >
         <Button asChild variant="ghost" size="icon">
-          <a href="/guide/" aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
+          <a href="https://getbee.team/guide/" aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
             <BookOpen aria-hidden="true" />
           </a>
         </Button>

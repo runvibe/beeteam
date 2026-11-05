@@ -11,13 +11,12 @@ export function appHref(to: string) {
   return /^\/(boards|tasks|agents|teams|settings)(?:\/|[?#]|$)/.test(to) ? "/app" + to : to;
 }
 export function canonicalizeEntry() {
-  if (new URLSearchParams(location.search).get("demo") === "1") {
-    history.replaceState(null, "", "/#how-it-works");
-    return;
-  }
-  let next = appHref(location.pathname);
+  const entry = new URL(location.href);
+  entry.searchParams.delete("demo");
+  let next = entry.pathname === "/" ? "/app/" : appHref(entry.pathname);
   if (next === "/app" || /^\/app\/home\/?$/.test(next)) next = "/app/";
-  if (next !== location.pathname) history.replaceState(history.state, "", next + location.search + location.hash);
+  const target = next + entry.search + entry.hash;
+  if (target !== location.pathname + location.search + location.hash) history.replaceState(history.state, "", target);
 }
 export const currentUrl = () => logicalPath(location.pathname) + location.search;
 export function navigationHref(to: string) {

@@ -48,26 +48,3 @@ fn catalog_only_change_invalidates_embedded_manifest_with_node_rust_hash_parity(
     assert_ne!(cargo_changed, after);
     assert_eq!(cargo_changed, build_frontend::source_hash(&root));
 }
-
-#[test]
-fn standalone_site_snapshot_ignores_submodule_metadata_and_detects_content_changes() {
-    let temp = tempfile::tempdir().unwrap();
-    let root = temp.path();
-    fs::create_dir_all(root.join("site/reference")).unwrap();
-    fs::write(root.join("site/.git"), "gitdir: ../.git/modules/site").unwrap();
-    fs::write(root.join("site/package.json"), "{}").unwrap();
-    fs::write(root.join("site/reference/mcp-catalog.json"), "{}").unwrap();
-    let script = Path::new(env!("CARGO_MANIFEST_DIR")).join("scripts/compose-ui.mjs");
-    let result = Command::new("node")
-        .args(["--input-type=module", "-e", "import {pathToFileURL} from 'node:url'; const {siteSources}=await import(pathToFileURL(process.argv[1])); console.log(JSON.stringify({siteSources:siteSources(process.argv[2])}));"])
-        .arg(script).arg(root).output().expect("Node is required for packaging regression tests");
-    assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
-    let manifest: serde_json::Value = serde_json::from_slice(&result.stdout).unwrap();
-    assert_eq!(manifest["siteSources"].as_array().unwrap().len(), 2);
-    build_frontend::verify_site_sources(&manifest, root);
-    fs::write(root.join("site/.git"), "gitdir: moved-metadata").unwrap();
-    fs::write(root.join("Cargo.toml"), "unrelated parent version").unwrap();
-    build_frontend::verify_site_sources(&manifest, root);
-    fs::write(root.join("site/reference/mcp-catalog.json"), "{\"changed\":true}").unwrap();
-    assert!(std::panic::catch_unwind(|| build_frontend::verify_site_sources(&manifest, root)).is_err());
-}
