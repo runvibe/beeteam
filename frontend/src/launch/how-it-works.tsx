@@ -1,11 +1,9 @@
 import { useEffect, useRef } from "react";
 import {
   animate,
-  motion,
   useInView,
   useMotionValue,
   useReducedMotion,
-  useTransform,
 } from "motion/react";
 import { ArrowUpRight, Hexagon } from "lucide-react";
 import { t, useLocale } from "@/i18n";
@@ -32,7 +30,7 @@ function WorkflowScene({
   const visible = useInView(frame, { amount: 0.4 });
   const reduce = useReducedMotion();
   const progress = useMotionValue(0);
-  const opacity = useTransform(progress, [0, 0.08, 0.92, 1], [0, 1, 1, 0]);
+
   useEffect(() => {
     if (reduce) {
       progress.set(1);
@@ -50,22 +48,19 @@ function WorkflowScene({
   const title = t(scene.labelKey);
   return (
     <div ref={frame} className="tour-scene" role="group" aria-label={title}>
-      {index >= 3 && (
+      {index === 4 && (
         <div className="tour-film-title">
           <Hexagon size={13} aria-hidden="true" />
           {t("common.tourTaskName")}
         </div>
       )}
-      <motion.div style={{ opacity: reduce ? 1 : opacity }}>
-        <AbstractScene step={index} progress={progress} />
-      </motion.div>
+      <AbstractScene step={index} progress={progress} />
       {index === 4 && (
         <div className="tour-receipt">
           <strong>{t("common.tourSummary")}</strong>
           <p>{t("common.tourFinding")}</p>
         </div>
       )}
-
     </div>
   );
 }
