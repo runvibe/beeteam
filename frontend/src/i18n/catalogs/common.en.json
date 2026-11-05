@@ -130,5 +130,13 @@
   "loadingCollection": "Loading {{label}}…",
   "loadedCollection": "{{shown}} of {{total}} {{label}}",
   "loadMoreCollection": "Load more {{label}}",
-  "manualLower": "manual"
+  "manualLower": "manual",
+  "mermaidDiagram": "Mermaid diagram",
+  "mermaidExpand": "Enlarge diagram",
+  "mermaidFit": "Fit to width",
+  "mermaidSource": "Diagram source",
+  "mermaidLoading": "Loading diagram…",
+  "mermaidError": "Could not render this diagram. The original source is shown below.",
+  "mermaidLimit": "This diagram exceeds the display limit. The original source is shown below.",
+  "mermaidUnsafe": "This diagram uses unsupported configuration or embedded content. The original source is shown below."
 }

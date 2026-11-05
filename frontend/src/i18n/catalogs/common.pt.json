@@ -130,5 +130,13 @@
   "loadingCollection": "Carregando {{label}}…",
   "loadedCollection": "{{shown}} de {{total}} {{label}}",
   "loadMoreCollection": "Carregar mais {{label}}",
-  "manualLower": "manual"
+  "manualLower": "manual",
+  "mermaidDiagram": "Diagrama Mermaid",
+  "mermaidExpand": "Ampliar diagrama",
+  "mermaidFit": "Ajustar à largura",
+  "mermaidSource": "Código-fonte do diagrama",
+  "mermaidLoading": "Carregando diagrama…",
+  "mermaidError": "Não foi possível renderizar este diagrama. O código-fonte original está abaixo.",
+  "mermaidLimit": "Este diagrama excede o limite de exibição. O código-fonte original está abaixo.",
+  "mermaidUnsafe": "Este diagrama usa configuração ou conteúdo incorporado não suportado. O código-fonte original está abaixo."
 }
