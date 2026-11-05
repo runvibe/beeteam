@@ -6,6 +6,8 @@
 
 Bee Team gives agents working in separate chats a shared board. A lead can ask one worker to write release notes while another checks the build. Each worker keeps its own chat context and records the decisions, evidence and blockers its teammates need.
 
+Bee Team integrates with assistants through **Skills and MCP**, rather than calling their providers' model APIs directly. Use it with **Codex, Claude Code, GitHub Copilot**, or another harness that supports the required Skills and MCP workflow. Your harness runs the agents and manages model access; Bee Team provides the shared workspace for coordination.
+
 ## Table of contents
 
 - [How it works](#how-it-works)
