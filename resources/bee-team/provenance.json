@@ -1,132 +1,133 @@
 {
-  "sourceCommit": "0af928f5178d84ba0a23fb24a129834dff40923e",
-  "scope": "English editorial skills, prompts and allowlisted MCP references; team-configured role icon lookup and own-chat prefix readback. Preserve technical contracts and user data.",
+  "sourceCommit": "d32ba6edfb705a00907c0ded1fad3188a17e612e",
+  "scope": "Renamed Call a Team Lead and Call a Collaborator packages, preserving Leader/Collaborator behavior, stable public MCP resource URIs, English content, technical contracts and user data.",
   "files": [
     {
-      "resourcePath": "bee-team-leader/SKILL.md",
-      "sourcePath": "skills/bee-team-leader/SKILL.md",
-      "sourceSha256": "bc014148beb514e36b60738b741f440de5e617a9b73cbed5f8be5d6ff4894195",
-      "bundledSha256": "627f48ffcb26d1447850a8c7f1d0dccb695a20f8a58b4aa321706e747bca834f",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "resourcePath": "call-a-team-lead/SKILL.md",
+      "sourcePath": "skills/call-a-team-lead/SKILL.md",
+      "sourceSha256": "7e3336bf60ca97c3f8359685f2f729df0fb6153b5056d6313200faa318bb3d8b",
+      "bundledSha256": "eb4be9a4bad8e23d79abac6fa5fc5699e9dd0319a9a27450b6a4a38c802f9c54",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
-      "resourcePath": "bee-team-collaborator/SKILL.md",
-      "sourcePath": "skills/bee-team-collaborator/SKILL.md",
-      "sourceSha256": "78cab0ecea1099d82d2ca3b990b17afdb9fec921cdc98762b999d902348984be",
-      "bundledSha256": "f9dd20f7365c3c3f768489c1aae948bee5e4f9420f1aa2203ea481ba33fc5186",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "resourcePath": "call-a-collaborator/SKILL.md",
+      "sourcePath": "skills/call-a-collaborator/SKILL.md",
+      "sourceSha256": "b2fc7b6402cf9154efc5dc4b392d10776801a51d3a11f57c7ed5b046eb70c4ac",
+      "bundledSha256": "771b8df820fae4be5f142007554ee702a73ce15cee19b0075d3e755d7e3a65fc",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
       "sourceSha256": "5f2b30fa7276fbccc7efd0c3c6b55c9e65fb4c41afc41d260071731c1a151357",
       "bundledSha256": "9f0f6d1b6c837fbee84d13d686814b3c8b384bd19165fb0fbab4051aa9ebb2b0",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
       "sourceSha256": "2412cbe1d42710f147841bd3c33d22db244c64340e5bf0cd4e545739aa92fa21",
       "bundledSha256": "61dfb4572b0ca7b03638360c25bd8e00f2d7b6775d0fa876fed23e55904b2648",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Preserve three reviewed driver-aware SQLite startup paragraphs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Preserve three reviewed driver-aware SQLite startup paragraphs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
-      "sourcePath": "skills/bee-team-leader/references/leader-onboarding-flows.md",
-      "sourceSha256": "f5df0e75510f79fc7b2ef46d9f4a788170cd97c72feead6042d6e50b7a75a514",
-      "bundledSha256": "c546924f47bc06f5dc8682fb6a4f1af8d0b52e70e3529b8feaf3a83a664fbc63",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "sourcePath": "skills/call-a-team-lead/references/leader-onboarding-flows.md",
+      "sourceSha256": "85260c0d95fab866371a33b5bb82c0e5ce6f5d103a699712442554b5d3ea7a39",
+      "bundledSha256": "4657a43e1df0751658780472b25b38f1dd0f3fc1f0659d1d14a8cab0e7deb1a3",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/collaborator-workflow.md",
-      "sourcePath": "skills/bee-team-leader/references/collaborator-workflow.md",
-      "sourceSha256": "4dca21bbb74dd80ff08aaee52b76a6fc9e4f356f8b6ed5daa9449ca1986623c3",
-      "bundledSha256": "8015d6ea4fc4884742d36780ac7d14d5ee9005f8a47eb32237d554d3c73a537d",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "sourcePath": "skills/call-a-team-lead/references/collaborator-workflow.md",
+      "sourceSha256": "6e1008c421318ad644599ad92dc0ee3a6430fd54361526210d701a9aefe1860c",
+      "bundledSha256": "256e0d7aae56ef58570cbe4e04f42b868e09515ab2f809fafe88f86ce8ef6a4a",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04). Resolve remaining skill links to stable MCP URIs; render unadvertised repository-document links as literal editorial references, without filesystem capability."
     },
     {
-      "resourcePath": "bee-team-leader/references/team-examples.md",
-      "sourcePath": "skills/bee-team-leader/references/team-examples.md",
+      "resourcePath": "call-a-team-lead/references/team-examples.md",
+      "sourcePath": "skills/call-a-team-lead/references/team-examples.md",
       "sourceSha256": "fe211f554b6b3b15a7962138641cbb2ce84394c85b8dae5c2e83dbda83a40899",
       "bundledSha256": "8e340447867a098c58a57b3ba93d4214829553ebddaec6e31e9a267a4faa0b20",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "prompts/task-briefing.md",
       "sourcePath": "skills/prompts/task-briefing.md",
-      "sourceSha256": "96fe82feef4d997aa25b5b86b978bb0c46a2eb81326a90a600402b228902a79b",
-      "bundledSha256": "96fe82feef4d997aa25b5b86b978bb0c46a2eb81326a90a600402b228902a79b",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "sourceSha256": "52b004a26bed471dadd6034710c232ae36456cad88d7052af6e0d7a248444ddf",
+      "bundledSha256": "52b004a26bed471dadd6034710c232ae36456cad88d7052af6e0d7a248444ddf",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "prompts/collaborator-resumption.md",
       "sourcePath": "skills/prompts/collaborator-resumption.md",
-      "sourceSha256": "bfc25fc1276a83d40abc3f078721bc906db1c92f14127929dbd92898a78a6c5f",
-      "bundledSha256": "bfc25fc1276a83d40abc3f078721bc906db1c92f14127929dbd92898a78a6c5f",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
+      "sourceSha256": "0825e691e50a860c6659a01b7fc98a565ff7ea555b30f7331e0ad655e1600d4c",
+      "bundledSha256": "0825e691e50a860c6659a01b7fc98a565ff7ea555b30f7331e0ad655e1600d4c",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "prompts/delivery-review.md",
       "sourcePath": "skills/prompts/delivery-review.md",
       "sourceSha256": "9542371b11e517fb143be059cfaec4a70561a9525d87694b591e14a982bcf556",
       "bundledSha256": "9542371b11e517fb143be059cfaec4a70561a9525d87694b591e14a982bcf556",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
       "sourceSha256": "578b26bc25b9e4eb4c804d8d6f12347458da36f897f10e0c8b87ba41776b82f1",
-      "bundledSha256": "a28a1a97f9f0544079829df62d8e65c6f38ae2e89b401f0f96e9d566c1c9d0f6",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "bundledSha256": "703116d992839a9f570b208a3f2cbcd4d9f86565c4bd9806c392675c4037b93d",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04). Resolve remaining skill links to stable MCP URIs; render unadvertised repository-document links as literal editorial references, without filesystem capability."
     },
     {
       "resourcePath": "references/usage-report.md",
       "sourcePath": "skills/references/usage-report.md",
       "sourceSha256": "d6f678637a7c9b95f186262e450c9af6841cb8d376f95fc8d2e84a1016a90b33",
       "bundledSha256": "a6775e61cfe72fa7d0aea27360f0baa70bf7b8b100ec83d0655c368dcd541965",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/collaborator-bootstrap.md",
       "sourcePath": "skills/references/collaborator-bootstrap.md",
-      "sourceSha256": "c95e62c882805871e011b65e9f4bdd233b24d855eeb50016d3ae5c7ef3f8a6bb",
-      "bundledSha256": "c95e62c882805871e011b65e9f4bdd233b24d855eeb50016d3ae5c7ef3f8a6bb",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04)."
+      "sourceSha256": "16c8a20f69975dced4115a4b15ae773cb0f80d9f29ed7b5e1ae2b1519b0efd79",
+      "bundledSha256": "16c8a20f69975dced4115a4b15ae773cb0f80d9f29ed7b5e1ae2b1519b0efd79",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Resolve team-selected role icon prefixes and verify own-chat title readback (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/execution-intervals.md",
       "sourcePath": "skills/references/execution-intervals.md",
       "sourceSha256": "824706b3e8c1aa1dd2017a980e873f3e6e6b938bab3de24150ff566202ebf4f7",
       "bundledSha256": "824706b3e8c1aa1dd2017a980e873f3e6e6b938bab3de24150ff566202ebf4f7",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/repository-evidence.md",
       "sourcePath": "skills/references/repository-evidence.md",
       "sourceSha256": "60fa92d447b49a136338c5acddbbe197d3ab5f507fafcde093ad06916e30e766",
       "bundledSha256": "60fa92d447b49a136338c5acddbbe197d3ab5f507fafcde093ad06916e30e766",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "references/mcp-content.md",
       "sourcePath": "skills/references/mcp-content.md",
-      "sourceSha256": "63545ff55ad64cd7e2a040415ec06134c64975cd53fc2f020122813be36c6cee",
-      "bundledSha256": "58a6083a28f3ab341b379f4c857794f16889d68bc0352a2f6798ee32a53bd12f",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
+      "sourceSha256": "205a50e09b640f75981a06bc52f9bffae35c968a6574656bb46a79c824aaa969",
+      "bundledSha256": "19ad36067a13ed081ebe3244d8ba045b631e9d764efbecc573dec8e3a02d8e47",
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     },
     {
       "resourcePath": "prompts/content-manifest.json",
       "sourcePath": "skills/prompts/content-manifest.json",
       "sourceSha256": "f05f3ffe606ad1e2394d6d31e245a4902741d49181ffb0b3b1a1f26788a39fba",
       "bundledSha256": "f05f3ffe606ad1e2394d6d31e245a4902741d49181ffb0b3b1a1f26788a39fba",
-      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04)."
+      "localOverlay": "Map listed relative Markdown references to explicit allowlisted MCP URIs. Remove obsolete aggregate agent resumption calls and prompt registration; preserve explicit task continuity guidance (2026-11-04). Rename skill invocation/package identities and display titles; preserve public MCP URIs (2026-11-04)."
     }
   ],
   "backendContractOverlay": {
     "date": "2026-11-03",
     "contract": "CreateTask requires project roots; repositories are locally discovered; summary commitReport and exact legacy replays preserved.",
     "documentation": "docs/mcp-catalog.md",
-    "skillsSnapshotStatus": "English bundle 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26; explicit MCP URI mapping and reviewed SQLite startup guidance.",
-    "agentResumptionRemoval": "Aggregate agent query and dedicated prompt removed; explicit task/profile/team reads and interval resume preserved. Canonical skills and bundled guidance updated together; global installation is a separate rollout."
+    "skillsSnapshotStatus": "Renamed skill packages d32ba6edfb705a00907c0ded1fad3188a17e612e; retained English guidance, stable public MCP URIs, explicit link mapping and reviewed SQLite startup guidance.",
+    "agentResumptionRemoval": "Aggregate agent query and dedicated prompt removed; explicit task/profile/team reads and interval resume preserved. Canonical skills and bundled guidance updated together; global installation is a separate rollout.",
+    "skillNameMigration": "call-a-team-lead / Call a Team Lead and call-a-collaborator / Call a Collaborator; stable beeteam://skills/leader and beeteam://skills/collaborator. No installed legacy aliases; global migration is a separate Leader action."
   }
 }

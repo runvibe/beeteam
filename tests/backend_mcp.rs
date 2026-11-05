@@ -102,11 +102,11 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let read = rpc(&app, "resources/read", json!({"uri":resource["uri"]})).await;
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
-            "beeteam://skills/leader" => "bee-team-leader/SKILL.md".to_owned(),
-            "beeteam://skills/collaborator" => "bee-team-collaborator/SKILL.md".to_owned(),
+            "beeteam://skills/leader" => "call-a-team-lead/SKILL.md".to_owned(),
+            "beeteam://skills/collaborator" => "call-a-collaborator/SKILL.md".to_owned(),
             "beeteam://references/content-manifest" => "prompts/content-manifest.json".to_owned(),
             "beeteam://references/team-examples" => {
-                "bee-team-leader/references/team-examples.md".to_owned()
+                "call-a-team-lead/references/team-examples.md".to_owned()
             }
             _ => {
                 let name = uri.rsplit('/').next().unwrap();
@@ -348,9 +348,9 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         assert!(text.contains("In the implemented MCP"));
         assert!(text.contains(name));
         assert!(text.contains("specification"));
-        assert!(text.contains(
-            "This result is read context, not a dispatch message between agents."
-        ));
+        assert!(
+            text.contains("This result is read context, not a dispatch message between agents.")
+        );
         assert!(!text.contains("{{taskId}}"));
     }
 }
@@ -481,6 +481,32 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
         }
     }
     let resources = rpc(&app, "resources/list", json!({})).await;
+    for (uri, name, invocation) in [
+        (
+            "beeteam://skills/leader",
+            "Call a Team Lead",
+            "call-a-team-lead",
+        ),
+        (
+            "beeteam://skills/collaborator",
+            "Call a Collaborator",
+            "call-a-collaborator",
+        ),
+    ] {
+        let matches: Vec<_> = resources["result"]["resources"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|r| r["uri"] == uri)
+            .collect();
+        assert_eq!(matches.len(), 1, "stable skill URI must remain unique");
+        assert_eq!(matches[0]["name"], name);
+        let read = rpc(&app, "resources/read", json!({"uri":uri})).await;
+        let content = read["result"]["contents"][0]["text"].as_str().unwrap();
+        assert!(content.starts_with(&format!("---\nname: {invocation}\n")));
+        assert!(content.contains(&format!("\n# {name}\n")));
+        assert!(!content.contains("name: bee-team-"));
+    }
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
         17
@@ -493,8 +519,8 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     for file in provenance["files"].as_array().unwrap() {
         let path = file["resourcePath"].as_str().unwrap();
         let uri = match path {
-            "bee-team-leader/SKILL.md" => "beeteam://skills/leader".to_owned(),
-            "bee-team-collaborator/SKILL.md" => "beeteam://skills/collaborator".to_owned(),
+            "call-a-team-lead/SKILL.md" => "beeteam://skills/leader".to_owned(),
+            "call-a-collaborator/SKILL.md" => "beeteam://skills/collaborator".to_owned(),
             "prompts/content-manifest.json" => "beeteam://references/content-manifest".to_owned(),
             _ => format!(
                 "beeteam://references/{}",
