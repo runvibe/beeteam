@@ -133,6 +133,7 @@
   "manualLower": "manual",
   "mermaidDiagram": "Mermaid diagram",
   "mermaidExpand": "Enlarge diagram",
+  "mermaidMaximize": "Maximize diagram",
   "mermaidFit": "Fit to width",
   "mermaidSource": "Diagram source",
   "mermaidLoading": "Loading diagram…",
