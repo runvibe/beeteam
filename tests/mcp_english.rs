@@ -38,10 +38,11 @@ async fn mcp_preserves_user_authored_portuguese_data() {
     let app = support::app().await;
     // This exact text also exists in the editorial translation map.
     let text = "Autoria declarada; sem autenticação ou prova de identidade.";
+    let authored_brand = "Bee Team | Get Bee Team | Call a Worker | Get a Worker";
     let agent = support::ok(&app,"POST","/api/v1/agents",json!({"name":text}),None).await;
     let team = support::ok(&app,"POST","/api/v1/teams",json!({"name":"User content fixture","leaderId":support::id(&agent),"coordinationContext":support::manual()}),None).await;
     let board = support::ok(&app,"POST","/api/v1/boards",json!({"name":"User content fixture","teamId":support::id(&team)}),None).await;
-    let task = support::ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",support::id(&board)),json!({"title":"User content fixture","description":text,"workScope":support::test_project_scope(),"authorAgentId":support::id(&agent),"executorAgentId":support::id(&agent),"coordinationContext":support::manual()}),None).await;
+    let task = support::ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",support::id(&board)),json!({"title":authored_brand,"description":text,"workScope":support::test_project_scope(),"authorAgentId":support::id(&agent),"executorAgentId":support::id(&agent),"coordinationContext":support::manual()}),None).await;
     let response = app.clone().oneshot(Request::post("/mcp")
         .header("host","127.0.0.1")
         .header("content-type","application/json")
@@ -51,6 +52,7 @@ async fn mcp_preserves_user_authored_portuguese_data() {
     let result: Value = serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(result["result"]["isError"],false);
     assert_eq!(result["result"]["structuredContent"]["data"]["description"],text);
+    assert_eq!(result["result"]["structuredContent"]["data"]["title"],authored_brand);
     let response = app.oneshot(Request::post("/mcp")
         .header("host","127.0.0.1")
         .header("content-type","application/json")
