@@ -117,7 +117,7 @@ export function AppPath() {
     <nav aria-label={tr("common.path")} className="context-path">
       <ol>
         <li>
-          <button onClick={() => setArea("boards")}>Get Bee Team</button>
+          <button onClick={() => setArea("boards")}>Bee Team</button>
         </li>
         <li>
           {boardId && area === "boards" ? (
