@@ -1,12 +1,12 @@
 # Projects, repositories, and commit evidence
 
-## Required project, repositories discovered by Bee Team
+## Required project, repositories discovered by Get Bee Team
 
 Leader and Worker identify the projects actually involved in the work and provide their name and absolute root folder. A project is required; do not substitute a generic not-applicable indication or a fictitious root. The Markdown specification continues to describe requirements/deliverables/acceptance, independently of structured metadata. Do not infer associations automatically from the text.
 
 Provide only the project folders and worktrees used in the request. Do not enumerate or register every worktree of a repository merely because they share Git objects. The root is the concrete working folder; it is neither a list of changed files nor the common Git metadata directory. A worktree with .git as a file is valid. Confirm the available absolute path and its relationship to the task; ambiguity or a missing root must be resolved before filling in the project, without inventing a directory.
 
-The agent does NOT provide repositories, remotes, provider, web URL, or branch as scope input. Bee Team discovers Git/remotes/branch/worktree through local inspection of the provided root. Read the result and returned identifiers before using a repository in commit evidence; do not fabricate repositoryKey or replace discovery with a manual description. Do not confuse the harness's access to the folder with the Bee Team process's access: hosts/containers may see different paths. Do not substitute another root to hide an access failure.
+The agent does NOT provide repositories, remotes, provider, web URL, or branch as scope input. Get Bee Team discovers Git/remotes/branch/worktree through local inspection of the provided root. Read the result and returned identifiers before using a repository in commit evidence; do not fabricate repositoryKey or replace discovery with a manual description. Do not confuse the harness's access to the folder with the Get Bee Team process's access: hosts/containers may see different paths. Do not substitute another root to hide an access failure.
 
 A project folder without Git is legitimate; do not initialize Git or create a remote to satisfy registration. An inaccessible folder does not prove the absence of Git: treat discovery as pending/unavailable according to the actual result, recording the limitation. Read discovery.status: not_git indicates successful inspection without Git; unavailable indicates inability to inspect, never proven absence of Git. Preserve existing names/roots and records; do not migrate legacy scope by inference.
 
@@ -30,7 +30,7 @@ The hash identifies the commit; the branch is historical context, not a mutable 
 
 Separate a locally created commit, confirmed push, and actually verified remote availability. A local object, configured remote, or tracking branch does not prove current publication. If only local, record the reference without announcing an available remote link. Commit links are optional and use only a safe web URL, a supported/configured host, and confirmed availability. Do not push merely to produce a link. Discovery recognizes github.com/gitlab.com; a custom/unknown host returns provider other and webUrl null, even if a safe remoteUrl exists. In that case do not invent a link; actually verified publication may be declared with commitUrl null.
 
-The declaration is evidence supplied by the agent, not authentication or automatic remote verification by Bee Team. Do not promise that the server checked content, authorship, current branch membership, or push. Do not expose credentials in persisted URLs even if the API rejects unsafe formats.
+The declaration is evidence supplied by the agent, not authentication or automatic remote verification by Get Bee Team. Do not promise that the server checked content, authorship, current branch membership, or push. Do not expose credentials in persisted URLs even if the API rejects unsafe formats.
 
 ## Persistence, legacy, and communication
 
