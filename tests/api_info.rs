@@ -82,6 +82,7 @@ async fn info_is_public_small_and_independent_of_database_and_health() {
         json!({"status":"ok","version":env!("CARGO_PKG_VERSION")})
     );
     let schema = read(&app, "/openapi.json").await.2;
+    assert_eq!(schema["info"]["title"], "Get Bee Team");
     beeteam::dto::contracts::validate_schema(
         &schema,
         &schema["components"]["schemas"]["ApiInfo"],

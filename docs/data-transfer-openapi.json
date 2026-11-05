@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Bee Team portable data transfer",
+    "title": "Get Bee Team portable data transfer",
     "version": "1.0.0",
     "description": "Administrative opt-in; actor metadata and preview tokens are not authentication. Imports restore only into empty destinations."
   },
