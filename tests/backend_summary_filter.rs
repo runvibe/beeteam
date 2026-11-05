@@ -19,7 +19,7 @@ async fn tool(app: &Router, task: &Value, query: Value) -> Value {
 }
 async fn page(app: &Router, task: &Value, query: Value) -> Value {
     let mut url = url::Url::parse(&format!(
-        "http://localhost/api/v1/tasks/{}/execution-summaries",
+        "http://localhost/api/v2/tasks/{}/execution-summaries",
         id(task)
     ))
     .unwrap();
@@ -73,7 +73,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
     let agent = ok(
         &app,
         "POST",
-        "/api/v1/agents",
+        "/api/v2/agents",
         json!({"name":"Summary filter fixture"}),
         None,
     )
@@ -81,7 +81,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
     let team = ok(
         &app,
         "POST",
-        "/api/v1/teams",
+        "/api/v2/teams",
         json!({"name":"Summary filters","leaderId":id(&agent),"coordinationContext":manual()}),
         None,
     )
@@ -89,14 +89,14 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
     let board = ok(
         &app,
         "POST",
-        "/api/v1/boards",
+        "/api/v2/boards",
         json!({"name":"Summary filters","teamId":id(&team)}),
         None,
     )
     .await;
     let mut tasks = Vec::new();
     for name in ["A", "B"] {
-        tasks.push(ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":name,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
+        tasks.push(ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&board)),json!({"title":name,"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await);
     }
     let mut task = tasks.remove(0);
     let other = tasks.remove(0);
@@ -106,7 +106,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
         let result = ok(
             &app,
             "POST",
-            &format!("/api/v1/tasks/{}/execution-summaries", id(&task)),
+            &format!("/api/v2/tasks/{}/execution-summaries", id(&task)),
             body,
             ver(&task),
         )
@@ -148,7 +148,7 @@ async fn exact_summary_id_filters_before_count_and_pagination_with_transport_par
             &app,
             "GET",
             &format!(
-                "/api/v1/tasks/{}/execution-summaries?id={invalid}",
+                "/api/v2/tasks/{}/execution-summaries?id={invalid}",
                 id(&task)
             ),
             Value::Null,

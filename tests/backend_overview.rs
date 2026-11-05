@@ -22,20 +22,20 @@ async fn success(app: &Router, name: &str, args: Value) -> Value {
     r["structuredContent"].clone()
 }
 async fn mutation(app: &Router, task: &Value, actor: &Value, name: &str, body: Value) -> Value {
-    let current = get(app, &format!("/api/v1/tasks/{}", id(task))).await;
+    let current = get(app, &format!("/api/v2/tasks/{}", id(task))).await;
     success(app,name,json!({"params":{"taskId":id(task)},"actor":actor,"expectedVersion":current["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":body})).await
 }
 #[tokio::test]
 async fn overview_uses_complete_direct_children_and_only_recorded_bounded_history() {
     let app = app().await;
-    let a = ok(&app, "POST", "/api/v1/agents", json!({"name":"A"}), None).await;
-    let b = ok(&app, "POST", "/api/v1/agents", json!({"name":"B"}), None).await;
+    let a = ok(&app, "POST", "/api/v2/agents", json!({"name":"A"}), None).await;
+    let b = ok(&app, "POST", "/api/v2/agents", json!({"name":"B"}), None).await;
     let actor_a = json!({"kind":"agent","id":id(&a)});
     let actor_b = json!({"kind":"agent","id":id(&b)});
     let team = ok(
         &app,
         "POST",
-        "/api/v1/teams",
+        "/api/v2/teams",
         json!({"name":"Overview","leaderId":id(&a),"coordinationContext":manual()}),
         None,
     )
@@ -43,14 +43,14 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     let mut boards = Vec::new();
     let mut statuses = Vec::new();
     for name in ["First board", "Second board"] {
-        let board=ok(&app,"POST","/api/v1/boards",json!({"name":name,"teamId":id(&team),"statuses":[{"name":"Open","isDone":false},{"name":"Done","isDone":true}]}),None).await;
+        let board=ok(&app,"POST","/api/v2/boards",json!({"name":name,"teamId":id(&team),"statuses":[{"name":"Open","isDone":false},{"name":"Done","isDone":true}]}),None).await;
         statuses.push(
-            get(&app, &format!("/api/v1/boards/{}/statuses", id(&board))).await["items"].clone(),
+            get(&app, &format!("/api/v2/boards/{}/statuses", id(&board))).await["items"].clone(),
         );
         boards.push(board);
     }
-    let root=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
-    let path = format!("/api/v1/tasks/{}/overview", id(&root));
+    let root=ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&boards[0])),json!({"title":"Root","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),None).await;
+    let path = format!("/api/v2/tasks/{}/overview", id(&root));
     let empty = get(&app, &path).await;
     assert_eq!(empty["directSubtasks"]["total"], 0);
     assert_eq!(empty["progressHistory"]["items"], json!([]));
@@ -61,8 +61,8 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     let mut children = Vec::new();
     for i in 0..55 {
         let board_index = i % 2;
-        let current = get(&app, &format!("/api/v1/tasks/{}", id(&root))).await;
-        let child=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[board_index])),json!({"title":format!("Child {i}"),"parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":if board_index==0{id(&a)}else{id(&b)},"coordinationContext":manual()}),ver(&current)).await;
+        let current = get(&app, &format!("/api/v2/tasks/{}", id(&root))).await;
+        let child=ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&boards[board_index])),json!({"title":format!("Child {i}"),"parentId":id(&root),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":if board_index==0{id(&a)}else{id(&b)},"coordinationContext":manual()}),ver(&current)).await;
         if i < 5 {
             let done = statuses[board_index]
                 .as_array()
@@ -94,9 +94,9 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
         }
         children.push(child);
     }
-    let parent = get(&app, &format!("/api/v1/tasks/{}", id(&children[6]))).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Grandchild excluded","parentId":id(&parent),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&parent)).await;
-    ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&boards[0])),json!({"title":"Unrelated excluded","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
+    let parent = get(&app, &format!("/api/v2/tasks/{}", id(&children[6]))).await;
+    ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&boards[0])),json!({"title":"Grandchild excluded","parentId":id(&parent),"workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&a),"coordinationContext":manual()}),ver(&parent)).await;
+    ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&boards[0])),json!({"title":"Unrelated excluded","workScope":test_project_scope(),"authorAgentId":id(&a),"executorAgentId":id(&b),"coordinationContext":manual()}),None).await;
     for i in 0..102 {
         mutation(&app,&root,&actor_b,"updateTask",json!({"currentSummary":format!("Explicit synthesis {i}"),"progress":{"percent":i%101,"note":format!("Point {i}")}})).await;
     }
@@ -113,10 +113,10 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     )
     .await;
     for i in 0..6 {
-        let current = get(&app, &format!("/api/v1/tasks/{}", id(&root))).await;
+        let current = get(&app, &format!("/api/v2/tasks/{}", id(&root))).await;
         success(&app,"createAttachment",json!({"params":{"taskId":id(&root)},"actor":actor_b,"expectedVersion":current["version"],"idempotencyKey":uuid::Uuid::new_v4(),"body":{"description":"Test only"},"upload":{"name":format!("file-{i}.txt"),"mediaType":"text/plain","dataBase64":"dGVzdA=="}})).await;
     }
-    let children_path = format!("/api/v1/tasks?parentId={}", id(&root));
+    let children_path = format!("/api/v2/tasks?parentId={}", id(&root));
     assert_eq!(get(&app, &children_path).await["total"], 54);
     let all = get(&app, &format!("{children_path}&includeArchived=true")).await;
     assert_eq!(all["total"], 55);
@@ -141,7 +141,7 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
         .0,
         400
     );
-    let before = get(&app, &format!("/api/v1/tasks/{}", id(&root))).await;
+    let before = get(&app, &format!("/api/v2/tasks/{}", id(&root))).await;
     let view = get(&app, &path).await;
     let mcp = success(
         &app,
@@ -209,7 +209,7 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     assert_eq!(view["currentSummaryMeta"]["actorId"], a["id"]);
     assert!(view["currentSummaryMeta"]["eventId"].is_string());
     // Compare persisted reads: PostgreSQL timestamps have microsecond precision.
-    let persisted = get(&app, &format!("/api/v1/tasks/{}/execution-summaries", id(&root))).await;
+    let persisted = get(&app, &format!("/api/v2/tasks/{}/execution-summaries", id(&root))).await;
     let latest_persisted = persisted["items"].as_array().unwrap().iter()
         .find(|row| row["id"] == latest["data"]["executionSummary"]["id"]).unwrap();
     assert_eq!(&view["latestExecutionSummary"], latest_persisted);
@@ -241,14 +241,14 @@ async fn overview_uses_complete_direct_children_and_only_recorded_bounded_histor
     assert!(view["nextStep"].is_null());
     assert_eq!(view["decisions"], json!([]));
     assert_eq!(
-        get(&app, &format!("/api/v1/tasks/{}", id(&root))).await,
+        get(&app, &format!("/api/v2/tasks/{}", id(&root))).await,
         before
     );
     assert_eq!(
         request(
             &app,
             "GET",
-            &format!("/api/v1/tasks/{}/overview", uuid::Uuid::now_v7()),
+            &format!("/api/v2/tasks/{}/overview", uuid::Uuid::now_v7()),
             json!({}),
             None
         )

@@ -32,65 +32,65 @@ Leituras nÃ£o iniciam atividade. ExclusÃµes sÃ£o lÃ³gicas e nÃ£o remov
 
 | Tool | API equivalente | Efeito | Body | Data de saÃ­da |
 |---|---|---|---|---|
-| `createBoard` | POST `/api/v1/boards` | write | CreateBoard | BoardCreated |
-| `listBoards` | GET `/api/v1/boards` | read | â€” | BoardPage |
-| `getBoard` | GET `/api/v1/boards/{boardId}` | read | â€” | Board |
-| `updateBoard` | PATCH `/api/v1/boards/{boardId}` | write | PatchBoard | Board |
-| `listStatuses` | GET `/api/v1/boards/{boardId}/statuses` | read | â€” | StatusList |
-| `createStatus` | POST `/api/v1/boards/{boardId}/statuses` | write | StatusInput | Status |
-| `updateStatus` | PATCH `/api/v1/boards/{boardId}/statuses/{statusId}` | write | PatchStatus | Status |
-| `orderStatuses` | PUT `/api/v1/boards/{boardId}/status-order` | write | StatusOrder | StatusOrderResult |
-| `getBoardView` | GET `/api/v1/boards/{boardId}/view` | read | â€” | BoardView |
-| `listTasks` | GET `/api/v1/boards/{boardId}/tasks` | read | â€” | TaskPage |
-| `createTask` | POST `/api/v1/boards/{boardId}/tasks` | write | CreateTask | Task |
-| `getTask` | GET `/api/v1/tasks/{taskId}` | read | â€” | Task |
-| `updateTask` | PATCH `/api/v1/tasks/{taskId}` | write | PatchTask | Task |
-| `assignTask` | PUT `/api/v1/tasks/{taskId}/assignment` | write | Assignment | Task |
-| `moveTask` | PUT `/api/v1/tasks/{taskId}/position` | write | Position | Task |
-| `blockTask` | PUT `/api/v1/tasks/{taskId}/block` | write | Block | Task |
-| `listPlans` | GET `/api/v1/tasks/{taskId}/plans` | read | â€” | PlanRevisionPage |
-| `createPlan` | POST `/api/v1/tasks/{taskId}/plans` | write | CreatePlan | PlanRevision |
-| `listComments` | GET `/api/v1/tasks/{taskId}/comments` | read | â€” | CommentPage |
-| `createComment` | POST `/api/v1/tasks/{taskId}/comments` | write | CreateComment | Comment |
-| `listAttachments` | GET `/api/v1/tasks/{taskId}/attachments` | read | â€” | AttachmentPage |
-| `createAttachment` | POST `/api/v1/tasks/{taskId}/attachments` | write | UploadAttachment | Attachment |
-| `listExecutionSummarys` | GET `/api/v1/tasks/{taskId}/execution-summaries` | read | â€” | ExecutionSummaryPage |
-| `createExecutionSummary` | POST `/api/v1/tasks/{taskId}/execution-summaries` | write | RecordExecution | ExecutionResult |
-| `revisePlan` | POST `/api/v1/tasks/{taskId}/plans/{planId}/revisions` | write | RevisePlan | PlanRevision |
-| `listPlanRevisions` | GET `/api/v1/tasks/{taskId}/plans/{planId}/revisions` | read | â€” | PlanRevisionPage |
-| `downloadAttachment` | GET `/api/v1/tasks/{taskId}/attachments/{attachmentId}/content` | read | â€” | empty |
-| `removeAttachment` | DELETE `/api/v1/tasks/{taskId}/attachments/{attachmentId}` | write | â€” | empty |
-| `getTimeline` | GET `/api/v1/tasks/{taskId}/timeline` | read | â€” | EventPage |
-| `archiveTask` | PUT `/api/v1/tasks/{taskId}/archive` | write | Archive | Task |
-| `listAllTasks` | GET `/api/v1/tasks` | read | â€” | TaskPage |
-| `createAgent` | POST `/api/v1/agents` | write | CreateAgent | Agent |
-| `listAgents` | GET `/api/v1/agents` | read | â€” | AgentPage |
-| `getAgent` | GET `/api/v1/agents/{agentId}` | read | â€” | Agent |
-| `updateAgent` | PATCH `/api/v1/agents/{agentId}` | write | PatchAgent | Agent |
-| `archiveAgent` | PUT `/api/v1/agents/{agentId}/archive` | write | Archive | Agent |
-| `copyAgent` | POST `/api/v1/agents/{agentId}/copies` | write | CopyAgent | CopyResult |
-| `uploadAgentImage` | POST `/api/v1/agents/{agentId}/image` | write | ImageUpload | Agent |
-| `removeAgentImage` | DELETE `/api/v1/agents/{agentId}/image` | write | â€” | empty |
-| `downloadAgentImage` | GET `/api/v1/agents/{agentId}/image/content` | read | â€” | empty |
-| `createTeam` | POST `/api/v1/teams` | write | CreateTeam | Team |
-| `listTeams` | GET `/api/v1/teams` | read | â€” | TeamPage |
-| `getTeam` | GET `/api/v1/teams/{teamId}` | read | â€” | Team |
-| `updateTeam` | PATCH `/api/v1/teams/{teamId}` | write | PatchTeam | Team |
-| `archiveTeam` | PUT `/api/v1/teams/{teamId}/archive` | write | Archive | Team |
-| `listTeamMembers` | GET `/api/v1/teams/{teamId}/members` | read | â€” | MemberPage |
-| `changeTeamComposition` | POST `/api/v1/team-composition-changes` | write | ChangeComposition | CompositionResult |
-| `createChatReference` | POST `/api/v1/agents/{agentId}/chat-references` | write | CreateChatReference | ChatReference |
-| `listChatReferences` | GET `/api/v1/agents/{agentId}/chat-references` | read | â€” | ChatReferencePage |
-| `updateChatReference` | PATCH `/api/v1/agents/{agentId}/chat-references/{chatReferenceId}` | write | PatchChatReference | ChatReference |
-| `listAgentActivities` | GET `/api/v1/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
+| `createBoard` | POST `/api/v2/boards` | write | CreateBoard | BoardCreated |
+| `listBoards` | GET `/api/v2/boards` | read | â€” | BoardPage |
+| `getBoard` | GET `/api/v2/boards/{boardId}` | read | â€” | Board |
+| `updateBoard` | PATCH `/api/v2/boards/{boardId}` | write | PatchBoard | Board |
+| `listStatuses` | GET `/api/v2/boards/{boardId}/statuses` | read | â€” | StatusList |
+| `createStatus` | POST `/api/v2/boards/{boardId}/statuses` | write | StatusInput | Status |
+| `updateStatus` | PATCH `/api/v2/boards/{boardId}/statuses/{statusId}` | write | PatchStatus | Status |
+| `orderStatuses` | PUT `/api/v2/boards/{boardId}/status-order` | write | StatusOrder | StatusOrderResult |
+| `getBoardView` | GET `/api/v2/boards/{boardId}/view` | read | â€” | BoardView |
+| `listTasks` | GET `/api/v2/boards/{boardId}/tasks` | read | â€” | TaskPage |
+| `createTask` | POST `/api/v2/boards/{boardId}/tasks` | write | CreateTask | Task |
+| `getTask` | GET `/api/v2/tasks/{taskId}` | read | â€” | Task |
+| `updateTask` | PATCH `/api/v2/tasks/{taskId}` | write | PatchTask | Task |
+| `assignTask` | PUT `/api/v2/tasks/{taskId}/assignment` | write | Assignment | Task |
+| `moveTask` | PUT `/api/v2/tasks/{taskId}/position` | write | Position | Task |
+| `blockTask` | PUT `/api/v2/tasks/{taskId}/block` | write | Block | Task |
+| `listPlans` | GET `/api/v2/tasks/{taskId}/plans` | read | â€” | PlanRevisionPage |
+| `createPlan` | POST `/api/v2/tasks/{taskId}/plans` | write | CreatePlan | PlanRevision |
+| `listComments` | GET `/api/v2/tasks/{taskId}/comments` | read | â€” | CommentPage |
+| `createComment` | POST `/api/v2/tasks/{taskId}/comments` | write | CreateComment | Comment |
+| `listAttachments` | GET `/api/v2/tasks/{taskId}/attachments` | read | â€” | AttachmentPage |
+| `createAttachment` | POST `/api/v2/tasks/{taskId}/attachments` | write | UploadAttachment | Attachment |
+| `listExecutionSummarys` | GET `/api/v2/tasks/{taskId}/execution-summaries` | read | â€” | ExecutionSummaryPage |
+| `createExecutionSummary` | POST `/api/v2/tasks/{taskId}/execution-summaries` | write | RecordExecution | ExecutionResult |
+| `revisePlan` | POST `/api/v2/tasks/{taskId}/plans/{planId}/revisions` | write | RevisePlan | PlanRevision |
+| `listPlanRevisions` | GET `/api/v2/tasks/{taskId}/plans/{planId}/revisions` | read | â€” | PlanRevisionPage |
+| `downloadAttachment` | GET `/api/v2/tasks/{taskId}/attachments/{attachmentId}/content` | read | â€” | empty |
+| `removeAttachment` | DELETE `/api/v2/tasks/{taskId}/attachments/{attachmentId}` | write | â€” | empty |
+| `getTimeline` | GET `/api/v2/tasks/{taskId}/timeline` | read | â€” | EventPage |
+| `archiveTask` | PUT `/api/v2/tasks/{taskId}/archive` | write | Archive | Task |
+| `listAllTasks` | GET `/api/v2/tasks` | read | â€” | TaskPage |
+| `createAgent` | POST `/api/v2/agents` | write | CreateAgent | Agent |
+| `listAgents` | GET `/api/v2/agents` | read | â€” | AgentPage |
+| `getAgent` | GET `/api/v2/agents/{agentId}` | read | â€” | Agent |
+| `updateAgent` | PATCH `/api/v2/agents/{agentId}` | write | PatchAgent | Agent |
+| `archiveAgent` | PUT `/api/v2/agents/{agentId}/archive` | write | Archive | Agent |
+| `copyAgent` | POST `/api/v2/agents/{agentId}/copies` | write | CopyAgent | CopyResult |
+| `uploadAgentImage` | POST `/api/v2/agents/{agentId}/image` | write | ImageUpload | Agent |
+| `removeAgentImage` | DELETE `/api/v2/agents/{agentId}/image` | write | â€” | empty |
+| `downloadAgentImage` | GET `/api/v2/agents/{agentId}/image/content` | read | â€” | empty |
+| `createTeam` | POST `/api/v2/teams` | write | CreateTeam | Team |
+| `listTeams` | GET `/api/v2/teams` | read | â€” | TeamPage |
+| `getTeam` | GET `/api/v2/teams/{teamId}` | read | â€” | Team |
+| `updateTeam` | PATCH `/api/v2/teams/{teamId}` | write | PatchTeam | Team |
+| `archiveTeam` | PUT `/api/v2/teams/{teamId}/archive` | write | Archive | Team |
+| `listTeamMembers` | GET `/api/v2/teams/{teamId}/members` | read | â€” | MemberPage |
+| `changeTeamComposition` | POST `/api/v2/team-composition-changes` | write | ChangeComposition | CompositionResult |
+| `createChatReference` | POST `/api/v2/agents/{agentId}/chat-references` | write | CreateChatReference | ChatReference |
+| `listChatReferences` | GET `/api/v2/agents/{agentId}/chat-references` | read | â€” | ChatReferencePage |
+| `updateChatReference` | PATCH `/api/v2/agents/{agentId}/chat-references/{chatReferenceId}` | write | PatchChatReference | ChatReference |
+| `listAgentActivities` | GET `/api/v2/agents/{agentId}/activities` | read | â€” | ActivityLinkPage |
 
 ### Resolução por slug
 
 | Tool | HTTP | Efeito | Entrada | Saída |
 |---|---|---|---|---|
-| `resolveAgentSlug` | GET `/api/v1/agents/by-slug/{slug}` | read | `params.slug` | SlugResolution |
-| `resolveTeamSlug` | GET `/api/v1/teams/by-slug/{slug}` | read | `params.slug` | SlugResolution |
-| `resolveTaskSlug` | GET `/api/v1/tasks/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+| `resolveAgentSlug` | GET `/api/v2/agents/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+| `resolveTeamSlug` | GET `/api/v2/teams/by-slug/{slug}` | read | `params.slug` | SlugResolution |
+| `resolveTaskSlug` | GET `/api/v2/tasks/by-slug/{slug}` | read | `params.slug` | SlugResolution |
 
 ## Compostas
 
@@ -146,7 +146,7 @@ nunca comandos executados pelo servidor.
 | URI | Fonte empacotada |
 |---|---|
 | `beeteam://skills/leader` | call-a-team-lead/SKILL.md |
-| `beeteam://skills/collaborator` | call-a-collaborator/SKILL.md |
+| `beeteam://skills/worker` | call-a-worker/SKILL.md |
 | `beeteam://references/integration` | references/integration.md |
 | `beeteam://references/handoff` | references/handoff.md |
 | `beeteam://references/codex` | references/codex.md |
@@ -184,7 +184,7 @@ rollback/idempotÃªncia, resources seguros e os trÃªs prompts. CatÃ¡logo te
 
 ## Síntese cumulativa para cards
 
-`Task.currentSummary` é sempre string, vazia se ainda não informada, com máximo de 16384 bytes UTF-8. Conteúdo escrito pelo colaborador: trabalho feito/concluído, em andamento, pendências/próximo passo. É retornado em getTask, listTasks, listAllTasks, getBoardView e nas tasks de prepare_execution/compostas; o cliente não consulta histórico por card. Não é gerado pelo servidor nem derivado de description/progress.note/ExecutionSummary.summary.
+`Task.currentSummary` é sempre string, vazia se ainda não informada, com máximo de 16384 bytes UTF-8. Conteúdo escrito pelo worker: trabalho feito/concluído, em andamento, pendências/próximo passo. É retornado em getTask, listTasks, listAllTasks, getBoardView e nas tasks de prepare_execution/compostas; o cliente não consulta histórico por card. Não é gerado pelo servidor nem derivado de description/progress.note/ExecutionSummary.summary.
 
 `updateTask.body.currentSummary` substitui a síntese; `progress` exige seu envio conjunto. `moveTask.body.currentSummary` é obrigatório ao mudar status, opcional para reordenar no mesmo status. `createExecutionSummary.body.currentSummary` e `close_activity.execution.currentSummary` são obrigatórios. `record_progress.currentSummary` e `subtaskUpdates[].currentSummary` seguem a regra de progress por task. Escritas não aceitam vazio, null ou só espaços; omissão administrativa preserva o valor. O histórico anterior permanece na timeline. RecordExecution.summary continua descrevendo aquela atividade, não a síntese atual.
 
@@ -198,7 +198,7 @@ Especificações e planos/revisões conservam o texto recebido, incluindo Markdo
 
 ## Slugs de agentes, times e tasks
 
-Agent.slug, Team.slug e Task.slug (incluindo subtasks) são gerados, sempre presentes e não editáveis. UUIDv7 permanece identidade interna e parâmetro das APIs existentes. Boards não possuem slug. Resolvers GET /api/v1/agents/by-slug/{slug}, /teams/by-slug/{slug}, /tasks/by-slug/{slug} retornam {id,slug}; no MCP: resolveAgentSlug/resolveTeamSlug/resolveTaskSlug com params.slug. Usar o UUID retornado nas APIs/prompts seguintes; não enviar slug onde se exige UUID. Retorno404 para ausente/excluído; arquivados continuam resolvendo. Formato inválido ou não canônico retorna400; não há redirect/normalização implícita no resolver.
+Agent.slug, Team.slug e Task.slug (incluindo subtasks) são gerados, sempre presentes e não editáveis. UUIDv7 permanece identidade interna e parâmetro das APIs existentes. Boards não possuem slug. Resolvers GET /api/v2/agents/by-slug/{slug}, /teams/by-slug/{slug}, /tasks/by-slug/{slug} retornam {id,slug}; no MCP: resolveAgentSlug/resolveTeamSlug/resolveTaskSlug com params.slug. Usar o UUID retornado nas APIs/prompts seguintes; não enviar slug onde se exige UUID. Retorno404 para ausente/excluído; arquivados continuam resolvendo. Formato inválido ou não canônico retorna400; não há redirect/normalização implícita no resolver.
 
 Normalização única no PostgreSQL: lowercase+NFKD, remoção de marcas combinantes U+0300..036F, ß/æ/œ para ss/ae/oe, demais caracteres fora de a-z0-9 viram separador, hifens colapsados/sem bordas. Nomes sem caracteres úteis usam agent/team/task; não há transliteração universal de alfabetos não latinos. Máximo80 caracteres ASCII, truncando base para caber sufixos -2,-3... . Reservados new/edit/create/by-slug/resolve/search/archive/settings/api/mcp/agents/teams/tasks e strings em formato UUID recebem prefixo agent-/team-/task-.
 
@@ -211,10 +211,10 @@ Replays históricos sem slug ganham o slug canônico imutável do registro corre
 O catálogo atual anuncia 13 resources; esta seção substitui contagens históricas acima e nos textos editoriais preservados. Os seis URIs anteriores permanecem. Novos URIs:
 
 - `beeteam://references/leader-onboarding-flows`
-- `beeteam://references/collaborator-workflow`
+- `beeteam://references/worker-workflow`
 - `beeteam://references/mcp-content`
 - `beeteam://references/task-briefing`
-- `beeteam://references/collaborator-resumption`
+- `beeteam://references/worker-resumption`
 - `beeteam://references/delivery-review`
 - `beeteam://references/content-manifest`
 
@@ -234,23 +234,23 @@ Supersedes the historical snapshot descriptions above. Ten approved materials fr
 
 The 13-resource allowlist and three read-only prompt names/arguments are unchanged. Relative links remain resolvable through their listed reference basename. Task records carry questions, answers, decisions, scope changes, blockers and deliveries; authorized chat notifications carry only persisted references and change type. Identity activation remains possible without a task. Persistence failures, repeated notifications and harness permissions cannot authorize execution or notification loops. This is a compiled package update, not evidence of activation in an existing runtime.
 
-Links ending in `call-a-team-lead/SKILL.md` or `call-a-collaborator/SKILL.md` map to `beeteam://skills/leader` and `beeteam://skills/collaborator`, respectively, rather than a references/SKILL URI.
+Links ending in `call-a-team-lead/SKILL.md` or `call-a-worker/SKILL.md` map to `beeteam://skills/leader` and `beeteam://skills/worker`, respectively, rather than a references/SKILL URI.
 
 ## Leader chat title snapshot — 2026-10-30
 
-Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Collaborator chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
+Bundled MCP materials now incorporate Skills commit `98e0428dceec64ea74d86c6a8d4ed27ce3a14f08`: a confirmed Leader uses a single 👑 prefix in its own chat title, preserving useful context. Agent/team names and slugs, Worker chats and other chats are unchanged. Existing task-authoritative communication and the local SQLite startup overlay are preserved. The resource allowlist and prompt contracts are unchanged; provenance hashes are in `resources/bee-team/provenance.json`. This updates source materials only: no active service, deployed executable or global installation is changed by this synchronization. Runtime activation remains pending.
 
 Validation for this snapshot: source/bundle SHA-256 and all relative resource links checked; `cargo build --locked --features mcp --lib -j 1` passed; `cargo test --locked --features mcp -j 1` passed all 87 tests with isolated PostgreSQL on 55481. The MCP integration regression first failed against the old provenance, then passed with served-resource hashes checked. Catalog regenerated via the required `mcp_catalog` example. No release artifact was generated or replaced, no active runtime was restarted, and no data/global skill installation was changed.
 
 ## Both chat role marks — 2026-10-30
 
-Current bundled source `e73c21be0263374a26ce5ea5e655e185e7cdfea2` supersedes the earlier Leader-only rule: Leader uses 👑 and Collaborator uses 🐝 from skill activation, including existing chats and role switches. Initial role marks are replaced/normalized rather than accumulated; useful title context is preserved, and normalized discovery does not establish identity. Only chat titles are affected; agent/team names, slugs and Bee Team data are unchanged. Task-authoritative communication and the three local SQLite startup/readiness paragraphs remain intact. The 13-resource allowlist and three prompt contracts are unchanged. This is a source snapshot update; no running service or release executable is updated here, so runtime activation remains pending.
+Current bundled source `e73c21be0263374a26ce5ea5e655e185e7cdfea2` supersedes the earlier Leader-only rule: Leader uses 👑 and Worker uses 🐝 from skill activation, including existing chats and role switches. Initial role marks are replaced/normalized rather than accumulated; useful title context is preserved, and normalized discovery does not establish identity. Only chat titles are affected; agent/team names, slugs and Bee Team data are unchanged. Task-authoritative communication and the three local SQLite startup/readiness paragraphs remain intact. The 13-resource allowlist and three prompt contracts are unchanged. This is a source snapshot update; no running service or release executable is updated here, so runtime activation remains pending.
 
 Validation of the both-role snapshot: source/bundle hashes and relative resource links verified; the previous Leader-only restriction is absent from bundled materials. Library build and the full MCP-enabled Rust suite passed with one job: 87 tests using isolated PostgreSQL on 55481, including served resource hashes and prompt checks. The provenance regression failed against the old snapshot before synchronization. Catalog regenerated with the required example. No release build/replacement, service restart, data change, chat rename or global installation was performed; runtime activation is pending.
 
 ## Exact comment lookup (2026-10-30)
 
-MCP `getComment` takes `{"params":{"taskId":"UUIDv7","commentId":"UUIDv7"}}`; HTTP parity is `GET /api/v1/tasks/{taskId}/comments/{commentId}`. No actor, expectedVersion or idempotency key is required for this read. Both IDs are required and membership is checked inside the shared service. Repositories hydrate the requested comment by primary key within the existing read snapshot, without paginating comments.
+MCP `getComment` takes `{"params":{"taskId":"UUIDv7","commentId":"UUIDv7"}}`; HTTP parity is `GET /api/v2/tasks/{taskId}/comments/{commentId}`. No actor, expectedVersion or idempotency key is required for this read. Both IDs are required and membership is checked inside the shared service. Repositories hydrate the requested comment by primary key within the existing read snapshot, without paginating comments.
 
 MCP success uses `structuredContent: {data: Comment, version: 1, createdId: null}` (version is the stored comment version). HTTP returns Comment directly. Comment fields are id, taskId, body, actorId, actorKind, createdAt and deletedAt. Content and authorship are returned unchanged. Missing/deleted task or comment and mismatched task membership all return HTTP 404 / MCP isError=true with `{code:"not_found",error:"Resource not found",details:{}}`. Invalid UUIDv7 input returns invalid_request / HTTP 400.
 
@@ -264,7 +264,7 @@ Final coordinated Skills snapshot: `23b8bdf730802e447b4536c59df7b4ce73ef957d`; 1
 
 ## Comment author and literal text filters (2026-10-30)
 
-`GET /api/v1/tasks/{taskId}/comments` and MCP `listComments` accept optional `actorKind=human|agent`, `actorId=UUIDv7`, and `text=substring`. Example MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"actorKind":"agent","actorId":"UUIDv7","text":"Palette","limit":20,"offset":0}}`. Existing date, ordering and pagination options remain available. Distinct filters combine with AND. Humans have null actorId: select them with actorKind=human alone. Combining human with an existing agent actorId returns no results; actorId keeps its existing UUID/existence validation.
+`GET /api/v2/tasks/{taskId}/comments` and MCP `listComments` accept optional `actorKind=human|agent`, `actorId=UUIDv7`, and `text=substring`. Example MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"actorKind":"agent","actorId":"UUIDv7","text":"Palette","limit":20,"offset":0}}`. Existing date, ordering and pagination options remain available. Distinct filters combine with AND. Humans have null actorId: select them with actorKind=human alone. Combining human with an existing agent actorId returns no results; actorId keeps its existing UUID/existence validation.
 
 `text` matches a literal substring of the complete stored Markdown body, including Markdown punctuation. It is case-sensitive and accent-sensitive, does not trim or normalize, and is limited to 1024 characters / 4096 UTF-8 bytes. Empty text applies no restriction. `%`, `_`, backslash, regex syntax and SQL punctuation are literal characters, not patterns. Bound `strpos` (PostgreSQL) / `instr` (SQLite) predicates provide identical literal matching without LIKE wildcard interpolation or escaping ambiguity. No embeddings, semantic search, Markdown rendering or client-side-only filtering is used.
 
@@ -274,7 +274,7 @@ This source change requires a new runtime artifact and manual activation to beco
 
 ## Task-scoped participants (2026-10-30)
 
-`GET /api/v1/tasks/{taskId}/participants` and MCP `listTaskParticipants` return a distinct participant page (`items`, `total`, `offset`, `limit`, `hasMore`, `nextOffset`). MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"offset":0,"limit":100}}`. Only offset/limit are accepted; the endpoint is independent of comment filters or loaded comment pages. UI clients paginate this smaller participant collection until hasMore=false, never enumerate the global agent catalog or scan comment pages.
+`GET /api/v2/tasks/{taskId}/participants` and MCP `listTaskParticipants` return a distinct participant page (`items`, `total`, `offset`, `limit`, `hasMore`, `nextOffset`). MCP arguments: `{"params":{"taskId":"UUIDv7"},"query":{"offset":0,"limit":100}}`. Only offset/limit are accepted; the endpoint is independent of comment filters or loaded comment pages. UI clients paginate this smaller participant collection until hasMore=false, never enumerate the global agent catalog or scan comment pages.
 
 Each item has `actorKind`, nullable `actorId`, nullable `agentName`, `agentArchived` and `agentDeleted`. The exact task contributes its current author/executor, authors recorded on comments, plan revisions, attachments, execution summaries and timeline events, plus original author/executor and previous/new executors recorded by creation/assignment events. Sources are non-deleted records; retained timeline events preserve participation even if an attachment/comment was removed. Descendants, unrelated tasks and other team members are excluded. No identity is inferred from text, names, chat content or a team roster.
 
@@ -286,7 +286,7 @@ Historical author filtering: listComments.actorId validates UUID syntax but does
 
 ## Task overview snapshot (2026-10-30)
 
-`GET /api/v1/tasks/{taskId}/overview` / MCP `getTaskOverview` (`{"params":{"taskId":"UUIDv7"}}`) returns the current Task plus complete SQL aggregates of non-deleted DIRECT children across boards, including archived children. `directSubtasks` provides total/done/remaining and a separate blocked count (blocked is an overlapping property, not another status bucket), byStatus keyed by board/status IDs with current names and isDone, and byExecutor with total/done/remaining. Executor distribution means current assignment, never productivity or who historically performed the work. No status color exists in the model, so color is null.
+`GET /api/v2/tasks/{taskId}/overview` / MCP `getTaskOverview` (`{"params":{"taskId":"UUIDv7"}}`) returns the current Task plus complete SQL aggregates of non-deleted DIRECT children across boards, including archived children. `directSubtasks` provides total/done/remaining and a separate blocked count (blocked is an overlapping property, not another status bucket), byStatus keyed by board/status IDs with current names and isDone, and byExecutor with total/done/remaining. Executor distribution means current assignment, never productivity or who historically performed the work. No status color exists in the model, so color is null.
 
 The current task progress remains independent of child completion. `progressHistory` contains only explicitly recorded `task.updated` progress values, ordered from oldest to newest within the latest 100 matching events, with exact event ID, occurredAt, actor metadata and source. total/limit/truncated and coverage=explicit_progress_events_only are explicit. Task creation defaults, derived child ratios and older execution-summary progress are NOT reconstructed into points: legacy closure events did not store that progress. Consequently the latest historical point can differ from the current task progress. Follow the existing task timeline for older records; there is no claim of a complete continuous series.
 
@@ -334,12 +334,12 @@ Historical reads/transfer retain missing metrics. Exact saved legacy HTTP/MCP
 and compound replays remain valid before current schema validation. New keys
 must satisfy the new contract. See [summary usage](summary-usage.md).
 
-## Collaborator bootstrap snapshot — 2026-11-02
+## Worker bootstrap snapshot — 2026-11-02
 
 Bootstrap snapshot: Skills `5fd5f0b280865609ab7de7a2770fefa092c21fd4`, 13 source
 materials tracked in provenance, 15 allowlisted resources and 3 read-only prompts.
-New URI: `beeteam://references/collaborator-bootstrap`. Creation of an authorized
-chat precedes Collaborator self-registration; confirmed name/agentId/teamId and
+New URI: `beeteam://references/worker-bootstrap`. Creation of an authorized
+chat precedes Worker self-registration; confirmed name/agentId/teamId and
 ready/pending precede Leader verification and task assignment. Bootstrap-only
 communication exemptions do not authorize business work or bypass harness policy.
 Existing required usage declarations and local driver-aware startup overlays remain.
@@ -423,7 +423,7 @@ CreateTask requires projects-only workScope; updateTask refreshes discovery when
 
 ### Timeline: seleção exata de evento (2026-11-03)
 
-`getTimeline.query.id` é um UUIDv7 opcional e escalar, equivalente a `GET /api/v1/tasks/{taskId}/timeline?id=...`. Combina por AND com o escopo da tarefa, `includeChildren` e demais filtros. A igualdade usa parâmetros vinculados na CTE SQL `filtered`, antes de `count`, ordenação e `offset/limit`, em ambos os adapters existentes. UUIDs são normalizados; ID inválido ou repetido retorna 400. ID inexistente, excluído ou fora do escopo retorna `EventPage` vazio. Sem ID, a consulta mantém seu comportamento.
+`getTimeline.query.id` é um UUIDv7 opcional e escalar, equivalente a `GET /api/v2/tasks/{taskId}/timeline?id=...`. Combina por AND com o escopo da tarefa, `includeChildren` e demais filtros. A igualdade usa parâmetros vinculados na CTE SQL `filtered`, antes de `count`, ordenação e `offset/limit`, em ambos os adapters existentes. UUIDs são normalizados; ID inválido ou repetido retorna 400. ID inexistente, excluído ou fora do escopo retorna `EventPage` vazio. Sem ID, a consulta mantém seu comportamento.
 
 Validação isolada cobre evento além dos primeiros 50, retorno completo, count/paginação, filtros combinados, descendência recursiva cross-board, evento alheio/inexistente/excluído, UUID inválido e paridade HTTP/MCP.
 
@@ -435,7 +435,7 @@ Verificação: 2 testes de timeline, 2 regressões de filtros de comentários/re
 
 ### Pontos leves da Timeline (2026-11-03)
 
-`getTimelinePoints` corresponde a `GET /api/v1/tasks/{taskId}/timeline-points`. Item: id, taskId, type, occurredAt, sequence. Page: items, total, offset, limit, hasMore, nextOffset. Mesmos filtros da Timeline, sequência asc por padrão, limit padrão50/máximo100. A projeção SQL preserva escopo recursivo cross-board e filtra antes de count/paginação; não carrega data, Markdown, evidências nem reidrata eventos. DTO remove o actorId interno usado no filtro. Clientes devem consumir todas as páginas leves, distinguir falha/carregamento parcial e consultar conteúdo completo só por demanda. Páginas têm snapshots independentes, sem garantia de snapshot global entre chamadas. Catálogo: 79 tools, 17 resources, 3 prompts.
+`getTimelinePoints` corresponde a `GET /api/v2/tasks/{taskId}/timeline-points`. Item: id, taskId, type, occurredAt, sequence. Page: items, total, offset, limit, hasMore, nextOffset. Mesmos filtros da Timeline, sequência asc por padrão, limit padrão50/máximo100. A projeção SQL preserva escopo recursivo cross-board e filtra antes de count/paginação; não carrega data, Markdown, evidências nem reidrata eventos. DTO remove o actorId interno usado no filtro. Clientes devem consumir todas as páginas leves, distinguir falha/carregamento parcial e consultar conteúdo completo só por demanda. Páginas têm snapshots independentes, sem garantia de snapshot global entre chamadas. Catálogo: 79 tools, 17 resources, 3 prompts.
 
 Validação: suíte Rust completa com 160 testes aprovados; 2 testes do endpoint repetidos em PostgreSQL 18 isolado, além de SQLite. Cobertura de campos mínimos, coleta de todas as páginas, total/ordenação/filtros, descendência cross-board, exclusão lógica e ausência de hidratação de eventos/resumos. Nenhum banco de produto ou serviço ativo foi alterado.
 
@@ -449,10 +449,19 @@ English source snapshot: 96e4432fb1df3e8d0df8e6ccda5581f5de0a3e26. All 17 source
 
 ### Agent aggregate resumption removal (2026-11-04)
 
-The aggregate agent resumption endpoint/tool and its dedicated MCP prompt have been removed. Task briefing and delivery review remain registered; the collaborator continuity resource remains read-only guidance for explicit task/profile/team reads. Profile instructions/context, team context, chat references, activity indexes and task interval start/pause/resume/finish are preserved. Catalog: 78 tools, 17 resources, 2 prompts. No stored records or migrations are changed.
+The aggregate agent resumption endpoint/tool and its dedicated MCP prompt have been removed. Task briefing and delivery review remain registered; the worker continuity resource remains read-only guidance for explicit task/profile/team reads. Profile instructions/context, team context, chat references, activity indexes and task interval start/pause/resume/finish are preserved. Catalog: 78 tools, 17 resources, 2 prompts. No stored records or migrations are changed.
 
 Validation: the full `cargo test --locked --features mcp -j 1` suite passed (165 tests), with temporary SQLite and an isolated PostgreSQL 18 test instance for PostgreSQL-specific cases. The removal/data-preservation regression also passed in a separate PostgreSQL run. Tests verify HTTP 404, missing MCP tool/prompt discovery, unchanged profile/team/conversation data, preserved task interval workflows, and bundled resource hashes. Frontend changes and product runtime rollout are separate.
 
 ### Latest recorded agent activity (2026-11-04)
 
-`getAgentLatestActivity` maps to `GET /api/v1/agents/{agentId}/latest-activity`. It selects a single task event whose recorded actor kind and ID identify the agent, including archived tasks/boards. Orders by occurredAt instant, sequence and event ID descending. Deleted events/tasks/boards are excluded; missing/deleted agent and database failures are errors. Empty history is `{activity:null}`. The compact result carries type, occurredAt, taskId/taskSlug/taskTitle, eventId and nullable summaryId (an explicit live summary of the same task). No profile-update, assignment, presence or session inference. Catalog: 79 tools, 17 resources, 2 prompts.
+`getAgentLatestActivity` maps to `GET /api/v2/agents/{agentId}/latest-activity`. It selects a single task event whose recorded actor kind and ID identify the agent, including archived tasks/boards. Orders by occurredAt instant, sequence and event ID descending. Deleted events/tasks/boards are excluded; missing/deleted agent and database failures are errors. Empty history is `{activity:null}`. The compact result carries type, occurredAt, taskId/taskSlug/taskTitle, eventId and nullable summaryId (an explicit live summary of the same task). No profile-update, assignment, presence or session inference. Catalog: 79 tools, 17 resources, 2 prompts.
+
+### Worker contract compatibility
+
+MCP schemas and RA/Kanban `/api/v2` responses use Worker. The unchanged operation
+names accept legacy input aliases through the shared typed DTO normalization;
+combining an old and new field is invalid. `/api/v1` remains the explicit legacy
+HTTP facade. Discover `roles.worker` via `/api/v1/info`. Raw stored replay and
+transfer snapshots and user-authored text are preserved. The four old Collaborator
+resource URIs remain unlisted read aliases; resources/list advertises Worker only.

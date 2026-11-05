@@ -37,8 +37,8 @@ fn projection(table: &str, c: &Command) -> String {
         "listTeamMembers" => "json_object('agentId',r.id,'name',r.data->>'name','role',member.role,'agentArchivedAt',r.archived_at)".into(),
         "listAgentActivities" => format!("json_set({base},'$._archived',json(CASE WHEN {} THEN 'true' ELSE 'false' END),'$.taskId',r.id,'$.isCurrentExecutor',json(CASE WHEN r.executor_agent_id=actor.id THEN 'true' ELSE 'false' END),'$.lastWorkedAt', (SELECT created_at FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id ORDER BY created_at DESC,id DESC LIMIT 1),'$.latestOwnSummaryId', (SELECT id FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id ORDER BY created_at DESC,id DESC LIMIT 1),'$.taskUpdatedAt',r.updated_at,'$._worked',json(CASE WHEN EXISTS(SELECT 1 FROM execution_summaries WHERE task_id=r.id AND deleted_at IS NULL AND data->>'actorId'=actor.id) THEN 'true' ELSE 'false' END),'$._authored',json(CASE WHEN r.author_agent_id=actor.id THEN 'true' ELSE 'false' END))", archived()),
         _ if table=="tasks" => format!("json_set({base},'$._archived',json(CASE WHEN {} THEN 'true' ELSE 'false' END))",archived()),
-        _ if table=="agents" => format!("json_set({base},'$.bindings',json_object('leaderTeamId',(SELECT id FROM teams WHERE leader_id=r.id AND deleted_at IS NULL),'collaboratorTeamId',(SELECT team_id FROM memberships WHERE agent_id=r.id AND deleted_at IS NULL)))"),
-        _ if table=="teams" => format!("json_set({base},'$.collaboratorCount',(SELECT count(*) FROM memberships WHERE team_id=r.id AND deleted_at IS NULL))"),
+        _ if table=="agents" => format!("json_set({base},'$.bindings',json_object('leaderTeamId',(SELECT id FROM teams WHERE leader_id=r.id AND deleted_at IS NULL),'workerTeamId',(SELECT team_id FROM memberships WHERE agent_id=r.id AND deleted_at IS NULL)))"),
+        _ if table=="teams" => format!("json_set({base},'$.workerCount',(SELECT count(*) FROM memberships WHERE team_id=r.id AND deleted_at IS NULL))"),
         _ => base.into(),
     }
 }
@@ -55,7 +55,7 @@ fn base(c: &Command, table: &'static str) -> Result<QueryBuilder<Sqlite>> {
         .push(" r ");
     if c.operation == "listTeamMembers" {
         q.push("JOIN (SELECT leader_id AS id,'leader' AS role FROM teams WHERE id=").push_bind(c.id("teamId")?.to_string())
-            .push(" UNION ALL SELECT agent_id,'collaborator' FROM memberships WHERE deleted_at IS NULL AND team_id=").push_bind(c.id("teamId")?.to_string())
+            .push(" UNION ALL SELECT agent_id,'worker' FROM memberships WHERE deleted_at IS NULL AND team_id=").push_bind(c.id("teamId")?.to_string())
             .push(") member ON member.id=r.id ");
     }
     if c.operation == "listAgentActivities" {
@@ -89,7 +89,7 @@ fn base(c: &Command, table: &'static str) -> Result<QueryBuilder<Sqlite>> {
         q.push(" AND NOT EXISTS(SELECT 1 FROM plan_revisions newer WHERE newer.plan_id=r.plan_id AND newer.deleted_at IS NULL AND CAST(newer.data->>'revision' AS INTEGER) > CAST(r.data->>'revision' AS INTEGER))");
     }
     if table == "teams" {
-        if let Some(id) = c.query.get("collaboratorId") {
+        if let Some(id) = c.query.get("workerId") {
             q.push(" AND EXISTS(SELECT 1 FROM memberships WHERE team_id=r.id AND deleted_at IS NULL AND data->'agentId'=").push_bind(id.clone()).push(")");
         }
     }
@@ -120,8 +120,8 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
         let role = c.q("role");
         let fields: &[&str] = match role.as_str() {
             Some("leader") => &["leaderTeamId"],
-            Some("collaborator") => &["collaboratorTeamId"],
-            _ => &["leaderTeamId", "collaboratorTeamId"],
+            Some("worker") => &["workerTeamId"],
+            _ => &["leaderTeamId", "workerTeamId"],
         };
         q.push(" AND (");
         for (i, f) in fields.iter().enumerate() {
@@ -148,7 +148,7 @@ fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
                 | "includeRemoved"
                 | "limitPerColumn"
                 | "relation"
-                | "collaboratorId"
+                | "workerId"
         ) || (c.operation == "listAgents" && matches!(key.as_str(), "role" | "teamId"))
         {
             continue;
@@ -269,7 +269,7 @@ pub(super) async fn select(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Res
             | "sequence"
             | "progress"
             | "version"
-            | "collaboratorCount"
+            | "workerCount"
             | "sizeBytes"
     ) {
         q.push("(");

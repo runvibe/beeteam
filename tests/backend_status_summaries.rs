@@ -13,7 +13,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     let agent = ok(
         &app,
         "POST",
-        "/api/v1/agents",
+        "/api/v2/agents",
         json!({"name":"Status fixture"}),
         None,
     )
@@ -21,7 +21,7 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     let team = ok(
         &app,
         "POST",
-        "/api/v1/teams",
+        "/api/v2/teams",
         json!({"name":"Usage","leaderId":id(&agent),"coordinationContext":manual()}),
         None,
     )
@@ -29,12 +29,12 @@ async fn setup_on(app: Router) -> (Router, Value, Value, Value) {
     let board = ok(
         &app,
         "POST",
-        "/api/v1/boards",
+        "/api/v2/boards",
         json!({"name":"Usage","teamId":id(&team)}),
         None,
     )
     .await;
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Status task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&board)),json!({"title":"Status task","workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     (app, agent, board, task)
 }
 fn execution(task: &Value, board: &Value) -> Value {
@@ -48,7 +48,7 @@ fn args(task: &Value, body: Value) -> Value {
 #[tokio::test]
 async fn status_changes_require_summary_in_http_and_mcp_without_side_effects() {
     let (app, _, board, task) = setup().await;
-    let path = format!("/api/v1/tasks/{}", id(&task));
+    let path = format!("/api/v2/tasks/{}", id(&task));
     let history = get(&app, &format!("{path}/timeline")).await;
     for target in board["statuses"]
         .as_array()
@@ -106,9 +106,9 @@ async fn initial_status_reordering_and_progress_remain_independent() {
         .iter()
         .find(|s| s["id"] != first["statusId"] && s["isDone"] == false)
         .unwrap();
-    let task=ok(&app,"POST",&format!("/api/v1/boards/{}/tasks",id(&board)),json!({"title":"Explicit initial status","statusId":next["id"],"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
+    let task=ok(&app,"POST",&format!("/api/v2/boards/{}/tasks",id(&board)),json!({"title":"Explicit initial status","statusId":next["id"],"workScope":test_project_scope(),"authorAgentId":id(&agent),"executorAgentId":id(&agent),"coordinationContext":manual()}),None).await;
     assert_eq!(task["statusId"], next["id"]);
-    let path = format!("/api/v1/tasks/{}", id(&task));
+    let path = format!("/api/v2/tasks/{}", id(&task));
     let task = ok(
         &app,
         "PUT",
@@ -167,7 +167,7 @@ async fn summary_transition_snapshot_and_replay_are_atomic_and_historical() {
         .iter()
         .find(|s| s["id"] != task["statusId"] && s["isDone"] == false)
         .unwrap();
-    let path = format!("/api/v1/tasks/{}", id(&task));
+    let path = format!("/api/v2/tasks/{}", id(&task));
     let route = format!("{path}/execution-summaries");
     let mut body = execution(&task, &board);
     body["statusId"] = next["id"].clone();
@@ -188,7 +188,7 @@ async fn summary_transition_snapshot_and_replay_are_atomic_and_historical() {
     ok(
         &app,
         "PATCH",
-        &format!("/api/v1/boards/{}/statuses/{}", id(&board), id(next)),
+        &format!("/api/v2/boards/{}/statuses/{}", id(&board), id(next)),
         json!({"name":"Renamed later"}),
         ver(next),
     )
@@ -242,7 +242,7 @@ async fn close_activity_rolls_back_failures_and_replays_valid_transition() {
         .iter()
         .find(|s| s["id"] != task["statusId"] && s["isDone"] == false)
         .unwrap();
-    let path = format!("/api/v1/tasks/{}", id(&task));
+    let path = format!("/api/v2/tasks/{}", id(&task));
     let mut body = execution(&task, &board);
     body["statusId"] = next["id"].clone();
     let close = json!({"taskId":id(&task),"actor":{"kind":"human"},"expectedVersion":task["version"],"idempotencyKey":uuid::Uuid::new_v4(),"block":{"blocked":true,"reason":"Dependency"},"comment":"Atomic comment","execution":body});

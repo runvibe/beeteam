@@ -6,9 +6,13 @@ pub(super) fn catalog() -> Value {
 }
 
 pub(super) fn defaults(team: &mut Value) {
+    if team.get("workerIconId").is_none() {
+        if let Some(icon) = team.get("collaboratorIconId").cloned() { team["workerIconId"] = icon; }
+    }
+    team.as_object_mut().unwrap().remove("collaboratorIconId");
     for (field, default) in [
         ("leaderIconId", dto::LEADER_DEFAULT),
-        ("collaboratorIconId", dto::COLLABORATOR_DEFAULT),
+        ("workerIconId", dto::WORKER_DEFAULT),
     ] {
         if team.get(field).is_none() {
             team[field] = json!(default);
@@ -21,7 +25,7 @@ pub(super) fn resolve(team: &mut Value) {
     defaults(team);
     team["roleIcons"] = json!({
         "leader": dto::icon(team["leaderIconId"].as_str().unwrap_or(dto::LEADER_DEFAULT)),
-        "collaborator": dto::icon(team["collaboratorIconId"].as_str().unwrap_or(dto::COLLABORATOR_DEFAULT)),
+        "worker": dto::icon(team["workerIconId"].as_str().unwrap_or(dto::WORKER_DEFAULT)),
     });
 }
 
@@ -34,10 +38,10 @@ mod tests {
         let mut team = json!({"name":"Legacy"});
         resolve(&mut team);
         assert_eq!(team["roleIcons"]["leader"]["unicode"], "👑");
-        assert_eq!(team["roleIcons"]["collaborator"]["id"], "user-round");
+        assert_eq!(team["roleIcons"]["worker"]["id"], "user-round");
         team["leaderIconId"] = json!("rocket");
         resolve(&mut team);
         assert_eq!(team["roleIcons"]["leader"]["unicode"], "🚀");
-        assert_eq!(team["collaboratorIconId"], "user-round");
+        assert_eq!(team["workerIconId"], "user-round");
     }
 }

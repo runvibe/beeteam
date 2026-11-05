@@ -69,6 +69,18 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         }
     }
     let resources = rpc(&app, "resources/list", json!({})).await;
+    for (old,new) in [
+        ("beeteam://skills/collaborator","beeteam://skills/worker"),
+        ("beeteam://references/collaborator-bootstrap","beeteam://references/worker-bootstrap"),
+        ("beeteam://references/collaborator-workflow","beeteam://references/worker-workflow"),
+        ("beeteam://references/collaborator-resumption","beeteam://references/worker-resumption"),
+    ] {
+        assert!(!resources["result"]["resources"].as_array().unwrap().iter().any(|r|r["uri"]==old));
+        let legacy = rpc(&app,"resources/read",json!({"uri":old})).await;
+        let canonical = rpc(&app,"resources/read",json!({"uri":new})).await;
+        assert_eq!(legacy["result"]["contents"][0]["text"],canonical["result"]["contents"][0]["text"]);
+        assert!(canonical["result"]["contents"][0]["text"].is_string());
+    }
     assert_eq!(
         resources["result"]["resources"].as_array().unwrap().len(),
         17
@@ -79,8 +91,8 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
             include_str!("../resources/bee-team/references/leader-onboarding-flows.md"),
         ),
         (
-            "beeteam://references/collaborator-workflow",
-            include_str!("../resources/bee-team/references/collaborator-workflow.md"),
+            "beeteam://references/worker-workflow",
+            include_str!("../resources/bee-team/references/worker-workflow.md"),
         ),
     ] {
         assert!(resources["result"]["resources"]
@@ -103,7 +115,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
         let uri = resource["uri"].as_str().unwrap();
         let path = match uri {
             "beeteam://skills/leader" => "call-a-team-lead/SKILL.md".to_owned(),
-            "beeteam://skills/collaborator" => "call-a-collaborator/SKILL.md".to_owned(),
+            "beeteam://skills/worker" => "call-a-worker/SKILL.md".to_owned(),
             "beeteam://references/content-manifest" => "prompts/content-manifest.json".to_owned(),
             "beeteam://references/team-examples" => {
                 "call-a-team-lead/references/team-examples.md".to_owned()
@@ -112,7 +124,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
                 let name = uri.rsplit('/').next().unwrap();
                 if [
                     "task-briefing",
-                    "collaborator-resumption",
+                    "worker-resumption",
                     "delivery-review",
                 ]
                 .contains(&name)
@@ -488,9 +500,9 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
             "call-a-team-lead",
         ),
         (
-            "beeteam://skills/collaborator",
-            "Call a Collaborator",
-            "call-a-collaborator",
+            "beeteam://skills/worker",
+            "Call a Worker",
+            "call-a-worker",
         ),
     ] {
         let matches: Vec<_> = resources["result"]["resources"]
@@ -520,7 +532,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
         let path = file["resourcePath"].as_str().unwrap();
         let uri = match path {
             "call-a-team-lead/SKILL.md" => "beeteam://skills/leader".to_owned(),
-            "call-a-collaborator/SKILL.md" => "beeteam://skills/collaborator".to_owned(),
+            "call-a-worker/SKILL.md" => "beeteam://skills/worker".to_owned(),
             "prompts/content-manifest.json" => "beeteam://references/content-manifest".to_owned(),
             _ => format!(
                 "beeteam://references/{}",

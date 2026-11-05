@@ -52,7 +52,7 @@ async fn roundtrip(pg_source: bool, pg_dest: bool) {
     store.write_blob(id, blob, &content).unwrap();
     store.append(id,"records/file_contents.jsonl",&json!({"id":blob,"blob":format!("blobs/{blob}.bin"),"bytes":content.len(),"createdAt":timestamp,"deletedAt":timestamp})).unwrap();
     let replay =
-        json!({"legacy":true,"snapshot":{"currentSummary":"","specification":"# original"}});
+        json!({"legacy":true,"snapshot":{"currentSummary":"","specification":"# original collaborator","collaboratorIconId":"lightbulb","actorRole":"collaborator"}});
     store.append(id,"records/request_replays.jsonl",&json!({"id":Uuid::now_v7(),"requestKey":Uuid::new_v4(),"actorKey":"human","operation":"createAgent","requestHash":"original","response":replay,"createdAt":timestamp,"expiresAt":timestamp,"deletedAt":null})).unwrap();
     let team = Uuid::now_v7();
     let board = Uuid::now_v7();
@@ -66,7 +66,7 @@ async fn roundtrip(pg_source: bool, pg_dest: bool) {
         (
             "teams",
             team,
-            json!({"slug":"history-team","leaderId":agent}),
+            json!({"slug":"history-team","leaderId":agent,"collaboratorIconId":"lightbulb","context":"worker and collaborator are authored text"}),
         ),
         ("boards", board, json!({"teamId":team})),
         ("boards", other_board, json!({"teamId":team})),

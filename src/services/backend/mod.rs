@@ -29,6 +29,7 @@ pub async fn execute(
     discovery: &dyn ProjectDiscovery,
     mut command: Command,
 ) -> Result<Outcome> {
+    crate::dto::worker_contract::body(contracts::operation(&command.operation)?, &mut command.body, false, true)?;
     contracts::validate_envelope(&command)?;
     let validation = contracts::validate(&command);
     if contracts::operation(&command.operation)?.method != "POST" {
@@ -83,7 +84,7 @@ pub async fn execute(
     );
     let mut digest = Sha256::new();
     digest
-        .update(serde_json::to_vec(&json!([command.body, command.params, command.query])).unwrap());
+        .update(serde_json::to_vec(&crate::dto::worker_contract::replay_input(&command)?).unwrap());
     if let Some(upload) = &command.upload {
         digest.update(&upload.bytes);
         digest.update(upload.name.as_bytes());
@@ -192,6 +193,9 @@ pub async fn execute(
     Ok(result)
 }
 fn project(doc: &Value, schema: &Value, value: &Value) -> Value {
+    let mut canonical = value.clone();
+    crate::dto::worker_contract::transform(doc, schema, &mut canonical, false, false).expect("read projection");
+    let value = &canonical;
     let schema = contracts::resolve(doc, schema);
     if let Some(alternatives) = schema
         .get("anyOf")

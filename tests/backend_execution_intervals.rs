@@ -110,7 +110,7 @@ async fn tracking_summary_filter_has_http_mcp_parity() {
     let start = step(&app, &mut task, body).await;
     let body = payload(&task, &board, "checkpoint", 200, 1, Some(&start["executionTracking"]));
     let selected = step(&app, &mut task, body).await;
-    let base = format!("/api/v1/tasks/{}/execution-tracking-events", id(&task));
+    let base = format!("/api/v2/tasks/{}/execution-tracking-events", id(&task));
     let all = get(&app, &base).await;
     assert_eq!(all["total"], 2);
     assert_ne!(all["items"][0]["summaryId"], selected["id"]);
@@ -123,7 +123,7 @@ async fn tracking_summary_filter_has_http_mcp_parity() {
         (&task, json!({"summaryId":id(&selected),"executionId":uuid::Uuid::now_v7()}), 0),
         (&task, json!({"summaryId":id(&selected),"intervalId":uuid::Uuid::now_v7()}), 0),
     ] {
-        let mut url = url::Url::parse(&format!("http://localhost/api/v1/tasks/{}/execution-tracking-events", id(target))).unwrap();
+        let mut url = url::Url::parse(&format!("http://localhost/api/v2/tasks/{}/execution-tracking-events", id(target))).unwrap();
         for (key, value) in query.as_object().unwrap() {
             url.query_pairs_mut().append_pair(key, &value.as_str().map(str::to_owned).unwrap_or_else(||value.to_string()));
         }

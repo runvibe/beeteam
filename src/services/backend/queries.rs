@@ -16,16 +16,16 @@ pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value
                 .into_iter()
                 .find(|t| t.reference("leaderId") == Some(id))
                 .map(|t| t.id);
-            let collaborator = records
+            let worker = records
                 .list("memberships")
                 .into_iter()
                 .find(|m| m.reference("agentId") == Some(id))
                 .and_then(|m| m.reference("teamId"));
-            value["bindings"] = json!({"leaderTeamId":leader,"collaboratorTeamId":collaborator});
+            value["bindings"] = json!({"leaderTeamId":leader,"workerTeamId":worker});
         }
         "teams" => {
             super::team_role_icons::resolve(&mut value);
-            value["collaboratorCount"] = json!(records
+            value["workerCount"] = json!(records
                 .list("memberships")
                 .iter()
                 .filter(|m| m.reference("teamId") == Some(id))
@@ -80,7 +80,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         ("authorAgentId", "agents"),
         ("executorAgentId", "agents"),
         ("leaderId", "agents"),
-        ("collaboratorId", "agents"),
+        ("workerId", "agents"),
         ("actorId", "agents"),
     ] {
         if let Some(value) = c.query.get(key) {
@@ -155,9 +155,9 @@ async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
         let actor = c.id("agentId")?;
         for item in &mut items {
             let id = value_id(&item["taskId"])?;
-            item["taskPath"] = json!(format!("/api/v1/tasks/{id}"));
+            item["taskPath"] = json!(format!("/api/v2/tasks/{id}"));
             item["summariesPath"] = json!(format!(
-                "/api/v1/tasks/{id}/execution-summaries?actorId={actor}"
+                "/api/v2/tasks/{id}/execution-summaries?actorId={actor}"
             ));
         }
     }

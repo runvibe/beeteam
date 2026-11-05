@@ -16,33 +16,61 @@ async fn tool(app: &Router, name: &str, arguments: Value) -> Value {
     result["result"].clone()
 }
 
+// PostgreSQL persists timestamps at microsecond precision; mutation/replay snapshots
+// retain the original timestamp. Compare all fields and the supported instant precision.
+fn assert_team_eq(mut left: Value, mut right: Value) {
+    if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("postgres") {
+        for field in ["createdAt", "updatedAt"] {
+            for team in [&mut left, &mut right] {
+                let instant = chrono::DateTime::parse_from_rfc3339(team[field].as_str().unwrap()).unwrap();
+                team[field] = json!(instant.timestamp_micros());
+            }
+        }
+    }
+    assert_eq!(left,right);
+}
+
+#[tokio::test]
+async fn legacy_mcp_aliases_return_worker_and_conflicts_are_atomic() {
+    let app = app().await;
+    let agent = ok(&app,"POST","/api/v2/agents",json!({"name":"Alias leader"}),None).await;
+    let result = tool(&app,"createTeam",json!({"body":{"name":"Aliases","leaderId":id(&agent),"collaboratorIconId":"lightbulb","coordinationContext":manual()},"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await;
+    assert_eq!(result["isError"],false,"{result}");
+    let team = result["structuredContent"]["data"].clone();
+    assert_eq!(team["workerIconId"],"lightbulb");
+    assert!(team.get("collaboratorIconId").is_none());
+    let result = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"workerIconId":"rocket","collaboratorIconId":"rocket"},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
+    assert_eq!(result["isError"],true,"{result}");
+    assert_team_eq(get(&app,&format!("/api/v2/teams/{}",id(&team))).await,team);
+}
+
 #[tokio::test]
 async fn catalog_and_team_icons_have_http_mcp_parity() {
     let app = app().await;
-    let catalog = get(&app, "/api/v1/team-role-icons").await;
+    let catalog = get(&app, "/api/v2/team-role-icons").await;
     let mcp = tool(&app, "listTeamRoleIcons", json!({})).await;
     assert_eq!(mcp["isError"], false, "{mcp}");
     assert_eq!(catalog, mcp["structuredContent"]["data"]);
     let bundled: Value = serde_json::from_str(include_str!("../docs/team-role-icons.json")).unwrap();
     assert_eq!(catalog["items"], bundled);
-    let agent = ok(&app,"POST","/api/v1/agents",json!({"name":"Icon leader"}),None).await;
-    let body = json!({"name":"Icon team","leaderId":id(&agent),"leaderIconId":"rocket","collaboratorIconId":"shield","coordinationContext":manual()});
+    let agent = ok(&app,"POST","/api/v2/agents",json!({"name":"Icon leader"}),None).await;
+    let body = json!({"name":"Icon team","leaderId":id(&agent),"leaderIconId":"rocket","workerIconId":"shield","coordinationContext":manual()});
     let mcp = tool(&app,"createTeam",json!({"body":body,"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await;
     assert_eq!(mcp["isError"], false, "{mcp}");
     let team = mcp["structuredContent"]["data"].clone();
-    let path = format!("/api/v1/teams/{}", id(&team));
-    assert_eq!(team, get(&app, &path).await);
+    let path = format!("/api/v2/teams/{}", id(&team));
+    assert_team_eq(team.clone(), get(&app, &path).await);
     assert_eq!(team["roleIcons"]["leader"]["unicode"], "🚀");
-    assert_eq!(team["roleIcons"]["collaborator"]["id"], "shield");
+    assert_eq!(team["roleIcons"]["worker"]["id"], "shield");
     let team = ok(&app,"PATCH",&path,json!({"leaderIconId":"compass"}),ver(&team)).await;
-    assert_eq!(team["collaboratorIconId"], "shield");
-    assert_eq!(team, tool(&app,"getTeam",json!({"params":{"teamId":id(&team)}})).await["structuredContent"]["data"]);
-    let mcp = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"purpose":"Unrelated change","collaboratorIconId":"wrench"},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
+    assert_eq!(team["workerIconId"], "shield");
+    assert_team_eq(team.clone(), tool(&app,"getTeam",json!({"params":{"teamId":id(&team)}})).await["structuredContent"]["data"].clone());
+    let mcp = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"purpose":"Unrelated change","workerIconId":"wrench"},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
     assert_eq!(mcp["isError"], false, "{mcp}");
     let team = get(&app, &path).await;
     assert_eq!(team["leaderIconId"], "compass");
-    assert_eq!(team["roleIcons"]["collaborator"]["id"], "wrench");
-    assert_eq!(get(&app,"/api/v1/teams").await["items"][0], team);
+    assert_eq!(team["roleIcons"]["worker"]["id"], "wrench");
+    assert_eq!(get(&app,"/api/v2/teams").await["items"][0], team);
     for invalid in [json!(null), json!("unknown"), json!("<svg/>"), json!("crown\n"), json!(42)] {
         let patch = json!({"leaderIconId":invalid});
         assert_eq!(request(&app,"PATCH",&path,patch.clone(),ver(&team)).await.0,400);
@@ -57,14 +85,14 @@ async fn legacy_team_read_defaults_do_not_modify_persisted_json() {
     use beeteam::repositories::{records::Record};
     let (app, pool) = sqlite_app_with_pool().await;
     let repository = beeteam::repositories::sqlite::ResourceRepository::new(pool);
-    let agent = ok(&app,"POST","/api/v1/agents",json!({"name":"Legacy leader"}),None).await;
+    let agent = ok(&app,"POST","/api/v2/agents",json!({"name":"Legacy leader"}),None).await;
     let mut unit = repository.begin().await.unwrap();
     let data = json!({"name":"Legacy","slug":"legacy","leaderId":id(&agent),"purpose":"","context":""});
     let team_id = unit.records.insert(Record::new("teams", data.clone()));
     unit.commit().await.unwrap();
-    let team = get(&app,&format!("/api/v1/teams/{team_id}")).await;
+    let team = get(&app,&format!("/api/v2/teams/{team_id}")).await;
     assert_eq!(team["leaderIconId"], "crown");
-    assert_eq!(team["collaboratorIconId"], "user-round");
+    assert_eq!(team["workerIconId"], "user-round");
     assert_eq!(team["roleIcons"]["leader"]["unicode"], "👑");
     let unit = repository.begin().await.unwrap();
     assert_eq!(unit.records.get("teams", team_id).unwrap().data, data);
@@ -74,21 +102,21 @@ async fn legacy_team_read_defaults_do_not_modify_persisted_json() {
 #[tokio::test]
 async fn http_create_defaults_and_invalid_roles_match_mcp_validation() {
     let app = app().await;
-    let agent = ok(&app,"POST","/api/v1/agents",json!({"name":"Default leader"}),None).await;
+    let agent = ok(&app,"POST","/api/v2/agents",json!({"name":"Default leader"}),None).await;
     let body = json!({"name":"Defaults","leaderId":id(&agent),"coordinationContext":manual()});
-    for field in ["leaderIconId", "collaboratorIconId"] {
+    for field in ["leaderIconId", "workerIconId"] {
         for invalid in [Value::Null, json!("bad\u{202e}icon")] {
             let mut invalid_body = body.clone();
             invalid_body[field] = invalid;
-            assert_eq!(request(&app,"POST","/api/v1/teams",invalid_body.clone(),None).await.0,400);
+            assert_eq!(request(&app,"POST","/api/v2/teams",invalid_body.clone(),None).await.0,400);
             let mcp = tool(&app,"createTeam",json!({"body":invalid_body,"actor":{"kind":"human"},"idempotencyKey":uuid::Uuid::new_v4()})).await;
             assert_eq!(mcp["isError"],true,"{mcp}");
         }
     }
-    let team = ok(&app,"POST","/api/v1/teams",body,None).await;
+    let team = ok(&app,"POST","/api/v2/teams",body,None).await;
     assert_eq!(team["leaderIconId"],"crown");
-    assert_eq!(team["collaboratorIconId"],"user-round");
-    let updated = ok(&app,"PATCH",&format!("/api/v1/teams/{}",id(&team)),json!({"name":"Preserve defaults"}),ver(&team)).await;
+    assert_eq!(team["workerIconId"],"user-round");
+    let updated = ok(&app,"PATCH",&format!("/api/v2/teams/{}",id(&team)),json!({"name":"Preserve defaults"}),ver(&team)).await;
     assert_eq!(updated["roleIcons"],team["roleIcons"]);
 }
 
@@ -140,16 +168,16 @@ fn closed_catalog_matches_validation_and_has_safe_representations() {
 async fn every_catalog_choice_round_trips_through_http_and_mcp() {
     use beeteam::dto::team_role_icons::CATALOG;
     let app = app().await;
-    let agent = ok(&app,"POST","/api/v1/agents",json!({"name":"Expanded icons leader"}),None).await;
-    let mut team = ok(&app,"POST","/api/v1/teams",json!({"name":"Expanded icons","leaderId":id(&agent),"coordinationContext":manual()}),None).await;
-    let path = format!("/api/v1/teams/{}",id(&team));
+    let agent = ok(&app,"POST","/api/v2/agents",json!({"name":"Expanded icons leader"}),None).await;
+    let mut team = ok(&app,"POST","/api/v2/teams",json!({"name":"Expanded icons","leaderId":id(&agent),"coordinationContext":manual()}),None).await;
+    let path = format!("/api/v2/teams/{}",id(&team));
     for icon in CATALOG.iter() {
         team = ok(&app,"PATCH",&path,json!({"leaderIconId":icon.id}),ver(&team)).await;
         assert_eq!(team["roleIcons"]["leader"],serde_json::to_value(icon).unwrap());
-        let result = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"collaboratorIconId":icon.id},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
+        let result = tool(&app,"updateTeam",json!({"params":{"teamId":id(&team)},"body":{"workerIconId":icon.id},"actor":{"kind":"human"},"expectedVersion":team["version"]})).await;
         assert_eq!(result["isError"],false,"{result}");
         team = get(&app,&path).await;
-        assert_eq!(team["roleIcons"]["leader"],team["roleIcons"]["collaborator"]);
-        assert_eq!(team,result["structuredContent"]["data"]);
+        assert_eq!(team["roleIcons"]["leader"],team["roleIcons"]["worker"]);
+        assert_team_eq(team.clone(),result["structuredContent"]["data"].clone());
     }
 }

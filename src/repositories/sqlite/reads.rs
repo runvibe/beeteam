@@ -55,7 +55,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
         ("authorAgentId", "agents"),
         ("executorAgentId", "agents"),
         ("leaderId", "agents"),
-        ("collaboratorId", "agents"),
+        ("workerId", "agents"),
         ("actorId", "agents"),
     ] {
         let ids: Vec<Uuid> = c

@@ -18,9 +18,16 @@ impl BackendService {
         }
     }
     pub async fn execute(&self, command: Command) -> Result<Outcome> {
-        super::execute(self.repository.as_ref(), self.discovery.as_ref(), command).await
+        let op = crate::dto::contracts::operation(&command.operation)?;
+        let mut result = super::execute(self.repository.as_ref(), self.discovery.as_ref(), command).await?;
+        crate::dto::worker_contract::response(op, &mut result.data, false)?;
+        Ok(result)
     }
     pub async fn execute_compound(&self, name: &str, input: Value) -> Result<Value> {
-        super::composite::execute(self.repository.as_ref(), name, input).await
+        let mut result = super::composite::execute(self.repository.as_ref(), name, input).await?;
+        if let Some(def) = crate::dto::mcp::composite_tools().iter().find(|d| d["name"] == name) {
+            crate::dto::worker_contract::transform(&def["outputSchema"], &def["outputSchema"], &mut result, false, false)?;
+        }
+        Ok(result)
     }
 }
