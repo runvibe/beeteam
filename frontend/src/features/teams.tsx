@@ -272,7 +272,7 @@ function TeamDetail({ id }: { id: string }) {
                     <TeamRoleIcon id={roleIconId(q.data, m.role)} />
                     {m.role === "leader"
                       ? tr("common.leader")
-                      : tr("common.collaborator")}
+                      : tr("common.worker")}
                   </Badge>
                 </div>
               )}
@@ -319,7 +319,7 @@ export function TeamForm({ team: latest }: { team: Team }) {
       purpose: team.purpose,
       context: team.context,
       leaderIconId: roleIconId(team, "leader"),
-      collaboratorIconId: roleIconId(team, "collaborator"),
+      workerIconId: roleIconId(team, "worker"),
     }),
     save: (draft, version) =>
       api.patch(
@@ -341,9 +341,9 @@ export function TeamForm({ team: latest }: { team: Team }) {
         />
         <RoleIconSelect
           disabled={!iconsSupported}
-          role="collaborator"
-          value={autosave.draft.collaboratorIconId}
-          onChange={(id) => autosave.change("collaboratorIconId", id, true)}
+          role="worker"
+          value={autosave.draft.workerIconId}
+          onChange={(id) => autosave.change("workerIconId", id, true)}
         />
         {!iconsSupported && (
           <div>

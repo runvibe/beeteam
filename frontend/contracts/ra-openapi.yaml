@@ -39,7 +39,7 @@ servers:
   - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
-  /api/v1/team-role-icons:
+  /api/v2/team-role-icons:
     get:
       operationId: listTeamRoleIcons
       summary: List the closed catalog of team role icons
@@ -57,7 +57,7 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/TeamRoleIcon'
-  /api/v1/teams/by-slug/{slug}:
+  /api/v2/teams/by-slug/{slug}:
     get:
       operationId: resolveTeamSlug
       summary: Resolver slug de Team para UUID interno
@@ -87,7 +87,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/agents/by-slug/{slug}:
+  /api/v2/agents/by-slug/{slug}:
     get:
       operationId: resolveAgentSlug
       summary: Resolver slug de Agent para UUID interno
@@ -117,7 +117,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/v1/agents:
+  /api/v2/agents:
     parameters: []
     post:
       operationId: createAgent
@@ -146,7 +146,7 @@ paths:
                 contextSummary: ""
                 image: null
                 bindings:
-                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  workerTeamId: 10000000-0000-7000-8000-000000000030
                   leaderTeamId: 10000000-0000-7000-8000-000000000031
                 archivedAt: null
                 version: 1
@@ -217,7 +217,7 @@ paths:
             type: string
             enum:
               - leader
-              - collaborator
+              - worker
         - name: archived
           in: query
           required: false
@@ -298,7 +298,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/agents/{agentId}:
+  /api/v2/agents/{agentId}:
     parameters:
       - name: agentId
         in: path
@@ -331,7 +331,7 @@ paths:
                 contextSummary: ""
                 image: null
                 bindings:
-                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  workerTeamId: 10000000-0000-7000-8000-000000000030
                   leaderTeamId: 10000000-0000-7000-8000-000000000031
                 archivedAt: null
                 version: 1
@@ -379,7 +379,7 @@ paths:
                 contextSummary: ""
                 image: null
                 bindings:
-                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  workerTeamId: 10000000-0000-7000-8000-000000000030
                   leaderTeamId: 10000000-0000-7000-8000-000000000031
                 archivedAt: null
                 version: 1
@@ -416,7 +416,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PatchAgent"
-  /api/v1/agents/{agentId}/archive:
+  /api/v2/agents/{agentId}/archive:
     parameters:
       - name: agentId
         in: path
@@ -454,7 +454,7 @@ paths:
                 contextSummary: ""
                 image: null
                 bindings:
-                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  workerTeamId: 10000000-0000-7000-8000-000000000030
                   leaderTeamId: 10000000-0000-7000-8000-000000000031
                 archivedAt: null
                 version: 1
@@ -491,7 +491,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Archive"
-  /api/v1/agents/{agentId}/copies:
+  /api/v2/agents/{agentId}/copies:
     parameters:
       - name: agentId
         in: path
@@ -502,7 +502,7 @@ paths:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
     post:
       operationId: copyAgent
-      summary: Copiar perfil para novo colaborador
+      summary: Copiar perfil para novo worker
       description: "Política de uso proposta: usuário administra perfis e composição. Nova identidade
         independente. 412 para origem desatualizada; 409 composition_conflict para versão do
         destino. Imagem local recebe novo imageId e snapshot de bytes independente."
@@ -514,7 +514,7 @@ paths:
         - $ref: "#/components/parameters/ActorId"
       responses:
         "201":
-          description: Copiar perfil para novo colaborador
+          description: Copiar perfil para novo worker
           content:
             application/json:
               schema:
@@ -531,7 +531,7 @@ paths:
                   contextSummary: ""
                   image: null
                   bindings:
-                    collaboratorTeamId: 10000000-0000-7000-8000-000000000031
+                    workerTeamId: 10000000-0000-7000-8000-000000000031
                     leaderTeamId: null
                   archivedAt: null
                   version: 1
@@ -545,7 +545,7 @@ paths:
                   purpose: Organizar agentes
                   context: Demandas técnicas
                   leaderId: 10000000-0000-7000-8000-000000000010
-                  collaboratorCount: 1
+                  workerCount: 1
                   archivedAt: null
                   version: 2
                   createdAt: 2026-10-27T20:00:00Z
@@ -595,7 +595,7 @@ paths:
                 mode: manual
                 conversationRef: chat-1
                 approvalRef: msg-2
-  /api/v1/agents/{agentId}/image:
+  /api/v2/agents/{agentId}/image:
     parameters:
       - name: agentId
         in: path
@@ -632,7 +632,7 @@ paths:
                 contextSummary: ""
                 image: null
                 bindings:
-                  collaboratorTeamId: 10000000-0000-7000-8000-000000000030
+                  workerTeamId: 10000000-0000-7000-8000-000000000030
                   leaderTeamId: 10000000-0000-7000-8000-000000000031
                 archivedAt: null
                 version: 1
@@ -715,7 +715,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/agents/{agentId}/image/content:
+  /api/v2/agents/{agentId}/image/content:
     parameters:
       - name: agentId
         in: path
@@ -765,7 +765,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/teams:
+  /api/v2/teams:
     parameters: []
     post:
       operationId: createTeam
@@ -789,7 +789,7 @@ paths:
                 purpose: Organizar agentes
                 context: Demandas técnicas
                 leaderId: 10000000-0000-7000-8000-000000000010
-                collaboratorCount: 0
+                workerCount: 0
                 archivedAt: null
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
@@ -856,7 +856,7 @@ paths:
             type: string
             format: uuid
             pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        - name: collaboratorId
+        - name: workerId
           in: query
           required: false
           description: ""
@@ -944,7 +944,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/teams/{teamId}:
+  /api/v2/teams/{teamId}:
     parameters:
       - name: teamId
         in: path
@@ -972,7 +972,7 @@ paths:
                 purpose: Organizar agentes
                 context: Demandas técnicas
                 leaderId: 10000000-0000-7000-8000-000000000010
-                collaboratorCount: 0
+                workerCount: 0
                 archivedAt: null
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
@@ -1014,7 +1014,7 @@ paths:
                 purpose: Organizar agentes
                 context: Demandas técnicas
                 leaderId: 10000000-0000-7000-8000-000000000010
-                collaboratorCount: 0
+                workerCount: 0
                 archivedAt: null
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
@@ -1050,7 +1050,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PatchTeam"
-  /api/v1/teams/{teamId}/archive:
+  /api/v2/teams/{teamId}/archive:
     parameters:
       - name: teamId
         in: path
@@ -1083,7 +1083,7 @@ paths:
                 purpose: Organizar agentes
                 context: Demandas técnicas
                 leaderId: 10000000-0000-7000-8000-000000000010
-                collaboratorCount: 0
+                workerCount: 0
                 archivedAt: null
                 version: 1
                 createdAt: 2026-10-27T20:00:00Z
@@ -1119,7 +1119,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/Archive"
-  /api/v1/teams/{teamId}/members:
+  /api/v2/teams/{teamId}/members:
     parameters:
       - name: teamId
         in: path
@@ -1130,7 +1130,7 @@ paths:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
     get:
       operationId: listTeamMembers
-      summary: Listar líder e colaboradores
+      summary: Listar líder e workers
       description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
       x-contract-status: proposed
       parameters:
@@ -1150,7 +1150,7 @@ paths:
             type: string
             enum:
               - leader
-              - collaborator
+              - worker
         - $ref: "#/components/parameters/Offset"
         - $ref: "#/components/parameters/Limit"
         - name: sortBy
@@ -1175,7 +1175,7 @@ paths:
             default: asc
       responses:
         "200":
-          description: Listar líder e colaboradores
+          description: Listar líder e workers
           content:
             application/json:
               schema:
@@ -1195,7 +1195,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/team-composition-changes:
+  /api/v2/team-composition-changes:
     parameters: []
     post:
       operationId: changeTeamComposition
@@ -1223,7 +1223,7 @@ paths:
                     purpose: Organizar agentes
                     context: Demandas técnicas
                     leaderId: 10000000-0000-7000-8000-000000000010
-                    collaboratorCount: 0
+                    workerCount: 0
                     archivedAt: null
                     version: 1
                     createdAt: 2026-10-27T20:00:00Z
@@ -1255,17 +1255,17 @@ paths:
                 - teamId: 10000000-0000-7000-8000-000000000030
                   expectedVersion: 1
                   leaderId: 10000000-0000-7000-8000-000000000012
-                  collaboratorIds: []
+                  workerIds: []
                 - teamId: 10000000-0000-7000-8000-000000000031
                   expectedVersion: 1
                   leaderId: 10000000-0000-7000-8000-000000000010
-                  collaboratorIds:
+                  workerIds:
                     - 10000000-0000-7000-8000-000000000011
               coordinationContext:
                 mode: manual
                 conversationRef: chat-1
                 approvalRef: msg-3
-  /api/v1/agents/{agentId}/chat-references:
+  /api/v2/agents/{agentId}/chat-references:
     parameters:
       - name: agentId
         in: path
@@ -1451,7 +1451,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/agents/{agentId}/chat-references/{chatReferenceId}:
+  /api/v2/agents/{agentId}/chat-references/{chatReferenceId}:
     parameters:
       - name: agentId
         in: path
@@ -1530,7 +1530,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PatchChatReference"
-  /api/v1/agents/{agentId}/activities:
+  /api/v2/agents/{agentId}/activities:
     parameters:
       - name: agentId
         in: path
@@ -1648,7 +1648,7 @@ paths:
           $ref: "#/components/responses/500"
         "503":
           $ref: "#/components/responses/503"
-  /api/v1/agents/{agentId}/latest-activity:
+  /api/v2/agents/{agentId}/latest-activity:
     parameters:
       - name: agentId
         in: path
@@ -1923,7 +1923,7 @@ components:
           maximum: 5242880
         contentPath:
           type: string
-          pattern: ^/api/v1/agents/[^/]+/image/content$
+          pattern: ^/api/v2/agents/[^/]+/image/content$
         deletedAt:
           type:
             - string
@@ -1947,7 +1947,7 @@ components:
     RoleBindings:
       type: object
       properties:
-        collaboratorTeamId:
+        workerTeamId:
           type:
             - string
             - "null"
@@ -1960,7 +1960,7 @@ components:
           format: uuid
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
       required:
-        - collaboratorTeamId
+        - workerTeamId
         - leaderTeamId
       additionalProperties: false
       description: No máximo um time por papel; quando ambos não nulos, devem ser diferentes. Inclui
@@ -2173,7 +2173,7 @@ components:
     TeamRoleIconId:
       type: string
       enum: [crown, user-round, star, shield, rocket, compass, wrench, lightbulb, flower-2, bot, code, terminal, bug, flask-conical, book-open, graduation-cap, palette, globe, heart, zap, target, key-round, lock, music]
-      description: Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.
+      description: Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.
     TeamRoleIcon:
       type: object
       additionalProperties: false
@@ -2193,11 +2193,11 @@ components:
     TeamRoleIcons:
       type: object
       additionalProperties: false
-      required: [leader, collaborator]
+      required: [leader, worker]
       properties:
         leader:
           $ref: '#/components/schemas/TeamRoleIcon'
-        collaborator:
+        worker:
           $ref: '#/components/schemas/TeamRoleIcon'
     Team:
       type: object
@@ -2206,7 +2206,7 @@ components:
           $ref: '#/components/schemas/TeamRoleIcons'
         leaderIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
-        collaboratorIconId:
+        workerIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
         slug:
           $ref: '#/components/schemas/Slug'
@@ -2230,7 +2230,7 @@ components:
           type: string
           format: uuid
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        collaboratorCount:
+        workerCount:
           type: integer
           minimum: 0
         archivedAt:
@@ -2260,7 +2260,7 @@ components:
         - purpose
         - context
         - leaderId
-        - collaboratorCount
+        - workerCount
         - archivedAt
         - version
         - createdAt
@@ -2275,7 +2275,7 @@ components:
       properties:
         leaderIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
-        collaboratorIconId:
+        workerIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
         name:
           type: string
@@ -2293,7 +2293,7 @@ components:
           type: string
           format: uuid
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        collaboratorIds:
+        workerIds:
           type: array
           items:
             type: string
@@ -2314,7 +2314,7 @@ components:
       properties:
         leaderIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
-        collaboratorIconId:
+        workerIconId:
           $ref: '#/components/schemas/TeamRoleIconId'
         name:
           type: string
@@ -2347,7 +2347,7 @@ components:
           type: string
           enum:
             - leader
-            - collaborator
+            - worker
         agentArchivedAt:
           type:
             - string
@@ -2374,7 +2374,7 @@ components:
           type: string
           format: uuid
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        collaboratorIds:
+        workerIds:
           type: array
           items:
             type: string
@@ -2385,7 +2385,7 @@ components:
         - teamId
         - expectedVersion
         - leaderId
-        - collaboratorIds
+        - workerIds
       additionalProperties: false
       description: Composição final de time alterado (inclusive origem arquivada), com líder obrigatório.
         Times não enviados intactos; validar versões e cardinalidade final.
@@ -2612,10 +2612,10 @@ components:
           pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
         taskPath:
           type: string
-          pattern: ^/api/v1/tasks/[^/]+$
+          pattern: ^/api/v2/tasks/[^/]+$
         summariesPath:
           type: string
-          pattern: ^/api/v1/tasks/[^/]+/execution-summaries\?actorId=
+          pattern: ^/api/v2/tasks/[^/]+/execution-summaries\?actorId=
         authorAgentId: *a2
       required:
         - taskId

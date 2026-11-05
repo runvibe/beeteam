@@ -22,8 +22,8 @@ export function conversationAuthor(
     leader,
     role: leader
       ? tr("tasks.leaderCurrentRole")
-      : agent.bindings.collaboratorTeamId
-        ? tr("tasks.collaboratorCurrentRole")
+      : agent.bindings.workerTeamId
+        ? tr("tasks.workerCurrentRole")
         : tr("tasks.unidentifiedRole"),
   };
 }

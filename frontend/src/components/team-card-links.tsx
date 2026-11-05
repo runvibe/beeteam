@@ -44,8 +44,8 @@ function Shortcut({
 export function TeamCardLinks({ team }: { team: Team }) {
   useLocale();
   const leader = useEntity("agents", team.leaderId || "");
-  const countLabel = tr("teams.collaborators", {
-    count: team.collaboratorCount,
+  const countLabel = tr("teams.workers", {
+    count: team.workerCount,
     name: team.name,
   });
   return (
@@ -71,11 +71,11 @@ export function TeamCardLinks({ team }: { team: Team }) {
         </span>
       )}
       <Shortcut
-        href={`${destination("/agents")}&${new URLSearchParams({ "agents.teamId": team.id, "agents.role": "collaborator" })}`}
+        href={`${destination("/agents")}&${new URLSearchParams({ "agents.teamId": team.id, "agents.role": "worker" })}`}
         label={countLabel}
       >
-        <TeamRoleIcon id={roleIconId(team, "collaborator")} />
-        <span aria-hidden="true">{formatNumber(team.collaboratorCount)}</span>
+        <TeamRoleIcon id={roleIconId(team, "worker")} />
+        <span aria-hidden="true">{formatNumber(team.workerCount)}</span>
       </Shortcut>
     </Tooltip.Provider>
   );

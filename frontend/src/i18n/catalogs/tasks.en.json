@@ -83,7 +83,7 @@
   "identityNotProvided": "Identity not provided",
   "unidentifiedRole": "Unidentified role",
   "leaderCurrentRole": "Leader · current role",
-  "collaboratorCurrentRole": "Collaborator · current role",
+  "workerCurrentRole": "Worker · current role",
   "searchConversationText": "Search conversation text",
   "authorType": "Author type",
   "people": "People",

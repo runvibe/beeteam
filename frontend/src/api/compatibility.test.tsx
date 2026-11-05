@@ -54,7 +54,9 @@ it("uses contract and capability identifiers independently of release numbers an
   const read = vi.fn().mockResolvedValue(info);
   setup(read);
   await waitFor(() =>
-    expect(screen.getByRole("combobox", { name: "Leader icon" })).toBeEnabled(),
+    expect(
+      screen.getByRole("combobox", { name: "Leader icon" }),
+    ).toBeEnabled(),
   );
   expect(read).toHaveBeenCalledTimes(1);
   expect(screen.getByText("0.0.1")).toBeInTheDocument();
@@ -66,13 +68,11 @@ it.each(["en", "pt"] as const)(
   "isolates a missing optional capability and protects legacy metadata writes in %s",
   async (locale) => {
     const { patch } = setup(
-      vi
-        .fn()
-        .mockResolvedValue({
-          ...info,
-          apiVersion: "999.0.0",
-          capabilities: [],
-        }),
+      vi.fn().mockResolvedValue({
+        ...info,
+        apiVersion: "999.0.0",
+        capabilities: [],
+      }),
       locale,
     );
     await screen.findByText(
@@ -95,7 +95,7 @@ it.each(["en", "pt"] as const)(
       expect.objectContaining({ name: "Preserved metadata" }),
     );
     expect(patch.mock.calls[0][2]).not.toHaveProperty("leaderIconId");
-    expect(patch.mock.calls[0][2]).not.toHaveProperty("collaboratorIconId");
+    expect(patch.mock.calls[0][2]).not.toHaveProperty("workerIconId");
   },
 );
 it.each([404, 503, 0])(
@@ -144,22 +144,26 @@ it("warns about an unsupported contract without removing existing form data", as
     ).toBeGreaterThan(0),
   );
   expect(screen.getByRole("textbox", { name: "Name" })).toBeEnabled();
-  expect(screen.getByRole("combobox", { name: "Leader icon" })).toBeDisabled();
+  expect(
+    screen.getByRole("combobox", { name: "Leader icon" }),
+  ).toBeDisabled();
 });
 it("retains last verified support across transient refresh failures", async () => {
   const read = vi.fn().mockResolvedValue(info);
   const view = setup(read);
   await waitFor(() =>
-    expect(screen.getByRole("combobox", { name: "Leader icon" })).toBeEnabled(),
+    expect(
+      screen.getByRole("combobox", { name: "Leader icon" }),
+    ).toBeEnabled(),
   );
   read.mockRejectedValue(new ApiError(503, "unavailable", "Unavailable"));
   await act(async () => {
     await view.client.invalidateQueries({ queryKey: apiInfoKey });
   });
   await waitFor(() =>
-    expect(screen.getAllByText(/Check the connection/).length).toBeGreaterThan(
-      0,
-    ),
+    expect(
+      screen.getAllByText(/Check the connection/).length,
+    ).toBeGreaterThan(0),
   );
   expect(screen.getByRole("combobox", { name: "Leader icon" })).toBeEnabled();
 });

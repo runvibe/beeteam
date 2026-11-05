@@ -2,7 +2,7 @@
 export type Team = {
   roleIcons?: import("./TeamRoleIcons").TeamRoleIcons;
   leaderIconId?: import("./TeamRoleIconId").TeamRoleIconId;
-  collaboratorIconId?: import("./TeamRoleIconId").TeamRoleIconId;
+  workerIconId?: import("./TeamRoleIconId").TeamRoleIconId;
   slug: import("./Slug").Slug;
   /** Format: uuid */
   id: string;
@@ -13,7 +13,7 @@ export type Team = {
   context: string;
   /** Format: uuid */
   leaderId: string;
-  collaboratorCount: number;
+  workerCount: number;
   /** Format: date-time */
   archivedAt: string | null;
   version: number;

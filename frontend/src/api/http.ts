@@ -2,7 +2,8 @@ import { message } from "@/i18n";
 import type { BeeApi, Resources, Filters } from "./types";
 import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
-import { createTransport, type HttpOptions } from "./http-transport";
+import type { HttpOptions } from "./http-transport";
+import { createWorkerTransport } from "./worker-transport";
 const segment = encodeURIComponent;
 function query(
   filters: Filters & { kind?: "model" | "harness"; summaryId?: string } = {},
@@ -36,9 +37,9 @@ function collection(resource: keyof Resources, scope: string) {
   }
 }
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
-  const request = createTransport(options);
+  const { request, info, auxiliary } = createWorkerTransport(options);
   return {
-    info: (signal) => request("/info", { signal }),
+    info,
     agentLatestActivity: (agentId, signal) =>
       request(`/agents/${segment(agentId)}/latest-activity`, { signal }),
     timelinePoints: (taskId, pagination = {}, signal) =>
@@ -52,7 +53,7 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
         signal,
       }),
     openProject: (taskId, projectKey, application) =>
-      request(
+      auxiliary(
         `/tasks/${segment(taskId)}/projects/${segment(projectKey)}/open`,
         {
           method: "POST",
@@ -61,7 +62,9 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
         },
       ),
     executionIntervalUsage: (taskId, signal) =>
-      request(`/tasks/${segment(taskId)}/execution-interval-usage`, { signal }),
+      request(`/tasks/${segment(taskId)}/execution-interval-usage`, {
+        signal,
+      }),
     executionIntervals: (taskId, pagination = {}, signal) =>
       request(
         `/tasks/${segment(taskId)}/execution-intervals` + query(pagination),
@@ -73,7 +76,12 @@ export function createHttpApi(options: HttpOptions = {}): BeeApi {
           query(pagination),
         { signal },
       ),
-    executionIntervalRevisions: (taskId, intervalId, pagination = {}, signal) =>
+    executionIntervalRevisions: (
+      taskId,
+      intervalId,
+      pagination = {},
+      signal,
+    ) =>
       request(
         `/tasks/${segment(taskId)}/execution-intervals/${segment(intervalId)}/revisions` +
           query(pagination),

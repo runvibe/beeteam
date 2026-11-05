@@ -108,7 +108,7 @@ function UsageEntryDetails({ entry }: { entry: UsageEntry }) {
         {
           {
             leader: tr("common.leader"),
-            collaborator: tr("common.collaborator"),
+            worker: tr("common.worker"),
             human: tr("tasks.person"),
             unknown: tr("usage.roleNotProvided"),
           }[o.actorRole]
@@ -128,7 +128,9 @@ function UsageEntryDetails({ entry }: { entry: UsageEntry }) {
         <summary>{tr("usage.originalObservationAndProvenance")}</summary>
         <p className="small-note">
           {kinds[o.reportKind]}
-          {tr("usage.snapshotsAreNotAddedDirectlyCacheAndReasoningAreAlready")}
+          {tr(
+            "usage.snapshotsAreNotAddedDirectlyCacheAndReasoningAreAlready",
+          )}
         </p>
         <TokenComponents value={o} />
         <dl className="usage-provenance">
@@ -188,7 +190,8 @@ function UsageEntryDetails({ entry }: { entry: UsageEntry }) {
           </div>
         </dl>
         <p className="small-note">
-          {tr("usage.entryReportRevision")} {formatNumber(entry.reportRevision)}
+          {tr("usage.entryReportRevision")}{" "}
+          {formatNumber(entry.reportRevision)}
         </p>
         <OverviewAttribution
           actor={entry.reportingActor}
@@ -227,7 +230,8 @@ export function SummaryUsage({
       ) : (
         <>
           <p className="small-note">
-            {tr("usage.summaryReportRevision")} {formatNumber(report.revision)}
+            {tr("usage.summaryReportRevision")}{" "}
+            {formatNumber(report.revision)}
             {tr("usage.reportTimeNotUsageTime")}
           </p>
           <OverviewAttribution
@@ -250,7 +254,9 @@ export function SummaryUsage({
             ))}
           </ul>
           {!report.entries.length && (
-            <p className="small-note">{tr("usage.noMetricEntriesAvailable")}</p>
+            <p className="small-note">
+              {tr("usage.noMetricEntriesAvailable")}
+            </p>
           )}
         </>
       )}

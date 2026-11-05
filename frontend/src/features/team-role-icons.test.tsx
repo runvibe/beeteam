@@ -30,11 +30,11 @@ afterEach(() => {
 });
 
 it.each([
-  ["en", "Leader icon", "Collaborator icon", "Rocket", "Shield"],
-  ["pt", "Ícone do líder", "Ícone do colaborador", "Foguete", "Escudo"],
+  ["en", "Leader icon", "Worker icon", "Rocket", "Shield"],
+  ["pt", "Ícone do líder", "Ícone do Worker", "Foguete", "Escudo"],
 ] as const)(
   "autosaves independent icon selections and restores on reopen in %s",
-  async (locale, leaderLabel, collaboratorLabel, rocket, shield) => {
+  async (locale, leaderLabel, workerLabel, rocket, shield) => {
     setLocalePreference(locale);
     const seed = makeSeed();
     const team = seed.teams[0];
@@ -45,14 +45,16 @@ it.each([
         <TeamForm team={team} />
       </ApiProvider>,
     );
-    await userEvent.click(screen.getByRole("combobox", { name: leaderLabel }));
+    await userEvent.click(
+      screen.getByRole("combobox", { name: leaderLabel }),
+    );
     await userEvent.click(
       await screen.findByRole("option", { name: `${rocket} 🚀` }),
     );
     await waitFor(() => expect(patch).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(patch.mock.results[0].type).toBe("return"));
     await userEvent.click(
-      screen.getByRole("combobox", { name: collaboratorLabel }),
+      screen.getByRole("combobox", { name: workerLabel }),
     );
     await userEvent.click(
       await screen.findByRole("option", { name: `${shield} 🛡️` }),
@@ -60,7 +62,7 @@ it.each([
     await waitFor(async () => {
       const saved = await api.get("teams", team.id);
       expect(saved.leaderIconId).toBe("rocket");
-      expect(saved.collaboratorIconId).toBe("shield");
+      expect(saved.workerIconId).toBe("shield");
     });
     const saved = await api.get("teams", team.id);
     view.unmount();
@@ -73,7 +75,7 @@ it.each([
       screen.getByRole("combobox", { name: leaderLabel }),
     ).toHaveTextContent(rocket);
     expect(
-      screen.getByRole("combobox", { name: collaboratorLabel }),
+      screen.getByRole("combobox", { name: workerLabel }),
     ).toHaveTextContent(shield);
     expect(patch).toHaveBeenCalledTimes(2);
   },
@@ -84,13 +86,13 @@ it("renders team context and each agent binding using that team's configured ico
   const seed = makeSeed();
   const team = seed.teams[0];
   team.leaderIconId = "compass";
-  team.collaboratorIconId = "wrench";
+  team.workerIconId = "wrench";
   const api = createMockApi({ delay: 0, seed });
   const { container } = render(
     <ApiProvider api={api}>
       <TeamCardLinks team={team} />
       <AgentRoleSymbol teamId={team.id} role="leader" />
-      <AgentRoleSymbol teamId={team.id} role="collaborator" />
+      <AgentRoleSymbol teamId={team.id} role="worker" />
     </ApiProvider>,
   );
   await waitFor(() =>
@@ -100,17 +102,17 @@ it("renders team context and each agent binding using that team's configured ico
       }),
     ).toBeInTheDocument(),
   );
-  expect(container.querySelectorAll('[data-role-icon="compass"]')).toHaveLength(
-    2,
-  );
-  expect(container.querySelectorAll('[data-role-icon="wrench"]')).toHaveLength(
-    2,
-  );
+  expect(
+    container.querySelectorAll('[data-role-icon="compass"]'),
+  ).toHaveLength(2);
+  expect(
+    container.querySelectorAll('[data-role-icon="wrench"]'),
+  ).toHaveLength(2);
 });
 
 it("uses local trusted assets and stable defaults for older API responses", () => {
   expect(roleIconId(undefined, "leader")).toBe("crown");
-  expect(roleIconId(undefined, "collaborator")).toBe("user-round");
+  expect(roleIconId(undefined, "worker")).toBe("user-round");
   const { container } = render(
     <TeamRoleIcon id={'<svg onload="alert(1)" />'} />,
   );
@@ -165,14 +167,14 @@ it.each(["en", "pt"] as const)(
     );
     await userEvent.click(
       screen.getByRole("combobox", {
-        name: locale === "en" ? "Collaborator icon" : "Ícone do colaborador",
+        name: locale === "en" ? "Worker icon" : "Ícone do Worker",
       }),
     );
     await userEvent.keyboard("{End}{Enter}");
     await waitFor(async () => {
       const saved = await api.get("teams", team.id);
       expect(saved.leaderIconId).toBe("bot");
-      expect(saved.collaboratorIconId).toBe("music");
+      expect(saved.workerIconId).toBe("music");
     });
   },
 );

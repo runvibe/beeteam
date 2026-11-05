@@ -17,10 +17,10 @@ const symbols = {
       return tr("common.leader");
     },
   },
-  collaborator: {
+  worker: {
     icon: UserRound,
     get label() {
-      return tr("common.collaborator");
+      return tr("common.worker");
     },
   },
   unbound: {

@@ -26,9 +26,9 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
   expect(trigger).toHaveAttribute("data-active", "true");
   expect(location.search).toContain("agents.name=Lia");
   await user.click(trigger);
-  expect(screen.getByRole("searchbox", { name: "Buscar agentes" })).toHaveValue(
-    "Lia",
-  );
+  expect(
+    screen.getByRole("searchbox", { name: "Buscar agentes" }),
+  ).toHaveValue("Lia");
   expect(
     screen.getByRole("searchbox", { name: "Buscar agentes" }),
   ).toHaveFocus();
@@ -41,8 +41,8 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
   expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
   expect(location.search).toContain("agents.name=Lia");
   await user.click(screen.getByRole("button", { name: "Papel" }));
-  await user.click(screen.getByRole("radio", { name: "Colaborador" }));
-  expect(location.search).toContain("agents.role=collaborator");
+  await user.click(screen.getByRole("radio", { name: "Worker" }));
+  expect(location.search).toContain("agents.role=worker");
   await user.keyboard("{Escape}");
   const summary = await screen.findByRole("button", {
     name: "Expandir 2 filtros ativos",
@@ -50,7 +50,7 @@ it("opens focused search, keeps URL filters through Escape/history, and clears f
   expect(summary).toHaveTextContent("Buscar agentes: Lia");
   await user.click(summary);
   expect(summary).toHaveAttribute("aria-expanded", "true");
-  expect(screen.getByText("Papel: Colaborador")).toBeVisible();
+  expect(screen.getByText("Papel: Worker")).toBeVisible();
   await user.click(summary);
   await user.unhover(summary);
   expect(summary).toHaveAttribute("aria-expanded", "false");
@@ -99,40 +99,43 @@ it("searches teams globally from a focused combobox and applies the selected sug
     "true",
   );
 });
-it("removes just one active filter from its tag with keyboard, resets pages and keeps other URL state", async () => {
-  window.history.replaceState(
-    {},
-    "",
-    "/agents?agents.name=Lia&agents.role=collaborator&agents.offset=5&agents.window=5:1&agents.limit=1",
-  );
-  const user = userEvent.setup();
-  render(
-    <ApiProvider api={createMockApi({ delay: 0 })}>
-      <App />
-    </ApiProvider>,
-  );
-  const removeSearch = await screen.findByRole("button", {
-    name: "Remover filtro Buscar agentes: Lia",
-  });
-  removeSearch.focus();
-  await user.keyboard("{Enter}");
-  expect(location.search).not.toContain("agents.name");
-  expect(location.search).not.toContain("agents.offset");
-  expect(location.search).not.toContain("agents.window");
-  expect(location.search).toContain("agents.role=collaborator");
-  expect(location.search).toContain("agents.limit=1");
-  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-  expect(
-    screen.getByRole("button", { name: "Remover filtro Papel: Colaborador" }),
-  ).toHaveFocus();
-  await user.click(
-    screen.getByRole("button", { name: "Remover filtro Papel: Colaborador" }),
-  );
-  expect(location.search).not.toContain("agents.role");
-  expect(
-    screen.queryByRole("button", { name: /filtros ativos/ }),
-  ).not.toBeInTheDocument();
-});
+it.each(["worker", "collaborator"])(
+  "removes one filter while preserving the %s role bookmark and focus",
+  async (role) => {
+    window.history.replaceState(
+      {},
+      "",
+      `/agents?agents.name=Lia&agents.role=${role}&agents.offset=5&agents.window=5:1&agents.limit=1`,
+    );
+    const user = userEvent.setup();
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    const removeSearch = await screen.findByRole("button", {
+      name: "Remover filtro Buscar agentes: Lia",
+    });
+    removeSearch.focus();
+    await user.keyboard("{Enter}");
+    expect(location.search).not.toContain("agents.name");
+    expect(location.search).not.toContain("agents.offset");
+    expect(location.search).not.toContain("agents.window");
+    expect(location.search).toContain(`agents.role=${role}`);
+    expect(location.search).toContain("agents.limit=1");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remover filtro Papel: Worker" }),
+    ).toHaveFocus();
+    await user.click(
+      screen.getByRole("button", { name: "Remover filtro Papel: Worker" }),
+    );
+    expect(location.search).not.toContain("agents.role");
+    expect(
+      screen.queryByRole("button", { name: /filtros ativos/ }),
+    ).not.toBeInTheDocument();
+  },
+);
 
 it("renders team purpose and multiparagraph context inside one clipping container", async () => {
   window.history.replaceState({}, "", "/teams");
@@ -157,7 +160,9 @@ it("renders team purpose and multiparagraph context inside one clipping containe
     </ApiProvider>,
   );
   await waitFor(() =>
-    expect(container.querySelectorAll(".team-card").length).toBeGreaterThan(0),
+    expect(container.querySelectorAll(".team-card").length).toBeGreaterThan(
+      0,
+    ),
   );
   for (const card of Array.from(container.querySelectorAll(".team-card"))) {
     expect(card.querySelectorAll(".card-excerpt")).toHaveLength(1);

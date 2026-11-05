@@ -1,21 +1,20 @@
+import { legacyFetch } from "@/api/legacy-fetch.fixture";
 import { expect, it, vi } from "vitest";
 import { createHttpApi } from "./http";
 it("reads explicit task interval resources and authoritative aggregate without summing pages", async () => {
-  const fetcher = vi
-    .fn()
-    .mockImplementation(
-      async () =>
-        new Response(
-          JSON.stringify({
-            items: [],
-            total: 0,
-            hasMore: false,
-            nextOffset: null,
-          }),
-          { headers: { "Content-Type": "application/json" } },
-        ),
-    );
-  const api = createHttpApi({ fetch: fetcher });
+  const fetcher = vi.fn().mockImplementation(
+    async () =>
+      new Response(
+        JSON.stringify({
+          items: [],
+          total: 0,
+          hasMore: false,
+          nextOffset: null,
+        }),
+        { headers: { "Content-Type": "application/json" } },
+      ),
+  );
+  const api = createHttpApi({ fetch: legacyFetch(fetcher) });
   await api.executionIntervalUsage("task/id");
   await api.executionIntervals("task/id", { offset: 20, limit: 20 });
   await api.executionTrackingEvents("task/id", { offset: 40, limit: 20 });
