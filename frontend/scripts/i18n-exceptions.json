@@ -11,7 +11,7 @@
   },
   {
     "file": "src/components/context-path.tsx",
-    "text": "Bee Team",
+    "text": "Get Bee Team",
     "reason": "Product brand; the name is identical in both locales."
   },
   {
@@ -46,7 +46,7 @@
   },
   {
     "file": "src/components/navigation-rail.tsx",
-    "text": "Bee Team",
+    "text": "Get Bee Team",
     "reason": "Product brand; the name is identical in both locales."
   },
   {
