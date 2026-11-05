@@ -8,12 +8,13 @@ use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use uuid::Uuid;
 
-pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -> Result<Value> {
+pub async fn execute(repository: &dyn ResourceStore, name: &str, mut input: Value) -> Result<Value> {
     let definition = mcp::composite_tools()
         .into_iter()
         .find(|t| t["name"] == name)
         .ok_or_else(Failure::missing)?;
     let schema = &definition["inputSchema"];
+    crate::dto::worker_contract::transform(schema, schema, &mut input, false, true)?;
     let validation = contracts::validate_schema(schema, schema, &input);
     let id = body_id(&input, "taskId")?;
     let mut unit = if name == "prepare_execution" {
@@ -54,7 +55,9 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, input: Value) -
             .ok_or_else(|| Failure::invalid("Idempotency key required"))?,
     )
     .map_err(|_| Failure::invalid("Invalid idempotency key"))?;
-    let hash = Sha256::digest(serde_json::to_vec(&input).unwrap())
+    let mut replay_input = input.clone();
+    crate::dto::worker_contract::transform(schema, schema, &mut replay_input, true, false)?;
+    let hash = Sha256::digest(serde_json::to_vec(&replay_input).unwrap())
         .iter()
         .map(|b| format!("{b:02x}"))
         .collect::<String>();

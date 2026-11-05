@@ -26,103 +26,103 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Structured projects and commit evidence",
       "uri": "beeteam://references/repository-evidence"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Explicit task session intervals",
       "uri": "beeteam://references/execution-intervals"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
-      "name": "Collaborator chat-first bootstrap",
-      "uri": "beeteam://references/collaborator-bootstrap"
+      "name": "Worker chat-first bootstrap",
+      "uri": "beeteam://references/worker-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Call a Team Lead",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/collaborator. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/worker. No filesystem access or global installation.",
       "mimeType": "text/markdown",
-      "name": "Call a Collaborator",
-      "uri": "beeteam://skills/collaborator"
+      "name": "Call a Worker",
+      "uri": "beeteam://skills/worker"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
-      "name": "Collaborator workflow",
-      "uri": "beeteam://references/collaborator-workflow"
+      "name": "Worker workflow",
+      "uri": "beeteam://references/worker-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/collaborator-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
-      "name": "Collaborator task continuity template",
-      "uri": "beeteam://references/collaborator-resumption"
+      "name": "Worker task continuity template",
+      "uri": "beeteam://references/worker-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit d32ba6edfb705a00907c0ded1fad3188a17e612e plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-collaborator/SKILL.md map to beeteam://skills/leader and beeteam://skills/collaborator. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit e6c1c0252ffa7c180f8a51c4b892b173954c53e1 plus local SQLite startup guidance (2026-11-03). Links to call-a-team-lead/SKILL.md and call-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -175,7 +175,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/boards. List boards. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/boards. List boards. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -608,7 +608,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/boards. Create a board. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/boards. Create a board. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -1050,7 +1050,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/boards/{boardId}. Read a board. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/boards/{boardId}. Read a board. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -1386,7 +1386,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/boards/{boardId}. Update or archive a board. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/boards/{boardId}. Update or archive a board. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -1753,7 +1753,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/boards/{boardId}/status-order. Order all active statuses. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/boards/{boardId}/status-order. Order all active statuses. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -1962,7 +1962,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/boards/{boardId}/statuses. List ordered statuses. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/boards/{boardId}/statuses. List ordered statuses. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -2228,7 +2228,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/boards/{boardId}/statuses. Create a status at the end. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/boards/{boardId}/statuses. Create a status at the end. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -2418,7 +2418,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/boards/{boardId}/statuses/{statusId}. Configure a status. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/boards/{boardId}/statuses/{statusId}. Configure a status. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -2615,7 +2615,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/boards/{boardId}/tasks. List tasks and subtasks. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/boards/{boardId}/tasks. List tasks and subtasks. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -2901,7 +2901,7 @@
                       "type": "string"
                     },
                     "currentSummary": {
-                      "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                      "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                       "type": "string",
                       "x-maxBytes": 16384
                     },
@@ -3414,7 +3414,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/boards/{boardId}/tasks. Create a task or subtask. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/boards/{boardId}/tasks. Create a task or subtask. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -3744,7 +3744,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -4219,7 +4219,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/boards/{boardId}/view. Read the board view. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/boards/{boardId}/view. Read the board view. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -4542,7 +4542,7 @@
                             "type": "string"
                           },
                           "currentSummary": {
-                            "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                            "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                             "type": "string",
                             "x-maxBytes": 16384
                           },
@@ -5045,7 +5045,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/execution-intervals. Recover open intervals before starting or resuming work; no automatic closure. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/execution-intervals. Recover open intervals before starting or resuming work; no automatic closure. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -5431,7 +5431,7 @@
                                         "actorRole": {
                                           "enum": [
                                             "leader",
-                                            "collaborator",
+                                            "worker",
                                             "human",
                                             "unknown"
                                           ],
@@ -5914,7 +5914,7 @@
                                         "actorRole": {
                                           "enum": [
                                             "leader",
-                                            "collaborator",
+                                            "worker",
                                             "human",
                                             "unknown"
                                           ],
@@ -6525,7 +6525,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks. List tasks across boards and query recursive children. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks. List tasks across boards and query recursive children. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -6806,7 +6806,7 @@
                       "type": "string"
                     },
                     "currentSummary": {
-                      "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                      "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                       "type": "string",
                       "x-maxBytes": 16384
                     },
@@ -7319,7 +7319,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/by-slug/{slug}. Resolve a Task slug to its internal UUID. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/by-slug/{slug}. Resolve a Task slug to its internal UUID. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -7464,7 +7464,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}. Read a task. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}. Read a task. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -7655,7 +7655,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -8130,7 +8130,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/tasks/{taskId}. Update content and progress. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/tasks/{taskId}. Update content and progress. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -8419,7 +8419,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -8894,7 +8894,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/tasks/{taskId}/archive. Archive or restore a task. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/tasks/{taskId}/archive. Archive or restore a task. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -9090,7 +9090,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -9565,7 +9565,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/tasks/{taskId}/assignment. Assign or transfer responsibility. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/tasks/{taskId}/assignment. Assign or transfer responsibility. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -9809,7 +9809,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -10284,7 +10284,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/attachments. List attachments. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/attachments. List attachments. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -10580,7 +10580,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/attachments. Register attachments. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/attachments. Register attachments. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -10773,7 +10773,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "DELETE /api/v1/tasks/{taskId}/attachments/{attachmentId}. Remove attachment access and preserve the soft-deleted record. Actor is declared, not authenticated.",
+      "description": "DELETE /api/v2/tasks/{taskId}/attachments/{attachmentId}. Remove attachment access and preserve the soft-deleted record. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -10902,7 +10902,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/attachments/{attachmentId}/content. . Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/attachments/{attachmentId}/content. . Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -11021,7 +11021,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/tasks/{taskId}/block. Block or unblock. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/tasks/{taskId}/block. Block or unblock. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -11243,7 +11243,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -11718,7 +11718,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/comments. List comments. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/comments. List comments. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -11998,7 +11998,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/comments. Register comments. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/comments. Register comments. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -12186,7 +12186,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/comments/{commentId}. Read one comment belonging to the specified task. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/comments/{commentId}. Read one comment belonging to the specified task. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -12371,7 +12371,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/execution-interval-usage. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/execution-interval-usage. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -12586,7 +12586,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/execution-intervals. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/execution-intervals. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -12975,7 +12975,7 @@
                                         "actorRole": {
                                           "enum": [
                                             "leader",
-                                            "collaborator",
+                                            "worker",
                                             "human",
                                             "unknown"
                                           ],
@@ -13458,7 +13458,7 @@
                                         "actorRole": {
                                           "enum": [
                                             "leader",
-                                            "collaborator",
+                                            "worker",
                                             "human",
                                             "unknown"
                                           ],
@@ -14069,7 +14069,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/execution-intervals/{intervalId}/revisions. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -14489,7 +14489,7 @@
                                             "actorRole": {
                                               "enum": [
                                                 "leader",
-                                                "collaborator",
+                                                "worker",
                                                 "human",
                                                 "unknown"
                                               ],
@@ -14972,7 +14972,7 @@
                                             "actorRole": {
                                               "enum": [
                                                 "leader",
-                                                "collaborator",
+                                                "worker",
                                                 "human",
                                                 "unknown"
                                               ],
@@ -15662,7 +15662,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/execution-intervals/{intervalId}/revisions. Explicit audit-preserving correction or invalidation of closed interval. If-Match is interval version. No source evidence mutation.. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/execution-intervals/{intervalId}/revisions. Explicit audit-preserving correction or invalidation of closed interval. If-Match is interval version. No source evidence mutation.. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -16086,7 +16086,7 @@
                                   "actorRole": {
                                     "enum": [
                                       "leader",
-                                      "collaborator",
+                                      "worker",
                                       "human",
                                       "unknown"
                                     ],
@@ -16569,7 +16569,7 @@
                                   "actorRole": {
                                     "enum": [
                                       "leader",
-                                      "collaborator",
+                                      "worker",
                                       "human",
                                       "unknown"
                                     ],
@@ -17144,7 +17144,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/execution-summaries. List execution summaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/execution-summaries. List execution summaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -17905,7 +17905,7 @@
                                       "actorRole": {
                                         "enum": [
                                           "leader",
-                                          "collaborator",
+                                          "worker",
                                           "human",
                                           "unknown"
                                         ],
@@ -18414,7 +18414,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/execution-summaries. Explicit executionTracking optionally records start/checkpoint/pause/resume/finish atomically with this summary. Start before work, save returned IDs, query listOpenExecutionIntervals before recovery; pause/finish before switching tasks. evidenceIds select supplied usage observations; start declares counterMode and coverageRootSessionId. Never infer boundaries from status or timestamps. Conflicting source/root returns 409 with active interval IDs. Missing evidence requires a comment, not fabricated tokens. Task status changes require an execution summary, including close_activity using the same atomic service. statusObserved is a server-owned historical snapshot. Every new summary requires usageReport.entries with measured cumulative_snapshot session/session_tree usage, identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens equal to inclusive inputTokens + outputTokens; never add cached input or reasoning output again. The total is the source session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption or a required delta. A first real snapshot is accepted as a baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest evidenceId; preserve reset/gap baselines honestly. Repeated evidence keeps its identity and is not counted twice. Keep multiple disjoint sessions/models separate; do not sum cumulative checkpoints or overlapping tree and child totals, or label mixed-model totals with the last selected model. Collect actual session counters from permitted Codex App Server/exec streams, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel, or authorized Cursor usage exports; check surface/version and documented counter semantics. Kiro credits/context are not token measurements. No unavailable, estimated, model null, missing total or fabricated zero can substitute in a new summary. If collection fails, record the impediment in a comment without changing status or claiming a saved summary. Legacy reads, late-evidence schemas and exact saved idempotent replays remain compatible. Every new summary also requires commitReport: hasCommits=false with commits=[] or hasCommits=true with repositoryKey, explicit named/detached/unknown branch, full hash and availability per reference. Resolve repositories from task.workScope. Never fabricate a commit. Local/unknown commits have no remote link; published links require remoteVerifiedAt and explicit GitHub/GitLab webUrl matching the hash. Legacy omission is not false; exact saved replays remain valid. See beeteam://references/repository-evidence.. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/execution-summaries. Explicit executionTracking optionally records start/checkpoint/pause/resume/finish atomically with this summary. Start before work, save returned IDs, query listOpenExecutionIntervals before recovery; pause/finish before switching tasks. evidenceIds select supplied usage observations; start declares counterMode and coverageRootSessionId. Never infer boundaries from status or timestamps. Conflicting source/root returns 409 with active interval IDs. Missing evidence requires a comment, not fabricated tokens. Task status changes require an execution summary, including close_activity using the same atomic service. statusObserved is a server-owned historical snapshot. Every new summary requires usageReport.entries with measured cumulative_snapshot session/session_tree usage, identified modelId and actor.kind=agent with persisted UUIDv7. Supply non-null decimal-string totalTokens equal to inclusive inputTokens + outputTokens; never add cached input or reasoning output again. The total is the source session/epoch/model/actor accumulation through observedAt, not task-exclusive consumption or a required delta. A first real snapshot is accepted as a baseline with previousEvidenceId null and delta null. Subsequent comparable snapshots reference the latest evidenceId; preserve reset/gap baselines honestly. Repeated evidence keeps its identity and is not counted twice. Keep multiple disjoint sessions/models separate; do not sum cumulative checkpoints or overlapping tree and child totals, or label mixed-model totals with the last selected model. Collect actual session counters from permitted Codex App Server/exec streams, Copilot SDK/CLI/VS Code telemetry, Claude SDK/OTel, or authorized Cursor usage exports; check surface/version and documented counter semantics. Kiro credits/context are not token measurements. No unavailable, estimated, model null, missing total or fabricated zero can substitute in a new summary. If collection fails, record the impediment in a comment without changing status or claiming a saved summary. Legacy reads, late-evidence schemas and exact saved idempotent replays remain compatible. Every new summary also requires commitReport: hasCommits=false with commits=[] or hasCommits=true with repositoryKey, explicit named/detached/unknown branch, full hash and availability per reference. Resolve repositories from task.workScope. Never fabricate a commit. Local/unknown commits have no remote link; published links require remoteVerifiedAt and explicit GitHub/GitLab webUrl matching the hash. Legacy omission is not false; exact saved replays remain valid. See beeteam://references/repository-evidence.. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -18808,7 +18808,7 @@
                             "actorRole": {
                               "enum": [
                                 "leader",
-                                "collaborator",
+                                "worker",
                                 "human",
                                 "unknown"
                               ],
@@ -19814,7 +19814,7 @@
                                     "actorRole": {
                                       "enum": [
                                         "leader",
-                                        "collaborator",
+                                        "worker",
                                         "human",
                                         "unknown"
                                       ],
@@ -20355,7 +20355,7 @@
                     "type": "string"
                   },
                   "currentSummary": {
-                    "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                    "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                     "type": "string",
                     "x-maxBytes": 16384
                   },
@@ -20837,7 +20837,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions. Append late usage evidence without changing task state or summary Markdown. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/execution-summaries/{summaryId}/usage-revisions. Append late usage evidence without changing task state or summary Markdown. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -20912,7 +20912,7 @@
                     "actorRole": {
                       "enum": [
                         "leader",
-                        "collaborator",
+                        "worker",
                         "human",
                         "unknown"
                       ],
@@ -21846,7 +21846,7 @@
                                 "actorRole": {
                                   "enum": [
                                     "leader",
-                                    "collaborator",
+                                    "worker",
                                     "human",
                                     "unknown"
                                   ],
@@ -22317,7 +22317,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/execution-tracking-events. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/execution-tracking-events. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -22632,7 +22632,7 @@
                               "actorRole": {
                                 "enum": [
                                   "leader",
-                                  "collaborator",
+                                  "worker",
                                   "human",
                                   "unknown"
                                 ],
@@ -23187,7 +23187,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/executions. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/executions. Read explicit execution intervals without inferred boundaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -23493,7 +23493,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/overview. Read complete direct-child aggregates and bounded recorded history in one snapshot. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/overview. Read complete direct-child aggregates and bounded recorded history in one snapshot. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -24551,7 +24551,7 @@
                                         "actorRole": {
                                           "enum": [
                                             "leader",
-                                            "collaborator",
+                                            "worker",
                                             "human",
                                             "unknown"
                                           ],
@@ -25301,7 +25301,7 @@
                     "type": "string"
                   },
                   "currentSummary": {
-                    "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                    "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                     "type": "string",
                     "x-maxBytes": 16384
                   },
@@ -26421,7 +26421,7 @@
                                               "actorRole": {
                                                 "enum": [
                                                   "leader",
-                                                  "collaborator",
+                                                  "worker",
                                                   "human",
                                                   "unknown"
                                                 ],
@@ -26935,7 +26935,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/participants. List distinct recorded participants of this exact task. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/participants. List distinct recorded participants of this exact task. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -27148,7 +27148,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/plans. List plans. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/plans. List plans. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -27444,7 +27444,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/plans. Register plans. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/plans. Register plans. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -27660,7 +27660,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/plans/{planId}/revisions. List plan revisions. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/plans/{planId}/revisions. List plan revisions. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -27957,7 +27957,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/tasks/{taskId}/plans/{planId}/revisions. Save an immutable revision. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/tasks/{taskId}/plans/{planId}/revisions. Save an immutable revision. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -28185,7 +28185,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/tasks/{taskId}/position. Reorder a task within its current status; status changes require execution-summaries. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/tasks/{taskId}/position. Reorder a task within its current status; status changes require execution-summaries. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -28400,7 +28400,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -28875,7 +28875,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/timeline. Read the unified timeline. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/timeline. Read the unified timeline. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -29199,7 +29199,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/timeline-points. Read lightweight timeline points. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/timeline-points. Read lightweight timeline points. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -29481,7 +29481,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/usage. Read known usage totals and summary checkpoints. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/usage. Read known usage totals and summary checkpoints. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -30259,7 +30259,7 @@
                                           "actorRole": {
                                             "enum": [
                                               "leader",
-                                              "collaborator",
+                                              "worker",
                                               "human",
                                               "unknown"
                                             ],
@@ -30757,7 +30757,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/tasks/{taskId}/usage/dimensions. List every reported model or harness with pagination. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/tasks/{taskId}/usage/dimensions. List every reported model or harness with pagination. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -30975,7 +30975,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents. List agents. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents. List agents. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -31059,7 +31059,7 @@
               "role": {
                 "enum": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "string"
               },
@@ -31162,7 +31162,7 @@
                       "additionalProperties": false,
                       "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                       "properties": {
-                        "collaboratorTeamId": {
+                        "leaderTeamId": {
                           "format": "uuid",
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                           "type": [
@@ -31170,7 +31170,7 @@
                             "null"
                           ]
                         },
-                        "leaderTeamId": {
+                        "workerTeamId": {
                           "format": "uuid",
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                           "type": [
@@ -31180,7 +31180,7 @@
                         }
                       },
                       "required": [
-                        "collaboratorTeamId",
+                        "workerTeamId",
                         "leaderTeamId"
                       ],
                       "type": "object"
@@ -31232,7 +31232,7 @@
                           "additionalProperties": false,
                           "properties": {
                             "contentPath": {
-                              "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                              "pattern": "^/api/v2/agents/[^/]+/image/content$",
                               "type": "string"
                             },
                             "deletedAt": {
@@ -31399,7 +31399,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/agents. Create a unique profile without bindings. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/agents. Create a unique profile without bindings. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -31581,7 +31581,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -31589,7 +31589,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -31599,7 +31599,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -31651,7 +31651,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -31784,7 +31784,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/by-slug/{slug}. Resolve an Agent slug to its internal UUID. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/by-slug/{slug}. Resolve an Agent slug to its internal UUID. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -31929,7 +31929,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/{agentId}. Read profile and bindings. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/{agentId}. Read profile and bindings. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -32051,7 +32051,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -32059,7 +32059,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -32069,7 +32069,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -32121,7 +32121,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -32254,7 +32254,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/agents/{agentId}. Edit a shared profile. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/agents/{agentId}. Edit a shared profile. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -32443,7 +32443,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -32451,7 +32451,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -32461,7 +32461,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -32513,7 +32513,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -32646,7 +32646,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/{agentId}/activities. Read the agent task and summary index. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/{agentId}/activities. Read the agent task and summary index. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -32870,7 +32870,7 @@
                       "type": "string"
                     },
                     "summariesPath": {
-                      "pattern": "^/api/v1/tasks/[^/]+/execution-summaries\\?actorId=",
+                      "pattern": "^/api/v2/tasks/[^/]+/execution-summaries\\?actorId=",
                       "type": "string"
                     },
                     "taskId": {
@@ -32879,7 +32879,7 @@
                       "type": "string"
                     },
                     "taskPath": {
-                      "pattern": "^/api/v1/tasks/[^/]+$",
+                      "pattern": "^/api/v2/tasks/[^/]+$",
                       "type": "string"
                     },
                     "taskUpdatedAt": {
@@ -32965,7 +32965,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/agents/{agentId}/archive. Archive or reactivate a profile. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/agents/{agentId}/archive. Archive or reactivate a profile. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -33092,7 +33092,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -33100,7 +33100,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -33110,7 +33110,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -33162,7 +33162,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -33295,7 +33295,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/{agentId}/chat-references. List chat references. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/{agentId}/chat-references. List chat references. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -33615,7 +33615,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/agents/{agentId}/chat-references. Register an external chat reference. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/agents/{agentId}/chat-references. Register an external chat reference. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -33862,7 +33862,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/agents/{agentId}/chat-references/{chatReferenceId}. Edit or archive a reference. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/agents/{agentId}/chat-references/{chatReferenceId}. Edit or archive a reference. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -34104,7 +34104,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/agents/{agentId}/copies. Copy a profile to a new collaborator. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/agents/{agentId}/copies. Copy a profile to a new worker. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -34277,7 +34277,7 @@
                     "additionalProperties": false,
                     "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                     "properties": {
-                      "collaboratorTeamId": {
+                      "leaderTeamId": {
                         "format": "uuid",
                         "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                         "type": [
@@ -34285,7 +34285,7 @@
                           "null"
                         ]
                       },
-                      "leaderTeamId": {
+                      "workerTeamId": {
                         "format": "uuid",
                         "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                         "type": [
@@ -34295,7 +34295,7 @@
                       }
                     },
                     "required": [
-                      "collaboratorTeamId",
+                      "workerTeamId",
                       "leaderTeamId"
                     ],
                     "type": "object"
@@ -34347,7 +34347,7 @@
                         "additionalProperties": false,
                         "properties": {
                           "contentPath": {
-                            "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                            "pattern": "^/api/v2/agents/[^/]+/image/content$",
                             "type": "string"
                           },
                           "deletedAt": {
@@ -34469,40 +34469,6 @@
                       "null"
                     ]
                   },
-                  "collaboratorCount": {
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "collaboratorIconId": {
-                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                    "enum": [
-                      "crown",
-                      "user-round",
-                      "star",
-                      "shield",
-                      "rocket",
-                      "compass",
-                      "wrench",
-                      "lightbulb",
-                      "flower-2",
-                      "bot",
-                      "code",
-                      "terminal",
-                      "bug",
-                      "flask-conical",
-                      "book-open",
-                      "graduation-cap",
-                      "palette",
-                      "globe",
-                      "heart",
-                      "zap",
-                      "target",
-                      "key-round",
-                      "lock",
-                      "music"
-                    ],
-                    "type": "string"
-                  },
                   "context": {
                     "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                     "type": "string",
@@ -34526,7 +34492,7 @@
                     "type": "string"
                   },
                   "leaderIconId": {
-                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                     "enum": [
                       "crown",
                       "user-round",
@@ -34573,11 +34539,11 @@
                   "roleIcons": {
                     "additionalProperties": false,
                     "properties": {
-                      "collaborator": {
+                      "leader": {
                         "additionalProperties": false,
                         "properties": {
                           "id": {
-                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                             "enum": [
                               "crown",
                               "user-round",
@@ -34627,11 +34593,11 @@
                         ],
                         "type": "object"
                       },
-                      "leader": {
+                      "worker": {
                         "additionalProperties": false,
                         "properties": {
                           "id": {
-                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                            "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                             "enum": [
                               "crown",
                               "user-round",
@@ -34684,7 +34650,7 @@
                     },
                     "required": [
                       "leader",
-                      "collaborator"
+                      "worker"
                     ],
                     "type": "object"
                   },
@@ -34702,6 +34668,40 @@
                   "version": {
                     "minimum": 1,
                     "type": "integer"
+                  },
+                  "workerCount": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "workerIconId": {
+                    "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                    "enum": [
+                      "crown",
+                      "user-round",
+                      "star",
+                      "shield",
+                      "rocket",
+                      "compass",
+                      "wrench",
+                      "lightbulb",
+                      "flower-2",
+                      "bot",
+                      "code",
+                      "terminal",
+                      "bug",
+                      "flask-conical",
+                      "book-open",
+                      "graduation-cap",
+                      "palette",
+                      "globe",
+                      "heart",
+                      "zap",
+                      "target",
+                      "key-round",
+                      "lock",
+                      "music"
+                    ],
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -34711,7 +34711,7 @@
                   "purpose",
                   "context",
                   "leaderId",
-                  "collaboratorCount",
+                  "workerCount",
                   "archivedAt",
                   "version",
                   "createdAt",
@@ -34749,7 +34749,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/agents/{agentId}/image. Upload or replace an image. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/agents/{agentId}/image. Upload or replace an image. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -34873,7 +34873,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -34881,7 +34881,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -34891,7 +34891,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -34943,7 +34943,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -35076,7 +35076,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "DELETE /api/v1/agents/{agentId}/image. Remove the current image. Actor is declared, not authenticated.",
+      "description": "DELETE /api/v2/agents/{agentId}/image. Remove the current image. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -35199,7 +35199,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/{agentId}/image/content. . Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/{agentId}/image/content. . Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -35312,7 +35312,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/agents/{agentId}/latest-activity. Read the latest recorded task activity attributed to an agent. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/agents/{agentId}/latest-activity. Read the latest recorded task activity attributed to an agent. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -35489,7 +35489,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/team-composition-changes. Change composition or transfer between teams atomically. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/team-composition-changes. Change composition or transfer between teams atomically. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -35547,15 +35547,6 @@
                   "additionalProperties": false,
                   "description": "Final composition of a changed team (including an archived source), with a required leader. Unspecified teams remain unchanged; validate versions and final role cardinality.",
                   "properties": {
-                    "collaboratorIds": {
-                      "items": {
-                        "format": "uuid",
-                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                        "type": "string"
-                      },
-                      "type": "array",
-                      "uniqueItems": true
-                    },
                     "expectedVersion": {
                       "minimum": 1,
                       "type": "integer"
@@ -35569,13 +35560,22 @@
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                       "type": "string"
+                    },
+                    "workerIds": {
+                      "items": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      "type": "array",
+                      "uniqueItems": true
                     }
                   },
                   "required": [
                     "teamId",
                     "expectedVersion",
                     "leaderId",
-                    "collaboratorIds"
+                    "workerIds"
                   ],
                   "type": "object"
                 },
@@ -35664,40 +35664,6 @@
                         "null"
                       ]
                     },
-                    "collaboratorCount": {
-                      "minimum": 0,
-                      "type": "integer"
-                    },
-                    "collaboratorIconId": {
-                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                      "enum": [
-                        "crown",
-                        "user-round",
-                        "star",
-                        "shield",
-                        "rocket",
-                        "compass",
-                        "wrench",
-                        "lightbulb",
-                        "flower-2",
-                        "bot",
-                        "code",
-                        "terminal",
-                        "bug",
-                        "flask-conical",
-                        "book-open",
-                        "graduation-cap",
-                        "palette",
-                        "globe",
-                        "heart",
-                        "zap",
-                        "target",
-                        "key-round",
-                        "lock",
-                        "music"
-                      ],
-                      "type": "string"
-                    },
                     "context": {
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
@@ -35721,7 +35687,7 @@
                       "type": "string"
                     },
                     "leaderIconId": {
-                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                       "enum": [
                         "crown",
                         "user-round",
@@ -35768,11 +35734,11 @@
                     "roleIcons": {
                       "additionalProperties": false,
                       "properties": {
-                        "collaborator": {
+                        "leader": {
                           "additionalProperties": false,
                           "properties": {
                             "id": {
-                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                               "enum": [
                                 "crown",
                                 "user-round",
@@ -35822,11 +35788,11 @@
                           ],
                           "type": "object"
                         },
-                        "leader": {
+                        "worker": {
                           "additionalProperties": false,
                           "properties": {
                             "id": {
-                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                               "enum": [
                                 "crown",
                                 "user-round",
@@ -35879,7 +35845,7 @@
                       },
                       "required": [
                         "leader",
-                        "collaborator"
+                        "worker"
                       ],
                       "type": "object"
                     },
@@ -35897,6 +35863,40 @@
                     "version": {
                       "minimum": 1,
                       "type": "integer"
+                    },
+                    "workerCount": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "workerIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb",
+                        "flower-2",
+                        "bot",
+                        "code",
+                        "terminal",
+                        "bug",
+                        "flask-conical",
+                        "book-open",
+                        "graduation-cap",
+                        "palette",
+                        "globe",
+                        "heart",
+                        "zap",
+                        "target",
+                        "key-round",
+                        "lock",
+                        "music"
+                      ],
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -35906,7 +35906,7 @@
                     "purpose",
                     "context",
                     "leaderId",
-                    "collaboratorCount",
+                    "workerCount",
                     "archivedAt",
                     "version",
                     "createdAt",
@@ -35945,7 +35945,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/team-role-icons. List the closed catalog of team role icons. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/team-role-icons. List the closed catalog of team role icons. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -36042,7 +36042,7 @@
                   "additionalProperties": false,
                   "properties": {
                     "id": {
-                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                       "enum": [
                         "crown",
                         "user-round",
@@ -36122,7 +36122,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/teams. List teams. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/teams. List teams. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -36178,11 +36178,6 @@
                 "default": false,
                 "type": "boolean"
               },
-              "collaboratorId": {
-                "format": "uuid",
-                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                "type": "string"
-              },
               "createdBefore": {
                 "format": "date-time",
                 "type": "string"
@@ -36236,6 +36231,11 @@
               },
               "updatedFrom": {
                 "format": "date-time",
+                "type": "string"
+              },
+              "workerId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
               }
             },
@@ -36295,40 +36295,6 @@
                         "null"
                       ]
                     },
-                    "collaboratorCount": {
-                      "minimum": 0,
-                      "type": "integer"
-                    },
-                    "collaboratorIconId": {
-                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                      "enum": [
-                        "crown",
-                        "user-round",
-                        "star",
-                        "shield",
-                        "rocket",
-                        "compass",
-                        "wrench",
-                        "lightbulb",
-                        "flower-2",
-                        "bot",
-                        "code",
-                        "terminal",
-                        "bug",
-                        "flask-conical",
-                        "book-open",
-                        "graduation-cap",
-                        "palette",
-                        "globe",
-                        "heart",
-                        "zap",
-                        "target",
-                        "key-round",
-                        "lock",
-                        "music"
-                      ],
-                      "type": "string"
-                    },
                     "context": {
                       "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                       "type": "string",
@@ -36352,7 +36318,7 @@
                       "type": "string"
                     },
                     "leaderIconId": {
-                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                       "enum": [
                         "crown",
                         "user-round",
@@ -36399,11 +36365,11 @@
                     "roleIcons": {
                       "additionalProperties": false,
                       "properties": {
-                        "collaborator": {
+                        "leader": {
                           "additionalProperties": false,
                           "properties": {
                             "id": {
-                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                               "enum": [
                                 "crown",
                                 "user-round",
@@ -36453,11 +36419,11 @@
                           ],
                           "type": "object"
                         },
-                        "leader": {
+                        "worker": {
                           "additionalProperties": false,
                           "properties": {
                             "id": {
-                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                              "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                               "enum": [
                                 "crown",
                                 "user-round",
@@ -36510,7 +36476,7 @@
                       },
                       "required": [
                         "leader",
-                        "collaborator"
+                        "worker"
                       ],
                       "type": "object"
                     },
@@ -36528,6 +36494,40 @@
                     "version": {
                       "minimum": 1,
                       "type": "integer"
+                    },
+                    "workerCount": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "workerIconId": {
+                      "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                      "enum": [
+                        "crown",
+                        "user-round",
+                        "star",
+                        "shield",
+                        "rocket",
+                        "compass",
+                        "wrench",
+                        "lightbulb",
+                        "flower-2",
+                        "bot",
+                        "code",
+                        "terminal",
+                        "bug",
+                        "flask-conical",
+                        "book-open",
+                        "graduation-cap",
+                        "palette",
+                        "globe",
+                        "heart",
+                        "zap",
+                        "target",
+                        "key-round",
+                        "lock",
+                        "music"
+                      ],
+                      "type": "string"
                     }
                   },
                   "required": [
@@ -36537,7 +36537,7 @@
                     "purpose",
                     "context",
                     "leaderId",
-                    "collaboratorCount",
+                    "workerCount",
                     "archivedAt",
                     "version",
                     "createdAt",
@@ -36602,7 +36602,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "POST /api/v1/teams. Create a team with a leader and members. Actor is declared, not authenticated.",
+      "description": "POST /api/v2/teams. Create a team with a leader and members. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -36632,45 +36632,6 @@
             "additionalProperties": false,
             "description": "Create a group with a leader and members, without a higher-level grouping entity or task ownership. Identities must exist and role cardinalities must be valid.",
             "properties": {
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
-              "collaboratorIds": {
-                "items": {
-                  "format": "uuid",
-                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                  "type": "string"
-                },
-                "type": "array",
-                "uniqueItems": true
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36700,7 +36661,7 @@
                 "type": "object"
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -36743,6 +36704,45 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
+              },
+              "workerIds": {
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
               }
             },
             "required": [
@@ -36821,40 +36821,6 @@
                   "null"
                 ]
               },
-              "collaboratorCount": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -36878,7 +36844,7 @@
                 "type": "string"
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -36925,11 +36891,11 @@
               "roleIcons": {
                 "additionalProperties": false,
                 "properties": {
-                  "collaborator": {
+                  "leader": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -36979,11 +36945,11 @@
                     ],
                     "type": "object"
                   },
-                  "leader": {
+                  "worker": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -37036,7 +37002,7 @@
                 },
                 "required": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "object"
               },
@@ -37054,6 +37020,40 @@
               "version": {
                 "minimum": 1,
                 "type": "integer"
+              },
+              "workerCount": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
               }
             },
             "required": [
@@ -37063,7 +37063,7 @@
               "purpose",
               "context",
               "leaderId",
-              "collaboratorCount",
+              "workerCount",
               "archivedAt",
               "version",
               "createdAt",
@@ -37094,7 +37094,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/teams/by-slug/{slug}. Resolve a Team slug to its internal UUID. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/teams/by-slug/{slug}. Resolve a Team slug to its internal UUID. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -37239,7 +37239,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/teams/{teamId}. Read a team. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/teams/{teamId}. Read a team. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -37349,40 +37349,6 @@
                   "null"
                 ]
               },
-              "collaboratorCount": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -37406,7 +37372,7 @@
                 "type": "string"
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -37453,11 +37419,11 @@
               "roleIcons": {
                 "additionalProperties": false,
                 "properties": {
-                  "collaborator": {
+                  "leader": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -37507,11 +37473,11 @@
                     ],
                     "type": "object"
                   },
-                  "leader": {
+                  "worker": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -37564,7 +37530,7 @@
                 },
                 "required": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "object"
               },
@@ -37582,6 +37548,40 @@
               "version": {
                 "minimum": 1,
                 "type": "integer"
+              },
+              "workerCount": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
               }
             },
             "required": [
@@ -37591,7 +37591,7 @@
               "purpose",
               "context",
               "leaderId",
-              "collaboratorCount",
+              "workerCount",
               "archivedAt",
               "version",
               "createdAt",
@@ -37622,7 +37622,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PATCH /api/v1/teams/{teamId}. Edit team purpose and context. Actor is declared, not authenticated.",
+      "description": "PATCH /api/v2/teams/{teamId}. Edit team purpose and context. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -37653,43 +37653,13 @@
             "description": "Composition changes only through the separate atomic command.",
             "minProperties": 1,
             "properties": {
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -37727,6 +37697,36 @@
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
                 "x-maxBytes": 65536
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
               }
             },
             "required": [],
@@ -37809,40 +37809,6 @@
                   "null"
                 ]
               },
-              "collaboratorCount": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -37866,7 +37832,7 @@
                 "type": "string"
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -37913,11 +37879,11 @@
               "roleIcons": {
                 "additionalProperties": false,
                 "properties": {
-                  "collaborator": {
+                  "leader": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -37967,11 +37933,11 @@
                     ],
                     "type": "object"
                   },
-                  "leader": {
+                  "worker": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -38024,7 +37990,7 @@
                 },
                 "required": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "object"
               },
@@ -38042,6 +38008,40 @@
               "version": {
                 "minimum": 1,
                 "type": "integer"
+              },
+              "workerCount": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
               }
             },
             "required": [
@@ -38051,7 +38051,7 @@
               "purpose",
               "context",
               "leaderId",
-              "collaboratorCount",
+              "workerCount",
               "archivedAt",
               "version",
               "createdAt",
@@ -38082,7 +38082,7 @@
         "openWorldHint": false,
         "readOnlyHint": false
       },
-      "description": "PUT /api/v1/teams/{teamId}/archive. Archive or reactivate a team. Actor is declared, not authenticated.",
+      "description": "PUT /api/v2/teams/{teamId}/archive. Archive or reactivate a team. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -38197,40 +38197,6 @@
                   "null"
                 ]
               },
-              "collaboratorCount": {
-                "minimum": 0,
-                "type": "integer"
-              },
-              "collaboratorIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
-                "enum": [
-                  "crown",
-                  "user-round",
-                  "star",
-                  "shield",
-                  "rocket",
-                  "compass",
-                  "wrench",
-                  "lightbulb",
-                  "flower-2",
-                  "bot",
-                  "code",
-                  "terminal",
-                  "bug",
-                  "flask-conical",
-                  "book-open",
-                  "graduation-cap",
-                  "palette",
-                  "globe",
-                  "heart",
-                  "zap",
-                  "target",
-                  "key-round",
-                  "lock",
-                  "music"
-                ],
-                "type": "string"
-              },
               "context": {
                 "description": "Maximum 64 KiB UTF-8; text, not a complete transcript.",
                 "type": "string",
@@ -38254,7 +38220,7 @@
                 "type": "string"
               },
               "leaderIconId": {
-                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                 "enum": [
                   "crown",
                   "user-round",
@@ -38301,11 +38267,11 @@
               "roleIcons": {
                 "additionalProperties": false,
                 "properties": {
-                  "collaborator": {
+                  "leader": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -38355,11 +38321,11 @@
                     ],
                     "type": "object"
                   },
-                  "leader": {
+                  "worker": {
                     "additionalProperties": false,
                     "properties": {
                       "id": {
-                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for collaborator.",
+                        "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
                         "enum": [
                           "crown",
                           "user-round",
@@ -38412,7 +38378,7 @@
                 },
                 "required": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "object"
               },
@@ -38430,6 +38396,40 @@
               "version": {
                 "minimum": 1,
                 "type": "integer"
+              },
+              "workerCount": {
+                "minimum": 0,
+                "type": "integer"
+              },
+              "workerIconId": {
+                "description": "Stable closed catalog ID. Legacy teams default to crown for leader and user-round for worker.",
+                "enum": [
+                  "crown",
+                  "user-round",
+                  "star",
+                  "shield",
+                  "rocket",
+                  "compass",
+                  "wrench",
+                  "lightbulb",
+                  "flower-2",
+                  "bot",
+                  "code",
+                  "terminal",
+                  "bug",
+                  "flask-conical",
+                  "book-open",
+                  "graduation-cap",
+                  "palette",
+                  "globe",
+                  "heart",
+                  "zap",
+                  "target",
+                  "key-round",
+                  "lock",
+                  "music"
+                ],
+                "type": "string"
               }
             },
             "required": [
@@ -38439,7 +38439,7 @@
               "purpose",
               "context",
               "leaderId",
-              "collaboratorCount",
+              "workerCount",
               "archivedAt",
               "version",
               "createdAt",
@@ -38470,7 +38470,7 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
-      "description": "GET /api/v1/teams/{teamId}/members. List the leader and collaborators. Actor is declared, not authenticated.",
+      "description": "GET /api/v2/teams/{teamId}/members. List the leader and workers. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
         "properties": {
@@ -38550,7 +38550,7 @@
               "role": {
                 "enum": [
                   "leader",
-                  "collaborator"
+                  "worker"
                 ],
                 "type": "string"
               },
@@ -38642,7 +38642,7 @@
                     "role": {
                       "enum": [
                         "leader",
-                        "collaborator"
+                        "worker"
                       ],
                       "type": "string"
                     }
@@ -39990,7 +39990,7 @@
               "type": "object"
             },
             "CurrentSummary": {
-              "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+              "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
               "type": "string",
               "x-maxBytes": 16384
             },
@@ -43900,7 +43900,7 @@
                 "actorRole": {
                   "enum": [
                     "leader",
-                    "collaborator",
+                    "worker",
                     "human",
                     "unknown"
                   ],
@@ -44445,7 +44445,7 @@
                       "type": "string"
                     },
                     "currentSummary": {
-                      "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                      "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                       "type": "string",
                       "x-maxBytes": 16384
                     },
@@ -45000,7 +45000,7 @@
                 "additionalProperties": false,
                 "description": "At most one team per role; when both are non-null, they must differ. Includes bindings to archived teams.",
                 "properties": {
-                  "collaboratorTeamId": {
+                  "leaderTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -45008,7 +45008,7 @@
                       "null"
                     ]
                   },
-                  "leaderTeamId": {
+                  "workerTeamId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                     "type": [
@@ -45018,7 +45018,7 @@
                   }
                 },
                 "required": [
-                  "collaboratorTeamId",
+                  "workerTeamId",
                   "leaderTeamId"
                 ],
                 "type": "object"
@@ -45070,7 +45070,7 @@
                     "additionalProperties": false,
                     "properties": {
                       "contentPath": {
-                        "pattern": "^/api/v1/agents/[^/]+/image/content$",
+                        "pattern": "^/api/v2/agents/[^/]+/image/content$",
                         "type": "string"
                       },
                       "deletedAt": {
@@ -45777,7 +45777,7 @@
                                     "actorRole": {
                                       "enum": [
                                         "leader",
-                                        "collaborator",
+                                        "worker",
                                         "human",
                                         "unknown"
                                       ],
@@ -46460,7 +46460,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -48213,7 +48213,7 @@
               "type": "object"
             },
             "CurrentSummary": {
-              "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+              "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
               "type": "string",
               "x-maxBytes": 16384
             },
@@ -52123,7 +52123,7 @@
                 "actorRole": {
                   "enum": [
                     "leader",
-                    "collaborator",
+                    "worker",
                     "human",
                     "unknown"
                   ],
@@ -53378,7 +53378,7 @@
                                 "actorRole": {
                                   "enum": [
                                     "leader",
-                                    "collaborator",
+                                    "worker",
                                     "human",
                                     "unknown"
                                   ],
@@ -53922,7 +53922,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -54468,7 +54468,7 @@
                   "type": "string"
                 },
                 "currentSummary": {
-                  "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                  "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                   "type": "string",
                   "x-maxBytes": 16384
                 },
@@ -56218,7 +56218,7 @@
               "type": "object"
             },
             "CurrentSummary": {
-              "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+              "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
               "type": "string",
               "x-maxBytes": 16384
             },
@@ -60128,7 +60128,7 @@
                 "actorRole": {
                   "enum": [
                     "leader",
-                    "collaborator",
+                    "worker",
                     "human",
                     "unknown"
                   ],
@@ -60980,7 +60980,7 @@
                             "actorRole": {
                               "enum": [
                                 "leader",
-                                "collaborator",
+                                "worker",
                                 "human",
                                 "unknown"
                               ],
@@ -61964,7 +61964,7 @@
                                 "actorRole": {
                                   "enum": [
                                     "leader",
-                                    "collaborator",
+                                    "worker",
                                     "human",
                                     "unknown"
                                   ],
@@ -62508,7 +62508,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                 "type": "string",
                 "x-maxBytes": 16384
               },
@@ -63054,7 +63054,7 @@
                   "type": "string"
                 },
                 "currentSummary": {
-                  "description": "Current cumulative synthesis authored by the collaborator (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
+                  "description": "Current cumulative synthesis authored by the worker (completed work, current work and pending items/next step). Empty means not yet provided. Never inferred from description, progress note or history.",
                   "type": "string",
                   "x-maxBytes": 16384
                 },

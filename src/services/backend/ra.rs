@@ -101,7 +101,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         "createTeam" => {
             coordination(body, "manual")?;
             let mut data = defaults(body, &["purpose", "context"]);
-            data.as_object_mut().unwrap().remove("collaboratorIds");
+            data.as_object_mut().unwrap().remove("workerIds");
             data.as_object_mut().unwrap().remove("coordinationContext");
             data["slug"] = json!(
                 unit.allocate_slug("teams", data["name"].as_str().unwrap())
@@ -109,7 +109,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             );
             team_role_icons::defaults(&mut data);
             let id = unit.records.insert(Record::new("teams", data));
-            let members = body["collaboratorIds"]
+            let members = body["workerIds"]
                 .as_array()
                 .cloned()
                 .unwrap_or_default();
@@ -128,8 +128,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             patch(
                 unit.records.get_mut("teams", id)?,
                 body,
-                &["name", "purpose", "context", "leaderIconId", "collaboratorIconId"],
+                &["name", "purpose", "context", "leaderIconId", "workerIconId"],
             );
+            team_role_icons::defaults(&mut unit.records.get_mut("teams", id)?.data);
             outcome(&unit.records, "teams", id, false)
         }
         "changeTeamComposition" => {
@@ -156,7 +157,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 set_members(
                     &mut unit.records,
                     id,
-                    change["collaboratorIds"].as_array().unwrap(),
+                    change["workerIds"].as_array().unwrap(),
                 )?;
                 touched.extend(team_agents(&unit.records, id));
             }
@@ -203,7 +204,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 let agent = unit.records.get_mut("agents", id)?;
                 agent.data["image"]["imageId"] = json!(image_id);
                 agent.data["image"]["contentPath"] =
-                    json!(format!("/api/v1/agents/{id}/image/content"));
+                    json!(format!("/api/v2/agents/{id}/image/content"));
             }
             unit.records.insert(Record::new(
                 "memberships",
@@ -291,7 +292,7 @@ fn set_members(records: &mut Records, team: Uuid, members: &[Value]) -> Result<(
         let id = value_id(value)?;
         active(records, "agents", id)?;
         if !desired.insert(id) {
-            return Err(Failure::invalid("Duplicate collaborator"));
+            return Err(Failure::invalid("Duplicate worker"));
         }
     }
     let existing: Vec<_> = records
@@ -318,7 +319,7 @@ fn set_members(records: &mut Records, team: Uuid, members: &[Value]) -> Result<(
 }
 fn validate_composition(records: &Records) -> Result<()> {
     let mut leaders = BTreeSet::new();
-    let mut collaborators = BTreeSet::new();
+    let mut workers = BTreeSet::new();
     for team in records.list("teams") {
         let leader = body_id(&team.data, "leaderId")?;
         active(records, "agents", leader)?;
@@ -338,13 +339,13 @@ fn validate_composition(records: &Records) -> Result<()> {
             if agent == leader {
                 return Err(Failure::new(
                     "same_team_roles",
-                    "Leader cannot collaborate in the same team",
+                    "Leader cannot be a worker in the same team",
                 ));
             }
-            if !collaborators.insert(agent) {
+            if !workers.insert(agent) {
                 return Err(Failure::new(
                     "role_cardinality_conflict",
-                    "Agent already collaborates in another team",
+                    "Agent already works in another team",
                 ));
             }
         }

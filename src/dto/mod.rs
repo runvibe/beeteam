@@ -20,3 +20,5 @@ pub mod timeline;
 pub mod agent_activity;
 
 pub mod team_role_icons;
+
+pub mod worker_contract;

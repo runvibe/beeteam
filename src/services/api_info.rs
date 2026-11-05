@@ -9,6 +9,7 @@ impl ApiInfoService {
     pub fn new(mcp_enabled: bool, transfer_enabled: bool, local_projects_enabled: bool) -> Self {
         let mut capabilities = vec![
             "agents.latest-activity",
+            "roles.worker",
             "teams.role-icons",
             "tasks.execution-intervals",
             "tasks.timeline-points",
@@ -28,7 +29,7 @@ impl ApiInfoService {
         Self {
             info: ApiInfo {
                 api_version: env!("CARGO_PKG_VERSION").into(),
-                supported_contract_versions: vec!["v1".into()],
+                supported_contract_versions: vec!["v1".into(), "v2".into()],
                 capabilities: capabilities.into_iter().map(str::to_owned).collect(),
             },
         }
