@@ -11,7 +11,7 @@ export function stageFrontend(root) {
   if(realpathSync(frontend)!==frontend)throw new Error('Frontend source must not traverse a symlink or junction');
   const allowed=resolve(root,'.local','distribution')+sep;
   function directory(path) {
-    if(!path.startsWith(allowed))throw new Error('Invalid build staging directory');
+    if(path!==allowed.slice(0,-1)&&!path.startsWith(allowed))throw new Error('Invalid build staging directory');
     mkdirSync(path,{recursive:true});
     if(realpathSync(path)!==path)throw new Error('Build staging must not traverse a symlink or junction');
   }

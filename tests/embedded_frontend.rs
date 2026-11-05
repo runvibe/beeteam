@@ -8,7 +8,7 @@ use beeteam::{
 use http_body_util::BodyExt;
 use tower::ServiceExt;
 fn app() -> axum::Router {
-    app_with_mode(beeteam::services::frontend::FrontendMode::default())
+    app_with_mode(beeteam::services::frontend::FrontendMode::Embedded)
 }
 fn app_with_mode(mode: beeteam::services::frontend::FrontendMode) -> axum::Router {
     let pool = sqlx::postgres::PgPoolOptions::new()

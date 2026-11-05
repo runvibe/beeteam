@@ -382,15 +382,16 @@ executable; the default is SQLite at `~/.beeteam/beeteam.sql`.
 launcher preserves that override, and the MCP endpoint uses the configured port.
 For a separate Vite process, set `BEE_API_TARGET` to the same API port.
 
-Open `http://127.0.0.1:59865/`. UI, `/api/v1`, `/docs` and the configured MCP
+With `BEE_FRONTEND_MODE=embedded`, open `http://127.0.0.1:59865/`. UI, `/api/v1`, `/docs` and the configured MCP
 endpoint share the listener. Deep links under boards/tasks/agents/teams load the
 SPA. Only known UI paths get HTML; missing assets, API paths and MCP prefixes
 retain non-HTML errors. Fingerprinted Vite assets use immutable caching and
 ETags; HTML and public non-fingerprinted files revalidate. HEAD and conditional
 GET are supported. Existing route errors are never replaced with HTML.
 
-`BEE_FRONTEND_MODE` accepts `embedded` or `disabled`. Its default is `embedded`
-when compiled with `embedded-ui`, otherwise `disabled`. Requesting embedded mode
+`BEE_FRONTEND_MODE` accepts `embedded` or `disabled`. Its default is always
+`disabled`, including distribution builds. Set `BEE_FRONTEND_MODE=embedded` to
+serve the local panel explicitly. Requesting embedded mode
 from an API-only executable fails startup explicitly. For development:
 
 ```powershell

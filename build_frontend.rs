@@ -134,15 +134,13 @@ pub fn source_hash(root: &Path) -> String {
             )
         })
         .collect();
-    let catalog = root.parent().unwrap().join("docs/team-role-icons.json");
-    assert_eq!(
-        fs::canonicalize(&catalog).unwrap(),
-        fs::canonicalize(root).unwrap().parent().unwrap().join("docs/team-role-icons.json"),
-        "external embedded UI inputs cannot traverse symlinks"
-    );
-    assert!(!fs::symlink_metadata(&catalog).unwrap().file_type().is_symlink());
-    inputs.push(("../docs/team-role-icons.json".into(), catalog));
-    println!("cargo:rerun-if-changed=docs/team-role-icons.json");
+    for name in ["docs/team-role-icons.json", "Cargo.toml"] {
+        let path = root.parent().unwrap().join(name);
+        assert_eq!(fs::canonicalize(&path).unwrap(), fs::canonicalize(root).unwrap().parent().unwrap().join(name), "external embedded UI inputs cannot traverse symlinks");
+        assert!(!fs::symlink_metadata(&path).unwrap().file_type().is_symlink());
+        inputs.push((format!("../{name}"), path));
+        println!("cargo:rerun-if-changed={name}");
+    }
     inputs.sort_by(|a, b| a.0.cmp(&b.0));
     let mut source = Sha256::new();
     for (name, path) in inputs {
