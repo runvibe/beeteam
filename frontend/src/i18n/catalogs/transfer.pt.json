@@ -1,7 +1,7 @@
 {
   "globalSettings": "Configurações globais",
   "exportAndImportData": "Exportar e importar dados",
-  "portableArchiveOfThisBeeTeamInstallationImportRequiresAn": "Arquivo portátil da instalação Bee Team. A importação exige um destino vazio.",
+  "portableArchiveOfThisBeeTeamInstallationImportRequiresAn": "Arquivo portátil da instalação Get Bee Team. A importação exige um destino vazio.",
   "transferFailed": "Falha na transferência",
   "preparingArchive": "Preparando arquivo",
   "fileExceedsTheUploadLimit": "Arquivo excede o limite de upload.",
