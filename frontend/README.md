@@ -60,6 +60,10 @@ O evento de auditoria `task.parent_changed` aparece como “Vínculo da tarefa a
 
 ## Contratos e adapter
 
+O frontend incorpora a versão de `Cargo.toml` no build/dev. A entrada HTTP verifica `/api/v1/info` antes de montar o painel ou abrir SSE. Versões diferentes e falhas de descoberta mostram recuperação/retry; o transporte também recusa operações até confirmar igualdade e contrato suportado. A descoberta usa timeout de três segundos e verificação periódica.
+
+Uma release estável maior em `https://getbee.team/install.json` gera aviso opcional. Configure `VITE_INSTALL_MANIFEST_URL` para previews controlados. A consulta tem timeout e cache de cinco minutos; falhas remotas permitem usar o par local compatível. O consumidor valida schemaVersion1, SemVer, artefatos GitHub HTTPS com hash/tamanho e skills na tag `v<appVersion>`. Downloads são listados por sistema/arquitetura.
+
 `contracts/` contém cópias de referência dos contratos oficiais. Não é a fonte central e não deve substituir `docs/` na integração. `npm run generate:types` gera os schemas RA, Kanban e System em módulos pequenos em `src/api/generated/`; os arquivos gerados não são editados manualmente.
 
 `BeeApi` em `src/api/types.ts` é a porta tipada consumida pelas features; `ApiProvider` injeta o adapter e isola o cache por instância. `createMockApi()` é a implementação demonstrativa. `seed.ts` contém fixtures UUID v7, inclusive hierarquia com quatro níveis e filhos entre boards. A configuração usa IDs v7 novos e controle de versão. Registros removidos são filtrados por deletedAt; arquivamento é distinto.

@@ -1,0 +1,29 @@
+.api-version-gate {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 1.5rem;
+}
+.api-version-card {
+  width: 100%;
+  max-width: 36rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.api-version-card > * + * {
+  margin-top: 1rem;
+}
+.api-version-card h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.api-version-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.release-notice { padding: .75rem 1rem; background: var(--muted); border-bottom: 1px solid var(--border); }
+.release-notice summary { cursor: pointer; }
+.release-notice a { text-decoration: underline; }
