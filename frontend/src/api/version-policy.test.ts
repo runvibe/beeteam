@@ -32,6 +32,15 @@ describe("installed API and frontend version agreement", () => {
       }),
     ).toBe("unsupported");
   });
+  it("rejects a generic info response without a Bee Team capability", () => {
+    expect(
+      assessApiVersion("1.2.3", {
+        ...info("1.2.3"),
+        supportedContractVersions: ["v1"],
+        capabilities: [],
+      }),
+    ).toBe("unsupported");
+  });
 });
 describe("optional public stable release", () => {
   it.each([

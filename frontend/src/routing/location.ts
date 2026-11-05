@@ -1,6 +1,23 @@
 import { useEffect, useSyncExternalStore } from "react";
 const eventName = "beeteam:navigate";
 export const currentUrl = () => location.pathname + location.search;
+export function demoHref(to: string) {
+  if (!to.startsWith("/") || to.startsWith("//")) return to;
+  const url = new URL(to, location.origin);
+  if (
+    !url.searchParams.has("demo") &&
+    new URLSearchParams(location.search).get("demo") === "1"
+  )
+    url.searchParams.set("demo", "1");
+  const returnTo = new URLSearchParams(location.search).get("returnTo");
+  if (
+    url.searchParams.get("demo") === "1" &&
+    returnTo &&
+    !url.searchParams.has("returnTo")
+  )
+    url.searchParams.set("returnTo", returnTo);
+  return url.pathname + url.search + url.hash;
+}
 function subscribe(notify: () => void) {
   window.addEventListener("popstate", notify);
   window.addEventListener(eventName, notify);
@@ -27,6 +44,7 @@ function savePosition(url: string) {
   });
 }
 export function navigate(to: string, replace = false) {
+  to = demoHref(to);
   savePosition(currentUrl());
   const previous = currentUrl();
   if (to === previous) return;
@@ -70,7 +88,9 @@ export function navigate(to: string, replace = false) {
 export function safeOrigin(value: string | null): string | null {
   if (
     !value ||
-    !/^\/(boards|tasks|agents|teams)(\/|\?|$)/.test(value) ||
+    (!/^\/(boards|tasks|agents|teams)(\/|\?|$)/.test(value) &&
+      value !== "/" &&
+      !value.startsWith("/?")) ||
     value.startsWith("//")
   )
     return null;
@@ -84,10 +104,11 @@ export function safeOrigin(value: string | null): string | null {
   }
 }
 export function destination(path: string) {
-  return `${path}?${new URLSearchParams({ from: currentUrl() })}`;
+  return demoHref(`${path}?${new URLSearchParams({ from: currentUrl() })}`);
 }
 /** Canonical identity replacement must not create a navigation or lose return indexes. */
 export function replaceCanonicalUrl(to: string) {
+  to = demoHref(to);
   const previous = currentUrl();
   if (to === previous) return;
   savePosition(previous);

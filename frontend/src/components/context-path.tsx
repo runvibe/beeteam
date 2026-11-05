@@ -3,6 +3,7 @@ import { useLocale, t as tr } from "@/i18n";
 import { openCardLink } from "@/routing/card-navigation";
 import {
   destination,
+  demoHref,
   navigate,
   safeOrigin,
   useLocation,
@@ -35,7 +36,7 @@ export function AppPath() {
         <ol>
           <li>
             <a
-              href={findOrigin(`/${root}`) ?? `/${root}`}
+              href={demoHref(findOrigin(`/${root}`) ?? `/${root}`)}
               onClick={openCardLink}
             >
               {root === "boards"
@@ -62,7 +63,7 @@ export function AppPath() {
         <ol>
           <li>
             <a
-              href={findOrigin(`/${resource}`) ?? `/${resource}`}
+              href={demoHref(findOrigin(`/${resource}`) ?? `/${resource}`)}
               onClick={openCardLink}
             >
               {agentId ? tr("common.agents") : tr("common.teams")}
@@ -97,7 +98,7 @@ export function AppPath() {
       <nav aria-label={tr("common.path")} className="context-path">
         <ol>
           <li>
-            <a href={listOrigin} onClick={openCardLink}>
+            <a href={demoHref(listOrigin)} onClick={openCardLink}>
               {tr("common.boards")}
             </a>
           </li>
@@ -192,7 +193,7 @@ export function TaskPath({
       <ol>
         {shell && (
           <li>
-            <a href={findOrigin("/boards") ?? "/boards"} onClick={openCardLink}>
+            <a href={demoHref(findOrigin("/boards") ?? "/boards")} onClick={openCardLink}>
               {tr("common.boards")}
             </a>
           </li>
