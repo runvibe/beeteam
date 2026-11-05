@@ -66,6 +66,8 @@ The public guide includes a binary environment reference at `/guide/reference/en
 
 ## Development
 
+The public site in `site/` uses Vike to pre-render the landing page and documentation in English and Portuguese. The React/Vite application in `frontend/` mounts at `/app/` and has its own build and PWA update lifecycle. Public articles can be updated independently of the app/API version. See [the product boundaries and verification steps](docs/guides/site-and-app.md).
+
 Run the backend and Vite separately for frontend development, or build the embedded distribution for a single executable. [Development and tests](docs/guides/development.md) · [Runtime modes](docs/guides/runtime.md).
 
 ## Troubleshooting

@@ -1,0 +1,30 @@
+name: Public site artifact
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'site/**'
+      - 'docs/mcp-catalog.json'
+      - 'Cargo.toml'
+      - 'scripts/compose-ui.mjs'
+      - '.github/workflows/public-site.yaml'
+permissions:
+  contents: read
+jobs:
+  prerender:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+        working-directory: site
+      - run: npm run build
+        working-directory: site
+      - uses: actions/upload-artifact@v4
+        with:
+          name: public-site
+          path: site/dist/client/
+          include-hidden-files: true
+          if-no-files-found: error

@@ -4,6 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 import { readAppVersion } from "./scripts/app-version.mjs";
+import { pwa } from "./scripts/pwa-plugin.js";
+import { publicSite } from "./scripts/public-site.js";
 import type { PreviewServer, ViteDevServer } from "vite";
 
 function installGuide(server: ViteDevServer | PreviewServer) {
@@ -21,10 +23,11 @@ export default defineConfig(({ mode }) => {
     },
   };
   return {
+    base: "/app/",
     define: { __BEE_APP_VERSION__: JSON.stringify(readAppVersion()) },
     server: { host: "127.0.0.1", port: 5173, strictPort: true, proxy },
     preview: { proxy },
-    plugins: [react(), tailwindcss(), { name: "install-guide", configureServer: installGuide, configurePreviewServer: installGuide }],
+    plugins: [publicSite(), react(), tailwindcss(), pwa(), { name: "install-guide", configureServer: installGuide, configurePreviewServer: installGuide }],
     resolve: {
       alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
     },

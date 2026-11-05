@@ -257,5 +257,10 @@
   "mermaidUnsafe": "This diagram uses unsupported configuration or embedded content. The original source is shown below.",
   "installChatNamed": "Follow https://getbee.team/install to install Bee Team on my computer using {{harness}}. Verify the published release and confirm that the local API is running.",
   "installChatOther": "Follow https://getbee.team/install to install Bee Team on my computer using this assistant. Verify the published release and confirm that the local API is running.",
-  "copyChatPrompt": "Copy request"
+  "copyChatPrompt": "Copy request",
+  "pwaUpdateTitle": "App update ready",
+  "pwaUpdateBody": "A new version of the app is ready. Save your work in every open app tab before reloading.",
+  "pwaReload": "Reload the app",
+  "pwaUpdateFailed": "The update is still pending. Reload when your work is saved.",
+  "pwaOtherTabs": "Save your work and close the other Bee Team app tabs, then reload here."
 }

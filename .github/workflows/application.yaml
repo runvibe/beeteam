@@ -1,0 +1,30 @@
+name: Application artifact
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'frontend/**'
+      - 'docs/team-role-icons.json'
+      - 'docs/mcp-catalog.json'
+      - 'Cargo.toml'
+      - '.github/workflows/application.yaml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build:embedded
+        working-directory: frontend
+      - uses: actions/upload-artifact@v4
+        with:
+          name: application
+          path: frontend/dist/
+          include-hidden-files: true
+          if-no-files-found: error

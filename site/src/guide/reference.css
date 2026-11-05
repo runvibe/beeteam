@@ -1,0 +1,25 @@
+.guide-reference-table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.guide-reference-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.guide-reference-table td,
+.guide-reference-table th {
+  text-align: start;
+  vertical-align: top;
+  padding: 0.6rem;
+  border-bottom: 1px solid currentColor;
+}
+.guide-reference-table code {
+  overflow-wrap: anywhere;
+}
+.guide-block[id^="tool-"] {
+  scroll-margin-block-start: 5rem;
+}
+.guide-block[id^="tool-"] pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
