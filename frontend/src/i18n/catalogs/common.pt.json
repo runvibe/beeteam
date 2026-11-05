@@ -133,6 +133,7 @@
   "manualLower": "manual",
   "mermaidDiagram": "Diagrama Mermaid",
   "mermaidExpand": "Ampliar diagrama",
+  "mermaidMaximize": "Maximizar diagrama",
   "mermaidFit": "Ajustar à largura",
   "mermaidSource": "Código-fonte do diagrama",
   "mermaidLoading": "Carregando diagrama…",

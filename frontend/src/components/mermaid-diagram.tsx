@@ -3,6 +3,7 @@ import { useStore } from "zustand";
 import { t, useLocale } from "@/i18n";
 import { themeController } from "@/state/theme-runtime";
 import { Button } from "./ui/button";
+import { MermaidFullscreen } from "./mermaid-fullscreen";
 import { mermaidSourceFailure, type MermaidFailure } from "./mermaid-policy";
 import { renderMermaid, type MermaidImage } from "./mermaid-renderer";
 import "./mermaid-diagram.css";
@@ -31,6 +32,14 @@ export function MermaidDiagram({
   const current =
     result?.source === source && result.theme === theme ? result : undefined;
   const error = failure ?? current?.failure;
+  const status =
+    error === "limit"
+      ? t("common.mermaidLimit")
+      : error === "unsafe"
+        ? t("common.mermaidUnsafe")
+        : error
+          ? t("common.mermaidError")
+          : t("common.mermaidLoading");
 
   useEffect(() => {
     if (visible || !element.current) return;
@@ -63,7 +72,7 @@ export function MermaidDiagram({
   }, [source, theme, visible, failure]);
 
   return (
-    <figure className="mermaid-diagram" ref={element}>
+    <figure className="mermaid-diagram" ref={element} tabIndex={-1}>
       {current?.image && !error ? (
         <div
           className={`mermaid-viewport${expanded ? " mermaid-expanded" : ""}`}
@@ -79,13 +88,7 @@ export function MermaidDiagram({
         </div>
       ) : (
         <p className="small-note" role="status">
-          {error === "limit"
-            ? t("common.mermaidLimit")
-            : error === "unsafe"
-              ? t("common.mermaidUnsafe")
-              : error
-                ? t("common.mermaidError")
-                : t("common.mermaidLoading")}
+          {status}
         </p>
       )}
       {current?.image && !error && (
@@ -99,6 +102,11 @@ export function MermaidDiagram({
           {expanded ? t("common.mermaidFit") : t("common.mermaidExpand")}
         </Button>
       )}
+      <MermaidFullscreen
+        owner={element}
+        image={error ? undefined : current?.image}
+        status={status}
+      />
       <details open={error ? true : undefined}>
         <summary>{t("common.mermaidSource")}</summary>
         <pre>
