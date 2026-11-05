@@ -52,7 +52,7 @@ export function NavigationRail() {
       <a
         className="navigation-logo"
         aria-label={tr("common.beeTeamGoToBoards")}
-        title="Get Bee Team"
+        title="Bee Team"
         href={demoHref("/boards")}
         onClick={(event) => {
           if (

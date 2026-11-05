@@ -1,6 +1,6 @@
 # Install Get a Team Lead and Get a Worker after integration
 
-Execute this procedure only after the Leader integrates and reviews the Get Bee Team revision. The Leader performs installation. This procedure does not restart Get Bee Team or reload existing chats. MCP resources do not install packages globally.
+Execute this procedure only after the Leader integrates and reviews the Bee Team revision. The Leader performs installation. This procedure does not restart Bee Team or reload existing chats. MCP resources do not install packages globally.
 
 | Existing package | Integrated source and destination | Action |
 | --- | --- | --- |
@@ -31,4 +31,4 @@ The reference domain is `getbee.team`. Preserve API routes, `beeteam://` URIs, s
 
 ## Historical installations
 
-Earlier releases used `bee-team-leader`, `bee-team-collaborator` and `call-a-collaborator`. Their prior migration is recorded in Git history. If those directories remain, stop this migration for explicit reconciliation of that older installation; do not expand the retirement set implicitly. Historical verification reports and authored Get Bee Team records retain their original terminology.
+Earlier releases used `bee-team-leader`, `bee-team-collaborator` and `call-a-collaborator`. Their prior migration is recorded in Git history. If those directories remain, stop this migration for explicit reconciliation of that older installation; do not expand the retirement set implicitly. Historical verification reports and authored Bee Team records retain their original terminology.

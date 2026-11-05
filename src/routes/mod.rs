@@ -25,8 +25,8 @@ pub mod system;
 #[derive(OpenApi)]
 #[openapi(
     info(
-        title = "Get Bee Team",
-        description = "Get Bee Team local service: system endpoints. Kanban and RA contracts are separate documents.",
+        title = "Bee Team",
+        description = "Bee Team local service: system endpoints. Kanban and RA contracts are separate documents.",
         version = env!("CARGO_PKG_VERSION"),
         license(name = "Apache-2.0", url = "https://www.apache.org/licenses/LICENSE-2.0.html")
     )

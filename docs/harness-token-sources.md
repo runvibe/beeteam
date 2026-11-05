@@ -52,7 +52,7 @@ salvar novos resumos apenas com unavailable. Sem fonte válida, a gravação dev
 
 ## Normalização e escopo
 
-Input/output no Get Bee Team são inclusivos. Cache e raciocínio já incluídos não são
+Input/output no Bee Team são inclusivos. Cache e raciocínio já incluídos não são
 somados novamente. APIs que reportem input sem cache precisam de normalização
 comprovada para a versão/endpoint antes da ingestão; nomes semelhantes não provam
 semântica igual. A documentação do Copilot explicita raciocínio como subconjunto

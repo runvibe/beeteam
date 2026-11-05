@@ -1,4 +1,4 @@
-# Get Bee Team — plano do contrato Kanban
+# Bee Team — plano do contrato Kanban
 
 27/10/2026. Revisão somente documental. Frontend, backend e skills permanecem pausados. Fonte formal: [kanban-openapi.yaml](kanban-openapi.yaml); decisões: [spec](../bee-team-spec.md). Este plano não implementa runtime.
 
@@ -37,7 +37,7 @@ Task.executionContext contém rootTaskId, originBoardId, originBoardMode e effec
 | standard | manual | qualquer | manual |
 | standard | automatic | qualquer | automatic |
 
-O board da origem da task principal governa toda a cadeia. Board de destino e flag do pai não substituem a regra. Em standard, pai automático não libera filho manual. Em manual, origem supera task automática. Em automatic, origem supera task manual e destino manual. Sem contexto, pedir aprovação. Harness executa; Get Bee Team armazena e expõe contexto, não é engine executor. Aprovações/limites externos continuam aplicáveis.
+O board da origem da task principal governa toda a cadeia. Board de destino e flag do pai não substituem a regra. Em standard, pai automático não libera filho manual. Em manual, origem supera task automática. Em automatic, origem supera task manual e destino manual. Sem contexto, pedir aprovação. Harness executa; Bee Team armazena e expõe contexto, não é engine executor. Aprovações/limites externos continuam aplicáveis.
 
 ## Recursos preservados
 

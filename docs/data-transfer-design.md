@@ -1,10 +1,10 @@
-# Exportação, importação e troca de banco do Get Bee Team
+# Exportação, importação e troca de banco do Bee Team
 
 Estado: primeira entrega implementada sobre `1f7a9ed`/`4f2dc2b`, com validação isolada em 28/10/2026. Nenhum banco de produto ou serviço ativo foi alterado. Evidências: `docs/data-transfer-verification.md`.
 
 ## Objetivo e escopo
 
-Exportar uma instância Get Bee Team em PostgreSQL ou SQLite e restaurar em outra instância Get Bee Team, nos quatro pares de origem/destino. A exportação pode ocorrer com a aplicação rodando. A importação restaura um conjunto completo; não combina cadastros de duas instalações.
+Exportar uma instância Bee Team em PostgreSQL ou SQLite e restaurar em outra instância Bee Team, nos quatro pares de origem/destino. A exportação pode ocorrer com a aplicação rodando. A importação restaura um conjunto completo; não combina cadastros de duas instalações.
 
 O usuário aprovou a primeira entrega integral: ZIP portátil, destino vazio, precisão explícita e limites administrativos. Substituição/cutover e apagamento continuam fora do escopo.
 
@@ -12,7 +12,7 @@ O usuário aprovou a primeira entrega integral: ZIP portátil, destino vazio, pr
 
 Um arquivo `.beeteam.zip` com manifesto versionado, registros JSON Lines e arquivos binários. O JSON acompanha o modelo atual de payloads e preserva nulos, booleanos, números e textos Markdown sem conversão para colunas textuais. Nenhum script SQL do pacote é executado.
 
-| Alternativa | Viabilidade para Get Bee Team | Decisão proposta |
+| Alternativa | Viabilidade para Bee Team | Decisão proposta |
 |---|---|---|
 | CSV | Possível com um CSV por tabela, manifesto, codificação de JSON, convenção de nulos e armazenamento separado de anexos. CSV não distingue nulo de texto vazio sem convenção específica. | Útil para relatórios tabulares; não simplifica o backup completo. |
 | Dump SQL | Possível para restauração no mesmo motor; sintaxe, tipos, funções, triggers e sequências diferem entre PostgreSQL e SQLite. | Não usar como formato de intercâmbio. |
@@ -29,7 +29,7 @@ Referências: [CSV no PostgreSQL](https://www.postgresql.org/docs/18/sql-copy.ht
 - PostgreSQL usa lock transacional compartilhado entre escritores. SQLite usa BEGIN IMMEDIATE; o importador precisa participar desses mesmos mecanismos.
 - `src/repositories/database.rs` e `src/state.rs`: adapters/pools escolhidos na inicialização. Alterar env não troca o banco de um processo já rodando.
 - `src/repositories/changes.rs` e o adapter SQLite: notificação deve ocorrer só depois do commit; não em cada item importado.
-- Há tabelas legadas `authors` e `posts` no PostgreSQL, fora do domínio Get Bee Team atual e ausentes no SQLite. Se contiverem dados, a exportação completa deve informar e recusar a operação, sem ignorá-las silenciosamente; o suporte delas é uma extensão separada.
+- Há tabelas legadas `authors` e `posts` no PostgreSQL, fora do domínio Bee Team atual e ausentes no SQLite. Se contiverem dados, a exportação completa deve informar e recusar a operação, sem ignorá-las silenciosamente; o suporte delas é uma extensão separada.
 
 ## Conteúdo do pacote v1
 

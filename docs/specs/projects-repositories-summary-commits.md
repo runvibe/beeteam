@@ -4,7 +4,7 @@ Estado: implementação autorizada pelo usuário em 03/11/2026 após revisão da
 
 ## Revisão autorizada: descoberta local de Git
 
-Esta revisão substitui a entrada manual de repositórios descrita abaixo. Novas tarefas devem declarar ao menos um projeto com nome e caminho absoluto da pasta raiz. O chamador informa somente os projetos efetivamente envolvidos; repositórios são resultados da descoberta feita pelo Get Bee Team na máquina do servidor.
+Esta revisão substitui a entrada manual de repositórios descrita abaixo. Novas tarefas devem declarar ao menos um projeto com nome e caminho absoluto da pasta raiz. O chamador informa somente os projetos efetivamente envolvidos; repositórios são resultados da descoberta feita pelo Bee Team na máquina do servidor.
 
 - Inspecionar cada pasta declarada em modo somente leitura para identificar checkout, branch, worktree e remotes. Reconhecer `.git` como arquivo e diretório. Não incluir outras worktrees automaticamente como envolvidas.
 - Projeto sem Git é válido. Pasta inacessível ou inspeção indisponível preserva o cadastro e expõe a condição de descoberta; não equivale a ausência de Git.

@@ -18,7 +18,7 @@ Consulte o título atual e a ferramenta real do harness. Remova somente as marca
 
 Ao criar um chat Worker autorizado, a Leader já usa `🐝 <nome do worker>`, preservando contexto útil; o Worker garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
 
-A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Get Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Worker continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
+A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Worker continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
 
 Exemplos: ativar Worker em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Worker vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
 
@@ -127,7 +127,7 @@ Registrar incrementalmente as decisões da conversa nessa mesma task: descriptio
 
 Cumprimentar, escolher time e consultar cadastro não exigem tasks artificiais. Se o time for novo e identidade/time/board ainda não existirem, coletar o contexto inicial necessário e resolver cadastros conforme aprovações já previstas, sem exigir um registro impossível nem interromper toda conversa por burocracia. Assim que os pré-requisitos existirem, materializar o contexto já coletado numa task de coordenação e seguir nela antes de avançar no planejamento substantivo. O contexto coletado antes disso está pendente de registro, não salvo.
 
-Só afirmar “salvo” ou “plano atualizado no Get Bee Team” após confirmação da persistência. Em erro, explicar o que não foi confirmado, suspender trabalho dependente do registro e reconciliar somente a etapa faltante, preservando cadastros existentes. Atualizar plano em ferramenta do harness ou na conversa não equivale a salvar plan.content/revisão no Get Bee Team.
+Só afirmar “salvo” ou “plano atualizado no Bee Team” após confirmação da persistência. Em erro, explicar o que não foi confirmado, suspender trabalho dependente do registro e reconciliar somente a etapa faltante, preservando cadastros existentes. Atualizar plano em ferramenta do harness ou na conversa não equivale a salvar plan.content/revisão no Bee Team.
 
 **Distinção de papéis:** o Leader pode criar essa tarefa inicial de coordenação dentro da solicitação do usuário. O Worker não pode criar task para se autoautorizar: só executa task já registrada/atribuída e só cria/desdobra quando isso estiver no escopo atribuído.
 
@@ -177,7 +177,7 @@ Na criação autorizada, Leader usa 🐝 e o nome do worker como base legível; 
 
 Para time novo, a aprovação da composição pode incluir a criação dos chats explicitados na proposta. Para existentes, seguir modo, autorizações vigentes e exigências do harness, sem repetir pedidos já cobertos; isso não elimina a escolha explícita entre continuar no candidato encontrado ou criar outro. Esta documentação não solicita criação de chats reais agora.
 
-A coordenação atual precisa saber qual chat foi escolhido para cada worker e que o chat atual desempenha o papel do líder. Decisão aprovada: NÃO construir vínculo persistente adicional chat–worker no Get Bee Team nesta fase. Aproveitar somente relações e referências que o harness/LLM já disponibilize para coordenar as sessões reais, sem exigir novo mapeamento em banco ou cadastro extra de IDs. Não inventar relação nativa pai/filho nem presumir que todas as ferramentas mantenham os mesmos vínculos.
+A coordenação atual precisa saber qual chat foi escolhido para cada worker e que o chat atual desempenha o papel do líder. Decisão aprovada: NÃO construir vínculo persistente adicional chat–worker no Bee Team nesta fase. Aproveitar somente relações e referências que o harness/LLM já disponibilize para coordenar as sessões reais, sem exigir novo mapeamento em banco ou cadastro extra de IDs. Não inventar relação nativa pai/filho nem presumir que todas as ferramentas mantenham os mesmos vínculos.
 
 No handoff ao chat escolhido, explicitar uso da skill Worker, identidade existente ou autorização explícita para cadastrar novo worker como fallback, time, referência da task quando existir, referências persistidas do contexto de execução do board de origem; fora do bootstrap inicial de novo chat Worker e de seu retorno de configuração, notificação restrita a task, áreas efetivamente atualizadas, status pertinente e commentID retornado. Usar dados persistidos como fonte, sem inventar IDs ou substituir registro por mensagem.
 
@@ -219,7 +219,7 @@ No retorno, o Worker salva primeiro na task progresso, currentSummary, comentár
 | Proposta alterada/rejeitada | Revisar e obter aprovação resultante | Nenhum cadastro da proposta rejeitada; silêncio não aprova. |
 | Proposta aprovada | Preparar Leader/time; criar chats e aguardar autocadastro/prontidão dos Workers | Aprovação pode incluir chats dos workers; nenhum pedido de permissão repetido para ação já coberta. |
 | Qualquer caso contextualizado/formado | Procurar chats pelo nome do worker e conferir candidatos | Nome é base legível, não prova de identidade; referências disponíveis, existência e acesso são conferidos. |
-| Nenhum chat encontrado ou chat confirmado apagado | Criar conforme autorização vigente | Mesmo agente, autoria e histórico preservados; handoff com perfil, tarefas, plano, specification, currentSummary e pendências; sem persistência adicional do vínculo no Get Bee Team. |
+| Nenhum chat encontrado ou chat confirmado apagado | Criar conforme autorização vigente | Mesmo agente, autoria e histórico preservados; handoff com perfil, tarefas, plano, specification, currentSummary e pendências; sem persistência adicional do vínculo no Bee Team. |
 | Candidato encontrado, inclusive nome igual ou semelhante | Incluir na proposta conjunta continuar no candidato ou criar outro | Reutilizar somente após escolha explícita, mesmo no automático; consulta permitida pode preceder escolha, mas nenhuma instrução é enviada ao candidato não escolhido. |
 | Nome do chat precisa de ajuste | Novo chat autorizado já recebe 🐝; no existente, Worker ajusta ao assumir | Marca do papel obrigatória, complemento útil livre; identidade e registros preservados. |
 | Referência existe, acesso não confirmado | Declarar limitação e tratar próxima ação autorizada | Não afirmar exclusão ou recuperar conversa integral inexistente; falhas parciais não são apresentadas como sucesso. |
@@ -239,7 +239,7 @@ No retorno, o Worker salva primeiro na task progresso, currentSummary, comentár
 | Time com líder | Reutiliza líder/perfil/contexto sem duplicação | Detalhar leitura de descrição, workers, boards, tarefas e situação histórica/atual antes da gestão. |
 | Time sem líder | Pede decisão ao usuário antes de assumir ou cadastrar | Substituir pela criação de liderança adequada como parte do caso 2, com tratamento específico de outras lacunas. |
 | Time novo | Descoberta, proposta de composição e aprovação antes de cadastro | Propor perfis funcionais sucintos, preservando nome/avatar, abrangência multidisciplinar e chats separados após aprovação objetiva. |
-| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Buscar por nome/contexto permitido, apresentar proposta conjunta de reutilização ou criação e confirmar entendimento após handoff; usar referências existentes, sem persistência adicional no Get Bee Team. |
+| Chats nos três casos | Referências e retomada gerais, sem esta etapa comum explícita | Buscar por nome/contexto permitido, apresentar proposta conjunta de reutilização ou criação e confirmar entendimento após handoff; usar referências existentes, sem persistência adicional no Bee Team. |
 | Planejamento inicial | Contextualização e propostas sem requisito explícito de task própria | Reutilizar/criar task de coordenação atribuída à Leader antes de planejamento substantivo, com exceção inicial sem cadastros e persistência incremental. |
 | Gestão posterior | Regras gerais de coordenação e autonomia | Não acrescentar política automática de próxima tarefa ou continuidade nesta rodada. |
 
@@ -251,7 +251,7 @@ O documento registra intenção aprovada, não comprova que a skill, o frontend 
 2. Detalhes para derivar o perfil da liderança ausente e tratar dados obrigatórios incompletos, concorrência ou falha parcial na criação/vínculo.
 3. Sequência e autorização de criar boards, assumir/transferir sua gestão e organizar tarefas/workers quando faltar estrutura.
 4. Geração, escolha, armazenamento e limites dos avatares em diferentes harnesses.
-5. Formato exato dos nomes dos chats e limitações operacionais de cada harness. Já está decidido não criar persistência adicional chat–worker no Get Bee Team nesta fase; usar referências existentes e retomar somente etapas faltantes em falhas parciais.
+5. Formato exato dos nomes dos chats e limitações operacionais de cada harness. Já está decidido não criar persistência adicional chat–worker no Bee Team nesta fase; usar referências existentes e retomar somente etapas faltantes em falhas parciais.
 6. Eventual integração de eventos de seleção da interface com o chat. Por enquanto, a comunicação é explícita pelo usuário.
 
 ## Escopo desta entrega
@@ -276,4 +276,4 @@ Após validar atribuição/preparo/autorização, consulte execução/intervalo 
 
 ## Identificar checkout e evidência de commits
 
-Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Get Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.
+Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.

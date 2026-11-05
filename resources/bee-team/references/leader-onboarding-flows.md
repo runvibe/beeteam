@@ -18,7 +18,7 @@ Read your current title and discover the actual harness rename tool. Normalize o
 
 When creating an explicitly authorized new Worker chat, use the actual destination team's resolved worker Unicode plus the worker name and useful context. The Worker resolves identity/team/role and ensures its own title when taking over. Search/reuse may normalize known leading markers but never treats a title or icon as identity. Preserve existing reuse confirmations and harness permissions; never rename someone else's existing chat or bulk-rename chats.
 
-The change applies exclusively to your own chat title when assuming the role, or to the initial title of the new chat whose creation was authorized. Do not rename other chats in bulk or change agent/team names, slugs, or Get Bee Team data. Marking the role does not confirm identity or waive a registered/assigned task. The Worker still does not navigate the user's screen; adjusting its own title is not panel navigation.
+The change applies exclusively to your own chat title when assuming the role, or to the initial title of the new chat whose creation was authorized. Do not rename other chats in bulk or change agent/team names, slugs, or Bee Team data. Marking the role does not confirm identity or waive a registered/assigned task. The Worker still does not navigate the user's screen; adjusting its own title is not panel navigation.
 
 Examples with a team configured as leader=rocket and worker=shield: after resolving that team, `👑 Ana — Project X` becomes `🚀 Ana — Project X` for its Leader; `🐝 Ana — Project X` becomes `🛡️ Ana — Project X` for its Worker. A repeated invocation with the correct title performs no write. Changing the configured icon is observed on the next lookup; it does not authorize renaming other chats.
 
@@ -127,7 +127,7 @@ Incrementally record the conversation's decisions in that same task: description
 
 Greeting, choosing a team, and consulting registration do not require artificial tasks. If the team is new and identity/team/board do not yet exist, collect the necessary initial context and resolve registrations according to the approvals already established, without requiring an impossible record or interrupting all conversation with bureaucracy. As soon as prerequisites exist, materialize the context already collected in a coordination task and continue in it before advancing substantive planning. Context collected before that is pending recording, not saved.
 
-Only claim “saved” or “plan updated in Get Bee Team” after persistence is confirmed. On error, explain what was not confirmed, suspend work dependent on the record, and reconcile only the missing step, preserving existing registrations. Updating a plan in a harness tool or in the conversation is not equivalent to saving plan.content/revision in Get Bee Team.
+Only claim “saved” or “plan updated in Bee Team” after persistence is confirmed. On error, explain what was not confirmed, suspend work dependent on the record, and reconcile only the missing step, preserving existing registrations. Updating a plan in a harness tool or in the conversation is not equivalent to saving plan.content/revision in Bee Team.
 
 **Role distinction:** the Leader may create this initial coordination task within the user's request. The Worker cannot create a task to authorize itself: it only executes an already registered/assigned task and only creates/decomposes when that is within the assigned scope.
 
@@ -177,7 +177,7 @@ During authorized creation, the Leader uses the destination team's resolved work
 
 For a new team, composition approval may include creation of the chats specified in the proposal. For existing teams, follow mode, current authorizations, and harness requirements without repeating requests already covered; this does not eliminate the explicit choice between continuing in the candidate found or creating another. Create chats only within the session's actual request and authorization.
 
-Current coordination needs to know which chat was chosen for each worker and that the current chat plays the leader role. Approved decision: do NOT build an additional persistent chat–worker link in Get Bee Team at this stage. Use only relationships and references the harness/LLM already provides to coordinate actual sessions, without requiring a new database mapping or extra ID registration. Do not invent a native parent/child relationship or assume all tools maintain the same links.
+Current coordination needs to know which chat was chosen for each worker and that the current chat plays the leader role. Approved decision: do NOT build an additional persistent chat–worker link in Bee Team at this stage. Use only relationships and references the harness/LLM already provides to coordinate actual sessions, without requiring a new database mapping or extra ID registration. Do not invent a native parent/child relationship or assume all tools maintain the same links.
 
 In the handoff to the chosen chat, explicitly state use of the Worker skill, existing identity or explicit authorization to register a new worker as fallback, team, task reference when available, and persisted references for the origin board's execution context; outside the initial bootstrap of a new Worker chat and its configuration response, notifications are restricted to task, areas actually updated, relevant status, and returned commentID. Use persisted data as the source, without inventing IDs or replacing records with messages.
 
@@ -219,7 +219,7 @@ In the response, the Worker first saves relevant progress, currentSummary, comme
 | Proposal changed/rejected | Revise and obtain approval of the result | No registration of the rejected proposal; silence is not approval. |
 | Proposal approved | Prepare Leader/team; create chats and await Workers' self-registration/readiness | Approval may include worker chats; no repeated permission request for an action already covered. |
 | Any case contextualized/formed | Search chats by worker name and check candidates | Name is a readable base, not proof of identity; available references, existence, and access are checked. |
-| No chat found or chat confirmed deleted | Create according to current authorization | Same agent, authorship, and history preserved; handoff with profile, tasks, plan, specification, currentSummary, and pending items; no additional link persistence in Get Bee Team. |
+| No chat found or chat confirmed deleted | Create according to current authorization | Same agent, authorship, and history preserved; handoff with profile, tasks, plan, specification, currentSummary, and pending items; no additional link persistence in Bee Team. |
 | Candidate found, including same or similar name | Include continuing in candidate or creating another in the combined proposal | Reuse only after explicit choice, even in automatic mode; permitted reading may precede choice, but no instruction is sent to an unchosen candidate. |
 | Chat name needs adjustment | Authorized new chat receives its destination team's worker Unicode; in an existing one, Worker adjusts when assuming the role | Mandatory role marker, free useful additional context; identity and records preserved. |
 | Reference exists, access unconfirmed | Declare limitation and handle next authorized action | Do not claim deletion or recover a nonexistent full conversation; partial failures are not presented as success. |
@@ -239,7 +239,7 @@ In the response, the Worker first saves relevant progress, currentSummary, comme
 | Team with leader | Reuses leader/profile/context without duplication | Detail reading description, workers, boards, tasks, and historical/current situation before management. |
 | Team without leader | Asks user for a decision before assuming or registering | Replace with creating suitable leadership as part of case 2, with specific handling of other gaps. |
 | New team | Discovery, composition proposal, and approval before registration | Propose concise functional profiles, preserving name/avatar, multidisciplinary scope, and separate chats after clear approval. |
-| Chats in all three cases | General references and resumption, without this explicit common step | Search by name/permitted context, present a combined reuse-or-create proposal, and confirm understanding after handoff; use existing references without additional persistence in Get Bee Team. |
+| Chats in all three cases | General references and resumption, without this explicit common step | Search by name/permitted context, present a combined reuse-or-create proposal, and confirm understanding after handoff; use existing references without additional persistence in Bee Team. |
 | Initial planning | Contextualization and proposals without explicit own-task requirement | Reuse/create a coordination task assigned to the Leader before substantive planning, with an initial exception without registrations and incremental persistence. |
 | Subsequent management | General coordination and autonomy rules | Do not add an automatic next-task or continuation policy in this round. |
 
@@ -251,7 +251,7 @@ The table records the evolution relative to baseline dfd4e19. This skill applies
 2. Details for deriving the missing leader's profile and handling incomplete required data, concurrency, or partial creation/membership failure.
 3. Sequence and authorization for creating boards, assuming/transferring their management, and organizing tasks/workers when structure is missing.
 4. Avatar generation, selection, storage, and limits in different harnesses.
-5. Exact chat-name format and operational limitations of each harness. It is already decided not to create additional chat–worker persistence in Get Bee Team at this stage; use existing references and resume only missing steps on partial failures.
+5. Exact chat-name format and operational limitations of each harness. It is already decided not to create additional chat–worker persistence in Bee Team at this stage; use existing references and resume only missing steps on partial failures.
 6. Possible integration of interface selection events with the chat. For now, communication is explicit through the user.
 
 ## Scope of reference use
@@ -276,4 +276,4 @@ After validating assignment/preparation/authorization, query the active executio
 
 ## Identify checkout and commit evidence
 
-Follow [projects/repos/commits](beeteam://references/repository-evidence): provide the mandatory project with name/absolute root only for the folders/worktrees involved; read Get Bee Team's Git discovery and its IDs, without manual repos. No Git is legitimate; inaccessibility does not become absence of Git. Before each summary, declare only actual commits from that activity; investigation without a commit is false/empty list. Do not create a commit to fill out a form or claim publication because a local hash exists. Specification Markdown, structured scope, and historical evidence are independent.
+Follow [projects/repos/commits](beeteam://references/repository-evidence): provide the mandatory project with name/absolute root only for the folders/worktrees involved; read Bee Team's Git discovery and its IDs, without manual repos. No Git is legitimate; inaccessibility does not become absence of Git. Before each summary, declare only actual commits from that activity; investigation without a commit is false/empty list. Do not create a commit to fill out a form or claim publication because a local hash exists. Specification Markdown, structured scope, and historical evidence are independent.

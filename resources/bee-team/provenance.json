@@ -1,125 +1,125 @@
 {
-  "sourceCommit": "9339e3916fa9c79ad9749477686c55dbb67d7249",
-  "scope": "Get Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data.",
+  "sourceCommit": "10d5218428ec042e32c0470a73ab41aa11cd8b63",
+  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data.",
   "files": [
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "73d5cd007604261d5bac9141b941c7c4b9ab8f274c75fd5d79981657c6d48c73",
-      "bundledSha256": "a2c345126fb0dcbc968dc67645b71203fb8a6ef69a4fd658983affa6ce3a4e78",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "61bb325c3cec68839e6098e2a9493d7f8e509a7aa1780024635cc7d54a3eb963",
+      "bundledSha256": "845b0e3bb7bab9b4206da996fde23690bd6219dc29b6416a3cd746e5564e64a7",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "5c870959007fa54f10a42abbc6cfba183a41ccb080fe8140d0f7bf871e360240",
-      "bundledSha256": "28a3b755742f396cf90f80295917fa25711265f989fae5922c7627e419b6f63a",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "ac5064ae5096ac725c191c25f7b08a0faf4814b91736be962ccabd7d1fe42b28",
+      "bundledSha256": "4c9cb1636fb2e3fd717a3fd8e8f2a67948de3a2fc5e8a61a8ff8469535da6ec0",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
-      "sourceSha256": "ab1f8360a4e51294ba18cc6538337ccd040462b15ae2b1ca4a74d9e945c37b0d",
-      "bundledSha256": "51c092aac81140a6cc05586d6e51ac6edc27583d42d91e4c7b308cc803655cfe",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "473af29e74af4ee5ace10bb6b7109ef191a9b2c56b16f8f2881f0b8e7d743b9c",
+      "bundledSha256": "2af5ea4cfde3f22fbb439809cf94d2c9ad0de9aa87a00f0044b83da8414a4514",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/codex.md",
       "sourcePath": "skills/references/codex.md",
-      "sourceSha256": "2426f43ccb8c6bc5dd08bed037a82802f5713ee84f7d6cf1b344537f3a9a42c7",
-      "bundledSha256": "18147c3719e8b2596dcb20aa3eba638eb62096735764c09759f66e581cb34fac",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "2ed051f1b8f8e4286416d727ccf749773c83eadb47af6adb692fb7251666723e",
+      "bundledSha256": "829f144123200852825001424d77044b99ed3a229c6cc98ebf02a82d18ff4fc5",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/leader-onboarding-flows.md",
       "sourcePath": "skills/get-a-team-lead/references/leader-onboarding-flows.md",
-      "sourceSha256": "0278727530d35375ca666d50da51d3d22136f1a9c1318a36375eb6cd0c9bb091",
-      "bundledSha256": "d69b79faaf2db818e8561514b3496bd43be629be7a7e6ae00ed933b38b209001",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "69dce62e1d3c44df092f42d2d7f3bde8a115d4bbf65cc3202ae2958320cdad53",
+      "bundledSha256": "e83d7343a4262489c5265598a9b38369d64325f56483f3e464752a25b55c80e8",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/worker-workflow.md",
       "sourcePath": "skills/get-a-team-lead/references/worker-workflow.md",
-      "sourceSha256": "db33631527d622edbce1a411b050697bb250ed0204367e6a61d0375af7d02282",
-      "bundledSha256": "aad7bfad4bb58ccb34ec712479c03ba3d60a672658ca8ea383cf19d3a56d625c",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "18af50807450429432f7b0088736fd993b23717c5c8912f0167452e4fe041ebb",
+      "bundledSha256": "b6a30b3e68b3c0c92fc940a61a516bbc477a1917ef8e6505e0754b6b4ef083c5",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "get-a-team-lead/references/team-examples.md",
       "sourcePath": "skills/get-a-team-lead/references/team-examples.md",
-      "sourceSha256": "ca35f4ec32eae5c995cf57514b67cf23959d359f0c1139611ab1cc0ad4bc3acc",
-      "bundledSha256": "95b1e171d9e0867be57298c938d0637eb30f008a372a1e7f9c35a3fd0a7162a6",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "db570e2a8bded8a5fb237c8cfbe66d49a3ec64891d78b3238f6af44ddc3177a6",
+      "bundledSha256": "7fe07c42454c98f4654fb16ffca99e884771087d221e20e6577c881ed4ce9980",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "prompts/task-briefing.md",
       "sourcePath": "skills/prompts/task-briefing.md",
-      "sourceSha256": "97c7e80ba60c5a74ee0c735f2c2841d07d56432534a1eace0e70bb8b01e09541",
-      "bundledSha256": "97c7e80ba60c5a74ee0c735f2c2841d07d56432534a1eace0e70bb8b01e09541",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "331281bfe67be12048b35aea97daa700b87df2ad32211863341f043de860b189",
+      "bundledSha256": "331281bfe67be12048b35aea97daa700b87df2ad32211863341f043de860b189",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "prompts/worker-resumption.md",
       "sourcePath": "skills/prompts/worker-resumption.md",
-      "sourceSha256": "1da9fe18393a0e371379f426727173dac412ab8ab1fbfa33f12c154ea16833cb",
-      "bundledSha256": "1da9fe18393a0e371379f426727173dac412ab8ab1fbfa33f12c154ea16833cb",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "88556f62dc33d4ed97e9c6369be09cffbccf712adab3a785be83c38b04bb8bf3",
+      "bundledSha256": "88556f62dc33d4ed97e9c6369be09cffbccf712adab3a785be83c38b04bb8bf3",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "prompts/delivery-review.md",
       "sourcePath": "skills/prompts/delivery-review.md",
-      "sourceSha256": "08d9347c4092e95c219d339fdc8bd0f18ea8f0740815f9fb9dc77a5fa0da0be9",
-      "bundledSha256": "08d9347c4092e95c219d339fdc8bd0f18ea8f0740815f9fb9dc77a5fa0da0be9",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "d70741a18099fc17cfe3f9997debb9682009bd7e8e432c46c08518a849443a21",
+      "bundledSha256": "d70741a18099fc17cfe3f9997debb9682009bd7e8e432c46c08518a849443a21",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
-      "sourceSha256": "0cb6692b3181ee8f845c94c64888a03b01b80e2a72c23fb8e014d2205d4eec02",
-      "bundledSha256": "f351a19176c3496883f494b5a482db47ae0ca1505f348b53fd30a37ba6e8c008",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "a86e5668fe4777aea13e04a32e1684a0fb7060b026294a37c02c8b266ed2d284",
+      "bundledSha256": "ab997689301c79fe50cd284d5e40d9888c21fb0d56c6815fe08b35da3814ea1b",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/usage-report.md",
       "sourcePath": "skills/references/usage-report.md",
-      "sourceSha256": "97ea1826916843128b8b078374617bcf6cc367d1d8b8af8ec55c6918593e4af6",
-      "bundledSha256": "33f5926aaaab610ef14389407743b295fcc7256dac83427b75333bc34c0d2d73",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "8e382c9ab6dc648bcfae6206d837f87883d8cfc9314ab2f4be544c3a2ecc917f",
+      "bundledSha256": "4cff4ce98c09f5cffc3ad3069c09d3cdb3b4991a303071ce604e84aaeca2ff79",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/worker-bootstrap.md",
       "sourcePath": "skills/references/worker-bootstrap.md",
-      "sourceSha256": "2a88a0f987f7b9dbd97c69012e140340f8201e0979b4c1aabb01546e7c4d0b57",
-      "bundledSha256": "2a88a0f987f7b9dbd97c69012e140340f8201e0979b4c1aabb01546e7c4d0b57",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "0b0d020868cf74184168d6efd4e67359b70526e82f94ef4e54cc950fe434343a",
+      "bundledSha256": "0b0d020868cf74184168d6efd4e67359b70526e82f94ef4e54cc950fe434343a",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/execution-intervals.md",
       "sourcePath": "skills/references/execution-intervals.md",
       "sourceSha256": "66b765c6f263fcacf37f8bd2581250439178ef6fbc3999d9ce949dccca417468",
       "bundledSha256": "66b765c6f263fcacf37f8bd2581250439178ef6fbc3999d9ce949dccca417468",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/repository-evidence.md",
       "sourcePath": "skills/references/repository-evidence.md",
-      "sourceSha256": "81d03bcffd134c17fc8a04627322f228befb150669fe5495a15bd0397cd3dadc",
-      "bundledSha256": "81d03bcffd134c17fc8a04627322f228befb150669fe5495a15bd0397cd3dadc",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "7e5e7abd388a1101f066f77284b5dff59dc9bcefe120ed30cd21c10811d4e3b0",
+      "bundledSha256": "7e5e7abd388a1101f066f77284b5dff59dc9bcefe120ed30cd21c10811d4e3b0",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "references/mcp-content.md",
       "sourcePath": "skills/references/mcp-content.md",
-      "sourceSha256": "042108f1f37b84e4de16022d656bbc6e8ffd1646b4bc704908c0a1749abfdf95",
-      "bundledSha256": "ca544e485c315bf7acd4caba7393ec81b515951bc1a45797c5dde3e89803d228",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "b5c3ad7aa8bd8e7422926d1fbacbe47f15527f42043cbaba52ec08ebadc14ac9",
+      "bundledSha256": "3ca667d7af82cf3aaacbd2e4be44ed657e0ec5c30858fd01bc259184f8216f21",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     },
     {
       "resourcePath": "prompts/content-manifest.json",
       "sourcePath": "skills/prompts/content-manifest.json",
       "sourceSha256": "f05f3ffe606ad1e2394d6d31e245a4902741d49181ffb0b3b1a1f26788a39fba",
       "bundledSha256": "f05f3ffe606ad1e2394d6d31e245a4902741d49181ffb0b3b1a1f26788a39fba",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Get Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
     }
   ],
   "backendContractOverlay": {

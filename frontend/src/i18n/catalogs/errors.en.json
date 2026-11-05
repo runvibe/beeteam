@@ -31,7 +31,7 @@
   "useArchivedOrIncludearchivedNotBoth": "Use archived or includeArchived, not both.",
   "invalidDateRange": "Invalid date range.",
   "commentNotFound": "Comment not found.",
-  "openingLocalProjectsRequiresAConnectionToTheBeeTeam": "Opening local projects requires a connection to the Get Bee Team API.",
+  "openingLocalProjectsRequiresAConnectionToTheBeeTeam": "Opening local projects requires a connection to the Bee Team API.",
   "intervalsAreOnlyAvailableWithTheConnectedApi": "Intervals are only available with the connected API.",
   "metricsAreOnlyAvailableWithTheConnectedApi": "Metrics are only available with the connected API.",
   "imageUnavailable": "Image unavailable.",

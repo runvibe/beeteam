@@ -79,7 +79,7 @@ async fn local_only(State(bound_local): State<bool>, request: Request, next: Nex
             StatusCode::FORBIDDEN,
             Json(Failure::new(
                 "local_action_forbidden",
-                "A abertura de projetos exige acesso local direto ao Get Bee Team.",
+                "A abertura de projetos exige acesso local direto ao Bee Team.",
             )),
         )
             .into_response();

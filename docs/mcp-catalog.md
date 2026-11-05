@@ -1,4 +1,4 @@
-# CatÃ¡logo MCP Get Bee Team
+# CatÃ¡logo MCP Bee Team
 
 Implementado com **rmcp 2.0.0**, protocolo MCP 2025-11-25, Streamable HTTP stateless JSON.
 Discovery real: `tools/list`, `resources/list`, `prompts/list`. [Schemas completos](mcp-catalog.json)
@@ -468,7 +468,7 @@ resource URIs remain unlisted read aliases; resources/list advertises Worker onl
 
 ### Product and skill display names
 
-The product brand is **Get Bee Team**, with brand domain `getbee.team`. Skills are
+The product brand is **Bee Team**, with brand domain `getbee.team`. Skills are
 **Get a Team Lead** (`$get-a-team-lead`) and **Get a Worker** (`$get-a-worker`).
 Technical tool names, `beeteam://` resource URIs, HTTP paths and stored authored
 content are unchanged. Resource reads use the renamed bundled package paths.

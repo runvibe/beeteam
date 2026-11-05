@@ -5,11 +5,11 @@
   "capabilities": "Available capabilities",
   "checking": "Checking API compatibility…",
   "compatible": "Compatible API contract.",
-  "incompatible": "The API contract is incompatible with this interface. Update Get Bee Team and the interface to compatible versions.",
+  "incompatible": "The API contract is incompatible with this interface. Update Bee Team and the interface to compatible versions.",
   "legacy": "Compatibility verification is unavailable on this API. Existing features remain available.",
   "error": "Could not verify API compatibility. Check the connection and try again.",
   "retry": "Check again",
-  "iconsMissing": "Update Get Bee Team to configure team role icons. Other team settings remain available.",
+  "iconsMissing": "Update Bee Team to configure team role icons. Other team settings remain available.",
   "iconsUnverified": "Team role icons are unavailable until API support can be verified.",
   "unknown": "Unavailable",
   "none": "None reported"

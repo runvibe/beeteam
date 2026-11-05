@@ -18,7 +18,7 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
       name: /Recolher navegação|Expandir navegação/,
     }),
   ).not.toBeInTheDocument();
-  const brand = screen.getByRole("link", { name: "Get Bee Team - ir para boards" });
+  const brand = screen.getByRole("link", { name: "Bee Team - ir para boards" });
   expect(brand).toHaveTextContent("");
   const nav = screen.getByRole("navigation", { name: "Navegação principal" });
   const tasks = within(nav).getByRole("button", { name: "Tarefas" });

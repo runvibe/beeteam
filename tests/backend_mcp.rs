@@ -58,8 +58,8 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     let init=rpc(&app,"initialize",json!({"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"test","version":"1"}})).await;
     assert_eq!(init["result"]["serverInfo"]["name"],"beeteam-mcp");
     let instructions = init["result"]["instructions"].as_str().unwrap();
-    assert!(instructions.starts_with("Get Bee Team local storage."));
-    assert!(!instructions.contains("Get Get Bee Team"));
+    assert!(instructions.starts_with("Bee Team local storage."));
+    assert!(!instructions.contains("Get Bee Team"));
     assert!(init["result"]["capabilities"].get("resources").is_some());
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;

@@ -1,4 +1,4 @@
-# Get Bee Team RA — plano do contrato
+# Bee Team RA — plano do contrato
 
 27/10/2026. Revisão somente documental. Frontend/backend/skills pausados. Fonte formal: [ra-openapi.yaml](ra-openapi.yaml); [spec](../bee-team-spec.md) e [Kanban](kanban-api-plan.md).
 

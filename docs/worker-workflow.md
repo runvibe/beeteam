@@ -21,7 +21,7 @@ Consulte o título atual e a ferramenta real do harness. Remova somente as marca
 
 Ao criar um chat Worker autorizado, a Leader já usa `🐝 <nome do worker>`, preservando contexto útil; o Worker garante o padrão ao ativar sua skill. Na busca/reutilização, compare nomes normalizando essas marcas iniciais, sem perder contexto nem tratar nome/emoji como prova de identidade. Preserve as confirmações de reutilização e permissões do harness existentes.
 
-A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Get Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Worker continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
+A mudança é exclusivamente no título do próprio chat ao assumir o papel, ou no título inicial do novo chat cuja criação foi autorizada. Não renomeie outros chats em massa nem altere nomes de agentes/times, slugs ou dados Bee Team. Marcar o papel não confirma identidade nem dispensa tarefa registrada/atribuída. O Worker continua sem conduzir a tela do usuário; ajustar seu próprio título não é navegação do painel.
 
 Exemplos: ativar Worker em `Projeto X` produz `🐝 Projeto X` antes da identidade; identificado como Ana, ajusta para `🐝 Ana — Projeto X`. `👑 Ana — Projeto X` ao assumir Worker vira `🐝 Ana — Projeto X`; a transição inversa usa `👑`. `🐝 👑 🐝 Ana` vira uma única marca do papel ativo; retomada com título correto não escreve novamente.
 
@@ -225,4 +225,4 @@ Após validar atribuição/preparo/autorização, consulte execução/intervalo 
 
 ## Identificar checkout e evidência de commits
 
-Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Get Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.
+Siga [projetos/repos/commits](../skills/references/repository-evidence.md): informe projeto obrigatório com nome/raiz absoluta somente das pastas/worktrees envolvidas; leia descoberta Git do Bee Team e seus IDs, sem repos manuais. SemGit é legítimo, inacessível não vira ausência de Git. Antes de cada resumo, declare somente commits efetivos daquela atividade; investigação sem commit é false/lista vazia. Não criar commit para preencher formulário nem afirmar publicação por ter hash local. Markdown de specification, escopo estruturado e evidência histórica são independentes.
