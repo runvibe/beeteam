@@ -45,7 +45,6 @@ function Hive({ progress }: { progress: Progress }) {
         ))}
       </g>
       <Cell />
-      <Cell size={28} />
     </g>
   );
 }
@@ -56,9 +55,8 @@ function Team({ progress }: { progress: Progress }) {
     <g className="tour-fine-outline">
       <g transform="translate(300 82)">
         <Cell />
-        <Cell size={26} />
       </g>
-      {[160, 440].map((x, i) => {
+      {[160, 440].map((x) => {
         const d = `M300 113.7 C300 157 ${x} 169 ${x} 213.3`;
         return (
           <g key={x}>
@@ -71,11 +69,6 @@ function Team({ progress }: { progress: Progress }) {
             />
             <g transform={`translate(${x} 245)`}>
               <Cell />
-              {i === 0 ? (
-                <circle r="8" />
-              ) : (
-                <path d="m-10 0 10-10 10 10-10 10Z" />
-              )}
             </g>
           </g>
         );
