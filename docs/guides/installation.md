@@ -1,47 +1,51 @@
 # Install Bee Team
 
-## Choose a distribution
+## Ask your assistant to install it
 
-As of November 5, 2026 GitHub reported zero releases and zero runs of the native candidate workflow. The repository was private. The reference domain returned HTML at the install manifest path. Use an authorized checkout for now.
+Open the [installation guide](https://getbee.team/guide/installation), choose your harness, and copy the installation request into its chat:
 
-| OS and CPU | Native build path | Native archive smoke | Published archive |
-| --- | --- | --- | --- |
-| Windows x64 | PowerShell below | See [verification](verification.md) | None |
-| Windows arm64 | Source, unverified | Unverified | None |
-| Linux x64 | POSIX shell below | Unverified | None |
-| Linux arm64 | Source, unverified | Unverified | None |
-| macOS arm64 | POSIX shell below | Unverified | None |
-| macOS x64 | Source, unverified | Unverified | None |
-
-The workflow runs on native Windows, Ubuntu and macOS runners. Packaging determines architecture from the actual runner. A workflow definition alone cannot establish support for every CPU.
-
-## Build from source
-
-Install a native Rust toolchain (Cargo and rustc 1.94+), the platform linker and C/C++ build tools, and Node.js 22.20+ with npm. On Windows use the MSVC build tools and Windows SDK, on macOS the Xcode command line tools, and on Linux the system C compiler and development tools. From the checkout root:
-
-```sh
-node scripts/build-distribution.mjs
+```text
+Follow https://getbee.team/install to install Bee Team on my computer using this assistant. Verify the published release and confirm that the local API is running.
 ```
 
-The script stages dependencies in `.local/distribution/frontend` and embeds the matching UI. With Cargo's default target directory the binary is in `target/release`. Node is needed only to build.
+The assistant reads the setup instructions and the [installation manifest](https://getbee.team/install.json), identifies your operating system and CPU, and installs **Setup Bee Team**, **Get a Team Lead** and **Get a Worker** from the same immutable GitHub release tag as the binary. It confirms that the harness discovers Setup Bee Team before using it to install or update the native application.
+
+This user installation path uses ready-to-run native artifacts. It does not require checking out this repository, installing a Rust compiler or building the frontend.
+
+## Choose a published native package
+
+Windows, Linux and macOS are release targets; the [published release](https://github.com/runvibe/beeteam/releases) and manifest list the operating-system/architecture combinations actually available. A workflow definition alone is not evidence that a package is published. If the manifest, matching archive or Skills tag cannot be verified, the assistant reports that installation is unavailable and stops rather than substituting another version or origin.
+
+The setup skill checks the archive's exact origin, version, filename, byte length and SHA-256 before extraction. Windows uses ZIP with a root `beeteam.exe`. Linux and macOS use tar.gz with a root `beeteam`. The app and all three Skills must come from the same verified release tag. See the [manifest contract](../install-manifest.md) and [bootstrap reference](../../skills/setup-bee-team/references/bootstrap.md).
+
+## Start and connect
+
+Setup Bee Team starts or reuses the identified local service, checks its health and version, and reports the result. Open [the hosted app](https://getbee.team/app/) in a browser on the same computer and allow local service access if prompted. It expects `http://127.0.0.1:59865/api/v1`; service and app versions must match.
+
+To start an already installed binary manually, open its installation folder:
 
 **Windows PowerShell**
 
 ```powershell
-$env:BEE_FRONTEND_MODE = 'embedded'
-.\target\release\beeteam.exe
+.\beeteam.exe
 ```
 
-**macOS and Linux**
+**macOS or Linux**
 
 ```sh
-BEE_FRONTEND_MODE=embedded ./target/release/beeteam
+./beeteam
 ```
 
-Use a second terminal for readiness. In PowerShell run `Invoke-RestMethod http://127.0.0.1:59865/health` and `Invoke-RestMethod http://127.0.0.1:59865/api/v1/info`. In a POSIX shell use `curl -fsS` with each URL. Expect a healthy service and an info object with the app version and supported contract versions. Open the local panel at `http://127.0.0.1:59865/app/`. Stop your foreground instance with Ctrl+C. Restart with the same working directory, environment and data location.
+Keep a foreground terminal open while using Bee Team. Do not start a second instance if the service is already running. API and MCP run by default. To serve the optional bundled UI, set `BEE_FRONTEND_MODE=embedded` before starting the installed binary and open `http://127.0.0.1:59865/app/`. See [runtime modes](runtime.md).
 
-## When a release becomes available
+In a second terminal, read `http://127.0.0.1:59865/health` and `http://127.0.0.1:59865/api/v1/info` using PowerShell's `Invoke-RestMethod` or `curl -fsS` on macOS/Linux. The [local connection walkthrough](https://getbee.team/guide/local-connection) explains startup, browser permission and the expected port.
 
-Check the [release list](https://github.com/runvibe/beeteam/releases) against the [manifest contract](../install-manifest.md). Match OS, CPU, tag, exact archive name, byte length and SHA-256. Windows uses ZIP with a root `beeteam.exe`. Unix uses tar.gz with a root executable `beeteam`. In PowerShell compare `Get-FileHash -Algorithm SHA256 $archive` with the manifest, where `$archive` is the downloaded file. On Linux use `sha256sum "$archive"`; on macOS use `shasum -a 256 "$archive"`. Stage in a fresh directory and use the [setup package](../../skills/setup-bee-team/SKILL.md) to verify extraction and launch.
+## Update an existing installation
 
-Before upgrading, record the current version, database location, launch environment and service manager. Keep a verified data backup and the prior binary. Stop only the identified instance, switch the executable, restart and repeat the info and board checks. Restore a compatible backup if migrations prevent binary-only rollback.
+Ask Setup Bee Team to check the release and installation before changing it. Record the current version, database location, launch environment and service manager. Preserve a verified data backup and the prior binary. Stop only the identified instance, replace it with the verified native archive, restart and repeat the health, version and board checks. Restore a compatible backup if migrations prevent binary-only rollback.
+
+Inspect and back up customized Skills before replacement. See [Skills installation](skills.md).
+
+## Contributor builds
+
+Building from source is a development workflow, separate from published-archive installation. Contributors can follow [Development and tests](development.md) for native toolchain and packaging commands.
