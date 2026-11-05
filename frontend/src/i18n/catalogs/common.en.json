@@ -1,4 +1,6 @@
 {
+  "guideDocumentation": "Documentation",
+  "guideInstallation": "Installation guide",
   "tourCopy": "Mobile copy",
   "tourReplay": "Replay animation",
   "tourPlay": "Resume animation",

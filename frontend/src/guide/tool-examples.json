@@ -1,0 +1,19 @@
+{
+  "listBoards": {
+    "createdId": null,
+    "data": {
+      "hasMore": false,
+      "items": [],
+      "limit": 1,
+      "nextOffset": null,
+      "offset": 0,
+      "total": 0
+    },
+    "version": null
+  },
+  "versionConflict": {
+    "code": "version_conflict",
+    "details": {},
+    "error": "Resource has changed"
+  }
+}

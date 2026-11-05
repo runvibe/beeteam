@@ -10,6 +10,11 @@ import { appVersion } from "./app-version";
 import { LaunchRoot } from "./launch/launch-root";
 import { canonicalizeEntry } from "./routing/location";
 async function start() {
+  if (/^\/guide(?:\/|$)/.test(location.pathname)) {
+    const { Guide } = await import("./guide/Guide");
+    createRoot(document.getElementById("root")!).render(<StrictMode><Guide /></StrictMode>);
+    return;
+  }
   canonicalizeEntry();
   const api = runtimeConfig.mock
     ? (await import("./api/mock")).createMockApi()

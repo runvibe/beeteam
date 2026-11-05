@@ -28,6 +28,8 @@ fn catalog_only_change_invalidates_embedded_manifest_with_node_rust_hash_parity(
     fs::create_dir_all(catalog.parent().unwrap()).unwrap();
     fs::write(&catalog, "[{\"id\":\"crown\"}]\n").unwrap();
     fs::write(temp.path().join("Cargo.toml"), "[package]\nversion=\"0.1.0\"\n").unwrap();
+    let mcp_catalog = temp.path().join("docs/mcp-catalog.json");
+    fs::write(&mcp_catalog, r#"{"tools":[]}"#).unwrap();
     let before = node_hash(&root);
     assert_eq!(before, build_frontend::source_hash(&root));
     let manifest = serde_json::json!({"sourceHash":before});
@@ -37,6 +39,10 @@ fn catalog_only_change_invalidates_embedded_manifest_with_node_rust_hash_parity(
     assert_ne!(after, before);
     assert_eq!(after, build_frontend::source_hash(&root));
     assert!(std::panic::catch_unwind(|| build_frontend::verify_source_hash(&manifest, &root)).is_err());
+    fs::write(mcp_catalog, r#"{"tools":[{}]}"#).unwrap();
+    let mcp_changed = node_hash(&root);
+    assert_ne!(mcp_changed, after);
+    assert_eq!(mcp_changed, build_frontend::source_hash(&root));
     fs::write(temp.path().join("Cargo.toml"), "[package]\nversion=\"0.2.0\"\n").unwrap();
     let cargo_changed = node_hash(&root);
     assert_ne!(cargo_changed, after);

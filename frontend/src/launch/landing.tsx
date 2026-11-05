@@ -9,6 +9,7 @@ import { harnessIcon } from "@/features/harness-catalog";
 import { themeController } from "@/state/theme-runtime";
 import "./landing.css";
 import { HeroBoard } from "./hero-board";
+import { guideHref, rememberHarness } from "@/guide/navigation";
 import { HowItWorks } from "./how-it-works";
 
 function RepositoryLink() {
@@ -60,6 +61,7 @@ export function Landing() {
   const chosenIcon = harness && harnessIcon(harness.replaceAll("-", " "));
   const languageAction = t(language === "pt-BR" ? "common.switchEnglish" : "common.switchPortuguese");
   function selectHarness(choice: Harness) {
+    rememberHarness(choice);
     setHarness(choice);
     setCopyState("idle");
     themeController.store.getState().setPreset(choice === "other" ? "default" : choice === "github-copilot" ? "copilot" : choice);
@@ -82,6 +84,7 @@ export function Landing() {
         </a>
         <nav aria-label={t("common.launchNavigation")}>
           <a href="/app/">{t("common.launchOpenPanel")}</a>
+          <a href={guideHref("", harness)}>{t("common.guideDocumentation")}</a>
           <a href="#install">{t("common.launchInstall")}</a>
           <RepositoryLink />
         </nav>
@@ -172,7 +175,7 @@ export function Landing() {
                 {t("common.launchCopyFailed")}
               </p>
             )}
-            <div className="launch-guide-link"><a
+            <div className="launch-guide-link"><a href={guideHref("installation", harness)}>{t("common.guideInstallation")}</a> <a
               href="/install"
               target="_blank"
               rel="noreferrer"

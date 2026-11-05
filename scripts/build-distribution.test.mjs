@@ -21,6 +21,7 @@ function fixture(t) {
   writeFileSync(resolve(root,'Cargo.toml'),'[package]\nversion="0.1.0"\n');
   mkdirSync(resolve(root,'docs'));
   writeFileSync(resolve(root,'docs/team-role-icons.json'),'[{"id":"crown"}]\n');
+  writeFileSync(resolve(root,'docs/mcp-catalog.json'),'{"tools":[]}\n');
   return root;
 }
 
@@ -28,6 +29,7 @@ test('isolated staging includes the canonical sibling catalog and has the same s
   const root=fixture(t);
   const staged=stageFrontend(root);
   assert.equal(readFileSync(resolve(staged,'../docs/team-role-icons.json'),'utf8'),readFileSync(resolve(root,'docs/team-role-icons.json'),'utf8'));
+  assert.equal(readFileSync(resolve(staged,'../docs/mcp-catalog.json'),'utf8'),readFileSync(resolve(root,'docs/mcp-catalog.json'),'utf8'));
   const original=sourceHash(resolve(root,'frontend'));
   assert.equal(sourceHash(staged),original);
   writeFileSync(resolve(root,'docs/team-role-icons.json'),'[{"id":"rocket"}]\n');
