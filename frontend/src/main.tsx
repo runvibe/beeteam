@@ -1,3 +1,4 @@
+import { AnalyticsConsent } from "./analytics/consent-controls";
 import { createChangeSource } from "./api/change-source";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -23,6 +24,7 @@ async function start() {
     : createChangeSource(runtimeConfig.apiBaseUrl);
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
+      <AnalyticsConsent product="app" legalReady={false} />
       {runtimeConfig.mock ? (
         <ApiProvider api={api}>
           <PwaUpdate />

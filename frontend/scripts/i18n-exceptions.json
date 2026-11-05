@@ -258,5 +258,15 @@
     "file": "src/components/detail-layout/detail-context.tsx",
     "text": ".detail-primary h1",
     "reason": "DOM selector for restoring focus to the primary heading after a responsive context transition; never displayed."
+  },
+  {
+    "file": "src/analytics/consent-controls.tsx",
+    "text": "noopener noreferrer",
+    "reason": "HTML relationship tokens protect external policy links; these are security attributes, not interface prose."
+  },
+  {
+    "file": "src/analytics/frame-client.ts",
+    "text": "allow-scripts allow-same-origin",
+    "reason": "Closed iframe sandbox capability tokens. The separate metrics origin prevents parent DOM/history access."
   }
 ]
