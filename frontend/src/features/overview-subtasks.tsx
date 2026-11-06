@@ -30,41 +30,43 @@ export function OverviewSubtasks({
           {tr("tasks.viewAllAndFilter")}
         </Button>
       </header>
-      <TaskRecordList
-        resource="tasks"
-        scope=""
-        filters={{
-          parentId: task.id,
-          limit: 10,
-          sortBy: "position",
-          includeArchived: true,
-        }}
-        empty={tr("tasks.noSubtasks")}
-        emptyDescription={tr("tasks.thisTaskHasNoDirectSubtasksYet")}
-      >
-        {(child) => {
-          const percent = recordedPercent(child.progress?.percent);
-          return (
-            <div className="overview-subtask-row">
-              <button
-                className="record-link"
-                onClick={() => openTask(child.id)}
-              >
-                {child.title}
-              </button>
-              <div className="overview-subtask-meter">
-                <RecordedProgress
-                  percent={percent}
-                  label={tr("tasks.progressOf", { title: child.title })}
-                />
-                <span aria-hidden="true">
-                  {percent === undefined ? "—" : formatPercent(percent)}
-                </span>
+      <div className="overview-subtask-list" data-list-scroll>
+        <TaskRecordList
+          resource="tasks"
+          scope=""
+          filters={{
+            parentId: task.id,
+            limit: 10,
+            sortBy: "position",
+            includeArchived: true,
+          }}
+          empty={tr("tasks.noSubtasks")}
+          emptyDescription={tr("tasks.thisTaskHasNoDirectSubtasksYet")}
+        >
+          {(child) => {
+            const percent = recordedPercent(child.progress?.percent);
+            return (
+              <div className="overview-subtask-row">
+                <button
+                  className="record-link"
+                  onClick={() => openTask(child.id)}
+                >
+                  {child.title}
+                </button>
+                <div className="overview-subtask-meter">
+                  <RecordedProgress
+                    percent={percent}
+                    label={tr("tasks.progressOf", { title: child.title })}
+                  />
+                  <span aria-hidden="true">
+                    {percent === undefined ? "—" : formatPercent(percent)}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        }}
-      </TaskRecordList>
+            );
+          }}
+        </TaskRecordList>
+      </div>
     </section>
   );
 }
