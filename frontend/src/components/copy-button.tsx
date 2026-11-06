@@ -31,7 +31,7 @@ export function CopyButton({ text, label, ...props }: Props) {
     <>
       <Button type="button" {...props} onClick={copy} aria-label={label}>
         <span className="relative inline-grid place-items-center">
-          <span className={copied ? "invisible inline-flex items-center gap-2" : "inline-flex items-center gap-2"}>{!copied && <Copy aria-hidden="true" size={14} />}{label}</span>
+          <span className={copied ? "invisible inline-flex items-center gap-2" : "inline-flex items-center gap-2"}><Copy aria-hidden="true" size={14} />{label}</span>
           {copied && <span key={feedback.count} aria-hidden="true" className="absolute grid size-6 place-items-center">
             <motion.span className="absolute inset-0" initial={{ rotate: 0 }} animate={{ rotate: reduced ? 0 : 180 }} transition={{ duration: 0.45 }}>
               <BeeTeamLogo className="size-full!" variant="thin" />

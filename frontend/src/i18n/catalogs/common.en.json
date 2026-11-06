@@ -53,7 +53,7 @@
   "homeTeamTitle": "Choose your team with a team lead",
   "homeTeamBody": "A team lead coordinates the work. Workers carry out assigned tasks and record their results. Start by reviewing the teams already available in your local application.",
   "homeLeaderPrompt": "Use get-a-team-lead to show me the existing teams and guide me through the first steps.",
-  "homeCopyPrompt": "Copy prompt for my assistant",
+  "homeCopyPrompt": "Copy request",
   "homeCopyFailed": "Select the prompt above and copy it manually.",
   "homePlanTitle": "Agree on the goal and the plan",
   "homePlanBody": "Discuss the objective, scope and expected result with your team lead. Boards organize tasks; each task can hold a specification, plans, conversation and files.",

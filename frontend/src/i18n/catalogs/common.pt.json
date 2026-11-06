@@ -53,7 +53,7 @@
   "homeTeamTitle": "Escolha seu time com um líder",
   "homeTeamBody": "O líder coordena o trabalho. Os workers executam tarefas atribuídas e registram resultados. Comece conhecendo os times que já estão disponíveis na sua aplicação local.",
   "homeLeaderPrompt": "Use get-a-team-lead para me apresentar os times existentes e orientar meus primeiros passos.",
-  "homeCopyPrompt": "Copiar pedido para meu assistente",
+  "homeCopyPrompt": "Copiar pedido",
   "homeCopyFailed": "Selecione o pedido acima e copie manualmente.",
   "homePlanTitle": "Combine o objetivo e o plano",
   "homePlanBody": "Converse com seu líder sobre o objetivo, o escopo e o resultado esperado. Os boards organizam tarefas; cada tarefa pode reunir especificação, planos, conversa e arquivos.",

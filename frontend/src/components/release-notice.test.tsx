@@ -28,9 +28,10 @@ it("confirms a successful copy inside the button and replays on another click", 
   const button = await screen.findByRole("button", { name: "Copy request" });
   fireEvent.click(button);
   await waitFor(() => expect(button).toHaveTextContent("Prompt copied."));
-  const first = button.querySelector("svg");
+  expect(button.querySelector(".invisible .lucide-copy")).toBeInTheDocument();
+  const first = button.querySelector(".lucide-hexagon");
   expect(first).toHaveAttribute("stroke-width", "1.15");
   fireEvent.click(button);
-  await waitFor(() => expect(button.querySelector("svg")).not.toBe(first));
+  await waitFor(() => expect(button.querySelector(".lucide-hexagon")).not.toBe(first));
   expect(writeText).toHaveBeenCalledTimes(2);
 });
