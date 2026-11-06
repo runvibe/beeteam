@@ -1,6 +1,7 @@
+import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
 
-import { BookOpen, Hexagon, Columns3, Users, Network, House } from "lucide-react";
+import { BookOpen, Columns3, Users, Network, House } from "lucide-react";
 import { ReleaseNotice } from "./release-notice";
 import { appVersion } from "@/app-version";
 import { Tooltip } from "radix-ui";
@@ -83,7 +84,7 @@ export function NavigationRail({
           else setArea("boards");
         }}
       >
-        <Hexagon strokeWidth={2.3} aria-hidden="true" />
+        <BeeTeamLogo aria-hidden="true" />
       </a>
       <Tooltip.Provider delayDuration={300}>
         <nav aria-label={tr("common.mainNavigation")}>

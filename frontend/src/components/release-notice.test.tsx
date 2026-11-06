@@ -28,6 +28,7 @@ it("confirms a successful copy inside the button and replays on another click", 
   fireEvent.click(button);
   await waitFor(() => expect(button).toHaveTextContent("Prompt copied."));
   const first = button.querySelector("svg");
+  expect(first).toHaveAttribute("stroke-width", "1.15");
   fireEvent.click(button);
   await waitFor(() => expect(button.querySelector("svg")).not.toBe(first));
   expect(writeText).toHaveBeenCalledTimes(2);

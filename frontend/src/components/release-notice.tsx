@@ -1,6 +1,7 @@
+import { BeeTeamLogo } from "./bee-team-logo";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { ArrowDownToLine, Check, Hexagon } from "lucide-react";
+import { ArrowDownToLine, Check } from "lucide-react";
 import { t, useLocale } from "@/i18n";
 import { usePublicManifest } from "@/launch/public-manifest";
 import { newerStableRelease } from "@/api/version-policy";
@@ -51,7 +52,7 @@ export function ReleaseNotice({ installedVersion }: { installedVersion: string }
             <span key={animation} className="relative grid size-6 place-items-center" aria-hidden="true">
               <motion.span className="absolute inset-0" initial={{ rotate: 0 }}
                 animate={{ rotate: reducedMotion ? 0 : 180 }} transition={{ duration: 0.45 }}>
-                <Hexagon className="size-full!" strokeWidth={2.3} />
+                <BeeTeamLogo className="size-full!" variant="thin" />
               </motion.span>
               <motion.span initial={{ opacity: reducedMotion ? 1 : 0 }} animate={{ opacity: 1 }}
                 transition={{ delay: reducedMotion ? 0 : 0.3 }}>

@@ -1,6 +1,7 @@
+import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
 
-import { Hexagon } from "lucide-react";
+
 import { useEffect, useState } from "react";
 import "./loading-indicator.css";
 
@@ -24,7 +25,7 @@ export function LoadingIndicator({
       aria-busy="true"
       className={`bee-loading${compact ? " bee-loading-compact" : ""}`}
     >
-      <Hexagon strokeWidth={2.3}
+      <BeeTeamLogo
         aria-hidden="true"
         style={{ visibility: visible ? "visible" : "hidden" }}
       />
