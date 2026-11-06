@@ -66,6 +66,13 @@ def verify(bundle, root):
     try:
         server, = directory.rglob("beeteam-server.exe" if os_name == "Windows" else "beeteam-server")
         check_server(server, root)
+        desktop = server.with_name("beeteam-desktop.exe" if os_name == "Windows" else "beeteam-desktop")
+        if os_name == "Darwin":
+            import plistlib
+            with (server.parent.parent / "Info.plist").open("rb") as stream:
+                desktop = server.with_name(plistlib.load(stream)["CFBundleExecutable"])
+        runner = ["dbus-run-session", "--", "xvfb-run", "-a"] if os_name == "Linux" else []
+        run(*runner, sys.executable, Path(__file__).with_name("desktop-lifecycle-smoke.py"), desktop, server)
     finally:
         if os_name == "Darwin":
             run("hdiutil", "detach", directory)
@@ -73,4 +80,3 @@ def verify(bundle, root):
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory(prefix="bee-desktop-qa-") as tmp:
         verify(Path(sys.argv[1]).resolve(), Path(tmp))
-

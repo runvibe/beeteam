@@ -21,4 +21,3 @@ destination = desktop / "binaries" / f"beeteam-server-{host}{suffix}"
 destination.parent.mkdir(exist_ok=True)
 shutil.copy2(target / "release" / f"beeteam{suffix}", destination)
 print(destination)
-

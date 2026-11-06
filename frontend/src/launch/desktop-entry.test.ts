@@ -10,4 +10,3 @@ it("offers Desktop only on the plain hosted entry in a browser", () => {
   }
   expect(shouldOfferDesktop(new URL("http://127.0.0.1:59865/app/"), false)).toBe(false);
 });
-

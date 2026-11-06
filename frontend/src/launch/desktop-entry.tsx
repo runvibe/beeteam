@@ -13,4 +13,3 @@ export function DesktopEntry() {
     <a href={pt ? "/pt/guide/" : "/guide/"}>{pt ? "Ajuda para instalação" : "Installation help"}</a>
   </main>;
 }
-

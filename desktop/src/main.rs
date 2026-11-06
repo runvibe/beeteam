@@ -8,6 +8,7 @@ use tauri::{
     Manager, WebviewUrl, WebviewWindowBuilder,
 };
 use tauri_plugin_autostart::ManagerExt;
+use tauri_plugin_deep_link::DeepLinkExt;
 
 struct DesktopState {
     child: Mutex<Option<Child>>,
@@ -33,6 +34,16 @@ fn main() {
                 .build(),
         )
         .setup(|app| {
+            let action_handle = app.handle().clone();
+            app.deep_link().on_open_url(move |event| {
+                if event
+                    .urls()
+                    .iter()
+                    .any(|url| url.as_str() == "beeteam://open")
+                {
+                    show(&action_handle);
+                }
+            });
             let prefs = app.path().app_config_dir()?.join("exit-on-close");
             let keep = !prefs.exists();
             app.manage(DesktopState {
@@ -43,7 +54,10 @@ fn main() {
             let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
             let tray_menu = Menu::with_items(app, &[&open, &quit])?;
             TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(tauri::image::Image::from_bytes(include_bytes!(
+                    "../icons/tray.png"
+                ))?)
+                .icon_as_template(cfg!(target_os = "macos"))
                 .tooltip("Bee Team")
                 .menu(&tray_menu)
                 .on_menu_event(|app, event| match event.id.as_ref() {
@@ -117,6 +131,7 @@ fn main() {
                     }
                 }
                 Err(error) => {
+                    let _ = window.set_title(&format!("Bee Team Desktop — {error}"));
                     let message = serde_json::to_string(&error).unwrap();
                     let _ = window.eval(format!(
                         "document.getElementById('status').textContent={message}"
@@ -146,7 +161,14 @@ fn main() {
         if matches!(event, tauri::RunEvent::Exit) {
             if let Some(mut child) = app.state::<DesktopState>().child.lock().unwrap().take() {
                 drop(child.stdin.take());
-                let _ = child.wait();
+                // Ask the owned server to drain. Bound the desktop exit if a client holds a stream.
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(8);
+                while matches!(child.try_wait(), Ok(None)) {
+                    if std::time::Instant::now() >= deadline {
+                        break;
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                }
             }
         }
     });
