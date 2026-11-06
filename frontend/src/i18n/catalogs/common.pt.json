@@ -104,7 +104,7 @@
   "releaseCopyInstruction": "Cole este pedido no seu assistente para atualizar o Bee Team.",
   "releaseCopyAction": "Copiar pedido",
   "optionalUpdate": "Atualização opcional",
-  "optionalUpdateAvailable": "A versão {{version}} está disponível. Você pode continuar usando esta versão.",
+  "optionalUpdateAvailable": "Versão {{version}} disponível",
   "updateDownloads": "Atualização e downloads",
   "setupUpdateGuidance": "Peça ao seu assistente para usar setup-bee-team para atualizar a aplicação. O download do pacote é a primeira etapa; o setup verifica e instala o arquivo.",
   "connectGetBeeTeam": "Conectar Bee Team",

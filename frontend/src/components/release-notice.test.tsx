@@ -17,3 +17,18 @@ it.each([
   fireEvent.click(screen.getByRole("button"));
   await waitFor(() => expect(screen.getByText(text)).toBeVisible());
 });
+
+it("confirms a successful copy inside the button and replays on another click", async () => {
+  setLocalePreference("en");
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
+  render(<ReleaseNotice installedVersion="1.2.3" />);
+  fireEvent.click(screen.getByRole("button"));
+  const button = await screen.findByRole("button", { name: "Copy request" });
+  fireEvent.click(button);
+  await waitFor(() => expect(button).toHaveTextContent("Prompt copied."));
+  const first = button.querySelector("svg");
+  fireEvent.click(button);
+  await waitFor(() => expect(button.querySelector("svg")).not.toBe(first));
+  expect(writeText).toHaveBeenCalledTimes(2);
+});
