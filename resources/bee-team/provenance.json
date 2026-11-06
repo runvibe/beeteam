@@ -5,15 +5,15 @@
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "d47607b1467cd074021a6ed5b66a254886ae8523eaf8a61fe9a4300079b4c70c",
-      "bundledSha256": "b874319254ece8e8313f2e14d7cf42babddaa889ed31441d8a2f445547f15b00",
+      "sourceSha256": "5cb7ebd1d646d1b6de9bcf5d7b87d9a3c3457ccbe62dec053f73e46441b763c6",
+      "bundledSha256": "bb0c1df5ce092a83ae476a3840ab1a8556e044aa0b6a9600df50a82016c4bb94",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "64039d4ec0b2fb15fe1fa7aece7b32f963fee3687550f528c7fc02a93069c7ab",
-      "bundledSha256": "6a26ba11efaa482e72e260a32a12c50e57c1e5cd19b958cd30d68a32d2a37a9a",
+      "sourceSha256": "eac95ec29bacd2f0c85c54e2b10b159de8110514a0ebae7d26e2ce98e0697a9a",
+      "bundledSha256": "3d6b9ef604cc94a5361fb4d6fd708f71a8e3d81e87d6262d58202c0a5604df93",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
     },
     {

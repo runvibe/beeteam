@@ -3127,7 +3127,8 @@ components:
       minLength: 1
       pattern: '\S'
       maxLength: 200
-      description: Resumo atual escrito pelo worker, completo por si só. Prefira uma ou duas frases curtas com o resultado principal e, se relevante, o bloqueio ou próximo passo. Guarde os detalhes no histórico da atividade. Exemplos — “Menu mobile pronto para revisão.” ou “Exportação implementada. A validação aguarda acesso ao banco de testes.” Substitui o resumo anterior, preservado na timeline.
+      description: >-
+        Em até 200 caracteres, conte em uma frase natural o que está acontecendo agora com a tarefa. Nomeie o trabalho e seu estado real. Exemplos: “Estamos testando a exportação de relatórios.” “A exportação aguarda a liberação do banco de testes.” “Concluímos a exportação e validamos o arquivo gerado.” Use conclusão somente após o aceite aplicável. Registre detalhes da etapa no resumo histórico.
     Progress:
       type: object
       properties:
