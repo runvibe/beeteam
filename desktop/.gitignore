@@ -1,0 +1,9 @@
+target/
+binaries/
+
+gen/
+icons/*
+!icons/icon.png
+!icons/icon.ico
+!icons/icon.icns
+!icons/tray.png

@@ -1,6 +1,13 @@
 use super::contracts::{ProjectOpener, RepositoryFuture};
 use crate::dto::{backend::Failure, local_projects::ProjectApplication};
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod unix;
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+use unix as platform;
+#[cfg(windows)]
+use windows as platform;
+
 pub struct LocalProjectOpener;
 impl ProjectOpener for LocalProjectOpener {
     fn open<'a>(
@@ -9,22 +16,22 @@ impl ProjectOpener for LocalProjectOpener {
         application: ProjectApplication,
     ) -> RepositoryFuture<'a, ()> {
         Box::pin(async move {
-            #[cfg(not(windows))]
+            #[cfg(not(any(windows, target_os = "linux", target_os = "macos")))]
             {
                 let _ = (root, application);
                 Err(Failure::new(
                     "local_application_unsupported",
-                    "Explorer e VS Code locais estão disponíveis somente no host Windows.",
+                    "A abertura de projetos está indisponível neste sistema.",
                 ))
             }
-            #[cfg(windows)]
+            #[cfg(any(windows, target_os = "linux", target_os = "macos"))]
             {
                 let root = root.to_owned();
                 // The blocking preparation has no side effects. A timed-out inspection
                 // must never launch an application after its caller has given up.
                 let plan = tokio::time::timeout(
                     std::time::Duration::from_secs(3),
-                    tokio::task::spawn_blocking(move || windows::prepare(&root, application)),
+                    tokio::task::spawn_blocking(move || platform::prepare(&root, application)),
                 )
                 .await
                 .map_err(|_| {
@@ -39,7 +46,7 @@ impl ProjectOpener for LocalProjectOpener {
                         "Não foi possível preparar a abertura da pasta.",
                     )
                 })??;
-                windows::launch(plan)
+                platform::launch(plan)
             }
         })
     }

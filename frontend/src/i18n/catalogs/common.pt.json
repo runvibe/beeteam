@@ -1,4 +1,6 @@
 {
+  "desktopOpen": "Abrir Bee Team Desktop",
+  "desktopContinueWeb": "Continuar no navegador",
   "guideDocumentation": "Documentação",
   "guideInstallation": "Guia de instalação",
   "tourCopy": "Cópia no celular",
@@ -206,7 +208,7 @@
   "recentActivity": "Atividade recente",
   "noActivityRecorded": "Nenhuma atividade registrada.",
   "couldNotOpenTheFolderInThisApplication": "Não foi possível abrir a pasta neste aplicativo.",
-  "openInExplorer": "Abrir no Explorer",
+  "openInExplorer": "Abrir pasta do projeto",
   "openInVsCode": "Abrir no VS Code",
   "recordedCumulativeUsageOf": "Acumulado registrado de",
   "sessionAndDescendants": "sessão e descendentes",

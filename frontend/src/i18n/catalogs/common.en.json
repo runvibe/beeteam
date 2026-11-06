@@ -1,4 +1,6 @@
 {
+  "desktopOpen": "Open Bee Team Desktop",
+  "desktopContinueWeb": "Continue on the web",
   "guideDocumentation": "Documentation",
   "guideInstallation": "Installation guide",
   "tourCopy": "Mobile copy",
@@ -206,7 +208,7 @@
   "recentActivity": "Recent activity",
   "noActivityRecorded": "No activity recorded.",
   "couldNotOpenTheFolderInThisApplication": "Could not open the folder in this application.",
-  "openInExplorer": "Open in Explorer",
+  "openInExplorer": "Open project folder",
   "openInVsCode": "Open in VS Code",
   "recordedCumulativeUsageOf": "Recorded cumulative usage of",
   "sessionAndDescendants": "session and descendants",
