@@ -5,7 +5,7 @@ import { join } from "node:path";
 
 const publicDir = fileURLToPath(new URL("../public/", import.meta.url));
 const source = readFileSync(join(publicDir, "icons/bee-logo.svg"), "utf8");
-const favicon = source.replace('stroke-width="2.3"', 'stroke-width="3"');
+const favicon = source.replace('stroke-width="2.3"', 'stroke-width="3.3"');
 const outputs = new Map([["favicon.svg", Buffer.from(favicon)]]);
 function png(svg, size) {
   return new Resvg(svg, { fitTo: { mode: "width", value: size }, font: { loadSystemFonts: false } }).render().asPng();
