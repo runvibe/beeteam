@@ -81,7 +81,7 @@ export function NavigationRail({
           else setArea("boards");
         }}
       >
-        <Hexagon aria-hidden="true" />
+        <Hexagon strokeWidth={2.3} aria-hidden="true" />
       </a>
       <Tooltip.Provider delayDuration={300}>
         <nav aria-label={tr("common.mainNavigation")}>

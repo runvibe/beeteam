@@ -24,7 +24,7 @@ export function LoadingIndicator({
       aria-busy="true"
       className={`bee-loading${compact ? " bee-loading-compact" : ""}`}
     >
-      <Hexagon
+      <Hexagon strokeWidth={2.3}
         aria-hidden="true"
         style={{ visibility: visible ? "visible" : "hidden" }}
       />
