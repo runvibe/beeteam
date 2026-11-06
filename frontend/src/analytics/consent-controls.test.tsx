@@ -51,6 +51,6 @@ it.each([
 ] as const)("uses the published legal locale for %s", (language, privacy, terms, prefix) => {
   setLocalePreference(language);
   render(<AnalyticsConsent product="app" legalReady />);
-  expect(screen.getByRole("link", { name: privacy })).toHaveAttribute("href", `https://getbee.team${prefix}/privacy`);
-  expect(screen.getByRole("link", { name: terms })).toHaveAttribute("href", `https://getbee.team${prefix}/terms`);
+  expect(screen.getByRole("link", { name: privacy })).toHaveAttribute("href", `https://getbee.team${prefix}/privacy?theme=default&mode=light`);
+  expect(screen.getByRole("link", { name: terms })).toHaveAttribute("href", `https://getbee.team${prefix}/terms?theme=default&mode=light`);
 });

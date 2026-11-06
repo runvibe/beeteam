@@ -1,6 +1,11 @@
+import { useSiteLink } from "@/state/site-link";
+import { NavigationTooltip } from "./navigation-tooltip";
+import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
 
-import { BookOpen, Hexagon, Columns3, Users, Network, House } from "lucide-react";
+import { BookOpen, Columns3, Users, Network, House } from "lucide-react";
+import { ReleaseNotice } from "./release-notice";
+import { appVersion } from "@/app-version";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
@@ -52,6 +57,7 @@ export function NavigationRail({
   useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
+  const siteLink = useSiteLink();
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
     if (area !== "home") navigate(homeHref);
@@ -81,11 +87,13 @@ export function NavigationRail({
           else setArea("boards");
         }}
       >
-        <Hexagon strokeWidth={2.3} aria-hidden="true" />
+        <BeeTeamLogo aria-hidden="true" />
       </a>
       <Tooltip.Provider delayDuration={300}>
         <nav aria-label={tr("common.mainNavigation")}>
+          {homeEnabled && <ReleaseNotice installedVersion={appVersion} />}
           {homeEnabled && (
+            <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
               variant={area === "home" ? "secondary" : "ghost"}
@@ -96,10 +104,10 @@ export function NavigationRail({
             >
               <House aria-hidden="true" />
             </Button>
+            </NavigationTooltip>
           )}
           {sections.map(({ area: target, label, name, Icon }) => (
-            <Tooltip.Root key={target}>
-              <Tooltip.Trigger asChild>
+            <NavigationTooltip key={target} label={label}>
                 <Button
                   className="navigation-button"
                   variant={area === target ? "secondary" : "ghost"}
@@ -110,18 +118,7 @@ export function NavigationRail({
                 >
                   <Icon aria-hidden="true" />
                 </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="navigation-tooltip"
-                  side="right"
-                  sideOffset={8}
-                  collisionPadding={8}
-                >
-                  {label}
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            </NavigationTooltip>
           ))}
         </nav>
       </Tooltip.Provider>
@@ -130,7 +127,7 @@ export function NavigationRail({
         aria-label={tr("common.globalPreferences")}
       >
         <Button asChild variant="ghost" size="icon">
-          <a href="https://getbee.team/guide/" aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
+          <a href={siteLink("/guide/")} aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
             <BookOpen aria-hidden="true" />
           </a>
         </Button>

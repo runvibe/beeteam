@@ -170,3 +170,29 @@
 .icon-navigation main { padding-left: 0; padding-right: 0; }
 
 .icon-navigation .topbar { padding-left: 0; }
+
+.navigation-rail .release-update-button,
+.navigation-rail .release-update-button:hover {
+  position: relative;
+  background: var(--foreground);
+  color: var(--background);
+}
+.release-update-button::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(transparent 35%, var(--foreground) 76%, transparent 90%);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .release-update-button::before {
+    animation: release-ring-turn 3s linear infinite;
+  }
+}
+@keyframes release-ring-turn {
+  to { transform: rotate(1turn); }
+}

@@ -95,8 +95,8 @@ it.each([
     </ApiProvider>,
   );
   const install = await screen.findByRole("link", { name: installLabel });
-  expect(install).toHaveAttribute("href", `https://getbee.team${prefix}/guide/installation`);
+  expect(install).toHaveAttribute("href", `https://getbee.team${prefix}/guide/installation?theme=default&mode=light`);
   expect(install).toHaveAttribute("data-slot", "button");
-  expect(screen.getByRole("link", { name: helpLabel })).toHaveAttribute("href", `https://getbee.team${prefix}/guide/local-connection`);
+  expect(screen.getByRole("link", { name: helpLabel })).toHaveAttribute("href", `https://getbee.team${prefix}/guide/local-connection?theme=default&mode=light`);
   expect(screen.queryByText("Business panel")).toBeNull();
 });
