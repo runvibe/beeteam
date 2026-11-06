@@ -29,17 +29,13 @@ export function CopyButton({ text, label, ...props }: Props) {
   return (
     <>
       <Button type="button" {...props} onClick={copy} aria-label={label}>
-        <span className="relative inline-grid place-items-center">
-          <motion.span className="inline-flex items-center gap-2" initial={false}
-            animate={{ opacity: copied ? 0 : 1 }} transition={{ duration: reduced ? 0 : 0.16 }}>
-            <Copy aria-hidden="true" size={14} />{label}
-          </motion.span>
-          {copied && <motion.span key={feedback.count} aria-hidden="true" className="absolute grid place-items-center"
-            initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: reduced ? 1 : [0, 1, 1, 0] }}
-            transition={{ duration: reduced ? 0 : 1.8, times: [0, 0.12, 0.88, 1] }}>
-            <Check size={16} />
-          </motion.span>}
-        </span>
+        <motion.span key={copied ? feedback.count : "idle"} aria-hidden="true"
+          className="inline-grid size-4 shrink-0 place-items-center"
+          initial={copied && !reduced ? { opacity: 0 } : false}
+          animate={{ opacity: 1 }} transition={{ duration: reduced ? 0 : 0.15 }}>
+          {copied ? <Check size={16} /> : <Copy size={16} />}
+        </motion.span>
+        {label}
         <span role="status" className="sr-only">{copied && t("common.homePromptCopied")}</span>
       </Button>
       {feedback?.failed && <span role="status">{t("common.homeCopyFailed")}</span>}
