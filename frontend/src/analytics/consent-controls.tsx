@@ -95,7 +95,6 @@ export function AnalyticsConsent({ product, path, children, legalReady = false }
       <div className="analytics-consent-actions">
         {manage ? <>
           <Button onClick={() => choose(draft)}>{t("common.analyticsSave")}</Button>
-          {choice === "accepted" && <Button variant="outline" onClick={() => choose(false)}>{t("common.analyticsWithdraw")}</Button>}
           <Button variant="ghost" onClick={() => setManage(false)}>{t("common.analyticsClose")}</Button>
         </> : <>
           <Button onClick={() => choose(true)}>{t("common.analyticsAccept")}</Button>
