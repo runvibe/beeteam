@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Timeline event details use square corners and no outer border.
+- The Timeline event list fits the visible panel as you scroll or resize. Event details use square corners and no outer border.
 
 - Identify agents, teams, boards, and task metadata by their icons in the task detail sidebar.
 

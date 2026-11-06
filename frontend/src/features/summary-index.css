@@ -43,7 +43,7 @@
 }
 @media (min-width: 1056px) {
   .summary-index-items {
-    max-height: min(600px, 65dvh);
+    max-height: var(--timeline-list-room, min(600px, 65dvh));
   }
 }
 
