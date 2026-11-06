@@ -195,3 +195,14 @@
     @apply bg-background text-foreground;
   }
 }
+
+.desktop-entry {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  max-width: 30rem;
+  margin: 15vh auto;
+  padding: 2rem;
+}
+.desktop-entry a { text-decoration: underline; text-underline-offset: .2em; }
+

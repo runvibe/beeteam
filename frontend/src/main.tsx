@@ -1,3 +1,4 @@
+import { DesktopEntry, shouldOfferDesktop } from "./launch/desktop-entry";
 import { AnalyticsConsent } from "./analytics/consent-controls";
 import { createChangeSource } from "./api/change-source";
 import { StrictMode } from "react";
@@ -12,6 +13,10 @@ import { LaunchRoot } from "./launch/launch-root";
 import { canonicalizeEntry } from "./routing/location";
 import { PwaUpdate } from "./pwa/update";
 async function start() {
+  if (shouldOfferDesktop(new URL(location.href), matchMedia("(display-mode: standalone)").matches)) {
+    createRoot(document.getElementById("root")!).render(<DesktopEntry />);
+    return;
+  }
   canonicalizeEntry();
   const api = runtimeConfig.mock
     ? (await import("./api/mock")).createMockApi()
