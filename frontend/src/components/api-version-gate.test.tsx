@@ -39,7 +39,7 @@ function Business() {
   useList("boards");
   return <p>Business panel</p>;
 }
-it.each(["1.2.2", "1.2.4", "invalid"])(
+it.each(["1.2.2", "1.2.4", "1.2.3+other", "invalid"])(
   "blocks the panel and live source for %s",
   async (version) => {
     const api = createMockApi({ delay: 0 });
@@ -57,6 +57,10 @@ it.each(["1.2.2", "1.2.4", "invalid"])(
     expect(screen.queryByText("Business panel")).toBeNull();
     expect(list).not.toHaveBeenCalled();
     expect(source).not.toHaveBeenCalled();
+    if (version !== "invalid") {
+      expect(await screen.findByText(/^Use a skill setup-bee-team/)).toBeVisible();
+      expect(screen.getByRole("button", { name: /copiar pedido/i })).toBeVisible();
+    }
   },
 );
 it("recovers from discovery failure only after exact equality", async () => {
