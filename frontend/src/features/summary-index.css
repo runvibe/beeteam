@@ -43,7 +43,9 @@
 }
 @media (min-width: 1056px) {
   .summary-index-items {
-    max-height: var(--timeline-list-room, min(600px, 65dvh));
+    height: var(--detail-list-room, auto);
+    max-height: var(--detail-list-room, min(600px, 65dvh));
+    align-content: start;
   }
 }
 

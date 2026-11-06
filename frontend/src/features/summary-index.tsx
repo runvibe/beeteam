@@ -1,7 +1,8 @@
+import { useDetailListRoom } from "./use-detail-list-room";
 import { formatPercent, useLocale, t as tr } from "@/i18n";
 
 import { FilterPopover, FilterOptions } from "@/components/filter-controls";
-import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
@@ -30,7 +31,7 @@ export function summaryTitle(
   const title = line?.replace(/^#{1,6}\s+/, "");
   return title
     ? title.length > 100
-      ? title.slice(0, 99) + "…"
+      ? title.slice(0, 99) + "â€¦"
       : title
     : tr("tasks.summaryFrom", { date: formatDate(row.createdAt) });
 }
@@ -77,29 +78,7 @@ export function SummaryBrowser({
 }) {
   useLocale();
   const root = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const list = root.current;
-    if (!list || resource !== "timeline") return;
-    const panel = list.closest("[data-detail-scroll]");
-    const measure = () => {
-      const bottom = Math.min(window.innerHeight, panel?.getBoundingClientRect().bottom ?? window.innerHeight);
-      const available = Math.max(0, bottom - list.getBoundingClientRect().top - 8);
-      list.style.setProperty("--timeline-list-room", available + "px");
-    };
-    measure();
-    panel?.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("resize", measure);
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
-    if (panel) observer?.observe(panel);
-    return () => {
-      panel?.removeEventListener("scroll", measure);
-      window.removeEventListener("scroll", measure);
-      window.removeEventListener("resize", measure);
-      observer?.disconnect();
-      list.style.removeProperty("--timeline-list-room");
-    };
-  }, [resource]);
+  useDetailListRoom(root, resource === "timeline");
   const sentinel = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useUrlState<string>(
     `${resource}.selected`,

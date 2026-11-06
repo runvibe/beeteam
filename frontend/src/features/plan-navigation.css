@@ -8,7 +8,7 @@
 .task-plan-navigation {
   position: sticky;
   top: 0;
-  max-height: calc(100dvh - 112px);
+  height: var(--detail-list-room, calc(100dvh - 112px));
   overflow-y: auto;
   overscroll-behavior-y: contain;
   scrollbar-gutter: stable;
