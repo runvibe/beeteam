@@ -1,3 +1,4 @@
+import { CookiePreferences } from "@/analytics/consent-controls";
 import { readTransferJob, persistTransferJob } from "./transfer-job-storage";
 import {
   formatNumber,
@@ -76,6 +77,7 @@ export function DataTransferSettings() {
           </DialogHeader>
           <AppearanceSettings />
           <LanguageControl />
+          <CookiePreferences />
           <ApiCompatibilityDetails />
           <section className="detail-section">
             <h3>{tr("transfer.exportAndImportData")}</h3>

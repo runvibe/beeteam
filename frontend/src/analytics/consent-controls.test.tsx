@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { AnalyticsConsent } from "./consent-controls";
+import { AnalyticsConsent, CookiePreferences } from "./consent-controls";
 import { consentKey } from "./consent-store";
 import { setLocalePreference } from "@/i18n";
 
@@ -16,7 +16,7 @@ it("rejects analytics without creating a network frame or gating the app", () =>
   fireEvent.click(screen.getByRole("button", { name: "Rejeitar analytics" }));
   expect(document.querySelector("iframe")).toBeNull();
   expect(JSON.parse(localStorage.getItem(consentKey)!).analytics).toBe("rejected");
-  expect(screen.getByRole("button", { name: "Preferências de cookies" })).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Preferências de cookies" })).toBeNull();
 });
 
 it("waits for legal readiness and allows managing and withdrawing a prior choice", () => {
@@ -25,25 +25,23 @@ it("waits for legal readiness and allows managing and withdrawing a prior choice
   expect(screen.queryByRole("button", { name: "Aceitar analytics" })).toBeNull();
   expect(localStorage.getItem(consentKey)).toBeNull();
   expect(document.querySelector("iframe")).toBeNull();
-  view.rerender(<AnalyticsConsent product="app" legalReady />);
+  view.rerender(<AnalyticsConsent product="app" legalReady><CookiePreferences /></AnalyticsConsent>);
   fireEvent.click(screen.getByRole("button", { name: "Aceitar analytics" }));
   expect(document.querySelector("iframe")).not.toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Preferências de cookies" }));
   expect(screen.getByRole("checkbox")).toBeChecked();
-  fireEvent.click(screen.getByRole("button", { name: "Retirar consentimento" }));
+  fireEvent.click(screen.getByRole("checkbox"));
   expect(JSON.parse(localStorage.getItem(consentKey)!).analytics).toBe("rejected");
 });
 
 it("keeps core UI available when a consented metrics frame is blocked", () => {
   const useApp = vi.fn();
-  render(<><button onClick={useApp}>Use app</button><AnalyticsConsent product="app" legalReady /></>);
+  render(<><button onClick={useApp}>Use app</button><AnalyticsConsent product="app" legalReady><CookiePreferences /></AnalyticsConsent></>);
   fireEvent.click(screen.getByRole("button", { name: "Aceitar analytics" }));
   expect(document.querySelector("iframe")?.src).toBe("https://metrics.getbee.team/analytics/frame.html");
   // No handshake arrives, as when an extension or browser blocks the frame.
   fireEvent.click(screen.getByRole("button", { name: "Use app" }));
   expect(useApp).toHaveBeenCalledOnce();
-  fireEvent.click(screen.getByRole("button", { name: "Preferências de cookies" }));
-  fireEvent.click(screen.getByRole("button", { name: "Retirar consentimento" }));
+  fireEvent.click(screen.getByRole("checkbox"));
   expect(document.querySelector("iframe")).toBeNull();
 });
 
