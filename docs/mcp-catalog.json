@@ -8176,7 +8176,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
                 "minLength": 1,
                 "pattern": "\\S",
                 "type": "string",
@@ -18569,7 +18569,7 @@
                 "type": "object"
               },
               "currentSummary": {
-                "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
                 "minLength": 1,
                 "pattern": "\\S",
                 "type": "string",
@@ -28954,7 +28954,7 @@
                 ]
               },
               "currentSummary": {
-                "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
                 "minLength": 1,
                 "pattern": "\\S",
                 "type": "string",
@@ -40729,7 +40729,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
               "minLength": 1,
               "pattern": "\\S",
               "type": "string",
@@ -48982,7 +48982,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
               "minLength": 1,
               "pattern": "\\S",
               "type": "string",
@@ -53407,7 +53407,7 @@
             "x-maxBytes": 16384
           },
           "currentSummary": {
-            "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+            "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
             "minLength": 1,
             "pattern": "\\S",
             "type": "string",
@@ -53494,7 +53494,7 @@
                   "x-maxBytes": 16384
                 },
                 "currentSummary": {
-                  "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+                  "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
                   "minLength": 1,
                   "pattern": "\\S",
                   "type": "string",
@@ -57017,7 +57017,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
               "minLength": 1,
               "pattern": "\\S",
               "type": "string",
@@ -61565,7 +61565,7 @@
                 "type": "object"
               },
               "currentSummary": {
-                "description": "Complete, nonempty cumulative synthesis replaces the current one while preserving the previous value in the timeline. Not a delta or transcript.",
+                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
                 "minLength": 1,
                 "pattern": "\\S",
                 "type": "string",
