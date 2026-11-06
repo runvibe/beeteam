@@ -112,6 +112,8 @@
   "frontendUpdateRequired": "The local application is newer than this page. Reload the frontend to continue.",
   "versionAgreementRequired": "The frontend and local application must have the same supported version. Use setup-bee-team to verify the installation.",
   "versionPair": "Frontend {{frontend}} · Local application {{api}}",
+  "localPanelHint": "If Bee Team is running on this computer, its panel may be available on the default port.",
+  "openLocalPanel": "Open local panel",
   "connectionGuidance": "Check that the application is running and that your browser allows access to the local service. Connection, permission or configuration issues can prevent verification.",
   "checkConnectionAgain": "Check connection again",
   "reloadFrontend": "Reload frontend",
