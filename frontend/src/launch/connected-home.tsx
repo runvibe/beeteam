@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { BookOpen, Columns3, Network, Users } from "lucide-react";
+import { CopyButton } from "@/components/copy-button";
 import { t, useLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { useApiCompatibility } from "@/api/compatibility";
@@ -9,21 +10,12 @@ export function ConnectedHome() {
   const locale = useLocale();
   const url = useLocation();
   const { info } = useApiCompatibility();
-  const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
   const origin = safeOrigin(new URLSearchParams(url.split("?")[1]).get("from"));
   const resume =
     origin && !new URL(origin, location.origin).pathname.startsWith("/home")
       ? origin
       : null;
   const prompt = t("common.homeLeaderPrompt");
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(prompt);
-      setCopied("copied");
-    } catch {
-      setCopied("failed");
-    }
-  };
   return (
     <section className="connected-home" aria-labelledby="home-title">
       <header>
@@ -58,16 +50,7 @@ export function ConnectedHome() {
             <h3>{t("common.homeTeamTitle")}</h3>
             <p>{t("common.homeTeamBody")}</p>
             <blockquote>{prompt}</blockquote>
-            <Button variant="outline" size="sm" onClick={() => void copy()}>
-              {t("common.homeCopyPrompt")}
-            </Button>
-            {copied !== "idle" && (
-              <p role="status">
-                {copied === "copied"
-                  ? t("common.homePromptCopied")
-                  : t("common.homeCopyFailed")}
-              </p>
-            )}
+            <CopyButton variant="outline" size="sm" text={prompt} label={t("common.homeCopyPrompt")} />
           </li>
           <li>
             <h3>{t("common.homePlanTitle")}</h3>
@@ -80,12 +63,12 @@ export function ConnectedHome() {
         </ol>
       </section>
       <nav className="home-destinations" aria-label={t("common.homeExplore")}>
-        <Button asChild variant="outline"><a href="https://getbee.team/guide/">{t("common.guideDocumentation")}</a></Button>
+        <Button asChild variant="outline"><a href="https://getbee.team/guide/"><BookOpen aria-hidden="true" />{t("common.guideDocumentation")}</a></Button>
         <Button variant="outline" onClick={() => navigate("/teams")}>
-          {t("common.homeOpenTeams")}
+          <Network aria-hidden="true" />{t("common.homeOpenTeams")}
         </Button>
         <Button variant="outline" onClick={() => navigate("/agents")}>
-          {t("common.homeOpenAgents")}
+          <Users aria-hidden="true" />{t("common.homeOpenAgents")}
         </Button>
         <Button asChild variant="ghost">
           <a href={`https://getbee.team${locale === "pt-BR" ? "/pt" : ""}/guide/installation`}>{t("common.homeReviewSetup")}</a>
