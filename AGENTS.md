@@ -43,3 +43,7 @@
 - Portable transfer is administratively opt-in and empty-destination-only. Keep archive, blob, journal and OS lease access in repositories/transfer; HTTP/MCP share the transfer service. Preserve raw domain/replay JSON and Markdown. Typed submicrosecond metadata requires explicit truncation approval for PostgreSQL. A DB commit marker overrides late cancellation; an unknown commit outcome stays restoring until writer-lock-protected reconciliation. Never add force/reset/cutover implicitly. Verify cancellation during stalled uploads and writer-lock waits, plus all four driver pairs, before changing this workflow.
 
 - Single-binary distribution uses `node scripts/build-distribution.mjs` and Cargo `embedded-ui`; frontend dependencies/build output live in isolated `.local/distribution/frontend`. Keep source/output hash verification, production/same-origin build settings, and the repository/service/HTTP split. Never fall back to SPA HTML for API/MCP or missing assets. Preserve API-only/Vite development and do not restart active services to validate packaging.
+
+## Release changelog
+
+Every pull request with a user-visible change must update the root CHANGELOG.md. Collect pending changes under Unreleased. Before publishing, move them into a nonempty version section matching Cargo.toml, merge it into main, and publish that exact section as the GitHub Release notes. Describe observable changes in English.

@@ -8176,7 +8176,7 @@
                 "type": "string"
               },
               "currentSummary": {
-                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
                 "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
@@ -18569,7 +18569,7 @@
                 "type": "object"
               },
               "currentSummary": {
-                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
                 "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
@@ -28954,7 +28954,7 @@
                 ]
               },
               "currentSummary": {
-                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
                 "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
@@ -40729,7 +40729,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
               "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
@@ -48982,7 +48982,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
               "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
@@ -53407,7 +53407,7 @@
             "x-maxBytes": 16384
           },
           "currentSummary": {
-            "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+            "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
             "maxLength": 200,
             "minLength": 1,
             "pattern": "\\S",
@@ -53494,7 +53494,7 @@
                   "x-maxBytes": 16384
                 },
                 "currentSummary": {
-                  "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                  "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
                   "maxLength": 200,
                   "minLength": 1,
                   "pattern": "\\S",
@@ -57017,7 +57017,7 @@
               "x-maxBytes": 16384
             },
             "CurrentSummaryInput": {
-              "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
               "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
@@ -61565,7 +61565,7 @@
                 "type": "object"
               },
               "currentSummary": {
-                "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "description": "In at most 200 characters, tell the reader in a natural sentence what is happening with this task now. Name the work and its actual state. Examples: We are testing report exports. Report exports are waiting for access to the test database. We finished report exports and verified the resulting file. Describe completion only after applicable acceptance. Record activity details in the historical summary.",
                 "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",

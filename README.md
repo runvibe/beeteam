@@ -8,6 +8,8 @@ Bee Team gives agents working in separate chats a shared board. A lead can ask o
 
 Bee Team integrates with assistants through **Skills and MCP**, rather than calling their providers' model APIs directly. Use it with **Codex, Claude Code, GitHub Copilot**, or another harness that supports the required Skills and MCP workflow. Your harness runs the agents and manages model access; Bee Team provides the shared workspace for coordination.
 
+During delegated work, workers record questions in Bee Team and notify the leader who assigned the task. The leader asks you for any decision and records your answer for the worker.
+
 ## Table of contents
 
 - [How it works](#how-it-works)
@@ -20,6 +22,8 @@ Bee Team integrates with assistants through **Skills and MCP**, rather than call
 - [License and brand](#license-and-brand)
 
 ## How it works
+
+Switch light or dark mode in the app sidebar, or change the palette in Settings. The new appearance spreads from the selected control across the window.
 
 Open the **Documentation** link on the landing page or app home for the interactive guide at `/guide/`. It works before connecting the local API, in English or Portuguese. Choose a harness to see the matching installation and team tutorial steps. The advanced reference includes binary settings and the MCP catalog for this build.
 

@@ -28,7 +28,8 @@ it("confirms a successful copy inside the button and replays on another click", 
   const button = await screen.findByRole("button", { name: "Copy request" });
   fireEvent.click(button);
   await waitFor(() => expect(button).toHaveTextContent("Prompt copied."));
-  expect(button.querySelector(".lucide-copy")).toBeInTheDocument();
+  expect(button.querySelector(".lucide-copy")).toBeNull();
+  expect(screen.getByText("Copy request", { selector: "button" })).toBeVisible();
   const first = button.querySelector(".lucide-check");
   expect(first).toBeInTheDocument();
   fireEvent.click(button);

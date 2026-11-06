@@ -5,16 +5,16 @@
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "daef73c5801a4952d38134783c9ce171ab19b439f3a1eb65eb407e7c8e5e4c29",
-      "bundledSha256": "7af7b2cc1cee2ac551281503a6911e9d40cdc572d2ba3b7a3f1e1ee01eea6069",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "5cb7ebd1d646d1b6de9bcf5d7b87d9a3c3457ccbe62dec053f73e46441b763c6",
+      "bundledSha256": "bb0c1df5ce092a83ae476a3840ab1a8556e044aa0b6a9600df50a82016c4bb94",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "3e644352da050491df7e12d9cf4a21b3b719d26dc31ae903680ba4faa6c2c20b",
-      "bundledSha256": "16ec14c98d64316fa3441d6413fb882de2b4273242c77a9bb88e20187e0487d4",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "eac95ec29bacd2f0c85c54e2b10b159de8110514a0ebae7d26e2ce98e0697a9a",
+      "bundledSha256": "3d6b9ef604cc94a5361fb4d6fd708f71a8e3d81e87d6262d58202c0a5604df93",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
     },
     {
       "resourcePath": "references/handoff.md",

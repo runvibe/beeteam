@@ -5,9 +5,9 @@
     "reason": "Verified CLI syntax with immutable release tag and closed harness identifier; command tokens are technical."
   },
   {
-    "file": "src/components/release-notice.tsx",
-    "text": "noopener noreferrer",
-    "reason": "HTML link relationship security tokens are technical attributes, not interface prose."
+    "file": "src/state/theme-reveal.ts",
+    "text": "radial-gradient(circle at {{value1}}px {{value2}}px, transparent {{value3}}px, black {{value4}}px)",
+    "reason": "CSS mask geometry for the circular theme reveal in older WebViews."
   },
   {
     "file": "src/api/context.tsx",

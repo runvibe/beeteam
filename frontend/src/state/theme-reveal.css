@@ -1,0 +1,21 @@
+html[data-theme-reveal]::view-transition-group(root),
+html[data-theme-reveal]::view-transition-old(root) {
+  animation: none;
+}
+html[data-theme-reveal]::view-transition-old(root),
+html[data-theme-reveal]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+html[data-theme-reveal]::view-transition-new(root) {
+  animation: bee-theme-circle 480ms cubic-bezier(.22,.68,.18,1) both;
+}
+@keyframes bee-theme-circle {
+  from { clip-path: circle(0 at var(--bee-reveal-x) var(--bee-reveal-y)); }
+  to { clip-path: circle(var(--bee-reveal-radius) at var(--bee-reveal-x) var(--bee-reveal-y)); }
+}
+.bee-theme-reveal-matte {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+}
