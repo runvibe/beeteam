@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Copy the update request when the panel and API versions differ. The sidebar update indicator uses a more compact disc within the standard navigation button.
+
 ## 0.1.3
 
 - Switching appearance reveals the new theme outward from the control you used.

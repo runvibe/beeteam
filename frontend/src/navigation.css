@@ -174,7 +174,8 @@
 .navigation-rail .release-update-button,
 .navigation-rail .release-update-button:hover {
   position: relative;
-  background: var(--foreground);
+  border: 4px solid transparent;
+  background: var(--foreground) padding-box;
   color: var(--background);
 }
 .release-update-button::before {

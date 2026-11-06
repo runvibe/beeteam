@@ -9,6 +9,7 @@ import type { ChangeSource } from "@/api/live-refresh";
 import { t, useLocale } from "@/i18n";
 import { Button } from "./ui/button";
 import "./api-version-gate.css";
+import { UpdateRequest } from "./update-request";
 import { navigate } from "@/routing/location";
 import { PwaUpdate } from "@/pwa/update";
 
@@ -85,6 +86,7 @@ export function ApiVersionGate({
             })}
           </p>
         )}
+        {!query.error && (agreement === "api-older" || agreement === "frontend-older" || agreement === "different-build") && <UpdateRequest />}
         {query.error != null && <p>{t("common.connectionGuidance")}</p>}
         {query.error != null && window.location.hostname === "getbee.team" && (
           <p>{t("common.localPanelHint")}{" "}
