@@ -19,9 +19,9 @@ def check_server(binary, root):
         port = listener.getsockname()[1]
     env = dict(os.environ, APP_HOST="127.0.0.1", APP_PORT=str(port),
                DATABASE_DRIVER="sqlite", DATABASE_URL="sqlite://" + (root / "qa.db").as_posix(),
-               OTEL_ENABLED="false", BEE_DESKTOP_PARENT_PIPE="1", MCP_ENABLED="true")
+               OTEL_ENABLED="false", MCP_ENABLED="true")
     base = f"http://127.0.0.1:{port}"
-    child = subprocess.Popen([binary], env=env, cwd=root, stdin=subprocess.PIPE)
+    child = subprocess.Popen([binary, "--desktop-parent-pipe"], env=env, cwd=root, stdin=subprocess.PIPE)
     try:
         for _ in range(200):
             try:

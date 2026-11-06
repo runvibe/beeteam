@@ -18,7 +18,7 @@ it("opens only on explicit click and prevents overlapping launches", async () =>
   expect(open).not.toHaveBeenCalled();
   const group = screen.getByRole("group", { name: "Ações do projeto App" });
   await userEvent.click(
-    within(group).getByRole("button", { name: "Abrir no Explorer" }),
+    within(group).getByRole("button", { name: "Abrir pasta do projeto" }),
   );
   expect(open).toHaveBeenCalledExactlyOnceWith("explorer");
   expect(
@@ -45,7 +45,7 @@ it("reports an unavailable application without claiming it opened and allows ret
   );
   expect(screen.queryByRole("status")).toBeNull();
   expect(
-    screen.getByRole("button", { name: "Abrir no Explorer" }),
+    screen.getByRole("button", { name: "Abrir pasta do projeto" }),
   ).toBeEnabled();
 });
 
@@ -74,7 +74,7 @@ it("connects the project card to its task/key and clears feedback when navigatin
   const view = render(<View taskId="019a0000-0000-7000-8000-000000000001" />);
   expect(api.openProject).not.toHaveBeenCalled();
   await userEvent.click(
-    screen.getByRole("button", { name: "Abrir no Explorer" }),
+    screen.getByRole("button", { name: "Abrir pasta do projeto" }),
   );
   expect(api.openProject).toHaveBeenCalledExactlyOnceWith(
     "019a0000-0000-7000-8000-000000000001",

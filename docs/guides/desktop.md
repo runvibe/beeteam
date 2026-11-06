@@ -4,11 +4,11 @@ Desktop candidates include the standalone server from the same build. On first u
 
 Closing the window normally hides it. Choose **Open Bee Team** in the tray to return, or **Quit** to close Desktop and its own child server. The **Desktop** menu controls the close behavior and launching hidden at login. Browser and MCP clients using a separately launched server continue after Quit. Desktop uses the server's database configuration; uninstalling the desktop package should preserve the database. Upgrade using the same installation channel after backing up your data.
 
-## PortuguÃªs
+## Português
 
-O instalador Desktop inclui o servidor da mesma versÃ£o. Ao abrir o Bee Team Desktop, ele reutiliza o painel e o MCP locais compatÃ­veis ou inicia o servidor incluÃ­do se a porta estiver livre. A porta padrÃ£o Ã© 59865 e pode ser configurada com APP_PORT. Uma porta ocupada por serviÃ§o incompatÃ­vel exige intervenÃ§Ã£o antes de tentar novamente.
+O instalador Desktop inclui o servidor da mesma versão. Ao abrir o Bee Team Desktop, ele reutiliza o painel e o MCP locais compatíveis ou inicia o servidor incluído se a porta estiver livre. A porta padrão é 59865 e pode ser configurada com APP_PORT. Uma porta ocupada por serviço incompatível exige intervenção antes de tentar novamente.
 
-Fechar a janela normalmente mantÃ©m o aplicativo na bandeja. **Open Bee Team** reabre a janela. **Quit** encerra o desktop e o servidor iniciado por ele. O menu **Desktop** permite escolher o comportamento ao fechar e o inÃ­cio oculto no login. O navegador e o MCP continuam disponÃ­veis quando o servidor foi iniciado separadamente. Atualize pelo mesmo canal de instalaÃ§Ã£o e faÃ§a backup dos dados antes de atualizar.
+Fechar a janela normalmente mantém o aplicativo na bandeja. **Open Bee Team** reabre a janela. **Quit** encerra o desktop e o servidor iniciado por ele. O menu **Desktop** permite escolher o comportamento ao fechar e o início oculto no login. O navegador e o MCP continuam disponíveis quando o servidor foi iniciado separadamente. Atualize pelo mesmo canal de instalação e faça backup dos dados antes de atualizar.
 
 ## Candidate builds
 

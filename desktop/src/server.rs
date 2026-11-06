@@ -83,7 +83,7 @@ pub fn connect() -> Result<Connection, String> {
         command.creation_flags(0x08000000);
     }
     let mut child = command
-        .env("BEE_DESKTOP_PARENT_PIPE", "1")
+        .arg("--desktop-parent-pipe")
         .env("APP_HOST", "127.0.0.1")
         .stdin(Stdio::piped())
         .spawn()

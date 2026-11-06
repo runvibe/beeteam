@@ -62,7 +62,10 @@ async fn main() -> Result<()> {
 }
 
 async fn desktop_parent_closed() {
-    if std::env::var("BEE_DESKTOP_PARENT_PIPE").as_deref() != Ok("1") {
+    if !std::env::args_os()
+        .skip(1)
+        .any(|arg| arg == "--desktop-parent-pipe")
+    {
         std::future::pending::<()>().await;
     }
     use tokio::io::AsyncReadExt;
