@@ -315,7 +315,7 @@
   font-size: 13px;
 }
 
-.overview-subtask-list { max-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 2px; }
+.overview-subtask-list { max-height: min(360px, 50dvh); overflow-y: auto; overscroll-behavior: contain; padding: 2px; }
 
 .overview-subtasks-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .overview-subtask-row { display: grid; grid-template-columns: minmax(0, 1fr) 140px; align-items: center; gap: 16px; padding-block: 8px; padding-inline-end: 8px; min-width: 0; }

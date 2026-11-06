@@ -33,7 +33,7 @@ export function TimelineEventCard({ event }: { event: Resources["timeline"] }) {
     <Card
       role="article"
       aria-label={`${label} · ${event.sequence}`}
-      className="task-execution-summary timeline-event-card"
+      className="task-execution-summary timeline-event-card rounded-none border-0 ring-0"
     >
       <CardHeader className="summary-record-header">
         <CardTitle>{label}</CardTitle>

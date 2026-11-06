@@ -1,3 +1,4 @@
+import { useDetailListRoom } from "./use-detail-list-room";
 import { formatPercent, useLocale, t as tr } from "@/i18n";
 
 import { FilterPopover, FilterOptions } from "@/components/filter-controls";
@@ -30,7 +31,7 @@ export function summaryTitle(
   const title = line?.replace(/^#{1,6}\s+/, "");
   return title
     ? title.length > 100
-      ? title.slice(0, 99) + "…"
+      ? title.slice(0, 99) + "â€¦"
       : title
     : tr("tasks.summaryFrom", { date: formatDate(row.createdAt) });
 }
@@ -77,6 +78,7 @@ export function SummaryBrowser({
 }) {
   useLocale();
   const root = useRef<HTMLDivElement>(null);
+  useDetailListRoom(root, resource === "timeline");
   const sentinel = useRef<HTMLDivElement>(null);
   const [selected, setSelected] = useUrlState<string>(
     `${resource}.selected`,

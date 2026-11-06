@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Long subtask lists scroll inside the task overview.
+
+- The Plans and Timeline lists fit the visible panel as you scroll or resize. Event details use square corners and no outer border.
+
 - Identify agents, teams, boards, and task metadata by their icons in the task detail sidebar.
 
 - Copy the update request when the panel and API versions differ. The sidebar update indicator uses a more compact disc within the standard navigation button.

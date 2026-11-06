@@ -1,9 +1,9 @@
+import { useDetailListRoom } from "./use-detail-list-room";
 import { useLocale, t as tr } from "@/i18n";
 
 import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import {
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
   type ReactNode,
@@ -42,22 +42,7 @@ export function PlanNavigation({
   const list = useRef<HTMLElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
   const { query } = plans;
-  useLayoutEffect(() => {
-    const node = list.current;
-    if (mobile || !node) return;
-    const main = node.closest("[data-detail-scroll]");
-    const measure = () => {
-      const bottom = main?.getBoundingClientRect().bottom ?? window.innerHeight;
-      node.style.maxHeight = `${Math.max(160, bottom - node.getBoundingClientRect().top - 8)}px`;
-    };
-    measure();
-    main?.addEventListener("scroll", measure, { passive: true });
-    window.addEventListener("resize", measure);
-    return () => {
-      main?.removeEventListener("scroll", measure);
-      window.removeEventListener("resize", measure);
-    };
-  }, [mobile]);
+  useDetailListRoom(list, !mobile);
 
   const reveal = usePlanReveal(list, selectedId, plans, mobile, revealConsumed);
 

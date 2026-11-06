@@ -74,7 +74,7 @@ it.each([
         (call) => call[0] === "tasks" && call[2]?.parentId === parent.id,
       );
     expect(root).toBe(
-      desktop ? document.querySelector("[data-detail-scroll]") : null,
+      tab === "overview" ? document.querySelector(".overview-subtask-list[data-list-scroll]") : desktop ? document.querySelector("[data-detail-scroll]") : null,
     );
     expect(requests().map((call) => call[2]?.offset)).toEqual([0]);
     expect(screen.queryByRole("button", { name: "Child 10" })).toBeNull();
