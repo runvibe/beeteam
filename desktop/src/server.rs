@@ -1,7 +1,6 @@
 use reqwest::blocking::Client;
 use serde_json::Value;
-use std::io;
-use std::net::{Ipv4Addr, SocketAddrV4, TcpStream};
+use std::net::{Ipv4Addr, SocketAddrV4, TcpListener};
 use std::process::{Child, Command, Stdio};
 use std::time::{Duration, Instant};
 
@@ -65,13 +64,12 @@ pub fn connect() -> Result<Connection, String> {
         .timeout(Duration::from_secs(2))
         .build()
         .map_err(|e| e.to_string())?;
-    match TcpStream::connect_timeout(&addr.into(), Duration::from_secs(2)) {
-        Ok(_) => {
-            ready(&client, &base)?;
-            return Ok(Connection { url, child: None });
-        }
-        Err(e) if e.kind() == io::ErrorKind::ConnectionRefused => (),
-        Err(e) => return Err(e.to_string()),
+    // Windows may time out when connecting to an unused loopback port. A
+    // successful bind proves availability; the server repeats the bind before
+    // opening storage, so a competing launch still fails safely.
+    if TcpListener::bind(addr).is_err() {
+        ready(&client, &base)?;
+        return Ok(Connection { url, child: None });
     }
     let executable = std::env::current_exe()
         .map_err(|e| e.to_string())?
