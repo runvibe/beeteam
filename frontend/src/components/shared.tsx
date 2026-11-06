@@ -1,6 +1,6 @@
 import { locale, useLocale, t as tr } from "@/i18n";
 
-import { useId, type ReactNode } from "react";
+import { useId, type ReactNode, type RefObject } from "react";
 import { useCompactFilters } from "./filter-context";
 import { InlineFilterSearch } from "./inline-filter-search";
 import { FilterPopover, FilterOptions } from "./filter-controls";
@@ -129,12 +129,14 @@ export function Choice({
   onChange,
   options,
   all,
+  triggerRef,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
   all?: string;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 }) {
   useLocale();
   const compact = useCompactFilters();
@@ -144,6 +146,7 @@ export function Choice({
     return (
       <FilterPopover
         label={label}
+        triggerRef={triggerRef}
         summary={selected}
         onClear={() => onChange(all ? "" : options[0]?.value || "")}
         active={value !== (all ? "" : options[0]?.value || "")}
@@ -165,7 +168,7 @@ export function Choice({
         value={value || "__all"}
         onValueChange={(v) => onChange(v === "__all" ? "" : v)}
       >
-        <SelectTrigger aria-label={label}>
+        <SelectTrigger aria-label={label} ref={triggerRef}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -1,15 +1,28 @@
+import { useRef, type ComponentProps } from "react";
+import { revealTheme } from "@/state/theme-reveal";
 import { useStore } from "zustand";
 import { useLocale, t } from "@/i18n";
 import { themeController } from "@/state/theme-runtime";
 import { type ThemePreference, type ThemePreset } from "@/state/theme";
 import { Choice } from "./shared";
+function ThemeChoice({ onChange, ...props }: ComponentProps<typeof Choice>) {
+  const trigger = useRef<HTMLButtonElement>(null);
+  return (
+    <Choice {...props} triggerRef={trigger} onChange={(value) => {
+      if (value === props.value) return;
+      if (trigger.current) revealTheme(trigger.current, () => onChange(value));
+      else onChange(value);
+    }} />
+  );
+}
+
 export function AppearanceSettings() {
   useLocale();
   const preset = useStore(themeController.store, (s) => s.preset);
   const preference = useStore(themeController.store, (s) => s.preference);
   return (
     <section className="detail-section">
-      <Choice
+      <ThemeChoice
         label={t("settings.colorPalette")}
         value={preset}
         onChange={(value) =>
@@ -22,7 +35,7 @@ export function AppearanceSettings() {
           { value: "copilot", label: t("settings.paletteCopilot") },
         ]}
       />
-      <Choice
+      <ThemeChoice
         label={t("settings.appearance")}
         value={preference}
         onChange={(value) =>

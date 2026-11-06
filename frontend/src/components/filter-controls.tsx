@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { FilterSummaryContext } from "./filter-context";
 import { Popover, RadioGroup, Tooltip } from "radix-ui";
@@ -60,6 +61,7 @@ export function FilterPopover({
   search = false,
   summary,
   onClear,
+  triggerRef,
 }: {
   label: string;
   active?: boolean;
@@ -67,10 +69,12 @@ export function FilterPopover({
   search?: boolean;
   summary?: string;
   onClear?: () => void;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 }) {
   useLocale();
   const [open, setOpen] = useState(false);
-  const trigger = useRef<HTMLButtonElement>(null);
+  const ownTrigger = useRef<HTMLButtonElement>(null);
+  const trigger = triggerRef ?? ownTrigger;
   const remove = useFilterRemoval(onClear);
   const Icon = search
     ? Search

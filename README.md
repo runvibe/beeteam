@@ -23,6 +23,8 @@ During delegated work, workers record questions in Bee Team and notify the leade
 
 ## How it works
 
+Switch light or dark mode in the app sidebar, or change the palette in Settings. The new appearance spreads from the selected control across the window.
+
 Open the **Documentation** link on the landing page or app home for the interactive guide at `/guide/`. It works before connecting the local API, in English or Portuguese. Choose a harness to see the matching installation and team tutorial steps. The advanced reference includes binary settings and the MCP catalog for this build.
 
 The harness runs the agents and opens their chats. Bee Team stores profiles, team membership, tasks, plans, comments and results locally. The lead assigns work and reviews evidence on the board. Workers communicate by task and comment ID so each can retrieve the exact handoff. [Walk through a two-worker release](docs/guides/first-team.md).

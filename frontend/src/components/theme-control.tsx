@@ -1,5 +1,6 @@
 import { useLocale, t as tr } from "@/i18n";
 
+import { revealTheme } from "@/state/theme-reveal";
 import { useStore } from "zustand";
 import { Sun, Moon } from "lucide-react";
 import { themeController } from "@/state/theme-runtime";
@@ -19,7 +20,9 @@ export function ThemeControl() {
       size="icon"
       aria-label={label}
       title={label}
-      onClick={() => themeController.store.getState().setPreference(next)}
+      onClick={(event) => revealTheme(event.currentTarget, () => {
+        themeController.store.getState().setPreference(next);
+      })}
     >
       <Icon aria-hidden="true" />
     </Button>
