@@ -1,3 +1,4 @@
+import { SlidersHorizontal } from "lucide-react";
 import { useLocale, t as tr } from "@/i18n";
 
 import { StatusSettings } from "./status-settings";
@@ -155,7 +156,7 @@ export function TaskMode({ task }: { task: Task }) {
   });
   return (
     <section className="task-autonomy">
-      <h2>{tr("common.autonomy")}</h2>
+      <h2><SlidersHorizontal className="task-reference-icon" aria-hidden="true" />{tr("common.autonomy")}</h2>
       <p className="task-effective-mode">
         {tr("common.effectiveMode")}{" "}
         <strong>

@@ -2,7 +2,7 @@ import { useLocale, t as tr } from "@/i18n";
 import { closeTaskDetails } from "@/routing/task-details-view";
 import { useTaskContextView, useTaskMobile } from "./task-context-view";
 import { DetailContext } from "@/components/detail-layout/detail-context";
-import { ArrowUpLeft } from "lucide-react";
+import { Archive, ArrowUpLeft, CalendarClock, CircleDot, Columns3, Network, Users } from "lucide-react";
 import type { TaskOverviewData } from "@/api/task-overview";
 import type { Task } from "@/api/types";
 import { useUi } from "@/state/ui";
@@ -71,20 +71,20 @@ export function TaskContext({
       }
     >
       <section>
-        <h2>{tr("boards.status")}</h2>
+        <h2><CircleDot className="task-reference-icon" aria-hidden="true" />{tr("boards.status")}</h2>
         <TaskStatus task={task} />
       </section>
       <section>
         <h2>{tr("tasks.assignees")}</h2>
         <dl>
           <div>
-            <dt>{tr("boards.executor")}</dt>
+            <dt><Users className="task-reference-icon" aria-hidden="true" />{tr("boards.executor")}</dt>
             <dd>
               <AgentName id={task.executorAgentId} />
             </dd>
           </div>
           <div>
-            <dt>{tr("tasks.author")}</dt>
+            <dt><Users className="task-reference-icon" aria-hidden="true" />{tr("tasks.author")}</dt>
             <dd>
               <AgentName id={task.authorAgentId} />
             </dd>
@@ -95,7 +95,7 @@ export function TaskContext({
         <h2>{tr("tasks.relationships")}</h2>
         <dl>
           <div>
-            <dt>{tr("tasks.currentBoard")}</dt>
+            <dt><Columns3 className="task-reference-icon" aria-hidden="true" />{tr("tasks.currentBoard")}</dt>
             <dd>
               <Button variant="link" onClick={() => openBoard(task.boardId)}>
                 <BoardName id={task.boardId} />
@@ -103,13 +103,13 @@ export function TaskContext({
             </dd>
           </div>
           <div>
-            <dt>{tr("tasks.currentBoardTeam")}</dt>
+            <dt><Network className="task-reference-icon" aria-hidden="true" />{tr("tasks.currentBoardTeam")}</dt>
             <dd>
               <TaskBoardTeam boardId={task.boardId} />
             </dd>
           </div>
           <div>
-            <dt>{tr("tasks.chainOriginBoard")}</dt>
+            <dt><Columns3 className="task-reference-icon" aria-hidden="true" />{tr("tasks.chainOriginBoard")}</dt>
             <dd>
               <Button
                 variant="link"
@@ -132,13 +132,13 @@ export function TaskContext({
         <h2>{tr("tasks.record")}</h2>
         <dl>
           <div>
-            <dt>{tr("agents.registry")}</dt>
+            <dt><Archive className="task-reference-icon" aria-hidden="true" />{tr("agents.registry")}</dt>
             <dd>
               {task.archivedAt ? tr("tasks.archived") : tr("tasks.active")}
             </dd>
           </div>
           <div>
-            <dt>{tr("tasks.updatedAt")}</dt>
+            <dt><CalendarClock className="task-reference-icon" aria-hidden="true" />{tr("tasks.updatedAt")}</dt>
             <dd>
               <time dateTime={task.updatedAt}>
                 {formatDate(task.updatedAt)}
