@@ -8,7 +8,7 @@
   "archivedRecordsAreReadOnly": "Archived records are read-only.",
   "projectDiscoveryRequiresTheConnectedApi": "Project discovery requires the connected API.",
   "specificationMustBeMarkdownText": "Specification must be Markdown text.",
-  "aNonemptyCurrentSummaryOfUpTo16384Utf8": "A nonempty current summary of up to 16384 UTF-8 bytes is required.",
+  "currentSummaryRequiredUpTo200Characters": "A nonempty current summary of up to 200 characters is required.",
   "theImageMustUseHttps": "The image must use HTTPS.",
   "invalidMode": "Invalid mode.",
   "aStatusWithThisNameAlreadyExists": "A status with this name already exists.",

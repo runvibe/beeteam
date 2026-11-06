@@ -80,12 +80,12 @@ export function patchRecord<K extends keyof Patches>(
       (patch.progress !== undefined && !patch.currentSummary?.trim()) ||
       (patch.currentSummary !== undefined &&
         (!patch.currentSummary.trim() ||
-          new TextEncoder().encode(patch.currentSummary).length > 16384))
+          Array.from(patch.currentSummary).length > 200))
     )
       throw new ApiError(
         400,
         "invalid_request",
-        message("errors.aNonemptyCurrentSummaryOfUpTo16384Utf8"),
+        message("errors.currentSummaryRequiredUpTo200Characters"),
       );
   }
   for (const [key, value] of Object.entries(body)) validateText(value, key);

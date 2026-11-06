@@ -558,8 +558,22 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
 
 fn validate_current_summary(body: &Value, required: bool) -> Result<()> {
     match body.get("currentSummary") {
-        Some(Value::String(text)) if !text.trim().is_empty() && text.len() <= 16384 => Ok(()),
+        Some(Value::String(text)) if !text.trim().is_empty() && text.chars().count() <= 200 => Ok(()),
         None if !required => Ok(()),
-        _ => Err(Failure::invalid("currentSummary must be a non-blank cumulative synthesis of at most 16384 UTF-8 bytes; required for work progress or status changes")),
+        _ => Err(Failure::invalid("currentSummary must be a non-blank cumulative synthesis of at most 200 characters; required for work progress or status changes")),
+    }
+}
+
+#[cfg(test)]
+mod current_summary_tests {
+    use super::*;
+
+    #[test]
+    fn summary_limit_counts_unicode_characters_on_write() {
+        for (length, valid) in [(200, true), (201, false)] {
+            let body = serde_json::json!({ "currentSummary": "\u{1f41d}".repeat(length) });
+            assert_eq!(validate_current_summary(&body, true).is_ok(), valid);
+        }
+        assert!(validate_current_summary(&serde_json::json!({}), false).is_ok());
     }
 }
