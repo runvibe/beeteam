@@ -30,8 +30,6 @@
 .analytics-consent-options label { display: flex; align-items: center; gap: 0.75rem; min-height: 2.5rem; }
 .analytics-consent-options input { width: 1rem; height: 1rem; accent-color: var(--primary); }
 .analytics-consent-options input:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-.analytics-preferences-trigger { position: fixed; bottom: 1rem; inset-inline-end: 1rem; z-index: 80; }
-.analytics-preferences-trigger > * { background: var(--card); }
 @media (max-width: 480px) {
   .analytics-consent { padding: 1rem; max-height: calc(100dvh - 2rem); overflow: auto; }
 }

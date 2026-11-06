@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, useContext, type ReactNode, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { t, useLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { createConsentStore } from "./consent-store";
@@ -15,9 +15,34 @@ function subscribeRoute(notify: () => void) {
   };
 }
 
-export function AnalyticsConsent({ product, path, legalReady = false }: {
+type ConsentStore = ReturnType<typeof createConsentStore>;
+const ConsentContext = createContext<ConsentStore | null>(null);
+
+export function CookiePreferences() {
+  const store = useContext(ConsentContext);
+  return store ? <PreferenceField store={store} /> : null;
+}
+
+function PreferenceField({ store }: { store: ConsentStore }) {
+  useLocale();
+  const choice = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
+  return (
+    <section className="detail-section analytics-consent-options">
+      <h3>{t("common.analyticsManage")}</h3>
+      <label>
+        <input type="checkbox" checked={choice === "accepted"}
+          onChange={event => store.choose(event.currentTarget.checked ? "accepted" : "rejected")} />
+        <span>{t("common.analyticsOptional")}</span>
+      </label>
+      <p className="small-note">{t("common.analyticsStorage")}</p>
+    </section>
+  );
+}
+
+export function AnalyticsConsent({ product, path, children, legalReady = false }: {
   product: AnalyticsProduct;
   path?: string;
+  children?: ReactNode;
   legalReady?: boolean;
 }) {
   const language = useLocale();
@@ -48,15 +73,10 @@ export function AnalyticsConsent({ product, path, legalReady = false }: {
     store.choose(accepted ? "accepted" : "rejected");
     setManage(false);
   }
-  if (!legalReady) return null;
-  if (choice !== "unknown" && !manage) return (
-    <div className="analytics-preferences-trigger">
-      <Button variant="outline" size="sm" onClick={() => { setDraft(choice === "accepted"); setManage(true); }}>
-        {t("common.analyticsManage")}
-      </Button>
-    </div>
-  );
   return (
+    <ConsentContext.Provider value={legalReady ? store : null}>
+      {children}
+      {legalReady && choice === "unknown" && (
     <section className="analytics-consent" aria-labelledby={titleId}>
       <h2 id={titleId}>{t("common.analyticsTitle")}</h2>
       <p>{t("common.analyticsDescription")}</p>
@@ -84,5 +104,7 @@ export function AnalyticsConsent({ product, path, legalReady = false }: {
         </>}
       </div>
     </section>
+      )}
+    </ConsentContext.Provider>
   );
 }
