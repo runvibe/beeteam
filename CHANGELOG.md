@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Match the default browser icon to the bold Bee Team outline.
+
 ## 0.1.4
 
 - Long subtask lists scroll inside the task overview.
