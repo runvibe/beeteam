@@ -40,8 +40,8 @@ it("enters Home from the connected root and leaves direct list links intact", as
   expect(document.querySelector(".mobile-context-path")).toHaveTextContent("Início");
   expect(location.search).toContain("boards.name=preserved");
   expect(list).not.toHaveBeenCalled();
-  for (const link of screen.getAllByRole("link", { name: "Documentação" })) expect(link).toHaveAttribute("href", "https://getbee.team/guide/");
-  expect(screen.getByRole("link", { name: "Rever instruções de instalação" })).toHaveAttribute("href", "https://getbee.team/pt/guide/installation");
+  for (const link of screen.getAllByRole("link", { name: "Documentação" })) expect(link).toHaveAttribute("href", "https://getbee.team/guide/?theme=default&mode=light");
+  expect(screen.getByRole("link", { name: "Rever instruções de instalação" })).toHaveAttribute("href", "https://getbee.team/pt/guide/installation?theme=default&mode=light");
   fireEvent.click(screen.getByRole("button", { name: "Abrir boards" }));
   await screen.findByRole("link", { name: "Lançamento do produto" });
   expect(location.pathname).toBe("/boards");
@@ -92,7 +92,7 @@ it("checks the local API on app entry and retries before opening the panel", asy
   });
   expect(location.pathname).toBe("/app/");
   act(() => setLocalePreference("en"));
-  expect(screen.getByRole("link", { name: "Review installation instructions" })).toHaveAttribute("href", "https://getbee.team/guide/installation");
+  expect(screen.getByRole("link", { name: "Review installation instructions" })).toHaveAttribute("href", "https://getbee.team/guide/installation?theme=default&mode=light");
   expect(
     screen.getByRole("heading", {
       name: "Your next step starts with a conversation.",

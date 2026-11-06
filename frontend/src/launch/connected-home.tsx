@@ -1,3 +1,4 @@
+import { useSiteLink } from "@/state/site-link";
 import { BookOpen, Columns3, Network, Users } from "lucide-react";
 import { CopyButton } from "@/components/copy-button";
 import { t, useLocale } from "@/i18n";
@@ -7,6 +8,7 @@ import { navigate, safeOrigin, useLocation } from "@/routing/location";
 import "./connected-home.css";
 
 export function ConnectedHome() {
+  const siteLink = useSiteLink();
   const locale = useLocale();
   const url = useLocation();
   const { info } = useApiCompatibility();
@@ -63,15 +65,16 @@ export function ConnectedHome() {
         </ol>
       </section>
       <nav className="home-destinations" aria-label={t("common.homeExplore")}>
-        <Button asChild variant="outline"><a href="https://getbee.team/guide/"><BookOpen aria-hidden="true" />{t("common.guideDocumentation")}</a></Button>
+        <Button asChild variant="outline"><a href={siteLink("/guide/")}><BookOpen aria-hidden="true" />{t("common.guideDocumentation")}</a></Button>
         <Button variant="outline" onClick={() => navigate("/teams")}>
           <Network aria-hidden="true" />{t("common.homeOpenTeams")}
         </Button>
         <Button variant="outline" onClick={() => navigate("/agents")}>
           <Users aria-hidden="true" />{t("common.homeOpenAgents")}
         </Button>
+        <Button variant="outline" onClick={() => navigate("/boards")}><Columns3 aria-hidden="true" />{t("common.homeViewBoards")}</Button>
         <Button asChild variant="ghost">
-          <a href={`https://getbee.team${locale === "pt-BR" ? "/pt" : ""}/guide/installation`}>{t("common.homeReviewSetup")}</a>
+          <a href={siteLink(`${locale === "pt-BR" ? "/pt" : ""}/guide/installation`)}>{t("common.homeReviewSetup")}</a>
         </Button>
       </nav>
     </section>

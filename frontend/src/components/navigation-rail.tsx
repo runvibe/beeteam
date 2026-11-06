@@ -1,3 +1,4 @@
+import { useSiteLink } from "@/state/site-link";
 import { NavigationTooltip } from "./navigation-tooltip";
 import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
@@ -56,6 +57,7 @@ export function NavigationRail({
   useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
+  const siteLink = useSiteLink();
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
     if (area !== "home") navigate(homeHref);
@@ -125,7 +127,7 @@ export function NavigationRail({
         aria-label={tr("common.globalPreferences")}
       >
         <Button asChild variant="ghost" size="icon">
-          <a href="https://getbee.team/guide/" aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
+          <a href={siteLink("/guide/")} aria-label={tr("common.guideDocumentation")} title={tr("common.guideDocumentation")}>
             <BookOpen aria-hidden="true" />
           </a>
         </Button>

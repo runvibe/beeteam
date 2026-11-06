@@ -1,7 +1,6 @@
 import { useEffect, useState, type ComponentProps } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Check, Copy } from "lucide-react";
-import { BeeTeamLogo } from "./bee-team-logo";
 import { Button } from "./ui/button";
 import { t } from "@/i18n";
 
@@ -31,15 +30,15 @@ export function CopyButton({ text, label, ...props }: Props) {
     <>
       <Button type="button" {...props} onClick={copy} aria-label={label}>
         <span className="relative inline-grid place-items-center">
-          <span className={copied ? "invisible inline-flex items-center gap-2" : "inline-flex items-center gap-2"}><Copy aria-hidden="true" size={14} />{label}</span>
-          {copied && <span key={feedback.count} aria-hidden="true" className="absolute grid size-6 place-items-center">
-            <motion.span className="absolute inset-0" initial={{ rotate: 0 }} animate={{ rotate: reduced ? 0 : 180 }} transition={{ duration: 0.45 }}>
-              <BeeTeamLogo className="size-full!" variant="thin" />
-            </motion.span>
-            <motion.span initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: 1 }} transition={{ delay: reduced ? 0 : 0.3 }}>
-              <Check className="size-3!" />
-            </motion.span>
-          </span>}
+          <motion.span className="inline-flex items-center gap-2" initial={false}
+            animate={{ opacity: copied ? 0 : 1 }} transition={{ duration: reduced ? 0 : 0.16 }}>
+            <Copy aria-hidden="true" size={14} />{label}
+          </motion.span>
+          {copied && <motion.span key={feedback.count} aria-hidden="true" className="absolute grid place-items-center"
+            initial={{ opacity: reduced ? 1 : 0 }} animate={{ opacity: reduced ? 1 : [0, 1, 1, 0] }}
+            transition={{ duration: reduced ? 0 : 1.8, times: [0, 0.12, 0.88, 1] }}>
+            <Check size={16} />
+          </motion.span>}
         </span>
         <span role="status" className="sr-only">{copied && t("common.homePromptCopied")}</span>
       </Button>

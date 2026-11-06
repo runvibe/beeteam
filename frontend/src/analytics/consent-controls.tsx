@@ -1,3 +1,4 @@
+import { useSiteLink } from "@/state/site-link";
 import { createContext, useContext, type ReactNode, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { t, useLocale } from "@/i18n";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,8 @@ export function AnalyticsConsent({ product, path, children, legalReady = false }
   const titleId = useId();
   const checkboxId = useId();
   const prefix = language === "pt-BR" ? "/pt" : "";
-  const legalOrigin = product === "app" ? "https://getbee.team" : "";
+  const siteLink = useSiteLink();
+  const legalLink = (path: string) => product === "app" ? siteLink(path) : path;
   useEffect(() => setDraft(choice === "accepted"), [choice]);
   useEffect(() => {
     const frame = createFrameClient(product, window, document, t("common.analyticsFrameTitle"));
@@ -89,8 +91,8 @@ export function AnalyticsConsent({ product, path, children, legalReady = false }
         {!store.isPersistent() && <p role="status">{t("common.analyticsSessionOnly")}</p>}
       </div>}
       {legalReady && <nav className="analytics-consent-legal" aria-label={t("common.analyticsLegal")}>
-        <a href={`${legalOrigin}${prefix}/privacy`} target="_blank" rel="noopener noreferrer">{t("common.analyticsPrivacy")}</a>
-        <a href={`${legalOrigin}${prefix}/terms`} target="_blank" rel="noopener noreferrer">{t("common.analyticsTerms")}</a>
+        <a href={legalLink(`${prefix}/privacy`)} target="_blank" rel="noopener noreferrer">{t("common.analyticsPrivacy")}</a>
+        <a href={legalLink(`${prefix}/terms`)} target="_blank" rel="noopener noreferrer">{t("common.analyticsTerms")}</a>
       </nav>}
       <div className="analytics-consent-actions">
         {manage ? <>

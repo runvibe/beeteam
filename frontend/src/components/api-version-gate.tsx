@@ -1,3 +1,4 @@
+import { useSiteLink } from "@/state/site-link";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
@@ -25,7 +26,8 @@ export function ApiVersionGate({
   introduction?: boolean;
 }) {
   const locale = useLocale();
-  const documentation = `https://getbee.team${locale === "pt-BR" ? "/pt" : ""}/guide`;
+  const siteLink = useSiteLink();
+  const documentation = `${locale === "pt-BR" ? "/pt" : ""}/guide`;
   const api = useApi();
   const query = useQuery({
     queryKey: apiInfoKey,
@@ -91,7 +93,7 @@ export function ApiVersionGate({
         )}
         <div className="api-version-actions">
           <Button asChild variant="outline">
-            <a href={`${documentation}/installation`}>
+            <a href={siteLink(`${documentation}/installation`)}>
               {t("common.launchInstall")}
             </a>
           </Button>
@@ -114,7 +116,7 @@ export function ApiVersionGate({
         </div>
         <p className="api-version-help">
           <Button asChild variant="link" className="h-auto p-0 text-sm">
-            <a href={`${documentation}/local-connection`}>
+            <a href={siteLink(`${documentation}/local-connection`)}>
               {t("common.connectionHelp")}
             </a>
           </Button>
