@@ -3126,7 +3126,7 @@ components:
       type: string
       minLength: 1
       pattern: '\S'
-      x-maxBytes: 16384
+      maxLength: 200
       description: Resumo atual escrito pelo worker, completo por si só. Prefira uma ou duas frases curtas com o resultado principal e, se relevante, o bloqueio ou próximo passo. Guarde os detalhes no histórico da atividade. Exemplos — “Menu mobile pronto para revisão.” ou “Exportação implementada. A validação aguarda acesso ao banco de testes.” Substitui o resumo anterior, preservado na timeline.
     Progress:
       type: object

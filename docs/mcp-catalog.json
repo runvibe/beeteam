@@ -8177,10 +8177,10 @@
               },
               "currentSummary": {
                 "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
-                "type": "string",
-                "x-maxBytes": 16384
+                "type": "string"
               },
               "description": {
                 "description": "Markdown, maximum 65536 UTF-8 bytes.",
@@ -18570,10 +18570,10 @@
               },
               "currentSummary": {
                 "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
-                "type": "string",
-                "x-maxBytes": 16384
+                "type": "string"
               },
               "deliverables": {
                 "items": {
@@ -28955,10 +28955,10 @@
               },
               "currentSummary": {
                 "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
-                "type": "string",
-                "x-maxBytes": 16384
+                "type": "string"
               },
               "statusId": {
                 "format": "uuid",
@@ -40730,10 +40730,10 @@
             },
             "CurrentSummaryInput": {
               "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
-              "type": "string",
-              "x-maxBytes": 16384
+              "type": "string"
             },
             "DeclaredActor": {
               "description": "Creator declared in the request. human identifies the local user; agent uses a persisted ID. Identity is not verified.",
@@ -48983,10 +48983,10 @@
             },
             "CurrentSummaryInput": {
               "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
-              "type": "string",
-              "x-maxBytes": 16384
+              "type": "string"
             },
             "DeclaredActor": {
               "description": "Creator declared in the request. human identifies the local user; agent uses a persisted ID. Identity is not verified.",
@@ -53408,10 +53408,10 @@
           },
           "currentSummary": {
             "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+            "maxLength": 200,
             "minLength": 1,
             "pattern": "\\S",
-            "type": "string",
-            "x-maxBytes": 16384
+            "type": "string"
           },
           "expectedVersion": {
             "minimum": 1,
@@ -53495,10 +53495,10 @@
                 },
                 "currentSummary": {
                   "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                  "maxLength": 200,
                   "minLength": 1,
                   "pattern": "\\S",
-                  "type": "string",
-                  "x-maxBytes": 16384
+                  "type": "string"
                 },
                 "expectedVersion": {
                   "minimum": 1,
@@ -57018,10 +57018,10 @@
             },
             "CurrentSummaryInput": {
               "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+              "maxLength": 200,
               "minLength": 1,
               "pattern": "\\S",
-              "type": "string",
-              "x-maxBytes": 16384
+              "type": "string"
             },
             "DeclaredActor": {
               "description": "Creator declared in the request. human identifies the local user; agent uses a persisted ID. Identity is not verified.",
@@ -61566,10 +61566,10 @@
               },
               "currentSummary": {
                 "description": "Worker-authored, self-contained snapshot of the current task. Prefer one or two short sentences stating the main result and, when relevant, the blocker or next step. Put implementation details in the activity history. Examples: “Mobile menu ready for review. or “Export implemented. Validation is waiting for test database access. Replaces the previous summary, which stays in the timeline.",
+                "maxLength": 200,
                 "minLength": 1,
                 "pattern": "\\S",
-                "type": "string",
-                "x-maxBytes": 16384
+                "type": "string"
               },
               "deliverables": {
                 "items": {
