@@ -25,6 +25,8 @@ Open the **Documentation** link on the landing page or app home for the interact
 
 The harness runs the agents and opens their chats. Bee Team stores profiles, team membership, tasks, plans, comments and results locally. The lead assigns work and reviews evidence on the board. Workers communicate by task and comment ID so each can retrieve the exact handoff. [Walk through a two-worker release](docs/guides/first-team.md).
 
+The work summary gives the current status in one or two short sentences. Include the main result and any blocker or next step. Record the details in the activity history.
+
 ## Quick start
 
 Open the [installation guide](https://getbee.team/guide/installation), choose your harness, and copy its request into your assistant's chat. The same assistant-first flow starts with this prompt:
