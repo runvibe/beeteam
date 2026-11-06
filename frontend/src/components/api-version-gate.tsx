@@ -86,6 +86,11 @@ export function ApiVersionGate({
           </p>
         )}
         {query.error != null && <p>{t("common.connectionGuidance")}</p>}
+        {query.error != null && window.location.hostname === "getbee.team" && (
+          <p>{t("common.localPanelHint")}{" "}
+            <a className="underline" href="http://127.0.0.1:59865/app/">{t("common.openLocalPanel")}</a>
+          </p>
+        )}
         <div className="api-version-actions">
           <Button asChild variant="outline">
             <a href={`${documentation}/installation`}>
