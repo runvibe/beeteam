@@ -1,6 +1,8 @@
 import { useLocale, t as tr } from "@/i18n";
 
 import { BookOpen, Hexagon, Columns3, Users, Network, House } from "lucide-react";
+import { ReleaseNotice } from "./release-notice";
+import { appVersion } from "@/app-version";
 import { Tooltip } from "radix-ui";
 import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
@@ -85,6 +87,7 @@ export function NavigationRail({
       </a>
       <Tooltip.Provider delayDuration={300}>
         <nav aria-label={tr("common.mainNavigation")}>
+          {homeEnabled && <ReleaseNotice installedVersion={appVersion} />}
           {homeEnabled && (
             <Button
               className="navigation-button"

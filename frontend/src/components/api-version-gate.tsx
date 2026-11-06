@@ -8,7 +8,6 @@ import type { ChangeSource } from "@/api/live-refresh";
 import { t, useLocale } from "@/i18n";
 import { Button } from "./ui/button";
 import "./api-version-gate.css";
-import { ReleaseNotice } from "./release-notice";
 import { navigate } from "@/routing/location";
 import { PwaUpdate } from "@/pwa/update";
 
@@ -51,7 +50,6 @@ export function ApiVersionGate({
       <>
         <PwaUpdate visible />
         <div className="connected-session">
-          <ReleaseNotice installedVersion={expectedVersion} />
           {changes && <LiveUpdates source={changes} />}
           {children}
         </div>
