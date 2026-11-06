@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.4
+
 - Long subtask lists scroll inside the task overview.
 
 - The Plans and Timeline lists fit the visible panel as you scroll or resize. Event details use square corners and no outer border.
