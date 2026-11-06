@@ -100,7 +100,7 @@
   "launchFooterNotice": "© {{year}} Bee Team contributors. Free, open-source software under Apache 2.0. Bee Team branding is reserved separately.",
   "languageEnglish": "English",
   "languagePortuguese": "Português",
-  "releaseUpdatePrompt": "Read https://getbee.team/install and use the Setup Bee Team skill to update my existing Bee Team installation. Compare the running version with the release at https://getbee.team/install.json. If I am already up to date, confirm that and stop. If a newer release is available, back up my data, verify the package for my OS and architecture, and update the binary and the skills for my assistant to the same release. Preserve my database and settings. Restart the service and confirm the running version on the configured port.",
+  "releaseUpdatePrompt": "Use the setup-bee-team skill to update my existing Bee Team installation.",
   "releaseCopyInstruction": "Paste this request in your assistant to update Bee Team.",
   "releaseCopyAction": "Copy request",
   "optionalUpdate": "Optional update",

@@ -100,7 +100,7 @@
   "launchFooterNotice": "© {{year}} Contribuidores Bee Team. Software gratuito e de código aberto sob Apache 2.0. Marca e identidade Bee Team reservadas separadamente.",
   "languageEnglish": "English",
   "languagePortuguese": "Português",
-  "releaseUpdatePrompt": "Leia https://getbee.team/install e use a skill Setup Bee Team para atualizar minha instalação do Bee Team. Compare a versão em execução com a release de https://getbee.team/install.json. Se eu já estiver na versão atual, confirme e encerre. Se houver uma versão mais nova, faça backup dos meus dados, verifique o pacote do meu sistema e arquitetura e atualize o binário e as skills do meu assistente para a mesma release. Preserve meu banco e minhas configurações. Reinicie o serviço e confirme a versão em execução na porta configurada.",
+  "releaseUpdatePrompt": "Use a skill setup-bee-team para atualizar minha instalação do Bee Team.",
   "releaseCopyInstruction": "Cole este pedido no seu assistente para atualizar o Bee Team.",
   "releaseCopyAction": "Copiar pedido",
   "optionalUpdate": "Atualização opcional",

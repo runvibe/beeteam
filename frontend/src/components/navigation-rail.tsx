@@ -1,3 +1,4 @@
+import { NavigationTooltip } from "./navigation-tooltip";
 import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -90,6 +91,7 @@ export function NavigationRail({
         <nav aria-label={tr("common.mainNavigation")}>
           {homeEnabled && <ReleaseNotice installedVersion={appVersion} />}
           {homeEnabled && (
+            <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
               variant={area === "home" ? "secondary" : "ghost"}
@@ -100,10 +102,10 @@ export function NavigationRail({
             >
               <House aria-hidden="true" />
             </Button>
+            </NavigationTooltip>
           )}
           {sections.map(({ area: target, label, name, Icon }) => (
-            <Tooltip.Root key={target}>
-              <Tooltip.Trigger asChild>
+            <NavigationTooltip key={target} label={label}>
                 <Button
                   className="navigation-button"
                   variant={area === target ? "secondary" : "ghost"}
@@ -114,18 +116,7 @@ export function NavigationRail({
                 >
                   <Icon aria-hidden="true" />
                 </Button>
-              </Tooltip.Trigger>
-              <Tooltip.Portal>
-                <Tooltip.Content
-                  className="navigation-tooltip"
-                  side="right"
-                  sideOffset={8}
-                  collisionPadding={8}
-                >
-                  {label}
-                </Tooltip.Content>
-              </Tooltip.Portal>
-            </Tooltip.Root>
+            </NavigationTooltip>
           ))}
         </nav>
       </Tooltip.Provider>

@@ -1,3 +1,4 @@
+import { NavigationTooltip } from "./navigation-tooltip";
 import { BeeTeamLogo } from "./bee-team-logo";
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
@@ -34,12 +35,14 @@ export function ReleaseNotice({ installedVersion }: { installedVersion: string }
 
   return (
     <Dialog onOpenChange={() => setFeedback(null)}>
+      <NavigationTooltip label={t("common.optionalUpdate")}>
       <DialogTrigger asChild>
         <Button className="navigation-button release-update-button" variant="ghost" size="icon"
-          aria-label={t("common.optionalUpdate")} title={t("common.optionalUpdate")}>
+          aria-label={t("common.optionalUpdate")}>
           <ArrowDownToLine aria-hidden="true" />
         </Button>
       </DialogTrigger>
+      </NavigationTooltip>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t("common.optionalUpdateAvailable", { version: data.appVersion })}</DialogTitle>
