@@ -1,5 +1,6 @@
 pub mod backend;
 pub mod session_bindings;
+pub mod session_delivery;
 pub mod usage;
 pub mod contracts;
 pub mod echo;

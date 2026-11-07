@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Keep truncated execution summary titles within their length limit.
+
+- Deliver Conversation mentions to explicitly linked Codex sessions, track acknowledgements and uncertain outcomes, and notify the team leader once for each worker execution summary.
+- Select team agents by name with @ mentions and inspect delivery state in the task Conversation.
+
 - Match the default browser icon to the bold Bee Team outline.
 
 ## 0.1.4

@@ -42,10 +42,34 @@ async fn main() -> Result<()> {
         state = state.with_transfers(transfer);
     }
 
-    let router = create_router_with_frontend(state, &config, frontend_mode);
-
     let addr = config.listen_addr()?;
     let listener = TcpListener::bind(addr).await?;
+    let actual = listener.local_addr()?;
+    let ip = match actual.ip() {
+        std::net::IpAddr::V4(ip) if ip.is_unspecified() => {
+            std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST)
+        }
+        std::net::IpAddr::V6(ip) if ip.is_unspecified() => {
+            std::net::IpAddr::V6(std::net::Ipv6Addr::LOCALHOST)
+        }
+        other => other,
+    };
+    let endpoint = config.mcp.enabled.then(|| {
+        format!(
+            "http://{}{}",
+            std::net::SocketAddr::new(ip, actual.port()),
+            config.mcp.path
+        )
+    });
+    let managed_runtime = state.managed_session_runtime(endpoint.as_deref())?;
+    let router = create_router_with_frontend(state, &config, frontend_mode);
+    if let Some((runtime, lease)) = managed_runtime {
+        tokio::spawn(async move {
+            if runtime.run(lease).await.is_err() {
+                tracing::error!("Managed session runtime stopped");
+            }
+        });
+    }
     tracing::info!("listening on {}", addr);
     if let Some(mcp_url) = config.mcp_endpoint_url() {
         tracing::info!("mcp enabled at {}", mcp_url);

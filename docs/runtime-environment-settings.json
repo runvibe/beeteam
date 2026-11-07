@@ -182,5 +182,43 @@
         "Nome do serviço nos traces exportados. Quando ausente, o Bee Team usa o nome do pacote Cargo."
       ]
     ]
+  },
+  {
+    "label": [
+      "Managed Conversation delivery",
+      "Entrega gerenciada na Conversa"
+    ],
+    "rows": [
+      [
+        "BEE_SESSION_INSTALLATION_ID",
+        "unset",
+        "Explicit opt-in installation identity; must match a saved session binding. Unset disables the local dispatcher.",
+        "Identidade local explícita, igual à do vínculo salvo. Ausente desativa o envio gerenciado."
+      ],
+      [
+        "BEE_CODEX_EXECUTABLE",
+        "unset",
+        "Absolute path to the official Codex executable; required when managed delivery is enabled. Requests cannot select executable paths.",
+        "Caminho absoluto do executável oficial Codex, obrigatório com envio gerenciado. Requisições não escolhem o executável."
+      ],
+      [
+        "BEE_SESSION_STATE_DIR",
+        "user home/.beeteam/managed-session-locks",
+        "Absolute directory for exclusive OS-backed installation leases. No session credentials are stored here.",
+        "Diretório absoluto para travas exclusivas por instalação. Não armazena credenciais de sessão."
+      ],
+      [
+        "USERPROFILE",
+        "OS-provided",
+        "Windows user home used to locate the default managed-session lease directory.",
+        "Pasta pessoal informada pelo Windows para localizar as travas de sessões gerenciadas."
+      ],
+      [
+        "HOME",
+        "OS-provided",
+        "User-home fallback for the default managed-session lease directory when USERPROFILE is absent.",
+        "Pasta pessoal alternativa para as travas de sessões quando USERPROFILE está ausente."
+      ]
+    ]
   }
 ]

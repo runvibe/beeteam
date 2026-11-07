@@ -378,7 +378,9 @@ impl ArchiveStore {
         self.ensure_space(total)?;
         let legacy_intervals = INTERVAL_GROUPS.iter().all(|t| !manifest.entries.contains_key(&format!("records/{t}.jsonl")));
         let legacy_session_bindings = !manifest.entries.contains_key("records/agent_session_bindings.jsonl");
+        let legacy_deliveries = !manifest.entries.contains_key("records/session_deliveries.jsonl");
         for t in groups() {
+            if legacy_deliveries && t == "session_deliveries" { continue; }
             if legacy_session_bindings && t == "agent_session_bindings" { continue; }
             if legacy_intervals && INTERVAL_GROUPS.contains(&t) { continue; }
             ensure!(
@@ -390,6 +392,7 @@ impl ArchiveStore {
         fs::create_dir_all(dir.join("records"))?;
         fs::create_dir_all(dir.join("blobs"))?;
         if legacy_session_bindings { File::create(dir.join("records/agent_session_bindings.jsonl"))?; }
+        if legacy_deliveries { File::create(dir.join("records/session_deliveries.jsonl"))?; }
         // Normalize only absent additive groups to empty staging files. No rows,
         // evidence, manifest entries or archive bytes are fabricated or rewritten.
         if legacy_intervals {

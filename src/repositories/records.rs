@@ -23,6 +23,7 @@ pub const TABLES: &[&str] = &[
     "events",
     "chat_references",
     "agent_session_bindings",
+    "session_deliveries",
     "images",
     "memberships",
     "board_events",

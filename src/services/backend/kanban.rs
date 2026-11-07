@@ -449,6 +449,11 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         }
         "createComment" => {
             let rid=unit.records.insert(Record::new("comments",json!({"taskId":id,"body":b["body"],"actorId":c.actor()?.id,"actorKind":c.actor()?.kind})));
+            let recipients = crate::services::managed_sessions::queue::recipients(b)?;
+            if !recipients.is_empty() {
+                unit.records.get_mut("comments", rid)?.data["mentionedAgentIds"] = json!(recipients);
+                crate::services::managed_sessions::queue::comment(&mut unit.records, id, rid, &recipients)?;
+            }
             created = Some(("comments", rid));
             unit.records.get_mut("tasks", id)?.touch();
             ("comment.created", json!({"commentId":rid}))
@@ -535,6 +540,7 @@ async fn mutate_task(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 task.data["progress"]["percent"] = json!(100);
             }
             task.touch();
+            crate::services::managed_sessions::queue::summary(&mut unit.records, id, sid)?;
             created = Some(("execution_summaries", sid));
             (
                 "execution.recorded",

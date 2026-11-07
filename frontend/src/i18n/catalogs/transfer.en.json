@@ -70,7 +70,9 @@
     "board_events": "Board events",
     "file_contents": "File contents",
     "request_replays": "Idempotency responses",
-    "archive_ready": "Archive ready"
+    "archive_ready": "Archive ready",
+    "agent_session_bindings": "Agent session bindings",
+    "session_deliveries": "Conversation deliveries"
   },
   "error": {
     "disabled": "Transfer is disabled.",

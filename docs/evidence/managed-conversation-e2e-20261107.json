@@ -1,0 +1,31 @@
+{
+  "binarySha256": "669bd72dba2f3cbade9ab878b6ae3ed5e5e693e53ed9cc7a7e849d0444dbc6a2",
+  "database": "D:\\codex-build-cache\\managed-final-acceptance\\managed-proof-20261107-143701-e191dc57\\e2e-20261107-143701\\proof.sql",
+  "scope": "Owned isolated sessions and API fixtures only",
+  "checks": {
+    "twoRecipientsAndOriginResponses": true,
+    "workerIntermediateNoticeAndReplay": true,
+    "leaderSummaryNoNotice": true,
+    "restartPreservesBindingAndResume": true,
+    "finalWorkerNoticeAndReplay": true,
+    "crashAfterAcknowledgementNoResend": true,
+    "uncertainWorkerDoesNotBlockOtherWorker": true
+  },
+  "leaderThreadId": "01a1b671-0089-7101-9fb4-33faea4623b0",
+  "workerThreadIds": [
+    "01a1b671-0f95-71d0-9a80-6428a9be9b1c",
+    "01a1b671-1afc-7a10-9191-776334220533"
+  ],
+  "cliVersion": "0.166.0",
+  "apiUrl": "http://127.0.0.1:61054",
+  "taskId": "01a1b671-279d-7792-a1af-ccc922f1f701",
+  "profiles": {
+    "leader": "01a1b671-2716-7f01-9bf5-caf8acfe2a09",
+    "workers": [
+      "01a1b671-2721-7210-af69-64a245dbe0da",
+      "01a1b671-272b-72d2-a5d5-edcc1bec3e52"
+    ]
+  },
+  "interruptedDeliveryId": "01a1b672-abcb-7b31-b45e-6cdd56722079",
+  "interruptedTurnId": "01a1b672-d7e9-73e0-9203-113f9fa3ec14"
+}

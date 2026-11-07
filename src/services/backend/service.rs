@@ -11,6 +11,7 @@ pub struct BackendService {
     discovery: Arc<dyn ProjectDiscovery>,
 }
 impl BackendService {
+    pub(crate) fn resources(&self) -> Arc<dyn ResourceStore> { self.repository.clone() }
     pub fn new(repository: Arc<dyn ResourceStore>, discovery: Arc<dyn ProjectDiscovery>) -> Self {
         Self {
             repository,

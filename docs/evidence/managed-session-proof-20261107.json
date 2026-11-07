@@ -1,0 +1,68 @@
+{
+  "cliVersion": "0.166.0",
+  "model": "gpt-6.1-sol",
+  "sessions": [
+    {
+      "threadId": "01a1b616-3380-7780-90c4-ef85c6c90284",
+      "marker": "BEE_PROOF_ALPHA_7A31",
+      "firstTurn": {
+        "turnId": "01a1b616-366b-7362-a917-b72c6a78f767",
+        "status": "completed",
+        "messages": [
+          "BEE_PROOF_ALPHA_7A31"
+        ],
+        "error": null
+      },
+      "resumed": true,
+      "secondTurn": {
+        "turnId": "01a1b616-50e0-7d60-a10d-60ce162336fd",
+        "status": "completed",
+        "messages": [
+          "BEE_PROOF_ALPHA_7A31"
+        ],
+        "error": null
+      }
+    },
+    {
+      "threadId": "01a1b616-4537-7663-8209-24819a2b926b",
+      "marker": "BEE_PROOF_BETA_4B92",
+      "firstTurn": {
+        "turnId": "01a1b616-4580-7b73-8f37-b11592f41228",
+        "status": "completed",
+        "messages": [
+          "BEE_PROOF_BETA_4B92"
+        ],
+        "error": null
+      },
+      "resumed": true,
+      "secondTurn": {
+        "turnId": "01a1b616-5df0-7c32-b84d-329b0f73ec0f",
+        "status": "completed",
+        "messages": [
+          "BEE_PROOF_BETA_4B92"
+        ],
+        "error": null
+      }
+    }
+  ],
+  "missingSessionRejected": "{\"code\": -32600, \"message\": \"no rollout found for thread id 00000000-0000-7000-8000-000000000000\"}",
+  "rustAdapter": {
+    "threadId": "01a1b616-3380-7780-90c4-ef85c6c90284",
+    "turnId": "01a1b61b-7a3d-7f33-99da-6daad694acec",
+    "acknowledged": true,
+    "completed": true,
+    "text": "BEE_PROOF_ALPHA_7A31"
+  },
+  "scope": "Owned isolated test sessions only; no user conversations received messages.",
+  "faultProbe": {
+    "busySession": {
+      "behavior": "accepted",
+      "resultTurnId": "01a1b62b-fc4c-7242-b121-bfd302eda318"
+    },
+    "interruptedTurn": {
+      "threadId": "01a1b616-3380-7780-90c4-ef85c6c90284",
+      "turnId": "01a1b62b-fc4c-7242-b121-bfd302eda318",
+      "status": "interrupted"
+    }
+  }
+}

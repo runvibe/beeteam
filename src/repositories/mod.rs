@@ -6,6 +6,9 @@ pub mod resources;
 pub mod changes;
 
 pub mod contracts;
+pub mod codex_session;
+pub mod codex_mcp_scope;
+pub mod session_dispatch_lease;
 mod errors;
 pub mod records;
 mod task_order;

@@ -58,7 +58,9 @@ impl AppState {
     pub(crate) fn with_api_info(mut self, mcp_enabled: bool, local_projects_enabled: bool) -> Self {
         self.api_info = crate::services::api_info::ApiInfoService::new(
             mcp_enabled,
-            self.transfers.as_ref().is_some_and(|service| service.config.enabled),
+            self.transfers
+                .as_ref()
+                .is_some_and(|service| service.config.enabled),
             local_projects_enabled,
         );
         self
@@ -86,6 +88,44 @@ impl AppState {
 
     pub fn backend(&self) -> &crate::services::backend::service::BackendService {
         &self.inner.backend
+    }
+    /// Explicit local opt-in. Executable and installation never come from requests.
+    pub fn managed_session_runtime(
+        &self,
+        mcp_endpoint: Option<&str>,
+    ) -> anyhow::Result<
+        Option<(
+            Arc<crate::services::managed_sessions::dispatch::ManagedSessionService>,
+            crate::repositories::session_dispatch_lease::DispatchLease,
+        )>,
+    > {
+        let Some(config) =
+            crate::services::managed_sessions::config::ManagedSessionConfig::from_env()?
+        else {
+            return Ok(None);
+        };
+        let mcp_endpoint = mcp_endpoint
+            .ok_or_else(|| {
+                anyhow::anyhow!("Managed session delivery requires this instance's MCP endpoint")
+            })?
+            .to_owned();
+        let lease = crate::repositories::session_dispatch_lease::DispatchLease::acquire(
+            &config.state_dir,
+            &config.installation_id,
+        )?;
+        let provider = Arc::new(crate::repositories::codex_session::CodexSessionProvider {
+            executable: config.executable,
+            timeout: std::time::Duration::from_secs(300),
+            mcp_endpoint,
+        });
+        let service = Arc::new(
+            crate::services::managed_sessions::dispatch::ManagedSessionService::new(
+                self.inner.backend.resources(),
+                provider,
+                config.installation_id,
+            ),
+        );
+        Ok(Some((service, lease)))
     }
     pub fn local_projects(&self) -> &crate::services::local_projects::LocalProjectService {
         &self.inner.local_projects

@@ -29,6 +29,8 @@ const stages: Record<string, string> = {
   attachments: "transfer.stage.attachments",
   execution_summaries: "transfer.stage.execution_summaries",
   chat_references: "transfer.stage.chat_references",
+  agent_session_bindings: "transfer.stage.agent_session_bindings",
+  session_deliveries: "transfer.stage.session_deliveries",
   task_executions: "transfer.stage.task_executions",
   task_execution_intervals: "transfer.stage.task_execution_intervals",
   task_execution_interval_counters:

@@ -11916,7 +11916,33 @@
                         "null"
                       ]
                     },
+                    "deliveryId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
                     "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "inReplyToCommentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "mentionedAgentIds": {
+                      "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                      "items": {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      "maxItems": 32,
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "sourceSummaryId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                       "type": "string"
@@ -12032,6 +12058,17 @@
                 "minLength": 1,
                 "type": "string",
                 "x-maxBytes": 16384
+              },
+              "mentionedAgentIds": {
+                "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array",
+                "uniqueItems": true
               }
             },
             "required": [
@@ -12142,7 +12179,33 @@
                   "null"
                 ]
               },
+              "deliveryId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
               "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "inReplyToCommentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "mentionedAgentIds": {
+                "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array",
+                "uniqueItems": true
+              },
+              "sourceSummaryId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
@@ -12327,7 +12390,33 @@
                   "null"
                 ]
               },
+              "deliveryId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
               "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "inReplyToCommentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "mentionedAgentIds": {
+                "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                "items": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array",
+                "uniqueItems": true
+              },
+              "sourceSummaryId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                 "type": "string"
@@ -29605,6 +29694,338 @@
         "openWorldHint": false,
         "readOnlyHint": true
       },
+      "description": "GET /api/v2/tasks/{taskId}/session-deliveries. List managed Conversation delivery state. Actor is declared, not authenticated.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "description": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "taskId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "taskId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "commentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "default": 0,
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "state": {
+                "enum": [
+                  "waiting_binding",
+                  "pending",
+                  "dispatching",
+                  "acknowledged",
+                  "completed",
+                  "failed",
+                  "uncertain",
+                  "superseded"
+                ],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "upload": {
+            "additionalProperties": false,
+            "properties": {
+              "dataBase64": {
+                "type": "string"
+              },
+              "mediaType": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "mediaType",
+              "dataBase64"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listTaskSessionDeliveries",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "description": "Offset beyond the total: items=[], hasMore=false, nextOffset=null. Total and items use the same snapshot within this response; there is no snapshot across requests.",
+            "properties": {
+              "hasMore": {
+                "description": "offset + number of returned items < total.",
+                "type": "boolean"
+              },
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "backendOrigin": {
+                      "description": "Verified local Bee Team MCP origin for the provider turn; absent until preflight passes.",
+                      "format": "uri",
+                      "type": "string"
+                    },
+                    "bindingId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "commentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "errorCode": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "expectsReply": {
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "enum": [
+                        "mention",
+                        "worker_summary",
+                        "response"
+                      ],
+                      "type": "string"
+                    },
+                    "originBindingId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "replyCommentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "requesterAgentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "sourceId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "state": {
+                      "enum": [
+                        "waiting_binding",
+                        "pending",
+                        "dispatching",
+                        "acknowledged",
+                        "completed",
+                        "failed",
+                        "uncertain",
+                        "superseded"
+                      ],
+                      "type": "string"
+                    },
+                    "targetAgentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "taskId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "turnId": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "taskId",
+                    "commentId",
+                    "sourceId",
+                    "targetAgentId",
+                    "kind",
+                    "state",
+                    "bindingId",
+                    "turnId",
+                    "errorCode",
+                    "expectsReply",
+                    "replyCommentId",
+                    "version",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "limit": {
+                "description": "Limit actually requested/applied.",
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "nextOffset": {
+                "description": "offset + number of returned items when hasMore; otherwise null.",
+                "minimum": 0,
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "offset": {
+                "description": "Requested offset; always zero in the board view.",
+                "maximum": 2147483647,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "total": {
+                "description": "",
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "items",
+              "offset",
+              "limit",
+              "total",
+              "hasMore",
+              "nextOffset"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
       "description": "GET /api/v2/tasks/{taskId}/timeline. Read the unified timeline. Actor is declared, not authenticated.",
       "inputSchema": {
         "additionalProperties": false,
@@ -41919,7 +42340,33 @@
                     "null"
                   ]
                 },
+                "deliveryId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
                 "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "inReplyToCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "sourceSummaryId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                   "type": "string"
@@ -42315,6 +42762,17 @@
                   "minLength": 1,
                   "type": "string",
                   "x-maxBytes": 16384
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
                 }
               },
               "required": [
@@ -43700,6 +44158,189 @@
                 "content",
                 "changeSummary",
                 "baseRevision"
+              ],
+              "type": "object"
+            },
+            "SessionDelivery": {
+              "additionalProperties": false,
+              "properties": {
+                "backendOrigin": {
+                  "description": "Verified local Bee Team MCP origin for the provider turn; absent until preflight passes.",
+                  "format": "uri",
+                  "type": "string"
+                },
+                "bindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "errorCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "expectsReply": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "mention",
+                    "worker_summary",
+                    "response"
+                  ],
+                  "type": "string"
+                },
+                "originBindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "replyCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "requesterAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sourceId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "state": {
+                  "enum": [
+                    "waiting_binding",
+                    "pending",
+                    "dispatching",
+                    "acknowledged",
+                    "completed",
+                    "failed",
+                    "uncertain",
+                    "superseded"
+                  ],
+                  "type": "string"
+                },
+                "targetAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "turnId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "version": {
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "commentId",
+                "sourceId",
+                "targetAgentId",
+                "kind",
+                "state",
+                "bindingId",
+                "turnId",
+                "errorCode",
+                "expectsReply",
+                "replyCommentId",
+                "version",
+                "createdAt",
+                "updatedAt"
+              ],
+              "type": "object"
+            },
+            "SessionDeliveryPage": {
+              "additionalProperties": false,
+              "description": "Offset beyond the total: items=[], hasMore=false, nextOffset=null. Total and items use the same snapshot within this response; there is no snapshot across requests.",
+              "properties": {
+                "hasMore": {
+                  "description": "offset + number of returned items < total.",
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDelivery"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "description": "Limit actually requested/applied.",
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "description": "offset + number of returned items when hasMore; otherwise null.",
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "description": "Requested offset; always zero in the board view.",
+                  "maximum": 2147483647,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "description": "",
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "offset",
+                "limit",
+                "total",
+                "hasMore",
+                "nextOffset"
               ],
               "type": "object"
             },
@@ -50172,7 +50813,33 @@
                     "null"
                   ]
                 },
+                "deliveryId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
                 "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "inReplyToCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "sourceSummaryId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                   "type": "string"
@@ -50568,6 +51235,17 @@
                   "minLength": 1,
                   "type": "string",
                   "x-maxBytes": 16384
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
                 }
               },
               "required": [
@@ -51953,6 +52631,189 @@
                 "content",
                 "changeSummary",
                 "baseRevision"
+              ],
+              "type": "object"
+            },
+            "SessionDelivery": {
+              "additionalProperties": false,
+              "properties": {
+                "backendOrigin": {
+                  "description": "Verified local Bee Team MCP origin for the provider turn; absent until preflight passes.",
+                  "format": "uri",
+                  "type": "string"
+                },
+                "bindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "errorCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "expectsReply": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "mention",
+                    "worker_summary",
+                    "response"
+                  ],
+                  "type": "string"
+                },
+                "originBindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "replyCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "requesterAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sourceId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "state": {
+                  "enum": [
+                    "waiting_binding",
+                    "pending",
+                    "dispatching",
+                    "acknowledged",
+                    "completed",
+                    "failed",
+                    "uncertain",
+                    "superseded"
+                  ],
+                  "type": "string"
+                },
+                "targetAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "turnId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "version": {
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "commentId",
+                "sourceId",
+                "targetAgentId",
+                "kind",
+                "state",
+                "bindingId",
+                "turnId",
+                "errorCode",
+                "expectsReply",
+                "replyCommentId",
+                "version",
+                "createdAt",
+                "updatedAt"
+              ],
+              "type": "object"
+            },
+            "SessionDeliveryPage": {
+              "additionalProperties": false,
+              "description": "Offset beyond the total: items=[], hasMore=false, nextOffset=null. Total and items use the same snapshot within this response; there is no snapshot across requests.",
+              "properties": {
+                "hasMore": {
+                  "description": "offset + number of returned items < total.",
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDelivery"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "description": "Limit actually requested/applied.",
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "description": "offset + number of returned items when hasMore; otherwise null.",
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "description": "Requested offset; always zero in the board view.",
+                  "maximum": 2147483647,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "description": "",
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "offset",
+                "limit",
+                "total",
+                "hasMore",
+                "nextOffset"
               ],
               "type": "object"
             },
@@ -58207,7 +59068,33 @@
                     "null"
                   ]
                 },
+                "deliveryId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
                 "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "inReplyToCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
+                },
+                "sourceSummaryId": {
                   "format": "uuid",
                   "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
                   "type": "string"
@@ -58603,6 +59490,17 @@
                   "minLength": 1,
                   "type": "string",
                   "x-maxBytes": 16384
+                },
+                "mentionedAgentIds": {
+                  "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination.",
+                  "items": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "maxItems": 32,
+                  "type": "array",
+                  "uniqueItems": true
                 }
               },
               "required": [
@@ -59988,6 +60886,189 @@
                 "content",
                 "changeSummary",
                 "baseRevision"
+              ],
+              "type": "object"
+            },
+            "SessionDelivery": {
+              "additionalProperties": false,
+              "properties": {
+                "backendOrigin": {
+                  "description": "Verified local Bee Team MCP origin for the provider turn; absent until preflight passes.",
+                  "format": "uri",
+                  "type": "string"
+                },
+                "bindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "commentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "errorCode": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "expectsReply": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "kind": {
+                  "enum": [
+                    "mention",
+                    "worker_summary",
+                    "response"
+                  ],
+                  "type": "string"
+                },
+                "originBindingId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "replyCommentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "requesterAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sourceId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "state": {
+                  "enum": [
+                    "waiting_binding",
+                    "pending",
+                    "dispatching",
+                    "acknowledged",
+                    "completed",
+                    "failed",
+                    "uncertain",
+                    "superseded"
+                  ],
+                  "type": "string"
+                },
+                "targetAgentId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "taskId": {
+                  "format": "uuid",
+                  "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                  "type": "string"
+                },
+                "turnId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "version": {
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "taskId",
+                "commentId",
+                "sourceId",
+                "targetAgentId",
+                "kind",
+                "state",
+                "bindingId",
+                "turnId",
+                "errorCode",
+                "expectsReply",
+                "replyCommentId",
+                "version",
+                "createdAt",
+                "updatedAt"
+              ],
+              "type": "object"
+            },
+            "SessionDeliveryPage": {
+              "additionalProperties": false,
+              "description": "Offset beyond the total: items=[], hasMore=false, nextOffset=null. Total and items use the same snapshot within this response; there is no snapshot across requests.",
+              "properties": {
+                "hasMore": {
+                  "description": "offset + number of returned items < total.",
+                  "type": "boolean"
+                },
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/SessionDelivery"
+                  },
+                  "type": "array"
+                },
+                "limit": {
+                  "description": "Limit actually requested/applied.",
+                  "maximum": 100,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "nextOffset": {
+                  "description": "offset + number of returned items when hasMore; otherwise null.",
+                  "minimum": 0,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "offset": {
+                  "description": "Requested offset; always zero in the board view.",
+                  "maximum": 2147483647,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "total": {
+                  "description": "",
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "items",
+                "offset",
+                "limit",
+                "total",
+                "hasMore",
+                "nextOffset"
               ],
               "type": "object"
             },

@@ -25,6 +25,7 @@ fn table(c: &Command) -> Result<&'static str> {
         "getTimeline" | "getTimelinePoints" => "events",
         "listChatReferences" => "chat_references",
         "listAgentSessionBindings" => "agent_session_bindings",
+        "listTaskSessionDeliveries" | "listSessionDeliveryWork" => "session_deliveries",
         "listTeamMembers" => "agents",
         _ => return Err(Failure::missing()),
     })
@@ -105,6 +106,11 @@ fn field(q: &mut QueryBuilder<Sqlite>, key: &str, text: bool) {
         .push_bind(key.to_owned());
 }
 fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
+    if c.operation == "listSessionDeliveryWork" {
+        q.push(" AND value->>'state' IN (SELECT value FROM json_each(").push_bind(c.q("states").to_string()).push(")) AND (value->'destination'->>'installationId'=").push_bind(c.q("installationId").as_str().unwrap_or("").to_owned())
+            .push(" OR (value->>'bindingId' IS NULL AND EXISTS(SELECT 1 FROM agent_session_bindings b WHERE b.agent_id=(value->>'targetAgentId') AND b.deleted_at IS NULL AND b.data->>'endedAt' IS NULL AND b.data->>'installationId'=").push_bind(c.q("installationId").as_str().unwrap_or("").to_owned()).push(")))");
+        return Ok(());
+    }
     if c.operation == "listAvailableSessionAgents" {
         q.push(" AND value->>'archivedAt' IS NULL AND NOT EXISTS(SELECT 1 FROM agent_session_bindings b WHERE b.agent_id=(value->>'id') AND b.deleted_at IS NULL AND b.data->>'endedAt' IS NULL)");
     }

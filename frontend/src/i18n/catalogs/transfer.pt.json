@@ -70,7 +70,9 @@
     "board_events": "Eventos dos boards",
     "file_contents": "Conteúdos dos arquivos",
     "request_replays": "Respostas de idempotência",
-    "archive_ready": "Arquivo pronto"
+    "archive_ready": "Arquivo pronto",
+    "agent_session_bindings": "Vínculos de sessão dos agentes",
+    "session_deliveries": "Entregas da Conversa"
   },
   "error": {
     "disabled": "Transferência desativada.",

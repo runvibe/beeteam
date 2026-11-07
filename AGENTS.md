@@ -44,6 +44,8 @@
 
 - Single-binary distribution uses `node scripts/build-distribution.mjs` and Cargo `embedded-ui`; frontend dependencies/build output live in isolated `.local/distribution/frontend`. Keep source/output hash verification, production/same-origin build settings, and the repository/service/HTTP split. Never fall back to SPA HTML for API/MCP or missing assets. Preserve API-only/Vite development and do not restart active services to validate packaging.
 
+- Managed session delivery is explicitly configured per local installation. Conversation comments and worker-summary notices enqueue in the same transaction; provider calls run after commit. Preserve acknowledgement and uncertain outcomes, never automatically resend an unknown turn, and never fall back to an ended or replacement binding. Validate only owned isolated sessions; retain unmanaged skills/MCP behavior and keep product token accounting separate.
+
 ## Release changelog
 
 Every pull request with a user-visible change must update the root CHANGELOG.md. Collect pending changes under Unreleased. Before publishing, move them into a nonempty version section matching Cargo.toml, merge it into main, and publish that exact section as the GitHub Release notes. Describe observable changes in English.
