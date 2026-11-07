@@ -14,6 +14,7 @@ use uuid::Uuid;
 pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     let body = &c.body;
     match c.operation.as_str() {
+        "createAgentWithSession" | "claimAgentSession" => super::session_bindings::run(unit,c).await,
         "createAgent" => {
             let mut data = defaults(
                 body,
@@ -82,6 +83,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                     "Reassign unfinished tasks before archiving the executor",
                 ));
             }
+            if body["archived"] == true { super::session_bindings::close_for_archive(unit,c,id)?; }
             patch(
                 unit.records.get_mut("agents", id)?,
                 body,

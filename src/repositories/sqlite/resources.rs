@@ -192,7 +192,7 @@ impl SqliteWork {
         for r in records
             .rows
             .values()
-            .filter(|r| matches!(r.table, "teams" | "memberships" | "images" | "statuses"))
+            .filter(|r| matches!(r.table, "teams" | "memberships" | "images" | "statuses" | "agent_session_bindings"))
         {
             if self
                 .original

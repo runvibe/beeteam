@@ -1,4 +1,5 @@
 pub mod backend;
+pub mod session_bindings;
 pub mod usage;
 pub mod contracts;
 pub mod echo;
