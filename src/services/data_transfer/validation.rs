@@ -53,7 +53,7 @@ fn refs(table: &str) -> Vec<(&'static str, &'static str, bool)> {
             ("agentId", "agents", false),
             ("contentId", "file_contents", false),
         ],
-        "chat_references" => vec![("agentId", "agents", false)],
+        "chat_references" | "agent_session_bindings" => vec![("agentId", "agents", false)],
         "board_events" => vec![("boardId", "boards", false)],
         _ => vec![],
     }

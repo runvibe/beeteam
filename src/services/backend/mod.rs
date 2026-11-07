@@ -10,6 +10,7 @@ mod project_discovery;
 mod tracking;
 mod queries;
 mod ra;
+mod session_bindings;
 mod team_role_icons;
 pub mod service;
 

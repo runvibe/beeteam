@@ -13,7 +13,7 @@ fn table(c: &Command) -> Result<&'static str> {
         "listTaskExecutionIntervals" | "listOpenExecutionIntervals" => "task_execution_intervals",
         "listTaskExecutionTrackingEvents" => "task_execution_tracking_events",
         "listTaskExecutionIntervalRevisions" => "task_execution_interval_revisions",
-        "listAgents" => "agents",
+        "listAgents" | "listAvailableSessionAgents" => "agents",
         "listTeams" => "teams",
         "listBoards" => "boards",
         "listStatuses" => "statuses",
@@ -24,6 +24,7 @@ fn table(c: &Command) -> Result<&'static str> {
         "listExecutionSummarys" => "execution_summaries",
         "getTimeline" | "getTimelinePoints" => "events",
         "listChatReferences" => "chat_references",
+        "listAgentSessionBindings" => "agent_session_bindings",
         "listTeamMembers" => "agents",
         _ => return Err(Failure::missing()),
     })
@@ -104,6 +105,9 @@ fn field(q: &mut QueryBuilder<Sqlite>, key: &str, text: bool) {
         .push_bind(key.to_owned());
 }
 fn filters(q: &mut QueryBuilder<Sqlite>, c: &Command) -> Result<()> {
+    if c.operation == "listAvailableSessionAgents" {
+        q.push(" AND value->>'archivedAt' IS NULL AND NOT EXISTS(SELECT 1 FROM agent_session_bindings b WHERE b.agent_id=(value->>'id') AND b.deleted_at IS NULL AND b.data->>'endedAt' IS NULL)");
+    }
     if c.operation == "listAgentActivities" {
         q.push(" AND (");
         q.push(match c.q("relation").as_str().unwrap_or("any") {
