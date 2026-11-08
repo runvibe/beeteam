@@ -1,0 +1,15 @@
+{
+  "date": "2026-11-08",
+  "testedCommit": "758955fb1580ecf8033b3c2abfe37c8b01ef3f46",
+  "cargoBuild": "passed: cargo build --locked -j2",
+  "backend": {
+    "sqlite": {"command": "cargo test --locked -j2", "suites": 60, "passed": 269, "failed": 0},
+    "postgresql18": {"command": "cargo test --locked -j2 --no-fail-fast", "suites": 60, "passed": 269, "failed": 0},
+    "databases": "Isolated test databases only"
+  },
+  "frontend": {"fullSuiteBeforeFinalFixes": 720, "focusedAfterFinalFixes": 40, "typecheck": "passed", "productionBuild": "passed", "i18nFilesAudited": 224},
+  "contracts": {"paths": 10, "schemas": 23, "validFixtures": 11, "invalidFixtures": 3, "typescriptGeneration": "passed"},
+  "skills": {"isolatedPackageHarnessCombinationsPassed": 9},
+  "native": {"evidence": "integrated-chat-native-20261108.json", "checksPassed": 9, "approvalAcceptance": "Not exercised by the real provider; controlled tests passed"},
+  "review": {"pullRequest": 65, "merged": false, "released": false, "humanAcceptance": "pending"}
+}

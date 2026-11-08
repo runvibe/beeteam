@@ -200,3 +200,5 @@ Automated frontend coverage passed 720 tests; final recovery/origin UI fixes pas
 Local user-review startup exposed historical CRLF-vs-LF SQL migration checksums in the existing copy. The original data was not modified and no checksum validation was disabled. Resolved for local review through the official opt-in export/strict restore flow into a new empty database. All 46 original record/blob entries were byte-identical after re-export; 5 boards, 167 tasks and 107 agents were preserved. The review API and Vite panel opened successfully; no product source database or migration checksum was modified.
 
 No automatic merge, deployment or user acceptance has occurred. The plan was read back from the restored local review instance; no record in the original source database was changed.
+
+Final validation: `cargo build --locked -j2` passed. Full SQLite and PostgreSQL 18 runs each passed 269 tests across 60 suites, with no failures. Evidence: `docs/evidence/integrated-chat-validation-20261108.json`. Native approval acceptance remains unverified; the real provider did not request approval. Delivery remains in draft PR #65 for human review.
