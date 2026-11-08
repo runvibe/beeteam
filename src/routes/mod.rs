@@ -13,14 +13,15 @@ mod data_transfer;
 #[cfg(feature = "mcp")]
 mod data_transfer_mcp;
 mod frontend;
-mod local_projects;
+#[cfg(feature = "mcp")]
+mod integrated_chat_mcp;
 mod leader_chat;
+mod local_access;
+mod local_projects;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
 mod mcp_adapter;
-#[cfg(feature = "mcp")]
-mod integrated_chat_mcp;
 #[cfg(feature = "mcp")]
 mod mcp_materials;
 pub mod system;
@@ -92,7 +93,7 @@ pub fn create_router_with_frontend(
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
-        .merge(leader_chat::router())
+        .merge(leader_chat::router(config))
         .merge(local_projects::router(config.host.is_loopback()))
         .merge(data_transfer::router(state.clone()));
 
@@ -110,6 +111,15 @@ pub fn create_router_with_frontend(
     let api_router = if config.mcp.enabled {
         api_router.merge(mcp::router(&config.mcp, state.clone()).layer(
             axum::middleware::from_fn_with_state(state.clone(), data_transfer::origin),
+        ))
+    } else {
+        api_router
+    };
+
+    let api_router = if state.leader_chat().is_configured() {
+        api_router.layer(axum::middleware::from_fn_with_state(
+            local_access::Policy::new(config, true),
+            local_access::enforce,
         ))
     } else {
         api_router

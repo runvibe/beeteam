@@ -37,6 +37,16 @@ pub fn binding<'a>(records: &'a Records, agent: Uuid) -> Result<&'a Record> {
         .ok_or_else(|| Failure::new("session_not_ready", "Agent has no active session"))
 }
 pub fn active_binding(records: &Records, chat: &Record) -> Result<Record> {
+    let team = records.get(
+        "teams",
+        chat.reference("teamId").ok_or_else(Failure::missing)?,
+    )?;
+    if team.archived_at.is_some() || team.reference("leaderId") != chat.reference("leaderAgentId") {
+        return Err(Failure::new(
+            "leader_role_changed",
+            "This historical chat no longer represents the active team leader",
+        ));
+    }
     let b = binding(
         records,
         chat.reference("leaderAgentId")
@@ -84,6 +94,14 @@ pub fn create(records: &mut Records, c: &Command) -> Result<Outcome> {
         .into_iter()
         .find(|r| r.reference("bindingId") == Some(req.binding_id))
     {
+        if chat.reference("teamId") != Some(req.team_id)
+            || chat.reference("leaderAgentId") != Some(req.leader_agent_id)
+        {
+            return Err(Failure::new(
+                "binding_chat_conflict",
+                "This binding already owns a chat for another team",
+            ));
+        }
         return Ok(Outcome::data(project(chat)));
     }
     let row = Record::new(

@@ -19,7 +19,7 @@ use futures_util::stream;
 use serde_json::{json, Value};
 use std::{collections::BTreeMap, convert::Infallible, time::Duration};
 use uuid::Uuid;
-pub fn router() -> Router<AppState> {
+pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
     Router::new()
         .route("/api/v2/leader-chats", get(read).post(write))
         .route("/api/v2/leader-chats/{chatId}", get(read))
@@ -43,6 +43,10 @@ pub fn router() -> Router<AppState> {
         )
         .route("/api/v2/agents/{agentId}/runtime", get(read))
         .route("/api/v2/agents/{agentId}/integrated-session", post(write))
+        .layer(axum::middleware::from_fn_with_state(
+            super::local_access::Policy::new(config, false),
+            super::local_access::enforce,
+        ))
 }
 fn error(e: Failure) -> Response {
     let status = match e.code.as_str() {

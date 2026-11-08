@@ -67,14 +67,13 @@ impl LeaderChatService {
         }
         let target: SessionDestination =
             serde_json::from_value(b.data.clone()).map_err(|e| Failure::invalid(e.to_string()))?;
-        let text = u
+        let message = u
             .records
             .list("leader_chat_messages")
             .into_iter()
             .find(|m| m.reference("turnId") == Some(id) && m.data["role"] == "user")
-            .and_then(|r| r.data["content"].as_str())
-            .ok_or_else(Failure::missing)?
-            .to_owned();
+            .ok_or_else(Failure::missing)?;
+        let text = super::context::prompt(&chat, &b, message);
         rules::transition(&mut u.records, id, "running", Value::Null)?;
         let (control_tx, control_rx) = mpsc::channel(16);
         self.controls.lock().await.insert(id, control_tx);

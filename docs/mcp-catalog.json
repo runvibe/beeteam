@@ -26,103 +26,103 @@
   "protocolVersion": "2025-11-25",
   "resources": [
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/repository-evidence. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Structured projects and commit evidence",
       "uri": "beeteam://references/repository-evidence"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/execution-intervals. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Explicit task session intervals",
       "uri": "beeteam://references/execution-intervals"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-bootstrap. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-bootstrap. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker chat-first bootstrap",
       "uri": "beeteam://references/worker-bootstrap"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/usage-report. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Required execution usage reporting",
       "uri": "beeteam://references/usage-report"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/leader. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Get a Team Lead",
       "uri": "beeteam://skills/leader"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/worker. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://skills/worker. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Get a Worker",
       "uri": "beeteam://skills/worker"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/integration. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "HTTP and MCP integration",
       "uri": "beeteam://references/integration"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/handoff. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Handoff",
       "uri": "beeteam://references/handoff"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/codex. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Codex guidance",
       "uri": "beeteam://references/codex"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/team-examples. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Team examples",
       "uri": "beeteam://references/team-examples"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/leader-onboarding-flows. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Leader onboarding workflow",
       "uri": "beeteam://references/leader-onboarding-flows"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-workflow. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-workflow. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker workflow",
       "uri": "beeteam://references/worker-workflow"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/mcp-content. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "MCP content guidance",
       "uri": "beeteam://references/mcp-content"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/task-briefing. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Task briefing template",
       "uri": "beeteam://references/task-briefing"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-resumption. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/worker-resumption. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Worker task continuity template",
       "uri": "beeteam://references/worker-resumption"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/delivery-review. No filesystem access or global installation.",
       "mimeType": "text/markdown",
       "name": "Delivery review template",
       "uri": "beeteam://references/delivery-review"
     },
     {
-      "description": "Discover current resources through resources/list. Bundled English Skills commit ce484c9f6c2e303532b61027ea2b69146b055aa2 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
+      "description": "Discover current resources through resources/list. Bundled English Skills commit ea3e3b70415ac965882b8d6dda47d61cc6f007d4 plus local SQLite startup guidance (2026-11-03). Links to get-a-team-lead/SKILL.md and get-a-worker/SKILL.md map to beeteam://skills/leader and beeteam://skills/worker. Other relative Markdown links map by basename (without .md/.json) to beeteam://references/{name}; workflow and prompt templates are listed resources. Resource: beeteam://references/content-manifest. No filesystem access or global installation.",
       "mimeType": "application/json",
       "name": "Prompt content manifest",
       "uri": "beeteam://references/content-manifest"
@@ -29911,6 +29911,7 @@
                     },
                     "state": {
                       "enum": [
+                        "waiting_external",
                         "waiting_binding",
                         "pending",
                         "dispatching",
@@ -33577,6 +33578,14 @@
                     "minLength": 1,
                     "type": "string"
                   },
+                  "mode": {
+                    "default": "external",
+                    "description": "Declared harness sessions are external. Integrated sessions must be created by the managed bootstrap.",
+                    "enum": [
+                      "external"
+                    ],
+                    "type": "string"
+                  },
                   "projectRoot": {
                     "description": "Declared absolute project root; not a grant of filesystem access.",
                     "maxLength": 4096,
@@ -33923,6 +33932,15 @@
                     "minLength": 1,
                     "type": "string"
                   },
+                  "mode": {
+                    "default": "external",
+                    "description": "Missing on legacy records means external; integrated bindings are created by Bee Team.",
+                    "enum": [
+                      "external",
+                      "integrated"
+                    ],
+                    "type": "string"
+                  },
                   "projectRoot": {
                     "description": "Declared absolute project root; not a grant of filesystem access.",
                     "maxLength": 4096,
@@ -33936,12 +33954,55 @@
                   "startedBy": {
                     "type": "object"
                   },
+                  "toolProfile": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "enabledMcpServers": {
+                        "default": [],
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 100,
+                        "type": "array"
+                      },
+                      "networkAccess": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "skillRoots": {
+                        "default": [],
+                        "items": {
+                          "description": "Absolute local directory path.",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 32,
+                        "type": "array"
+                      },
+                      "webSearch": {
+                        "default": "live",
+                        "enum": [
+                          "disabled",
+                          "cached",
+                          "live"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
                   "updatedAt": {
                     "format": "date-time",
                     "type": "string"
                   },
                   "verification": {
-                    "const": "declared"
+                    "description": "Verified means local managed-session preflight succeeded; not proof of a completed task.",
+                    "enum": [
+                      "declared",
+                      "verified"
+                    ],
+                    "type": "string"
                   },
                   "version": {
                     "minimum": 1,
@@ -37614,6 +37675,14 @@
                     "minLength": 1,
                     "type": "string"
                   },
+                  "mode": {
+                    "default": "external",
+                    "description": "Declared harness sessions are external. Integrated sessions must be created by the managed bootstrap.",
+                    "enum": [
+                      "external"
+                    ],
+                    "type": "string"
+                  },
                   "projectRoot": {
                     "description": "Declared absolute project root; not a grant of filesystem access.",
                     "maxLength": 4096,
@@ -37969,6 +38038,15 @@
                     "minLength": 1,
                     "type": "string"
                   },
+                  "mode": {
+                    "default": "external",
+                    "description": "Missing on legacy records means external; integrated bindings are created by Bee Team.",
+                    "enum": [
+                      "external",
+                      "integrated"
+                    ],
+                    "type": "string"
+                  },
                   "projectRoot": {
                     "description": "Declared absolute project root; not a grant of filesystem access.",
                     "maxLength": 4096,
@@ -37982,12 +38060,55 @@
                   "startedBy": {
                     "type": "object"
                   },
+                  "toolProfile": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "enabledMcpServers": {
+                        "default": [],
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 100,
+                        "type": "array"
+                      },
+                      "networkAccess": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "skillRoots": {
+                        "default": [],
+                        "items": {
+                          "description": "Absolute local directory path.",
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "maxItems": 32,
+                        "type": "array"
+                      },
+                      "webSearch": {
+                        "default": "live",
+                        "enum": [
+                          "disabled",
+                          "cached",
+                          "live"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
                   "updatedAt": {
                     "format": "date-time",
                     "type": "string"
                   },
                   "verification": {
-                    "const": "declared"
+                    "description": "Verified means local managed-session preflight succeeded; not proof of a completed task.",
+                    "enum": [
+                      "declared",
+                      "verified"
+                    ],
+                    "type": "string"
                   },
                   "version": {
                     "minimum": 1,
@@ -38221,6 +38342,15 @@
                       "minLength": 1,
                       "type": "string"
                     },
+                    "mode": {
+                      "default": "external",
+                      "description": "Missing on legacy records means external; integrated bindings are created by Bee Team.",
+                      "enum": [
+                        "external",
+                        "integrated"
+                      ],
+                      "type": "string"
+                    },
                     "projectRoot": {
                       "description": "Declared absolute project root; not a grant of filesystem access.",
                       "maxLength": 4096,
@@ -38234,12 +38364,55 @@
                     "startedBy": {
                       "type": "object"
                     },
+                    "toolProfile": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "enabledMcpServers": {
+                          "default": [],
+                          "items": {
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 100,
+                          "type": "array"
+                        },
+                        "networkAccess": {
+                          "default": true,
+                          "type": "boolean"
+                        },
+                        "skillRoots": {
+                          "default": [],
+                          "items": {
+                            "description": "Absolute local directory path.",
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "maxItems": 32,
+                          "type": "array"
+                        },
+                        "webSearch": {
+                          "default": "live",
+                          "enum": [
+                            "disabled",
+                            "cached",
+                            "live"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
                     "updatedAt": {
                       "format": "date-time",
                       "type": "string"
                     },
                     "verification": {
-                      "const": "declared"
+                      "description": "Verified means local managed-session preflight succeeded; not proof of a completed task.",
+                      "enum": [
+                        "declared",
+                        "verified"
+                      ],
+                      "type": "string"
                     },
                     "version": {
                       "minimum": 1,
@@ -44239,6 +44412,7 @@
                 },
                 "state": {
                   "enum": [
+                    "waiting_external",
                     "waiting_binding",
                     "pending",
                     "dispatching",
@@ -52712,6 +52886,7 @@
                 },
                 "state": {
                   "enum": [
+                    "waiting_external",
                     "waiting_binding",
                     "pending",
                     "dispatching",
@@ -60967,6 +61142,7 @@
                 },
                 "state": {
                   "enum": [
+                    "waiting_external",
                     "waiting_binding",
                     "pending",
                     "dispatching",
@@ -67255,6 +67431,425 @@
         "type": "object"
       },
       "name": "cancelDataTransfer"
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Observe an agent's external or integrated mode, active binding and local Codex readiness. Readiness is not proof of end-to-end tool execution.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getAgentRuntime",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "bindingId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capabilities": {
+                "additionalProperties": false,
+                "properties": {
+                  "approvals": {
+                    "type": "boolean"
+                  },
+                  "interrupt": {
+                    "type": "boolean"
+                  },
+                  "mcp": {
+                    "type": "boolean"
+                  },
+                  "resume": {
+                    "type": "boolean"
+                  },
+                  "skills": {
+                    "type": "boolean"
+                  },
+                  "streaming": {
+                    "type": "boolean"
+                  },
+                  "webSearch": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "streaming",
+                  "resume",
+                  "interrupt",
+                  "approvals",
+                  "skills",
+                  "mcp",
+                  "webSearch"
+                ],
+                "type": "object"
+              },
+              "harness": {
+                "type": "string"
+              },
+              "mode": {
+                "enum": [
+                  "external",
+                  "integrated"
+                ],
+                "type": "string"
+              },
+              "readiness": {
+                "enum": [
+                  "external",
+                  "unavailable",
+                  "needs_auth",
+                  "ready",
+                  "busy"
+                ],
+                "type": "string"
+              },
+              "tools": {
+                "additionalProperties": false,
+                "properties": {
+                  "mcpServers": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "enum": [
+                            "connected",
+                            "disabled",
+                            "needs_auth",
+                            "failed"
+                          ],
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "enabled",
+                        "status"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "networkAccess": {
+                    "type": "boolean"
+                  },
+                  "skills": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "available": {
+                          "type": "boolean"
+                        },
+                        "enabled": {
+                          "type": "boolean"
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "enabled",
+                        "available"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "webSearch": {
+                    "enum": [
+                      "disabled",
+                      "cached",
+                      "live"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "webSearch",
+                  "networkAccess",
+                  "skills",
+                  "mcpServers"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "agentId",
+              "mode",
+              "harness",
+              "bindingId",
+              "readiness",
+              "capabilities",
+              "tools"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true,
+        "readOnlyHint": false
+      },
+      "description": "Create a Bee Team-owned Codex session for an existing agent. Uses the same version, observed binding and idempotency rules as HTTP. Never takes over an external Desktop chat; active work must finish before replacement. Local runtime must be configured.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "actor": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "format": "uuid",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kind": {
+                "enum": [
+                  "human",
+                  "agent"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ],
+            "type": "object"
+          },
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "expectedBindingId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "projectRoot": {
+                "description": "Absolute existing project directory on the local host.",
+                "minLength": 1,
+                "type": "string"
+              },
+              "toolProfile": {
+                "additionalProperties": false,
+                "properties": {
+                  "enabledMcpServers": {
+                    "default": [],
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 100,
+                    "type": "array"
+                  },
+                  "networkAccess": {
+                    "default": true,
+                    "type": "boolean"
+                  },
+                  "skillRoots": {
+                    "default": [],
+                    "items": {
+                      "description": "Absolute local directory path.",
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 32,
+                    "type": "array"
+                  },
+                  "webSearch": {
+                    "default": "live",
+                    "enum": [
+                      "disabled",
+                      "cached",
+                      "live"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "projectRoot",
+              "expectedBindingId"
+            ],
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "body",
+          "actor",
+          "expectedVersion",
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "createIntegratedSession",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "createdId": {
+            "format": "uuid",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "bindingId": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "externalId": {
+                "type": "string"
+              },
+              "harness": {
+                "enum": [
+                  "codex"
+                ],
+                "type": "string"
+              },
+              "mode": {
+                "enum": [
+                  "integrated"
+                ],
+                "type": "string"
+              },
+              "projectRoot": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId",
+              "bindingId",
+              "harness",
+              "mode",
+              "externalId",
+              "projectRoot"
+            ],
+            "type": "object"
+          },
+          "version": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "data",
+          "version",
+          "createdId"
+        ],
+        "type": "object"
+      }
     }
   ]
 }

@@ -1,5 +1,6 @@
 //! Integrated chat orchestration. HTTP and provider transports stay outside this service.
 mod bootstrap;
+mod context;
 mod execution;
 mod recovery;
 pub mod rules;

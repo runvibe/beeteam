@@ -79,3 +79,60 @@ fn uncertain_cancellation_preserves_diagnostic_and_does_not_claim_delivery() {
     assert_eq!(records.get("leader_chat_turns", turn).unwrap(), &original);
     assert!(records.list("leader_chat_events").is_empty());
 }
+
+#[test]
+fn old_leader_chat_becomes_read_only_after_role_change() {
+    let mut records = Records::default();
+    let former = uuid::Uuid::now_v7();
+    let current = uuid::Uuid::now_v7();
+    let team = records.insert(Record::new("teams", json!({"leaderId":current})));
+    let binding = records.insert(Record::new(
+        "agent_session_bindings",
+        json!({"agentId":former,"mode":"integrated","endedAt":null}),
+    ));
+    let chat = records.insert(Record::new(
+        "leader_chats",
+        json!({"teamId":team,"leaderAgentId":former,"bindingId":binding}),
+    ));
+    let mut send = cmd(
+        "integrated:send",
+        json!({"clientMessageId":uuid::Uuid::new_v4(),"bindingId":binding,"content":"hello"}),
+    );
+    send.params.insert("chatId".into(), chat.to_string());
+    assert_eq!(
+        rules::send(&mut records, &send).unwrap_err().code,
+        "leader_role_changed"
+    );
+    assert!(records.list("leader_chat_turns").is_empty());
+    assert!(records.get("leader_chats", chat).is_ok());
+}
+
+#[test]
+fn same_binding_cannot_return_a_different_teams_chat() {
+    let mut records = Records::default();
+    let agent = uuid::Uuid::now_v7();
+    let team_a = records.insert(Record::new("teams", json!({"leaderId":agent})));
+    let team_b = records.insert(Record::new("teams", json!({"leaderId":agent})));
+    let binding = records.insert(Record::new(
+        "agent_session_bindings",
+        json!({"agentId":agent,"mode":"integrated","endedAt":null}),
+    ));
+    let create = |team| {
+        cmd(
+            "integrated:create",
+            json!({"teamId":team,"leaderAgentId":agent,"bindingId":binding,"title":"Chat"}),
+        )
+    };
+    let first = rules::create(&mut records, &create(team_a)).unwrap();
+    assert_eq!(
+        rules::create(&mut records, &create(team_a)).unwrap().data,
+        first.data
+    );
+    assert_eq!(
+        rules::create(&mut records, &create(team_b))
+            .unwrap_err()
+            .code,
+        "binding_chat_conflict"
+    );
+    assert_eq!(records.list("leader_chats").len(), 1);
+}

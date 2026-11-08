@@ -49,6 +49,8 @@ impl IntegratedProvider for TestProvider {
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
+            assert!(text.contains("Bee Team persisted execution context"));
+            let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
@@ -92,7 +94,27 @@ impl IntegratedProvider for TestProvider {
         })
     }
 }
+async fn test_local_peer(
+    mut request: axum::extract::Request,
+    next: axum::middleware::Next,
+) -> axum::response::Response {
+    request.extensions_mut().insert(axum::extract::ConnectInfo(
+        "127.0.0.1:40000".parse::<std::net::SocketAddr>().unwrap(),
+    ));
+    if !request.headers().contains_key("host") {
+        request
+            .headers_mut()
+            .insert("host", "127.0.0.1".parse().unwrap());
+    }
+    next.run(request).await
+}
 async fn fixture() -> (axum::Router, Value, Value, Arc<TestProvider>) {
+    fixture_with_origins(CorsConfig::Permissive, CorsConfig::Permissive).await
+}
+async fn fixture_with_origins(
+    api_origins: CorsConfig,
+    mcp_origins: CorsConfig,
+) -> (axum::Router, Value, Value, Arc<TestProvider>) {
     let temp = std::env::temp_dir().join(format!("beeteam-chat-test-{}.sql", Uuid::new_v4()));
     let url = format!("sqlite://{}", temp.to_string_lossy().replace('\\', "/"));
     let db = if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("postgres") {
@@ -110,16 +132,16 @@ async fn fixture() -> (axum::Router, Value, Value, Arc<TestProvider>) {
         database_url: url,
         host: "127.0.0.1".parse().unwrap(),
         port: 0,
-        cors: CorsConfig::Permissive,
+        cors: api_origins,
         body_limit_bytes: 1024 * 1024,
-        otel_enabled: cfg!(feature = "mcp"),
+        otel_enabled: false,
         mcp: McpConfig {
             enabled: cfg!(feature = "mcp"),
             path: "/mcp".into(),
-            cors: CorsConfig::Permissive,
+            cors: mcp_origins,
         },
     };
-    let app = create_router(state, &config);
+    let app = create_router(state, &config).layer(axum::middleware::from_fn(test_local_peer));
     let agent = ok(
         &app,
         "POST",
@@ -367,4 +389,164 @@ async fn http_mcp_bootstrap_share_replay_and_runtime() {
         }
     }
     assert_eq!(provider.0.load(Ordering::SeqCst), 1);
+}
+
+async fn browser_request(
+    app: &axum::Router,
+    method: &str,
+    path: &str,
+    host: &str,
+    origin: &str,
+    body: Value,
+) -> u16 {
+    use tower::ServiceExt;
+    let response = app
+        .clone()
+        .oneshot(
+            axum::http::Request::builder()
+                .method(method)
+                .uri(path)
+                .header("host", host)
+                .header("origin", origin)
+                .header("content-type", "application/json")
+                .header("accept", "application/json, text/event-stream")
+                .header("mcp-protocol-version", "2025-11-25")
+                .header("X-Actor-Kind", "human")
+                .header("Idempotency-Key", Uuid::new_v4().to_string())
+                .body(axum::body::Body::from(body.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    response.status().as_u16()
+}
+#[tokio::test]
+async fn untrusted_browser_cannot_bootstrap_read_stream_or_trigger_conversation_delivery() {
+    let (app, agent, _, provider) = fixture().await;
+    for (method, path) in [
+        ("GET", format!("/api/v2/agents/{}/runtime", id(&agent))),
+        (
+            "POST",
+            format!("/api/v2/agents/{}/integrated-session", id(&agent)),
+        ),
+        (
+            "GET",
+            format!("/api/v2/leader-chats/{}/events", Uuid::now_v7()),
+        ),
+        ("POST", format!("/api/v2/tasks/{}/comments", Uuid::now_v7())),
+    ] {
+        assert_eq!(
+            browser_request(
+                &app,
+                method,
+                &path,
+                "127.0.0.1",
+                "https://evil.example",
+                json!({})
+            )
+            .await,
+            403,
+            "{path}"
+        );
+    }
+    assert_eq!(
+        browser_request(
+            &app,
+            "GET",
+            &format!("/api/v2/agents/{}/runtime", id(&agent)),
+            "attacker.example",
+            "http://localhost:5176",
+            Value::Null
+        )
+        .await,
+        403
+    );
+    if cfg!(feature = "mcp") {
+        let body = json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"createIntegratedSession","arguments":{"params":{"agentId":id(&agent)},"body":{"projectRoot":std::env::temp_dir(),"expectedBindingId":null},"actor":{"kind":"human"},"expectedVersion":ver(&agent),"idempotencyKey":Uuid::new_v4()}}});
+        assert_eq!(
+            browser_request(
+                &app,
+                "POST",
+                "/mcp",
+                "127.0.0.1",
+                "https://evil.example",
+                body
+            )
+            .await,
+            403
+        );
+    }
+    assert_eq!(provider.0.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        browser_request(
+            &app,
+            "GET",
+            &format!("/api/v2/agents/{}/runtime", id(&agent)),
+            "127.0.0.1",
+            "http://localhost:5176",
+            Value::Null
+        )
+        .await,
+        200
+    );
+}
+#[tokio::test]
+async fn explicit_browser_trust_is_scoped_separately_to_api_and_mcp() {
+    let (app, agent, _, _) = fixture_with_origins(
+        CorsConfig::Restricted(vec!["https://app.example".into()]),
+        CorsConfig::Restricted(vec!["https://mcp.example".into()]),
+    )
+    .await;
+    let path = format!("/api/v2/agents/{}/runtime", id(&agent));
+    assert_eq!(
+        browser_request(
+            &app,
+            "GET",
+            &path,
+            "127.0.0.1",
+            "https://app.example",
+            Value::Null
+        )
+        .await,
+        200
+    );
+    assert_eq!(
+        browser_request(
+            &app,
+            "GET",
+            &path,
+            "127.0.0.1",
+            "https://mcp.example",
+            Value::Null
+        )
+        .await,
+        403
+    );
+    if cfg!(feature = "mcp") {
+        let body = json!({"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}});
+        assert_eq!(
+            browser_request(
+                &app,
+                "POST",
+                "/mcp",
+                "127.0.0.1",
+                "https://mcp.example",
+                body.clone()
+            )
+            .await,
+            200
+        );
+        assert_eq!(
+            browser_request(
+                &app,
+                "POST",
+                "/mcp",
+                "127.0.0.1",
+                "https://app.example",
+                body
+            )
+            .await,
+            403
+        );
+    }
 }
