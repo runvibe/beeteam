@@ -46,6 +46,8 @@
 
 - Managed session delivery is explicitly configured per local installation. Conversation comments and worker-summary notices enqueue in the same transaction; provider calls run after commit. Preserve acknowledgement and uncertain outcomes, never automatically resend an unknown turn, and never fall back to an ended or replacement binding. Validate only owned isolated sessions; retain unmanaged skills/MCP behavior and keep product token accounting separate.
 
+- Integrated chat owns its Codex threads. External bindings remain MCP/skills references and never authorize App Server takeover. Use shared DTO/service bootstrap for HTTP and MCP, preserve original turn IDs during recovery, and never retry inference to resolve an uncertain result. Apply the loopback/origin execution boundary to chat routes and all API/MCP writes whenever the integrated runtime is enabled. Actor metadata is not authentication.
+
 ## Release changelog
 
 Every pull request with a user-visible change must update the root CHANGELOG.md. Collect pending changes under Unreleased. Before publishing, move them into a nonempty version section matching Cargo.toml, merge it into main, and publish that exact section as the GitHub Release notes. Describe observable changes in English.

@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-08",
+  "purpose": "Local user evaluation copy, not a test database",
+  "method": "Official opt-in portable export and strict-precision restore into a new empty destination",
+  "result": "completed",
+  "precisionChanges": 0,
+  "originalEntriesByteIdentical": 46,
+  "newEmptyChatGroups": 7,
+  "countsBeforeAndAfter": {
+    "boards": 5,
+    "tasks": 167,
+    "agents": 107
+  },
+  "originalDatabaseChanged": false,
+  "migrationChecksumsChanged": false,
+  "uiObserved": "Team Bee Team / leader chat; legacy binding remains external; replacement requires explicit choice",
+  "notAcceptance": [
+    "No user-data session was created or replaced",
+    "No test suite targets this copy",
+    "End-user approval remains pending"
+  ]
+}

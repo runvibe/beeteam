@@ -29774,6 +29774,7 @@
               "state": {
                 "enum": [
                   "waiting_binding",
+                  "waiting_external",
                   "pending",
                   "dispatching",
                   "acknowledged",

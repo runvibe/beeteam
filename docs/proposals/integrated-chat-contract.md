@@ -1,6 +1,6 @@
 # Contrato frontend/backend do chat integrado — v0.1.0-draft
 
-Status: proposta para desenvolvimento paralelo, ainda não implementada. Fonte dos tipos: [OpenAPI](integrated-chat-openapi.json). Não confundir estes endpoints com capacidades da versão instalada. Implementação e merge permanecem separados desta entrega de contrato.
+Status: contrato da implementação em revisão na branch `codex/agent-session-bindings`. Fonte dos tipos: [OpenAPI](integrated-chat-openapi.json). Testes de contrato e aceitação real do runtime são verificações distintas. Sem merge automático.
 
 ## Decisões
 
@@ -69,7 +69,7 @@ Snapshot inclui atividades do turno ativo e aprovações pendentes inclusive de 
 
 ## Aprovações e ferramentas
 
-MVP expõe command/file_change/network/mcp_tool com accept ou decline para aquela ocorrência; não existe botão aceitar tudo. Backend valida solicitação ainda pendente e vínculo/turno de origem válido. Pedido expirado/encerrado retorna 409 approval_expired. Decisão aceita significa decisão registrada, não ferramenta concluída. Backend deve tratar seu envio ao provedor como idempotente/reconciliável; se a conexão se perder, não pedir nova aprovação para executar de novo silenciosamente.
+O adaptador Codex implementado expõe command/file_change/network com accept ou decline para aquela ocorrência; não existe botão aceitar tudo. Backend valida solicitação ainda pendente e vínculo/turno de origem válido. Pedido expirado/encerrado retorna 409 approval_expired. Decisão aceita significa decisão registrada, não ferramenta concluída. Backend deve tratar seu envio ao provedor como idempotente/reconciliável; se a conexão se perder, não pedir nova aprovação para executar de novo silenciosamente.
 
 Runtime distingue capacidade suportada, configuração habilitada e disponibilidade efetiva. Frontend não deduz login pelo nome do provedor. Nesta fatia, configuração de ferramentas, login OAuth e formulários MCP estruturados pertencem a contratos adicionais da etapa 5/6: não inventar endpoints no frontend. Pedido desses tipos ainda não suportados deve falhar explicitamente como unsupported_capability, sem falso botão de confirmação. Essa limitação bloqueia considerar a etapa 6 completa, mas não bloqueia desenvolver o chat básico em paralelo.
 
@@ -89,6 +89,14 @@ Formato existente: {error: texto legível, code: código estável, details: obje
 
 Fixtures são contratos, não prova de execução real. Aceite final exige sessão Codex própria, dados isolados, evidências de UI + API e PR sem merge automático. OAuth/formulários e edição de perfis exigem seus contratos complementares antes do início dessas fatias.
 
-## Recupera��o expl�cita de turno incerto
+## Recuperação explícita de turno incerto
 
-`reconcile` exige actor, If-Match do turno e Idempotency-Key. Consulta somente o thread e o turno originais. Estado confirmado completed/cancelled/failed � persistido com mensagem final e entrega vinculada, sem nova infer�ncia. Running, resultado desconhecido ou aus�ncia de providerTurnId mant�m uncertain e retorna resolved:false. Uma nova verifica��o consciente usa nova chave; repetir pedido cujo HTTP falhou conserva a mesma chave. A interface nunca reenvia a mensagem original. Cria��o de sess�o com resultado incerto e sem externalId conhecido continua bloqueada; n�o � poss�vel atribuir com seguran�a uma thread por adivinha��o.
+`reconcile` exige actor, If-Match do turno e Idempotency-Key. Consulta somente o thread e o turno originais. Estado confirmado completed/cancelled/failed é persistido com mensagem final e entrega vinculada, sem nova inferência. Running, resultado desconhecido ou ausência de providerTurnId mantém uncertain e retorna resolved:false. Uma nova verificação consciente usa nova chave; repetir pedido cujo HTTP falhou conserva a mesma chave. A interface nunca reenvia a mensagem original. Criação de sessão com resultado incerto e sem externalId conhecido continua bloqueada; não é possível atribuir com segurança uma thread por adivinhação.
+
+## Local execution boundary
+
+Integrated execution requires a loopback listener and peer, a local Host and no forwarding headers. Browser Origin must be loopback or an exact explicitly configured trusted origin. Permissive CORS is not execution permission. Chat routes always enforce this policy; when the integrated runtime is enabled, the same boundary covers all API and MCP commands, including Conversation writes that enqueue work. Static assets and health checks remain separate. The existing external-only mode is unchanged. This is a transport boundary, not actor authentication. Rejection returns 403 local_action_forbidden.
+
+One chat belongs to one binding and one team in this slice. Reusing its binding for a different team returns 409 binding_chat_conflict instead of returning another team's chat. Changing the team's leader makes the old chat read-only.
+
+Error codes are extensible strings: provider failures such as needs_auth or mcp_scope_unverified preserve diagnostics. Clients handle known codes and retain a generic fallback. A bootstrap with an unknown outcome uses session_creation_uncertain; retry keeps the same key and never guesses a new thread.

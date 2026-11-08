@@ -1,6 +1,6 @@
 # Modos externo e integrado — plano de implementação
 
-> Execução futura: usar superpowers:executing-plans, uma entrega por vez. Este documento autoriza planejamento, não implementação ou merge. Manter PR para revisão do usuário.
+> Implementação autorizada pelo usuário em 08/11/2026. Executar por entregas e manter PR para revisão, sem merge automático.
 
 **Objetivo:** preservar o Bee Team por MCP e skills e oferecer chat integrado com o líder, permitindo agentes dos dois modos no mesmo time.
 
@@ -25,13 +25,13 @@
 - Sem merge/publicação automática. Medição de tokens por vínculo/tarefa permanece fase posterior.
 - SOLID, arquivos abaixo de 1000 linhas e paridade HTTP/MCP. Actor context continua metadado, não autenticação.
 
-## Ponto de partida verificado antes da implementa��o
+## Ponto de partida verificado antes da implementação
 
 O adaptador atual retoma threads e entrega turnos. `codex_mcp_scope.rs` desativa MCPs/plugins herdados e fixa a instância Bee Team; `codex_session.rs` interrompe a entrega em solicitações de aprovação. Isso não constitui chat integrado completo. O acesso à sessão já ocupada pelo Desktop falhou com active writer; não contornar esse bloqueio. A API de revisão em 59867 recusou conexão durante este planejamento; registro deste plano no board está pendente.
 
 ## Interfaces propostas
 
-Nomes abaixo são decisões para a implementação; não são endpoints existentes.
+O contrato efetivo desta entrega está em `docs/proposals/integrated-chat-openapi.json`. A lista abaixo registra o desenho inicial; a matriz de entrega no final distingue implementação, aceite e extensões pendentes.
 
 - `AgentSessionMode = external | integrated`; vínculo contém modo, harness, externalId, installationId, projectRoot e versão. ID externo pode faltar apenas durante a criação de uma sessão integrada, nunca no vínculo ativo concluído.
 - `SessionCapabilities`: streaming, resume, interrupt, approvals, skills, mcp e webSearch; capacidade declarada é separada de configuração habilitada e verificação de funcionamento.
@@ -176,4 +176,27 @@ Claude Code executável, hospedagem cloud/multitenant, cobrança, métricas por 
 
 ## Registro no Bee Team
 
-Pendente: anexar este plano como nova revisão/novo plano na tarefa de integração, criar as nove subtarefas acima com conteúdo próprio e preservar as seis subtarefas anteriores como evidência da primeira entrega. Não reabrir itens anteriores apenas para representar escopo novo. Confirmar os IDs retornados e o conteúdo persistido antes de anunciar registro no board.
+Plano registrado e conferido na tarefa `01a1b328-0c58-7481-bad1-d9ed03f1319a` da instância local de avaliação, como plano `01a1bc21-086c-70b2-b4ab-ec837a72f571`. As seis subtarefas anteriores foram preservadas. Os nove capítulos acima organizam o escopo; não representam nove novas subtarefas já criadas. O banco original não foi modificado por esse registro.
+
+
+## Implementation checkpoint (2026-11-08, review only)
+
+The original checklists above remain acceptance requirements, not a claim that every future extension shipped. PR #65 contains the following reviewable implementation:
+
+| Area | Implemented | Boundary still open |
+| --- | --- | --- |
+| Contract | 10 API paths, 23 schemas, shared fixtures and generated TS; HTTP/MCP bootstrap parity | Human review, no release |
+| Modes and lifecycle | External default for legacy references; owned integrated bootstrap; replacement/history; active-turn guards | Unknown bootstrap without a provider ID cannot be safely recovered |
+| Leader chat | Persisted messages/events, SSE replay, cancellation, known-turn reconciliation, current leader/team checks | Final user acceptance |
+| Conversation | Integrated dispatch, worker approval routing, task-linked leader notices and atomic replies | External mode is readable Conversation/ledger only; no external inbox acknowledgement API |
+| Tools | Web search, command-network policy, existing local skills, explicit extra roots and selected MCP servers | No individual skill toggle or post-bootstrap profile editor |
+| Approvals | Command/file/network binary decisions, origin-specific worker approval, expiry/conflict handling | OAuth and structured MCP forms remain unsupported and fail explicitly |
+| UI | Team leader chat, runtime and bootstrap controls, PT/EN, responsive history/composer/approvals | End-user evaluation with their project |
+| Skills | Updated source/bundled roles and isolated installation checks for all three packages | No global installation inferred |
+| Recovery | Exact provider-turn lookup, no repeat inference, receipt/message deduplication | Worker without an integrated leader chat has no chat recovery address; worker recovery list is not exposed in UI |
+
+Automated frontend coverage passed 720 tests; final recovery/origin UI fixes passed 40 focused tests, typecheck and production build. The i18n audit covers 224 files with no unresolved or stale entries. Skills CLI 1.7.6 passed all nine package/harness combinations with byte parity and provenance validation. Native Codex acceptance creates owned sessions in isolated SQLite, proves chat/SSE/restart, real MCP/web calls and recovery without duplicate inference. Detailed final backend and native evidence is recorded with the PR; a test fixture is not live user acceptance.
+
+Local user-review startup exposed historical CRLF-vs-LF SQL migration checksums in the existing copy. The original data was not modified and no checksum validation was disabled. Resolved for local review through the official opt-in export/strict restore flow into a new empty database. All 46 original record/blob entries were byte-identical after re-export; 5 boards, 167 tasks and 107 agents were preserved. The review API and Vite panel opened successfully; no product source database or migration checksum was modified.
+
+No automatic merge, deployment or user acceptance has occurred. The plan was read back from the restored local review instance; no record in the original source database was changed.

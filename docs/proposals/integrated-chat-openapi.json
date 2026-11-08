@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Bee Team Integrated Chat — Proposed Contract",
+    "title": "Bee Team Integrated Chat — Review Contract",
     "version": "0.1.0-draft",
-    "description": "Contract-first proposal, not currently implemented. Normative lifecycle and SSE rules: integrated-chat-contract.md. No changes to existing HTTP/MCP contracts."
+    "description": "Implemented review contract for the local integrated chat. Normative lifecycle, supported interactions and SSE rules: integrated-chat-contract.md. Kept separate from the existing Kanban/RA contracts."
   },
   "servers": [
     {
@@ -114,6 +114,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
@@ -215,6 +225,16 @@
           },
           "503": {
             "description": "See normative error mapping in companion contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -333,6 +353,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -441,6 +471,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       },
@@ -531,6 +571,16 @@
           },
           "503": {
             "description": "See normative error mapping in companion contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -660,6 +710,16 @@
           },
           "503": {
             "description": "See normative error mapping in companion contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -817,6 +877,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -949,6 +1019,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1060,6 +1140,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1143,6 +1233,16 @@
           },
           "503": {
             "description": "See normative error mapping in companion contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1242,6 +1342,16 @@
           },
           "503": {
             "description": "See normative error mapping in companion contract.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1373,6 +1483,16 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Direct local access or a trusted browser origin is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1455,7 +1575,8 @@
           },
           "code": {
             "type": "string",
-            "enum": [
+            "description": "Stable error identifier. Provider and storage adapters may add codes; clients must retain a generic fallback.",
+            "examples": [
               "invalid_request",
               "invalid_actor_context",
               "not_found",
@@ -1471,7 +1592,13 @@
               "unsupported_capability",
               "payload_too_large",
               "storage_unavailable",
-              "internal_error"
+              "internal_error",
+              "local_action_forbidden",
+              "session_creation_uncertain",
+              "session_busy",
+              "binding_chat_conflict",
+              "turn_not_uncertain",
+              "needs_auth"
             ]
           },
           "details": {

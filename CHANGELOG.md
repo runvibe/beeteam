@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Generate new record metadata timestamps at microsecond precision so PostgreSQL write responses and subsequent reads agree, without rewriting existing data or replay snapshots.
+
+- Add a team leader chat backed by Bee Team-owned Codex App Server sessions, with persistent history, streamed responses, cancellation and per-action approvals.
+- Keep external MCP/skills sessions separate from integrated sessions in mixed teams. Create integrated worker sessions through the same HTTP and MCP lifecycle service.
+- Configure integrated web search, command network access, native skills and selected local MCP servers without granting full filesystem access.
+- Recover confirmed outcomes of uncertain chat turns by querying their original provider turn, without resending work. Unknown creation outcomes remain explicit and are never guessed.
+
 - Clarify external and integrated session workflows in role/setup skills, including mixed teams, pending external messages and avoiding duplicate direct notifications.
 
 - Keep truncated execution summary titles within their length limit.
