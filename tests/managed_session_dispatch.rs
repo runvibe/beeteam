@@ -59,7 +59,7 @@ impl SessionProvider for Provider {
         })
     }
 }
-async fn fixture() -> (axum::Router, Arc<dyn ResourceStore>, Value, Value) {
+async fn fixture_mode(mode: &str) -> (axum::Router, Arc<dyn ResourceStore>, Value, Value) {
     let (app, store) = if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("sqlite") {
         let (app, pool) = sqlite_app_with_pool().await;
         let url = format!(
@@ -85,7 +85,27 @@ async fn fixture() -> (axum::Router, Arc<dyn ResourceStore>, Value, Value) {
         None,
     )
     .await;
-    let worker=ok(&app,"POST","/api/v2/agents/with-session",json!({"agent":{"name":"Isolated worker"},"session":{"harness":"codex","installationId":"isolated","externalId":"owned","projectRoot":"/tmp/isolated"}}),None).await["agent"].clone();
+    let worker = ok(
+        &app,
+        "POST",
+        "/api/v2/agents",
+        json!({"name":"Isolated worker"}),
+        None,
+    )
+    .await;
+    // The synthetic provider fixture inserts its owned binding at creation;
+    // production binding history is immutable, including its mode.
+    let mut unit = store.begin().await.unwrap();
+    unit.records
+        .insert(beeteam::repositories::records::Record::new(
+            "agent_session_bindings",
+            json!({
+                "agentId":worker["id"],"mode":mode,"harness":"codex","installationId":"isolated",
+                "externalId":"owned","projectRoot":"/tmp/isolated","startedAt":chrono::Utc::now(),
+                "endedAt":null,"startedBy":null,"endedBy":null,"verification":"verified"
+            }),
+        ));
+    unit.commit().await.unwrap();
     let team=ok(&app,"POST","/api/v2/teams",json!({"name":"Isolated team","leaderId":id(&leader),"workerIds":[id(&worker)],"coordinationContext":manual()}),None).await;
     let board = ok(
         &app,
@@ -99,8 +119,35 @@ async fn fixture() -> (axum::Router, Arc<dyn ResourceStore>, Value, Value) {
     (app, store, task, worker)
 }
 #[tokio::test]
+async fn external_recipient_stays_readable_without_starting_provider() {
+    let (app, store, task, worker) = fixture_mode("external").await;
+    let route = format!("/api/v2/tasks/{}/comments", id(&task));
+    ok(
+        &app,
+        "POST",
+        &route,
+        json!({"body":"Read this through MCP","mentionedAgentIds":[id(&worker)]}),
+        ver(&task),
+    )
+    .await;
+    let provider = Arc::new(Provider {
+        calls: AtomicUsize::new(0),
+        fail: false,
+    });
+    let service = ManagedSessionService::new(store, provider.clone(), "isolated".into());
+    assert!(!service.deliver_next().await.unwrap());
+    assert_eq!(provider.calls.load(Ordering::SeqCst), 0);
+    let rows = get(
+        &app,
+        &format!("/api/v2/tasks/{}/session-deliveries", id(&task)),
+    )
+    .await;
+    assert_eq!(rows["items"][0]["state"], "waiting_external");
+    assert_eq!(get(&app, &route).await["total"], 1);
+}
+#[tokio::test]
 async fn replay_creates_one_delivery_and_a_correlated_reply_is_persisted_once() {
-    let (app, store, task, worker) = fixture().await;
+    let (app, store, task, worker) = fixture_mode("integrated").await;
     let route = format!("/api/v2/tasks/{}/comments", id(&task));
     let key = uuid::Uuid::new_v4();
     let body = json!({"body":"Please inspect","mentionedAgentIds":[id(&worker)]});
@@ -135,7 +182,7 @@ async fn replay_creates_one_delivery_and_a_correlated_reply_is_persisted_once() 
 }
 #[tokio::test]
 async fn uncertain_send_and_restart_never_resubmit_the_request() {
-    let (app, store, task, worker) = fixture().await;
+    let (app, store, task, worker) = fixture_mode("integrated").await;
     ok(
         &app,
         "POST",
@@ -172,7 +219,7 @@ async fn rpc(app: &axum::Router, name: &str, args: Value) -> Value {
 }
 #[tokio::test]
 async fn worker_summary_notices_are_atomic_with_compound_replays_and_leader_suppression() {
-    let (app, _store, task, worker) = fixture().await;
+    let (app, _store, task, worker) = fixture_mode("integrated").await;
     let key = uuid::Uuid::new_v4();
     let mut usage = session_usage(id(&worker));
     usage["entries"][0]["actorRole"] = json!("worker");
@@ -214,7 +261,7 @@ async fn worker_summary_notices_are_atomic_with_compound_replays_and_leader_supp
 
 #[tokio::test]
 async fn rollback_and_cold_recovery_do_not_send_or_duplicate_comments() {
-    let (app, store, task, worker) = fixture().await;
+    let (app, store, task, worker) = fixture_mode("integrated").await;
     let stranger = ok(
         &app,
         "POST",
@@ -275,12 +322,20 @@ async fn rollback_and_cold_recovery_do_not_send_or_duplicate_comments() {
 #[tokio::test]
 async fn a_blocked_binding_cannot_starve_other_sessions_beyond_the_first_page() {
     use beeteam::{repositories::records::Record, services::managed_sessions::queue};
-    let (app, store, task, worker) = fixture().await;
-    let other=ok(&app,"POST","/api/v2/agents/with-session",json!({"agent":{"name":"Other isolated worker"},"session":{"harness":"codex","installationId":"isolated","externalId":"other-owned","projectRoot":"/tmp/isolated"}}),None).await["agent"].clone();
+    let (app, store, task, worker) = fixture_mode("integrated").await;
+    let other = ok(
+        &app,
+        "POST",
+        "/api/v2/agents",
+        json!({"name":"Other isolated worker"}),
+        None,
+    )
+    .await;
     let tid = uuid::Uuid::parse_str(id(&task)).unwrap();
     let wid = uuid::Uuid::parse_str(id(&worker)).unwrap();
     let oid = uuid::Uuid::parse_str(id(&other)).unwrap();
     let mut unit = store.begin().await.unwrap();
+    unit.records.insert(Record::new("agent_session_bindings",json!({"agentId":oid,"mode":"integrated","harness":"codex","installationId":"isolated","externalId":"other-owned","projectRoot":"/tmp/isolated","endedAt":null})));
     let board = unit
         .records
         .get("tasks", tid)

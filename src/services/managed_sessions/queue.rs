@@ -102,7 +102,12 @@ pub fn enqueue(
         .map(|b| b.id);
     let binding = active_binding(records, target).cloned();
     let destination = binding.as_ref().map(|b| json!({"harness":b.data["harness"],"installationId":b.data["installationId"],"externalId":b.data["externalId"],"projectRoot":b.data["projectRoot"]}));
-    records.insert(Record::new("session_deliveries", json!({"taskId":task,"commentId":comment,"sourceId":source,"kind":kind,"targetAgentId":target,"requesterAgentId":message.data["actorId"],"originBindingId":origin,"bindingId":binding.as_ref().map(|b|b.id),"destination":destination,"state":if binding.is_some(){"pending"}else{"waiting_binding"},"turnId":null,"errorCode":null,"expectsReply":expects_reply,"replyCommentId":null})));
+    let state = match binding.as_ref() {
+        Some(b) if b.data["mode"] == "integrated" => "pending",
+        Some(_) => "waiting_external",
+        None => "waiting_binding",
+    };
+    records.insert(Record::new("session_deliveries", json!({"taskId":task,"commentId":comment,"sourceId":source,"kind":kind,"targetAgentId":target,"requesterAgentId":message.data["actorId"],"originBindingId":origin,"bindingId":binding.as_ref().map(|b|b.id),"destination":destination,"state":state,"turnId":null,"errorCode":null,"expectsReply":expects_reply,"replyCommentId":null})));
     Ok(())
 }
 pub fn comment(
@@ -202,7 +207,21 @@ pub fn claim(records: &mut Records, id: Uuid, installation: &str) -> Result<bool
     let Some(binding) = binding else {
         return Ok(false);
     };
+    // Missing mode is a legacy external declaration, never authority to take
+    // over a Desktop session. The message remains readable through Conversation.
+    if binding.data["mode"] != "integrated" {
+        let row = records.get_mut("session_deliveries", id)?;
+        row.data["state"] = json!("waiting_external");
+        row.touch();
+        return Ok(false);
+    }
     if binding.data["installationId"] != installation {
+        return Ok(false);
+    }
+    if records.list("leader_chat_turns").iter().any(|r| {
+        r.reference("bindingId") == Some(binding.id)
+            && !crate::dto::leader_chat::terminal(r.data["status"].as_str().unwrap_or(""))
+    }) {
         return Ok(false);
     }
     if records.list("session_deliveries").iter().any(|r| {

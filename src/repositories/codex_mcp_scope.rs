@@ -1,18 +1,41 @@
 //! Per-thread MCP containment. Inventory metadata only; no auth/config secrets.
 use crate::dto::session_delivery::SessionFailure;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use std::collections::BTreeSet;
+
+/// Explicit local provider configuration; contains no credentials or commands.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields, default)]
+pub struct CodexToolProfile {
+    pub web_search: String,
+    pub network_access: bool,
+    pub enabled_mcp_servers: Vec<String>,
+    pub skill_roots: Vec<String>,
+}
+impl Default for CodexToolProfile {
+    fn default() -> Self {
+        Self {
+            web_search: "live".into(),
+            network_access: true,
+            enabled_mcp_servers: vec![],
+            skill_roots: vec![],
+        }
+    }
+}
 pub struct McpScope {
     endpoint: String,
     origin: String,
     name: String,
     configuration: Value,
+    profile: Option<CodexToolProfile>,
 }
 /// Missing/malformed pagination metadata is not evidence of a complete inventory.
-pub fn inventory_cursor(result:&Value)->Result<Option<&str>,SessionFailure> {
+pub fn inventory_cursor(result: &Value) -> Result<Option<&str>, SessionFailure> {
     match result.get("nextCursor") {
-        Some(Value::Null)=>Ok(None),
-        Some(Value::String(cursor)) if !cursor.is_empty()=>Ok(Some(cursor)),
-        _=>Err(fail()),
+        Some(Value::Null) => Ok(None),
+        Some(Value::String(cursor)) if !cursor.is_empty() => Ok(Some(cursor)),
+        _ => Err(fail()),
     }
 }
 impl McpScope {
@@ -40,13 +63,83 @@ impl McpScope {
             origin: url.origin().ascii_serialization(),
             name: name.into(),
             configuration,
+            profile: None,
         })
     }
+    pub fn with_tools(
+        endpoint: &str,
+        name: &str,
+        profile: CodexToolProfile,
+    ) -> Result<Self, SessionFailure> {
+        if !matches!(profile.web_search.as_str(), "live" | "cached" | "disabled")
+            || profile.enabled_mcp_servers.len() > 100
+            || profile.skill_roots.len() > 32
+            || profile.enabled_mcp_servers.iter().any(|s| {
+                s.trim().is_empty()
+                    || s.trim() != s
+                    || s.contains('\0')
+                    || s == name
+                    || s == "codex_apps"
+            })
+            || profile
+                .skill_roots
+                .iter()
+                .any(|s| s.contains('\0') || !std::path::Path::new(s).is_absolute())
+        {
+            return Err(SessionFailure::new(
+                "invalid_tool_profile",
+                "Invalid Codex tool profile",
+                false,
+            ));
+        }
+        let mut scope = Self::new(endpoint, name)?;
+        scope.configuration["web_search"] = json!(profile.web_search);
+        scope.configuration["sandbox_workspace_write.network_access"] =
+            json!(profile.network_access);
+        scope.profile = Some(profile);
+        Ok(scope)
+    }
+    pub fn skill_roots(&self) -> &[String] {
+        self.profile
+            .as_ref()
+            .map(|p| p.skill_roots.as_slice())
+            .unwrap_or(&[])
+    }
+    fn selected(&self, name: &str) -> bool {
+        self.profile
+            .as_ref()
+            .is_some_and(|p| p.enabled_mcp_servers.iter().any(|s| s == name))
+    }
     pub fn observe(&mut self, servers: &[Value]) -> Result<(), SessionFailure> {
+        if let Some(profile) = &self.profile {
+            for name in &profile.enabled_mcp_servers {
+                let server = servers
+                    .iter()
+                    .find(|s| s["name"] == *name)
+                    .ok_or_else(fail)?;
+                // Plugin activation can enable several MCPs. Require explicit
+                // selection of every sibling rather than silently broadening it.
+                if let Some(plugin) = server["pluginId"].as_str() {
+                    if servers.iter().any(|s| {
+                        s["pluginId"] == plugin && !self.selected(s["name"].as_str().unwrap_or(""))
+                    }) {
+                        return Err(fail());
+                    }
+                }
+            }
+        }
         for server in servers {
             let name = server["name"].as_str().ok_or_else(fail)?;
             if name == self.name {
                 return Err(fail());
+            }
+            if self.selected(name) {
+                // Keep the configured transport and provider-owned credentials.
+                // Never copy environment/header/token values into our config.
+                if let Some(plugin) = server["pluginId"].as_str() {
+                    self.configuration["plugins"][plugin] = json!({"enabled":true});
+                }
+                continue;
             }
             if let Some(plugin) = server["pluginId"].as_str() {
                 self.configuration["plugins"][plugin] = json!({"enabled":false});
@@ -73,7 +166,9 @@ impl McpScope {
         let mut ids = std::collections::BTreeSet::new();
         for server in servers {
             if let Some(id) = server["pluginId"].as_str() {
-                ids.insert(id.to_owned());
+                if !self.selected(server["name"].as_str().unwrap_or("")) {
+                    ids.insert(id.to_owned());
+                }
             }
         }
         ids.into_iter().collect()
@@ -83,6 +178,7 @@ impl McpScope {
     }
     pub fn verify(&self, servers: &[Value]) -> Result<(), SessionFailure> {
         let mut found = false;
+        let mut verified_selected = BTreeSet::new();
         for server in servers {
             let tools = server["tools"].as_object();
             if server["name"] == self.name {
@@ -98,12 +194,21 @@ impl McpScope {
                     return Err(fail());
                 }
                 found = true;
+            } else if self.selected(server["name"].as_str().unwrap_or("")) {
+                if server["runtimeStatus"] != "connected"
+                    || !server["toolsError"].is_null()
+                    || tools.is_none_or(|t| t.is_empty() || t.keys().any(|name| forbidden(name)))
+                {
+                    return Err(fail());
+                }
+                verified_selected.insert(server["name"].as_str().unwrap());
             } else if server["runtimeStatus"] == "disabled" {
                 continue;
             } else {
                 // Dynamic unrelated plugins may remain; never permit a foreign
                 // Bee Team or harness-chat tool catalog to reach inference.
-                if !server["pluginId"].is_string()
+                if self.profile.is_some()
+                    || !server["pluginId"].is_string()
                     || server["runtimeStatus"] != "connected"
                     || !server["toolsError"].is_null()
                     || tools.is_none_or(|t| t.is_empty())
@@ -113,7 +218,12 @@ impl McpScope {
                 }
             }
         }
-        if found {
+        let selection_complete = self.profile.as_ref().is_none_or(|p| {
+            p.enabled_mcp_servers
+                .iter()
+                .all(|name| verified_selected.contains(name.as_str()))
+        });
+        if found && selection_complete {
             Ok(())
         } else {
             Err(fail())

@@ -118,7 +118,7 @@ impl ManagedSessionService {
                 let text=format!("Bee Team Conversation\nTask: {}\nComment: {}\nDelivery: {}\nRecipient agent: {}\nSender agent (null means human): {}\nManaged mode: use this task's Conversation as the only communication channel. For independent questions or delegations, use Bee Team createComment with explicit mentionedAgentIds; do not message other harness chats. Worker execution summaries already generate leader notices, so do not duplicate those notices.\n{}\n\n{}",row.data["taskId"],comment.id,id,row.data["targetAgentId"],comment.data["actorId"],if row.data["expectsReply"]==true{"Return a direct reply as final text. Bee Team appends and routes it automatically; do not also create a duplicate reply comment."}else{"Informational notification. Do not send an automatic acknowledgement or notify other chats."},comment.data["body"].as_str().unwrap_or(""));
                 unit.commit().await?;
                 let (tx, mut rx) = tokio::sync::mpsc::channel(8);
-                let delivery = self.provider.deliver(&destination, &text, tx);
+                let delivery = self.provider.deliver_context(&destination, &text, tx, id);
                 tokio::pin!(delivery);
                 let mut complete = false;
                 let mut receiving = true;

@@ -22,12 +22,35 @@ fn fixture() -> (Records, Uuid, Uuid, Uuid, Uuid) {
     (r, task, leader, worker, team)
 }
 #[test]
+fn external_or_legacy_sessions_are_never_dispatched() {
+    for mode in [serde_json::Value::Null, json!("external")] {
+        let (mut r, task, leader, worker, _) = fixture();
+        add(
+            &mut r,
+            "agent_session_bindings",
+            json!({"agentId":worker,"mode":mode,"harness":"codex","installationId":"local","externalId":"desktop","projectRoot":"/tmp","endedAt":null}),
+        );
+        let comment = add(
+            &mut r,
+            "comments",
+            json!({"taskId":task,"actorId":leader,"body":"Read through MCP"}),
+        );
+        queue::comment(&mut r, task, comment, &[worker]).unwrap();
+        let delivery = r.list("session_deliveries")[0].id;
+        assert!(!queue::claim(&mut r, delivery, "local").unwrap());
+        assert_eq!(
+            r.get("session_deliveries", delivery).unwrap().data["state"],
+            "waiting_external"
+        );
+    }
+}
+#[test]
 fn worker_summaries_notify_once_but_leader_summaries_never_notify() {
     let (mut r, task, leader, worker, _) = fixture();
     add(
         &mut r,
         "agent_session_bindings",
-        json!({"agentId":worker,"harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
+        json!({"agentId":worker,"mode":"integrated","harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
     );
     let summary = add(
         &mut r,
@@ -102,7 +125,7 @@ fn an_explicit_binding_unblocks_pending_but_replacement_never_reroutes_queued_wo
     let binding = add(
         &mut r,
         "agent_session_bindings",
-        json!({"agentId":worker,"harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
+        json!({"agentId":worker,"mode":"integrated","harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
     );
     assert!(queue::claim(&mut r, delivery, "local").unwrap());
     assert!(!queue::claim(&mut r, delivery, "local").unwrap());
@@ -111,7 +134,7 @@ fn an_explicit_binding_unblocks_pending_but_replacement_never_reroutes_queued_wo
     add(
         &mut r,
         "agent_session_bindings",
-        json!({"agentId":worker,"harness":"codex","installationId":"local","externalId":"new","projectRoot":"/tmp","endedAt":null}),
+        json!({"agentId":worker,"mode":"integrated","harness":"codex","installationId":"local","externalId":"new","projectRoot":"/tmp","endedAt":null}),
     );
     assert!(!queue::claim(&mut r, delivery, "local").unwrap());
     assert_eq!(
@@ -125,7 +148,7 @@ fn archived_tasks_never_dispatch_queued_mentions() {
     add(
         &mut r,
         "agent_session_bindings",
-        json!({"agentId":worker,"harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
+        json!({"agentId":worker,"mode":"integrated","harness":"codex","installationId":"local","externalId":"owned","projectRoot":"/tmp","endedAt":null}),
     );
     let comment = add(
         &mut r,

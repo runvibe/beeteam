@@ -1,0 +1,201 @@
+[
+  {
+    "schema": "CreateChat",
+    "value": {
+      "teamId": "019a6000-0000-7000-8000-000000000002",
+      "leaderAgentId": "019a6000-0000-7000-8000-000000000003",
+      "bindingId": "019a6000-0000-7000-8000-000000000004",
+      "title": "Planejamento"
+    }
+  },
+  {
+    "schema": "SendMessage",
+    "value": {
+      "clientMessageId": "019a6000-0000-7000-8000-000000000008",
+      "bindingId": "019a6000-0000-7000-8000-000000000004",
+      "content": "Vamos planejar a entrega?",
+      "taskId": null
+    }
+  },
+  {
+    "schema": "Snapshot",
+    "value": {
+      "chat": {
+        "id": "019a6000-0000-7000-8000-000000000001",
+        "teamId": "019a6000-0000-7000-8000-000000000002",
+        "leaderAgentId": "019a6000-0000-7000-8000-000000000003",
+        "bindingId": "019a6000-0000-7000-8000-000000000004",
+        "title": "Planejamento",
+        "version": 1,
+        "createdAt": "2026-11-08T15:00:00Z",
+        "updatedAt": "2026-11-08T15:00:00Z"
+      },
+      "messages": [
+        {
+          "id": "019a6000-0000-7000-8000-000000000006",
+          "chatId": "019a6000-0000-7000-8000-000000000001",
+          "turnId": "019a6000-0000-7000-8000-000000000005",
+          "role": "assistant",
+          "content": "Vou organizar as etapas.",
+          "revision": 1,
+          "taskId": null,
+          "clientMessageId": null,
+          "createdAt": "2026-11-08T15:00:00Z"
+        }
+      ],
+      "olderMessagesCursor": null,
+      "activeTurn": {
+        "id": "019a6000-0000-7000-8000-000000000005",
+        "chatId": "019a6000-0000-7000-8000-000000000001",
+        "bindingId": "019a6000-0000-7000-8000-000000000004",
+        "status": "running",
+        "failure": null,
+        "version": 2,
+        "createdAt": "2026-11-08T15:00:00Z",
+        "updatedAt": "2026-11-08T15:00:00Z"
+      },
+      "pendingApprovals": [],
+      "toolActivities": [],
+      "eventCursor": "cursor-1"
+    }
+  },
+  {
+    "schema": "ChatEvent",
+    "value": {
+      "schemaVersion": 1,
+      "id": "cursor-2",
+      "chatId": "019a6000-0000-7000-8000-000000000001",
+      "turnId": "019a6000-0000-7000-8000-000000000005",
+      "createdAt": "2026-11-08T15:00:00Z",
+      "type": "message.updated",
+      "data": {
+        "message": {
+          "id": "019a6000-0000-7000-8000-000000000006",
+          "chatId": "019a6000-0000-7000-8000-000000000001",
+          "turnId": "019a6000-0000-7000-8000-000000000005",
+          "role": "assistant",
+          "content": "Vou organizar as etapas.",
+          "revision": 1,
+          "taskId": null,
+          "clientMessageId": null,
+          "createdAt": "2026-11-08T15:00:00Z"
+        }
+      }
+    }
+  },
+  {
+    "schema": "ChatEvent",
+    "value": {
+      "schemaVersion": 1,
+      "id": "cursor-3",
+      "chatId": "019a6000-0000-7000-8000-000000000001",
+      "turnId": "019a6000-0000-7000-8000-000000000005",
+      "createdAt": "2026-11-08T15:00:00Z",
+      "type": "turn.updated",
+      "data": {
+        "turn": {
+          "id": "019a6000-0000-7000-8000-000000000005",
+          "chatId": "019a6000-0000-7000-8000-000000000001",
+          "bindingId": "019a6000-0000-7000-8000-000000000004",
+          "status": "waiting_approval",
+          "failure": null,
+          "version": 3,
+          "createdAt": "2026-11-08T15:00:00Z",
+          "updatedAt": "2026-11-08T15:00:00Z"
+        }
+      }
+    }
+  },
+  {
+    "schema": "ChatEvent",
+    "value": {
+      "schemaVersion": 1,
+      "id": "cursor-4",
+      "chatId": "019a6000-0000-7000-8000-000000000001",
+      "turnId": "019a6000-0000-7000-8000-000000000005",
+      "createdAt": "2026-11-08T15:00:00Z",
+      "type": "approval.updated",
+      "data": {
+        "approval": {
+          "id": "019a6000-0000-7000-8000-000000000007",
+          "chatId": "019a6000-0000-7000-8000-000000000001",
+          "turnId": "019a6000-0000-7000-8000-000000000005",
+          "bindingId": "019a6000-0000-7000-8000-000000000004",
+          "agentId": "019a6000-0000-7000-8000-000000000003",
+          "taskId": null,
+          "kind": "network",
+          "title": "Acessar documentação",
+          "description": "Permitir acesso ao host nesta execução?",
+          "command": null,
+          "host": "developers.openai.com",
+          "paths": [],
+          "status": "pending",
+          "version": 1,
+          "expiresAt": "2026-11-08T15:15:00Z"
+        }
+      }
+    }
+  },
+  {
+    "schema": "ChatEvent",
+    "value": {
+      "schemaVersion": 1,
+      "id": "cursor-5",
+      "chatId": "019a6000-0000-7000-8000-000000000001",
+      "turnId": "019a6000-0000-7000-8000-000000000005",
+      "createdAt": "2026-11-08T15:00:00Z",
+      "type": "tool.updated",
+      "data": {
+        "tool": {
+          "id": "019a6000-0000-7000-8000-000000000009",
+          "turnId": "019a6000-0000-7000-8000-000000000005",
+          "name": "web_search",
+          "status": "completed",
+          "summary": "Documentação consultada.",
+          "revision": 1
+        }
+      }
+    }
+  },
+  {
+    "schema": "ChatEvent",
+    "value": {
+      "schemaVersion": 1,
+      "id": "cursor-6",
+      "chatId": "019a6000-0000-7000-8000-000000000001",
+      "turnId": "019a6000-0000-7000-8000-000000000005",
+      "createdAt": "2026-11-08T15:00:00Z",
+      "type": "turn.updated",
+      "data": {
+        "turn": {
+          "id": "019a6000-0000-7000-8000-000000000005",
+          "chatId": "019a6000-0000-7000-8000-000000000001",
+          "bindingId": "019a6000-0000-7000-8000-000000000004",
+          "status": "completed",
+          "failure": null,
+          "version": 4,
+          "createdAt": "2026-11-08T15:00:00Z",
+          "updatedAt": "2026-11-08T15:00:00Z"
+        }
+      }
+    }
+  },
+  {
+    "schema": "Error",
+    "value": {
+      "error": "Há um turno em andamento.",
+      "code": "turn_in_progress",
+      "details": {
+        "turnId": "019a6000-0000-7000-8000-000000000005"
+      }
+    }
+  },
+  {
+    "schema": "Error",
+    "value": {
+      "error": "Recarregue o histórico.",
+      "code": "cursor_expired",
+      "details": {}
+    }
+  }
+]
