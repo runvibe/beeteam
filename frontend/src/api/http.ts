@@ -1,4 +1,5 @@
 import { message } from "@/i18n";
+import { createLeaderChatApi } from "./leader-chat";
 import type { BeeApi, Resources, Filters } from "./types";
 import type { TaskOverview } from "./generated/kanban/TaskOverview";
 import { ApiError } from "./types";
@@ -39,6 +40,7 @@ function collection(resource: keyof Resources, scope: string) {
 export function createHttpApi(options: HttpOptions = {}): BeeApi {
   const { request, info, auxiliary } = createWorkerTransport(options);
   return {
+    leaderChat: createLeaderChatApi(options),
     createComment: (taskId,input,version,key)=>request(`/tasks/${segment(taskId)}/comments`,{method:"POST",body:JSON.stringify(input),headers:{"If-Match":`"${version}"`,"Idempotency-Key":key}}),
     sessionDeliveries: (taskId,commentId,signal)=>request(`/tasks/${segment(taskId)}/session-deliveries`+query({limit:100,...(commentId?{commentId}:{})}),{signal}),
     info,

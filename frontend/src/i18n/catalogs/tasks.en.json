@@ -263,6 +263,7 @@
   "sendConversation": "Send",
   "sendingConversation": "Sending…",
   "deliveryState_waiting_binding": "Awaiting a linked session",
+  "deliveryState_waiting_external": "Available via external MCP",
   "deliveryState_pending": "Queued",
   "deliveryState_dispatching": "Sending",
   "deliveryState_acknowledged": "Accepted; awaiting response",

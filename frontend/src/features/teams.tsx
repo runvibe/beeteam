@@ -6,6 +6,7 @@ import {
 import { DetailRecordList } from "./detail-record-list";
 import { useApiCompatibility } from "@/api/compatibility";
 import { teamSettingsPatch } from "./team-settings-patch";
+import { LeaderChat } from "./leader-chat";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -172,6 +173,9 @@ export function TeamPage() {
 }
 function TeamDetail({ id }: { id: string }) {
   useLocale();
+  const [tab, setTab] = useUrlState<string>("team.tab", "overview", {
+    values: ["overview", "chat"],
+  });
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   const q = useEntity("teams", id);
   const memberLimit = usePageSize("members", 10),
@@ -254,55 +258,90 @@ function TeamDetail({ id }: { id: string }) {
       <QueryState query={q}>
         {q.data && (
           <>
-            <div className="team-intro">
-              <TextBlock>{q.data.context}</TextBlock>
-            </div>
-            <h3>{tr("common.agents")}</h3>
-            <DetailRecordList
-              resource="members"
-              scope={id}
-              filters={{ limit: memberLimit, sortBy: "name" }}
-              empty={tr("agents.noCurrentAssociations")}
-              countLabel={tr("common.agents")}
-            >
-              {(m) => (
-                <div key={m.agentId} className="record-row">
-                  <AgentName id={m.agentId} />
-                  <Badge variant="outline">
-                    <TeamRoleIcon id={roleIconId(q.data, m.role)} />
-                    {m.role === "leader"
-                      ? tr("common.leader")
-                      : tr("common.worker")}
-                  </Badge>
+            <nav className="team-chat-tabs" aria-label={tr("teams.details")}>
+              <Button
+                variant={tab === "overview" ? "secondary" : "ghost"}
+                aria-pressed={tab === "overview"}
+                onClick={() => setTab("overview")}
+              >
+                {tr("chat.overview")}
+              </Button>
+              <Button
+                variant={tab === "chat" ? "secondary" : "ghost"}
+                aria-pressed={tab === "chat"}
+                onClick={() => setTab("chat")}
+              >
+                {tr("chat.title")}
+              </Button>
+            </nav>
+            {tab === "chat" ? (
+              <TeamLeaderChat team={q.data} />
+            ) : (
+              <>
+                <div className="team-intro">
+                  <TextBlock>{q.data.context}</TextBlock>
                 </div>
-              )}
-            </DetailRecordList>
-            <h3>{tr("teams.managedBoards")}</h3>
-            <DetailRecordList
-              resource="boards"
-              scope=""
-              filters={{ teamId: id, limit: boardLimit }}
-              empty={tr("teams.noLinkedBoards")}
-              countLabel={tr("teams.managedBoards")}
-            >
-              {(b) => (
-                <Button
-                  key={b.id}
-                  className="team-board-link"
-                  variant="outline"
-                  onClick={() => {
-                    openBoard(b.id);
-                  }}
+                <h3>{tr("common.agents")}</h3>
+                <DetailRecordList
+                  resource="members"
+                  scope={id}
+                  filters={{ limit: memberLimit, sortBy: "name" }}
+                  empty={tr("agents.noCurrentAssociations")}
+                  countLabel={tr("common.agents")}
                 >
-                  <span>{b.name}</span>
-                  <ArrowUpRight data-icon="inline-end" />
-                </Button>
-              )}
-            </DetailRecordList>
+                  {(m) => (
+                    <div key={m.agentId} className="record-row">
+                      <AgentName id={m.agentId} />
+                      <Badge variant="outline">
+                        <TeamRoleIcon id={roleIconId(q.data, m.role)} />
+                        {m.role === "leader"
+                          ? tr("common.leader")
+                          : tr("common.worker")}
+                      </Badge>
+                    </div>
+                  )}
+                </DetailRecordList>
+                <h3>{tr("teams.managedBoards")}</h3>
+                <DetailRecordList
+                  resource="boards"
+                  scope=""
+                  filters={{ teamId: id, limit: boardLimit }}
+                  empty={tr("teams.noLinkedBoards")}
+                  countLabel={tr("teams.managedBoards")}
+                >
+                  {(b) => (
+                    <Button
+                      key={b.id}
+                      className="team-board-link"
+                      variant="outline"
+                      onClick={() => {
+                        openBoard(b.id);
+                      }}
+                    >
+                      <span>{b.name}</span>
+                      <ArrowUpRight data-icon="inline-end" />
+                    </Button>
+                  )}
+                </DetailRecordList>
+              </>
+            )}
           </>
         )}
       </QueryState>
     </EntityDetailPage>
+  );
+}
+function TeamLeaderChat({ team }: { team: Team }) {
+  const api = useApi();
+  const leader = useEntity("agents", team.leaderId);
+  return (
+    <LeaderChat
+      api={api.leaderChat}
+      teamId={team.id}
+      leaderAgentId={team.leaderId}
+      leaderVersion={leader.data?.version}
+      onSessionCreated={() => void leader.refetch()}
+    />
   );
 }
 export function TeamForm({ team: latest }: { team: Team }) {

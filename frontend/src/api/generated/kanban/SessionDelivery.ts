@@ -22,6 +22,7 @@ export type SessionDelivery = {
   kind: "mention" | "worker_summary" | "response";
   /** @enum {string} */
   state:
+    | "waiting_external"
     | "waiting_binding"
     | "pending"
     | "dispatching"

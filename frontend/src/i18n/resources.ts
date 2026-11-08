@@ -1,4 +1,6 @@
 import agentsEn from "./catalogs/agents.en.json";
+import chatEn from "./catalogs/chat.en.json";
+import chatPt from "./catalogs/chat.pt.json";
 import agentsPt from "./catalogs/agents.pt.json";
 import boardsEn from "./catalogs/boards.en.json";
 import boardsPt from "./catalogs/boards.pt.json";
@@ -26,6 +28,7 @@ export const resources = {
   en: {
     translation: {
       agents: agentsEn,
+      chat: chatEn,
       boards: boardsEn,
       common: commonEn,
       compatibility: compatibilityEn,
@@ -42,6 +45,7 @@ export const resources = {
   pt: {
     translation: {
       agents: agentsPt,
+      chat: chatPt,
       boards: boardsPt,
       common: commonPt,
       compatibility: compatibilityPt,

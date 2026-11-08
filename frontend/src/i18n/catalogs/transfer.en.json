@@ -42,6 +42,13 @@
     "expired": "Expired"
   },
   "stage": {
+    "leader_session_operations": "Integrated session operations",
+    "leader_chats": "Leader chats",
+    "leader_chat_turns": "Chat executions",
+    "leader_chat_messages": "Chat messages",
+    "leader_chat_approvals": "Chat approvals",
+    "leader_chat_events": "Chat events",
+    "leader_chat_tools": "Chat tool activities",
     "validating": "Validating archive",
     "snapshot": "Creating snapshot",
     "upload": "Uploading",

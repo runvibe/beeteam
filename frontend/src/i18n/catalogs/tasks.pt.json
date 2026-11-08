@@ -263,6 +263,7 @@
   "sendConversation": "Enviar",
   "sendingConversation": "Enviando…",
   "deliveryState_waiting_binding": "Aguardando uma sessão vinculada",
+  "deliveryState_waiting_external": "Disponível para consulta pelo MCP externo",
   "deliveryState_pending": "Na fila",
   "deliveryState_dispatching": "Enviando",
   "deliveryState_acknowledged": "Aceita; aguardando resposta",

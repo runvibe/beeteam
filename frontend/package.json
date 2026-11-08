@@ -11,6 +11,7 @@
     "test": "vitest run",
     "typecheck": "tsc -b",
     "generate:types": "node scripts/generate-types.mjs",
+    "generate:chat-types": "node scripts/generate-chat-types.mjs",
     "build:embedded": "node scripts/build-embedded.mjs",
     "audit:i18n": "node scripts/i18n-audit.mjs",
     "generate:icons": "node scripts/generate-brand-icons.mjs"

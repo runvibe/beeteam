@@ -100,6 +100,7 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  leaderChat?: import("./leader-chat").LeaderChatApi;
   createComment(taskId:string,input:{body:string;mentionedAgentIds?:string[]},version:number,idempotencyKey:string):Promise<Resources["comments"]>;
   sessionDeliveries(taskId:string,commentId?:string,signal?:AbortSignal):Promise<Page<import("./generated/kanban/SessionDelivery").SessionDelivery>>;
   info(
