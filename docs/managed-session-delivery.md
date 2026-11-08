@@ -33,6 +33,8 @@ HTTP `createComment` and its MCP counterpart accept:
 
 Use the current task version and the same idempotency key/body/version when retrying an uncertain HTTP result. Each recipient has an independent delivery record. `listTaskSessionDeliveries` / `GET /api/v2/tasks/{taskId}/session-deliveries` supports `commentId`, `state`, offset and limit. A recipient without a binding waits for an explicit binding; a recipient from another team rejects the whole comment mutation. No provider call occurs inside a database transaction.
 
+For an external recipient, `waiting_external` is a delivery-ledger observation, not an acknowledged inbox. The current API has no external consume/acknowledge operation. The agent reads the task Conversation with the existing tools and writes its response there; that comment does not automatically complete the managed receipt. Changing the agent to integrated mode does not automatically replay old `waiting_external` messages. Issue a new deliberate request when delivery is required under the new binding.
+
 The worker's final response is appended to the same Conversation with `inReplyToCommentId` and `deliveryId`. An informational delivery returns it to the requesting agent's original binding only if that binding remains active. It does not notify another worker or recurse into an acknowledgement loop. Human requests receive their responses in the Conversation. Authored Markdown is preserved as text.
 
 For every summary authored by an explicitly bound worker belonging to the task board's team, including intermediate and final summaries, the same transaction inserts a Conversation notice linked by `sourceSummaryId` and queues it for that team's leader. A leader-authored summary generates no notice. The source summary ID and recipient make the intent unique. Shared HTTP/MCP execution, `close_activity` and saved idempotent replays retain these guarantees. A failed summary transaction creates neither a notice nor a delivery.
@@ -42,6 +44,7 @@ For every summary authored by an explicitly bound worker belonging to the task b
 | State | Meaning and recovery |
 | --- | --- |
 | waiting_binding | No managed destination existed. Wait for an explicit binding. |
+| waiting_external | Recipient is external. The Conversation remains readable; no provider push or automatic delivery acknowledgement is performed. |
 | pending | Destination recorded; no send claimed yet. |
 | dispatching | Serialized claim committed before provider I/O. |
 | acknowledged | Provider returned the exact turn ID; generation is still pending. |
