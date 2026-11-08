@@ -132,7 +132,10 @@ impl IntegratedProvider for ApprovalProvider {
         Box::pin(async { Ok("unused".into()) })
     }
     fn inspect<'a>(&'a self, _: &'a SessionDestination, _: &'a Value) -> ProviderFuture<'a, Value> {
-        Box::pin(async { Ok(json!({})) })
+        Box::pin(async move {
+            self.0.fetch_add(100, Ordering::SeqCst);
+            Ok(json!({}))
+        })
     }
     fn run<'a>(
         &'a self,
@@ -351,4 +354,94 @@ async fn leader_delivery_is_task_linked_system_notice_and_assistant_reply() {
         .any(|m| m.data["role"] == "assistant" && m.data["content"] == "Tests passed"));
     assert!(!messages.iter().any(|m| m.data["role"] == "user"));
     u.rollback().await.unwrap();
+}
+
+#[tokio::test]
+async fn runtime_external_binding_never_inspects_provider() {
+    let (mut r, _, _, worker, binding) = fixture(true);
+    r.get_mut("agent_session_bindings", binding).unwrap().data["mode"] = json!("external");
+    let (_dir, _, service, provider) = stored(r).await;
+    let mut cmd = beeteam::services::leader_chat::command("runtime");
+    cmd.params.insert("agentId".into(), worker.to_string());
+    let result = service.read(cmd).await.unwrap();
+    assert_eq!(result["readiness"], "external");
+    assert_eq!(result["capabilities"]["streaming"], false);
+    assert_eq!(provider.0.load(Ordering::SeqCst), 0);
+}
+#[tokio::test]
+async fn runtime_reports_binding_busy_from_conversation_delivery() {
+    let (r, _, _, worker, _) = fixture(true);
+    let (_dir, _, service, _) = stored(r).await;
+    let mut cmd = beeteam::services::leader_chat::command("runtime");
+    cmd.params.insert("agentId".into(), worker.to_string());
+    let result = service.read(cmd).await.unwrap();
+    assert_eq!(result["readiness"], "busy");
+}
+
+#[tokio::test]
+async fn generic_rebind_and_archive_cannot_orphan_integrated_work() {
+    let (mut r, _, _, worker, binding) = fixture(true);
+    let status = r.list("statuses")[0].id;
+    r.get_mut("statuses", status).unwrap().data["isDone"] = json!(true);
+    let (_dir, store, _, _) = stored(r).await;
+    let backend = beeteam::services::backend::service::BackendService::new(
+        store.clone(),
+        Arc::new(beeteam::repositories::local_git::LocalGitDiscovery::default()),
+    );
+    for (operation, body) in [
+        (
+            "claimAgentSession",
+            json!({"expectedBindingId":binding,"session":{"mode":"external","harness":"codex","installationId":"test","externalId":"new-external","projectRoot":"/tmp/project"}}),
+        ),
+        ("archiveAgent", json!({"archived":true})),
+    ] {
+        let command = Command {
+            operation: operation.into(),
+            params: [("agentId".into(), worker.to_string())]
+                .into_iter()
+                .collect(),
+            query: Default::default(),
+            body,
+            actor: Some(Actor {
+                kind: "human".into(),
+                id: None,
+            }),
+            expected_version: Some(1),
+            idempotency_key: Some(Uuid::now_v7()),
+            upload: None,
+        };
+        let error = backend.execute(command).await.unwrap_err();
+        assert_eq!(error.code, "session_busy", "{error:?}");
+    }
+    let u = store.begin().await.unwrap();
+    assert!(u
+        .records
+        .get("agent_session_bindings", binding)
+        .unwrap()
+        .data["endedAt"]
+        .is_null());
+    assert!(u
+        .records
+        .get("agents", worker)
+        .unwrap()
+        .archived_at
+        .is_none());
+    u.rollback().await.unwrap();
+}
+#[test]
+fn uncertain_turn_blocks_binding_replacement_until_reconciled() {
+    let (mut r, id, _, worker, binding) = fixture(true);
+    r.get_mut("session_deliveries", id).unwrap().data["state"] = json!("completed");
+    let turn = r.insert(Record::new(
+        "leader_chat_turns",
+        json!({"bindingId":binding,"status":"uncertain"}),
+    ));
+    assert_eq!(
+        beeteam::services::leader_chat::rules::ensure_agent_idle(&r, worker)
+            .unwrap_err()
+            .code,
+        "session_busy"
+    );
+    r.get_mut("leader_chat_turns", turn).unwrap().data["status"] = json!("completed");
+    assert!(beeteam::services::leader_chat::rules::ensure_agent_idle(&r, worker).is_ok());
 }

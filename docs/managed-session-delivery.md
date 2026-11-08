@@ -50,7 +50,7 @@ For every summary authored by an explicitly bound worker belonging to the task b
 | uncertain | Timeout, connection loss, approval boundary or restart left an unconfirmed outcome. Never automatically resend; inspect the original session first. Further sends on that binding wait for intervention. |
 | superseded | The recorded binding or team membership changed before dispatch. No fallback to a previous or replacement session. |
 
-An exclusive OS lease prevents two local services from dispatching/recovering the same installation. Two independent session workers progress concurrently; each binding is serialized. On service restart, in-flight records become uncertain while retaining the provider turn ID when known. Exactly-once inference is not promised by the provider protocol. After inspecting an uncertain session, an explicit binding replacement to a verified destination can resume new work; it does not erase the uncertain history or prove that the original action was cancelled.
+An exclusive OS lease prevents two local services from dispatching/recovering the same installation. Two independent session workers progress concurrently; each binding is serialized. On service restart, in-flight records become uncertain while retaining the provider turn ID when known. Exactly-once inference is not promised by the provider protocol. An uncertain integrated turn or delivery blocks new sends, binding replacement and agent archival until its outcome is reconciled. Replacing metadata is not proof that the original provider stopped. The current integrated slice must not be described as having a user-facing reconciliation action until that action exists and is validated.
 
 ## Acceptance evidence
 

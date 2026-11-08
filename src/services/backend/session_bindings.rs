@@ -3,6 +3,7 @@ use super::*;
 use crate::dto::session_bindings::Session;
 
 pub(super) fn close_for_archive(unit: &mut UnitOfWork, c: &Command, id: Uuid) -> Result<()> {
+    crate::services::leader_chat::rules::ensure_agent_idle(&unit.records, id)?;
     let actor = c.actor()?.value();
     let now = Utc::now();
     for binding in unit.records.rows.values_mut().filter(|b| {
@@ -34,6 +35,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         c.id("agentId")?
     };
     let agent = active(&unit.records, "agents", agent_id)?.clone();
+    crate::services::leader_chat::rules::ensure_agent_idle(&unit.records, agent_id)?;
     if c.operation != "createAgentWithSession" {
         check_version(&agent, c.expected_version)?;
     }
