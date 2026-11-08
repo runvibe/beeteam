@@ -1,19 +1,19 @@
 {
-  "sourceCommit": "51791e4f3f9eb96e3abad75a40b9d726a8d19b5b",
-  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data. Mode-aware external/integrated session guidance; mixed teams preserve external MCP/skills and managed Conversation routing without duplicate harness notifications.",
+  "sourceCommit": "ea3e3b70415ac965882b8d6dda47d61cc6f007d4",
+  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data. Mode-aware external/integrated session guidance; mixed teams preserve external MCP/skills and managed Conversation routing without duplicate harness notifications. Integrated agent provisioning through advertised getAgentRuntime/createIntegratedSession MCP tools, with external-only generic declarations.",
   "files": [
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "7de0fc95f5cf8e326167881aac60f70d3c03558f3ac7cc459fbbfe54236d09cb",
-      "bundledSha256": "189adde2df0d91d24f98561f4fe8a38ec6bd7b340820ddc275753f6f4c9dc926",
+      "sourceSha256": "397f840e7fdcbfa6dfbbd850d4a9f02ffc8c9765aa901f20097b5c6196094d87",
+      "bundledSha256": "31b2699ce969eff84b99eb5633b1a22215f408b44fac3ed1d3c8b8b0b58e1eb4",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "3adc8193997425c4d97db2c8b2ef92fb1f0dc7bc4f6ceca168d96b55e530603f",
-      "bundledSha256": "1149a1047e87875f22f7a65f1a519d205afd708bb01817b16f3061c19d7c9997",
+      "sourceSha256": "967f94918004931f65390d279c180f921851039a50ec8d274484dfa51b5df558",
+      "bundledSha256": "db1b159f3e51a07c0b1ec89516e4eb6af8fce8702da390df2cad73dc595b242a",
       "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
