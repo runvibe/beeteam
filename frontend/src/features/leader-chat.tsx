@@ -179,7 +179,7 @@ function LeaderChatBody({
       chat.refresh();
     } catch (e) {
       setSetupError(e);
-      if (e instanceof ApiError && e.status > 0 && e.status < 500 && e.code !== "session_creation_uncertain")
+      if (e instanceof ApiError && e.status > 0 && e.status < 500 && e.code !== "session_creation_uncertain" && e.code !== "invalid_response")
         setupRequest.current = null;
     } finally {
       setSetupBusy(false);

@@ -367,11 +367,11 @@ it("does not reuse another team chat when the selected team changes", async () =
     ),
   );
 });
-it.each([['session_busy', false], ['session_creation_uncertain', true]] as const)('handles bootstrap %s without losing the project or retry identity', async (code, uncertain) => {
+it.each([['session_busy', false], ['session_creation_uncertain', true], ['invalid_response', true]] as const)('handles bootstrap %s without losing the project or retry identity', async (code, uncertain) => {
   const transport = api();
   vi.mocked(transport.runtime).mockResolvedValue({agentId:'leader', mode:'external', bindingId:null, harness:'codex', readiness:'external'} as never);
   vi.mocked(transport.list).mockResolvedValue({items:[],nextCursor:null});
-  vi.mocked(transport.createSession).mockRejectedValue(new ApiError(409, code, 'bootstrap'));
+  vi.mocked(transport.createSession).mockRejectedValue(new ApiError(code === 'invalid_response' ? 201 : 409, code, 'bootstrap'));
   render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
   const project = await screen.findByLabelText('Diretório do projeto neste computador');
   fireEvent.change(project,{target:{value:'C:\\project'}});
@@ -401,4 +401,26 @@ it('checks an uncertain turn without resending and retains retry identity only o
  fireEvent.click(check); await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(3));
  expect(vi.mocked(transport.reconcile).mock.calls[2][2]).not.toEqual(vi.mocked(transport.reconcile).mock.calls[1][2]);
  expect(transport.send).not.toHaveBeenCalled();
+});
+
+it('stops forbidden SSE and shows the local origin error', async () => {
+ const transport=api();
+ vi.mocked(transport.stream).mockRejectedValue(new ApiError(403,'local_action_forbidden','Forbidden'));
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader"/>);
+ await screen.findByRole('alert');
+ expect(screen.getByText('Esta a\u00e7\u00e3o exige uma origem local autorizada. Abra o Bee Team pelo endere\u00e7o local configurado.')).toBeVisible();
+ expect(screen.getByText('Conex\u00e3o interrompida')).toBeVisible();
+ expect(transport.stream).toHaveBeenCalledTimes(1);
+});
+it('retries the original message when a successful HTTP response has invalid JSON', async () => {
+ const transport=api();
+ vi.mocked(transport.send).mockRejectedValue(new ApiError(202,'invalid_response','Invalid JSON'));
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader"/>);
+ const composer=await screen.findByRole('textbox',{name:'Mensagem para o l\u00edder'});
+ fireEvent.change(composer,{target:{value:'preserved'}});
+ fireEvent.click(screen.getByRole('button',{name:'Enviar mensagem'}));
+ fireEvent.click(await screen.findByRole('button',{name:'Verificar envio anterior'}));
+ await waitFor(()=>expect(transport.send).toHaveBeenCalledTimes(2));
+ expect(vi.mocked(transport.send).mock.calls[0]).toEqual(vi.mocked(transport.send).mock.calls[1]);
+ expect(composer).toHaveValue('preserved');
 });

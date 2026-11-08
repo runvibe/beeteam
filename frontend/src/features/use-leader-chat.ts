@@ -182,7 +182,8 @@ export function useLeaderChat(
           }
           if (
             e instanceof ApiError &&
-            (e.status === 404 ||
+            (e.status === 403 ||
+              e.status === 404 ||
               e.status === 400 ||
               e.code === "incompatible_stream")
           ) {
@@ -276,7 +277,7 @@ export function useLeaderChat(
       if (!pending.current) return true;
       setError(e);
       const ambiguous =
-        !(e instanceof ApiError) || e.status === 0 || e.status >= 500;
+        !(e instanceof ApiError) || e.status === 0 || e.status >= 500 || e.code === "invalid_response";
       if (!ambiguous) pending.current = null;
       setSendUncertain(ambiguous);
       return false;
@@ -325,7 +326,7 @@ export function useLeaderChat(
         setUnresolvedChat(result.resolved ? null : `${chatId}:${pending.turn.id}`);
         setSnapshot(state => state?.chat.id === chatId ? applyTurn(state,result.turn) : state);
       } catch(error) {
-        if (error instanceof ApiError && error.status > 0 && error.status < 500) reconciliation.current = null;
+        if (error instanceof ApiError && error.status > 0 && error.status < 500 && error.code !== "invalid_response") reconciliation.current = null;
         throw error;
       }
     });
