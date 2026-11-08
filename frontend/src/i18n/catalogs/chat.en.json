@@ -71,5 +71,11 @@
   "enabled": "Enabled",
   "disabled": "Disabled",
   "tools": "Session tools",
-  "noTools": "No additional tools reported."
+  "noTools": "No additional tools reported.",
+  "session_busy": "This agent has an active execution or delivery. Wait for it to finish before changing the session.",
+  "session_creation_uncertain": "Session creation is pending reconciliation. Check the same request; do not create another session.",
+  "provider_unavailable": "Codex is unavailable. Check its installation and retry.",
+  "invalid_tool_profile": "Check the configured tool names and directories.",
+  "checkSetup": "Check session creation",
+  "setupUncertain": "The creation result is unknown. Your settings are preserved while you check the same request."
 }

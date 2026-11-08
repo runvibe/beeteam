@@ -71,5 +71,11 @@
   "enabled": "Habilitado",
   "disabled": "Desabilitado",
   "tools": "Ferramentas da sessão",
-  "noTools": "Nenhuma ferramenta adicional informada."
+  "noTools": "Nenhuma ferramenta adicional informada.",
+  "session_busy": "Este agente tem uma execução ou entrega ativa. Aguarde o término antes de trocar a sessão.",
+  "session_creation_uncertain": "A criação da sessão aguarda reconciliação. Verifique o mesmo pedido; não crie outra sessão.",
+  "provider_unavailable": "O Codex está indisponível. Confira a instalação e tente novamente.",
+  "invalid_tool_profile": "Confira os nomes das ferramentas e os diretórios configurados.",
+  "checkSetup": "Verificar criação da sessão",
+  "setupUncertain": "O resultado da criação é desconhecido. Suas configurações ficam preservadas enquanto você verifica o mesmo pedido."
 }

@@ -28,6 +28,11 @@ import "./leader-chat.css";
 export function ChatError({ error }: { error: unknown }) {
   const codes = [
     "turn_in_progress",
+    "session_busy",
+    "session_creation_uncertain",
+    "provider_unavailable",
+    "needs_auth",
+    "invalid_tool_profile",
     "version_conflict",
     "external_mode",
     "session_not_ready",
@@ -172,7 +177,7 @@ function LeaderChatBody({
       chat.refresh();
     } catch (e) {
       setSetupError(e);
-      if (e instanceof ApiError && e.status > 0 && e.status < 500)
+      if (e instanceof ApiError && e.status > 0 && e.status < 500 && e.code !== "session_creation_uncertain")
         setupRequest.current = null;
     } finally {
       setSetupBusy(false);
@@ -289,8 +294,9 @@ function LeaderChatBody({
                   (!!runtime.bindingId && !replace)
                 }
               >
-                {tr("chat.setup")}
+                {setupRequest.current && !setupBusy ? tr("chat.checkSetup") : tr("chat.setup")}
               </Button>
+              {setupRequest.current && !setupBusy && <p role="status">{tr("chat.setupUncertain")}</p>}
               {setupError != null && <ChatError error={setupError} />}
             </form>
           )}

@@ -366,3 +366,20 @@ it("does not reuse another team chat when the selected team changes", async () =
     ),
   );
 });
+it.each([['session_busy', false], ['session_creation_uncertain', true]] as const)('handles bootstrap %s without losing the project or retry identity', async (code, uncertain) => {
+  const transport = api();
+  vi.mocked(transport.runtime).mockResolvedValue({agentId:'leader', mode:'external', bindingId:null, harness:'codex', readiness:'external'} as never);
+  vi.mocked(transport.list).mockResolvedValue({items:[],nextCursor:null});
+  vi.mocked(transport.createSession).mockRejectedValue(new ApiError(409, code, 'bootstrap'));
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
+  const project = await screen.findByLabelText('Diretório do projeto neste computador');
+  fireEvent.change(project,{target:{value:'C:\\project'}});
+  fireEvent.click(screen.getByRole('button',{name:'Criar sessão integrada'}));
+  await screen.findByRole('alert');
+  expect(project).toHaveValue('C:\\project');
+  if (uncertain) expect(project).toBeDisabled(); else expect(project).toBeEnabled();
+  fireEvent.click(screen.getByRole('button',{name: uncertain ? 'Verificar criação da sessão' : 'Criar sessão integrada'}));
+  await waitFor(()=>expect(transport.createSession).toHaveBeenCalledTimes(2));
+  const calls=vi.mocked(transport.createSession).mock.calls;
+  if(uncertain) expect(calls[0]).toEqual(calls[1]); else expect(calls[0][3]).not.toEqual(calls[1][3]);
+});
