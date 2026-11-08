@@ -2,6 +2,14 @@
 
 The first binding slice and this delivery slice remain reviewable changes on PR #65. A saved binding declares a destination; successful provider acknowledgement and completion are separate events.
 
+## Two coexisting session modes
+
+The external workflow remains available: use the user's existing assistant with MCP and the role skills. A saved external chat ID is metadata, not a remotely controllable session. The agent reads its assigned task's Conversation when activated and records its response there. If the harness has a supported, explicitly authorized notification tool, that workflow can still use it. Otherwise the message remains available for the external agent to read; do not label it as delivered to the session.
+
+Integrated mode uses a session owned by Bee Team and the official provider adapter. The human-facing leader chat is separate from task Conversation: it can begin before any task exists, while task Conversation remains the canonical exchange between leader and workers. A team can mix external and integrated agents. Delivery follows the recipient's mode. Each agent has one active binding, and an explicit replacement preserves history rather than taking over a Desktop-owned session.
+
+Check the installed runtime's advertised capabilities and binding mode. Older binaries without that capability keep the external workflow. Provider acknowledgement, response completion and human acceptance are separate milestones. The integrated-chat contract and implementation work must not be presented as released merely because the skills have been updated.
+
 ## Local activation
 
 Managed sending is disabled unless `BEE_SESSION_INSTALLATION_ID` is explicitly set. Also set:
@@ -9,9 +17,9 @@ Managed sending is disabled unless `BEE_SESSION_INSTALLATION_ID` is explicitly s
 - `BEE_CODEX_EXECUTABLE`: absolute path to the official Codex executable, not a shell command, npm wrapper or SDK.
 - `BEE_SESSION_STATE_DIR` (optional): absolute directory for OS-backed installation leases. The default is `.beeteam/managed-session-locks` under the user's home.
 
-The configured installation must match the explicit session binding. Codex handles its existing authentication; Bee Team never reads or stores credentials. Each resumed thread retains its saved model, sandbox and approval policy. Its actual project directory must match the binding. Unknown server requests and approvals are not automatically granted; continue them in the owning harness. Claude Code is represented by the provider-neutral contract but returns unsupported until a future official adapter is implemented.
+The configured installation must match the explicit session binding. Codex handles its existing authentication; Bee Team never reads or stores credentials. Each resumed thread retains its saved model, sandbox and approval policy. Its actual project directory must match the binding. The legacy Conversation adapter does not automatically grant unknown server requests or approvals. Integrated chat must route supported approvals through its own panel; an unsupported request is reported explicitly, never silently accepted. Claude Code is represented by the provider-neutral contract but returns unsupported until a future official adapter is implemented.
 
-Use a separate test database and owned test sessions before activation. Never infer managed ownership from legacy chat references or profile names. The existing MCP binding operations remain the only way to create or explicitly replace an active binding; history is preserved. Do not run the same managed thread concurrently through another harness process.
+Use a separate test database and owned test sessions before activation. Never infer managed ownership from legacy chat references or profile names. Use the installed runtime's explicit binding or integrated-session creation flow; history is preserved. Creating a managed session is a separate operation from saving an external chat reference. Do not run the same managed thread concurrently through another harness process.
 
 ## Conversation and HTTP/MCP
 

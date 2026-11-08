@@ -108,3 +108,7 @@ Managed agent session bindings and the first HTTP/MCP implementation slice are d
 ### Managed Conversation delivery
 
 Conversation messages can select team agents with @ mentions; HTTP/MCP callers use explicit `mentionedAgentIds`. Declared session bindings remain separate from provider access and delivery. Local dispatch is opt-in with `BEE_SESSION_INSTALLATION_ID` and an absolute `BEE_CODEX_EXECUTABLE`; credentials stay with Codex. See [managed delivery](docs/managed-session-delivery.md) for activation, outcomes, recovery and isolated acceptance evidence. Claude Code is a future adapter; product token accounting remains a separate phase.
+
+### External and integrated agents
+
+The external mode keeps the existing assistant + MCP + skills workflow. An external chat reference does not let Bee Team control a Codex Desktop session. Integrated mode uses a Bee Team-owned provider session and a leader chat in the panel. Different agents can use both modes in the same team; one agent has one active session binding with replacement history. Check the installed API's capabilities before offering the integrated flow. See [session modes and delivery](docs/managed-session-delivery.md#two-coexisting-session-modes) for the channel rules and current limits.

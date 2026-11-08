@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Clarify external and integrated session workflows in role/setup skills, including mixed teams, pending external messages and avoiding duplicate direct notifications.
+
 - Keep truncated execution summary titles within their length limit.
 
 - Deliver Conversation mentions to explicitly linked Codex sessions, track acknowledgements and uncertain outcomes, and notify the team leader once for each worker execution summary.
