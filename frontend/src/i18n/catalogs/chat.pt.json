@@ -77,5 +77,7 @@
   "provider_unavailable": "O Codex está indisponível. Confira a instalação e tente novamente.",
   "invalid_tool_profile": "Confira os nomes das ferramentas e os diretórios configurados.",
   "checkSetup": "Verificar criação da sessão",
-  "setupUncertain": "O resultado da criação é desconhecido. Suas configurações ficam preservadas enquanto você verifica o mesmo pedido."
+  "setupUncertain": "O resultado da criação é desconhecido. Suas configurações ficam preservadas enquanto você verifica o mesmo pedido.",
+  "reconcile": "Verificar resultado",
+  "reconcilePending": "O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente."
 }

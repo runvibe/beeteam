@@ -6,6 +6,7 @@ import type {
   Chat,
   SendMessage,
   Snapshot,
+  Turn,
 } from "@/api/leader-chat-types";
 import { ApiError } from "@/api/types";
 import { t as tr } from "@/i18n";
@@ -55,6 +56,8 @@ export function useLeaderChat(
   const snapshotRef = useRef(snapshot);
   snapshotRef.current = snapshot;
   const busy = useRef(false);
+  const reconciliation = useRef<{chatId:string;turn:Turn;key:string}|null>(null);
+  const [unresolvedChat, setUnresolvedChat] = useState<string|null>(null);
   const refresh = useCallback(() => setEpoch((v) => v + 1), []);
   useEffect(() => {
     if (
@@ -309,6 +312,24 @@ export function useLeaderChat(
       setNextChats(page.nextCursor);
     }
   }
+  async function reconcile() {
+    const turn = snapshotRef.current?.activeTurn;
+    if (!api || !chatId || !turn || turn.status !== "uncertain" || busy.current) return;
+    if (reconciliation.current?.chatId !== chatId || reconciliation.current?.turn.id !== turn.id)
+      reconciliation.current = {chatId, turn, key:crypto.randomUUID()};
+    const pending = reconciliation.current;
+    await action(async () => {
+      try {
+        const result = await api.reconcile(chatId, pending.turn, pending.key);
+        reconciliation.current = null;
+        setUnresolvedChat(result.resolved ? null : `${chatId}:${pending.turn.id}`);
+        setSnapshot(state => state?.chat.id === chatId ? applyTurn(state,result.turn) : state);
+      } catch(error) {
+        if (error instanceof ApiError && error.status > 0 && error.status < 500) reconciliation.current = null;
+        throw error;
+      }
+    });
+  }
   async function cancel() {
     if (!api || !chatId || !snapshot?.activeTurn) return;
     const result = await action(() =>
@@ -349,6 +370,8 @@ export function useLeaderChat(
     older,
     moreChats,
     cancel,
+    reconcile,
+    reconciliationUnresolved: unresolvedChat === `${chatId}:${snapshot?.activeTurn?.id}`,
     decide,
   };
 }

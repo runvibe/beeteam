@@ -7,6 +7,7 @@ import {
   protocolError,
 } from "./leader-chat-stream";
 import type {
+  ReconcileResult,
   AgentRuntime,
   Approval,
   Chat,
@@ -43,6 +44,7 @@ export interface LeaderChatApi {
     signal?: AbortSignal,
   ): Promise<MessagePage>;
   send(chatId: string, body: SendMessage, key: string): Promise<SendResult>;
+  reconcile(chatId: string, turn: Turn, key: string): Promise<ReconcileResult>;
   cancel(chatId: string, turn: Turn, key: string): Promise<Turn>;
   decide(
     chatId: string,
@@ -104,6 +106,7 @@ export function createLeaderChatApi(options: HttpOptions = {}): LeaderChatApi {
         signal,
       }),
     send: (id, body, key) => write(chatPath(id) + "/messages", body, key),
+    reconcile: (id, turn, key) => write(chatPath(id) + `/turns/${segment(turn.id)}/reconcile`, undefined, key, turn.version),
     cancel: (id, turn, key) =>
       write(
         chatPath(id) + `/turns/${segment(turn.id)}/cancel`,

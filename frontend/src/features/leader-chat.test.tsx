@@ -80,6 +80,7 @@ function api(): LeaderChatApi {
     createSession: vi.fn(),
     messages: vi.fn(),
     cancel: vi.fn(),
+    reconcile: vi.fn(),
     decide: vi.fn(),
   };
 }
@@ -382,4 +383,22 @@ it.each([['session_busy', false], ['session_creation_uncertain', true]] as const
   await waitFor(()=>expect(transport.createSession).toHaveBeenCalledTimes(2));
   const calls=vi.mocked(transport.createSession).mock.calls;
   if(uncertain) expect(calls[0]).toEqual(calls[1]); else expect(calls[0][3]).not.toEqual(calls[1][3]);
+});
+it('checks an uncertain turn without resending and retains retry identity only on network failure', async () => {
+ const transport=api();
+ const turn={id:'turn',chatId:'chat',bindingId:'binding',status:'uncertain' as const,version:2,failure:null,createdAt:snapshot.chat.createdAt,updatedAt:snapshot.chat.updatedAt};
+ vi.mocked(transport.snapshot).mockResolvedValue({...snapshot,activeTurn:turn});
+ vi.mocked(transport.reconcile).mockRejectedValueOnce(new TypeError('network')).mockResolvedValue({resolved:false,turn});
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
+ const composer=await screen.findByRole('textbox',{name:'Mensagem para o líder'});
+ fireEvent.change(composer,{target:{value:'draft preserved'}});
+ const check=screen.getByRole('button',{name:'Verificar resultado'});
+ fireEvent.click(check); await screen.findByRole('alert'); fireEvent.click(check);
+ await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(2));
+ await screen.findByText('O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente.');
+ expect(vi.mocked(transport.reconcile).mock.calls[0]).toEqual(vi.mocked(transport.reconcile).mock.calls[1]);
+ expect(composer).toHaveValue('draft preserved'); expect(screen.getByRole('button',{name:'Enviar mensagem'})).toBeDisabled();
+ fireEvent.click(check); await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(3));
+ expect(vi.mocked(transport.reconcile).mock.calls[2][2]).not.toEqual(vi.mocked(transport.reconcile).mock.calls[1][2]);
+ expect(transport.send).not.toHaveBeenCalled();
 });

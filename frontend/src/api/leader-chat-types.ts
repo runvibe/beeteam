@@ -13,3 +13,4 @@ export type { ToolActivity } from "./generated/chat/ToolActivity";
 export type { Turn } from "./generated/chat/Turn";
 export type { IntegratedSession } from "./generated/chat/IntegratedSession";
 export type { CreateIntegratedSession } from "./generated/chat/CreateIntegratedSession";
+export type { ReconcileResult } from "./generated/chat/ReconcileResult";

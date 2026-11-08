@@ -77,5 +77,7 @@
   "provider_unavailable": "Codex is unavailable. Check its installation and retry.",
   "invalid_tool_profile": "Check the configured tool names and directories.",
   "checkSetup": "Check session creation",
-  "setupUncertain": "The creation result is unknown. Your settings are preserved while you check the same request."
+  "setupUncertain": "The creation result is unknown. Your settings are preserved while you check the same request.",
+  "reconcile": "Check execution result",
+  "reconcilePending": "The provider has not confirmed the result yet. No message was resent. You can check again."
 }

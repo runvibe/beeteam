@@ -436,6 +436,10 @@ function LeaderChatBody({
             </section>
           ))}
           {turn && <p role="status">{tr(`chat.${turn.status}`)}</p>}
+          {turn?.status === "uncertain" && !readOnly && <div>
+            <Button disabled={chat.working} onClick={() => void chat.reconcile()}>{tr("chat.reconcile")}</Button>
+            {chat.reconciliationUnresolved && <p role="status">{tr("chat.reconcilePending")}</p>}
+          </div>}
           {turn?.failure && (
             <details>
               <summary>{tr("chat.errorDetails")}</summary>
