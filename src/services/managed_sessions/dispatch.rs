@@ -4,10 +4,7 @@ use crate::{
         backend::{Command, Failure, Result},
         session_delivery::*,
     },
-    repositories::{
-        contracts::{ResourceStore, SessionProvider},
-        records::Record,
-    },
+    repositories::contracts::{ResourceStore, SessionProvider},
 };
 use serde_json::{json, Value};
 use std::{collections::BTreeMap, sync::Arc};
@@ -194,45 +191,7 @@ impl ManagedSessionService {
                 row.touch();
             }
             SessionEvent::Completed { turn_id, text } => {
-                if row.data["turnId"].as_str() != Some(&turn_id) {
-                    return Err(Failure::invalid("Provider completed another turn"));
-                }
-                let mut reply = None;
-                if row.data["expectsReply"] == true && !text.is_empty() {
-                    if text.len() > 16384 {
-                        return Err(Failure::invalid(
-                            "Provider reply exceeds Conversation limit",
-                        ));
-                    }
-                    let task = row.reference("taskId").ok_or_else(Failure::missing)?;
-                    let target = row
-                        .reference("targetAgentId")
-                        .ok_or_else(Failure::missing)?;
-                    let cid=unit.records.insert(Record::new("comments",json!({"taskId":task,"body":text,"actorId":target,"actorKind":"agent","inReplyToCommentId":row.data["commentId"],"deliveryId":id})));
-                    unit.records.get_mut("tasks", task)?.touch();
-                    reply = Some(cid);
-                    if let Some(origin) = row.reference("requesterAgentId") {
-                        if row.reference("originBindingId").is_some()
-                            && queue::active_binding(&unit.records, origin).map(|b| b.id)
-                                == row.reference("originBindingId")
-                        {
-                            queue::enqueue(
-                                &mut unit.records,
-                                task,
-                                cid,
-                                origin,
-                                "response",
-                                id,
-                                false,
-                            )?;
-                        }
-                    }
-                }
-                let row = unit.records.get_mut("session_deliveries", id)?;
-                row.data["state"] = json!("completed");
-                row.data["turnId"] = json!(turn_id);
-                row.data["replyCommentId"] = json!(reply);
-                row.touch();
+                super::completion::complete(&mut unit.records, id, &turn_id, &text)?;
             }
         }
         unit.commit().await

@@ -2,3 +2,5 @@
 pub mod config;
 pub mod dispatch;
 pub mod queue;
+
+pub mod completion;

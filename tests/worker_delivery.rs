@@ -1,3 +1,4 @@
+mod support;
 use beeteam::{
     dto::session_delivery::SessionDestination,
     repositories::records::{Record, Records},
@@ -200,9 +201,14 @@ async fn stored(
             .to_string_lossy()
             .replace('\\', "/")
     );
-    let db = DatabaseRepository::connect(DatabaseDriver::Sqlite, &url)
-        .await
-        .unwrap();
+    let db = if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("postgres") {
+        let (_, pool) = support::app_with_pool().await;
+        DatabaseRepository::new(pool)
+    } else {
+        DatabaseRepository::connect(DatabaseDriver::Sqlite, &url)
+            .await
+            .unwrap()
+    };
     let (store, _) = db.stores();
     let mut u = store.begin().await.unwrap();
     for row in records.rows.into_values() {
@@ -444,4 +450,217 @@ fn uncertain_turn_blocks_binding_replacement_until_reconciled() {
     );
     r.get_mut("leader_chat_turns", turn).unwrap().data["status"] = json!("completed");
     assert!(beeteam::services::leader_chat::rules::ensure_agent_idle(&r, worker).is_ok());
+}
+
+struct RecoveryProvider {
+    mutate_turn: Option<(Arc<dyn ResourceStore>, Uuid)>,
+    status: ReconciledStatus,
+    calls: AtomicUsize,
+}
+impl IntegratedProvider for RecoveryProvider {
+    fn create<'a>(&'a self, _: &'a str, _: &'a Value) -> ProviderFuture<'a, String> {
+        Box::pin(async { panic!("recovery must not create") })
+    }
+    fn inspect<'a>(&'a self, _: &'a SessionDestination, _: &'a Value) -> ProviderFuture<'a, Value> {
+        Box::pin(async { panic!("recovery must query exact turn") })
+    }
+    fn run<'a>(
+        &'a self,
+        _: &'a SessionDestination,
+        _: &'a str,
+        _: &'a Value,
+        _: mpsc::Sender<IntegratedEvent>,
+        _: mpsc::Receiver<Control>,
+    ) -> ProviderFuture<'a, ()> {
+        Box::pin(async { panic!("recovery must not submit") })
+    }
+    fn reconcile<'a>(
+        &'a self,
+        target: &'a SessionDestination,
+        id: &'a str,
+        _: &'a Value,
+    ) -> ProviderFuture<'a, ReconciledTurn> {
+        Box::pin(async move {
+            assert_eq!(target.external_id, "worker-thread");
+            assert_eq!(id, "exact-provider-turn");
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            if let Some((store, turn)) = &self.mutate_turn {
+                let mut u = store.begin().await.unwrap();
+                u.records
+                    .get_mut("leader_chat_turns", *turn)
+                    .unwrap()
+                    .touch();
+                u.commit().await.unwrap();
+            }
+            Ok(ReconciledTurn {
+                status: self.status,
+                text: Some("Recovered exact answer".into()),
+            })
+        })
+    }
+}
+async fn recovery_fixture(
+    status: ReconciledStatus,
+    has_provider_id: bool,
+) -> (
+    tempfile::TempDir,
+    Arc<dyn ResourceStore>,
+    LeaderChatService,
+    Arc<RecoveryProvider>,
+    Command,
+    Uuid,
+) {
+    let (mut r, delivery, _, worker, binding) = fixture(true);
+    let chat = r.list("leader_chats")[0].id;
+    let d = r.get_mut("session_deliveries", delivery).unwrap();
+    d.data["state"] = json!("uncertain");
+    d.data["turnId"] = json!("exact-provider-turn");
+    d.data["expectsReply"] = json!(true);
+    let task = d.data["taskId"].clone();
+    let turn=r.insert(Record::new("leader_chat_turns",json!({"chatId":chat,"bindingId":binding,"ownerAgentId":worker,"taskId":task,"sourceDeliveryId":delivery,"status":"uncertain","failure":{"code":"lost_connection"},"providerTurnId":if has_provider_id{json!("exact-provider-turn")}else{Value::Null}})));
+    let (dir, store, service, _) = stored(r).await;
+    let provider = Arc::new(RecoveryProvider {
+        mutate_turn: None,
+        status,
+        calls: AtomicUsize::new(0),
+    });
+    let service = service.with_provider(provider.clone(), "test".into());
+    service.recover().await.unwrap();
+    let u = store.begin().await.unwrap();
+    let version = u.records.get("leader_chat_turns", turn).unwrap().version;
+    u.rollback().await.unwrap();
+    let command = Command {
+        operation: "integrated:reconcile".into(),
+        params: [
+            ("chatId".into(), chat.to_string()),
+            ("turnId".into(), turn.to_string()),
+        ]
+        .into_iter()
+        .collect(),
+        query: Default::default(),
+        body: Value::Null,
+        actor: Some(Actor {
+            kind: "human".into(),
+            id: None,
+        }),
+        expected_version: Some(version),
+        idempotency_key: Some(Uuid::now_v7()),
+        upload: None,
+    };
+    (dir, store, service, provider, command, delivery)
+}
+#[tokio::test]
+async fn recovered_worker_completion_is_atomic_and_replay_does_not_duplicate_reply() {
+    let (_dir, store, service, provider, command, delivery) =
+        recovery_fixture(ReconciledStatus::Completed, true).await;
+    let out = service.reconcile(command.clone()).await.unwrap();
+    assert_eq!(out.data["resolved"], true);
+    assert_eq!(out.data["turn"]["status"], "completed");
+    assert_eq!(service.reconcile(command).await.unwrap().data, out.data);
+    assert_eq!(provider.calls.load(Ordering::SeqCst), 1);
+    let u = store.begin().await.unwrap();
+    assert_eq!(
+        u.records.get("session_deliveries", delivery).unwrap().data["state"],
+        "completed"
+    );
+    assert_eq!(
+        u.records
+            .list("comments")
+            .iter()
+            .filter(|c| c.reference("deliveryId") == Some(delivery))
+            .count(),
+        1
+    );
+    assert!(u.records.list("leader_chat_messages").is_empty());
+    u.rollback().await.unwrap();
+}
+#[tokio::test]
+async fn recovery_unknown_running_and_missing_id_preserve_uncertainty() {
+    for (status, known) in [
+        (ReconciledStatus::Running, true),
+        (ReconciledStatus::Unknown, true),
+        (ReconciledStatus::Completed, false),
+    ] {
+        let (_dir, store, service, provider, command, delivery) =
+            recovery_fixture(status, known).await;
+        let out = service.reconcile(command.clone()).await.unwrap();
+        assert_eq!(out.data["resolved"], false);
+        assert_eq!(out.data["turn"]["status"], "uncertain");
+        assert_eq!(
+            out.data["turn"]["version"],
+            command.expected_version.unwrap()
+        );
+        assert_eq!(provider.calls.load(Ordering::SeqCst), usize::from(known));
+        let u = store.begin().await.unwrap();
+        assert_eq!(
+            u.records.get("session_deliveries", delivery).unwrap().data["state"],
+            "uncertain"
+        );
+        u.rollback().await.unwrap();
+    }
+}
+#[tokio::test]
+async fn recovery_version_conflict_does_not_call_provider() {
+    let (_dir, _, service, provider, mut command, _) =
+        recovery_fixture(ReconciledStatus::Completed, true).await;
+    command.expected_version = Some(0);
+    assert_eq!(
+        service.reconcile(command).await.unwrap_err().code,
+        "version_conflict"
+    );
+    assert_eq!(provider.calls.load(Ordering::SeqCst), 0);
+}
+#[tokio::test]
+async fn recovery_confirmed_cancel_and_failure_release_delivery_without_reply() {
+    for (status, expected) in [
+        (ReconciledStatus::Cancelled, "cancelled"),
+        (ReconciledStatus::Failed, "failed"),
+    ] {
+        let (_dir, store, service, _, command, delivery) = recovery_fixture(status, true).await;
+        let out = service.reconcile(command).await.unwrap();
+        assert_eq!(out.data["resolved"], true);
+        assert_eq!(out.data["turn"]["status"], expected);
+        let u = store.begin().await.unwrap();
+        assert_eq!(
+            u.records.get("session_deliveries", delivery).unwrap().data["state"],
+            "failed"
+        );
+        assert!(!u
+            .records
+            .list("comments")
+            .iter()
+            .any(|c| c.reference("deliveryId") == Some(delivery)));
+        u.rollback().await.unwrap();
+    }
+}
+
+#[tokio::test]
+async fn recovery_revalidates_version_after_provider_query_outside_transaction() {
+    let (_dir, store, service, _, command, delivery) =
+        recovery_fixture(ReconciledStatus::Completed, true).await;
+    let provider = Arc::new(RecoveryProvider {
+        status: ReconciledStatus::Completed,
+        calls: AtomicUsize::new(0),
+        mutate_turn: Some((store.clone(), command.id("turnId").unwrap())),
+    });
+    let service = service.with_provider(provider, "test".into());
+    let result = tokio::time::timeout(
+        std::time::Duration::from_secs(5),
+        service.reconcile(command),
+    )
+    .await
+    .unwrap()
+    .unwrap_err();
+    assert_eq!(result.code, "version_conflict");
+    let u = store.begin().await.unwrap();
+    assert_eq!(
+        u.records.get("session_deliveries", delivery).unwrap().data["state"],
+        "uncertain"
+    );
+    assert!(!u
+        .records
+        .list("comments")
+        .iter()
+        .any(|c| c.reference("deliveryId") == Some(delivery)));
+    u.rollback().await.unwrap();
 }

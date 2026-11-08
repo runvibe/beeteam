@@ -50,7 +50,7 @@ For every summary authored by an explicitly bound worker belonging to the task b
 | uncertain | Timeout, connection loss, approval boundary or restart left an unconfirmed outcome. Never automatically resend; inspect the original session first. Further sends on that binding wait for intervention. |
 | superseded | The recorded binding or team membership changed before dispatch. No fallback to a previous or replacement session. |
 
-An exclusive OS lease prevents two local services from dispatching/recovering the same installation. Two independent session workers progress concurrently; each binding is serialized. On service restart, in-flight records become uncertain while retaining the provider turn ID when known. Exactly-once inference is not promised by the provider protocol. An uncertain integrated turn or delivery blocks new sends, binding replacement and agent archival until its outcome is reconciled. Replacing metadata is not proof that the original provider stopped. The current integrated slice must not be described as having a user-facing reconciliation action until that action exists and is validated.
+An exclusive OS lease prevents two local services from dispatching/recovering the same installation. Two independent session workers progress concurrently; each binding is serialized. On service restart, in-flight records become uncertain while retaining the provider turn ID when known. Exactly-once inference is not promised by the provider protocol. An uncertain integrated turn or delivery blocks new sends, binding replacement and agent archival until its outcome is reconciled. Replacing metadata is not proof that the original provider stopped. Use the explicit chat turn reconciliation action for a known provider turn; it reads that exact turn without resending the request. Confirmed completed, cancelled or failed outcomes release the local reservation. Running, missing or unknown provider outcomes remain uncertain.
 
 ## Acceptance evidence
 
@@ -79,3 +79,11 @@ If the leader has no integrated chat, a worker can execute actions that do not r
 A Conversation notice addressed to the integrated leader appears as a task-linked system notice in the leader chat. Its response is an assistant message there, while the dispatcher still owns the canonical Conversation reply and prevents acknowledgement loops. Worker text does not masquerade as a human chat message.
 
 `cargo test --locked --test worker_delivery` covers binding reservation, external-mode refusal, origin-specific approval routing and leader notification rendering data using an isolated SQLite database and a controlled provider. This is transport-independent evidence; actual Codex approval behavior and browser acceptance require separate verification.
+
+## Explicit recovery
+
+`POST /api/v2/leader-chats/{chatId}/turns/{turnId}/reconcile` uses declared actor context, the observed turn version and an idempotency key. It accepts an uncertain turn belonging to the original active binding on this installation. Provider inspection occurs outside the database transaction; version and binding are checked again before applying the result. A duplicate request replays the same result. To check a still-unresolved turn again later, send a new explicit request with a new key.
+
+Recovery never starts, resumes or resends inference. Without a persisted provider turn ID, Bee Team cannot safely guess which turn belongs to the request and returns unresolved. A confirmed worker completion applies the original Conversation reply and receipt atomically, without duplicate delivery; a confirmed leader response restores the assistant message. Unknown/running results preserve uncertainty.
+
+Known limits: a worker turn with no integrated leader chat has no address under the leader-chat recovery route. A bootstrap request that lost its provider session ID cannot be safely recovered by choosing an arbitrary provider thread or silently creating a second one. These cases remain explicit unresolved outcomes.
