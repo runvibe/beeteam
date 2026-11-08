@@ -24,6 +24,7 @@ import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
+import { ChatWorkspace, ChatPanelToggle } from "./features/chat-side-panel";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -45,46 +46,49 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
       <HeaderFiltersContext.Provider value={filterTarget}>
         <div className="app-shell icon-navigation">
           <NavigationRail homeEnabled={homeEnabled} />
-          <div className="main-shell">
-            <ApiCompatibilityBanner />
-            <header className="topbar">
-              <AppPath />
-              <MobileContextPath />
-              <div className="header-filter-slot" ref={setFilterTarget} />
-            </header>
-            <motion.main
-              id="main-content"
-              animate={pageAnimation}
-              data-page-identity={pageIdentity}
-            >
-              {!knownRoute ? (
-                <div>
-                  <h1>{tr("common.pageNotFound")}</h1>
-                  <Button onClick={() => setArea("boards")}>
-                    {tr("common.goToBoards")}
-                  </Button>
-                </div>
-              ) : routeEntity.active &&
-                (routeEntity.isPending ||
-                  (routeEntity.error && !routeEntity.data)) ? (
-                <QueryState query={routeEntity}>{null}</QueryState>
-              ) : taskId ? (
-                <TaskPage />
-              ) : agentId ? (
-                <AgentPage />
-              ) : teamId ? (
-                <TeamPage />
-              ) : area === "home" ? (
-                <ConnectedHome />
-              ) : area === "boards" ? (
-                <Boards />
-              ) : area === "agents" ? (
-                <Agents />
-              ) : (
-                <Teams />
-              )}
-            </motion.main>
-          </div>
+          <ChatWorkspace>
+            <div className="main-shell">
+              <ApiCompatibilityBanner />
+              <header className="topbar">
+                <AppPath />
+                <MobileContextPath />
+                <div className="header-filter-slot" ref={setFilterTarget} />
+                <ChatPanelToggle />
+              </header>
+              <motion.main
+                id="main-content"
+                animate={pageAnimation}
+                data-page-identity={pageIdentity}
+              >
+                {!knownRoute ? (
+                  <div>
+                    <h1>{tr("common.pageNotFound")}</h1>
+                    <Button onClick={() => setArea("boards")}>
+                      {tr("common.goToBoards")}
+                    </Button>
+                  </div>
+                ) : routeEntity.active &&
+                  (routeEntity.isPending ||
+                    (routeEntity.error && !routeEntity.data)) ? (
+                  <QueryState query={routeEntity}>{null}</QueryState>
+                ) : taskId ? (
+                  <TaskPage />
+                ) : agentId ? (
+                  <AgentPage />
+                ) : teamId ? (
+                  <TeamPage />
+                ) : area === "home" ? (
+                  <ConnectedHome />
+                ) : area === "boards" ? (
+                  <Boards />
+                ) : area === "agents" ? (
+                  <Agents />
+                ) : (
+                  <Teams />
+                )}
+              </motion.main>
+            </div>
+          </ChatWorkspace>
         </div>
       </HeaderFiltersContext.Provider>
     </MotionConfig>

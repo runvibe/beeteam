@@ -15,5 +15,8 @@
   "lightAppearance": "Light",
   "darkAppearance": "Dark",
   "appearanceHelp": "The palette and appearance are saved on this device. Default restores the original colors.",
-  "globalSettingsHelp": "Appearance, language and data for this Bee Team installation."
+  "globalSettingsHelp": "Appearance, language and data for this Bee Team installation.",
+  "chatPosition": "Chat position",
+  "chatRight": "Right",
+  "chatLeft": "Left"
 }

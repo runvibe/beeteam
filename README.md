@@ -119,7 +119,7 @@ With the local integrated Codex runtime configured, a leader can create/select a
 
 ### Open the integrated leader chat
 
-Run the configured local backend on a loopback address, open the panel, select a team and open its leader chat tab. Choose an existing absolute project directory and create a Bee Team-owned session. The creation form configures web search, command network access, additional skill directories and selected existing MCP servers. Existing external references require an explicit replacement; their history is retained.
+Run the configured local backend on a loopback address, open the panel, select a team and open Chat with the leader. The chat stays in a separate, resizable side panel while navigating boards and tasks. Settings > Appearance > Chat position selects left or right and saves the layout on this device. Collapsing or moving the panel preserves its current draft. Choose an existing absolute project directory and create a Bee Team-owned session. The creation form configures web search, command network access, additional skill directories and selected existing MCP servers. Existing external references require an explicit replacement; their history is retained.
 
 The chat shows persistent messages, tool activity and per-action approvals. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
 

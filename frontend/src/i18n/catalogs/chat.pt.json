@@ -81,5 +81,7 @@
   "reconcile": "Verificar resultado",
   "reconcilePending": "O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente.",
   "binding_chat_conflict": "Esta sessão já tem um chat em outro time. Abra esse time ou crie outra sessão.",
-  "local_action_forbidden": "Esta ação exige uma origem local autorizada. Abra o Bee Team pelo endereço local configurado."
+  "local_action_forbidden": "Esta ação exige uma origem local autorizada. Abra o Bee Team pelo endereço local configurado.",
+  "resizePanel": "Redimensionar painel de chat",
+  "closePanel": "Recolher painel de chat"
 }

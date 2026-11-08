@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Move integrated leader chat to a persistent, resizable side panel with a saved left/right position in Appearance settings.
+
 - Generate new record metadata timestamps at microsecond precision so PostgreSQL write responses and subsequent reads agree, without rewriting existing data or replay snapshots.
 
 - Add a team leader chat backed by Bee Team-owned Codex App Server sessions, with persistent history, streamed responses, cancellation and per-action approvals.

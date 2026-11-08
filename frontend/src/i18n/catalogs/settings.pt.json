@@ -15,5 +15,8 @@
   "lightAppearance": "Claro",
   "darkAppearance": "Escuro",
   "appearanceHelp": "A paleta e a aparência são salvas neste dispositivo. Default restaura as cores originais.",
-  "globalSettingsHelp": "Aparência, idioma e dados desta instalação Bee Team."
+  "globalSettingsHelp": "Aparência, idioma e dados desta instalação Bee Team.",
+  "chatPosition": "Posição do chat",
+  "chatRight": "Direita",
+  "chatLeft": "Esquerda"
 }
