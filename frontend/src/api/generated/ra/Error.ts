@@ -3,6 +3,7 @@ export type Error = {
   error: string;
   /** @enum {string} */
   code:
+    | "session_binding_conflict"
     | "invalid_request"
     | "coordination_context_required"
     | "coordination_mode_mismatch"
