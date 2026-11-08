@@ -18,6 +18,18 @@ Determine your own and the recipient's session mode from the installed Bee Team'
 
 These mode rules take precedence over direct-chat notification/bootstrap examples elsewhere in this skill and its references: those examples describe the external harness workflow. Task registration, assignment, comment persistence, status/summary rules, and human acceptance still apply in both modes. A successful managed acknowledgement is not proof that execution completed. Do not resend an uncertain turn automatically. A worker summary triggers a leader notice only when the installed server advertises that behavior; do not create a duplicate notice. Leader-authored summaries do not trigger worker notifications.
 
+## Creating an integrated agent session through MCP
+
+When the installed catalog advertises `getAgentRuntime` and `createIntegratedSession`, create or select the agent first using the existing agent/team workflow. Resolve its UUID and current version, then call `getAgentRuntime` with `params.agentId` to observe its current mode and `bindingId`. Do not substitute a slug or a Desktop chat ID.
+
+Call `createIntegratedSession` with `params: {agentId}`, `body: {projectRoot, expectedBindingId, toolProfile?}`, the actual `actor`, the agent's `expectedVersion`, and a fresh `idempotencyKey`. `projectRoot` must be a real existing absolute folder. Use `expectedBindingId: null` for an unbound agent; replacing an existing binding requires its observed UUID and explicit authorization. Omit `toolProfile` to use server defaults, or provide only settings supported by the advertised schema. Preserve the exact request and key for an uncertain retry; never create another session just because the response was lost.
+
+This creates a new Bee Team-owned Codex session; it does not attach to or take over a Codex Desktop chat. Generic `createAgentWithSession` / `claimAgentSession` declarations remain external-only: never send `session.mode: integrated` to them. Active or uncertain work blocks replacement and archival until completed or reconciled.
+
+The local Bee Team server must already have its integrated runtime configured (`BEE_SESSION_INSTALLATION_ID`, an absolute native `BEE_CODEX_EXECUTABLE`, and the local MCP endpoint enabled); installing skills alone does not enable it. Codex must be authenticated locally. Observe the returned binding and runtime readiness before delegating. Readiness is not proof of successful message delivery or tool execution. If the tools/runtime are absent, preserve the external flow and report the prerequisite instead of inventing an API.
+
+For an integrated worker, the leader creates the worker profile/team membership and this owned session, assigns its task, then posts the task Conversation request with the worker's stable recipient ID. Bee Team routes it. Workers must not recreate or replace their own session on activation. The leader's human chat and task Conversation remain separate; approvals from workers require the supported leader approval UI and must never be auto-approved.
+
 ## Embedded browser connection recovery
 
 If the hosted panel fails in the assistant's embedded browser without offering local-network permission, read [integration recovery](references/integration.md#panel-access-from-an-assistants-embedded-browser). Use the API-served local app with `BEE_FRONTEND_MODE=embedded` through the existing authorized launcher, preserving storage and configuration; verify the real local browser view. Do not reinstall a healthy API or weaken browser protections.

@@ -112,3 +112,7 @@ Conversation messages can select team agents with @ mentions; HTTP/MCP callers u
 ### External and integrated agents
 
 The external mode keeps the existing assistant + MCP + skills workflow. An external chat reference does not let Bee Team control a Codex Desktop session. Integrated mode uses a Bee Team-owned provider session and a leader chat in the panel. Different agents can use both modes in the same team; one agent has one active session binding with replacement history. Check the installed API's capabilities before offering the integrated flow. See [session modes and delivery](docs/managed-session-delivery.md#two-coexisting-session-modes) for the channel rules and current limits.
+
+### Provision integrated workers through MCP
+
+With the local integrated Codex runtime configured, a leader can create/select an agent and call `getAgentRuntime` to observe its active binding. `createIntegratedSession` then accepts `params.agentId`, `body` containing an existing absolute `projectRoot`, observed `expectedBindingId` (null when unbound), optional `toolProfile`, plus `actor`, `expectedVersion` and `idempotencyKey`. This uses the same service as HTTP and creates a Bee Team-owned session. It never takes over a Codex Desktop chat; generic session declarations remain external-only. Configure `BEE_SESSION_INSTALLATION_ID`, the absolute native `BEE_CODEX_EXECUTABLE` and the local MCP endpoint before using it. See [managed delivery](docs/managed-session-delivery.md) for runtime prerequisites and approval limitations.
