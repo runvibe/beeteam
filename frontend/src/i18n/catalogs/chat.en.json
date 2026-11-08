@@ -79,5 +79,7 @@
   "checkSetup": "Check session creation",
   "setupUncertain": "The creation result is unknown. Your settings are preserved while you check the same request.",
   "reconcile": "Check execution result",
-  "reconcilePending": "The provider has not confirmed the result yet. No message was resent. You can check again."
+  "reconcilePending": "The provider has not confirmed the result yet. No message was resent. You can check again.",
+  "binding_chat_conflict": "This session already has a chat in another team. Open that team or create a different session.",
+  "local_action_forbidden": "This action requires an authorized local origin. Open Bee Team through its configured local address."
 }

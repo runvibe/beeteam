@@ -29,6 +29,8 @@ export function ChatError({ error }: { error: unknown }) {
   const codes = [
     "turn_in_progress",
     "session_busy",
+    "binding_chat_conflict",
+    "local_action_forbidden",
     "session_creation_uncertain",
     "provider_unavailable",
     "needs_auth",

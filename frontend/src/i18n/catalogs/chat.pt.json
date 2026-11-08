@@ -79,5 +79,7 @@
   "checkSetup": "Verificar criação da sessão",
   "setupUncertain": "O resultado da criação é desconhecido. Suas configurações ficam preservadas enquanto você verifica o mesmo pedido.",
   "reconcile": "Verificar resultado",
-  "reconcilePending": "O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente."
+  "reconcilePending": "O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente.",
+  "binding_chat_conflict": "Esta sessão já tem um chat em outro time. Abra esse time ou crie outra sessão.",
+  "local_action_forbidden": "Esta ação exige uma origem local autorizada. Abra o Bee Team pelo endereço local configurado."
 }
