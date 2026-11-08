@@ -197,5 +197,21 @@
       "code": "cursor_expired",
       "details": {}
     }
+  },
+  {
+    "schema": "ReconcileResult",
+    "value": {
+      "resolved": false,
+      "turn": {
+        "id": "019a6000-0000-7000-8000-000000000005",
+        "chatId": "019a6000-0000-7000-8000-000000000001",
+        "bindingId": "019a6000-0000-7000-8000-000000000004",
+        "status": "uncertain",
+        "failure": null,
+        "version": 3,
+        "createdAt": "2026-11-08T15:00:00Z",
+        "updatedAt": "2026-11-08T15:00:00Z"
+      }
+    }
   }
 ]

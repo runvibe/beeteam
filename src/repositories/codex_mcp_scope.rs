@@ -207,8 +207,9 @@ impl McpScope {
             } else {
                 // Dynamic unrelated plugins may remain; never permit a foreign
                 // Bee Team or harness-chat tool catalog to reach inference.
-                if self.profile.is_some()
-                    || !server["pluginId"].is_string()
+                // The provider must also pass disabled_plugins() to turn/start:
+                // Codex can keep plugin catalogs connected despite enabled=false.
+                if !server["pluginId"].is_string()
                     || server["runtimeStatus"] != "connected"
                     || !server["toolsError"].is_null()
                     || tools.is_none_or(|t| t.is_empty())
@@ -236,6 +237,8 @@ fn forbidden(name: &str) -> bool {
         .iter()
         .any(|op| op.name == name)
         || crate::dto::mcp::is_composite(name)
+        || crate::dto::integrated_chat_tools::NAMES.contains(&name)
+        || crate::dto::data_transfer_tools::NAMES.contains(&name)
         || matches!(
             name,
             "send_message_to_thread"

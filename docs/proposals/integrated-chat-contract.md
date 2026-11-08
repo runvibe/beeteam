@@ -23,6 +23,7 @@ O líder deve ser o líder atual do teamId. bindingId deve pertencer ao líder, 
 | POST /leader-chats/{chatId}/messages | Persiste mensagem e intenção de execução; retorna 202 com mensagem e turno |
 | GET /leader-chats/{chatId}/events | SSE: replay após cursor e acompanhamento dos próximos eventos |
 | GET /leader-chats/{chatId}/turns/{turnId} | Estado atual e ETag do turno |
+| POST /leader-chats/{chatId}/turns/{turnId}/reconcile | Consulta o turno original sem reenviar; retorna {resolved,turn} |
 | POST /leader-chats/{chatId}/turns/{turnId}/cancel | Solicita interrupção; 202 não significa interrupção confirmada |
 | POST /leader-chats/{chatId}/approvals/{approvalId}/decision | Aceita/recusa solicitação específica, com If-Match |
 
@@ -87,3 +88,7 @@ Formato existente: {error: texto legível, code: código estável, details: obje
 **Integração:** trocar transporte simulado pelo real sem mudar componentes; verificar mensagem antes de existir tarefa, worker misto, disconnect/reload, Unicode, duas requisições concorrentes, cancelamento versus conclusão, decisão duplicada, troca de vínculo e perda de processo depois do aceite. Uma aprovação de worker deve voltar somente ao worker certo.
 
 Fixtures são contratos, não prova de execução real. Aceite final exige sessão Codex própria, dados isolados, evidências de UI + API e PR sem merge automático. OAuth/formulários e edição de perfis exigem seus contratos complementares antes do início dessas fatias.
+
+## Recupera��o expl�cita de turno incerto
+
+`reconcile` exige actor, If-Match do turno e Idempotency-Key. Consulta somente o thread e o turno originais. Estado confirmado completed/cancelled/failed � persistido com mensagem final e entrega vinculada, sem nova infer�ncia. Running, resultado desconhecido ou aus�ncia de providerTurnId mant�m uncertain e retorna resolved:false. Uma nova verifica��o consciente usa nova chave; repetir pedido cujo HTTP falhou conserva a mesma chave. A interface nunca reenvia a mensagem original. Cria��o de sess�o com resultado incerto e sem externalId conhecido continua bloqueada; n�o � poss�vel atribuir com seguran�a uma thread por adivinha��o.

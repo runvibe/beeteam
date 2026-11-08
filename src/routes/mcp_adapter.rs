@@ -105,12 +105,16 @@ pub(super) fn tools() -> Vec<Value> {
     }
     tools.extend(crate::dto::mcp::composite_tools());
     tools.extend(crate::dto::data_transfer_tools::tools());
+    tools.extend(crate::dto::integrated_chat_tools::tools());
     for tool in &mut tools {
         crate::dto::mcp_language::translate_metadata(tool);
     }
     tools
 }
 pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Result<Value> {
+    if crate::dto::integrated_chat_tools::NAMES.contains(&name) {
+        return super::integrated_chat_mcp::call(state, name, arguments).await;
+    }
     if crate::dto::data_transfer_tools::NAMES.contains(&name) {
         return super::data_transfer_mcp::call(state, name, arguments).await;
     }

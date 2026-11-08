@@ -130,7 +130,9 @@ fn integrated_profile_can_disable_network_and_retains_explicit_skill_roots() {
     );
     assert_eq!(scope.skill_roots(), &[root]);
     let unexpected = json!({"name":"unexpected","pluginId":"p","runtimeStatus":"connected","toolsError":null,"tools":{"search":{}}});
-    assert!(scope.verify(&[own(), unexpected]).is_err());
+    let inventory = [own(), unexpected];
+    scope.verify(&inventory).unwrap();
+    assert_eq!(scope.disabled_plugins(&inventory), vec!["p"]);
 }
 #[test]
 fn pagination_is_explicit_and_never_assumed_complete() {
@@ -192,4 +194,34 @@ fn only_a_verified_local_managed_origin_can_be_used() {
         .is_ok());
     let unrelated = json!({"name":"data","pluginId":"data-plugin","runtimeStatus":"connected","toolsError":null,"tools":{"analyze_data":{}}});
     assert!(scope.verify(&[own(), unrelated]).is_ok());
+}
+
+#[test]
+fn connected_unselected_plugin_is_explicitly_disabled_for_the_turn() {
+    let scope = McpScope::with_tools(
+        "http://127.0.0.1:59869/mcp",
+        "owned_bee",
+        Default::default(),
+    )
+    .unwrap();
+    let inventory = vec![
+        own(),
+        json!({"name":"data","pluginId":"data-analytics@test","runtimeStatus":"connected","toolsError":null,"tools":{"search_mentions":{}}}),
+    ];
+    scope.verify(&inventory).unwrap();
+    assert_eq!(
+        scope.disabled_plugins(&inventory),
+        vec!["data-analytics@test"]
+    );
+    for forbidden in [
+        "createIntegratedSession",
+        "getAgentRuntime",
+        "restoreDataImport",
+    ] {
+        let inventory = vec![
+            own(),
+            json!({"name":"data","pluginId":"data-analytics@test","runtimeStatus":"connected","toolsError":null,"tools":{forbidden:{}}}),
+        ];
+        assert!(scope.verify(&inventory).is_err());
+    }
 }
