@@ -7,6 +7,7 @@ pub struct AppState {
     inner: Arc<SharedState>,
     api_info: crate::services::api_info::ApiInfoService,
     transfers: Option<Arc<crate::services::data_transfer::service::TransferService>>,
+    leader_chat: crate::services::leader_chat::LeaderChatService,
 }
 
 struct SharedState {
@@ -16,6 +17,38 @@ struct SharedState {
 }
 
 impl AppState {
+    pub fn leader_chat(&self) -> &crate::services::leader_chat::LeaderChatService {
+        &self.leader_chat
+    }
+    pub fn with_leader_chat_provider(
+        mut self,
+        provider: Arc<dyn crate::repositories::integrated_provider::IntegratedProvider>,
+        installation: String,
+    ) -> Self {
+        self.leader_chat = self.leader_chat.with_provider(provider, installation);
+        self
+    }
+    pub fn with_leader_chat_runtime(self, config: &crate::config::AppConfig) -> Self {
+        if self.leader_chat.is_configured() || !config.host.is_loopback() || !config.mcp.enabled {
+            return self;
+        }
+        match crate::services::managed_sessions::config::ManagedSessionConfig::from_env() {
+            Ok(Some(runtime)) => {
+                let endpoint = format!("http://{}:{}{}", config.host, config.port, config.mcp.path);
+                let provider = crate::repositories::codex_integrated::CodexIntegratedProvider {
+                    executable: runtime.executable,
+                    mcp_endpoint: endpoint,
+                    profile: Default::default(),
+                };
+                self.with_leader_chat_provider(Arc::new(provider), runtime.installation_id)
+            }
+            Ok(None) => self,
+            Err(error) => {
+                tracing::warn!(%error,"Integrated chat unavailable");
+                self
+            }
+        }
+    }
     pub fn new(database: DatabaseRepository) -> Self {
         Self::with_project_discovery(
             database,
@@ -41,6 +74,7 @@ impl AppState {
         let changes = crate::services::changes::ChangeFeed::new(source);
         let local_projects =
             crate::services::local_projects::LocalProjectService::new(resources.clone(), opener);
+        let leader_chat = crate::services::leader_chat::LeaderChatService::new(resources.clone());
         let backend = crate::services::backend::service::BackendService::new(resources, discovery);
         let inner = SharedState {
             backend,
@@ -50,6 +84,7 @@ impl AppState {
         Self {
             inner: Arc::new(inner),
             transfers: None,
+            leader_chat,
             api_info: crate::services::api_info::ApiInfoService::new(false, false, false),
         }
     }
@@ -104,6 +139,10 @@ impl AppState {
         else {
             return Ok(None);
         };
+        anyhow::ensure!(
+            self.leader_chat.is_configured(),
+            "Integrated delivery requires a configured loopback-only chat runtime"
+        );
         let mcp_endpoint = mcp_endpoint
             .ok_or_else(|| {
                 anyhow::anyhow!("Managed session delivery requires this instance's MCP endpoint")
@@ -113,11 +152,17 @@ impl AppState {
             &config.state_dir,
             &config.installation_id,
         )?;
-        let provider = Arc::new(crate::repositories::codex_session::CodexSessionProvider {
-            executable: config.executable,
-            timeout: std::time::Duration::from_secs(300),
-            mcp_endpoint,
-        });
+        let backend_origin = mcp_endpoint
+            .split('/')
+            .take(3)
+            .collect::<Vec<_>>()
+            .join("/");
+        let provider = Arc::new(
+            crate::services::leader_chat::worker_delivery::WorkerDeliveryProvider::new(
+                self.leader_chat.clone(),
+                backend_origin,
+            ),
+        );
         let service = Arc::new(
             crate::services::managed_sessions::dispatch::ManagedSessionService::new(
                 self.inner.backend.resources(),

@@ -7,6 +7,8 @@ pub mod changes;
 
 pub mod contracts;
 pub mod codex_session;
+pub mod integrated_provider;
+pub mod codex_integrated;
 pub mod codex_mcp_scope;
 pub mod session_dispatch_lease;
 mod errors;
@@ -15,6 +17,7 @@ mod task_order;
 
 pub mod query;
 mod reads;
+mod leader_chat_reads;
 
 pub mod sqlite;
 

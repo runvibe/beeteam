@@ -25,3 +25,6 @@ pub mod team_role_icons;
 
 pub mod worker_contract;
 pub mod task_parent;
+pub mod leader_chat;
+
+pub mod integrated_chat_tools;

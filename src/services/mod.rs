@@ -9,3 +9,4 @@ pub mod data_transfer;
 pub mod frontend;
 pub mod local_projects;
 pub mod managed_sessions;
+pub mod leader_chat;

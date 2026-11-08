@@ -17,10 +17,13 @@ impl LeaderChatService {
         let integrated = binding
             .as_ref()
             .is_some_and(|b| b.data["mode"] == "integrated");
-        let supported = integrated && self.provider.is_some();
+        let owned = binding
+            .as_ref()
+            .is_some_and(|b| b.data["installationId"] == self.installation);
+        let supported = integrated && owned && self.provider.is_some();
         let mut observed = json!({"readiness":"unavailable","tools":{"webSearch":"disabled","networkAccess":false,"skills":[],"mcpServers":[]}});
         // Metadata from an external binding must never start or resume its harness.
-        if integrated {
+        if integrated && owned {
             if let (Some(provider), Some(b)) = (&self.provider, &binding) {
                 if let Ok(target) = serde_json::from_value::<SessionDestination>(b.data.clone()) {
                     observed = match provider.inspect(&target, &b.data["toolProfile"]).await {
@@ -34,6 +37,8 @@ impl LeaderChatService {
         }
         let readiness = if !integrated {
             json!("external")
+        } else if !owned {
+            json!("unavailable")
         } else if busy {
             json!("busy")
         } else {

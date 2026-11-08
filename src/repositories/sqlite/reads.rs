@@ -40,6 +40,9 @@ async fn load_ids(
 }
 
 pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Result<Records> {
+    if c.operation.starts_with("integrated:") {
+        return super::leader_chat_reads::context(tx, c).await;
+    }
     let mut records = Records::default();
     for (key, table) in [
         ("agentId", "agents"),

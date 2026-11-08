@@ -45,6 +45,7 @@ pub struct ArchiveStore {
 }
 // Archives predating explicit execution tracking contain none of these groups.
 const INTERVAL_GROUPS: &[&str] = &["task_executions","task_execution_intervals","task_execution_interval_counters","task_execution_tracking_events","task_execution_interval_revisions"];
+const CHAT_GROUPS: &[&str] = &["leader_session_operations","leader_chats","leader_chat_turns","leader_chat_messages","leader_chat_approvals","leader_chat_events","leader_chat_tools"];
 pub fn groups() -> Vec<&'static str> {
     TABLES
         .iter()
@@ -378,8 +379,10 @@ impl ArchiveStore {
         self.ensure_space(total)?;
         let legacy_intervals = INTERVAL_GROUPS.iter().all(|t| !manifest.entries.contains_key(&format!("records/{t}.jsonl")));
         let legacy_session_bindings = !manifest.entries.contains_key("records/agent_session_bindings.jsonl");
+        let legacy_chat = CHAT_GROUPS.iter().all(|t| !manifest.entries.contains_key(&format!("records/{t}.jsonl")));
         let legacy_deliveries = !manifest.entries.contains_key("records/session_deliveries.jsonl");
         for t in groups() {
+            if legacy_chat && CHAT_GROUPS.contains(&t) { continue; }
             if legacy_deliveries && t == "session_deliveries" { continue; }
             if legacy_session_bindings && t == "agent_session_bindings" { continue; }
             if legacy_intervals && INTERVAL_GROUPS.contains(&t) { continue; }
@@ -392,6 +395,7 @@ impl ArchiveStore {
         fs::create_dir_all(dir.join("records"))?;
         fs::create_dir_all(dir.join("blobs"))?;
         if legacy_session_bindings { File::create(dir.join("records/agent_session_bindings.jsonl"))?; }
+        if legacy_chat { for t in CHAT_GROUPS { File::create(dir.join(format!("records/{t}.jsonl")))?; } }
         if legacy_deliveries { File::create(dir.join("records/session_deliveries.jsonl"))?; }
         // Normalize only absent additive groups to empty staging files. No rows,
         // evidence, manifest entries or archive bytes are fabricated or rewritten.

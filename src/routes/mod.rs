@@ -14,10 +14,13 @@ mod data_transfer;
 mod data_transfer_mcp;
 mod frontend;
 mod local_projects;
+mod leader_chat;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
 mod mcp_adapter;
+#[cfg(feature = "mcp")]
+mod integrated_chat_mcp;
 #[cfg(feature = "mcp")]
 mod mcp_materials;
 pub mod system;
@@ -45,7 +48,7 @@ pub fn create_router_with_frontend(
     config: &AppConfig,
     mode: crate::services::frontend::FrontendMode,
 ) -> Router {
-    let state = state.with_api_info(
+    let state = state.with_leader_chat_runtime(config).with_api_info(
         cfg!(feature = "mcp") && config.mcp.enabled,
         config.host.is_loopback(),
     );
@@ -89,6 +92,7 @@ pub fn create_router_with_frontend(
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
+        .merge(leader_chat::router())
         .merge(local_projects::router(config.host.is_loopback()))
         .merge(data_transfer::router(state.clone()));
 

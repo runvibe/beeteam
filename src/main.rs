@@ -61,6 +61,13 @@ async fn main() -> Result<()> {
             config.mcp.path
         )
     });
+    // Configure once before cloning into HTTP and Conversation dispatch.
+    let mut runtime_config = config.clone();
+    runtime_config.host = ip;
+    runtime_config.port = actual.port();
+    if config.host.is_loopback() {
+        state = state.with_leader_chat_runtime(&runtime_config);
+    }
     let managed_runtime = state.managed_session_runtime(endpoint.as_deref())?;
     let router = create_router_with_frontend(state, &config, frontend_mode);
     if let Some((runtime, lease)) = managed_runtime {

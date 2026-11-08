@@ -1,6 +1,7 @@
 //! SQLite adapters. Driver details never escape the repository boundary.
 pub mod changes;
 mod query;
+mod leader_chat_reads;
 pub(crate) mod reads;
 mod resources;
 mod slugs;
