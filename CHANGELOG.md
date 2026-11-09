@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Restore internal scrolling on long detail pages inside the persistent chat workspace.
+
 - Move integrated leader chat to a persistent, resizable side panel with a saved left/right position in Appearance settings.
 
 - Generate new record metadata timestamps at microsecond precision so PostgreSQL write responses and subsequent reads agree, without rewriting existing data or replay snapshots.

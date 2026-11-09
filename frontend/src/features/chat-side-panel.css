@@ -1,7 +1,8 @@
 .chat-workspace {
   display: flex;
   min-width: 0;
-  align-items: flex-start;
+  align-items: stretch;
+  min-height: 0;
 }
 .chat-workspace > .main-shell {
   flex: 1;
