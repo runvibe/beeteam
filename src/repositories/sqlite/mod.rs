@@ -1,7 +1,7 @@
 //! SQLite adapters. Driver details never escape the repository boundary.
 pub mod changes;
-mod query;
 mod leader_chat_reads;
+mod query;
 pub(crate) mod reads;
 mod resources;
 mod slugs;
@@ -24,7 +24,11 @@ pub async fn connect(url: &str) -> Result<SqlitePool> {
         .collation("beeteam_nocase", |a, b| {
             a.to_lowercase().cmp(&b.to_lowercase())
         });
-    if let Some(parent) = options.get_filename().parent().filter(|p| !p.as_os_str().is_empty()) {
+    if let Some(parent) = options
+        .get_filename()
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+    {
         std::fs::create_dir_all(parent).context("failed to create SQLite database directory")?;
     }
     let pool = SqlitePoolOptions::new()
@@ -38,3 +42,5 @@ pub async fn connect(url: &str) -> Result<SqlitePool> {
         .context("failed to migrate SQLite")?;
     Ok(pool)
 }
+
+mod managed_agent_reads;

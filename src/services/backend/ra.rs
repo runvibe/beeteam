@@ -14,7 +14,9 @@ use uuid::Uuid;
 pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     let body = &c.body;
     match c.operation.as_str() {
-        "createAgentWithSession" | "claimAgentSession" => super::session_bindings::run(unit,c).await,
+        "createAgentWithSession" | "claimAgentSession" => {
+            super::session_bindings::run(unit, c).await
+        }
         "createAgent" => {
             let mut data = defaults(
                 body,
@@ -83,7 +85,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                     "Reassign unfinished tasks before archiving the executor",
                 ));
             }
-            if body["archived"] == true { super::session_bindings::close_for_archive(unit,c,id)?; }
+            if body["archived"] == true {
+                super::session_bindings::close_for_archive(unit, c, id)?;
+            }
             patch(
                 unit.records.get_mut("agents", id)?,
                 body,
@@ -111,10 +115,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             );
             team_role_icons::defaults(&mut data);
             let id = unit.records.insert(Record::new("teams", data));
-            let members = body["workerIds"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
+            let members = body["workerIds"].as_array().cloned().unwrap_or_default();
             set_members(&mut unit.records, id, &members)?;
             validate_composition(&unit.records)?;
             let affected = team_agents(&unit.records, id);
@@ -222,6 +223,13 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             Ok(result)
         }
         "createChatReference" | "updateChatReference" => {
+            if !unit.records.get("agents", c.id("agentId")?)?.data["managedConfiguration"].is_null()
+            {
+                return Err(Failure::new(
+                    "operation_removed",
+                    "Managed agents do not accept external session references",
+                ));
+            }
             let id = c.id("agentId")?;
             active(&unit.records, "agents", id)?;
             validate_url(body["url"].as_str())?;

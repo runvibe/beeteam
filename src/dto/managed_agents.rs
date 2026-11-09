@@ -1,4 +1,4 @@
-//! Next-generation managed-agent contract. Not wired to runtime routes yet.
+//! Managed-agent contracts shared by HTTP, MCP, and the owned runtime.
 //! Public requests never select provider threads or assign external sessions.
 use crate::dto::backend::{Failure, Result};
 use serde::{Deserialize, Serialize};

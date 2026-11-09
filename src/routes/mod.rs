@@ -18,6 +18,9 @@ mod integrated_chat_mcp;
 mod leader_chat;
 mod local_access;
 mod local_projects;
+mod managed_agents;
+#[cfg(feature = "mcp")]
+mod managed_agents_mcp;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
@@ -94,6 +97,7 @@ pub fn create_router_with_frontend(
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
         .merge(leader_chat::router(config))
+        .merge(managed_agents::router(config))
         .merge(local_projects::router(config.host.is_loopback()))
         .merge(data_transfer::router(state.clone()));
 

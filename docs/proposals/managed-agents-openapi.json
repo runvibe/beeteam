@@ -720,7 +720,8 @@
               "needs_auth",
               "unavailable",
               "busy",
-              "uncertain"
+              "uncertain",
+              "configured"
             ]
           }
         },

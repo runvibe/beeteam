@@ -14,6 +14,12 @@ impl LeaderChatService {
         let hash =
             serde_json::to_string(&json!({"body":c.body,"version":c.expected_version})).unwrap();
         let mut u = self.store.begin().await?;
+        if !u.records.get("agents", agent)?.data["managedConfiguration"].is_null() {
+            return Err(Failure::new(
+                "operation_removed",
+                "Use managed agent configuration and requests",
+            ));
+        }
         if let Some(actor_id) = actor.id {
             u.records.get("agents", actor_id)?;
         }

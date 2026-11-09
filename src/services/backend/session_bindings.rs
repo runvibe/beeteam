@@ -35,6 +35,12 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         c.id("agentId")?
     };
     let agent = active(&unit.records, "agents", agent_id)?.clone();
+    if !agent.data["managedConfiguration"].is_null() {
+        return Err(Failure::new(
+            "operation_removed",
+            "Managed agents do not accept external session bindings",
+        ));
+    }
     crate::services::leader_chat::rules::ensure_agent_idle(&unit.records, agent_id)?;
     if c.operation != "createAgentWithSession" {
         check_version(&agent, c.expected_version)?;

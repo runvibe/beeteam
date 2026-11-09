@@ -270,5 +270,8 @@
   "deliveryState_completed": "Entregue",
   "deliveryState_failed": "Falha na entrega",
   "deliveryState_uncertain": "Resultado incerto; confira a sessão original antes de enviar novamente",
-  "deliveryState_superseded": "Sessão alterada; mensagem não enviada"
+  "deliveryState_superseded": "Sessão alterada; mensagem não enviada",
+  "deliveryState_managed": "Na fila do agente",
+  "deliveryState_managed_backpressure": "Aguardando espaço na fila",
+  "deliveryState_cancelled": "Cancelada"
 }

@@ -21,7 +21,7 @@ fn team(records: &Records, task: Uuid) -> Result<(Uuid, Uuid)> {
         .ok_or_else(Failure::missing)?;
     Ok((team, leader))
 }
-fn member(records: &Records, task: Uuid, agent: Uuid) -> Result<()> {
+pub(crate) fn member(records: &Records, task: Uuid, agent: Uuid) -> Result<()> {
     let (team, leader) = team(records, task)?;
     let profile = records.get("agents", agent)?;
     if profile.archived_at.is_some()
@@ -44,7 +44,7 @@ pub fn active_binding(records: &Records, agent: Uuid) -> Option<&Record> {
         .into_iter()
         .find(|b| b.reference("agentId") == Some(agent) && b.data["endedAt"].is_null())
 }
-fn task_active(records: &Records, id: Uuid) -> bool {
+pub(crate) fn task_active(records: &Records, id: Uuid) -> bool {
     let mut current = Some(id);
     let mut seen = std::collections::BTreeSet::new();
     while let Some(id) = current {
@@ -95,6 +95,17 @@ pub fn enqueue(
     }) {
         return Ok(());
     }
+    if crate::services::managed_agents::conversation::enqueue(
+        records,
+        task,
+        comment,
+        target,
+        kind,
+        source,
+        expects_reply,
+    )? {
+        return Ok(());
+    }
     let message = records.get("comments", comment)?.clone();
     let origin = message
         .reference("actorId")
@@ -134,7 +145,9 @@ pub fn summary(records: &mut Records, task: Uuid, summary: Uuid) -> Result<()> {
     }
     // An explicit author binding selects managed workflow. Legacy skills-only
     // workers retain their existing notification behavior and create no backlog.
-    if active_binding(records, author).is_none() {
+    if active_binding(records, author).is_none()
+        && records.get("agents", author)?.data["managedConfiguration"].is_null()
+    {
         return Ok(());
     }
     let (team, leader) = team(records, task)?;
@@ -192,6 +205,9 @@ pub fn claim(records: &mut Records, id: Uuid, installation: &str) -> Result<bool
         .reference("targetAgentId")
         .ok_or_else(Failure::missing)?;
     let task = delivery.reference("taskId").ok_or_else(Failure::missing)?;
+    if !records.get("agents", target)?.data["managedConfiguration"].is_null() {
+        return Ok(false);
+    }
     let binding = active_binding(records, target).cloned();
     if !task_active(records, task)
         || member(records, task, target).is_err()

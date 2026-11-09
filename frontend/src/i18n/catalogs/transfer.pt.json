@@ -79,7 +79,12 @@
     "request_replays": "Respostas de idempotência",
     "archive_ready": "Arquivo pronto",
     "agent_session_bindings": "Vínculos de sessão dos agentes",
-    "session_deliveries": "Entregas da Conversa"
+    "session_deliveries": "Entregas da Conversa",
+    "managed_conversations": "Conversas dos agentes",
+    "managed_requests": "Pedidos aos agentes",
+    "managed_messages": "Mensagens dos agentes",
+    "managed_approvals": "Aprovações dos agentes",
+    "managed_events": "Eventos dos agentes"
   },
   "error": {
     "disabled": "Transferência desativada.",

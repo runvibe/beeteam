@@ -29,9 +29,12 @@ pub fn complete(records: &mut Records, id: Uuid, turn_id: &str, text: &str) -> R
         records.get_mut("tasks", task)?.touch();
         reply = Some(cid);
         if let Some(origin) = row.reference("requesterAgentId") {
-            if row.reference("originBindingId").is_some()
-                && queue::active_binding(&records, origin).map(|b| b.id)
-                    == row.reference("originBindingId")
+            if records
+                .get("agents", origin)
+                .is_ok_and(|a| !a.data["managedConfiguration"].is_null())
+                || row.reference("originBindingId").is_some()
+                    && queue::active_binding(&records, origin).map(|b| b.id)
+                        == row.reference("originBindingId")
             {
                 queue::enqueue(records, task, cid, origin, "response", id, false)?;
             }

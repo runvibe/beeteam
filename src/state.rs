@@ -8,6 +8,7 @@ pub struct AppState {
     api_info: crate::services::api_info::ApiInfoService,
     transfers: Option<Arc<crate::services::data_transfer::service::TransferService>>,
     leader_chat: crate::services::leader_chat::LeaderChatService,
+    managed_agents: crate::services::managed_agents::ManagedAgentService,
 }
 
 struct SharedState {
@@ -17,6 +18,9 @@ struct SharedState {
 }
 
 impl AppState {
+    pub fn managed_agents(&self) -> &crate::services::managed_agents::ManagedAgentService {
+        &self.managed_agents
+    }
     pub fn leader_chat(&self) -> &crate::services::leader_chat::LeaderChatService {
         &self.leader_chat
     }
@@ -25,6 +29,9 @@ impl AppState {
         provider: Arc<dyn crate::repositories::integrated_provider::IntegratedProvider>,
         installation: String,
     ) -> Self {
+        self.managed_agents = self
+            .managed_agents
+            .with_provider(provider.clone(), installation.clone());
         self.leader_chat = self.leader_chat.with_provider(provider, installation);
         self
     }
@@ -75,6 +82,8 @@ impl AppState {
         let local_projects =
             crate::services::local_projects::LocalProjectService::new(resources.clone(), opener);
         let leader_chat = crate::services::leader_chat::LeaderChatService::new(resources.clone());
+        let managed_agents =
+            crate::services::managed_agents::ManagedAgentService::new(resources.clone());
         let backend = crate::services::backend::service::BackendService::new(resources, discovery);
         let inner = SharedState {
             backend,
@@ -85,6 +94,7 @@ impl AppState {
             inner: Arc::new(inner),
             transfers: None,
             leader_chat,
+            managed_agents,
             api_info: crate::services::api_info::ApiInfoService::new(false, false, false),
         }
     }

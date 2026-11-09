@@ -55,6 +55,7 @@ fn error(e: Failure) -> Response {
         "version_required" => 428,
         "payload_too_large" => 413,
         "storage_unavailable" => 503,
+        "operation_removed" => 410,
         "internal_error" => 500,
         _ => 409,
     };

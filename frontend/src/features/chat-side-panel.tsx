@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { CSSProperties, ReactNode } from "react";
 import { MessageSquare, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
@@ -5,6 +7,7 @@ import { useChatPanel } from "@/state/chat-panel";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/shared";
+import { ManagedAgentChat } from "./managed-agent-chat";
 import { LeaderChat } from "./leader-chat";
 import "./chat-side-panel.css";
 
@@ -124,6 +127,40 @@ function PanelLeader({
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
+  const [selected, setSelected] = useState(leaderId);
+  const members = useQuery({
+    queryKey: ["chat-team-members", teamId],
+    enabled: !!api.managedAgents,
+    queryFn: () => api.list("members", teamId, { limit: 100 }),
+  });
+  if (api.managedAgents)
+    return (
+      <>
+        <label className="managed-agent-selector">
+          {t("common.agents")}
+          <select
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+          >
+            <option value={leaderId}>{leader.data?.name ?? leaderId}</option>
+            {members.data?.items
+              .filter((m) => m.agentId !== leaderId && !m.agentArchivedAt)
+              .map((m) => (
+                <option key={m.agentId} value={m.agentId}>
+                  {m.name}
+                </option>
+              ))}
+          </select>
+        </label>
+        <ManagedAgentChat
+          key={selected}
+          api={api.managedAgents}
+          agentId={selected}
+          legacyApi={api.leaderChat}
+          teamId={teamId}
+        />
+      </>
+    );
   return (
     <LeaderChat
       api={api.leaderChat}

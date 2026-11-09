@@ -12,6 +12,11 @@ const states: Record<string, string> = {
 };
 const stages: Record<string, string> = {
   leader_session_operations: "transfer.stage.leader_session_operations",
+  managed_conversations: "transfer.stage.managed_conversations",
+  managed_requests: "transfer.stage.managed_requests",
+  managed_messages: "transfer.stage.managed_messages",
+  managed_approvals: "transfer.stage.managed_approvals",
+  managed_events: "transfer.stage.managed_events",
   leader_chats: "transfer.stage.leader_chats",
   leader_chat_turns: "transfer.stage.leader_chat_turns",
   leader_chat_messages: "transfer.stage.leader_chat_messages",

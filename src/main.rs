@@ -69,6 +69,7 @@ async fn main() -> Result<()> {
         state = state.with_leader_chat_runtime(&runtime_config);
     }
     let managed_runtime = state.managed_session_runtime(endpoint.as_deref())?;
+    state.managed_agents().start().await?;
     let router = create_router_with_frontend(state, &config, frontend_mode);
     if let Some((runtime, lease)) = managed_runtime {
         tokio::spawn(async move {

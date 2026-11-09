@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
@@ -24,18 +25,25 @@ vi.mock("./leader-chat", () => ({
 it("preserves mounted chat draft through navigation, side change and collapse", async () => {
   setLocalePreference("en");
   useChatPanel.getState().openTeam("team-a");
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   const view = render(
-    <ChatWorkspace>
-      <main>Boards</main>
-    </ChatWorkspace>,
+    <QueryClientProvider client={client}>
+      <ChatWorkspace>
+        <main>Boards</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
   );
   const draft = screen.getByRole("textbox", { name: "Draft" });
   await userEvent.type(draft, "Keep my draft");
   act(() => useChatPanel.getState().setSide("left"));
   view.rerender(
-    <ChatWorkspace>
-      <main>Tasks</main>
-    </ChatWorkspace>,
+    <QueryClientProvider client={client}>
+      <ChatWorkspace>
+        <main>Tasks</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
   );
   expect(screen.getByRole("textbox", { name: "Draft" })).toBe(draft);
   await userEvent.click(

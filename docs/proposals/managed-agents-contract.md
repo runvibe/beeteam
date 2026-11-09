@@ -1,12 +1,12 @@
 # Bee Team-owned agents: contract v1
 
-Status: contract-first implementation for review, not active routes. The checked-in OpenAPI, proposed MCP schemas, Rust request DTOs and generated TypeScript are executable contract artifacts. The running API and MCP catalog remain unchanged until the runtime and compatibility stages land. No main merge or release is authorized.
+Status: implemented on the review branch. HTTP/MCP adapters, shared services, additive persistence and the side panel use these contracts. Explicit agent configuration enables the managed path; the global legacy cutover remains pending as described below. No main merge or release is authorized.
 
 ## Decisions for parallel implementation
 
 - Keep ordinary agent creation (`createAgent`, POST `/api/v2/agents`) and profile editing in the RA contract. They already prohibit unknown session fields. Creation does not launch a provider or grant runtime access. Configure an existing agent using `configureAgentExecution`; profile creation and configuration are intentionally two operations, so a configuration failure leaves a valid, visibly unconfigured agent.
 - Configure provider/project/tools only. Provider thread, binding, installation and process identifiers never appear in public request schemas. The only initial provider is Codex; the adapter boundary remains extensible without accepting unsupported provider names.
-- Prepare the owned runtime on the first accepted request. Configuration does not imply login readiness or successful execution. Request state exposes preparation failures. This adopts the plan's on-demand proposal for this contract slice; provider provisioning is not implemented here.
+- Prepare the owned runtime on the first accepted request. Configuration does not imply login readiness or successful execution. Request state exposes preparation failures. The owned provider thread is created on the first accepted request.
 - An agent owns multiple Bee Team conversations. Each conversation owns its provider context internally. One active provider turn per agent in v1; conversations queue behind that lease. Separate conversations must not silently share a provider thread. A conversation is an explicit context-sharing choice, not a privacy boundary.
 - The local application is currently a trusted single-user installation. No caller authentication or tenant isolation is invented. Transport labels, actor fields and IDs are metadata, never credentials or authorization. HTTP/MCP execution retains the existing direct-local boundary. Hosting/multi-user access requires a separate security design.
 
@@ -42,7 +42,7 @@ Replies belong to the request and its conversation. Each message has immutable r
 
 ## Queue, snapshots and idempotency
 
-Submission durably records a request and returns 202 with its current state; acceptance is not provider delivery. Terminal execution failures are read as 200 snapshots with failed state/error, not mistaken for submission HTTP errors. Acceptance requires a configured active agent; unconfigured submission returns 409 invalid_request with an actionable message and creates no request. Authentication/provider availability is checked during preparation, yielding explicit failure if unavailable.
+Submission durably records a request and returns 202 with its current state; acceptance is not provider delivery. Terminal execution failures are read as 200 snapshots with failed state/error, not mistaken for submission HTTP errors. Acceptance requires a configured active agent; unconfigured submission returns 400 invalid_request with an actionable message and creates no request. Authentication/provider availability is checked during preparation, yielding explicit failure if unavailable.
 
 V1 permits one active turn per agent and at most **32 pending nonterminal requests** (including the active/uncertain request). Admission and capacity check are atomic. Pending order is durable acceptance sequence, with UUIDv7 as tie-breaker; no per-caller quota is claimed without authenticated callers. Full queue returns 429 queue_full with Retry-After seconds. Polling, reconnects, retries and approved duplicate notices do not change queue position or start extra work.
 
@@ -85,4 +85,10 @@ HTTP errors: 400 validation, 403 local boundary, 404 missing resources, 409 sema
 | skills and resources/bee-team source/bundled snapshots | replace assume/rebind guidance, regenerate provenance and catalog at runtime cutover |
 | tests/session_mode_contract.rs, leader_chat_http.rs, worker_delivery.rs and frontend chat tests | preserve legacy reads; add cutover, idempotency, multi-conversation and recovery acceptance |
 
-Validation now: DTOs, JSON Schema fixtures, HTTP/MCP parity and generated TS. Still pending: business service/transactions, actual routes, provider execution, migrations, frontend adoption, skill adoption and native end-to-end acceptance. Schema validation is not evidence those features run.
+The runtime checkpoint below supersedes the original contract-only status.
+
+## Runtime implementation checkpoint
+
+HTTP/MCP requests, owned per-conversation execution, durable per-agent queue, snapshots/SSE and the side panel are implemented on the review branch. The migration is additive. Explicitly configuring an agent switches that agent to managed requests and rejects its legacy bind/bootstrap writes; other legacy agents remain compatible until the global cutover is accepted. The final `agents.managed-requests.v1` capability is intentionally withheld during that transition. This staged retirement supersedes the all-at-once proposal above for the review build, preserving existing in-flight work. Existing owned sessions remain readable in legacy history, rather than being silently assigned to a new conversation.
+
+Provider output uses the same UTF-8-safe 65536-byte display bound during streaming and reconciliation, with an explicit truncation notice; the original turn is still consumed through its terminal outcome. Managed mutation receipts remain durable without the legacy 24-hour expiration.

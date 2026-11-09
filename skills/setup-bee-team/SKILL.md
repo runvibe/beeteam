@@ -33,3 +33,7 @@ python scripts/setup.py start --version <selected-release> --port 59865
 On a verified fresh install omit `--local-version`. For an update always supply the installed version. `stage` does not start anything; `start` inherits the launch environment and uses the version directory as its working directory. Default binaries live under `~/.local/share/get-bee-team/versions`, separately from application storage `~/.beeteam`. Use `--root` consistently for a different dedicated binary root. Do not put config, secrets or data in a binary version directory. Preserve configured MCP paths and use the actual configured port (fresh distribution default 59865).
 
 Report separately: skill files installed and discovered, artifact verified/staged, process started or reused, health/info response and exact panel/API versions, MCP read and browser check. Never call a staged binary a running installation. Do not publish a release, change DNS or update anyone else's installation from this skill.
+
+## Managed execution capability
+
+When sendAgentRequest is advertised, direct users to configure the agent and use Bee Team conversations. Do not install external session bindings as a prerequisite. Keep the same installation and data; verify readiness separately from successful execution.

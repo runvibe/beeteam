@@ -5,6 +5,11 @@ use std::collections::BTreeMap;
 use uuid::Uuid;
 
 pub const TABLES: &[&str] = &[
+    "managed_conversations",
+    "managed_requests",
+    "managed_messages",
+    "managed_approvals",
+    "managed_events",
     "agents",
     "teams",
     "boards",

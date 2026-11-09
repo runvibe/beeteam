@@ -124,7 +124,8 @@
                   "needs_auth",
                   "unavailable",
                   "busy",
-                  "uncertain"
+                  "uncertain",
+                  "configured"
                 ]
               }
             },
@@ -346,7 +347,8 @@
                   "needs_auth",
                   "unavailable",
                   "busy",
-                  "uncertain"
+                  "uncertain",
+                  "configured"
                 ]
               }
             },

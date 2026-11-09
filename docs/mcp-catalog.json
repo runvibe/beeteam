@@ -29912,6 +29912,9 @@
                     },
                     "state": {
                       "enum": [
+                        "managed",
+                        "managed_backpressure",
+                        "cancelled",
                         "waiting_external",
                         "waiting_binding",
                         "pending",
@@ -44413,6 +44416,9 @@
                 },
                 "state": {
                   "enum": [
+                    "managed",
+                    "managed_backpressure",
+                    "cancelled",
                     "waiting_external",
                     "waiting_binding",
                     "pending",
@@ -52887,6 +52893,9 @@
                 },
                 "state": {
                   "enum": [
+                    "managed",
+                    "managed_backpressure",
+                    "cancelled",
                     "waiting_external",
                     "waiting_binding",
                     "pending",
@@ -61143,6 +61152,9 @@
                 },
                 "state": {
                   "enum": [
+                    "managed",
+                    "managed_backpressure",
+                    "cancelled",
                     "waiting_external",
                     "waiting_binding",
                     "pending",
@@ -67848,6 +67860,2045 @@
           "data",
           "version",
           "createdId"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getAgentExecutionConfiguration",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "configuration": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "projectRoot": {
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-absolutePath": true,
+                        "x-maxBytes": 4096
+                      },
+                      "provider": {
+                        "enum": [
+                          "codex"
+                        ]
+                      },
+                      "toolProfile": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "enabledMcpServers": {
+                            "items": {
+                              "maxLength": 128,
+                              "minLength": 1,
+                              "pattern": "^[A-Za-z0-9._-]+$",
+                              "type": "string"
+                            },
+                            "maxItems": 64,
+                            "type": "array",
+                            "uniqueItems": true
+                          },
+                          "networkAccess": {
+                            "type": "boolean"
+                          },
+                          "skillRoots": {
+                            "items": {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string",
+                              "x-absolutePath": true,
+                              "x-maxBytes": 4096
+                            },
+                            "maxItems": 16,
+                            "type": "array",
+                            "uniqueItems": true
+                          },
+                          "webSearch": {
+                            "enum": [
+                              "live",
+                              "cached",
+                              "disabled"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "webSearch",
+                          "networkAccess",
+                          "enabledMcpServers",
+                          "skillRoots"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "provider",
+                      "projectRoot",
+                      "toolProfile"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "readiness": {
+                "enum": [
+                  "unconfigured",
+                  "ready",
+                  "needs_auth",
+                  "unavailable",
+                  "busy",
+                  "uncertain",
+                  "configured"
+                ]
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "agentId",
+              "version",
+              "configuration",
+              "readiness"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "projectRoot": {
+                "maxLength": 4096,
+                "minLength": 1,
+                "type": "string",
+                "x-absolutePath": true,
+                "x-maxBytes": 4096
+              },
+              "provider": {
+                "enum": [
+                  "codex"
+                ]
+              },
+              "toolProfile": {
+                "additionalProperties": false,
+                "properties": {
+                  "enabledMcpServers": {
+                    "items": {
+                      "maxLength": 128,
+                      "minLength": 1,
+                      "pattern": "^[A-Za-z0-9._-]+$",
+                      "type": "string"
+                    },
+                    "maxItems": 64,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "networkAccess": {
+                    "type": "boolean"
+                  },
+                  "skillRoots": {
+                    "items": {
+                      "maxLength": 4096,
+                      "minLength": 1,
+                      "type": "string",
+                      "x-absolutePath": true,
+                      "x-maxBytes": 4096
+                    },
+                    "maxItems": 16,
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "webSearch": {
+                    "enum": [
+                      "live",
+                      "cached",
+                      "disabled"
+                    ]
+                  }
+                },
+                "required": [
+                  "webSearch",
+                  "networkAccess",
+                  "enabledMcpServers",
+                  "skillRoots"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "provider",
+              "projectRoot",
+              "toolProfile"
+            ],
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "body",
+          "idempotencyKey",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "configureAgentExecution",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "configuration": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "projectRoot": {
+                        "maxLength": 4096,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-absolutePath": true,
+                        "x-maxBytes": 4096
+                      },
+                      "provider": {
+                        "enum": [
+                          "codex"
+                        ]
+                      },
+                      "toolProfile": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "enabledMcpServers": {
+                            "items": {
+                              "maxLength": 128,
+                              "minLength": 1,
+                              "pattern": "^[A-Za-z0-9._-]+$",
+                              "type": "string"
+                            },
+                            "maxItems": 64,
+                            "type": "array",
+                            "uniqueItems": true
+                          },
+                          "networkAccess": {
+                            "type": "boolean"
+                          },
+                          "skillRoots": {
+                            "items": {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string",
+                              "x-absolutePath": true,
+                              "x-maxBytes": 4096
+                            },
+                            "maxItems": 16,
+                            "type": "array",
+                            "uniqueItems": true
+                          },
+                          "webSearch": {
+                            "enum": [
+                              "live",
+                              "cached",
+                              "disabled"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "webSearch",
+                          "networkAccess",
+                          "enabledMcpServers",
+                          "skillRoots"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "provider",
+                      "projectRoot",
+                      "toolProfile"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "readiness": {
+                "enum": [
+                  "unconfigured",
+                  "ready",
+                  "needs_auth",
+                  "unavailable",
+                  "busy",
+                  "uncertain",
+                  "configured"
+                ]
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "agentId",
+              "version",
+              "configuration",
+              "readiness"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "allOf": [
+                  {
+                    "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                  },
+                  {
+                    "pattern": "^[^\\u0000]*$"
+                  }
+                ],
+                "maxLength": 65536,
+                "minLength": 1,
+                "type": "string",
+                "x-maxBytes": 65536
+              },
+              "conversationId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "taskId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "content"
+            ],
+            "type": "object"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "body",
+          "idempotencyKey"
+        ],
+        "type": "object"
+      },
+      "name": "sendAgentRequest",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "configurationVersion": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "needs_configuration",
+                          "needs_auth",
+                          "provider_unavailable",
+                          "execution_failed",
+                          "configuration_changed",
+                          "cancelled",
+                          "outcome_unknown"
+                        ]
+                      },
+                      "message": {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 2048
+                      },
+                      "retryable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "retryable"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "origin": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "transport": {
+                    "enum": [
+                      "http",
+                      "mcp",
+                      "conversation",
+                      "summary_notice"
+                    ]
+                  }
+                },
+                "required": [
+                  "transport",
+                  "label"
+                ],
+                "type": "object"
+              },
+              "state": {
+                "enum": [
+                  "accepted",
+                  "preparing",
+                  "queued",
+                  "running",
+                  "awaiting_approval",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "uncertain"
+                ]
+              },
+              "taskId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "agentId",
+              "conversationId",
+              "taskId",
+              "configurationVersion",
+              "version",
+              "state",
+              "origin",
+              "createdAt",
+              "updatedAt",
+              "error"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listAgentRequests",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "agentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "configurationVersion": {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "conversationId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "error": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "code": {
+                              "enum": [
+                                "needs_configuration",
+                                "needs_auth",
+                                "provider_unavailable",
+                                "execution_failed",
+                                "configuration_changed",
+                                "cancelled",
+                                "outcome_unknown"
+                              ]
+                            },
+                            "message": {
+                              "allOf": [
+                                {
+                                  "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                                },
+                                {
+                                  "pattern": "^[^\\u0000]*$"
+                                }
+                              ],
+                              "maxLength": 2048,
+                              "minLength": 1,
+                              "type": "string",
+                              "x-maxBytes": 2048
+                            },
+                            "retryable": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "message",
+                            "retryable"
+                          ],
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "origin": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "label": {
+                          "anyOf": [
+                            {
+                              "allOf": [
+                                {
+                                  "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                                },
+                                {
+                                  "pattern": "^[^\\u0000]*$"
+                                }
+                              ],
+                              "maxLength": 200,
+                              "minLength": 1,
+                              "type": "string",
+                              "x-maxBytes": 200
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "transport": {
+                          "enum": [
+                            "http",
+                            "mcp",
+                            "conversation",
+                            "summary_notice"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "transport",
+                        "label"
+                      ],
+                      "type": "object"
+                    },
+                    "state": {
+                      "enum": [
+                        "accepted",
+                        "preparing",
+                        "queued",
+                        "running",
+                        "awaiting_approval",
+                        "completed",
+                        "failed",
+                        "cancelled",
+                        "uncertain"
+                      ]
+                    },
+                    "taskId": {
+                      "anyOf": [
+                        {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "updatedAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "agentId",
+                    "conversationId",
+                    "taskId",
+                    "configurationVersion",
+                    "version",
+                    "state",
+                    "origin",
+                    "createdAt",
+                    "updatedAt",
+                    "error"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "maxLength": 2048,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "agentId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listAgentConversations",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "agentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "configurationVersion": {
+                      "minimum": 1,
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "readOnly": {
+                      "type": "boolean"
+                    },
+                    "taskId": {
+                      "anyOf": [
+                        {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "title": {
+                      "allOf": [
+                        {
+                          "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                        },
+                        {
+                          "pattern": "^[^\\u0000]*$"
+                        }
+                      ],
+                      "maxLength": 200,
+                      "minLength": 1,
+                      "type": "string",
+                      "x-maxBytes": 200
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "agentId",
+                    "configurationVersion",
+                    "taskId",
+                    "title",
+                    "readOnly",
+                    "createdAt"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "maxLength": 2048,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "requestId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "requestId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getAgentRequest",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "approvals": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "agentId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "description": {
+                      "allOf": [
+                        {
+                          "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                        },
+                        {
+                          "pattern": "^[^\\u0000]*$"
+                        }
+                      ],
+                      "maxLength": 8192,
+                      "minLength": 1,
+                      "type": "string",
+                      "x-maxBytes": 8192
+                    },
+                    "expiresAt": {
+                      "anyOf": [
+                        {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "kind": {
+                      "enum": [
+                        "command",
+                        "file_change",
+                        "network"
+                      ]
+                    },
+                    "requestId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "state": {
+                      "enum": [
+                        "pending",
+                        "accepted",
+                        "declined",
+                        "expired"
+                      ]
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "requestId",
+                    "agentId",
+                    "version",
+                    "kind",
+                    "description",
+                    "state",
+                    "expiresAt"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              "eventCursor": {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              "messages": {
+                "additionalProperties": false,
+                "properties": {
+                  "items": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "content": {
+                          "maxLength": 65536,
+                          "type": "string",
+                          "x-maxBytes": 65536
+                        },
+                        "conversationId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "role": {
+                          "enum": [
+                            "requester",
+                            "agent",
+                            "system"
+                          ]
+                        },
+                        "version": {
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "conversationId",
+                        "requestId",
+                        "role",
+                        "content",
+                        "version",
+                        "createdAt"
+                      ],
+                      "type": "object"
+                    },
+                    "maxItems": 100,
+                    "type": "array"
+                  },
+                  "nextCursor": {
+                    "anyOf": [
+                      {
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "items",
+                  "nextCursor"
+                ],
+                "type": "object"
+              },
+              "request": {
+                "additionalProperties": false,
+                "properties": {
+                  "agentId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "configurationVersion": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "conversationId": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "error": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "code": {
+                            "enum": [
+                              "needs_configuration",
+                              "needs_auth",
+                              "provider_unavailable",
+                              "execution_failed",
+                              "configuration_changed",
+                              "cancelled",
+                              "outcome_unknown"
+                            ]
+                          },
+                          "message": {
+                            "allOf": [
+                              {
+                                "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                              },
+                              {
+                                "pattern": "^[^\\u0000]*$"
+                              }
+                            ],
+                            "maxLength": 2048,
+                            "minLength": 1,
+                            "type": "string",
+                            "x-maxBytes": 2048
+                          },
+                          "retryable": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "message",
+                          "retryable"
+                        ],
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "id": {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  "origin": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "label": {
+                        "anyOf": [
+                          {
+                            "allOf": [
+                              {
+                                "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                              },
+                              {
+                                "pattern": "^[^\\u0000]*$"
+                              }
+                            ],
+                            "maxLength": 200,
+                            "minLength": 1,
+                            "type": "string",
+                            "x-maxBytes": 200
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "transport": {
+                        "enum": [
+                          "http",
+                          "mcp",
+                          "conversation",
+                          "summary_notice"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "transport",
+                      "label"
+                    ],
+                    "type": "object"
+                  },
+                  "state": {
+                    "enum": [
+                      "accepted",
+                      "preparing",
+                      "queued",
+                      "running",
+                      "awaiting_approval",
+                      "completed",
+                      "failed",
+                      "cancelled",
+                      "uncertain"
+                    ]
+                  },
+                  "taskId": {
+                    "anyOf": [
+                      {
+                        "format": "uuid",
+                        "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "updatedAt": {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  "version": {
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "id",
+                  "agentId",
+                  "conversationId",
+                  "taskId",
+                  "configurationVersion",
+                  "version",
+                  "state",
+                  "origin",
+                  "createdAt",
+                  "updatedAt",
+                  "error"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "request",
+              "messages",
+              "approvals",
+              "eventCursor"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "conversationId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listAgentConversationMessages",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "content": {
+                      "maxLength": 65536,
+                      "type": "string",
+                      "x-maxBytes": 65536
+                    },
+                    "conversationId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "role": {
+                      "enum": [
+                        "requester",
+                        "agent",
+                        "system"
+                      ]
+                    },
+                    "version": {
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "conversationId",
+                    "requestId",
+                    "role",
+                    "content",
+                    "version",
+                    "createdAt"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "maxLength": 2048,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "requestId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "requestId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "idempotencyKey",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "cancelAgentRequest",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "configurationVersion": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "needs_configuration",
+                          "needs_auth",
+                          "provider_unavailable",
+                          "execution_failed",
+                          "configuration_changed",
+                          "cancelled",
+                          "outcome_unknown"
+                        ]
+                      },
+                      "message": {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 2048
+                      },
+                      "retryable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "retryable"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "origin": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "transport": {
+                    "enum": [
+                      "http",
+                      "mcp",
+                      "conversation",
+                      "summary_notice"
+                    ]
+                  }
+                },
+                "required": [
+                  "transport",
+                  "label"
+                ],
+                "type": "object"
+              },
+              "state": {
+                "enum": [
+                  "accepted",
+                  "preparing",
+                  "queued",
+                  "running",
+                  "awaiting_approval",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "uncertain"
+                ]
+              },
+              "taskId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "agentId",
+              "conversationId",
+              "taskId",
+              "configurationVersion",
+              "version",
+              "state",
+              "origin",
+              "createdAt",
+              "updatedAt",
+              "error"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "requestId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "requestId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "idempotencyKey",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "reconcileAgentRequest",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "configurationVersion": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "error": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "code": {
+                        "enum": [
+                          "needs_configuration",
+                          "needs_auth",
+                          "provider_unavailable",
+                          "execution_failed",
+                          "configuration_changed",
+                          "cancelled",
+                          "outcome_unknown"
+                        ]
+                      },
+                      "message": {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 2048,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 2048
+                      },
+                      "retryable": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "message",
+                      "retryable"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "origin": {
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "anyOf": [
+                      {
+                        "allOf": [
+                          {
+                            "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                          },
+                          {
+                            "pattern": "^[^\\u0000]*$"
+                          }
+                        ],
+                        "maxLength": 200,
+                        "minLength": 1,
+                        "type": "string",
+                        "x-maxBytes": 200
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "transport": {
+                    "enum": [
+                      "http",
+                      "mcp",
+                      "conversation",
+                      "summary_notice"
+                    ]
+                  }
+                },
+                "required": [
+                  "transport",
+                  "label"
+                ],
+                "type": "object"
+              },
+              "state": {
+                "enum": [
+                  "accepted",
+                  "preparing",
+                  "queued",
+                  "running",
+                  "awaiting_approval",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "uncertain"
+                ]
+              },
+              "taskId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "updatedAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "agentId",
+              "conversationId",
+              "taskId",
+              "configurationVersion",
+              "version",
+              "state",
+              "origin",
+              "createdAt",
+              "updatedAt",
+              "error"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "additionalProperties": false,
+            "properties": {
+              "decision": {
+                "enum": [
+                  "accept",
+                  "decline"
+                ]
+              }
+            },
+            "required": [
+              "decision"
+            ],
+            "type": "object"
+          },
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "approvalId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "approvalId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "body",
+          "idempotencyKey",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "decideAgentRequestApproval",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "description": {
+                "allOf": [
+                  {
+                    "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                  },
+                  {
+                    "pattern": "^[^\\u0000]*$"
+                  }
+                ],
+                "maxLength": 8192,
+                "minLength": 1,
+                "type": "string",
+                "x-maxBytes": 8192
+              },
+              "expiresAt": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "command",
+                  "file_change",
+                  "network"
+                ]
+              },
+              "requestId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "state": {
+                "enum": [
+                  "pending",
+                  "accepted",
+                  "declined",
+                  "expired"
+                ]
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "requestId",
+              "agentId",
+              "version",
+              "kind",
+              "description",
+              "state",
+              "expiresAt"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
         ],
         "type": "object"
       }

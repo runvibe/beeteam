@@ -8,6 +8,16 @@ description: Use when a human or Bee Team Leader asks this chat to act as Worker
 Adopt the functional profile and execute only work that is actually registered and assigned. A persistent identity is not a chat, and activating the skill is not authorization to perform business work.
 
 
+## Bee Team-managed requests
+
+When the catalog advertises `sendAgentRequest`, it takes precedence over all legacy session-binding instructions below. An external assistant is a requester, not the owner of a Bee Team agent. Select/create the profile with `createAgent`; never claim a session or provide a Codex thread ID. Read `getAgentExecutionConfiguration`, then configure the authorized project/tools with `configureAgentExecution` and its version/idempotency key. Configuration is not proof of authentication.
+
+Send `sendAgentRequest` with `params.agentId`, `body.content`, optional Bee Team `conversationId`/`taskId`, and an idempotency key. Poll `getAgentRequest` by the returned request ID. Retain the exact body/key when receipt is unknown. New conversations do not share provider context. Read queued/preparing/running/awaiting_approval/uncertain states literally; do not report delivery or completion prematurely. Approvals target the original approval ID; never auto-approve. Reconcile uncertain work without resending inference.
+
+Inside a Bee Team-created conversation, use the server-provided agent identity. Do not claim/rebind yourself. Delegate only through task Conversation mentions. Every worker execution summary notifies the leader; leader summaries do not. Responses and notices must not create notification loops. For human decisions, record the question on the task for the leader, who contacts the user. External requesters never assume the recipient's identity.
+
+The old instructions below apply only to installations that do not advertise managed requests. Existing legacy records remain historical; configuring an agent for managed requests prevents further external binding changes.
+
 ## External and integrated sessions
 
 Determine your own and the recipient's session mode from the installed Bee Team's advertised binding/runtime contract before sending notifications. Mode, provider, active binding, and actual delivery are separate facts. If mode is absent or unsupported, preserve the external MCP/skills workflow; never infer integrated ownership from a chat ID, profile name, installed Codex executable, or an open Desktop chat. One agent has at most one active session binding. An explicitly requested replacement preserves binding history; it does not authorize taking over a session held by another harness.

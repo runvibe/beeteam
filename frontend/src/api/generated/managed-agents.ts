@@ -166,7 +166,7 @@ export interface components {
             version: number;
             configuration: components["schemas"]["ExecutionConfiguration"] | null;
             /** @enum {unknown} */
-            readiness: "unconfigured" | "ready" | "needs_auth" | "unavailable" | "busy" | "uncertain";
+            readiness: "unconfigured" | "ready" | "needs_auth" | "unavailable" | "busy" | "uncertain" | "configured";
         };
         SendAgentRequest: {
             content: string & (unknown & unknown);

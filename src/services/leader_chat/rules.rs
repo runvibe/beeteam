@@ -30,6 +30,15 @@ pub fn project(r: &Record) -> Value {
     v
 }
 pub fn binding<'a>(records: &'a Records, agent: Uuid) -> Result<&'a Record> {
+    if records
+        .get("agents", agent)
+        .is_ok_and(|a| !a.data["managedConfiguration"].is_null())
+    {
+        return Err(Failure::new(
+            "operation_removed",
+            "Use managed agent requests; legacy sessions are history only",
+        ));
+    }
     records
         .list("agent_session_bindings")
         .into_iter()
@@ -350,6 +359,19 @@ pub fn ensure_agent_idle(
     records: &crate::repositories::records::Records,
     agent: Uuid,
 ) -> Result<()> {
+    if records.list("managed_requests").iter().any(|r| {
+        r.reference("agentId") == Some(agent)
+            && !matches!(
+                r.data["state"].as_str(),
+                Some("completed" | "failed" | "cancelled")
+            )
+    }) {
+        return Err(Failure::new(
+            "session_busy",
+            "Agent has pending managed requests",
+        ));
+    }
+
     let Some(binding) = binding(records, agent).ok() else {
         return Ok(());
     };

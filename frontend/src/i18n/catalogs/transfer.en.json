@@ -79,7 +79,12 @@
     "request_replays": "Idempotency responses",
     "archive_ready": "Archive ready",
     "agent_session_bindings": "Agent session bindings",
-    "session_deliveries": "Conversation deliveries"
+    "session_deliveries": "Conversation deliveries",
+    "managed_conversations": "Agent conversations",
+    "managed_requests": "Agent requests",
+    "managed_messages": "Agent messages",
+    "managed_approvals": "Agent approvals",
+    "managed_events": "Agent events"
   },
   "error": {
     "disabled": "Transfer is disabled.",

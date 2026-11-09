@@ -1,0 +1,48 @@
+.managed-agent-chat {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.managed-agent-chat form,
+.managed-agent-chat label,
+.managed-agent-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.managed-agent-chat form {
+  gap: 1rem;
+}
+.managed-agent-selector {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+.managed-agent-chat select,
+.managed-agent-selector select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+.managed-agent-chat label:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+}
+.managed-agent-chat .leader-chat-toolbar {
+  align-items: end;
+  flex-wrap: wrap;
+}
+.managed-agent-chat .leader-chat-toolbar label {
+  flex: 1;
+}
+.managed-agent-chat article.requester {
+  background: var(--muted);
+  border-radius: 0.5rem;
+}
+.managed-agent-chat details,
+.managed-agent-chat [role="alert"] {
+  overflow-wrap: anywhere;
+}

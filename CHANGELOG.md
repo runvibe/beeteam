@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-- Define proposed Bee Team-managed agent contracts, strict request DTOs, HTTP/MCP parity fixtures and generated frontend types. Runtime activation and legacy session-binding retirement remain pending.
+- Implement managed-agent requests and conversations through HTTP/MCP, durable per-agent queues, owned Codex execution, approvals/recovery, and the existing chat side panel. Preserve legacy history and reject binding changes after explicit managed configuration.
+
+- Define proposed Bee Team-managed agent contracts, strict request DTOs, HTTP/MCP parity fixtures and generated frontend types. The runtime is available on the review branch; global legacy session-binding retirement remains pending.
 
 - Restore internal scrolling on long detail pages inside the persistent chat workspace.
 

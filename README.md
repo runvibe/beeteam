@@ -130,3 +130,11 @@ Integrated execution requires local listener/peer and a trusted browser origin. 
 ### Metadata timestamp precision
 
 New record creation and update metadata use microsecond precision, shared by PostgreSQL and SQLite, so write responses agree with subsequent reads. Existing timestamps, authored JSON, historical replay snapshots and portable transfer data retain their original precision; this does not migrate or normalize stored records.
+
+### Managed-agent review flow
+
+The review branch provides `/api/v2/agents/{agentId}/execution-config` and `/requests`, plus the matching MCP tools. Open a team's chat side panel, configure an existing absolute project folder, then send a request. Bee Team creates its own Codex thread on first use. New conversations have separate context; requests for the same agent queue serially. Choose the same conversation to continue. The panel supports request cancellation, original-request approvals and uncertain-outcome reconciliation; it keeps the saved left/right position. An external MCP caller sends requests and polls their IDs, without claiming the agent or supplying provider IDs.
+
+Existing data is preserved by additive SQLite/PostgreSQL migrations. Configuring a managed agent retires its legacy binding writes. Unconfigured legacy agents remain compatible pending the global cutover; old chat history remains available through legacy reads. No external Desktop session is imported. The installed Codex runtime and login still need to be configured locally.
+
+In the managed review panel, choose the leader or a worker from the agent selector. Enter the project folder and any existing MCP server names/skill directories needed for that work. These settings do not install tools or authenticate Codex. Conversation/worker-summary notices use the same durable queue, including a deferred outbox when the queue is full. Native provider output remains connected through completion; very large text is explicitly shortened at the public 65536-byte display limit.

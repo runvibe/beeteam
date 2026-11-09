@@ -17,7 +17,7 @@ export function ConversationDeliveryState({
     queryFn: ({ signal }) => api.sessionDeliveries(taskId, commentId, signal),
     refetchInterval: (query) =>
       query.state.data?.items.some((row) =>
-        ["pending", "dispatching", "acknowledged", "waiting_binding"].includes(
+        ["managed", "managed_backpressure", "pending", "dispatching", "acknowledged", "waiting_binding"].includes(
           row.state,
         ),
       )
