@@ -163,8 +163,10 @@ fn event(r: &mut Records, id: Uuid) -> Result<()> {
 }
 fn configuration(r: &Records, agent: Uuid) -> Result<Value> {
     let a = r.get("agents", agent)?;
+    let mut config = a.data["managedConfiguration"].clone();
+    if let Some(fields) = config.as_object_mut() { fields.remove("projectRoot"); }
     Ok(
-        json!({"agentId":agent,"version":a.version,"configuration":a.data["managedConfiguration"],"readiness":if a.data["managedConfiguration"].is_null(){"unconfigured"}else{"configured"}}),
+        json!({"agentId":agent,"version":a.version,"configuration":config,"readiness":if a.data["managedConfiguration"].is_null(){"unconfigured"}else{"configured"}}),
     )
 }
 

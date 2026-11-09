@@ -290,10 +290,8 @@ it("requires explicit replacement and sends configured tools when creating an in
       leaderVersion={4}
     />,
   );
-  fireEvent.change(
-    await screen.findByLabelText("Diretório do projeto neste computador"),
-    { target: { value: "C:\\project" } },
-  );
+  await screen.findByRole("button", { name: "Criar sessão integrada" });
+  expect(screen.queryByLabelText("Diretório do projeto neste computador")).toBeNull();
   expect(
     screen.getByRole("button", { name: "Criar sessão integrada" }),
   ).toBeDisabled();
@@ -315,7 +313,6 @@ it("requires explicit replacement and sends configured tools when creating an in
   expect(vi.mocked(transport.createSession).mock.calls[0].slice(0, 3)).toEqual([
     "leader",
     {
-      projectRoot: "C:\\project",
       expectedBindingId: "external",
       toolProfile: {
         webSearch: "live",
@@ -367,18 +364,19 @@ it("does not reuse another team chat when the selected team changes", async () =
     ),
   );
 });
-it.each([['session_busy', false], ['session_creation_uncertain', true], ['invalid_response', true]] as const)('handles bootstrap %s without losing the project or retry identity', async (code, uncertain) => {
+it.each([['session_busy', false], ['session_creation_uncertain', true], ['invalid_response', true]] as const)('handles bootstrap %s without losing settings or retry identity', async (code, uncertain) => {
   const transport = api();
   vi.mocked(transport.runtime).mockResolvedValue({agentId:'leader', mode:'external', bindingId:null, harness:'codex', readiness:'external'} as never);
   vi.mocked(transport.list).mockResolvedValue({items:[],nextCursor:null});
   vi.mocked(transport.createSession).mockRejectedValue(new ApiError(code === 'invalid_response' ? 201 : 409, code, 'bootstrap'));
   render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
-  const project = await screen.findByLabelText('Diretório do projeto neste computador');
-  fireEvent.change(project,{target:{value:'C:\\project'}});
+  await screen.findByRole('button',{name:'Criar sessão integrada'});
+  const settings = screen.getByLabelText('Nomes dos servidores MCP configurados, um por linha');
+  fireEvent.change(settings,{target:{value:'docs'}});
   fireEvent.click(screen.getByRole('button',{name:'Criar sessão integrada'}));
   await screen.findByRole('alert');
-  expect(project).toHaveValue('C:\\project');
-  if (uncertain) expect(project).toBeDisabled(); else expect(project).toBeEnabled();
+  expect(settings).toHaveValue('docs');
+  if (uncertain) expect(settings).toBeDisabled(); else expect(settings).toBeEnabled();
   fireEvent.click(screen.getByRole('button',{name: uncertain ? 'Verificar criação da sessão' : 'Criar sessão integrada'}));
   await waitFor(()=>expect(transport.createSession).toHaveBeenCalledTimes(2));
   const calls=vi.mocked(transport.createSession).mock.calls;

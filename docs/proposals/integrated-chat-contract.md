@@ -29,7 +29,7 @@ O líder deve ser o líder atual do teamId. bindingId deve pertencer ao líder, 
 
 Todos os IDs de entidades persistidas são UUIDv7; clientMessageId e Idempotency-Key são UUIDs de qualquer versão. Horários RFC3339 UTC. Campos opcionais de entrada omitidos têm os defaults descritos; campos de saída nullable sempre são enviados. IDs/cursors são opacos para o frontend.
 
-Bootstrap integrado: POST integrated-session recebe `{projectRoot, expectedBindingId}`. A raiz deve ser absoluta e existir no host; executable/installationId são configuração do servidor, nunca campos enviados pelo browser. If-Match corresponde ao agente. expectedBindingId é null sem vínculo anterior ou o UUID do vínculo a substituir. Resposta 201 contém `{agentId,bindingId,harness,mode,externalId,projectRoot}`. Só depois se cria o leader-chat; falha de criação de chat não exige criar outra sessão. Sessão externa não é retomada para esse bootstrap, mesmo quando usa o mesmo Codex.
+Bootstrap integrado: POST integrated-session recebe `{expectedBindingId}` e toolProfile opcional. O servidor cria e usa a pasta própria do agente em `~/.beeteam/workspaces/<agent-id>`; executable/installationId são configuração do servidor, nunca campos enviados pelo browser. If-Match corresponde ao agente. expectedBindingId é null sem vínculo anterior ou o UUID do vínculo a substituir. Resposta 201 contém `{agentId,bindingId,harness,mode,externalId,projectRoot}`. Só depois se cria o leader-chat; falha de criação de chat não exige criar outra sessão. Sessão externa não é retomada para esse bootstrap, mesmo quando usa o mesmo Codex.
 
 ## Autoria, versões e idempotência
 

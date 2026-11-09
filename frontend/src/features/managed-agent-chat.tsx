@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Markdown } from "@/components/markdown";
 import type { LeaderChatApi } from "@/api/leader-chat";
@@ -40,8 +39,7 @@ export function ManagedAgentChat({
   });
   const [conversation, setConversation] = useState(""),
     [request, setRequest] = useState(""),
-    [draft, setDraft] = useState(""),
-    [project, setProject] = useState("");
+    [draft, setDraft] = useState("");
   const [search, setSearch] = useState<"live" | "cached" | "disabled">("live"),
     [network, setNetwork] = useState(false),
     [mcps, setMcps] = useState(""),
@@ -218,7 +216,6 @@ export function ManagedAgentChat({
           variant="ghost"
           onClick={() => {
             const c = config.data!.configuration!;
-            setProject(c.projectRoot);
             setSearch(c.toolProfile.webSearch);
             setNetwork(c.toolProfile.networkAccess);
             setMcps(c.toolProfile.enabledMcpServers.join("\n"));
@@ -240,7 +237,6 @@ export function ManagedAgentChat({
                 version: config.data.version,
                 body: {
                   provider: "codex",
-                  projectRoot: project,
                   toolProfile: {
                     webSearch: search,
                     networkAccess: network,
@@ -268,15 +264,6 @@ export function ManagedAgentChat({
           }}
         >
           <p>{t("managed.setup")}</p>
-          <label>
-            {t("managed.project")}
-            <Input
-              value={project}
-              onChange={(e) => setProject(e.target.value)}
-              placeholder={t("managed.defaultProject")}
-              disabled={busy || !!setup.current}
-            />
-          </label>
           <label>
             {t("managed.search")}
             <select

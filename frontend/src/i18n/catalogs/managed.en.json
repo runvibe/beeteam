@@ -1,8 +1,7 @@
 {
   "title": "Agent conversation",
   "error": "The operation could not complete.",
-  "setup": "The folder is optional. Leave it blank for Bee Team to create a dedicated agent workspace. The conversation starts with your first request.",
-  "project": "Project folder",
+  "setup": "Bee Team automatically creates and reuses this agent’s workspace. The conversation starts with your first request.",
   "search": "Web search",
   "network": "Allow command network access",
   "mcps": "Configured MCP servers (one per line)",
@@ -38,6 +37,5 @@
   "edit": "Edit configuration",
   "request": "Request",
   "retryAction": "Retry the previous action before starting another.",
-  "retryActionButton": "Retry previous action",
-  "defaultProject": "Automatic: a dedicated folder for this agent"
+  "retryActionButton": "Retry previous action"
 }

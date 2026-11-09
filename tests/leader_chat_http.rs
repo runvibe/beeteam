@@ -16,6 +16,13 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 struct TestProvider(AtomicUsize, AtomicBool);
 impl IntegratedProvider for TestProvider {
+    fn default_workspace(&self, agent: Uuid) -> Result<String, beeteam::dto::session_delivery::SessionFailure> {
+        let path = std::env::temp_dir().join("beeteam-test-workspaces").join(agent.to_string());
+        std::fs::create_dir_all(&path).unwrap();
+        Ok(path.to_str().unwrap().into())
+    }
+
+
     fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
@@ -164,7 +171,7 @@ async fn fixture_with_origins(
 async fn chat(app: &axum::Router, agent: &Value, team: &Value) -> Value {
     let key = Uuid::new_v4();
     let route = format!("/api/v2/agents/{}/integrated-session", id(agent));
-    let body = json!({"projectRoot":std::env::temp_dir(),"expectedBindingId":null});
+    let body = json!({"expectedBindingId":null});
     let first = request_key(app, "POST", &route, body.clone(), ver(agent), key).await;
     assert_eq!(first.0, 201, "{first:?}");
     let replay = request_key(app, "POST", &route, body, ver(agent), key).await;
@@ -278,7 +285,7 @@ async fn bootstrap_failure_replays_without_duplicate_and_new_key_can_retry() {
     let (app, agent, _team, provider) = fixture().await;
     provider.1.store(true, Ordering::SeqCst);
     let route = format!("/api/v2/agents/{}/integrated-session", id(&agent));
-    let body = json!({"projectRoot":std::env::temp_dir(),"expectedBindingId":null});
+    let body = json!({"expectedBindingId":null});
     let key = Uuid::new_v4();
     let first = request_key(&app, "POST", &route, body.clone(), ver(&agent), key).await;
     assert!(first.0 >= 400);
@@ -313,7 +320,7 @@ async fn cannot_replace_binding_with_running_turn() {
         &app,
         "POST",
         &format!("/api/v2/agents/{}/integrated-session", id(&agent)),
-        json!({"projectRoot":std::env::temp_dir(),"expectedBindingId":chat["bindingId"]}),
+        json!({"expectedBindingId":chat["bindingId"]}),
         ver(&agent),
         Uuid::new_v4(),
     )
@@ -350,7 +357,7 @@ async fn http_mcp_bootstrap_share_replay_and_runtime() {
     use tower::ServiceExt;
     let (app, agent, _, provider) = fixture().await;
     let key = Uuid::new_v4();
-    let body = json!({"projectRoot":std::env::temp_dir(),"expectedBindingId":null});
+    let body = json!({"expectedBindingId":null});
     let route = format!("/api/v2/agents/{}/integrated-session", id(&agent));
     let first = request_key(&app, "POST", &route, body.clone(), ver(&agent), key).await;
     assert_eq!(first.0, 201);
@@ -462,7 +469,7 @@ async fn untrusted_browser_cannot_bootstrap_read_stream_or_trigger_conversation_
         403
     );
     if cfg!(feature = "mcp") {
-        let body = json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"createIntegratedSession","arguments":{"params":{"agentId":id(&agent)},"body":{"projectRoot":std::env::temp_dir(),"expectedBindingId":null},"actor":{"kind":"human"},"expectedVersion":ver(&agent),"idempotencyKey":Uuid::new_v4()}}});
+        let body = json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"createIntegratedSession","arguments":{"params":{"agentId":id(&agent)},"body":{"expectedBindingId":null},"actor":{"kind":"human"},"expectedVersion":ver(&agent),"idempotencyKey":Uuid::new_v4()}}});
         assert_eq!(
             browser_request(
                 &app,

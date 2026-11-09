@@ -1,8 +1,7 @@
 {
   "title": "Conversa com o agente",
   "error": "Não foi possível concluir a operação.",
-  "setup": "A pasta é opcional. Se deixar em branco, o Bee Team criará uma pasta própria para o agente. A conversa começa ao enviar o primeiro pedido.",
-  "project": "Pasta do projeto",
+  "setup": "O Bee Team cria e reutiliza automaticamente a pasta de trabalho deste agente. A conversa começa ao enviar o primeiro pedido.",
   "search": "Busca na internet",
   "network": "Permitir rede nos comandos",
   "mcps": "Servidores MCP configurados (um por linha)",
@@ -38,6 +37,5 @@
   "edit": "Editar configuração",
   "request": "Pedido",
   "retryAction": "Tente novamente a a��o anterior antes de iniciar outra.",
-  "retryActionButton": "Repetir ação anterior",
-  "defaultProject": "Automática: uma pasta própria para este agente"
+  "retryActionButton": "Repetir ação anterior"
 }

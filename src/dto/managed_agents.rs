@@ -74,14 +74,10 @@ pub struct ToolProfile {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ExecutionConfiguration {
     pub provider: Provider,
-    pub project_root: String,
     pub tool_profile: ToolProfile,
 }
 impl ExecutionConfiguration {
     pub fn validate(&self) -> Result<()> {
-        if !self.project_root.is_empty() {
-            absolute_path(&self.project_root)?;
-        }
         let profile = &self.tool_profile;
         if profile.enabled_mcp_servers.len() > 64 || profile.skill_roots.len() > 16 {
             return Err(Failure::invalid(

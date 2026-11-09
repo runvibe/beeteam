@@ -2564,15 +2564,9 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "projectRoot",
           "expectedBindingId"
         ],
         "properties": {
-          "projectRoot": {
-            "type": "string",
-            "minLength": 1,
-            "description": "Absolute existing project directory on the local host."
-          },
           "expectedBindingId": {
             "anyOf": [
               {

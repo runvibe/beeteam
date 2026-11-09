@@ -48,13 +48,15 @@ impl IntegratedProvider for TestProvider {
     }
     fn run<'a>(
         &'a self,
-        _target: &'a SessionDestination,
+        target: &'a SessionDestination,
         text: &'a str,
         _profile: &'a Value,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
+            assert!(std::path::Path::new(&target.project_root).is_dir());
+            assert!(target.project_root.contains("beeteam-test-workspaces"));
             let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
@@ -175,7 +177,7 @@ async fn fixture_with_origins(
 async fn owned_requests_continue_without_external_binding() {
     let (app, agent, _, provider) = fixture().await;
     let root = format!("/api/v2/agents/{}", id(&agent));
-    let config = json!({"provider":"codex","projectRoot":std::env::temp_dir(),"toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    let config = json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
     let response = request_key(
         &app,
         "PUT",
@@ -233,6 +235,8 @@ async fn owned_requests_continue_without_external_binding() {
     assert_eq!(snapshot["messages"]["items"].as_array().unwrap().len(), 2);
     assert_eq!(snapshot["messages"]["items"][1]["content"], "Response");
     assert_eq!(provider.0.load(Ordering::SeqCst), 1);
+    let workspace = std::env::temp_dir().join("beeteam-test-workspaces").join(id(&agent));
+    std::fs::remove_dir(&workspace).unwrap(); // Empty isolated test directory only.
     let next = request_key(
         &app,
         "POST",
@@ -248,7 +252,7 @@ async fn owned_requests_continue_without_external_binding() {
 
 async fn configured() -> (axum::Router, Value, Value, Arc<TestProvider>) {
     let (app, a, t, p) = fixture().await;
-    let cfg = json!({"provider":"codex","projectRoot":std::env::temp_dir(),"toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    let cfg = json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
     let r = request_key(
         &app,
         "PUT",
@@ -426,16 +430,23 @@ async fn mcp_and_http_share_the_original_receipt() {
 async fn automatic_workspace_is_resolved_and_replayed() {
     let (app, agent, _, _) = fixture().await;
     let root = format!("/api/v2/agents/{}", id(&agent));
-    let body = json!({"provider":"codex","projectRoot":"","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    let body = json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
     let key = Uuid::new_v4();
     let first = request_key(&app,"PUT",&format!("{root}/execution-config"),body.clone(),ver(&agent),key).await;
     assert_eq!(first.0,200,"{first:?}");
     let replay = request_key(&app,"PUT",&format!("{root}/execution-config"),body,ver(&agent),key).await;
     assert_eq!(first,replay);
     let state = get(&app,&format!("{root}/execution-config")).await;
-    let path = state["configuration"]["projectRoot"].as_str().unwrap();
+    assert!(state["configuration"].get("projectRoot").is_none());
+    let path = std::env::temp_dir().join("beeteam-test-workspaces").join(id(&agent));
+    let path = path.to_str().unwrap();
     assert!(std::path::Path::new(path).is_dir());
     assert!(path.ends_with(id(&agent)));
+    std::fs::remove_dir(path).unwrap(); // Empty isolated test directory only.
+    let mut invalid = json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    invalid["projectRoot"] = json!(std::env::temp_dir());
+    let rejected = request_key(&app,"PUT",&format!("{root}/execution-config"),invalid,ver(&state),Uuid::new_v4()).await;
+    assert_eq!(rejected.0,400,"{rejected:?}");
     let sent = request_key(&app,"POST",&format!("{root}/requests"),json!({"content":"hello"}),None,Uuid::new_v4()).await;
     assert_eq!(sent.0,202,"{sent:?}");
 }

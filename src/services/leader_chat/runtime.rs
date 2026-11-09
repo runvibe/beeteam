@@ -25,7 +25,9 @@ impl LeaderChatService {
         // Metadata from an external binding must never start or resume its harness.
         if integrated && owned {
             if let (Some(provider), Some(b)) = (&self.provider, &binding) {
-                if let Ok(target) = serde_json::from_value::<SessionDestination>(b.data.clone()) {
+                if let Ok(mut target) = serde_json::from_value::<SessionDestination>(b.data.clone()) {
+                    target.project_root = provider.default_workspace(agent)
+                        .map_err(|e| crate::dto::backend::Failure::new(e.code, e.message))?;
                     observed = match provider.inspect(&target, &b.data["toolProfile"]).await {
                         Ok(v) => v,
                         Err(e) => {

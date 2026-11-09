@@ -5,7 +5,7 @@ import { ManagedAgentChat } from "./managed-agent-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import { i18n } from "@/i18n";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
-it.each(["C:/project", ""])("configures project %s without requiring a folder", async (projectRoot) => {
+it("configures an agent without exposing a workspace setting", async () => {
   await i18n.changeLanguage("en");
   const api = {
     config: vi.fn().mockResolvedValue({
@@ -28,16 +28,13 @@ it.each(["C:/project", ""])("configures project %s without requiring a folder", 
     </QueryClientProvider>,
   );
   await waitFor(() => expect(screen.getByText("Configure agent")).not.toBeDisabled());
-  fireEvent.change(screen.getByLabelText("Project folder"), {
-    target: { value: projectRoot },
-  });
+  expect(screen.queryByLabelText("Project folder")).toBeNull();
   fireEvent.click(screen.getByText("Configure agent"));
   await waitFor(() => expect(api.configure).toHaveBeenCalled());
   const call = vi.mocked(api.configure).mock.calls[0];
   expect(call[0]).toBe("agent");
   expect(call[1]).toEqual({
     provider: "codex",
-    projectRoot,
     toolProfile: {
       webSearch: "live",
       networkAccess: false,
@@ -65,7 +62,6 @@ it("keeps the original action retry after the approval disappears", async () => 
       .fn()
       .mockResolvedValue({
         configuration: {
-          projectRoot: "C:/project",
           toolProfile: {
             webSearch: "disabled",
             networkAccess: false,

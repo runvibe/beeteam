@@ -203,12 +203,11 @@ impl CodexIntegratedProvider {
             )
             .await?;
         }
-        let mut params = json!({"config":scope.configuration()});
+        let mut params = json!({"config":scope.configuration(),"cwd":root});
         let method = if let Some(t) = thread {
             params["threadId"] = json!(t);
             "thread/resume"
         } else {
-            params["cwd"] = json!(root);
             params["ephemeral"] = json!(false);
             params["approvalPolicy"] = json!("on-request");
             params["sandbox"] = json!("workspace-write");

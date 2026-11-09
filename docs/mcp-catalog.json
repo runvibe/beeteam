@@ -67717,11 +67717,6 @@
                   }
                 ]
               },
-              "projectRoot": {
-                "description": "Absolute existing project directory on the local host.",
-                "minLength": 1,
-                "type": "string"
-              },
               "toolProfile": {
                 "additionalProperties": false,
                 "properties": {
@@ -67762,7 +67757,6 @@
               }
             },
             "required": [
-              "projectRoot",
               "expectedBindingId"
             ],
             "type": "object"
@@ -67906,24 +67900,6 @@
                   {
                     "additionalProperties": false,
                     "properties": {
-                      "projectRoot": {
-                        "anyOf": [
-                          {
-                            "enum": [
-                              ""
-                            ],
-                            "type": "string"
-                          },
-                          {
-                            "maxLength": 4096,
-                            "minLength": 1,
-                            "type": "string",
-                            "x-absolutePath": true,
-                            "x-maxBytes": 4096
-                          }
-                        ],
-                        "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path."
-                      },
                       "provider": {
                         "enum": [
                           "codex"
@@ -67977,7 +67953,6 @@
                     },
                     "required": [
                       "provider",
-                      "projectRoot",
                       "toolProfile"
                     ],
                     "type": "object"
@@ -68026,24 +68001,6 @@
           "body": {
             "additionalProperties": false,
             "properties": {
-              "projectRoot": {
-                "anyOf": [
-                  {
-                    "enum": [
-                      ""
-                    ],
-                    "type": "string"
-                  },
-                  {
-                    "maxLength": 4096,
-                    "minLength": 1,
-                    "type": "string",
-                    "x-absolutePath": true,
-                    "x-maxBytes": 4096
-                  }
-                ],
-                "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path."
-              },
               "provider": {
                 "enum": [
                   "codex"
@@ -68097,7 +68054,6 @@
             },
             "required": [
               "provider",
-              "projectRoot",
               "toolProfile"
             ],
             "type": "object"
@@ -68150,24 +68106,6 @@
                   {
                     "additionalProperties": false,
                     "properties": {
-                      "projectRoot": {
-                        "anyOf": [
-                          {
-                            "enum": [
-                              ""
-                            ],
-                            "type": "string"
-                          },
-                          {
-                            "maxLength": 4096,
-                            "minLength": 1,
-                            "type": "string",
-                            "x-absolutePath": true,
-                            "x-maxBytes": 4096
-                          }
-                        ],
-                        "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path."
-                      },
                       "provider": {
                         "enum": [
                           "codex"
@@ -68221,7 +68159,6 @@
                     },
                     "required": [
                       "provider",
-                      "projectRoot",
                       "toolProfile"
                     ],
                     "type": "object"

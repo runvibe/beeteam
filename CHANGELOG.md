@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Automatically create a persistent per-agent workspace under `~/.beeteam/workspaces` when the project folder is left empty, without changing existing configured projects.
+- Fix integrated agent workspaces to `~/.beeteam/workspaces/<agent-id>`, recreate missing directories before execution, and remove folder selection from HTTP/MCP and chat. Preserve historical conversations and files in previously selected folders.
 
 - Implement managed-agent requests and conversations through HTTP/MCP, durable per-agent queues, owned Codex execution, approvals/recovery, and the existing chat side panel. Preserve legacy history and reject binding changes after explicit managed configuration.
 

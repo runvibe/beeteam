@@ -59,6 +59,9 @@ impl WorkerDeliveryProvider {
             )
             .map_err(storage_failure)?;
         let profile = binding.data["toolProfile"].clone();
+        let mut owned_target = target.clone();
+        owned_target.project_root = provider.default_workspace(binding.reference("agentId").ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?)?;
+        let target = &owned_target;
         let turn_id = turn.id;
         u.commit().await.map_err(storage_failure)?;
         let (control_tx, control_rx) = mpsc::channel(16);

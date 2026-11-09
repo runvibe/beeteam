@@ -71,13 +71,15 @@ impl LeaderChatService {
             .provider
             .as_ref()
             .ok_or_else(|| Failure::new("session_not_ready", "Codex runtime not configured"))?;
+        let project_root = provider.default_workspace(agent)
+            .map_err(|e| Failure::new(e.code, e.message))?;
         provider
-            .validate(&req.project_root, &req.tool_profile)
+            .validate(&project_root, &req.tool_profile)
             .map_err(|e| Failure::new(e.code, e.message))?;
         // Durable reservation prevents duplicate provider threads across timeout/restart.
         let operation_id=u.records.insert(Record::new("leader_session_operations",json!({"operation":op,"actor":actor.key(),"requestKey":key,"hash":hash,"state":"pending"})));
         u.commit().await?;
-        let external = match provider.create(&req.project_root, &req.tool_profile).await {
+        let external = match provider.create(&project_root, &req.tool_profile).await {
             Ok(external) => external,
             Err(error) => {
                 let mut u = self.store.begin().await?;
@@ -133,9 +135,9 @@ impl LeaderChatService {
         }
         let b = Record::new(
             "agent_session_bindings",
-            json!({"agentId":agent,"mode":"integrated","toolProfile":req.tool_profile,"harness":"codex","installationId":self.installation,"externalId":external,"projectRoot":req.project_root,"startedAt":chrono::Utc::now(),"endedAt":null,"startedBy":actor.value(),"endedBy":null,"verification":"verified"}),
+            json!({"agentId":agent,"mode":"integrated","toolProfile":req.tool_profile,"harness":"codex","installationId":self.installation,"externalId":external,"projectRoot":project_root,"startedAt":chrono::Utc::now(),"endedAt":null,"startedBy":actor.value(),"endedBy":null,"verification":"verified"}),
         );
-        let data = json!({"agentId":agent,"bindingId":b.id,"mode":"integrated","harness":"codex","externalId":external,"projectRoot":req.project_root});
+        let data = json!({"agentId":agent,"bindingId":b.id,"mode":"integrated","harness":"codex","externalId":external,"projectRoot":project_root});
         u.records.insert(b);
         u.records.get_mut("agents", agent)?.touch();
         let operation = u

@@ -36,7 +36,6 @@ impl SendMessage {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CreateSession {
-    pub project_root: String,
     pub expected_binding_id: Option<Uuid>,
     #[serde(default)]
     pub tool_profile: serde_json::Value,

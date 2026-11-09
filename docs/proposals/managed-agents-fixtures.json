@@ -4,7 +4,6 @@
     "valid": true,
     "value": {
       "provider": "codex",
-      "projectRoot": "C:/projects/example",
       "toolProfile": {
         "webSearch": "live",
         "networkAccess": false,
@@ -413,7 +412,6 @@
     "valid": true,
     "value": {
       "provider": "codex",
-      "projectRoot": "/tmp/project﻿",
       "toolProfile": {
         "webSearch": "live",
         "networkAccess": false,
@@ -427,7 +425,6 @@
     "valid": true,
     "value": {
       "provider": "codex",
-      "projectRoot": "",
       "toolProfile": {
         "webSearch": "live",
         "networkAccess": false,

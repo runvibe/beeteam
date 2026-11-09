@@ -9,7 +9,6 @@ import {
 import { useLocale, t as tr } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Markdown } from "@/components/markdown";
 import { formatDate } from "@/components/shared";
 import { AgentName } from "@/components/names";
@@ -83,7 +82,6 @@ function LeaderChatBody({
   useLocale();
   const chat = useLeaderChat(api, teamId, leaderAgentId);
   const [draft, setDraft] = useState(""),
-    [project, setProject] = useState(""),
     [replace, setReplace] = useState(false),
     [setupBusy, setSetupBusy] = useState(false),
     [setupError, setSetupError] = useState<unknown>(null);
@@ -154,7 +152,6 @@ function LeaderChatBody({
     setupRequest.current ??= {
       key: crypto.randomUUID(),
       body: {
-        projectRoot: project.trim(),
         expectedBindingId: runtime?.bindingId ?? null,
         toolProfile: {
           webSearch,
@@ -227,13 +224,6 @@ function LeaderChatBody({
               }}
             >
               <p className="small-note">{tr("chat.setupHint")}</p>
-              <label htmlFor="leader-project">{tr("chat.project")}</label>
-              <Input
-                id="leader-project"
-                value={project}
-                onChange={(e) => setProject(e.target.value)}
-                disabled={setupBusy || !!setupRequest.current}
-              />
               <details>
                 <summary>{tr("chat.tools")}</summary>
                 <fieldset
@@ -291,7 +281,6 @@ function LeaderChatBody({
                 type="submit"
                 disabled={
                   setupBusy ||
-                  !project.trim() ||
                   leaderVersion === undefined ||
                   (!!runtime.bindingId && !replace)
                 }

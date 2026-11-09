@@ -11,7 +11,7 @@ parser.add_argument('--output',required=True,type=pathlib.Path,help='Parent dire
 args=parser.parse_args()
 binary=args.beeteam.resolve(strict=True);codex=args.codex.resolve(strict=True)
 root=args.output.resolve()/('chat-proof-'+datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%d-%H%M%S')+'-'+uuid.uuid4().hex[:8])
-root.mkdir(parents=True);cwd=root/'workspace';cwd.mkdir()
+root.mkdir(parents=True)
 shutil.copy2(binary,root/binary.name);binary=root/binary.name
 hidden=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0
 cli_version=subprocess.check_output([str(codex),'--version'],text=True,creationflags=hidden).strip().split()[-1]
@@ -61,7 +61,7 @@ try:
  start()
  agent=post('/api/v2/agents',{'name':'Managed request isolated proof'})
  route='/api/v2/agents/'+agent['id']
- config={'provider':'codex','projectRoot':str(cwd),'toolProfile':{'webSearch':'disabled','networkAccess':False,'enabledMcpServers':[],'skillRoots':[]}}
+ config={'provider':'codex','toolProfile':{'webSearch':'disabled','networkAccess':False,'enabledMcpServers':[],'skillRoots':[]}}
  configured=request('PUT',route+'/execution-config',config,agent['version'])
  key=str(uuid.uuid4());body={'content':'Reply exactly BEE_MANAGED_ALPHA. Do not use tools or modify anything.'}
  first=post(route+'/requests',body,key=key)
@@ -75,6 +75,11 @@ try:
  snapshot=finish(first)
  assert snapshot['messages']['items'][-1]['content'].strip()=='BEE_MANAGED_ALPHA',snapshot
  report['checks']['owned_send_and_replay']=True
+ workspace=pathlib.Path.home()/'.beeteam'/'workspaces'/agent['id']
+ assert workspace.is_dir()
+ assert 'projectRoot' not in configured['configuration']
+ (workspace/'acceptance.txt').write_text('preserve across resumption',encoding='utf-8')
+ report['checks']['fixed_workspace']=True
  cursor=first['id']+':'+first['id']
  req=urllib.request.Request(base+'/api/v2/agent-requests/'+first['id']+'/events?after='+cursor,headers={'Accept':'text/event-stream'})
  with urllib.request.urlopen(req,timeout=20) as response:
@@ -85,6 +90,7 @@ try:
  second=post(route+'/requests',{'content':'What marker did you reply with previously? Reply only that marker. Do not use tools.','conversationId':first['conversationId']})
  final=finish(second)
  assert final['messages']['items'][-1]['content'].strip()=='BEE_MANAGED_ALPHA',final
+ assert (workspace/'acceptance.txt').read_text(encoding='utf-8')=='preserve across resumption'
  report['checks']['restart_continue']=True
  report['checks']['no_provider_identifiers']=not any(x in json.dumps(final) for x in ['providerThread','providerTurn','externalId'])
  assert report['checks']['no_provider_identifiers']

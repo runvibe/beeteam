@@ -63,7 +63,7 @@ fn enforces_message_bytes_and_uuid_version() {
 
 #[test]
 fn configuration_accepts_only_supported_owned_runtime_settings() {
-    let valid = json!({"provider":"codex", "projectRoot":"C:/projects/example", "toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    let valid = json!({"provider":"codex", "toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
     serde_json::from_value::<ExecutionConfiguration>(valid.clone())
         .unwrap()
         .validate()
@@ -78,14 +78,21 @@ fn configuration_accepts_only_supported_owned_runtime_settings() {
     }
     let mut relative = valid;
     relative["projectRoot"] = json!("../project");
-    assert!(serde_json::from_value::<ExecutionConfiguration>(relative)
-        .unwrap()
-        .validate()
-        .is_err());
+    assert!(serde_json::from_value::<ExecutionConfiguration>(relative).is_err());
 }
 
 #[test]
-fn empty_project_uses_agent_workspace() {
-    let config: ExecutionConfiguration = serde_json::from_value(json!({"provider":"codex","projectRoot":"","toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}})).unwrap();
+fn configuration_needs_no_project() {
+    let config: ExecutionConfiguration = serde_json::from_value(json!({"provider":"codex","toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}})).unwrap();
     config.validate().unwrap();
+}
+
+#[test]
+fn workspace_cannot_be_selected_by_callers() {
+ let base=json!({"provider":"codex","toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+ serde_json::from_value::<ExecutionConfiguration>(base.clone()).unwrap().validate().unwrap();
+ for path in ["", "C:/project", "/tmp/project"] {
+  let mut body=base.clone();body["projectRoot"]=json!(path);
+  assert!(serde_json::from_value::<ExecutionConfiguration>(body).is_err());
+ }
 }

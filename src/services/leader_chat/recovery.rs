@@ -36,11 +36,13 @@ impl LeaderChatService {
         let provider_id = turn.data["providerTurnId"].as_str().map(str::to_owned);
         u.rollback().await?;
         let observed = if let Some(provider_id) = provider_id.as_deref() {
-            let target: SessionDestination = serde_json::from_value(binding.data.clone())
+            let mut target: SessionDestination = serde_json::from_value(binding.data.clone())
                 .map_err(|e| Failure::invalid(e.to_string()))?;
             let provider = self.provider.as_ref().ok_or_else(|| {
                 Failure::new("session_not_ready", "Integrated provider unavailable")
             })?;
+            target.project_root = provider.default_workspace(binding.reference("agentId").ok_or_else(Failure::missing)?)
+                .map_err(|e| Failure::new(e.code, e.message))?;
             provider
                 .reconcile(&target, provider_id, &binding.data["toolProfile"])
                 .await

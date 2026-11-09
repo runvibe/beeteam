@@ -60,12 +60,16 @@ impl ManagedAgentService {
         if conversation.data["installationId"] != self.installation {
             return self.fail(id, false, "provider_unavailable").await;
         }
+        let project_root = match provider.default_workspace(agent) {
+            Ok(root) => root,
+            Err(e) => return self.fail(id, false, e.code).await,
+        };
         let thread = if let Some(t) = conversation.data["providerThread"].as_str() {
             t.to_owned()
         } else {
             match provider
                 .create(
-                    config["projectRoot"].as_str().unwrap(),
+                    &project_root,
                     &config["toolProfile"],
                 )
                 .await
@@ -85,7 +89,7 @@ impl ManagedAgentService {
             harness: "codex".into(),
             installation_id: self.installation.clone(),
             external_id: thread,
-            project_root: config["projectRoot"].as_str().unwrap().into(),
+            project_root,
         };
         let (tx, mut rx) = mpsc::channel(32);
         let (control_tx, control_rx) = mpsc::channel(16);
@@ -260,7 +264,10 @@ impl ManagedAgentService {
             harness: "codex".into(),
             installation_id: self.installation.clone(),
             external_id: thread.into(),
-            project_root: config["projectRoot"].as_str().unwrap().into(),
+            project_root: self.provider.as_ref()
+                .ok_or_else(|| Failure::new("provider_unavailable", "Provider unavailable"))?
+                .default_workspace(r.reference("agentId").ok_or_else(Failure::missing)?)
+                .map_err(|e| Failure::new(e.code, e.message))?,
         };
         let result = self
             .provider
