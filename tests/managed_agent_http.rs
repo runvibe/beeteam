@@ -16,6 +16,12 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 struct TestProvider(AtomicUsize, AtomicBool);
 impl IntegratedProvider for TestProvider {
+    fn default_workspace(&self, agent: Uuid) -> Result<String, beeteam::dto::session_delivery::SessionFailure> {
+        let path = std::env::temp_dir().join("beeteam-test-workspaces").join(agent.to_string());
+        std::fs::create_dir_all(&path).unwrap();
+        Ok(path.to_str().unwrap().into())
+    }
+
     fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
@@ -414,4 +420,22 @@ async fn mcp_and_http_share_the_original_receipt() {
         serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(result["result"]["isError"], false, "{result}");
     assert_eq!(result["result"]["structuredContent"]["data"], first.1);
+}
+
+#[tokio::test]
+async fn automatic_workspace_is_resolved_and_replayed() {
+    let (app, agent, _, _) = fixture().await;
+    let root = format!("/api/v2/agents/{}", id(&agent));
+    let body = json!({"provider":"codex","projectRoot":"","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}});
+    let key = Uuid::new_v4();
+    let first = request_key(&app,"PUT",&format!("{root}/execution-config"),body.clone(),ver(&agent),key).await;
+    assert_eq!(first.0,200,"{first:?}");
+    let replay = request_key(&app,"PUT",&format!("{root}/execution-config"),body,ver(&agent),key).await;
+    assert_eq!(first,replay);
+    let state = get(&app,&format!("{root}/execution-config")).await;
+    let path = state["configuration"]["projectRoot"].as_str().unwrap();
+    assert!(std::path::Path::new(path).is_dir());
+    assert!(path.ends_with(id(&agent)));
+    let sent = request_key(&app,"POST",&format!("{root}/requests"),json!({"content":"hello"}),None,Uuid::new_v4()).await;
+    assert_eq!(sent.0,202,"{sent:?}");
 }

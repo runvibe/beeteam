@@ -30,11 +30,25 @@ impl ManagedAgentService {
                 let id = c.id("agentId")?;
                 let a = u.records.get("agents", id)?;
                 check_version(a, &c)?;
-                let config: ExecutionConfiguration = serde_json::from_value(c.body.clone())
+                let mut config: ExecutionConfiguration = serde_json::from_value(c.body.clone())
                     .map_err(|e| Failure::invalid(e.to_string()))?;
                 config.validate()?;
                 if a.archived_at.is_some() {
                     return Err(Failure::invalid("Agent is archived"));
+                }
+                if config.project_root.is_empty() {
+                    config.project_root = self
+                        .provider
+                        .as_ref()
+                        .ok_or_else(|| {
+                            Failure::new(
+                                "provider_unavailable",
+                                "Configure the local Codex runtime first",
+                            )
+                        })?
+                        .default_workspace(id)
+                        .map_err(|e| Failure::new(e.code, e.message))?;
+                    c.body = serde_json::to_value(&config).unwrap();
                 }
                 if a.data["managedConfiguration"] != c.body {
                     if u.records

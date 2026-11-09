@@ -55,6 +55,9 @@ pub struct ReconciledTurn {
     pub text: Option<String>,
 }
 pub trait IntegratedProvider: Send + Sync {
+    fn default_workspace(&self, agent: Uuid) -> Result<String, SessionFailure> {
+        super::agent_workspace::prepare(agent)
+    }
     fn reconcile<'a>(
         &'a self,
         _target: &'a SessionDestination,

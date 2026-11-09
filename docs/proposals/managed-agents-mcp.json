@@ -53,11 +53,22 @@
                         ]
                       },
                       "projectRoot": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 4096,
-                        "x-maxBytes": 4096,
-                        "x-absolutePath": true
+                        "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path.",
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 4096,
+                            "x-maxBytes": 4096,
+                            "x-absolutePath": true
+                          }
+                        ]
                       },
                       "toolProfile": {
                         "type": "object",
@@ -174,11 +185,22 @@
                 ]
               },
               "projectRoot": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 4096,
-                "x-maxBytes": 4096,
-                "x-absolutePath": true
+                "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path.",
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      ""
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "x-maxBytes": 4096,
+                    "x-absolutePath": true
+                  }
+                ]
               },
               "toolProfile": {
                 "type": "object",
@@ -276,11 +298,22 @@
                         ]
                       },
                       "projectRoot": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 4096,
-                        "x-maxBytes": 4096,
-                        "x-absolutePath": true
+                        "description": "Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path.",
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              ""
+                            ]
+                          },
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 4096,
+                            "x-maxBytes": 4096,
+                            "x-absolutePath": true
+                          }
+                        ]
                       },
                       "toolProfile": {
                         "type": "object",

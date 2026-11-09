@@ -1,7 +1,7 @@
 {
   "title": "Conversa com o agente",
   "error": "Não foi possível concluir a operação.",
-  "setup": "Configure o agente. O Bee Team criará a conversa no Codex quando você enviar o primeiro pedido.",
+  "setup": "A pasta é opcional. Se deixar em branco, o Bee Team criará uma pasta própria para o agente. A conversa começa ao enviar o primeiro pedido.",
   "project": "Pasta do projeto",
   "search": "Busca na internet",
   "network": "Permitir rede nos comandos",
@@ -38,5 +38,6 @@
   "edit": "Editar configuração",
   "request": "Pedido",
   "retryAction": "Tente novamente a a��o anterior antes de iniciar outra.",
-  "retryActionButton": "Repetir ação anterior"
+  "retryActionButton": "Repetir ação anterior",
+  "defaultProject": "Automática: uma pasta própria para este agente"
 }

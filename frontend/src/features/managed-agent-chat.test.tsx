@@ -5,7 +5,7 @@ import { ManagedAgentChat } from "./managed-agent-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import { i18n } from "@/i18n";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
-it("configures an agent without a binding selector", async () => {
+it.each(["C:/project", ""])("configures project %s without requiring a folder", async (projectRoot) => {
   await i18n.changeLanguage("en");
   const api = {
     config: vi.fn().mockResolvedValue({
@@ -27,9 +27,9 @@ it("configures an agent without a binding selector", async () => {
       <ManagedAgentChat agentId="agent" api={api} />
     </QueryClientProvider>,
   );
-  await screen.findByText("Configure agent");
+  await waitFor(() => expect(screen.getByText("Configure agent")).not.toBeDisabled());
   fireEvent.change(screen.getByLabelText("Project folder"), {
-    target: { value: "C:/project" },
+    target: { value: projectRoot },
   });
   fireEvent.click(screen.getByText("Configure agent"));
   await waitFor(() => expect(api.configure).toHaveBeenCalled());
@@ -37,7 +37,7 @@ it("configures an agent without a binding selector", async () => {
   expect(call[0]).toBe("agent");
   expect(call[1]).toEqual({
     provider: "codex",
-    projectRoot: "C:/project",
+    projectRoot,
     toolProfile: {
       webSearch: "live",
       networkAccess: false,

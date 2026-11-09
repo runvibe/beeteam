@@ -273,7 +273,7 @@ export function ManagedAgentChat({
             <Input
               value={project}
               onChange={(e) => setProject(e.target.value)}
-              required
+              placeholder={t("managed.defaultProject")}
               disabled={busy || !!setup.current}
             />
           </label>

@@ -1,7 +1,7 @@
 {
   "title": "Agent conversation",
   "error": "The operation could not complete.",
-  "setup": "Configure the agent. Bee Team creates its Codex conversation when you send the first request.",
+  "setup": "The folder is optional. Leave it blank for Bee Team to create a dedicated agent workspace. The conversation starts with your first request.",
   "project": "Project folder",
   "search": "Web search",
   "network": "Allow command network access",
@@ -38,5 +38,6 @@
   "edit": "Edit configuration",
   "request": "Request",
   "retryAction": "Retry the previous action before starting another.",
-  "retryActionButton": "Retry previous action"
+  "retryActionButton": "Retry previous action",
+  "defaultProject": "Automatic: a dedicated folder for this agent"
 }

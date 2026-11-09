@@ -83,3 +83,9 @@ fn configuration_accepts_only_supported_owned_runtime_settings() {
         .validate()
         .is_err());
 }
+
+#[test]
+fn empty_project_uses_agent_workspace() {
+    let config: ExecutionConfiguration = serde_json::from_value(json!({"provider":"codex","projectRoot":"","toolProfile":{"webSearch":"live","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}})).unwrap();
+    config.validate().unwrap();
+}

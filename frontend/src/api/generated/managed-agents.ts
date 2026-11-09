@@ -157,7 +157,8 @@ export interface components {
         ExecutionConfiguration: {
             /** @enum {unknown} */
             provider: "codex";
-            projectRoot: string;
+            /** @description Empty selects an automatically created per-agent directory under ~/.beeteam/workspaces. Responses contain the resolved absolute path. */
+            projectRoot: "" | string;
             toolProfile: components["schemas"]["ToolProfile"];
         };
         ConfigurationState: {

@@ -79,7 +79,9 @@ pub struct ExecutionConfiguration {
 }
 impl ExecutionConfiguration {
     pub fn validate(&self) -> Result<()> {
-        absolute_path(&self.project_root)?;
+        if !self.project_root.is_empty() {
+            absolute_path(&self.project_root)?;
+        }
         let profile = &self.tool_profile;
         if profile.enabled_mcp_servers.len() > 64 || profile.skill_roots.len() > 16 {
             return Err(Failure::invalid(

@@ -421,5 +421,19 @@
         "skillRoots": []
       }
     }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": true,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
   }
 ]

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Automatically create a persistent per-agent workspace under `~/.beeteam/workspaces` when the project folder is left empty, without changing existing configured projects.
+
 - Implement managed-agent requests and conversations through HTTP/MCP, durable per-agent queues, owned Codex execution, approvals/recovery, and the existing chat side panel. Preserve legacy history and reject binding changes after explicit managed configuration.
 
 - Define proposed Bee Team-managed agent contracts, strict request DTOs, HTTP/MCP parity fixtures and generated frontend types. The runtime is available on the review branch; global legacy session-binding retirement remains pending.
