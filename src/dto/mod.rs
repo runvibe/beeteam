@@ -28,3 +28,4 @@ pub mod task_parent;
 pub mod leader_chat;
 
 pub mod integrated_chat_tools;
+pub mod managed_agents;

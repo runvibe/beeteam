@@ -1,0 +1,425 @@
+[
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": true,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "C:/projects/example",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": true,
+    "value": {
+      "content": "Review the implementation"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": true,
+    "value": {
+      "content": "Review",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": "019a629b-4512-7000-8000-000000000001"
+    }
+  },
+  {
+    "schema": "RequestSnapshot",
+    "valid": true,
+    "value": {
+      "request": {
+        "id": "019a629b-4512-7000-8000-000000000001",
+        "agentId": "019a629b-4512-7000-8000-000000000001",
+        "conversationId": "019a629b-4512-7000-8000-000000000001",
+        "taskId": null,
+        "configurationVersion": 1,
+        "version": 1,
+        "state": "queued",
+        "origin": {
+          "transport": "mcp",
+          "label": null
+        },
+        "createdAt": "2026-11-09T17:00:00Z",
+        "updatedAt": "2026-11-09T17:00:00Z",
+        "error": null
+      },
+      "messages": {
+        "items": [],
+        "nextCursor": null
+      },
+      "approvals": [],
+      "eventCursor": "event-1"
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "accepted",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "preparing",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "queued",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "running",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "awaiting_approval",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "completed",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "failed",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "cancelled",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "AgentRequest",
+    "valid": true,
+    "value": {
+      "id": "019a629b-4512-7000-8000-000000000001",
+      "agentId": "019a629b-4512-7000-8000-000000000001",
+      "conversationId": "019a629b-4512-7000-8000-000000000001",
+      "taskId": null,
+      "configurationVersion": 1,
+      "version": 1,
+      "state": "uncertain",
+      "origin": {
+        "transport": "mcp",
+        "label": null
+      },
+      "createdAt": "2026-11-09T17:00:00Z",
+      "updatedAt": "2026-11-09T17:00:00Z",
+      "error": null
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "bindingId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "externalId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "sessionId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "expectedBindingId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "providerThreadId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "executorAgentId": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "harness": "desktop-thread"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": ""
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "  \n"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "A\u0000B"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "conversationId": "00000000-0000-4000-8000-000000000001"
+    }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": false,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "../repo",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": false,
+    "value": {
+      "provider": "claude-code",
+      "projectRoot": "C:/projects/example",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": false,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "C:/projects/example",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      },
+      "externalId": "existing-thread"
+    }
+  },
+  {
+    "schema": "ApprovalDecision",
+    "valid": false,
+    "value": {
+      "decision": "accept_all"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": ""
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": true,
+    "value": {
+      "content": "﻿"
+    }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": false,
+    "value": {
+      "content": "Review",
+      "conversationId": "01900000000070008000000000000001"
+    }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": false,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "/tmp/project",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
+  },
+  {
+    "schema": "ExecutionConfiguration",
+    "valid": true,
+    "value": {
+      "provider": "codex",
+      "projectRoot": "/tmp/project﻿",
+      "toolProfile": {
+        "webSearch": "live",
+        "networkAccess": false,
+        "enabledMcpServers": [],
+        "skillRoots": []
+      }
+    }
+  }
+]

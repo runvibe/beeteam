@@ -1,6 +1,6 @@
 # Agentes administrados pelo Bee Team — plano de implementação
 
-Status: proposta para revisão. Nenhuma implementação ou migração autorizada por este documento. Substitui, para a próxima entrega, o desenho de assumir agentes por vínculo público de sessão; não declara a mudança implementada.
+Status: implementação autorizada pelo usuário, começando pelos contratos, em PR para revisão e sem merge na main. A primeira etapa define DTOs, schemas HTTP/MCP, fixtures e tipos do frontend em [contrato normativo](../../proposals/managed-agents-contract.md). Os endpoints propostos ainda não estão ativos; serviços, migração e adoção pelo frontend permanecem etapas seguintes.
 
 ## Objetivo e decisões
 

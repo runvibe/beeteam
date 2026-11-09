@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Define proposed Bee Team-managed agent contracts, strict request DTOs, HTTP/MCP parity fixtures and generated frontend types. Runtime activation and legacy session-binding retirement remain pending.
+
 - Restore internal scrolling on long detail pages inside the persistent chat workspace.
 
 - Move integrated leader chat to a persistent, resizable side panel with a saved left/right position in Appearance settings.
