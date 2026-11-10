@@ -10,6 +10,7 @@ import { LeaderChat } from "./leader-chat";
 import type { LeaderChatApi } from "@/api/leader-chat";
 import type { Snapshot } from "@/api/leader-chat-types";
 import { ApiError } from "@/api/types";
+import { editPlainText } from "@/test/editable";
 vi.mock("@/components/names", () => ({
   AgentName: ({ id }: { id: string }) => <span>{id}</span>,
 }));
@@ -97,14 +98,42 @@ it("sends one message, retains focus, and blocks a second send while turn is que
   const composer = await screen.findByRole("textbox", {
     name: "Mensagem para o líder",
   });
-  fireEvent.change(composer, { target: { value: "Olá" } });
+  editPlainText(composer, "Olá");
   fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
   await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(1));
-  await waitFor(() => expect(composer).toHaveValue(""));
+  await waitFor(() => expect(composer.textContent).toBe(""));
+  expect(composer).toHaveFocus();
   expect(
     screen.getByRole("button", { name: "Enviar mensagem" }),
   ).toBeDisabled();
   expect(transport.create).not.toHaveBeenCalled();
+});
+it("focuses the legacy composer when its label is clicked", async () => {
+  render(<LeaderChat api={api()} teamId="team" leaderAgentId="leader" />);
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  fireEvent.click(screen.getByText("Mensagem para o líder"));
+  expect(composer).toHaveFocus();
+});
+it("keeps the legacy Ctrl+Enter shortcut and ignores it during composition", async () => {
+  const transport = api();
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" />);
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  expect(composer).toHaveAttribute("contenteditable", "plaintext-only");
+  const content = "Olá\n**equipe**";
+  composer.textContent = content;
+  fireEvent.input(composer);
+  fireEvent.keyDown(composer, { key: "Enter" });
+  fireEvent.compositionStart(composer);
+  fireEvent.keyDown(composer, { key: "Enter", ctrlKey: true });
+  expect(transport.send).not.toHaveBeenCalled();
+  fireEvent.compositionEnd(composer);
+  fireEvent.keyDown(composer, { key: "Enter", ctrlKey: true });
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(1));
+  expect(vi.mocked(transport.send).mock.calls[0][1].content).toBe(content);
 });
 it("keeps external mode explicit and never starts a session automatically", async () => {
   const transport = api();
@@ -226,11 +255,11 @@ it("allows editing a definitively rejected message rather than retrying the old 
   const composer = await screen.findByRole("textbox", {
     name: "Mensagem para o líder",
   });
-  fireEvent.change(composer, { target: { value: "first" } });
+  editPlainText(composer, "first");
   fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
   await screen.findByText("Aguarde o término da execução atual.");
-  expect(composer).toBeEnabled();
-  fireEvent.change(composer, { target: { value: "second" } });
+  expect(composer).toHaveAttribute("contenteditable", "plaintext-only");
+  editPlainText(composer, "second");
   fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
   await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(2));
   expect(vi.mocked(transport.send).mock.calls[1][1].content).toBe("second");
@@ -254,11 +283,14 @@ it("retries the exact identity after an ambiguous transport failure", async () =
   const composer = await screen.findByRole("textbox", {
     name: "Mensagem para o líder",
   });
-  fireEvent.change(composer, { target: { value: "same" } });
+  editPlainText(composer, "same");
   fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
-  fireEvent.click(
-    await screen.findByRole("button", { name: "Verificar envio anterior" }),
-  );
+  const retry = await screen.findByRole("button", { name: "Verificar envio anterior" });
+  expect(composer).toHaveAttribute("aria-disabled", "true");
+  composer.blur();
+  fireEvent.click(screen.getByText("Mensagem para o líder"));
+  expect(composer).not.toHaveFocus();
+  fireEvent.click(retry);
   await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(2));
   expect(vi.mocked(transport.send).mock.calls[0]).toEqual(
     vi.mocked(transport.send).mock.calls[1],
@@ -389,13 +421,13 @@ it('checks an uncertain turn without resending and retains retry identity only o
  vi.mocked(transport.reconcile).mockRejectedValueOnce(new TypeError('network')).mockResolvedValue({resolved:false,turn});
  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
  const composer=await screen.findByRole('textbox',{name:'Mensagem para o líder'});
- fireEvent.change(composer,{target:{value:'draft preserved'}});
+ editPlainText(composer,'draft preserved');
  const check=screen.getByRole('button',{name:'Verificar resultado'});
  fireEvent.click(check); await screen.findByRole('alert'); fireEvent.click(check);
  await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(2));
  await screen.findByText('O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente.');
  expect(vi.mocked(transport.reconcile).mock.calls[0]).toEqual(vi.mocked(transport.reconcile).mock.calls[1]);
- expect(composer).toHaveValue('draft preserved'); expect(screen.getByRole('button',{name:'Enviar mensagem'})).toBeDisabled();
+ expect(composer.textContent).toBe('draft preserved'); expect(screen.getByRole('button',{name:'Enviar mensagem'})).toBeDisabled();
  fireEvent.click(check); await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(3));
  expect(vi.mocked(transport.reconcile).mock.calls[2][2]).not.toEqual(vi.mocked(transport.reconcile).mock.calls[1][2]);
  expect(transport.send).not.toHaveBeenCalled();
@@ -415,10 +447,10 @@ it('retries the original message when a successful HTTP response has invalid JSO
  vi.mocked(transport.send).mockRejectedValue(new ApiError(202,'invalid_response','Invalid JSON'));
  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader"/>);
  const composer=await screen.findByRole('textbox',{name:'Mensagem para o l\u00edder'});
- fireEvent.change(composer,{target:{value:'preserved'}});
+ editPlainText(composer,'preserved');
  fireEvent.click(screen.getByRole('button',{name:'Enviar mensagem'}));
  fireEvent.click(await screen.findByRole('button',{name:'Verificar envio anterior'}));
  await waitFor(()=>expect(transport.send).toHaveBeenCalledTimes(2));
  expect(vi.mocked(transport.send).mock.calls[0]).toEqual(vi.mocked(transport.send).mock.calls[1]);
- expect(composer).toHaveValue('preserved');
+ expect(composer.textContent).toBe('preserved');
 });

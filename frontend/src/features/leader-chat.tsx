@@ -10,6 +10,7 @@ import { useLocale, t as tr } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Markdown } from "@/components/markdown";
+import { PlainTextEditor } from "@/components/plain-text-editor";
 import { formatDate } from "@/components/shared";
 import { AgentName } from "@/components/names";
 import { useEntity } from "@/api/context";
@@ -97,7 +98,7 @@ function LeaderChatBody({
     version: number;
   } | null>(null);
   const list = useRef<HTMLDivElement>(null),
-    composer = useRef<HTMLTextAreaElement>(null),
+    composer = useRef<HTMLDivElement>(null),
     atBottom = useRef(true);
   const snap = chat.snapshot,
     runtime = chat.runtime,
@@ -131,7 +132,7 @@ function LeaderChatBody({
       composer.current?.focus();
     }
   }
-  function handleComposerKey(e: KeyboardEvent<HTMLTextAreaElement>) {
+  function handleComposerKey(e: KeyboardEvent<HTMLDivElement>) {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       if (canSend) void send();
@@ -447,14 +448,22 @@ function LeaderChatBody({
                 if (canSend) void send();
               }}
             >
-              <label htmlFor="leader-message">{tr("chat.message")}</label>
-              <Textarea
+              <span
+                id="leader-message-label"
+                onClick={() => {
+                  if (!chat.working && !chat.sendUncertain)
+                    composer.current?.focus();
+                }}
+              >
+                {tr("chat.message")}
+              </span>
+              <PlainTextEditor
                 ref={composer}
                 id="leader-message"
+                aria-labelledby="leader-message-label"
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={setDraft}
                 disabled={chat.working || chat.sendUncertain}
-                rows={3}
                 onKeyDown={handleComposerKey}
               />
               <p className="small-note">{tr("chat.keyboardSend")}</p>

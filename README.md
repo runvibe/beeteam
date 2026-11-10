@@ -127,6 +127,8 @@ Every database starts with **Bee Team HQ**, a system team led by **Bee Team Guid
 
 Run the configured local backend on a loopback address and open the chat panel. Each team chat addresses its current leader; use "Choose team" to switch teams. The resizable panel stays open while navigating boards and tasks. Settings > Appearance > Chat position selects left or right and saves the layout on this device. Collapsing or moving the panel preserves its current draft. Long detail pages retain their independent content scrolling beside the chat panel. Managed execution settings configure web search, command network access, additional skill directories and selected existing MCP servers; Bee Team owns the workspace.
 
+The chat composer is a plain-text editable field: Markdown remains text, and pasting removes rich formatting. In managed chat, Enter sends and Shift+Enter starts a new line; the legacy leader chat keeps Ctrl/Cmd+Enter to send. Messages are limited to 65,536 UTF-8 bytes.
+
 The chat shows persistent messages, tool activity and per-action approvals. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
 
 Integrated execution requires local listener/peer and a trusted browser origin. A hosted panel must be explicitly allowlisted through `APP_CORS_ALLOW_ORIGINS`; MCP origins are configured separately with `MCP_ALLOWED_ORIGINS`. A wildcard CORS policy does not authorize remote execution. The default external-only workflow remains unchanged.

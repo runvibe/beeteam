@@ -1,5 +1,10 @@
 [
   {
+    "file": "src/components/plain-text-editor.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
     "file": "src/features/leader-chat.tsx",
     "text": "Enter",
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."

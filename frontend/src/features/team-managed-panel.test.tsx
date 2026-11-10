@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { editPlainText } from "@/test/editable";
 import { beforeEach, expect, it, vi } from "vitest";
 import { useChatPanel } from "@/state/chat-panel";
 import { i18n } from "@/i18n";
@@ -474,11 +475,9 @@ it("always sends to the displayed team leader without an agent selector", async 
   );
   expect(await screen.findByText("Leader One")).toBeVisible();
   expect(screen.queryByRole("combobox", { name: "Agents" })).toBeNull();
-  fireEvent.change(
+  editPlainText(
     await screen.findByRole("textbox", { name: "Message to agent" }),
-    {
-      target: { value: "Hello leader" },
-    },
+    "Hello leader",
   );
   fireEvent.click(screen.getByRole("button", { name: "Send request" }));
   await waitFor(() =>
@@ -505,13 +504,12 @@ it("clears the draft when the team's leader changes", async () => {
   const input = await screen.findByRole("textbox", {
     name: "Message to agent",
   });
-  fireEvent.change(input, {
-    target: { value: "Only for the previous leader" },
-  });
+  editPlainText(input, "Only for the previous leader");
   managed.leaderId = "new-leader";
   view.rerender(tree());
   expect(
-    await screen.findByRole("textbox", { name: "Message to agent" }),
-  ).toHaveValue("");
+    (await screen.findByRole("textbox", { name: "Message to agent" }))
+      .textContent,
+  ).toBe("");
   expect(managed.send).not.toHaveBeenCalled();
 });

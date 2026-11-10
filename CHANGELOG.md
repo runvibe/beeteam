@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Use a plain-text, multiline chat editor that preserves Markdown and existing keyboard shortcuts while removing rich formatting from pasted content.
+
 - Address each team's chat to its leader, manage worker execution and read-only history from agent details, and review pending worker approvals in the team panel even without an active leader conversation. Approvals follow current team membership; direct worker requests through HTTP/MCP remain available.
 
 - Redesign the agent chat as an AI-assistant thread: user messages in bubbles, agent replies with a hexagonal mark that pulses while work runs, inline status and approval cards, an auto-growing composer that sends with Enter, compact conversation/settings controls, and Bee Team HQ starter prompts for creating teams, agents and boards.

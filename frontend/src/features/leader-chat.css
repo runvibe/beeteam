@@ -83,10 +83,24 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.leader-chat-composer textarea {
+.leader-chat-composer .plain-text-editor {
   resize: vertical;
   min-height: 6rem;
   max-height: 18rem;
+  overflow-y: auto;
+  border: 1px solid var(--input);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  outline: none;
+  font: inherit;
+}
+.leader-chat-composer .plain-text-editor:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+}
+.leader-chat-composer .plain-text-editor[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 .leader-chat-actions {
   flex-wrap: wrap;

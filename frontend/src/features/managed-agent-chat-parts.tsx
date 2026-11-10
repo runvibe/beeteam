@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type FormEvent, type ReactNode } from "react";
+import { type FormEvent, type ReactNode } from "react";
 import {
   ArrowUp,
   Boxes,
@@ -11,6 +11,7 @@ import {
 import { t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/markdown";
+import { PlainTextEditor } from "@/components/plain-text-editor";
 import type { components } from "@/api/generated/managed-agents";
 
 type Message = components["schemas"]["Message"];
@@ -189,13 +190,6 @@ export function Composer({
   retry: boolean;
   readOnly?: boolean;
 }) {
-  const area = useRef<HTMLTextAreaElement>(null);
-  useLayoutEffect(() => {
-    const el = area.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 240)}px`;
-  }, [value]);
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (canSend) onSubmit();
@@ -205,14 +199,12 @@ export function Composer({
     <form className="assistant-composer" onSubmit={submit}>
       {readOnly && <p className="assistant-readonly">{t("managed.readonly")}</p>}
       <div className="assistant-composer-box">
-        <textarea
-          ref={area}
-          rows={1}
+        <PlainTextEditor
           aria-label={t("managed.message")}
           placeholder={t("managed.placeholder")}
           value={value}
           disabled={locked || readOnly}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
           onKeyDown={(e) => {
             if (
               e.key === "Enter" &&

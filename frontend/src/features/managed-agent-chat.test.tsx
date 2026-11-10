@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ManagedAgentChat } from "./managed-agent-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import { i18n } from "@/i18n";
+import { editPlainText } from "@/test/editable";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
 it("configures an agent without exposing a workspace setting", async () => {
   await i18n.changeLanguage("en");
@@ -160,7 +161,7 @@ it("fills the composer from a starter and sends with Enter", async () => {
   );
   fireEvent.click(await screen.findByText("Create a team"));
   const box = screen.getByLabelText("Message to agent");
-  expect(box).toHaveValue(
+  expect(box.textContent).toBe(
     "I want to create my first team. Help me define its goal, leader and roles.",
   );
   fireEvent.keyDown(box, { key: "Enter", shiftKey: true });
@@ -172,6 +173,97 @@ it("fills the composer from a starter and sends with Enter", async () => {
       "I want to create my first team. Help me define its goal, leader and roles.",
   });
   await screen.findByText("Running");
+});
+
+it("retries the identical multiline text and key after an uncertain send", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: {
+        toolProfile: {
+          webSearch: "live",
+          networkAccess: false,
+          enabledMcpServers: [],
+          skillRoots: [],
+        },
+      },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("Receipt lost"))
+      .mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  expect(editor).toHaveAttribute("contenteditable", "plaintext-only");
+  const content = "first line\n\n**Olá** <code>🐝</code>\n";
+  editPlainText(editor, content);
+  const draft = editor.innerHTML;
+  fireEvent.keyDown(editor, { key: "Enter" });
+  const retry = await screen.findByRole("button", {
+    name: "Check send with the same key",
+  });
+  expect(editor).toHaveAttribute("aria-disabled", "true");
+  expect(editor.innerHTML).toBe(draft);
+  fireEvent.click(retry);
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(api.send).mock.calls[0][1]).toEqual({ content });
+  expect(vi.mocked(api.send).mock.calls[1]).toEqual(
+    vi.mocked(api.send).mock.calls[0],
+  );
+  await waitFor(() => expect(editor.textContent).toBe(""));
+});
+
+it("applies the 65536-byte limit to the UTF-8 editor text", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: {
+        toolProfile: {
+          webSearch: "live",
+          networkAccess: false,
+          enabledMcpServers: [],
+          skillRoots: [],
+        },
+      },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn(),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  expect(editor).toHaveAttribute("contenteditable", "plaintext-only");
+  const send = screen.getByRole("button", { name: "Send request" });
+  editor.textContent = "é".repeat(32768);
+  fireEvent.input(editor);
+  expect(send).toBeEnabled();
+  editor.textContent += "é";
+  fireEvent.input(editor);
+  expect(send).toBeDisabled();
+  fireEvent.keyDown(editor, { key: "Enter" });
+  expect(api.send).not.toHaveBeenCalled();
 });
 
 it("hides onboarding starters outside Bee Team HQ", async () => {
