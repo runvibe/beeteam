@@ -37,5 +37,18 @@
   "edit": "Edit configuration",
   "request": "Request",
   "retryAction": "Retry the previous action before starting another.",
-  "retryActionButton": "Retry previous action"
+  "retryActionButton": "Retry previous action",
+  "welcomeTitle": "How can I help?",
+  "welcomeHint": "Send a request to start a conversation with this agent.",
+  "welcomeHq": "I'm the Bee Team guide. I can set up teams, agents and boards with you — pick a starting point or just type.",
+  "placeholder": "Ask the agent anything…",
+  "composerHint": "Enter to send · Shift+Enter for a new line",
+  "starterTeam": "Create a team",
+  "starterTeamPrompt": "I want to create my first team. Help me define its goal, leader and roles.",
+  "starterAgent": "Create an agent",
+  "starterAgentPrompt": "I want to create a new agent. Ask me what it should do and suggest a name and instructions.",
+  "starterBoard": "Create a board",
+  "starterBoardPrompt": "I want to create a board to organize work. Suggest columns and the first tasks.",
+  "starterTour": "How does Bee Team work?",
+  "starterTourPrompt": "Explain in a few steps how teams, agents, boards and tasks work together in Bee Team."
 }

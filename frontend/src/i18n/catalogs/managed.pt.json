@@ -37,5 +37,18 @@
   "edit": "Editar configuração",
   "request": "Pedido",
   "retryAction": "Tente novamente a a��o anterior antes de iniciar outra.",
-  "retryActionButton": "Repetir ação anterior"
+  "retryActionButton": "Repetir ação anterior",
+  "welcomeTitle": "Como posso ajudar?",
+  "welcomeHint": "Envie um pedido para começar uma conversa com este agente.",
+  "welcomeHq": "Sou o guia do Bee Team. Posso montar times, agentes e boards com você — escolha um ponto de partida ou escreva livremente.",
+  "placeholder": "Pergunte ou peça algo ao agente…",
+  "composerHint": "Enter envia · Shift+Enter quebra linha",
+  "starterTeam": "Criar um time",
+  "starterTeamPrompt": "Quero criar meu primeiro time. Me ajude a definir o objetivo, o líder e os papéis.",
+  "starterAgent": "Criar um agente",
+  "starterAgentPrompt": "Quero criar um novo agente. Me pergunte o que ele deve fazer e sugira nome e instruções.",
+  "starterBoard": "Criar um board",
+  "starterBoardPrompt": "Quero criar um board para organizar tarefas. Sugira as colunas e as primeiras tarefas.",
+  "starterTour": "Como o Bee Team funciona?",
+  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team."
 }

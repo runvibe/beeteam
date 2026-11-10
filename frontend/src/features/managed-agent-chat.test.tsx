@@ -123,3 +123,83 @@ it("keeps the original action retry after the approval disappears", async () => 
     vi.mocked(api.decide).mock.calls[0],
   );
 });
+
+it("fills the composer from a starter and sends with Enter", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: {
+        toolProfile: {
+          webSearch: "live",
+          networkAccess: false,
+          enabledMcpServers: [],
+          skillRoots: [],
+        },
+      },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi
+      .fn()
+      .mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <ManagedAgentChat agentId="agent" api={api} starters />
+    </QueryClientProvider>,
+  );
+  fireEvent.click(await screen.findByText("Create a team"));
+  const box = screen.getByLabelText("Message to agent");
+  expect(box).toHaveValue(
+    "I want to create my first team. Help me define its goal, leader and roles.",
+  );
+  fireEvent.keyDown(box, { key: "Enter", shiftKey: true });
+  expect(api.send).not.toHaveBeenCalled();
+  fireEvent.keyDown(box, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  expect(vi.mocked(api.send).mock.calls[0][1]).toEqual({
+    content:
+      "I want to create my first team. Help me define its goal, leader and roles.",
+  });
+  await screen.findByText("Running");
+});
+
+it("hides onboarding starters outside Bee Team HQ", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: {
+        toolProfile: {
+          webSearch: "live",
+          networkAccess: false,
+          enabledMcpServers: [],
+          skillRoots: [],
+        },
+      },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider
+      client={
+        new QueryClient({ defaultOptions: { queries: { retry: false } } })
+      }
+    >
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  await screen.findByText("How can I help?");
+  expect(screen.queryByText("Create a team")).toBeNull();
+});

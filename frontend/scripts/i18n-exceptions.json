@@ -5,6 +5,11 @@
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
   },
   {
+    "file": "src/features/managed-agent-chat-parts.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
     "file": "src/launch/bootstrap.ts",
     "text": "npx skills@1.7.6 add https://github.com/runvibe/beeteam/tree/{{value1}}/skills --skill setup-bee-team get-a-team-lead get-a-worker -a {{value2}} --copy",
     "reason": "Verified CLI syntax with immutable release tag and closed harness identifier; command tokens are technical."

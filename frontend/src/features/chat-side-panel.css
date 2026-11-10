@@ -42,11 +42,25 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
 }
 .chat-panel-team {
-  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.8rem;
   color: var(--muted-foreground);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+.chat-panel-team > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 .chat-panel-body .leader-chat {
   max-width: none;

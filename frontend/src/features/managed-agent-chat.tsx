@@ -2,12 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
+import { CircleStop, Settings2, SquarePen } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Markdown } from "@/components/markdown";
 import type { LeaderChatApi } from "@/api/leader-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { ApiError } from "@/api/types";
+import {
+  AgentMark,
+  ApprovalCard,
+  ChatMessage,
+  ChatWelcome,
+  Composer,
+  RequestStatus,
+} from "./managed-agent-chat-parts";
 import "./leader-chat.css";
 import "./managed-agent-chat.css";
 type S = components["schemas"];
@@ -16,11 +25,14 @@ export function ManagedAgentChat({
   agentId,
   legacyApi,
   teamId,
+  starters,
 }: {
   api: ManagedAgentApi;
   agentId: string;
   legacyApi?: LeaderChatApi;
   teamId?: string;
+  /** Offer Bee Team onboarding prompts in an empty conversation. */
+  starters?: boolean;
 }) {
   useLocale();
   const config = useQuery({
@@ -160,22 +172,140 @@ export function ManagedAgentChat({
   const readOnly = conversations.data?.items.find(
     (c) => c.id === conversation,
   )?.readOnly;
+  const messages = [...older, ...(page?.items ?? [])].filter(
+    (m, i, all) => all.findIndex((x) => x.id === m.id) === i,
+  );
+  const conversationRequests =
+    requests.data?.items.filter((r) => r.conversationId === conversation) ??
+    [];
+  const pendingApprovals =
+    snapshot.data?.approvals.filter((a) => a.state === "pending") ?? [];
+  const settled =
+    !current || ["completed", "failed", "cancelled"].includes(current.state);
+  const canSend =
+    !busy &&
+    !readOnly &&
+    (!!pending.current ||
+      (!!draft.trim() && new TextEncoder().encode(draft).length <= 65536));
+  function send() {
+    void act(async () => {
+      pending.current ??= {
+        key: crypto.randomUUID(),
+        body: {
+          content: draft,
+          ...(conversation ? { conversationId: conversation } : {}),
+        },
+      };
+      const p = pending.current;
+      try {
+        const r = await api.send(agentId, p.body, p.key);
+        setConversation(r.conversationId);
+        setRequest(r.id);
+        setDraft("");
+        pending.current = null;
+      } catch (e) {
+        if (
+          e instanceof ApiError &&
+          e.status >= 400 &&
+          e.status < 500 &&
+          e.status !== 408
+        )
+          pending.current = null;
+        throw e;
+      }
+    });
+  }
+  function openSettings() {
+    const c = config.data!.configuration!;
+    setSearch(c.toolProfile.webSearch);
+    setNetwork(c.toolProfile.networkAccess);
+    setMcps(c.toolProfile.enabledMcpServers.join("\n"));
+    setSkills(c.toolProfile.skillRoots.join("\n"));
+    setEditing(!editing);
+  }
+  const failure = error || config.error || snapshot.error || requests.error;
   return (
     <section
       className="leader-chat managed-agent-chat"
       aria-label={t("managed.title")}
     >
-      {(error || config.error || snapshot.error || requests.error) && (
-        <div role="alert">
+      {ready && (
+        <div className="assistant-toolbar">
+          <select
+            className="assistant-pill"
+            aria-label={t("managed.conversation")}
+            value={conversation}
+            disabled={!!pending.current}
+            onChange={(e) => {
+              setConversation(e.target.value);
+              const r = requests.data?.items.find(
+                (r) => r.conversationId === e.target.value,
+              );
+              setRequest(r?.id ?? "");
+            }}
+          >
+            <option value="">{t("managed.new")}</option>
+            {conversations.data?.items.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title}
+                {c.readOnly ? " · " + t("managed.readonly") : ""}
+              </option>
+            ))}
+          </select>
+          {conversationRequests.length > 1 && (
+            <select
+              className="assistant-pill assistant-pill-narrow"
+              aria-label={t("managed.request")}
+              value={request}
+              onChange={(e) => setRequest(e.target.value)}
+            >
+              {conversationRequests.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {t(`managed.${r.state}`)} ·{" "}
+                  {new Date(r.createdAt).toLocaleString()}
+                </option>
+              ))}
+            </select>
+          )}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t("managed.new")}
+            title={t("managed.new")}
+            disabled={!!pending.current}
+            onClick={() => {
+              setRequest("");
+              setConversation("");
+              setOlder([]);
+            }}
+          >
+            <SquarePen />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t("managed.edit")}
+            title={t("managed.edit")}
+            aria-expanded={editing}
+            onClick={openSettings}
+          >
+            <Settings2 />
+          </Button>
+        </div>
+      )}
+      {failure && (
+        <div role="alert" className="assistant-alert">
           {t("managed.error")}
           <details>
             <summary>{t("chat.errorDetails")}</summary>
-            {String(error || config.error || snapshot.error || requests.error)}
+            {String(failure)}
           </details>
         </div>
       )}
       {action.current && (
         <Button
+          variant="outline"
+          size="sm"
           disabled={busy}
           onClick={() =>
             void act(async () => {
@@ -187,47 +317,9 @@ export function ManagedAgentChat({
           {t("managed.retryActionButton")}
         </Button>
       )}
-      {!!legacyChats.data?.items.length && (
-        <details>
-          <summary>{t("managed.legacy")}</summary>
-          <select
-            aria-label={t("managed.legacy")}
-            value={legacy}
-            onChange={(e) => setLegacy(e.target.value)}
-          >
-            <option value="">—</option>
-            {legacyChats.data.items
-              .filter((c) => c.leaderAgentId === agentId)
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title}
-                </option>
-              ))}
-          </select>
-          {legacySnapshot.data?.messages.map((m) => (
-            <article key={m.id}>
-              <Markdown>{m.content}</Markdown>
-            </article>
-          ))}
-        </details>
-      )}
-      {ready && (
-        <Button
-          variant="ghost"
-          onClick={() => {
-            const c = config.data!.configuration!;
-            setSearch(c.toolProfile.webSearch);
-            setNetwork(c.toolProfile.networkAccess);
-            setMcps(c.toolProfile.enabledMcpServers.join("\n"));
-            setSkills(c.toolProfile.skillRoots.join("\n"));
-            setEditing(!editing);
-          }}
-        >
-          {t("managed.edit")}
-        </Button>
-      )}
       {(!ready || editing) && (
         <form
+          className="assistant-setup"
           onSubmit={(e) => {
             e.preventDefault();
             void act(async () => {
@@ -263,6 +355,7 @@ export function ManagedAgentChat({
             });
           }}
         >
+          {!ready && <AgentMark size="lg" />}
           <p>{t("managed.setup")}</p>
           <label>
             {t("managed.search")}
@@ -278,7 +371,7 @@ export function ManagedAgentChat({
               ))}
             </select>
           </label>
-          <label>
+          <label className="assistant-check">
             <input
               type="checkbox"
               checked={network}
@@ -308,67 +401,35 @@ export function ManagedAgentChat({
           </Button>
         </form>
       )}
-      {ready && (
-        <>
-          <div className="leader-chat-toolbar">
-            <label>
-              {t("managed.conversation")}
-              <select
-                value={conversation}
-                disabled={!!pending.current}
-                onChange={(e) => {
-                  setConversation(e.target.value);
-                  const r = requests.data?.items.find(
-                    (r) => r.conversationId === e.target.value,
-                  );
-                  setRequest(r?.id ?? "");
-                }}
-              >
-                <option value="">{t("managed.new")}</option>
-                {conversations.data?.items.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title}
-                    {c.readOnly ? " · " + t("managed.readonly") : ""}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <Button
-              variant="ghost"
-              disabled={!!pending.current}
-              onClick={() => {
-                setRequest("");
-                setConversation("");
-                setOlder([]);
-              }}
-            >
-              {t("managed.new")}
-            </Button>
-          </div>
-          <label>
-            {t("managed.request")}
-            <select
-              value={request}
-              onChange={(e) => {
-                const r = requests.data?.items.find(
-                  (r) => r.id === e.target.value,
-                );
-                if (r) {
-                  setRequest(r.id);
-                  setConversation(r.conversationId);
-                }
-              }}
-            >
-              <option value="">—</option>
-              {requests.data?.items.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {t(`managed.${r.state}`)} · {r.createdAt}
+      {!!legacyChats.data?.items.length && (
+        <details className="assistant-legacy">
+          <summary>{t("managed.legacy")}</summary>
+          <select
+            aria-label={t("managed.legacy")}
+            value={legacy}
+            onChange={(e) => setLegacy(e.target.value)}
+          >
+            <option value="">—</option>
+            {legacyChats.data.items
+              .filter((c) => c.leaderAgentId === agentId)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.title}
                 </option>
               ))}
-            </select>
-          </label>
+          </select>
+          {legacySnapshot.data?.messages.map((m) => (
+            <article key={m.id}>
+              <Markdown>{m.content}</Markdown>
+            </article>
+          ))}
+        </details>
+      )}
+      {ready && (
+        <>
           <div
-            className="leader-chat-messages"
+            className="assistant-thread"
+            aria-live="polite"
             onScroll={(e) => {
               const el = e.currentTarget;
               scroll.current =
@@ -378,6 +439,8 @@ export function ManagedAgentChat({
             {(olderCursor === undefined ? page?.nextCursor : olderCursor) && (
               <Button
                 variant="ghost"
+                size="sm"
+                className="assistant-older"
                 disabled={busy}
                 onClick={() =>
                   void act(async () => {
@@ -395,119 +458,72 @@ export function ManagedAgentChat({
                 {t("managed.older")}
               </Button>
             )}
-            {[...older, ...(page?.items ?? [])]
-              .filter((m, i, all) => all.findIndex((x) => x.id === m.id) === i)
-              .map((m) => (
-                <article key={m.id} className={`leader-chat-message ${m.role}`}>
-                  <small>{t(`managed.${m.role}`)}</small>
-                  <Markdown>{m.content}</Markdown>
-                </article>
-              ))}
+            {!conversation && !messages.length && !current && (
+              <ChatWelcome starters={!!starters} onPick={setDraft} />
+            )}
+            {messages.map((m) => (
+              <ChatMessage key={m.id} message={m} />
+            ))}
+            {current && current.state !== "completed" && (
+              <RequestStatus
+                state={current.state}
+                error={current.error?.message}
+                action={
+                  !settled && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={busy}
+                      onClick={() =>
+                        void act(() =>
+                          current.state === "uncertain"
+                            ? mutate(`reconcile:${current.id}`, (key) =>
+                                api.reconcile(current.id, current.version, key),
+                              )
+                            : mutate(`cancel:${current.id}`, (key) =>
+                                api.cancel(current.id, current.version, key),
+                              ),
+                        )
+                      }
+                    >
+                      {current.state === "uncertain" ? (
+                        t("managed.reconcile")
+                      ) : (
+                        <>
+                          <CircleStop aria-hidden="true" />
+                          {t("managed.cancel")}
+                        </>
+                      )}
+                    </Button>
+                  )
+                }
+              />
+            )}
+            {pendingApprovals.map((a) => (
+              <ApprovalCard
+                key={a.id}
+                description={a.description}
+                disabled={busy}
+                onDecide={(decision) =>
+                  void act(() =>
+                    mutate(`decision:${a.id}:${decision}`, (key) =>
+                      api.decide(a.id, a.version, decision, key),
+                    ),
+                  )
+                }
+              />
+            ))}
             <div ref={bottom} />
           </div>
-          {current && (
-            <div role="status">
-              {t(`managed.${current.state}`)}
-              {current.error && <p>{current.error.message}</p>}
-            </div>
-          )}
-          {snapshot.data?.approvals
-            .filter((a) => a.state === "pending")
-            .map((a) => (
-              <div key={a.id}>
-                <p>{a.description}</p>
-                {(["accept", "decline"] as const).map((decision) => (
-                  <Button
-                    key={decision}
-                    disabled={busy}
-                    onClick={() =>
-                      void act(() =>
-                        mutate(`decision:${a.id}:${decision}`, (key) =>
-                          api.decide(a.id, a.version, decision, key),
-                        ),
-                      )
-                    }
-                  >
-                    {t(`managed.${decision}`)}
-                  </Button>
-                ))}
-              </div>
-            ))}
-          {current &&
-            !["completed", "failed", "cancelled"].includes(current.state) && (
-              <Button
-                disabled={busy}
-                onClick={() =>
-                  void act(() =>
-                    current.state === "uncertain"
-                      ? mutate(`reconcile:${current.id}`, (key) =>
-                          api.reconcile(current.id, current.version, key),
-                        )
-                      : mutate(`cancel:${current.id}`, (key) =>
-                          api.cancel(current.id, current.version, key),
-                        ),
-                  )
-                }
-              >
-                {t(
-                  current.state === "uncertain"
-                    ? "managed.reconcile"
-                    : "managed.cancel",
-                )}
-              </Button>
-            )}
-          {readOnly && <p>{t("managed.readonly")}</p>}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void act(async () => {
-                pending.current ??= {
-                  key: crypto.randomUUID(),
-                  body: {
-                    content: draft,
-                    ...(conversation ? { conversationId: conversation } : {}),
-                  },
-                };
-                const p = pending.current;
-                try {
-                  const r = await api.send(agentId, p.body, p.key);
-                  setConversation(r.conversationId);
-                  setRequest(r.id);
-                  setDraft("");
-                  pending.current = null;
-                } catch (e) {
-                  if (
-                    e instanceof ApiError &&
-                    e.status >= 400 &&
-                    e.status < 500 &&
-                    e.status !== 408
-                  )
-                    pending.current = null;
-                  throw e;
-                }
-              });
-            }}
-          >
-            <label>
-              {t("managed.message")}
-              <Textarea
-                value={draft}
-                disabled={!!pending.current}
-                onChange={(e) => setDraft(e.target.value)}
-              />
-            </label>
-            <Button
-              disabled={
-                busy ||
-                readOnly ||
-                (!pending.current &&
-                  (!draft.trim() ||
-                    new TextEncoder().encode(draft).length > 65536))
-              }
-            >
-              {t(pending.current ? "managed.retry" : "managed.send")}
-            </Button>
-          </form>
+          <Composer
+            value={draft}
+            onChange={setDraft}
+            onSubmit={send}
+            locked={!!pending.current}
+            canSend={canSend}
+            retry={!!pending.current}
+            readOnly={readOnly}
+          />
         </>
       )}
     </section>

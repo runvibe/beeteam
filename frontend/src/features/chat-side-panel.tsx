@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CSSProperties, ReactNode } from "react";
-import { MessageSquare, X } from "lucide-react";
+import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { useChatPanel } from "@/state/chat-panel";
 import { useLocale, t } from "@/i18n";
@@ -132,11 +132,22 @@ function PanelTeam({ teamId }: { teamId: string }) {
     <QueryState query={team}>
       {team.data && (
         <>
-          <p className="chat-panel-team">{team.data.name}</p>
-          <Button variant="ghost" onClick={useChatPanel.getState().chooseTeam}>
-            {t("chat.chooseTeam")}
-          </Button>
-          <PanelLeader teamId={teamId} leaderId={team.data.leaderId} />
+          <div className="chat-panel-team">
+            <span title={team.data.name}>{team.data.name}</span>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={useChatPanel.getState().chooseTeam}
+            >
+              <ArrowLeftRight />
+              {t("chat.chooseTeam")}
+            </Button>
+          </div>
+          <PanelLeader
+            teamId={teamId}
+            leaderId={team.data.leaderId}
+            system={!!team.data.system}
+          />
         </>
       )}
     </QueryState>
@@ -145,9 +156,11 @@ function PanelTeam({ teamId }: { teamId: string }) {
 function PanelLeader({
   teamId,
   leaderId,
+  system,
 }: {
   teamId: string;
   leaderId: string;
+  system: boolean;
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
@@ -161,7 +174,7 @@ function PanelLeader({
     return (
       <>
         <label className="managed-agent-selector">
-          {t("common.agents")}
+          <span className="sr-only">{t("common.agents")}</span>
           <select
             value={selected}
             onChange={(e) => setSelected(e.target.value)}
@@ -182,6 +195,7 @@ function PanelLeader({
           agentId={selected}
           legacyApi={api.leaderChat}
           teamId={teamId}
+          starters={system && selected === leaderId}
         />
       </>
     );
