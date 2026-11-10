@@ -98,3 +98,53 @@ async fn system_flag_and_filter_identify_hq_among_user_teams() {
     let (status, _) = request(&app, "POST", "/api/v2/agents", json!({"name":"Fake","systemKey":"onboarding"}), None).await;
     assert_eq!(status, 400);
 }
+
+async fn protected(app: &axum::Router, method: &str, path: &str, body: Value, version: Option<i64>) {
+    let (status, response) = request(app, method, path, body, version).await;
+    assert_eq!(status, 409, "{response}");
+    assert_eq!(response["code"], "system_resource_protected", "{response}");
+}
+
+#[tokio::test]
+async fn hq_cannot_be_archived_reassigned_or_moved_but_can_be_edited() {
+    let (app, _) = seeded_app().await;
+    let (team, leader, board) = hq(&app).await;
+    let other_leader = ok(&app, "POST", "/api/v2/agents", json!({"name":"Lead"}), None).await;
+    let other = ok(&app, "POST", "/api/v2/teams", json!({"name":"Alpha","leaderId":id(&other_leader),"coordinationContext":manual()}), None).await;
+    protected(&app, "PUT", &format!("/api/v2/teams/{}/archive", id(&team)), json!({"archived":true}), ver(&team)).await;
+    protected(&app, "PUT", &format!("/api/v2/agents/{}/archive", id(&leader)), json!({"archived":true}), ver(&leader)).await;
+    protected(&app, "PATCH", &format!("/api/v2/boards/{}", id(&board)), json!({"archived":true}), ver(&board)).await;
+    protected(&app, "PATCH", &format!("/api/v2/boards/{}", id(&board)), json!({"teamId":id(&other)}), ver(&board)).await;
+    let free = ok(&app, "POST", "/api/v2/agents", json!({"name":"Free"}), None).await;
+    protected(&app, "POST", "/api/v2/team-composition-changes", json!({"teams":[{"teamId":id(&team),"expectedVersion":team["version"],"leaderId":id(&free),"workerIds":[]}],"coordinationContext":manual()}), None).await;
+    let (after_team, after_leader, after_board) = hq(&app).await;
+    assert_eq!((after_team["version"].clone(), after_leader["version"].clone(), after_board["version"].clone()), (team["version"].clone(), leader["version"].clone(), board["version"].clone()));
+    assert!(after_team["archivedAt"].is_null() && after_board["archivedAt"].is_null());
+    let renamed = ok(&app, "PATCH", &format!("/api/v2/teams/{}", id(&team)), json!({"name":"My HQ"}), ver(&team)).await;
+    assert_eq!((renamed["name"].clone(), renamed["system"].clone()), (json!("My HQ"), json!(true)));
+    let board = ok(&app, "PATCH", &format!("/api/v2/boards/{}", id(&board)), json!({"description":"Mine"}), ver(&board)).await;
+    assert_eq!(board["description"], "Mine");
+    let team = get(&app, &format!("/api/v2/teams/{}", id(&team))).await;
+    let staffed = ok(&app, "POST", "/api/v2/team-composition-changes", json!({"teams":[{"teamId":id(&team),"expectedVersion":team["version"],"leaderId":id(&leader),"workerIds":[id(&free)]}],"coordinationContext":manual()}), None).await;
+    assert_eq!(staffed["teams"][0]["workerCount"], 1);
+    ok(&app, "PUT", &format!("/api/v2/teams/{}/archive", id(&other)), json!({"archived":true}), ver(&other)).await;
+}
+
+#[cfg(feature = "mcp")]
+#[tokio::test]
+async fn mcp_shares_hq_protection() {
+    use axum::{body::Body, http::Request};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+    let (app, _) = seeded_app().await;
+    let (team, _, _) = hq(&app).await;
+    let response = app.clone().oneshot(Request::post("/mcp")
+        .header("host", "127.0.0.1").header("content-type", "application/json")
+        .header("accept", "application/json, text/event-stream")
+        .header("mcp-protocol-version", "2025-11-25")
+        .body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"archiveTeam","arguments":{"params":{"teamId":id(&team)},"body":{"archived":true},"actor":{"kind":"human"},"expectedVersion":team["version"]}}}).to_string())).unwrap()).await.unwrap();
+    let result: Value = serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(result["result"]["isError"], true, "{result}");
+    assert!(result.to_string().contains("system_resource_protected"), "{result}");
+    assert_eq!(get(&app, &format!("/api/v2/teams/{}", id(&team))).await["version"], team["version"]);
+}

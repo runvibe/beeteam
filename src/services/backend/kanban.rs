@@ -61,6 +61,9 @@ async fn board(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     if c.operation == "updateBoard" {
         let old = unit.records.get("boards", id)?.clone();
         check_version(&old, c.expected_version)?;
+        if b["archived"] == true || b.get("teamId").is_some_and(|team| *team != old.data["teamId"]) {
+            super::onboarding::protect(&old)?;
+        }
         if old.archived_at.is_some() && b["archived"] != false {
             return Err(Failure::new(
                 "archived_resource",

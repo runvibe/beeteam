@@ -47,6 +47,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             let id = c.id("agentId")?;
             let agent = unit.records.get("agents", id)?.clone();
             check_version(&agent, c.expected_version)?;
+            if body["archived"] == true {
+                super::onboarding::protect(&agent)?;
+            }
             if c.operation == "updateAgent" {
                 active(&unit.records, "agents", id)?;
                 validate_url(body["image"]["url"].as_str())?;
@@ -125,6 +128,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         "updateTeam" | "archiveTeam" => {
             let id = c.id("teamId")?;
             check_version(unit.records.get("teams", id)?, c.expected_version)?;
+            if body["archived"] == true {
+                super::onboarding::protect(unit.records.get("teams", id)?)?;
+            }
             if c.operation == "updateTeam" {
                 active(&unit.records, "teams", id)?;
             }
@@ -149,6 +155,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 let team = unit.records.get("teams", id)?;
                 if Some(team.version) != change["expectedVersion"].as_i64() {
                     return Err(Failure::new("composition_conflict", "Team version changed"));
+                }
+                if change["leaderId"] != team.data["leaderId"] {
+                    super::onboarding::protect(team)?;
                 }
                 touched.extend(team_agents(&unit.records, id));
             }
