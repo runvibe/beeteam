@@ -203,3 +203,168 @@ it("hides onboarding starters outside Bee Team HQ", async () => {
   await screen.findByText("How can I help?");
   expect(screen.queryByText("Create a team")).toBeNull();
 });
+
+it("shows a worker's existing managed conversation without allowing new messages", async () => {
+  await i18n.changeLanguage("en");
+  const request = {
+    id: "worker-request",
+    agentId: "worker",
+    conversationId: "worker-conversation",
+    version: 1,
+    state: "completed",
+    createdAt: "2026-11-09T00:00:00Z",
+  };
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: {
+        toolProfile: {
+          webSearch: "live",
+          networkAccess: false,
+          enabledMcpServers: [],
+          skillRoots: [],
+        },
+      },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({
+      items: [{ id: "worker-conversation", title: "Worker history" }],
+      nextCursor: null,
+    }),
+    requests: vi.fn().mockResolvedValue({ items: [request], nextCursor: null }),
+    snapshot: vi.fn().mockResolvedValue({
+      request,
+      messages: {
+        items: [{ id: "message", role: "agent", content: "Worker result" }],
+        nextCursor: null,
+      },
+      approvals: [],
+    }),
+    send: vi.fn(),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="worker" api={api} mode="management" />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByText("Worker result")).toBeVisible();
+  expect(screen.queryByRole("textbox", { name: "Message to agent" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Send request" })).toBeNull();
+  expect(api.send).not.toHaveBeenCalled();
+});
+
+it("preserves an ambiguous approval decision across management view remounts", async () => {
+  await i18n.changeLanguage("en");
+  const request = {
+    id: "retry-request",
+    agentId: "retry-worker",
+    conversationId: "retry-conversation",
+    version: 1,
+    state: "awaiting_approval",
+    createdAt: "2026-11-09T00:00:00Z",
+  };
+  let decided = false;
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [{ id: "retry-conversation", title: "Work" }], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [request], nextCursor: null }),
+    snapshot: vi.fn().mockImplementation(async () => ({
+      request: { ...request, state: decided ? "completed" : "awaiting_approval" },
+      messages: { items: [], nextCursor: null },
+      approvals: decided ? [] : [{ id: "retry-approval", version: 1, state: "pending", description: "Run command" }],
+    })),
+    decide: vi.fn().mockImplementationOnce(async () => {
+      decided = true;
+      throw new TypeError("Receipt lost");
+    }).mockResolvedValue({}),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const renderView = () => render(
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat agentId="retry-worker" api={api} mode="management" />
+    </QueryClientProvider>,
+  );
+  const first = renderView();
+  fireEvent.click(await screen.findByText("Approve"));
+  await screen.findByText("Retry previous action");
+  first.unmount();
+  await client.invalidateQueries({ queryKey: ["managed-snapshot", "retry-request"] });
+  renderView();
+  fireEvent.click(await screen.findByText("Retry previous action"));
+  await waitFor(() => expect(api.decide).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(api.decide).mock.calls[1]).toEqual(vi.mocked(api.decide).mock.calls[0]);
+});
+
+it("keeps historical worker requests accessible when execution is unconfigured", async () => {
+  await i18n.changeLanguage("en");
+  const request = {
+    id: "historical-request", agentId: "unconfigured", conversationId: "historical-conversation",
+    version: 1, state: "completed", createdAt: "2026-11-09T00:00:00Z",
+  };
+  const api = {
+    config: vi.fn().mockResolvedValue({ configuration: null, version: 1 }),
+    conversations: vi.fn().mockResolvedValue({ items: [{ id: "historical-conversation", title: "History" }], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [request], nextCursor: null }),
+    snapshot: vi.fn().mockResolvedValue({
+      request,
+      messages: { items: [{ id: "old-message", role: "agent", content: "Previous result" }], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="unconfigured" api={api} mode="management" />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByText("Previous result")).toBeVisible();
+  expect(screen.getByText("Configure agent")).toBeVisible();
+});
+
+it("loads older managed conversations instead of hiding them after the first page", async () => {
+  await i18n.changeLanguage("en");
+  const conversations = vi.fn().mockImplementation(async (_agent, cursor) =>
+    cursor
+      ? { items: [{ id: "older", title: "Older conversation" }], nextCursor: null }
+      : { items: [{ id: "recent", title: "Recent conversation" }], nextCursor: "next-page" },
+  );
+  const api = {
+    config: vi.fn().mockResolvedValue({ configuration: null, version: 1 }),
+    conversations,
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="paginated-worker" api={api} mode="management" />
+    </QueryClientProvider>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "More conversations" }));
+  expect(await screen.findByRole("option", { name: "Older conversation" })).toBeVisible();
+  expect(conversations).toHaveBeenCalledWith("paginated-worker", "next-page");
+});
+
+it("retries an uncertain configuration with the original body and key after remount", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({ configuration: null, version: 3 }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    configure: vi.fn().mockRejectedValueOnce(new TypeError("Receipt lost")).mockResolvedValue({}),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const renderView = () => render(
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat agentId="configuration-worker" api={api} mode="management" />
+    </QueryClientProvider>,
+  );
+  const first = renderView();
+  fireEvent.click(await screen.findByText("Configure agent"));
+  await screen.findByText("Retry previous action");
+  first.unmount();
+  renderView();
+  fireEvent.click(await screen.findByText("Retry previous action"));
+  await waitFor(() => expect(api.configure).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(api.configure).mock.calls[1]).toEqual(vi.mocked(api.configure).mock.calls[0]);
+});

@@ -616,6 +616,64 @@
           }
         }
       }
+    },
+    "/api/v2/teams/{teamId}/managed-approvals": {
+      "get": {
+        "operationId": "listTeamManagedApprovals",
+        "x-contract-status": "proposed",
+        "parameters": [
+          {
+            "name": "teamId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 2048
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pending managed approvals for current worker memberships.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamManagedApprovalPage"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "See normative status mapping.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1223,6 +1281,12 @@
               "accept",
               "decline"
             ]
+          },
+          "expectedTeamId": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "description": "Require the approval agent to remain a current worker of this team; a transfer returns approval_team_mismatch."
           }
         },
         "required": [
@@ -1279,7 +1343,8 @@
               "operation_removed",
               "unsupported_capability",
               "cursor_expired",
-              "internal_error"
+              "internal_error",
+              "approval_team_mismatch"
             ]
           },
           "message": {
@@ -1342,6 +1407,73 @@
           "type",
           "cursor",
           "request"
+        ],
+        "additionalProperties": false
+      },
+      "ManagedApprovalAgent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "TeamManagedApproval": {
+        "type": "object",
+        "properties": {
+          "approval": {
+            "$ref": "#/components/schemas/Approval"
+          },
+          "request": {
+            "$ref": "#/components/schemas/AgentRequest"
+          },
+          "agent": {
+            "$ref": "#/components/schemas/ManagedApprovalAgent"
+          }
+        },
+        "required": [
+          "approval",
+          "request",
+          "agent"
+        ],
+        "additionalProperties": false
+      },
+      "TeamManagedApprovalPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TeamManagedApproval"
+            },
+            "maxItems": 100
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
         ],
         "additionalProperties": false
       }

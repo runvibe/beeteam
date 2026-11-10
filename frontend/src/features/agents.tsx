@@ -6,6 +6,7 @@ import {
 } from "@/components/team-role-icon";
 import { AgentLatestActivity } from "./agent-latest-activity";
 import { AgentChats } from "./agent-chats";
+import { AgentManagedDetails } from "./agent-managed-details";
 import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -333,6 +334,7 @@ function AgentDetail({ id }: { id: string }) {
                 <Activities agentId={id} />
               </TabsContent>
               <TabsContent value="chats">
+                <AgentManagedDetails agentId={id} />
                 <AgentChats agentId={id} />
               </TabsContent>
             </Tabs>

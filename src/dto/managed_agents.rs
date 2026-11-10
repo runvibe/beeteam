@@ -4,6 +4,20 @@ use crate::dto::backend::{Failure, Result};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TeamManagedApproval {
+    pub approval: serde_json::Value,
+    pub request: serde_json::Value,
+    pub agent: ManagedApprovalAgent,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ManagedApprovalAgent {
+    pub id: Uuid,
+    pub name: String,
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SendAgentRequest {

@@ -21,6 +21,9 @@
   flex: 1;
   max-width: none;
 }
+.managed-agent-details .assistant-thread {
+  max-height: 32rem;
+}
 
 /* Toolbar */
 .assistant-toolbar {
@@ -29,8 +32,7 @@
   gap: 0.25rem;
   min-width: 0;
 }
-.assistant-pill,
-.managed-agent-selector select {
+.assistant-pill {
   appearance: none;
   min-width: 0;
   flex: 1;
@@ -47,12 +49,10 @@
   text-overflow: ellipsis;
   transition: border-color 150ms var(--chat-ease);
 }
-.assistant-pill:hover,
-.managed-agent-selector select:hover {
+.assistant-pill:hover {
   border-color: var(--muted-foreground);
 }
-.assistant-pill:focus-visible,
-.managed-agent-selector select:focus-visible {
+.assistant-pill:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 1px;
 }
@@ -74,6 +74,11 @@
 }
 .assistant-older {
   align-self: center;
+}
+.assistant-history-empty {
+  color: var(--muted-foreground);
+  text-align: center;
+  margin: auto;
 }
 .assistant-msg {
   min-width: 0;
@@ -385,13 +390,6 @@
   cursor: pointer;
   color: var(--muted-foreground);
   font-size: 0.8rem;
-}
-
-/* Agent selector rendered by the side panel above the chat. */
-.managed-agent-selector {
-  display: flex;
-  margin-bottom: 0.5rem;
-  min-width: 0;
 }
 
 @keyframes assistant-rise {

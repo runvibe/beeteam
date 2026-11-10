@@ -4,11 +4,11 @@
 
 **Have your own team of agentic bees.**
 
-The next managed-agent API is being developed contract-first in [the managed agents proposal](docs/proposals/managed-agents-contract.md). It lets clients address agents without supplying provider session IDs. Its proposed routes/tools are not active yet. Validate schemas, HTTP/MCP parity and generated TypeScript with `node docs/proposals/validate-managed-agents.mjs` after installing frontend dependencies.
+The managed-agent API is described in [the managed agents contract](docs/proposals/managed-agents-contract.md). It lets clients address agents without supplying provider session IDs. Validate schemas, HTTP/MCP parity and generated TypeScript with `node docs/proposals/validate-managed-agents.mjs` after installing frontend dependencies.
 
 Bee Team gives agents working in separate chats a shared board. A lead can ask one worker to write release notes while another checks the build. Each worker keeps its own chat context and records the decisions, evidence and blockers its teammates need.
 
-Bee Team integrates with assistants through **Skills and MCP**, rather than calling their providers' model APIs directly. Use it with **Codex, Claude Code, GitHub Copilot**, or another harness that supports the required Skills and MCP workflow. Your harness runs the agents and manages model access; Bee Team provides the shared workspace for coordination.
+Bee Team integrates with external assistants through **Skills and MCP**. Use it with **Codex, Claude Code, GitHub Copilot**, or another harness that supports that workflow: the harness runs the agents and manages model access, while Bee Team provides shared coordination. The optional managed workflow instead runs Bee Team-owned Codex sessions through the locally configured runtime.
 
 During delegated work, workers record questions in Bee Team and notify the leader who assigned the task. The leader asks you for any decision and records your answer for the worker.
 
@@ -125,7 +125,7 @@ Every database starts with **Bee Team HQ**, a system team led by **Bee Team Guid
 
 ### Open the integrated leader chat
 
-Run the configured local backend on a loopback address, open the panel, select a team and open Chat with the leader. The chat stays in a separate, resizable side panel while navigating boards and tasks. Settings > Appearance > Chat position selects left or right and saves the layout on this device. Collapsing or moving the panel preserves its current draft. Long detail pages retain their independent content scrolling beside the chat panel. Choose an existing absolute project directory and create a Bee Team-owned session. The creation form configures web search, command network access, additional skill directories and selected existing MCP servers. Existing external references require an explicit replacement; their history is retained.
+Run the configured local backend on a loopback address and open the chat panel. Each team chat addresses its current leader; use "Choose team" to switch teams. The resizable panel stays open while navigating boards and tasks. Settings > Appearance > Chat position selects left or right and saves the layout on this device. Collapsing or moving the panel preserves its current draft. Long detail pages retain their independent content scrolling beside the chat panel. Managed execution settings configure web search, command network access, additional skill directories and selected existing MCP servers; Bee Team owns the workspace.
 
 The chat shows persistent messages, tool activity and per-action approvals. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
 
@@ -137,12 +137,14 @@ New record creation and update metadata use microsecond precision, shared by Pos
 
 ### Managed-agent review flow
 
-The review branch provides `/api/v2/agents/{agentId}/execution-config` and `/requests`, plus the matching MCP tools. Open a team's chat side panel, configure an existing absolute project folder, then send a request. Bee Team creates its own Codex thread on first use. New conversations have separate context; requests for the same agent queue serially. Choose the same conversation to continue. The panel supports request cancellation, original-request approvals and uncertain-outcome reconciliation; it keeps the saved left/right position. An external MCP caller sends requests and polls their IDs, without claiming the agent or supplying provider IDs.
+The review branch provides `/api/v2/agents/{agentId}/execution-config` and `/requests`, plus the matching MCP tools. Configure the leader in the team chat and send a request. Bee Team creates its own Codex thread on first use. New conversations have separate context; requests for the same agent queue serially. Choose the same conversation to continue. The panel supports request cancellation, original-request approvals and uncertain-outcome reconciliation; it keeps the saved left/right position. HTTP/MCP callers can still send requests directly to workers and poll their IDs, without claiming the agent or supplying provider IDs.
 
 Existing data is preserved by additive SQLite/PostgreSQL migrations. Configuring a managed agent retires its legacy binding writes. Unconfigured legacy agents remain compatible pending the global cutover; old chat history remains available through legacy reads. No external Desktop session is imported. The installed Codex runtime and login still need to be configured locally.
 
-In the managed review panel, choose the leader or a worker from the agent selector. Enter the project folder and any existing MCP server names/skill directories needed for that work. These settings do not install tools or authenticate Codex. Conversation/worker-summary notices use the same durable queue, including a deferred outbox when the queue is full. Native provider output remains connected through completion; very large text is explicitly shortened at the public 65536-byte display limit.
+Configure and inspect each worker's managed execution under the agent's Chats tab. Its managed history is read-only there, with approval, cancellation and reconciliation controls; external chat references remain separate. Pending worker approvals also appear in the team chat, even without an active leader conversation. They follow the worker's current team; if a worker has no team, its controls remain in the agent details. HTTP `GET /api/v2/teams/{teamId}/managed-approvals` and MCP `listTeamManagedApprovals` provide the same paginated list. Decisions use the original approval version and idempotency key.
+
+Enter any existing MCP server names and skill directories needed for that work. These settings do not install tools or authenticate Codex. Without managed configuration, managed dispatch is not queued; external MCP/skills workflows remain available. Conversation/worker-summary notices use the same durable queue, including a deferred outbox when the queue is full. Native provider output remains connected through completion; very large text is explicitly shortened at the public 65536-byte display limit.
 
 Managed agent workspaces: Bee Team always creates and reuses `~/.beeteam/workspaces/<agent-id>`. HTTP/MCP requests and chat settings cannot choose a project folder. The directory is checked and recreated if missing before every execution, including conversation resumption. Old stored paths are ignored for execution; existing files and conversation history are preserved. Files remain separate from the SQLite database.
 
-The chat button is always available in the app header. Choose a team inside the panel on first use; the selected team and open/closed state are restored after reload.
+The chat button is always available in the app header. HQ opens by default; the selected team and open/closed state are restored after reload.

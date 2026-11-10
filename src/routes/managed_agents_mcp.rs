@@ -30,6 +30,7 @@ pub async fn call(state: &AppState, name: &str, args: Value) -> Result<Value> {
         "sendAgentRequest" => "send",
         "listAgentRequests" => "requests",
         "listAgentConversations" => "conversations",
+        "listTeamManagedApprovals" => "team-approvals",
         "getAgentRequest" => "snapshot",
         "listAgentConversationMessages" => "messages",
         "cancelAgentRequest" => "cancel",

@@ -62,6 +62,22 @@
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+.chat-panel-leader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.25rem 0 0.5rem;
+  font-size: 0.8rem;
+}
+.chat-panel-leader span {
+  color: var(--muted-foreground);
+}
+.chat-panel-leader strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .chat-panel-body .leader-chat {
   max-width: none;
 }

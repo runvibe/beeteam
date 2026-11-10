@@ -71,17 +71,17 @@ impl ManagedAgentService {
                             "Legacy work must finish or be reconciled first",
                         ));
                     }
-                    let provider = self.provider
-                        .as_ref()
-                        .ok_or_else(|| {
-                            Failure::new(
-                                "provider_unavailable",
-                                "Configure the local Codex runtime first",
-                            )
-                        })?;
-                    let project_root = provider.default_workspace(id)
+                    let provider = self.provider.as_ref().ok_or_else(|| {
+                        Failure::new(
+                            "provider_unavailable",
+                            "Configure the local Codex runtime first",
+                        )
+                    })?;
+                    let project_root = provider
+                        .default_workspace(id)
                         .map_err(|e| Failure::new(e.code, e.message))?;
-                    provider.validate(
+                    provider
+                        .validate(
                             &project_root,
                             &serde_json::to_value(config.tool_profile).unwrap(),
                         )
@@ -201,10 +201,37 @@ impl ManagedAgentService {
                         "Approval is no longer pending",
                     ));
                 }
-                if c.body.as_object().is_none_or(|o| o.len() != 1)
-                    || !matches!(c.body["decision"].as_str(), Some("accept" | "decline"))
+                if c.body.as_object().is_none_or(|o| {
+                    o.keys()
+                        .any(|key| key != "decision" && key != "expectedTeamId")
+                }) || !matches!(c.body["decision"].as_str(), Some("accept" | "decline"))
                 {
                     return Err(Failure::invalid("Choose accept or decline"));
+                }
+                if let Some(value) = c.body.get("expectedTeamId") {
+                    let team_text = value
+                        .as_str()
+                        .ok_or_else(|| Failure::invalid("expectedTeamId must be a UUIDv7"))?;
+                    let team_id = crate::dto::backend::parse_id(team_text)?;
+                    if !team_text.eq_ignore_ascii_case(&team_id.hyphenated().to_string()) {
+                        return Err(Failure::invalid(
+                            "expectedTeamId must use canonical UUID form",
+                        ));
+                    }
+                    let agent_id = r.reference("agentId").ok_or_else(Failure::missing)?;
+                    let is_worker = u.records.get("teams", team_id).is_ok_and(|team| {
+                        team.reference("leaderId") != Some(agent_id)
+                            && u.records.list("memberships").iter().any(|membership| {
+                                membership.reference("agentId") == Some(agent_id)
+                                    && membership.reference("teamId") == Some(team_id)
+                            })
+                    });
+                    if !is_worker {
+                        return Err(Failure::new(
+                            "approval_team_mismatch",
+                            "Approval agent is no longer a worker of the expected team",
+                        ));
+                    }
                 }
                 let rid = r.reference("requestId").unwrap();
                 if !self

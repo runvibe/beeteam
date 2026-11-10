@@ -46,12 +46,16 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
         body,
         key,
       ),
-    conversations: (id: string) =>
+    conversations: (id: string, cursor?: string) =>
       request<S["ConversationPage"]>(
-        `/agents/${encodeURIComponent(id)}/conversations`,
+        `/agents/${encodeURIComponent(id)}/conversations${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
       ),
-    requests: (id: string) =>
-      request<S["RequestPage"]>(`/agents/${encodeURIComponent(id)}/requests`),
+    requests: (id: string, cursor?: string) =>
+      request<S["RequestPage"]>(`/agents/${encodeURIComponent(id)}/requests${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
+    teamApprovals: (id: string, cursor?: string) =>
+      request<S["TeamManagedApprovalPage"]>(
+        `/teams/${encodeURIComponent(id)}/managed-approvals${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
+      ),
     snapshot: (id: string) =>
       request<ManagedSnapshot>(`/agent-requests/${encodeURIComponent(id)}`),
     messages: (id: string, cursor?: string) =>
@@ -77,10 +81,11 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
       version: number,
       decision: "accept" | "decline",
       key: string,
+      expectedTeamId?: string,
     ) =>
       write<S["Approval"]>(
         `/agent-approvals/${id}/decision`,
-        { decision },
+        { decision, ...(expectedTeamId ? { expectedTeamId } : {}) },
         key,
         version,
       ),

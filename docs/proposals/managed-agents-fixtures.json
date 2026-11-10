@@ -432,5 +432,119 @@
         "skillRoots": []
       }
     }
+  },
+  {
+    "schema": "TeamManagedApprovalPage",
+    "valid": true,
+    "value": {
+      "items": [
+        {
+          "approval": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "requestId": "019a629b-4512-7000-8000-000000000001",
+            "agentId": "019a629b-4512-7000-8000-000000000001",
+            "version": 1,
+            "kind": "network",
+            "description": "Allow network access",
+            "state": "pending",
+            "expiresAt": null
+          },
+          "request": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "agentId": "019a629b-4512-7000-8000-000000000001",
+            "conversationId": "019a629b-4512-7000-8000-000000000001",
+            "taskId": null,
+            "configurationVersion": 1,
+            "version": 1,
+            "state": "accepted",
+            "origin": {
+              "transport": "mcp",
+              "label": null
+            },
+            "createdAt": "2026-11-09T17:00:00Z",
+            "updatedAt": "2026-11-09T17:00:00Z",
+            "error": null
+          },
+          "agent": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "name": "Worker"
+          }
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "schema": "TeamManagedApprovalPage",
+    "valid": false,
+    "value": {
+      "items": [
+        {
+          "approval": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "requestId": "019a629b-4512-7000-8000-000000000001",
+            "agentId": "019a629b-4512-7000-8000-000000000001",
+            "version": 1,
+            "kind": "network",
+            "description": "Allow network access",
+            "state": "pending",
+            "expiresAt": null
+          },
+          "request": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "agentId": "019a629b-4512-7000-8000-000000000001",
+            "conversationId": "019a629b-4512-7000-8000-000000000001",
+            "taskId": null,
+            "configurationVersion": 1,
+            "version": 1,
+            "state": "accepted",
+            "origin": {
+              "transport": "mcp",
+              "label": null
+            },
+            "createdAt": "2026-11-09T17:00:00Z",
+            "updatedAt": "2026-11-09T17:00:00Z",
+            "error": null
+          },
+          "agent": {
+            "id": "019a629b-4512-7000-8000-000000000001",
+            "name": "Worker",
+            "sessionId": "private"
+          }
+        }
+      ],
+      "nextCursor": null
+    }
+  },
+  {
+    "schema": "ApprovalDecision",
+    "valid": true,
+    "value": {
+      "decision": "accept",
+      "expectedTeamId": "019a629b-4512-7000-8000-000000000001"
+    }
+  },
+  {
+    "schema": "ApprovalDecision",
+    "valid": true,
+    "value": {
+      "decision": "decline"
+    }
+  },
+  {
+    "schema": "ApprovalDecision",
+    "valid": false,
+    "value": {
+      "decision": "accept",
+      "expectedTeamId": null
+    }
+  },
+  {
+    "schema": "ApprovalDecision",
+    "valid": false,
+    "value": {
+      "decision": "accept",
+      "expectedTeamId": "019a629b451270008000000000000001"
+    }
   }
 ]

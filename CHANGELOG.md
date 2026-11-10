@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Address each team's chat to its leader, manage worker execution and read-only history from agent details, and review pending worker approvals in the team panel even without an active leader conversation. Approvals follow current team membership; direct worker requests through HTTP/MCP remain available.
+
 - Redesign the agent chat as an AI-assistant thread: user messages in bubbles, agent replies with a hexagonal mark that pulses while work runs, inline status and approval cards, an auto-growing composer that sends with Enter, compact conversation/settings controls, and Bee Team HQ starter prompts for creating teams, agents and boards.
 
 - Seed a protected **Bee Team HQ** team on every database, led by the **Bee Team Guide** agent and with a **Getting started** board, so a fresh installation opens a ready chat for creating teams, agents and boards. HQ resources are marked as system resources, cannot be archived or reassigned through HTTP/MCP, and an untouched seed does not block portable restore.

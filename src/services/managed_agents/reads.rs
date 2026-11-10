@@ -26,6 +26,13 @@ fn page(rows: Vec<&Record>, limit: usize, owner: Uuid, kind: &str, ascending: bo
 impl ManagedAgentService {
     pub async fn read(&self, mut c: Command) -> Result<Value> {
         self.recover().await?;
+        if c.operation == "managed:team-approvals" {
+            if let Some(value) = c.query.get("limit") {
+                if !value.as_u64().is_some_and(|n| (1..=100).contains(&n)) {
+                    return Err(Failure::invalid("limit must be 1..100"));
+                }
+            }
+        }
         let owner = c
             .params
             .values()
@@ -49,6 +56,47 @@ impl ManagedAgentService {
         let limit = c.q("limit").as_u64().unwrap_or(50).clamp(1, 100) as usize;
         let out = match c.operation.as_str() {
             "managed:config" => configuration(r, c.id("agentId")?)?,
+            "managed:team-approvals" => {
+                r.get("teams", owner)?;
+                let mut approvals = r.list("managed_approvals");
+                approvals.sort_by_key(|row| std::cmp::Reverse(row.id));
+                let more = approvals.len() > limit;
+                approvals.truncate(limit);
+                let next = if more {
+                    approvals
+                        .last()
+                        .map(|row| format!("team-approvals:{owner}:{}", row.id))
+                } else {
+                    None
+                };
+                let items = approvals
+                    .into_iter()
+                    .map(|approval| {
+                        let request = r.get(
+                            "managed_requests",
+                            approval
+                                .reference("requestId")
+                                .ok_or_else(Failure::missing)?,
+                        )?;
+                        let agent = r.get(
+                            "agents",
+                            approval.reference("agentId").ok_or_else(Failure::missing)?,
+                        )?;
+                        Ok(TeamManagedApproval {
+                            approval: public(approval),
+                            request: public(request),
+                            agent: ManagedApprovalAgent {
+                                id: agent.id,
+                                name: agent.data["name"]
+                                    .as_str()
+                                    .ok_or_else(Failure::missing)?
+                                    .to_owned(),
+                            },
+                        })
+                    })
+                    .collect::<Result<Vec<_>>>()?;
+                json!({"items":items, "nextCursor":next})
+            }
             "managed:requests" => {
                 r.get("agents", owner)?;
                 page(r.list("managed_requests"), limit, owner, "requests", false)

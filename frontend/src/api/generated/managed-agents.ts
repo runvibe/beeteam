@@ -143,6 +143,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/teams/{teamId}/managed-approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listTeamManagedApprovals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -259,6 +275,11 @@ export interface components {
         ApprovalDecision: {
             /** @enum {unknown} */
             decision: "accept" | "decline";
+            /**
+             * Format: uuid
+             * @description Require the approval agent to remain a current worker of this team; a transfer returns approval_team_mismatch.
+             */
+            expectedTeamId?: string;
         };
         RequestSnapshot: {
             request: components["schemas"]["AgentRequest"];
@@ -268,7 +289,7 @@ export interface components {
         };
         Error: {
             /** @enum {unknown} */
-            code: "invalid_request" | "payload_too_large" | "not_found" | "local_action_forbidden" | "configuration_busy" | "configuration_changed" | "conversation_mismatch" | "queue_full" | "idempotency_conflict" | "version_conflict" | "approval_expired" | "outcome_unknown" | "operation_removed" | "unsupported_capability" | "cursor_expired" | "internal_error";
+            code: "invalid_request" | "payload_too_large" | "not_found" | "local_action_forbidden" | "configuration_busy" | "configuration_changed" | "conversation_mismatch" | "queue_full" | "idempotency_conflict" | "version_conflict" | "approval_expired" | "outcome_unknown" | "operation_removed" | "unsupported_capability" | "cursor_expired" | "internal_error" | "approval_team_mismatch";
             message: string & (unknown & unknown);
             retryable: boolean;
         };
@@ -279,6 +300,20 @@ export interface components {
             type: "request.updated" | "snapshot.required";
             cursor: string & (unknown & unknown);
             request: components["schemas"]["AgentRequest"];
+        };
+        ManagedApprovalAgent: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        TeamManagedApproval: {
+            approval: components["schemas"]["Approval"];
+            request: components["schemas"]["AgentRequest"];
+            agent: components["schemas"]["ManagedApprovalAgent"];
+        };
+        TeamManagedApprovalPage: {
+            items: components["schemas"]["TeamManagedApproval"][];
+            nextCursor: string | null;
         };
     };
     responses: never;
@@ -654,6 +689,40 @@ export interface operations {
                 };
                 content: {
                     "text/event-stream": string;
+                };
+            };
+            /** @description See normative status mapping. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listTeamManagedApprovals: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                teamId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pending managed approvals for current worker memberships. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamManagedApprovalPage"];
                 };
             };
             /** @description See normative status mapping. */

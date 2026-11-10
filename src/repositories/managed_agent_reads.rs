@@ -8,6 +8,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
     let mut r = Records::default();
     for (key, table) in [
         ("agentId", "agents"),
+        ("teamId", "teams"),
         ("requestId", "managed_requests"),
         ("conversationId", "managed_conversations"),
     ] {
@@ -22,6 +23,34 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
         .unwrap_or("ffffffff-ffff-ffff-ffff-ffffffffffff")
         .to_owned();
     match c.operation.as_str() {
+        "managed:team-approvals" => {
+            let rows = sqlx::query("SELECT a.* FROM managed_approvals a JOIN memberships m ON CAST(m.agent_id AS TEXT)=a.data->>'agentId' AND m.deleted_at IS NULL JOIN agents ag ON ag.id=m.agent_id AND ag.deleted_at IS NULL JOIN managed_requests q ON CAST(q.id AS TEXT)=a.data->>'requestId' AND q.deleted_at IS NULL WHERE a.deleted_at IS NULL AND a.data->>'state'='pending' AND CAST(m.team_id AS TEXT)=$1 AND CAST(a.id AS TEXT)<$2 ORDER BY a.id DESC LIMIT $3")
+                .bind(c.id("teamId")?.to_string()).bind(&before).bind(limit + 1)
+                .fetch_all(&mut **tx).await?;
+            let mut agent_ids = Vec::new();
+            let mut request_ids = Vec::new();
+            for (i, row) in rows.iter().enumerate() {
+                let approval = super::reads::record("managed_approvals", row);
+                if i < limit as usize {
+                    if let Some(id) = approval.reference("agentId") {
+                        agent_ids.push(id.to_string());
+                    }
+                    if let Some(id) = approval.reference("requestId") {
+                        request_ids.push(id.to_string());
+                    }
+                }
+                r.insert(approval);
+            }
+            for (table, ids) in [("agents", agent_ids), ("managed_requests", request_ids)] {
+                let sql = match table {
+                    "agents" => "SELECT * FROM agents WHERE deleted_at IS NULL AND CAST(id AS TEXT)=ANY($1)",
+                    _ => "SELECT * FROM managed_requests WHERE deleted_at IS NULL AND CAST(id AS TEXT)=ANY($1)",
+                };
+                for row in sqlx::query(sql).bind(ids).fetch_all(&mut **tx).await? {
+                    r.insert(super::reads::record(table, &row));
+                }
+            }
+        }
         "managed:work" => {
             load(
                 tx,

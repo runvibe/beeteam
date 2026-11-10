@@ -8,6 +8,7 @@ import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/shared";
 import { ManagedAgentChat } from "./managed-agent-chat";
+import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
 import "./chat-side-panel.css";
 
@@ -164,38 +165,21 @@ function PanelLeader({
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
-  const [selected, setSelected] = useState(leaderId);
-  const members = useQuery({
-    queryKey: ["chat-team-members", teamId],
-    enabled: !!api.managedAgents,
-    queryFn: () => api.list("members", teamId, { limit: 100 }),
-  });
   if (api.managedAgents)
     return (
       <>
-        <label className="managed-agent-selector">
-          <span className="sr-only">{t("common.agents")}</span>
-          <select
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-          >
-            <option value={leaderId}>{leader.data?.name ?? leaderId}</option>
-            {members.data?.items
-              .filter((m) => m.agentId !== leaderId && !m.agentArchivedAt)
-              .map((m) => (
-                <option key={m.agentId} value={m.agentId}>
-                  {m.name}
-                </option>
-              ))}
-          </select>
-        </label>
+        <div className="chat-panel-leader">
+          <span>{t("common.leader")}</span>
+          <strong>{leader.data?.name ?? leaderId}</strong>
+        </div>
+        <TeamManagedApprovals key={teamId} teamId={teamId} api={api.managedAgents} />
         <ManagedAgentChat
-          key={selected}
+          key={leaderId}
           api={api.managedAgents}
-          agentId={selected}
+          agentId={leaderId}
           legacyApi={api.leaderChat}
           teamId={teamId}
-          starters={system && selected === leaderId}
+          starters={system}
         />
       </>
     );

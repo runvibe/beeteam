@@ -3,6 +3,10 @@ use serde_json::{json, Value};
 
 #[test]
 fn shared_json_schema_fixtures_match_rust_validation() {
+    let document: Value = serde_json::from_str(include_str!(
+        "../docs/proposals/managed-agents-openapi.json"
+    ))
+    .unwrap();
     let fixtures: Vec<Value> = serde_json::from_str(include_str!(
         "../docs/proposals/managed-agents-fixtures.json"
     ))
@@ -15,6 +19,12 @@ fn shared_json_schema_fixtures_match_rust_validation() {
             }
             "ExecutionConfiguration" => serde_json::from_value::<ExecutionConfiguration>(body)
                 .is_ok_and(|v| v.validate().is_ok()),
+            "TeamManagedApprovalPage" => beeteam::dto::contracts::validate_schema(
+                &document,
+                &document["components"]["schemas"]["TeamManagedApprovalPage"],
+                &body,
+            )
+            .is_ok(),
             _ => continue,
         };
         assert_eq!(accepted, fixture["valid"].as_bool().unwrap(), "{fixture}");

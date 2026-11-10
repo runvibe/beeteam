@@ -69875,6 +69875,12 @@
                   "accept",
                   "decline"
                 ]
+              },
+              "expectedTeamId": {
+                "description": "Require the approval agent to remain a current worker of this team; a transfer returns approval_team_mismatch.",
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
               }
             },
             "required": [
@@ -69989,6 +69995,349 @@
               "description",
               "state",
               "expiresAt"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "teamId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "teamId"
+            ],
+            "type": "object"
+          },
+          "query": {
+            "additionalProperties": false,
+            "properties": {
+              "cursor": {
+                "maxLength": 2048,
+                "type": "string"
+              },
+              "limit": {
+                "default": 50,
+                "maximum": 100,
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "listTeamManagedApprovals",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "agent": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "type": "object"
+                    },
+                    "approval": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "agentId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "description": {
+                          "allOf": [
+                            {
+                              "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                            },
+                            {
+                              "pattern": "^[^\\u0000]*$"
+                            }
+                          ],
+                          "maxLength": 8192,
+                          "minLength": 1,
+                          "type": "string",
+                          "x-maxBytes": 8192
+                        },
+                        "expiresAt": {
+                          "anyOf": [
+                            {
+                              "format": "date-time",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "kind": {
+                          "enum": [
+                            "command",
+                            "file_change",
+                            "network"
+                          ]
+                        },
+                        "requestId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "state": {
+                          "enum": [
+                            "pending",
+                            "accepted",
+                            "declined",
+                            "expired"
+                          ]
+                        },
+                        "version": {
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "requestId",
+                        "agentId",
+                        "version",
+                        "kind",
+                        "description",
+                        "state",
+                        "expiresAt"
+                      ],
+                      "type": "object"
+                    },
+                    "request": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "agentId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "configurationVersion": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "conversationId": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "error": {
+                          "anyOf": [
+                            {
+                              "additionalProperties": false,
+                              "properties": {
+                                "code": {
+                                  "enum": [
+                                    "needs_configuration",
+                                    "needs_auth",
+                                    "provider_unavailable",
+                                    "execution_failed",
+                                    "configuration_changed",
+                                    "cancelled",
+                                    "outcome_unknown"
+                                  ]
+                                },
+                                "message": {
+                                  "allOf": [
+                                    {
+                                      "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                                    },
+                                    {
+                                      "pattern": "^[^\\u0000]*$"
+                                    }
+                                  ],
+                                  "maxLength": 2048,
+                                  "minLength": 1,
+                                  "type": "string",
+                                  "x-maxBytes": 2048
+                                },
+                                "retryable": {
+                                  "type": "boolean"
+                                }
+                              },
+                              "required": [
+                                "code",
+                                "message",
+                                "retryable"
+                              ],
+                              "type": "object"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "id": {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        "origin": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "label": {
+                              "anyOf": [
+                                {
+                                  "allOf": [
+                                    {
+                                      "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                                    },
+                                    {
+                                      "pattern": "^[^\\u0000]*$"
+                                    }
+                                  ],
+                                  "maxLength": 200,
+                                  "minLength": 1,
+                                  "type": "string",
+                                  "x-maxBytes": 200
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "transport": {
+                              "enum": [
+                                "http",
+                                "mcp",
+                                "conversation",
+                                "summary_notice"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "transport",
+                            "label"
+                          ],
+                          "type": "object"
+                        },
+                        "state": {
+                          "enum": [
+                            "accepted",
+                            "preparing",
+                            "queued",
+                            "running",
+                            "awaiting_approval",
+                            "completed",
+                            "failed",
+                            "cancelled",
+                            "uncertain"
+                          ]
+                        },
+                        "taskId": {
+                          "anyOf": [
+                            {
+                              "format": "uuid",
+                              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "updatedAt": {
+                          "format": "date-time",
+                          "type": "string"
+                        },
+                        "version": {
+                          "minimum": 1,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "agentId",
+                        "conversationId",
+                        "taskId",
+                        "configurationVersion",
+                        "version",
+                        "state",
+                        "origin",
+                        "createdAt",
+                        "updatedAt",
+                        "error"
+                      ],
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "approval",
+                    "request",
+                    "agent"
+                  ],
+                  "type": "object"
+                },
+                "maxItems": 100,
+                "type": "array"
+              },
+              "nextCursor": {
+                "anyOf": [
+                  {
+                    "maxLength": 2048,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "items",
+              "nextCursor"
             ],
             "type": "object"
           }

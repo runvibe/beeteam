@@ -27,6 +27,7 @@ pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
         )
         .route("/api/v2/agents/{agentId}/requests", get(read).post(write))
         .route("/api/v2/agents/{agentId}/conversations", get(read))
+        .route("/api/v2/teams/{teamId}/managed-approvals", get(read))
         .route("/api/v2/agent-requests/{requestId}", get(read))
         .route("/api/v2/agent-requests/{requestId}/events", get(events))
         .route("/api/v2/agent-requests/{requestId}/cancel", post(write))
@@ -80,7 +81,9 @@ async fn read(
     Query(q): Query<BTreeMap<String, String>>,
 ) -> Response {
     let result = async {
-        let op = if path.as_str().ends_with("/execution-config") {
+        let op = if path.as_str().ends_with("/managed-approvals") {
+            "team-approvals"
+        } else if path.as_str().ends_with("/execution-config") {
             "config"
         } else if path.as_str().ends_with("/messages") {
             "messages"
