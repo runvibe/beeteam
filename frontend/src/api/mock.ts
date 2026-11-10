@@ -200,6 +200,8 @@ export function createMockApi(
             (!f.teamId || (r.bindings as Row)[`${f.role}TeamId`] === f.teamId)
           : r.role === f.role,
       );
+    if (f.system !== undefined && ["agents", "teams", "boards"].includes(resource))
+      rows = rows.filter((r) => Boolean(r.system) === f.system);
     if (f.rootOnly) rows = rows.filter((r) => r.parentId === null);
     if (f.blocked !== undefined)
       rows = rows.filter(

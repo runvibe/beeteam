@@ -78,6 +78,7 @@ export interface Filters {
   includeArchived?: boolean;
   rootOnly?: boolean;
   archived?: boolean;
+  system?: boolean;
   blocked?: boolean;
   role?: "leader" | "worker";
   relation?: "authored" | "executing" | "worked" | "any";

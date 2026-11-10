@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware";
 
 type ChatPanelState = {
   teamId: string | null;
+  /** True while the user is choosing a team; otherwise no selection means the system team. */
+  picking: boolean;
   open: boolean;
   side: "left" | "right";
   width: number;
@@ -17,22 +19,24 @@ export const useChatPanel = create<ChatPanelState>()(
   persist(
     (set) => ({
       teamId: null,
-      open: false,
+      picking: false,
+      open: true,
       side: "right",
       width: 440,
-      openTeam: (teamId) => set({ teamId, open: true }),
+      openTeam: (teamId) => set({ teamId, picking: false, open: true }),
       close: () => set({ open: false }),
       show: () => set({ open: true }),
-      chooseTeam: () => set({ teamId: null, open: true }),
+      chooseTeam: () => set({ teamId: null, picking: true, open: true }),
       setSide: (side) => set({ side }),
       setWidth: (width) => set({ width: Math.min(720, Math.max(320, width)) }),
     }),
     {
       name: "beeteam-chat-panel",
-      partialize: ({ side, width, teamId, open }) => ({
+      partialize: ({ side, width, teamId, picking, open }) => ({
         side,
         width,
         teamId,
+        picking,
         open,
       }),
     },

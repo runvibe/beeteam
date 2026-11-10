@@ -31,7 +31,8 @@ export function ChatPanelToggle() {
 
 export function ChatWorkspace({ children }: { children: ReactNode }) {
   useLocale();
-  const { teamId, open, side, width, close, setWidth } = useChatPanel();
+  const { teamId, picking, open, side, width, close, setWidth } =
+    useChatPanel();
   return (
     <div
       className="chat-workspace"
@@ -99,13 +100,30 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
           <div className="chat-panel-body">
             {teamId ? (
               <PanelTeam key={teamId} teamId={teamId} />
-            ) : (
+            ) : picking ? (
               <PanelTeamPicker />
+            ) : (
+              <PanelDefault />
             )}
           </div>
         </aside>
       )}
     </div>
+  );
+}
+/** Without an explicit selection, the panel opens the protected Bee Team HQ guide. */
+function PanelDefault() {
+  const api = useApi();
+  const system = useQuery({
+    queryKey: ["chat-system-team"],
+    queryFn: () => api.list("teams", "", { system: true, limit: 1 }),
+  });
+  const hq = system.data?.items[0];
+  return (
+    <QueryState query={system}>
+      {system.data &&
+        (hq ? <PanelTeam key={hq.id} teamId={hq.id} /> : <PanelTeamPicker />)}
+    </QueryState>
   );
 }
 function PanelTeam({ teamId }: { teamId: string }) {

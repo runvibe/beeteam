@@ -41,6 +41,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { SystemBadge } from "@/components/system-badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -136,6 +137,7 @@ export function Teams() {
                     >
                       <CardHeader>
                         <CardTitle>{t.name}</CardTitle>
+                        <SystemBadge system={t.system} />
                       </CardHeader>
                       <CardContent>
                         <CardExcerpt
@@ -212,7 +214,8 @@ function TeamDetail({ id }: { id: string }) {
                   <dd>
                     {q.data.archivedAt
                       ? tr("common.archived")
-                      : tr("agents.active")}
+                      : tr("agents.active")}{" "}
+                    <SystemBadge system={q.data.system} />
                   </dd>
                 </div>
                 <div>

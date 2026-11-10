@@ -6,19 +6,22 @@ import { useChatPanel } from "@/state/chat-panel";
 import { setLocalePreference } from "@/i18n";
 import { ChatWorkspace, ChatPanelToggle } from "./chat-side-panel";
 
+const systemTeams = vi.hoisted(() => ({
+  items: [{ id: "hq", name: "Bee Team HQ", system: true }] as unknown[],
+}));
 vi.mock("@/api/context", () => ({
   useApi: () => ({
-    list: async () => ({
-      items: [{ id: "team-a", name: "Team A" }],
-      total: 1,
-      offset: 0,
-      limit: 20,
-    }),
+    list: async (_resource: string, _scope: string, filters?: { system?: boolean }) => {
+      const items = filters?.system
+        ? systemTeams.items
+        : [{ id: "team-a", name: "Team A" }];
+      return { items, total: items.length, offset: 0, limit: 20 };
+    },
   }),
-  useEntity: (resource: string) => ({
+  useEntity: (resource: string, id: string) => ({
     data:
       resource === "teams"
-        ? { name: "Team A", leaderId: "leader" }
+        ? { name: id === "hq" ? "Bee Team HQ" : "Team A", leaderId: "leader", system: id === "hq" }
         : { version: 1 },
   }),
 }));
@@ -63,9 +66,10 @@ it("preserves mounted chat draft through navigation, side change and collapse", 
   );
 });
 
-it("opens chat without a previously selected team", async () => {
+it("opens the Bee Team HQ guide by default and still lets users choose a team", async () => {
   setLocalePreference("en");
-  useChatPanel.setState({ teamId: null, open: false });
+  systemTeams.items = [{ id: "hq", name: "Bee Team HQ", system: true }];
+  useChatPanel.setState({ teamId: null, picking: false, open: false });
   render(
     <QueryClientProvider client={new QueryClient()}>
       <ChatPanelToggle />
@@ -77,8 +81,31 @@ it("opens chat without a previously selected team", async () => {
   await userEvent.click(
     screen.getByRole("button", { name: "Chat with the leader" }),
   );
+  expect(await screen.findByText("Bee Team HQ")).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Draft" })).toBeVisible();
+  await userEvent.click(screen.getByRole("button", { name: "Choose team" }));
+  await userEvent.click(await screen.findByRole("button", { name: "Team A" }));
+  expect(useChatPanel.getState()).toMatchObject({ teamId: "team-a", picking: false });
+  expect(screen.getByRole("textbox", { name: "Draft" })).toBeVisible();
+});
+it("falls back to the team picker when the API has no system team", async () => {
+  setLocalePreference("en");
+  systemTeams.items = [];
+  useChatPanel.setState({ teamId: null, picking: false, open: true });
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ChatWorkspace>
+        <main>Agent details</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
+  );
   await userEvent.click(await screen.findByRole("button", { name: "Team A" }));
   expect(screen.getByRole("textbox", { name: "Draft" })).toBeVisible();
+});
+it("opens the panel on first visit", async () => {
+  localStorage.removeItem("beeteam-chat-panel");
+  useChatPanel.setState(useChatPanel.getInitialState());
+  expect(useChatPanel.getState()).toMatchObject({ open: true, teamId: null, picking: false });
 });
 it("restores the selected team and panel visibility after reload", async () => {
   useChatPanel.getState().openTeam("team-a");
