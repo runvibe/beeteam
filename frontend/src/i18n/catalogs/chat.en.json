@@ -82,5 +82,9 @@
   "binding_chat_conflict": "This session already has a chat in another team. Open that team or create a different session.",
   "local_action_forbidden": "This action requires an authorized local origin. Open Bee Team through its configured local address.",
   "resizePanel": "Resize chat panel",
-  "closePanel": "Close chat panel"
+  "closePanel": "Close chat panel",
+  "chooseTeam": "Choose team",
+  "noTeams": "No teams available. Create a team to start chatting.",
+  "previousTeams": "Previous teams",
+  "nextTeams": "Next teams"
 }

@@ -13,8 +13,7 @@ import "./chat-side-panel.css";
 
 export function ChatPanelToggle() {
   useLocale();
-  const { teamId, open, openTeam, close } = useChatPanel();
-  if (!teamId) return null;
+  const { open, show, close } = useChatPanel();
   return (
     <Button
       variant="ghost"
@@ -23,7 +22,7 @@ export function ChatPanelToggle() {
       title={t("chat.title")}
       aria-expanded={open}
       aria-controls="leader-chat-panel"
-      onClick={() => (open ? close() : openTeam(teamId))}
+      onClick={() => (open ? close() : show())}
     >
       <MessageSquare />
     </Button>
@@ -41,7 +40,7 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
       style={{ "--chat-panel-width": `${width}px` } as CSSProperties}
     >
       {children}
-      {teamId && (
+      {(teamId || open) && (
         <aside
           id="leader-chat-panel"
           className="chat-side-panel"
@@ -98,7 +97,11 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
             </Button>
           </header>
           <div className="chat-panel-body">
-            <PanelTeam key={teamId} teamId={teamId} />
+            {teamId ? (
+              <PanelTeam key={teamId} teamId={teamId} />
+            ) : (
+              <PanelTeamPicker />
+            )}
           </div>
         </aside>
       )}
@@ -112,6 +115,9 @@ function PanelTeam({ teamId }: { teamId: string }) {
       {team.data && (
         <>
           <p className="chat-panel-team">{team.data.name}</p>
+          <Button variant="ghost" onClick={useChatPanel.getState().chooseTeam}>
+            {t("chat.chooseTeam")}
+          </Button>
           <PanelLeader teamId={teamId} leaderId={team.data.leaderId} />
         </>
       )}
@@ -169,5 +175,47 @@ function PanelLeader({
       leaderVersion={leader.data?.version}
       onSessionCreated={() => void leader.refetch()}
     />
+  );
+}
+
+function PanelTeamPicker() {
+  const api = useApi();
+  const [offset, setOffset] = useState(0);
+  const teams = useQuery({
+    queryKey: ["chat-teams", offset],
+    queryFn: () => api.list("teams", "", { limit: 20, offset, sortBy: "name" }),
+  });
+  return (
+    <section aria-label={t("chat.chooseTeam")}>
+      <p>{t("chat.chooseTeam")}</p>
+      <QueryState query={teams}>
+        {teams.data?.items.map((team) => (
+          <Button
+            key={team.id}
+            variant="ghost"
+            onClick={() => useChatPanel.getState().openTeam(team.id)}
+          >
+            {team.name}
+          </Button>
+        ))}
+        {teams.data?.total === 0 && <p>{t("chat.noTeams")}</p>}
+        <div>
+          {offset > 0 && (
+            <Button
+              variant="ghost"
+              onClick={() => setOffset(Math.max(0, offset - 20))}
+            >
+              {t("chat.previousTeams")}
+            </Button>
+          )}
+          {teams.data &&
+            offset + teams.data.items.length < teams.data.total && (
+              <Button variant="ghost" onClick={() => setOffset(offset + 20)}>
+                {t("chat.nextTeams")}
+              </Button>
+            )}
+        </div>
+      </QueryState>
+    </section>
   );
 }

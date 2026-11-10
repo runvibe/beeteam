@@ -140,3 +140,5 @@ Existing data is preserved by additive SQLite/PostgreSQL migrations. Configuring
 In the managed review panel, choose the leader or a worker from the agent selector. Enter the project folder and any existing MCP server names/skill directories needed for that work. These settings do not install tools or authenticate Codex. Conversation/worker-summary notices use the same durable queue, including a deferred outbox when the queue is full. Native provider output remains connected through completion; very large text is explicitly shortened at the public 65536-byte display limit.
 
 Managed agent workspaces: Bee Team always creates and reuses `~/.beeteam/workspaces/<agent-id>`. HTTP/MCP requests and chat settings cannot choose a project folder. The directory is checked and recreated if missing before every execution, including conversation resumption. Old stored paths are ignored for execution; existing files and conversation history are preserved. Files remain separate from the SQLite database.
+
+The chat button is always available in the app header. Choose a team inside the panel on first use; the selected team and open/closed state are restored after reload.

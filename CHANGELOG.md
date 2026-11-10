@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Keep the chat entry point visible without a selected team and restore the selected team and panel visibility after reload.
+
 - Fix integrated agent workspaces to `~/.beeteam/workspaces/<agent-id>`, recreate missing directories before execution, and remove folder selection from HTTP/MCP and chat. Preserve historical conversations and files in previously selected folders.
 
 - Implement managed-agent requests and conversations through HTTP/MCP, durable per-agent queues, owned Codex execution, approvals/recovery, and the existing chat side panel. Preserve legacy history and reject binding changes after explicit managed configuration.

@@ -82,5 +82,9 @@
   "binding_chat_conflict": "Esta sessão já tem um chat em outro time. Abra esse time ou crie outra sessão.",
   "local_action_forbidden": "Esta ação exige uma origem local autorizada. Abra o Bee Team pelo endereço local configurado.",
   "resizePanel": "Redimensionar painel de chat",
-  "closePanel": "Recolher painel de chat"
+  "closePanel": "Recolher painel de chat",
+  "chooseTeam": "Escolher time",
+  "noTeams": "Nenhum time disponível. Crie um time para iniciar o chat.",
+  "previousTeams": "Times anteriores",
+  "nextTeams": "Próximos times"
 }
