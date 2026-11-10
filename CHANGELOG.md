@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Seed a protected **Bee Team HQ** team on every database, led by the **Bee Team Guide** agent and with a **Getting started** board, so a fresh installation opens a ready chat for creating teams, agents and boards. HQ resources are marked as system resources, cannot be archived or reassigned through HTTP/MCP, and an untouched seed does not block portable restore.
+
 - Keep the chat entry point visible without a selected team and restore the selected team and panel visibility after reload.
 
 - Fix integrated agent workspaces to `~/.beeteam/workspaces/<agent-id>`, recreate missing directories before execution, and remove folder selection from HTTP/MCP and chat. Preserve historical conversations and files in previously selected folders.

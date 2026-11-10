@@ -29,7 +29,7 @@ On a fresh database there are no teams or agents. The chat side panel (`frontend
 
 ### Seed service
 
-- New module `src/services/onboarding/` exposing `ensure_onboarding_workspace`. It depends only on `repositories/contracts.rs`.
+- New module `src/services/backend/onboarding.rs` exposing `ensure` (implemented location; originally planned as `src/services/onboarding/`). It depends only on `repositories/contracts.rs`.
 - `src/main.rs` calls it once after migrations, before the HTTP/MCP listener starts. It runs in one serialized write transaction using the existing UnitOfWork (`BEGIN IMMEDIATE` on SQLite).
 - Behaviour:
   - If the onboarding team exists, do nothing. Never recreate, rewrite or reorder user-edited or archived onboarding tasks.
