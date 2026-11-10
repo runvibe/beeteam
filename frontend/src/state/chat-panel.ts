@@ -1,18 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+export type ChatPanelSide = "left" | "right";
 type ChatPanelState = {
   teamId: string | null;
   /** True while the user is choosing a team; otherwise no selection means the system team. */
   picking: boolean;
   open: boolean;
-  side: "left" | "right";
+  side: ChatPanelSide;
   width: number;
   openTeam: (teamId: string) => void;
   close: () => void;
   show: () => void;
   chooseTeam: () => void;
-  setSide: (side: "left" | "right") => void;
+  setSide: (side: ChatPanelSide) => void;
   setWidth: (width: number) => void;
 };
 export const useChatPanel = create<ChatPanelState>()(

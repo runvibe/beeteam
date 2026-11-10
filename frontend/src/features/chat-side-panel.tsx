@@ -1,15 +1,24 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CSSProperties, ReactNode } from "react";
-import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
+import {
+  ArrowLeftRight,
+  GripHorizontal,
+  MessageSquare,
+  PanelLeft,
+  PanelRight,
+  X,
+} from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { useChatPanel } from "@/state/chat-panel";
+import type { ChatPanelSide } from "@/state/chat-panel";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/shared";
 import { ManagedAgentChat } from "./managed-agent-chat";
 import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
+import { useChatPanelDock } from "./use-chat-panel-dock";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle() {
@@ -32,8 +41,23 @@ export function ChatPanelToggle() {
 
 export function ChatWorkspace({ children }: { children: ReactNode }) {
   useLocale();
-  const { teamId, picking, open, side, width, close, setWidth } =
+  const { teamId, picking, open, side, width, close, setWidth, setSide } =
     useChatPanel();
+  const [announcement, setAnnouncement] = useState("");
+  const dockTo = useCallback(
+    (next: ChatPanelSide) => {
+      setSide(next);
+      setAnnouncement(
+        t(next === "left" ? "chat.dockedLeft" : "chat.dockedRight"),
+      );
+    },
+    [setSide],
+  );
+  const dock = useChatPanelDock(dockTo);
+  const otherSide = side === "left" ? "right" : "left";
+  const moveLabel = t(
+    otherSide === "left" ? "chat.moveLeft" : "chat.moveRight",
+  );
   return (
     <div
       className="chat-workspace"
@@ -48,6 +72,15 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
           className="chat-side-panel"
           hidden={!open}
           aria-label={t("chat.title")}
+          data-dragging={dock.drag ? "true" : undefined}
+          style={
+            dock.drag
+              ? ({
+                  "--chat-drag-x": `${dock.drag.dx}px`,
+                  "--chat-drag-y": `${dock.drag.dy}px`,
+                } as CSSProperties)
+              : undefined
+          }
         >
           <div
             className="chat-panel-resizer"
@@ -86,8 +119,26 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
               event.currentTarget.releasePointerCapture(event.pointerId)
             }
           />
-          <header className="chat-panel-heading">
+          <header
+            className="chat-panel-heading"
+            data-draggable={dock.draggable ? "true" : undefined}
+            title={dock.draggable ? t("chat.dragToDock") : undefined}
+            onPointerDown={dock.onPointerDown}
+          >
+            {dock.draggable && (
+              <GripHorizontal className="chat-panel-grip" aria-hidden />
+            )}
             <strong>{t("chat.title")}</strong>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="chat-panel-move"
+              onClick={() => dockTo(otherSide)}
+              aria-label={moveLabel}
+              title={moveLabel}
+            >
+              {otherSide === "left" ? <PanelLeft /> : <PanelRight />}
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -107,7 +158,17 @@ export function ChatWorkspace({ children }: { children: ReactNode }) {
               <PanelDefault />
             )}
           </div>
+          <span className="sr-only" role="status" aria-live="polite">
+            {announcement}
+          </span>
         </aside>
+      )}
+      {dock.drag && (
+        <div
+          className="chat-dock-preview"
+          data-side={dock.drag.target}
+          aria-hidden
+        />
       )}
     </div>
   );

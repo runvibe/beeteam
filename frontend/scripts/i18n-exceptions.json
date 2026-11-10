@@ -283,5 +283,10 @@
     "file": "src/analytics/frame-client.ts",
     "text": "allow-scripts allow-same-origin",
     "reason": "Closed iframe sandbox capability tokens. The separate metrics origin prevents parent DOM/history access."
+  },
+  {
+    "file": "src/features/use-chat-panel-dock.ts",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
   }
 ]

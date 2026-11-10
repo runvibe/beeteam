@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Drag the chat panel by its header to dock it on the left or right with a blue snap preview, move it from the keyboard with a header button, and resize it with a visible edge handle while it splits the screen with the content.
+
 - Use a plain-text, multiline chat editor that preserves Markdown and existing keyboard shortcuts while removing rich formatting from pasted content.
 
 - Address each team's chat to its leader, manage worker execution and read-only history from agent details, and review pending worker approvals in the team panel even without an active leader conversation. Approvals follow current team membership; direct worker requests through HTTP/MCP remain available.
