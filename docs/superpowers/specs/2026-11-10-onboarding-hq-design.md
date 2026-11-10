@@ -40,7 +40,7 @@ On a fresh database there are no teams or agents. The chat side panel (`frontend
     - the onboarding tasks listed below, assigned to the team leader.
   - A unique-index conflict means another process seeded concurrently: roll back, re-read and succeed.
 - It runs on existing installations too. Seeding is additive and never changes other teams, agents or boards.
-- Task content lives in versioned Markdown under `resources/bee-team/onboarding/`, written in English like other bundled resources. Specification and execution plans remain plain Markdown and are never rendered or executed by the service.
+- Task content lives in versioned Markdown under `resources/onboarding/` (outside the `resources/bee-team` MCP allowlist, compiled in with `include_str!`), written in English like other bundled resources. Specification and execution plans remain plain Markdown and are never rendered or executed by the service.
 
 Onboarding tasks:
 
@@ -72,7 +72,8 @@ Enforce protection in the shared business services so HTTP and MCP stay identica
 
 - `docs/ra-openapi.yaml` and `docs/kanban-openapi.yaml`:
   - add a read-only `system: boolean` to `Agent`, `Team` and `Board` (true when `systemKey` is present). `systemKey` itself is not exposed;
-  - add the `system_resource_protected` 409 error to the operations above.
+  - add the `system_resource_protected` 409 error to the operations above;
+  - add an optional boolean `system` query filter to `listTeams`, so clients can find HQ without paging.
 - Regenerate frontend types and `docs/mcp-catalog.json` (`cargo run --locked --features mcp --example mcp_catalog`).
 
 ### Frontend
@@ -85,7 +86,7 @@ Enforce protection in the shared business services so HTTP and MCP stay identica
 ### Errors and edge cases
 
 - Seed failure aborts startup with an actionable log message and leaves no partial records, because everything runs in one transaction.
-- Portable transfer preserves `systemKey` as raw domain data. Because every started instance is seeded, restore's empty-destination check treats a database as empty when it holds only the onboarding seed with no user-created records and no change history beyond the seed. Inside the restore transaction, that seed is removed before import. Any other record still blocks restore, and no force/reset option is added. If the archive has no HQ, the next startup seeds one; if it has one, the seed finds it and does nothing.
+- Portable transfer preserves `systemKey` as raw domain data. Because every started instance is seeded, restore's empty-destination check treats a database as empty when it holds only the onboarding seed with no user-created records and no change history beyond the seed. Every row the seed creates stores `onboardingSeedVersion` equal to its version at seed commit, so any later edit makes it non-pristine. Inside the restore transaction, that seed is removed before import. Any other record still blocks restore, and no force/reset option is added. If the archive has no HQ, the next startup seeds one; if it has one, the seed finds it and does nothing.
 - An archived or deleted onboarding record from a future policy change is not resurrected. The seed checks existence by `systemKey`, including archived rows.
 
 ## Testing
