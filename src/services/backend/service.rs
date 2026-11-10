@@ -24,6 +24,10 @@ impl BackendService {
         crate::dto::worker_contract::response(op, &mut result.data, false)?;
         Ok(result)
     }
+    /// Idempotently creates the protected Bee Team HQ onboarding workspace.
+    pub async fn ensure_onboarding(&self) -> Result<super::onboarding::OnboardingIds> {
+        super::onboarding::ensure(self.repository.as_ref()).await
+    }
     pub async fn execute_compound(&self, name: &str, input: Value) -> Result<Value> {
         let mut result = super::composite::execute(self.repository.as_ref(), name, input).await?;
         if let Some(def) = crate::dto::mcp::composite_tools().iter().find(|d| d["name"] == name) {

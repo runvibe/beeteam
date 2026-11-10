@@ -25,8 +25,10 @@ async fn main() -> Result<()> {
         None
     };
     let mut state = AppState::new(database);
+    let mut recovery_pending = false;
     if let Some(transfer) = transfer {
         if transfer.recover().await.is_err() {
+            recovery_pending = true;
             tracing::warn!("transfer recovery pending; background maintenance will retry");
         }
         let maintenance = transfer.clone();
@@ -40,6 +42,16 @@ async fn main() -> Result<()> {
             }
         });
         state = state.with_transfers(transfer);
+    }
+    // Never write over a restore whose outcome is still unknown; the next start seeds.
+    if recovery_pending {
+        tracing::warn!("Bee Team HQ onboarding seed skipped until transfer recovery completes");
+    } else {
+        state
+            .backend()
+            .ensure_onboarding()
+            .await
+            .map_err(|e| anyhow::anyhow!("Bee Team HQ onboarding seed failed ({}): {}", e.code, e.error))?;
     }
 
     let addr = config.listen_addr()?;
