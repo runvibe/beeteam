@@ -53,7 +53,7 @@ pub(super) fn protect(record: &Record) -> Result<()> {
 pub async fn ensure(repository: &dyn ResourceStore) -> Result<OnboardingIds> {
     match seed(repository).await {
         // Another process committed the seed concurrently; the unique index kept one copy.
-        Err(e) if e.code == "constraint_conflict" => seed(repository).await,
+        Err(e) if e.details["reason"] == "constraint_conflict" => seed(repository).await,
         other => other,
     }
 }

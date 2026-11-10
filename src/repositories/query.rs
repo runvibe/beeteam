@@ -176,6 +176,10 @@ fn filters(q: &mut QueryBuilder<Postgres>, c: &Command) {
                 )
                 .push_bind(expected.as_bool().unwrap_or(false));
             }
+            "system" => {
+                q.push("(value->>'systemKey' IS NOT NULL)=")
+                    .push_bind(expected.as_bool().unwrap_or(false));
+            }
             "blocked" => {
                 q.push("value->'block'->'blocked'=")
                     .push_bind(expected.clone());

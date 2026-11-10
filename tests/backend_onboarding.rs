@@ -76,3 +76,25 @@ async fn concurrent_seeds_create_a_single_hq() {
     assert_eq!(get(&app, "/api/v2/teams").await["total"], 1);
     assert_eq!(get(&app, "/api/v2/agents").await["total"], 1);
 }
+
+#[tokio::test]
+async fn system_flag_and_filter_identify_hq_among_user_teams() {
+    let (app, _) = seeded_app().await;
+    let agent = ok(&app, "POST", "/api/v2/agents", json!({"name":"Lead"}), None).await;
+    assert_eq!(agent["system"], false);
+    let team = ok(&app, "POST", "/api/v2/teams", json!({"name":"Alpha","leaderId":id(&agent),"coordinationContext":manual()}), None).await;
+    assert_eq!(team["system"], false);
+    let system = get(&app, "/api/v2/teams?system=true").await;
+    assert_eq!(system["total"], 1);
+    assert_eq!(system["items"][0]["name"], "Bee Team HQ");
+    assert_eq!(system["items"][0]["system"], true);
+    let user = get(&app, "/api/v2/teams?system=false").await;
+    assert_eq!(user["total"], 1);
+    assert_eq!(user["items"][0]["system"], false);
+    let (team, leader, board) = hq(&app).await;
+    assert_eq!((team["system"].clone(), leader["system"].clone(), board["system"].clone()), (json!(true), json!(true), json!(true)));
+    assert_eq!(get(&app, &format!("/api/v2/boards/{}", id(&board))).await["system"], true);
+    assert_eq!(get(&app, "/api/v2/agents").await["items"].as_array().unwrap().iter().filter(|a| a["system"] == true).count(), 1);
+    let (status, _) = request(&app, "POST", "/api/v2/agents", json!({"name":"Fake","systemKey":"onboarding"}), None).await;
+    assert_eq!(status, 400);
+}

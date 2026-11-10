@@ -517,6 +517,11 @@
                       "minLength": 1,
                       "type": "string"
                     },
+                    "system": {
+                      "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                      "readOnly": true,
+                      "type": "boolean"
+                    },
                     "teamId": {
                       "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
                       "format": "uuid",
@@ -1333,6 +1338,11 @@
                 "minLength": 1,
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "teamId": {
                 "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
                 "format": "uuid",
@@ -1699,6 +1709,11 @@
                 "maxLength": 200,
                 "minLength": 1,
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "teamId": {
                 "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
@@ -32464,6 +32479,11 @@
                       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                       "type": "string"
                     },
+                    "system": {
+                      "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                      "readOnly": true,
+                      "type": "boolean"
+                    },
                     "updatedAt": {
                       "format": "date-time",
                       "type": "string"
@@ -32883,6 +32903,11 @@
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "updatedAt": {
                 "format": "date-time",
                 "type": "string"
@@ -33217,6 +33242,11 @@
                       "minLength": 1,
                       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                       "type": "string"
+                    },
+                    "system": {
+                      "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                      "readOnly": true,
+                      "type": "boolean"
                     },
                     "updatedAt": {
                       "format": "date-time",
@@ -33838,6 +33868,11 @@
                     "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                     "type": "string"
                   },
+                  "system": {
+                    "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                    "readOnly": true,
+                    "type": "boolean"
+                  },
                   "updatedAt": {
                     "format": "date-time",
                     "type": "string"
@@ -34326,6 +34361,11 @@
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "updatedAt": {
                 "format": "date-time",
                 "type": "string"
@@ -34717,6 +34757,11 @@
                 "minLength": 1,
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "updatedAt": {
                 "format": "date-time",
@@ -35366,6 +35411,11 @@
                 "minLength": 1,
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "updatedAt": {
                 "format": "date-time",
@@ -36552,6 +36602,11 @@
                     "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                     "type": "string"
                   },
+                  "system": {
+                    "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                    "readOnly": true,
+                    "type": "boolean"
+                  },
                   "updatedAt": {
                     "format": "date-time",
                     "type": "string"
@@ -36793,6 +36848,11 @@
                     "minLength": 1,
                     "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                     "type": "string"
+                  },
+                  "system": {
+                    "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                    "readOnly": true,
+                    "type": "boolean"
                   },
                   "updatedAt": {
                     "format": "date-time",
@@ -37147,6 +37207,11 @@
                 "minLength": 1,
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "updatedAt": {
                 "format": "date-time",
@@ -37943,6 +38008,11 @@
                     "minLength": 1,
                     "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                     "type": "string"
+                  },
+                  "system": {
+                    "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                    "readOnly": true,
+                    "type": "boolean"
                   },
                   "updatedAt": {
                     "format": "date-time",
@@ -38866,6 +38936,11 @@
                       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                       "type": "string"
                     },
+                    "system": {
+                      "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                      "readOnly": true,
+                      "type": "boolean"
+                    },
                     "updatedAt": {
                       "format": "date-time",
                       "type": "string"
@@ -39235,6 +39310,9 @@
                 ],
                 "type": "string"
               },
+              "system": {
+                "type": "boolean"
+              },
               "updatedBefore": {
                 "format": "date-time",
                 "type": "string"
@@ -39496,6 +39574,11 @@
                       "minLength": 1,
                       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                       "type": "string"
+                    },
+                    "system": {
+                      "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                      "readOnly": true,
+                      "type": "boolean"
                     },
                     "updatedAt": {
                       "format": "date-time",
@@ -40022,6 +40105,11 @@
                 "minLength": 1,
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "updatedAt": {
                 "format": "date-time",
@@ -40551,6 +40639,11 @@
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "updatedAt": {
                 "format": "date-time",
                 "type": "string"
@@ -41011,6 +41104,11 @@
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "updatedAt": {
                 "format": "date-time",
                 "type": "string"
@@ -41398,6 +41496,11 @@
                 "minLength": 1,
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
+              },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
               },
               "updatedAt": {
                 "format": "date-time",
@@ -42167,6 +42270,11 @@
                   "maxLength": 200,
                   "minLength": 1,
                   "type": "string"
+                },
+                "system": {
+                  "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                  "readOnly": true,
+                  "type": "boolean"
                 },
                 "teamId": {
                   "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
@@ -43141,6 +43249,7 @@
                     "storage_unavailable",
                     "invalid_actor_context",
                     "usage_attribution_conflict",
+                    "system_resource_protected",
                     "usage_policy_conflict",
                     "parent_cycle",
                     "active_execution_interval",
@@ -48406,6 +48515,11 @@
                 "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
                 "type": "string"
               },
+              "system": {
+                "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                "readOnly": true,
+                "type": "boolean"
+              },
               "updatedAt": {
                 "format": "date-time",
                 "type": "string"
@@ -50645,6 +50759,11 @@
                   "minLength": 1,
                   "type": "string"
                 },
+                "system": {
+                  "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                  "readOnly": true,
+                  "type": "boolean"
+                },
                 "teamId": {
                   "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
                   "format": "uuid",
@@ -51618,6 +51737,7 @@
                     "storage_unavailable",
                     "invalid_actor_context",
                     "usage_attribution_conflict",
+                    "system_resource_protected",
                     "usage_policy_conflict",
                     "parent_cycle",
                     "active_execution_interval",
@@ -58904,6 +59024,11 @@
                   "minLength": 1,
                   "type": "string"
                 },
+                "system": {
+                  "description": "True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.",
+                  "readOnly": true,
+                  "type": "boolean"
+                },
                 "teamId": {
                   "description": "Managing team of the board; may change without altering creator, tasks, executors, hierarchy or history.",
                   "format": "uuid",
@@ -59877,6 +60002,7 @@
                     "storage_unavailable",
                     "invalid_actor_context",
                     "usage_attribution_conflict",
+                    "system_resource_protected",
                     "usage_policy_conflict",
                     "parent_cycle",
                     "active_execution_interval",

@@ -844,6 +844,12 @@ paths:
       description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
       x-contract-status: proposed
       parameters:
+        - name: system
+          in: query
+          required: false
+          description: "True: only protected system teams such as Bee Team HQ; false: only user teams."
+          schema:
+            type: boolean
         - name: name
           in: query
           required: false
@@ -1888,6 +1894,7 @@ components:
             - leader_required
             - leadership_cycle
             - agent_in_use
+            - system_resource_protected
             - assignment_in_use
             - composition_conflict
             - invalid_actor_context
@@ -1979,6 +1986,10 @@ components:
     Agent:
       type: object
       properties:
+        system:
+          type: boolean
+          readOnly: true
+          description: True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.
         slug:
           $ref: '#/components/schemas/Slug'
         id:
@@ -2213,6 +2224,10 @@ components:
     Team:
       type: object
       properties:
+        system:
+          type: boolean
+          readOnly: true
+          description: True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.
         roleIcons:
           $ref: '#/components/schemas/TeamRoleIcons'
         leaderIconId:

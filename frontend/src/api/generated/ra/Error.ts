@@ -28,6 +28,7 @@ export type Error = {
     | "leader_required"
     | "leadership_cycle"
     | "agent_in_use"
+    | "system_resource_protected"
     | "assignment_in_use"
     | "composition_conflict"
     | "invalid_actor_context"
