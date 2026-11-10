@@ -76,7 +76,9 @@
   }
 }
 
-.icon-navigation main,
+.icon-navigation main {
+  padding-inline: 0.5rem;
+}
 .icon-navigation .topbar {
   padding-inline: 8px;
 }
@@ -132,6 +134,13 @@
 .header-filter-slot .filter-controls-row {
   flex-wrap: nowrap;
   min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  padding: 2px;
+}
+.header-filter-slot .filter-controls-row::-webkit-scrollbar {
+  height: 4px;
 }
 .header-filter-slot .filter-controls-row > * {
   flex-shrink: 0;
@@ -150,10 +159,7 @@
     max-width: calc(100% - 104px);
   }
   .header-filter-slot .filter-controls-row {
-    overflow-x: auto;
-    overflow-y: hidden;
     scrollbar-width: none;
-    padding: 2px;
   }
   .header-filter-slot .filter-controls-row::-webkit-scrollbar {
     display: none;
@@ -165,9 +171,6 @@
     width: 180px;
   }
 }
-
-/* Main content reaches its horizontal bounds; component padding is unchanged. */
-.icon-navigation main { padding-left: 0; padding-right: 0; }
 
 .icon-navigation .topbar { padding-left: 0; }
 

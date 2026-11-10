@@ -18,13 +18,14 @@ import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
 import { MobileContextPath } from "./components/mobile-context-path";
+import { DetailContainerContext } from "./components/detail-layout/use-detail-mobile";
 import { useState } from "react";
 import { HeaderFiltersContext } from "./components/header-filters";
 import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
-import { ChatWorkspace, ChatPanelToggle } from "./features/chat-side-panel";
+import { ChatWorkspace } from "./features/chat-side-panel";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -32,6 +33,9 @@ import "./scrollbars.css";
 export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   useLocale();
   const [filterTarget, setFilterTarget] = useState<HTMLDivElement | null>(null);
+  const [detailContainer, setDetailContainer] = useState<HTMLDivElement | null>(
+    null,
+  );
   useRestorePosition();
   const routeEntity = useRouteEntity();
   const url = useLocation();
@@ -46,49 +50,50 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
       <HeaderFiltersContext.Provider value={filterTarget}>
         <div className="app-shell icon-navigation">
           <NavigationRail homeEnabled={homeEnabled} />
-          <ChatWorkspace>
-            <div className="main-shell">
-              <ApiCompatibilityBanner />
-              <header className="topbar">
-                <AppPath />
-                <MobileContextPath />
-                <div className="header-filter-slot" ref={setFilterTarget} />
-                <ChatPanelToggle />
-              </header>
-              <motion.main
-                id="main-content"
-                animate={pageAnimation}
-                data-page-identity={pageIdentity}
-              >
-                {!knownRoute ? (
-                  <div>
-                    <h1>{tr("common.pageNotFound")}</h1>
-                    <Button onClick={() => setArea("boards")}>
-                      {tr("common.goToBoards")}
-                    </Button>
-                  </div>
-                ) : routeEntity.active &&
-                  (routeEntity.isPending ||
-                    (routeEntity.error && !routeEntity.data)) ? (
-                  <QueryState query={routeEntity}>{null}</QueryState>
-                ) : taskId ? (
-                  <TaskPage />
-                ) : agentId ? (
-                  <AgentPage />
-                ) : teamId ? (
-                  <TeamPage />
-                ) : area === "home" ? (
-                  <ConnectedHome />
-                ) : area === "boards" ? (
-                  <Boards />
-                ) : area === "agents" ? (
-                  <Agents />
-                ) : (
-                  <Teams />
-                )}
-              </motion.main>
-            </div>
-          </ChatWorkspace>
+          <DetailContainerContext.Provider value={detailContainer}>
+            <ChatWorkspace>
+              <div className="main-shell" ref={setDetailContainer}>
+                <ApiCompatibilityBanner />
+                <header className="topbar">
+                  <AppPath />
+                  <MobileContextPath />
+                  <div className="header-filter-slot" ref={setFilterTarget} />
+                </header>
+                <motion.main
+                  id="main-content"
+                  animate={pageAnimation}
+                  data-page-identity={pageIdentity}
+                >
+                  {!knownRoute ? (
+                    <div>
+                      <h1>{tr("common.pageNotFound")}</h1>
+                      <Button onClick={() => setArea("boards")}>
+                        {tr("common.goToBoards")}
+                      </Button>
+                    </div>
+                  ) : routeEntity.active &&
+                    (routeEntity.isPending ||
+                      (routeEntity.error && !routeEntity.data)) ? (
+                    <QueryState query={routeEntity}>{null}</QueryState>
+                  ) : taskId ? (
+                    <TaskPage />
+                  ) : agentId ? (
+                    <AgentPage />
+                  ) : teamId ? (
+                    <TeamPage />
+                  ) : area === "home" ? (
+                    <ConnectedHome />
+                  ) : area === "boards" ? (
+                    <Boards />
+                  ) : area === "agents" ? (
+                    <Agents />
+                  ) : (
+                    <Teams />
+                  )}
+                </motion.main>
+              </div>
+            </ChatWorkspace>
+          </DetailContainerContext.Provider>
         </div>
       </HeaderFiltersContext.Provider>
     </MotionConfig>

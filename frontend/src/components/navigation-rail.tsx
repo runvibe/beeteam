@@ -11,6 +11,7 @@ import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
+import { ChatPanelToggle } from "@/features/chat-side-panel";
 import {
   navigationHref,
   destination,
@@ -120,6 +121,9 @@ export function NavigationRail({
                 </Button>
             </NavigationTooltip>
           ))}
+          <NavigationTooltip label={tr("chat.title")}>
+            <ChatPanelToggle className="navigation-button" />
+          </NavigationTooltip>
         </nav>
       </Tooltip.Provider>
       <div

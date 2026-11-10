@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,10 +9,12 @@ import { ChatWorkspace, ChatPanelToggle } from "./chat-side-panel";
 
 const systemTeams = vi.hoisted(() => ({
   items: [{ id: "hq", name: "Bee Team HQ", system: true }] as unknown[],
+  listCalls: vi.fn(),
 }));
 vi.mock("@/api/context", () => ({
   useApi: () => ({
     list: async (_resource: string, _scope: string, filters?: { system?: boolean }) => {
+      systemTeams.listCalls(filters);
       const items = filters?.system
         ? systemTeams.items
         : [{ id: "team-a", name: "Team A" }];
@@ -63,6 +66,60 @@ it("preserves mounted chat draft through navigation, side change and collapse", 
   act(() => useChatPanel.getState().openTeam("team-a"));
   expect(screen.getByRole("textbox", { name: "Draft" })).toHaveValue(
     "Keep my draft",
+  );
+});
+
+it("preserves the default HQ draft when the chat is closed and reopened", async () => {
+  setLocalePreference("en");
+  systemTeams.items = [{ id: "hq", name: "Bee Team HQ", system: true }];
+  useChatPanel.setState({ teamId: null, picking: false, open: true });
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ChatPanelToggle />
+      <ChatWorkspace>
+        <main>Boards</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  const draft = await screen.findByRole("textbox", { name: "Draft" });
+  await userEvent.type(draft, "Keep the HQ draft");
+  const toggle = screen.getByRole("button", { name: "Chat with the leader" });
+  await userEvent.click(toggle);
+  expect(screen.queryByRole("textbox", { name: "Draft" })).toBeNull();
+  await userEvent.click(toggle);
+  expect(await screen.findByRole("textbox", { name: "Draft" })).toBe(draft);
+  expect(draft).toHaveValue("Keep the HQ draft");
+});
+
+it.each([
+  ["default team", false, "Bee Team HQ", { system: true }],
+  ["team picker", true, "Team A", { limit: 20 }],
+])("does not fetch the %s until an initially closed chat is opened", async (
+  _label,
+  picking,
+  name,
+  filters,
+) => {
+  setLocalePreference("en");
+  systemTeams.items = [{ id: "hq", name: "Bee Team HQ", system: true }];
+  systemTeams.listCalls.mockClear();
+  useChatPanel.setState({ teamId: null, picking, open: false });
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ChatPanelToggle />
+      <ChatWorkspace>
+        <main>Boards</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  await act(async () => {});
+  expect(systemTeams.listCalls).not.toHaveBeenCalled();
+  await userEvent.click(
+    screen.getByRole("button", { name: "Chat with the leader" }),
+  );
+  expect(await screen.findByText(name)).toBeVisible();
+  expect(systemTeams.listCalls).toHaveBeenCalledWith(
+    expect.objectContaining(filters),
   );
 });
 
@@ -121,4 +178,28 @@ it("restores the selected team and panel visibility after reload", async () => {
     teamId: "team-a",
     open: true,
   });
+});
+
+it("keeps the team and chat content in a centered, readable-width column", () => {
+  setLocalePreference("en");
+  useChatPanel.setState({ teamId: "team-a", open: true });
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/features/chat-side-panel.css", "utf8");
+  document.head.append(style);
+  try {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChatWorkspace>
+          <main>Boards</main>
+        </ChatWorkspace>
+      </QueryClientProvider>,
+    );
+    const content = document.querySelector(".chat-panel-content");
+    expect(content).toContainElement(screen.getByText("Team A"));
+    expect(content).toContainElement(screen.getByRole("textbox", { name: "Draft" }));
+    expect(getComputedStyle(content!).maxWidth).toBe("48rem");
+    expect(getComputedStyle(content!).marginInline).toBe("auto");
+  } finally {
+    style.remove();
+  }
 });

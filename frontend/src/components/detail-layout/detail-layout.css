@@ -181,6 +181,52 @@ body:has(.detail-page) {
 .detail-context-screen-header {
   display: none;
 }
+.detail-page[data-detail-compact="true"] .detail-columns {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+}
+.detail-page[data-detail-compact="true"] .record-row {
+  flex-wrap: wrap;
+}
+.detail-info-button:not([hidden]) {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 40;
+  /* Do not animate position while the chat panel is resized. */
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, transform,
+    translate;
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+.chat-workspace[data-chat-open="true"][data-chat-side="right"]
+  .detail-info-button:not([hidden]) {
+  right: calc(
+    min(var(--chat-panel-width), var(--chat-panel-max-width)) +
+      max(12px, env(safe-area-inset-right))
+  );
+}
+.detail-context[data-detail-screen="true"] {
+  display: block;
+  border: 0;
+  padding: 0 0 max(20px, env(safe-area-inset-bottom));
+}
+.detail-context-screen-header:not([hidden]) {
+  display: grid;
+  gap: 16px;
+}
+.detail-context-screen-header h1 {
+  font-size: 20px;
+  line-height: 1.4;
+  outline: none;
+}
+.detail-context-screen-header button {
+  justify-self: start;
+  min-height: 44px;
+}
 .detail-primary > [data-slot="tabs"] {
   min-width: 0;
   gap: 20px;
@@ -194,41 +240,13 @@ body:has(.detail-page) {
     gap: 28px;
   }
   .icon-navigation main:has(> .detail-page) {
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-  .detail-info-button:not([hidden]) {
-    position: fixed;
-    top: max(8px, env(safe-area-inset-top));
-    right: max(12px, env(safe-area-inset-right));
-    z-index: 40;
-    display: inline-flex;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    padding-right: max(0.5rem, env(safe-area-inset-right));
   }
   .detail-context:not([data-detail-screen="true"]) {
     display: none;
   }
-  .detail-context[data-detail-screen="true"] {
-    display: block;
-    border: 0;
-    padding: 0 0 max(20px, env(safe-area-inset-bottom));
-  }
   .detail-context-content {
     padding-top: 20px;
-  }
-  .detail-context-screen-header {
-    display: grid;
-    gap: 16px;
-  }
-  .detail-context-screen-header h1 {
-    font-size: 20px;
-    line-height: 1.4;
-    outline: none;
-  }
-  .detail-context-screen-header button {
-    justify-self: start;
-    min-height: 44px;
   }
   html:has(.detail-page) {
     scroll-padding-top: var(--detail-navigation-height, 70px);
@@ -238,5 +256,10 @@ body:has(.detail-page) {
   .detail-header h1 {
     font-size: 20px;
     line-height: 1.4;
+  }
+}
+@media (max-width: 850px) {
+  .chat-workspace[data-chat-open="true"] .detail-info-button:not([hidden]) {
+    display: none;
   }
 }

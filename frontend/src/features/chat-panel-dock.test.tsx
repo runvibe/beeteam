@@ -115,3 +115,66 @@ it("moves the panel to the other side from the keyboard and announces it", async
   expect(screen.getByRole("button", { name: "Move chat to the right" })).toBeVisible();
   act(() => useChatPanel.getState().setSide("right"));
 });
+
+it.each(["left", "right"] as const)(
+  "resizes the %s panel beyond 720 px and stops at 80% of the viewport",
+  (side) => {
+    vi.stubGlobal("innerWidth", 1600);
+    useChatPanel.setState({ side });
+    renderPanel();
+    const resizer = screen.getByRole("separator", { name: "Resize chat panel" });
+    const panel = resizer.parentElement!;
+    const left = side === "left" ? 68 : 1160;
+    vi.spyOn(panel, "getBoundingClientRect").mockReturnValue(
+      new DOMRect(left, 0, 440, 900),
+    );
+    resizer.setPointerCapture = vi.fn();
+    resizer.hasPointerCapture = vi.fn(() => true);
+    resizer.releasePointerCapture = vi.fn();
+
+    fireEvent.pointerDown(resizer, { pointerId: 1, button: 0 });
+    fireEvent.pointerMove(resizer, {
+      pointerId: 1,
+      clientX: side === "left" ? left + 1100 : 1600 - 1100,
+    });
+    expect(useChatPanel.getState().width).toBe(1100);
+    fireEvent.pointerMove(resizer, {
+      pointerId: 1,
+      clientX: side === "left" ? left + 1600 : 0,
+    });
+    expect(useChatPanel.getState().width).toBe(1280);
+    expect(resizer).toHaveAttribute("aria-valuemax", "1280");
+    expect(resizer).toHaveAttribute("aria-valuenow", "1280");
+    fireEvent.pointerUp(resizer, { pointerId: 1 });
+  },
+);
+
+it("resizes with the keyboard up to 80% and back again", () => {
+  useChatPanel.setState({ width: 940 });
+  renderPanel();
+  const resizer = screen.getByRole("separator", { name: "Resize chat panel" });
+  fireEvent.keyDown(resizer, { key: "ArrowLeft" });
+  expect(useChatPanel.getState().width).toBe(960);
+  fireEvent.keyDown(resizer, { key: "ArrowLeft" });
+  expect(useChatPanel.getState().width).toBe(960);
+  fireEvent.keyDown(resizer, { key: "ArrowRight" });
+  expect(useChatPanel.getState().width).toBe(940);
+});
+
+it("updates the accessible range and resizes from the visible width after a window resize", () => {
+  vi.stubGlobal("innerWidth", 1600);
+  useChatPanel.setState({ width: 1200 });
+  renderPanel();
+  const resizer = screen.getByRole("separator", { name: "Resize chat panel" });
+  expect(resizer).toHaveAttribute("aria-valuemax", "1280");
+  expect(resizer).toHaveAttribute("aria-valuenow", "1200");
+
+  vi.stubGlobal("innerWidth", 1000);
+  act(() => window.dispatchEvent(new Event("resize")));
+  expect(resizer).toHaveAttribute("aria-valuemax", "800");
+  expect(resizer).toHaveAttribute("aria-valuenow", "800");
+  expect(useChatPanel.getState().width).toBe(1200);
+  fireEvent.keyDown(resizer, { key: "ArrowRight" });
+  expect(useChatPanel.getState().width).toBe(780);
+  expect(resizer).toHaveAttribute("aria-valuenow", "780");
+});
