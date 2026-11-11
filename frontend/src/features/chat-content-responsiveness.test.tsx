@@ -58,7 +58,6 @@ it("keeps the breadcrumb beside the panel controls in the content header", () =>
       <div className="icon-navigation">
         <div className="main-shell">
           <header className="topbar">
-            <span className="workspace-panel-grip" />
             <span className="workspace-panel-controls" />
             <nav className="context-path" aria-label="Path">
               A path
@@ -71,6 +70,34 @@ it("keeps the breadcrumb beside the panel controls in the content header", () =>
       getComputedStyle(screen.getByRole("navigation", { name: "Path" }))
         .flexGrow,
     ).toBe("1");
+  } finally {
+    removeStyles();
+  }
+});
+
+it("supports touch dragging from the breadcrumb without blocking header filters", () => {
+  const removeStyles = installStyles("src/features/chat-side-panel.css");
+  try {
+    render(
+      <div className="chat-workspace" data-dockable="true">
+        <div className="main-shell">
+          <header className="topbar" data-dock-handle="content">
+            <nav className="context-path" aria-label="Path">A path</nav>
+            <div className="header-filter-slot" role="group" aria-label="Filters">
+              <button>Filter</button>
+            </div>
+          </header>
+        </div>
+      </div>,
+    );
+    expect(
+      getComputedStyle(screen.getByRole("navigation", { name: "Path" }))
+        .touchAction,
+    ).toBe("none");
+    expect(
+      getComputedStyle(screen.getByRole("group", { name: "Filters" }))
+        .touchAction,
+    ).not.toBe("none");
   } finally {
     removeStyles();
   }

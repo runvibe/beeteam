@@ -28,10 +28,7 @@ import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import { ChatWorkspace } from "./features/chat-side-panel";
 import { SessionsSidebar } from "./features/sessions-sidebar";
-import {
-  WorkspacePanelControls,
-  WorkspacePanelGrip,
-} from "./features/workspace-panel-controls";
+import { WorkspacePanelControls } from "./features/workspace-panel-controls";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -66,7 +63,6 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
               >
                 <ApiCompatibilityBanner />
                 <header className="topbar" data-dock-handle="content">
-                  <WorkspacePanelGrip panel="content" />
                   <WorkspacePanelControls panel="content" />
                   <AppPath />
                   <MobileContextPath />

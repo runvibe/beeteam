@@ -22,6 +22,7 @@ describe("Bee Team interface", () => {
       </ApiProvider>,
     );
     const topbar = document.querySelector(".topbar") as HTMLElement;
+    expect(topbar.querySelector(".workspace-panel-grip")).toBeNull();
     await userEvent.click(
       within(topbar).getByRole("button", { name: "Mover conteúdo para a direita" }),
     );

@@ -106,6 +106,23 @@ function beginDrag(header: Element, startX: number, endX: number) {
   fireEvent.pointerMove(window, { clientX: endX, clientY: 40, pointerId: 1 });
 }
 
+it("keeps sessions and chat headers draggable without grip icons", () => {
+  const { workspace, sessions, chat } = renderWorkspace();
+  for (const panel of [sessions, chat]) {
+    expect(panel.querySelector(".workspace-panel-grip")).toBeNull();
+  }
+  beginDrag(sessions.querySelector("header")!, 200, 700);
+  expect(document.querySelector(".chat-dock-preview")).toHaveAttribute(
+    "data-position",
+    "1",
+  );
+  fireEvent.pointerUp(window, { clientX: 700, clientY: 40, pointerId: 1 });
+  expect(workspace).toHaveAttribute(
+    "data-panel-order",
+    "content,sessions,chat",
+  );
+});
+
 it("docks sessions between content and chat and saves the arrangement", () => {
   const { workspace, sessions } = renderWorkspace();
   beginDrag(sessions.querySelector("header")!, 200, 700);

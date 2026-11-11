@@ -30,10 +30,7 @@ import {
   useWorkspaceWidth,
   workspacePanelName,
 } from "./workspace-panel-dock";
-import {
-  WorkspacePanelControls,
-  WorkspacePanelGrip,
-} from "./workspace-panel-controls";
+import { WorkspacePanelControls } from "./workspace-panel-controls";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle({
@@ -204,7 +201,6 @@ export function ChatWorkspace({
         data-draggable={dock.draggable ? "true" : undefined}
         title={dock.draggable ? t("workspace.dragToDock") : undefined}
       >
-        <WorkspacePanelGrip panel="chat" />
         <strong>{t("chat.title")}</strong>
         <WorkspacePanelControls panel="chat" />
         <Button

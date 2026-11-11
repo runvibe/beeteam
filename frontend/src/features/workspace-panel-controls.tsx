@@ -1,5 +1,5 @@
 import { useContext, useLayoutEffect, useRef } from "react";
-import { GripHorizontal, PanelLeft, PanelRight } from "lucide-react";
+import { PanelLeft, PanelRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { locale, t } from "@/i18n";
 import type { WorkspacePanel } from "@/state/workspace-layout";
@@ -7,20 +7,6 @@ import {
   WorkspaceDockContext,
   workspacePanelName,
 } from "./workspace-panel-dock";
-
-export function WorkspacePanelGrip({ panel }: { panel: WorkspacePanel }) {
-  const dock = useContext(WorkspaceDockContext);
-  if (!dock?.draggable || !dock.visible.includes(panel)) return null;
-  return (
-    <span
-      className="workspace-panel-grip"
-      aria-hidden
-      title={t("workspace.dragToDock")}
-    >
-      <GripHorizontal />
-    </span>
-  );
-}
 
 export function WorkspacePanelControls({ panel }: { panel: WorkspacePanel }) {
   const dock = useContext(WorkspaceDockContext);

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -127,6 +128,33 @@ it("lists sessions grouped by team and opens the chosen conversation", async () 
   expect(api.sessions).toHaveBeenCalledWith(
     expect.objectContaining({ sort: "updated_desc", limit: 50, teamIds: [] }),
   );
+});
+
+it("highlights the current session with a background rather than a border", async () => {
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/features/sessions-sidebar.css", "utf8");
+  document.head.append(style);
+
+  try {
+    renderSidebar();
+    const session = await screen.findByRole("button", { name: /Retro notes/ });
+    const inactiveStyle = getComputedStyle(session);
+    const inactive = {
+      background: inactiveStyle.background,
+      boxShadow: inactiveStyle.boxShadow,
+      borderWidth: inactiveStyle.borderWidth,
+    };
+
+    act(() => useChatPanel.getState().openConversation("t1", "c3"));
+
+    const activeStyle = getComputedStyle(session);
+    expect(session).toHaveAttribute("aria-current", "true");
+    expect(activeStyle.background).not.toBe(inactive.background);
+    expect(activeStyle.boxShadow).toBe(inactive.boxShadow);
+    expect(activeStyle.borderWidth).toBe(inactive.borderWidth);
+  } finally {
+    style.remove();
+  }
 });
 
 it("searches, sorts and filters through the API", async () => {
