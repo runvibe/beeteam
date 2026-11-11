@@ -305,6 +305,16 @@
     "reason": "Developer-only invariant error for an invalid internal panel order."
   },
   {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid workspace panel width",
+    "reason": "Developer-only invariant error for a non-finite internal panel width."
+  },
+  {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid saved sessions panel width; using the default.",
+    "reason": "Developer diagnostic for malformed local layout preferences, not rendered product copy."
+  },
+  {
     "file": "src/state/workspace-layout.ts",
     "text": "Invalid workspace panel move",
     "reason": "Developer-only invariant error for an invalid internal panel move."

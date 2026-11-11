@@ -8,7 +8,7 @@
 
 - Remove drag-grip icons from panel headers while retaining drag and keyboard controls.
 
-- Rearrange the sessions, content and chat panels by dragging their headers or choosing one of six keyboard-accessible layouts with compact icon-only previews from the navigation. A blue preview shows the drag position, including the middle; the order is saved, drafts stay intact, and chat resizing leaves space for the other open panels.
+- Rearrange the sessions, content and chat panels by dragging their headers or choosing one of six keyboard-accessible layouts with compact icon-only previews from the navigation. A blue preview shows the drag position, including the middle; the order is saved and drafts stay intact. Resize adjacent panels using their dividers or arrow keys while the navigation stays fixed; panel widths are saved and the chat remains limited to 80% of the viewport.
 
 - Remove pointer-focus highlights from text fields, searches, and chat composers while retaining visible keyboard focus.
 

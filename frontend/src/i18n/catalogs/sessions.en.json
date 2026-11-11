@@ -2,6 +2,7 @@
   "title": "Sessions",
   "toggle": "Show or hide sessions",
   "close": "Close sessions",
+  "resizePanel": "Resize sessions panel",
   "search": "Search sessions",
   "newSession": "New session",
   "filters": "Filters",

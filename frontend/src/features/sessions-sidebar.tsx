@@ -37,6 +37,7 @@ import {
 } from "./session-grouping";
 import { SessionFilterSection } from "./session-filter-section";
 import { useSessionNames } from "./use-session-names";
+import { WorkspacePanelResizer } from "./workspace-panel-resize";
 import "./sessions-sidebar.css";
 
 const NARROW_QUERY = "(max-width: 850px)";
@@ -164,6 +165,7 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
         data-open={open}
         data-drawer={drawer}
       >
+        <WorkspacePanelResizer panel="sessions" />
         <header className="sessions-heading" data-dock-handle="sessions">
           <strong>{t("sessions.title")}</strong>
           <Button

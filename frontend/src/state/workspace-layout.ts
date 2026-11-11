@@ -2,6 +2,7 @@ import type { ChatPanelSide } from "./chat-panel";
 
 export type WorkspacePanel = "sessions" | "content" | "chat";
 export const SESSIONS_PANEL_WIDTH = 280;
+export const SESSIONS_PANEL_MIN_WIDTH = 200;
 export const CONTENT_PANEL_MIN_WIDTH = 180;
 
 export function defaultPanelOrder(side: ChatPanelSide): WorkspacePanel[] {

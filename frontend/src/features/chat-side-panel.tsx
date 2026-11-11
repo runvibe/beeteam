@@ -3,15 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
-import {
-  CHAT_PANEL_MIN_WIDTH,
-  getMaxChatPanelWidth,
-  useChatPanel,
-} from "@/state/chat-panel";
+import { useChatPanel } from "@/state/chat-panel";
 import { useSessionsSidebar } from "@/state/sessions-sidebar";
 import {
-  CONTENT_PANEL_MIN_WIDTH,
-  SESSIONS_PANEL_WIDTH,
   chatSide,
   movePanel,
   type WorkspacePanel,
@@ -29,6 +23,8 @@ import {
   useWorkspaceWidth,
   workspacePanelName,
 } from "./workspace-panel-dock";
+import { WorkspacePanelResizer } from "./workspace-panel-resize";
+import { WorkspaceResizeContext, workspacePanelSizes } from "./workspace-panel-sizes";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle({
@@ -80,8 +76,8 @@ export function ChatWorkspace({
     side,
     panelOrder,
     width,
+    sessionsWidth,
     close,
-    setWidth,
     setPanelOrder,
   } = useChatPanel();
   const sessionsOpen = useSessionsSidebar((state) => state.open);
@@ -125,31 +121,16 @@ export function ChatWorkspace({
   );
   const dock = useWorkspacePanelDock(workspace, panelOrder, visible, reorder);
   const sessionsVisible = !dock.narrow && visible.includes("sessions");
-  const maxViewportWidth = getMaxChatPanelWidth(viewport);
-  const maxWidth = sessionsVisible
-    ? Math.max(
-        CHAT_PANEL_MIN_WIDTH,
-        Math.min(
-          maxViewportWidth,
-          (measuredWidth || viewport) -
-            SESSIONS_PANEL_WIDTH -
-            CONTENT_PANEL_MIN_WIDTH,
-        ),
-      )
-    : maxViewportWidth;
-  const visibleWidth = Math.min(width, maxWidth);
+  const resizeConfig = {
+    viewport,
+    workspace: measuredWidth || viewport,
+    visible,
+    narrow: dock.narrow,
+  };
+  const sizes = workspacePanelSizes(resizeConfig, width, sessionsWidth);
   const sessionsAfterContent =
     sessionsVisible &&
     panelOrder.indexOf("sessions") > panelOrder.indexOf("content");
-  const currentVisibleWidth = () =>
-    Math.min(useChatPanel.getState().width, maxWidth);
-  const resizeChat = (nextWidth: number) => {
-    const constrained = Math.max(
-      CHAT_PANEL_MIN_WIDTH,
-      Math.min(maxWidth, nextWidth),
-    );
-    if (constrained !== currentVisibleWidth()) setWidth(constrained);
-  };
   const chatPanel = (
     <aside
       id="leader-chat-panel"
@@ -159,41 +140,7 @@ export function ChatWorkspace({
       data-workspace-panel="chat"
       data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
     >
-      <div
-        className="chat-panel-resizer"
-        role="separator"
-        tabIndex={0}
-        aria-orientation="vertical"
-        aria-label={t("chat.resizePanel")}
-        aria-valuemin={CHAT_PANEL_MIN_WIDTH}
-        aria-valuemax={maxWidth}
-        aria-valuenow={visibleWidth}
-        onKeyDown={(event) => {
-          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-          event.preventDefault();
-          resizeChat(
-            currentVisibleWidth() +
-              (event.key === "ArrowRight" ? 20 : -20) *
-                (side === "left" ? 1 : -1),
-          );
-        }}
-        onPointerDown={(event) => {
-          event.currentTarget.setPointerCapture(event.pointerId);
-        }}
-        onPointerMove={(event) => {
-          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
-          const bounds =
-            event.currentTarget.parentElement!.getBoundingClientRect();
-          resizeChat(
-            side === "left"
-              ? event.clientX - bounds.left
-              : bounds.right - event.clientX,
-          );
-        }}
-        onPointerUp={(event) =>
-          event.currentTarget.releasePointerCapture(event.pointerId)
-        }
-      />
+      <WorkspacePanelResizer panel="chat" />
       <header
         className="chat-panel-heading"
         data-dock-handle="chat"
@@ -239,10 +186,10 @@ export function ChatWorkspace({
       style={
         {
           "--chat-panel-width": `${width}px`,
-          "--chat-panel-max-width": `${maxWidth}px`,
-          "--sessions-panel-width": `${SESSIONS_PANEL_WIDTH}px`,
+          "--chat-panel-max-width": `${sizes.chatMax}px`,
+          "--sessions-panel-width": `${sizes.sessions}px`,
           "--sessions-after-content-width": sessionsAfterContent
-            ? `${SESSIONS_PANEL_WIDTH}px`
+            ? `${sizes.sessions}px`
             : "0px",
           "--sessions-panel-order": panelOrder.indexOf("sessions"),
           "--content-panel-order": panelOrder.indexOf("content"),
@@ -252,15 +199,17 @@ export function ChatWorkspace({
         } as CSSProperties
       }
     >
-      {panelOrder.map((panel) => (
-        <Fragment key={panel}>
-          {panel === "sessions"
-            ? sessions
-            : panel === "content"
-              ? children
-              : chatPanel}
-        </Fragment>
-      ))}
+      <WorkspaceResizeContext.Provider value={resizeConfig}>
+        {panelOrder.map((panel) => (
+          <Fragment key={panel}>
+            {panel === "sessions"
+              ? sessions
+              : panel === "content"
+                ? children
+                : chatPanel}
+          </Fragment>
+        ))}
+      </WorkspaceResizeContext.Provider>
       <span className="sr-only" role="status" aria-live="polite">
         {announcement}
       </span>

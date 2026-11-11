@@ -114,7 +114,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .chat-dock-preview,
-  .chat-panel-resizer::after {
+  .workspace-panel-resizer::after {
     animation: none;
     transition: none;
   }
@@ -179,7 +179,7 @@
 .chat-panel-body .leader-chat-messages {
   max-height: 48dvh;
 }
-.chat-panel-resizer {
+.workspace-panel-resizer {
   position: absolute;
   left: -4px;
   top: 0;
@@ -189,7 +189,7 @@
   touch-action: none;
   z-index: 2;
 }
-.chat-panel-resizer::after {
+.workspace-panel-resizer::after {
   content: "";
   position: absolute;
   top: 0;
@@ -202,16 +202,16 @@
     background-color 150ms ease,
     box-shadow 150ms ease;
 }
-.chat-panel-resizer:hover::after,
-.chat-panel-resizer:active::after,
-.chat-panel-resizer:focus-visible::after {
+.workspace-panel-resizer:hover::after,
+.workspace-panel-resizer:active::after,
+.workspace-panel-resizer:focus-visible::after {
   background: rgb(59 130 246);
   box-shadow: 0 0 10px 1px rgb(59 130 246 / 0.55);
 }
-.chat-panel-resizer:focus-visible {
+.workspace-panel-resizer:focus-visible {
   outline: none;
 }
-[data-chat-side="left"] .chat-panel-resizer {
+.workspace-panel-resizer[data-resize-edge="right"] {
   left: auto;
   right: -4px;
 }
@@ -223,7 +223,7 @@
     z-index: 35;
     border: 0;
   }
-  .chat-panel-resizer,
+  .workspace-panel-resizer,
   .chat-dock-preview {
     display: none;
   }

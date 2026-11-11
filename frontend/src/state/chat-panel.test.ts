@@ -47,6 +47,52 @@ it("preserves widths above the old 720 px limit", async () => {
   expect(useChatPanel.getState().width).toBe(1100);
 });
 
+it("persists both panel widths and defaults older saved preferences to a 280 px sessions panel", async () => {
+  useChatPanel.setState(useChatPanel.getInitialState());
+  useChatPanel.getState().setLayoutWidths({ chat: 600, sessions: 370 });
+  const saved = localStorage.getItem("beeteam-chat-panel")!;
+  expect(JSON.parse(saved).state).toMatchObject({ width: 600, sessionsWidth: 370 });
+
+  useChatPanel.setState(useChatPanel.getInitialState());
+  localStorage.setItem("beeteam-chat-panel", saved);
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState()).toMatchObject({ width: 600, sessionsWidth: 370 });
+
+  useChatPanel.setState(useChatPanel.getInitialState());
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({ state: { side: "right", width: 500 }, version: 0 }),
+  );
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState()).toMatchObject({ width: 500, sessionsWidth: 280 });
+});
+
+it("rejects invalid resize values without changing saved widths", () => {
+  useChatPanel.setState(useChatPanel.getInitialState());
+  expect(() =>
+    useChatPanel.getState().setLayoutWidths({ chat: 500, sessions: Number.NaN }),
+  ).toThrow("Invalid workspace panel width");
+  expect(useChatPanel.getState()).toMatchObject({ width: 440, sessionsWidth: 280 });
+});
+
+it("reports and replaces an invalid saved sessions width", async () => {
+  const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
+  try {
+    useChatPanel.setState(useChatPanel.getInitialState());
+    localStorage.setItem(
+      "beeteam-chat-panel",
+      JSON.stringify({ state: { sessionsWidth: -10 }, version: 0 }),
+    );
+    await useChatPanel.persist.rehydrate();
+    expect(useChatPanel.getState().sessionsWidth).toBe(280);
+    expect(warning).toHaveBeenCalledWith(
+      "Invalid saved sessions panel width; using the default.",
+    );
+  } finally {
+    warning.mockRestore();
+  }
+});
+
 it("restores the original left-docked layout from older saved preferences", async () => {
   localStorage.setItem(
     "beeteam-chat-panel",

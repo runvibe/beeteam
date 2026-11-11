@@ -2,6 +2,7 @@
   "title": "Sessões",
   "toggle": "Mostrar ou ocultar sessões",
   "close": "Fechar sessões",
+  "resizePanel": "Redimensionar painel de sessões",
   "search": "Buscar sessões",
   "newSession": "Nova sessão",
   "filters": "Filtros",

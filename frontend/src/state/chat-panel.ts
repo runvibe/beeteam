@@ -4,6 +4,8 @@ import {
   chatSide,
   defaultPanelOrder,
   isPanelOrder,
+  SESSIONS_PANEL_MIN_WIDTH,
+  SESSIONS_PANEL_WIDTH,
   type WorkspacePanel,
 } from "./workspace-layout";
 
@@ -17,7 +19,15 @@ export function getMaxChatPanelWidth(viewportWidth: number) {
   );
 }
 
+function clampChatPanelWidth(width: number) {
+  return Math.min(
+    getMaxChatPanelWidth(window.innerWidth),
+    Math.max(CHAT_PANEL_MIN_WIDTH, width),
+  );
+}
+
 export type ChatPanelSide = "left" | "right";
+type LayoutWidths = Partial<Record<"chat" | "sessions", number>>;
 type ChatPanelState = {
   teamId: string | null;
   /** Session to show in the team chat; null starts a new conversation or restores the latest one. */
@@ -30,6 +40,7 @@ type ChatPanelState = {
   side: ChatPanelSide;
   panelOrder: WorkspacePanel[];
   width: number;
+  sessionsWidth: number;
   openTeam: (teamId: string) => void;
   startNewSession: (teamId: string | null) => void;
   openConversation: (teamId: string, conversationId: string) => void;
@@ -40,6 +51,7 @@ type ChatPanelState = {
   setSide: (side: ChatPanelSide) => void;
   setPanelOrder: (order: readonly WorkspacePanel[]) => void;
   setWidth: (width: number) => void;
+  setLayoutWidths: (widths: LayoutWidths) => void;
 };
 export const useChatPanel = create<ChatPanelState>()(
   persist(
@@ -52,6 +64,7 @@ export const useChatPanel = create<ChatPanelState>()(
       side: "right",
       panelOrder: defaultPanelOrder("right"),
       width: 440,
+      sessionsWidth: SESSIONS_PANEL_WIDTH,
       openTeam: (teamId) =>
         set({ teamId, conversationId: null, freshConversation: false, picking: false, open: true }),
       startNewSession: (teamId) =>
@@ -78,20 +91,41 @@ export const useChatPanel = create<ChatPanelState>()(
           throw new Error("Invalid workspace panel order");
         set({ panelOrder: [...order], side: chatSide(order) });
       },
-      setWidth: (width) =>
-        set({
-          width: Math.min(
-            getMaxChatPanelWidth(window.innerWidth),
-            Math.max(CHAT_PANEL_MIN_WIDTH, width),
-          ),
-        }),
+      setWidth: (width) => set({ width: clampChatPanelWidth(width) }),
+      setLayoutWidths: (widths) => {
+        if (
+          (widths.chat !== undefined && !Number.isFinite(widths.chat)) ||
+          (widths.sessions !== undefined && !Number.isFinite(widths.sessions))
+        )
+          throw new Error("Invalid workspace panel width");
+        set((state) => ({
+          width:
+            widths.chat === undefined
+              ? state.width
+              : clampChatPanelWidth(widths.chat),
+          sessionsWidth:
+            widths.sessions === undefined
+              ? state.sessionsWidth
+              : Math.max(SESSIONS_PANEL_MIN_WIDTH, widths.sessions),
+        }));
+      },
     }),
     {
       name: "beeteam-chat-panel",
-      partialize: ({ side, panelOrder, width, teamId, conversationId, picking, open }) => ({
+      partialize: ({
         side,
         panelOrder,
         width,
+        sessionsWidth,
+        teamId,
+        conversationId,
+        picking,
+        open,
+      }) => ({
+        side,
+        panelOrder,
+        width,
+        sessionsWidth,
         teamId,
         conversationId,
         picking,
@@ -106,7 +140,23 @@ export const useChatPanel = create<ChatPanelState>()(
         const panelOrder = isPanelOrder(saved.panelOrder)
           ? [...saved.panelOrder]
           : defaultPanelOrder(side);
-        return { ...current, ...saved, panelOrder, side: chatSide(panelOrder) };
+        const savedSessionsWidth = saved.sessionsWidth;
+        const validSessionsWidth =
+          typeof savedSessionsWidth === "number" &&
+          Number.isFinite(savedSessionsWidth) &&
+          savedSessionsWidth >= SESSIONS_PANEL_MIN_WIDTH;
+        if (savedSessionsWidth !== undefined && !validSessionsWidth)
+          console.warn("Invalid saved sessions panel width; using the default.");
+        const sessionsWidth = validSessionsWidth
+          ? savedSessionsWidth
+          : SESSIONS_PANEL_WIDTH;
+        return {
+          ...current,
+          ...saved,
+          panelOrder,
+          side: chatSide(panelOrder),
+          sessionsWidth,
+        };
       },
     },
   ),

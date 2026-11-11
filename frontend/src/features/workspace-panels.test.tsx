@@ -78,7 +78,7 @@ function renderWorkspace() {
       </ChatWorkspace>
     </QueryClientProvider>,
   );
-  const workspace = view.container.querySelector(".chat-workspace")!;
+  const workspace = view.container.querySelector<HTMLElement>(".chat-workspace")!;
   const sessions = screen.getByRole("complementary", { name: "Sessions" });
   const content = view.container.querySelector<HTMLElement>(".main-shell")!;
   const chat = screen.getByRole("complementary", {
@@ -108,6 +108,174 @@ function beginDrag(header: Element, startX: number, endX: number) {
   });
   fireEvent.pointerMove(window, { clientX: endX, clientY: 40, pointerId: 1 });
 }
+
+it.each([
+  {
+    order: ["sessions", "content", "chat"],
+    sessionsKey: "ArrowRight",
+    sessionsNeighbor: "content",
+    chatKey: "ArrowLeft",
+    chatNeighbor: "content",
+  },
+  {
+    order: ["sessions", "chat", "content"],
+    sessionsKey: "ArrowRight",
+    sessionsNeighbor: "chat",
+    chatKey: "ArrowRight",
+    chatNeighbor: "content",
+  },
+  {
+    order: ["content", "sessions", "chat"],
+    sessionsKey: "ArrowLeft",
+    sessionsNeighbor: "content",
+    chatKey: "ArrowLeft",
+    chatNeighbor: "sessions",
+  },
+  {
+    order: ["content", "chat", "sessions"],
+    sessionsKey: "ArrowLeft",
+    sessionsNeighbor: "chat",
+    chatKey: "ArrowLeft",
+    chatNeighbor: "content",
+  },
+  {
+    order: ["chat", "sessions", "content"],
+    sessionsKey: "ArrowRight",
+    sessionsNeighbor: "content",
+    chatKey: "ArrowRight",
+    chatNeighbor: "sessions",
+  },
+  {
+    order: ["chat", "content", "sessions"],
+    sessionsKey: "ArrowLeft",
+    sessionsNeighbor: "content",
+    chatKey: "ArrowRight",
+    chatNeighbor: "content",
+  },
+] as const)(
+  "resizes only neighboring panels in the $order layout",
+  ({ order, sessionsKey, sessionsNeighbor, chatKey, chatNeighbor }) => {
+    useChatPanel.getState().setPanelOrder(order);
+    const { workspace, sessions, chat } = renderWorkspace();
+    Object.defineProperty(workspace, "clientWidth", {
+      configurable: true,
+      value: 1132,
+    });
+    fireEvent(window, new Event("resize"));
+    const sessionsResizer = within(sessions).getByRole("separator", {
+      name: "Resize sessions panel",
+    });
+    const chatResizer = within(chat).getByRole("separator", {
+      name: "Resize chat panel",
+    });
+
+    fireEvent.keyDown(sessionsResizer, { key: sessionsKey });
+    expect(useChatPanel.getState().sessionsWidth).toBe(300);
+    expect(useChatPanel.getState().width).toBe(
+      sessionsNeighbor === "chat" ? 420 : 440,
+    );
+    expect(workspace.style.getPropertyValue("--sessions-panel-width")).toBe("300px");
+    expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.sessionsWidth)
+      .toBe(300);
+
+    fireEvent.keyDown(sessionsResizer, {
+      key: sessionsKey === "ArrowRight" ? "ArrowLeft" : "ArrowRight",
+    });
+    expect(useChatPanel.getState().sessionsWidth).toBe(280);
+    expect(useChatPanel.getState().width).toBe(440);
+
+    fireEvent.keyDown(chatResizer, { key: chatKey });
+    expect(useChatPanel.getState().width).toBe(460);
+    expect(useChatPanel.getState().sessionsWidth).toBe(
+      chatNeighbor === "sessions" ? 260 : 280,
+    );
+  },
+);
+
+it("resizes sessions with the pointer while keeping neighboring panels usable", () => {
+  const { workspace, sessions } = renderWorkspace();
+  Object.defineProperty(workspace, "clientWidth", {
+    configurable: true,
+    value: 1132,
+  });
+  fireEvent(window, new Event("resize"));
+  const resizer = within(sessions).getByRole("separator", {
+    name: "Resize sessions panel",
+  });
+  resizer.setPointerCapture = vi.fn();
+  resizer.hasPointerCapture = vi.fn(() => true);
+  resizer.releasePointerCapture = vi.fn();
+  expect(resizer).toHaveAttribute("aria-valuemin", "200");
+  expect(resizer).toHaveAttribute("aria-valuemax", "512");
+
+  fireEvent.pointerDown(resizer, { pointerId: 1, button: 0 });
+  fireEvent.pointerMove(resizer, { pointerId: 1, clientX: 2000 });
+  expect(useChatPanel.getState().sessionsWidth).toBe(512);
+  expect(useChatPanel.getState().width).toBe(440);
+  fireEvent.pointerMove(resizer, { pointerId: 1, clientX: 0 });
+  expect(useChatPanel.getState().sessionsWidth).toBe(200);
+  expect(resizer).toHaveAttribute("aria-valuenow", "200");
+  fireEvent.pointerUp(resizer, { pointerId: 1 });
+});
+
+it("keeps a constrained chat at its visible width when resizing sessions and content", () => {
+  useChatPanel.setState({ width: 960 });
+  const { workspace, sessions, chat } = renderWorkspace();
+  Object.defineProperty(workspace, "clientWidth", {
+    configurable: true,
+    value: 1132,
+  });
+  fireEvent(window, new Event("resize"));
+  const sessionsResizer = within(sessions).getByRole("separator", {
+    name: "Resize sessions panel",
+  });
+  const chatResizer = within(chat).getByRole("separator", {
+    name: "Resize chat panel",
+  });
+  expect(chatResizer).toHaveAttribute("aria-valuenow", "672");
+
+  fireEvent.keyDown(sessionsResizer, { key: "ArrowLeft" });
+  expect(useChatPanel.getState().sessionsWidth).toBe(260);
+  expect(chatResizer).toHaveAttribute("aria-valuenow", "672");
+  expect(useChatPanel.getState().width).toBe(672);
+});
+
+it("restores the saved sessions width after viewport and visibility changes", () => {
+  const { workspace, sessions } = renderWorkspace();
+  Object.defineProperty(workspace, "clientWidth", {
+    configurable: true,
+    value: 1132,
+  });
+  fireEvent(window, new Event("resize"));
+  const resizer = within(sessions).getByRole("separator", {
+    name: "Resize sessions panel",
+  });
+  for (let index = 0; index < 7; index++) {
+    fireEvent.keyDown(resizer, { key: "ArrowRight" });
+  }
+  expect(useChatPanel.getState().sessionsWidth).toBe(420);
+
+  Object.defineProperty(workspace, "clientWidth", {
+    configurable: true,
+    value: 900,
+  });
+  fireEvent(window, new Event("resize"));
+  expect(resizer).toHaveAttribute("aria-valuenow", "400");
+  fireEvent.keyDown(resizer, { key: "ArrowRight" });
+  expect(useChatPanel.getState().sessionsWidth).toBe(420);
+
+  act(() => useChatPanel.getState().close());
+  expect(resizer).toHaveAttribute("aria-valuenow", "420");
+  expect(useChatPanel.getState().width).toBe(440);
+  act(() => useChatPanel.getState().show());
+  expect(resizer).toHaveAttribute("aria-valuenow", "400");
+  Object.defineProperty(workspace, "clientWidth", {
+    configurable: true,
+    value: 1132,
+  });
+  fireEvent(window, new Event("resize"));
+  expect(resizer).toHaveAttribute("aria-valuenow", "420");
+});
 
 it("keeps sessions and chat headers draggable without grip icons", () => {
   const { workspace, sessions, chat } = renderWorkspace();
@@ -312,7 +480,9 @@ it("cancels a drag on viewport resize and ignores other pointers", () => {
 it("keeps the existing mobile overlays and disables panel dragging", () => {
   narrow = true;
   useSessionsSidebar.setState({ drawer: true });
-  const { workspace, sessions } = renderWorkspace();
+  const { workspace, sessions, chat } = renderWorkspace();
+  expect(within(sessions).queryByRole("separator")).toBeNull();
+  expect(within(chat).queryByRole("separator")).toBeNull();
   beginDrag(sessions.querySelector("header")!, 200, 1100);
   expect(document.querySelector(".chat-dock-preview")).toBeNull();
   fireEvent.pointerUp(window, { clientX: 1100, pointerId: 1 });
