@@ -1,6 +1,6 @@
 .workspace-layout-popover {
   z-index: 60;
-  width: min(310px, calc(100vw - 80px));
+  width: min(286px, calc(100vw - 80px));
   max-height: min(480px, var(--radix-popover-content-available-height));
   overflow: auto;
   padding: 10px;
@@ -10,30 +10,18 @@
   color: var(--popover-foreground);
   box-shadow: var(--shadow-md);
 }
-.workspace-layout-popover h2 {
-  font-size: 13px;
-  font-weight: 600;
-}
-.workspace-layout-popover p {
-  margin: 4px 0 12px;
-  color: var(--muted-foreground);
-  font-size: 12px;
-}
 .workspace-layout-options {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 .workspace-layout-option {
   position: relative;
   display: flex;
   min-width: 0;
-  flex-direction: column;
-  gap: 6px;
   padding: 8px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  text-align: left;
 }
 .workspace-layout-option:hover,
 .workspace-layout-option[data-state="checked"] {
@@ -70,15 +58,10 @@
   width: 13px;
   height: 13px;
 }
-.workspace-layout-name {
-  overflow-wrap: anywhere;
-  font-size: 10px;
-  line-height: 1.3;
-}
 .workspace-layout-check {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   display: grid;
   width: 14px;
   height: 14px;

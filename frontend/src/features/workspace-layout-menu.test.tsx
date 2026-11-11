@@ -6,6 +6,38 @@ import { expect, it } from "vitest";
 import { setLocalePreference } from "@/i18n";
 import { WorkspaceLayoutMenu } from "./workspace-layout-menu";
 
+it("shows icon-only layouts with accessible names and hover labels", async () => {
+  setLocalePreference("en");
+  render(
+    <Tooltip.Provider>
+      <WorkspaceLayoutMenu />
+    </Tooltip.Provider>,
+  );
+  await userEvent.click(screen.getByRole("button", { name: "Panel layouts" }));
+  const menu = screen.getByRole("dialog", { name: "Panel layouts" });
+  expect(menu).not.toHaveTextContent(/\S/);
+
+  const layouts = [
+    ["Sessions, Content, Chat", ["sessions", "content", "chat"]],
+    ["Sessions, Chat, Content", ["sessions", "chat", "content"]],
+    ["Content, Sessions, Chat", ["content", "sessions", "chat"]],
+    ["Content, Chat, Sessions", ["content", "chat", "sessions"]],
+    ["Chat, Sessions, Content", ["chat", "sessions", "content"]],
+    ["Chat, Content, Sessions", ["chat", "content", "sessions"]],
+  ] as const;
+  for (const [name, order] of layouts) {
+    const option = within(menu).getByRole("radio", { name });
+    expect(option).toHaveAttribute("title", name);
+    const preview = option.querySelector(".workspace-layout-preview");
+    expect(preview).toHaveAttribute("aria-hidden", "true");
+    expect(preview?.querySelectorAll("svg")).toHaveLength(3);
+    expect(
+      Array.from(preview?.querySelectorAll("[data-panel]") ?? [])
+        .map((panel) => panel.getAttribute("data-panel")),
+    ).toEqual(order);
+  }
+});
+
 it("keeps all six layout previews compact and selectable", async () => {
   setLocalePreference("en");
   const style = document.createElement("style");

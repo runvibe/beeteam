@@ -3,7 +3,6 @@
   "content": "Conteúdo",
   "sessions": "Sessões",
   "layouts": "Layouts dos painéis",
-  "layoutHint": "Escolha um layout ou arraste o cabeçalho de um painel.",
   "dragToDock": "Arraste para reorganizar os painéis",
   "moved": "Painel {{panel}} na posição {{position}} de {{total}}"
 }

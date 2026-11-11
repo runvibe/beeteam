@@ -3,7 +3,6 @@
   "content": "Content",
   "sessions": "Sessions",
   "layouts": "Panel layouts",
-  "layoutHint": "Choose a layout or drag a panel header.",
   "dragToDock": "Drag to rearrange panels",
   "moved": "{{panel}} moved to position {{position}} of {{total}}"
 }

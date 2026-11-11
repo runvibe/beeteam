@@ -46,8 +46,6 @@ export function WorkspaceLayoutMenu() {
           collisionPadding={8}
           aria-label={label}
         >
-          <h2>{label}</h2>
-          <p>{t("workspace.layoutHint")}</p>
           <RadioGroup.Root
             aria-label={label}
             className="workspace-layout-options"
@@ -58,12 +56,13 @@ export function WorkspaceLayoutMenu() {
             }}
           >
             {layouts.map((layout) => {
-              const names = layout.map(workspacePanelName);
+              const name = layout.map(workspacePanelName).join(", ");
               return (
                 <RadioGroup.Item
                   key={layout.join(",")}
                   value={layout.join(",")}
-                  aria-label={names.join(", ")}
+                  aria-label={name}
+                  title={name}
                   className="workspace-layout-option"
                 >
                   <span className="workspace-layout-preview" aria-hidden="true">
@@ -72,7 +71,6 @@ export function WorkspaceLayoutMenu() {
                       return <span key={panel} data-panel={panel}><Icon /></span>;
                     })}
                   </span>
-                  <span className="workspace-layout-name">{names.join(" · ")}</span>
                   <RadioGroup.Indicator className="workspace-layout-check">
                     <Check aria-hidden="true" />
                   </RadioGroup.Indicator>
