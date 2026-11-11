@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-09",
+  "baseCommit": "2742b83",
+  "branch": "codex/agent-session-bindings",
+  "backend": {
+    "sqlite": {
+      "command": "cargo test --locked -j2",
+      "suites": 62,
+      "passed": 282,
+      "failed": 0
+    },
+    "postgresql18": {
+      "command": "cargo test --locked -j2",
+      "suites": 62,
+      "passed": 282,
+      "failed": 0
+    }
+  },
+  "frontend": {
+    "passed": 728,
+    "suites": 155,
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "contracts": {
+    "httpOperations": 11,
+    "mcpTools": 10,
+    "fixtures": 33,
+    "generatedTypeScript": "passed"
+  },
+  "native": {
+    "evidence": "managed-agents-native-20261109.json",
+    "checksPassed": 4,
+    "approvals": "Controlled-provider acceptance; native approval not exercised"
+  },
+  "localReview": {
+    "url": "http://127.0.0.1:5190/app/",
+    "database": "Existing restored review copy, backup taken before additive migration",
+    "boards": 5,
+    "tasks": 167,
+    "agents": 107,
+    "browser": "Team and managed configuration panel verified in Chrome; real project acceptance remains human-owned"
+  },
+  "review": {
+    "pullRequest": 65,
+    "merged": false,
+    "released": false,
+    "globalLegacyCutover": "pending",
+    "humanAcceptance": "pending"
+  },
+  "cargoBuild": "passed: cargo build --locked",
+  "catalog": "regenerated: cargo run --locked --features mcp --example mcp_catalog"
+}

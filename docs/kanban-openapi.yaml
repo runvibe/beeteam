@@ -38,6 +38,7 @@ servers:
   - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v2/tasks/{taskId}/session-deliveries: {"get": {"operationId": "listTaskSessionDeliveries", "summary": "List managed Conversation delivery state", "description": "Read persisted recipients, acknowledgements and uncertain outcomes. An uncertain dispatch is never automatically resent. Actor context is declared metadata.", "parameters": [{"name": "taskId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, {"$ref": "#/components/parameters/Offset"}, {"$ref": "#/components/parameters/Limit"}, {"name": "state", "in": "query", "schema": {"type": "string", "enum": ["waiting_binding", "waiting_external", "pending", "dispatching", "acknowledged", "completed", "failed", "uncertain", "superseded"]}}, {"name": "commentId", "in": "query", "schema": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}], "responses": {"200": {"description": "Delivery ledger page", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SessionDeliveryPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
   /api/v2/tasks/by-slug/{slug}:
     get:
       operationId: resolveTaskSlug
@@ -3260,6 +3261,10 @@ components:
     Board:
       type: object
       properties:
+        system:
+          type: boolean
+          readOnly: true
+          description: True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.
         id:
           type: string
           format: uuid
@@ -3946,17 +3951,9 @@ components:
         - deletedAt
         - actorKind
       additionalProperties: false
-    CreateComment:
-      type: object
-      properties:
-        body:
-          type: string
-          minLength: 1
-          description: Máximo 16384 bytes UTF-8.
-          x-maxBytes: 16384
-      required:
-        - body
-      additionalProperties: false
+    SessionDelivery: {"type":"object","additionalProperties":false,"properties":{"id":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"taskId":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"commentId":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"sourceId":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"targetAgentId":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"bindingId":{"type":["string","null"],"format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"requesterAgentId":{"type":["string","null"],"format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"originBindingId":{"type":["string","null"],"format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"replyCommentId":{"type":["string","null"],"format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"kind":{"type":"string","enum":["mention","worker_summary","response"]},"state":{"type":"string","enum":["managed","managed_backpressure","cancelled","waiting_external","waiting_binding","pending","dispatching","acknowledged","completed","failed","uncertain","superseded"]},"turnId":{"type":["string","null"]},"errorCode":{"type":["string","null"]},"expectsReply":{"type":"boolean"},"version":{"type":"integer","minimum":1},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"},"backendOrigin":{"type":"string","format":"uri","description":"Verified local Bee Team MCP origin for the provider turn; absent until preflight passes."}},"required":["id","taskId","commentId","sourceId","targetAgentId","kind","state","bindingId","turnId","errorCode","expectsReply","replyCommentId","version","createdAt","updatedAt"]}
+    SessionDeliveryPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/SessionDelivery"}}, "offset": {"type": "integer", "minimum": 0, "maximum": 2147483647, "description": "Offset solicitado; no quadro \u00e9 sempre zero."}, "limit": {"type": "integer", "minimum": 1, "maximum": 100, "description": "Limite efetivamente solicitado/aplicado."}, "total": {"type": "integer", "minimum": 0, "description": ""}, "hasMore": {"type": "boolean", "description": "offset + quantidade de itens retornados < total."}, "nextOffset": {"type": ["integer", "null"], "minimum": 0, "description": "offset + quantidade de itens retornados quando hasMore; sen\u00e3o null."}}, "required": ["items", "offset", "limit", "total", "hasMore", "nextOffset"], "additionalProperties": false, "description": "Offset al\u00e9m do total: items=[], hasMore=false, nextOffset=null. Total e itens devem usar o mesmo snapshot dentro desta resposta; entre requisi\u00e7\u00f5es n\u00e3o h\u00e1 snapshot."}
+    CreateComment: {"type": "object", "properties": {"body": {"type": "string", "minLength": 1, "description": "Máximo 16384 bytes UTF-8.", "x-maxBytes": 16384}, "mentionedAgentIds": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination."}}, "required": ["body"], "additionalProperties": false}
     TaskOverview: {
         "type": "object",
         "properties": {
@@ -4414,51 +4411,7 @@ components:
           minimum: 0
       required: [items, total, offset, limit, hasMore, nextOffset]
       additionalProperties: false
-    Comment:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        taskId:
-          type: string
-          format: uuid
-          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        body:
-          type: string
-          minLength: 1
-          description: Máximo 16384 bytes UTF-8.
-          x-maxBytes: 16384
-        actorId:
-          type:
-            - string
-            - "null"
-          format: uuid
-          pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
-        createdAt:
-          type: string
-          format: date-time
-        deletedAt:
-          type:
-            - string
-            - "null"
-          format: date-time
-          description: "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."
-        actorKind:
-          type: string
-          enum:
-            - human
-            - agent
-      required:
-        - id
-        - taskId
-        - body
-        - actorId
-        - createdAt
-        - deletedAt
-        - actorKind
-      additionalProperties: false
+    Comment: {"type": "object", "properties": {"id": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "taskId": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "body": {"type": "string", "minLength": 1, "description": "Máximo 16384 bytes UTF-8.", "x-maxBytes": 16384}, "actorId": {"type": ["string", "null"], "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "createdAt": {"type": "string", "format": "date-time"}, "deletedAt": {"type": ["string", "null"], "format": "date-time", "description": "Exclusão lógica: corresponde a deleted_at no PostgreSQL; não remove dados físicos."}, "actorKind": {"type": "string", "enum": ["human", "agent"]}, "mentionedAgentIds": {"type": "array", "maxItems": 32, "uniqueItems": true, "items": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "description": "Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination."}, "sourceSummaryId": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "inReplyToCommentId": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}, "deliveryId": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, "required": ["id", "taskId", "body", "actorId", "createdAt", "deletedAt", "actorKind"], "additionalProperties": false}
     UploadAttachment:
       type: object
       properties:
@@ -5123,6 +5076,7 @@ components:
             - storage_unavailable
             - invalid_actor_context
             - usage_attribution_conflict
+            - system_resource_protected
             - usage_policy_conflict
             - parent_cycle
             - active_execution_interval

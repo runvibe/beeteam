@@ -1,4 +1,5 @@
 import { message } from "@/i18n";
+import { v7 } from "uuid";
 
 import { patchRecord, addStatus, orderStatuses } from "./configuration";
 import { projectTask, descendantIds } from "./projections";
@@ -199,6 +200,8 @@ export function createMockApi(
             (!f.teamId || (r.bindings as Row)[`${f.role}TeamId`] === f.teamId)
           : r.role === f.role,
       );
+    if (f.system !== undefined && ["agents", "teams", "boards"].includes(resource))
+      rows = rows.filter((r) => Boolean(r.system) === f.system);
     if (f.rootOnly) rows = rows.filter((r) => r.parentId === null);
     if (f.blocked !== undefined)
       rows = rows.filter(
@@ -279,6 +282,14 @@ export function createMockApi(
     return rows as unknown as Resources[K][];
   }
   const api: BeeApi = {
+    async createComment(taskId,input,version) {
+      await wait();
+      const task=db.tasks.find(t=>t.id===taskId);
+      if(!task || task.version!==version)throw new ApiError(409,"version_mismatch",message("errors.theApiReturnedAnInvalidResponse"));
+      const comment={id:v7(),taskId,...input,actorId:null,actorKind:"human" as const,createdAt:new Date().toISOString(),deletedAt:null};
+      db.comments.push(comment);task.version++;return clone(comment);
+    },
+    async sessionDeliveries(){return {items:[],total:0,offset:0,limit:100,hasMore:false,nextOffset:null};},
     info: async () => ({
       apiVersion: "demo",
       supportedContractVersions: ["v1", "v2"],

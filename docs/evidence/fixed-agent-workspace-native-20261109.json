@@ -1,0 +1,13 @@
+{
+  "binarySha256": "78bf8446482939f78ffe26c58c031b756ba589ed7426c2f570485c8f6b92dd94",
+  "database": "C:\\Users\\phili\\.codex\\build-cache\\fixed-workspace-qa\\chat-proof-20261109-225653-c7a7a6ab\\e2e-20261109-225653\\proof.sql",
+  "scope": "Owned isolated sessions and API fixtures only",
+  "checks": {
+    "owned_send_and_replay": true,
+    "fixed_workspace": true,
+    "sse_replay": true,
+    "restart_continue": true,
+    "no_provider_identifiers": true
+  },
+  "status": "passed"
+}

@@ -286,5 +286,7 @@
   "analyticsAccept": "Aceitar analytics",
   "analyticsReject": "Rejeitar analytics",
   "analyticsManage": "Preferências de cookies",
-  "analyticsFrameTitle": "Estatísticas de uso"
+  "analyticsFrameTitle": "Estatísticas de uso",
+  "system": "Sistema",
+  "systemHint": "Criado pelo Bee Team para ajudar você a começar. Não pode ser arquivado nem reatribuído."
 }

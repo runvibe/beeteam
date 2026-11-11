@@ -22,6 +22,7 @@ export type Error = {
     | "storage_unavailable"
     | "invalid_actor_context"
     | "usage_attribution_conflict"
+    | "system_resource_protected"
     | "usage_policy_conflict"
     | "parent_cycle"
     | "active_execution_interval"

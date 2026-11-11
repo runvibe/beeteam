@@ -1,27 +1,27 @@
 {
-  "sourceCommit": "ce484c9f6c2e303532b61027ea2b69146b055aa2",
-  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data.",
+  "sourceCommit": "ea3e3b70415ac965882b8d6dda47d61cc6f007d4",
+  "scope": "Bee Team brand and getbee.team reference domain; Get a Team Lead/Get a Worker package names. Stable MCP URIs, HTTP contracts, technical identifiers and authored data. Assistant embedded-browser recovery uses the API-served local UI without changing default mode or user data. Mode-aware external/integrated session guidance; mixed teams preserve external MCP/skills and managed Conversation routing without duplicate harness notifications. Integrated agent provisioning through advertised getAgentRuntime/createIntegratedSession MCP tools, with external-only generic declarations. Managed requests take precedence over legacy binding instructions; local source overlay based on 2742b83.",
   "files": [
     {
       "resourcePath": "get-a-team-lead/SKILL.md",
       "sourcePath": "skills/get-a-team-lead/SKILL.md",
-      "sourceSha256": "5cb7ebd1d646d1b6de9bcf5d7b87d9a3c3457ccbe62dec053f73e46441b763c6",
-      "bundledSha256": "bb0c1df5ce092a83ae476a3840ab1a8556e044aa0b6a9600df50a82016c4bb94",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
+      "sourceSha256": "6ac557595e3e29a5ad015ff8b8ebd8c43430797cfcae3f2aec7bddf3132474cc",
+      "bundledSha256": "7466489331c0839fdfe804bac286c5c59c99b1fde53ff3d160d80c704487d1be",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
       "resourcePath": "get-a-worker/SKILL.md",
       "sourcePath": "skills/get-a-worker/SKILL.md",
-      "sourceSha256": "eac95ec29bacd2f0c85c54e2b10b159de8110514a0ebae7d26e2ce98e0697a9a",
-      "bundledSha256": "3d6b9ef604cc94a5361fb4d6fd708f71a8e3d81e87d6262d58202c0a5604df93",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments."
+      "sourceSha256": "144db5753bf726c2fbf11c471acb2455a06d6a44080a2e7bf3bf590e4e5eb5dd",
+      "bundledSha256": "a5fd38d1c8293987289472bff252dc5d863787d4216669dc5a5dd17ecad19268",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. Delegated questions go to the originating Leader chat through confirmed task comments. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
       "resourcePath": "references/handoff.md",
       "sourcePath": "skills/references/handoff.md",
-      "sourceSha256": "473af29e74af4ee5ace10bb6b7109ef191a9b2c56b16f8f2881f0b8e7d743b9c",
-      "bundledSha256": "2af5ea4cfde3f22fbb439809cf94d2c9ad0de9aa87a00f0044b83da8414a4514",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "4bdfb7e4298f8c1efa7fd13793bf066f6bec59d7a726662e10f60d90db9b2959",
+      "bundledSha256": "d46561811805dc58e96a7c74970a892caabf4a55a3db833defc04f4e378d7760",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
       "resourcePath": "references/codex.md",
@@ -75,9 +75,9 @@
     {
       "resourcePath": "references/integration.md",
       "sourcePath": "skills/references/integration.md",
-      "sourceSha256": "9abbdfe880bd58776fdc8f9e9f34ccd10c404b88689c9436c9be6bc2267fdf46",
-      "bundledSha256": "1ed258ca0d192c94ec67443c122db28e97c0cac94aa3e0188d98e4f441966db9",
-      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance."
+      "sourceSha256": "4f554241a8007eb569771247e27e978dfee3f3a5bb68c307ed48bc80f4741249",
+      "bundledSha256": "042e3f850c80e32e28c73a2a022fa8fdd130b3010ef220e67e30f5f320281d69",
+      "localOverlay": "Map relative links to the unchanged allowlisted MCP URIs; retain unadvertised repository references as literal editorial text. Bee Team branding and Get skill names come from the exact source commit; preserve contracts, compatibility and driver-aware startup guidance. External/integrated mode precedence is synchronized from source; existing resource-link mapping is preserved."
     },
     {
       "resourcePath": "references/usage-report.md",

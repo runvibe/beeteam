@@ -286,5 +286,7 @@
   "analyticsAccept": "Accept analytics",
   "analyticsReject": "Reject analytics",
   "analyticsManage": "Cookie preferences",
-  "analyticsFrameTitle": "Usage analytics"
+  "analyticsFrameTitle": "Usage analytics",
+  "system": "System",
+  "systemHint": "Created by Bee Team to help you get started. It cannot be archived or reassigned."
 }

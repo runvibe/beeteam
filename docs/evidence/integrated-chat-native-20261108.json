@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-08",
+  "status": "passed",
+  "binarySha256": "56446b42439a6ea859514dd686814c2b089e595e384cb8504df29b851c11a79a",
+  "provider": "Official native Codex App Server 0.166.0 via stdio",
+  "scope": "New owned sessions and isolated SQLite; no product data",
+  "checks": {
+    "bootstrap_replay": true,
+    "runtime": true,
+    "first_turn": true,
+    "snapshot": true,
+    "sse_replay": true,
+    "restart_resume": true,
+    "second_turn": true,
+    "mcp_and_web_execution": true,
+    "reconciliation": true
+  },
+  "reconciliation": {
+    "faultInjection": "Only isolated proof DB changed to emulate a lost final receipt",
+    "resolved": true,
+    "idempotentReplay": true,
+    "noDuplicateMessages": true
+  },
+  "limitations": [
+    "No Desktop session takeover",
+    "Native smoke does not imply end-user acceptance",
+    "UI viewport evidence was captured separately with isolated fixtures"
+  ],
+  "reproduce": "python scripts/qa-integrated-chat.py --beeteam <candidate> --codex <official-native-codex> --output <temporary-parent>",
+  "approvalProbe": {
+    "result": "not_exercised",
+    "reason": "The owned provider session reported approval_policy=never and completed without requesting or executing the harmless command. No native approval was accepted.",
+    "coverage": "Origin-specific decisions, expiry and cancellation are covered by controlled provider/HTTP tests; native approval acceptance remains unverified."
+  }
+}

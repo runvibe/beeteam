@@ -2,15 +2,8 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { revealInScrollStrip } from "@/components/scroll-reveal";
 import "./detail-navigation.css";
-/** Reveal within this strip only: scrollIntoView would also move the task/document. */
-function reveal(viewport: HTMLElement, target: HTMLElement) {
-  const bounds = viewport.getBoundingClientRect();
-  const tab = target.getBoundingClientRect();
-  if (tab.left < bounds.left) viewport.scrollLeft += tab.left - bounds.left;
-  else if (tab.right > bounds.right)
-    viewport.scrollLeft += tab.right - bounds.right;
-}
 
 export function DetailNavigation({
   value,
@@ -72,7 +65,7 @@ export function DetailNavigation({
       const selected = node.querySelector<HTMLElement>(
         '[aria-selected="true"]',
       );
-      if (focus || selected) reveal(node, (focus || selected)!);
+      if (focus || selected) revealInScrollStrip(node, (focus || selected)!);
     };
     resize();
     const observer = new ResizeObserver(resize);
@@ -91,7 +84,7 @@ export function DetailNavigation({
   useLayoutEffect(() => {
     const node = viewport.current;
     const selected = node?.querySelector<HTMLElement>('[aria-selected="true"]');
-    if (node && selected) reveal(node, selected);
+    if (node && selected) revealInScrollStrip(node, selected);
     measure();
   }, [value]);
   function move(direction: -1 | 1) {
@@ -115,7 +108,7 @@ export function DetailNavigation({
           onScroll={measure}
           onFocusCapture={(event) => {
             if (viewport.current && event.target.getAttribute("role") === "tab")
-              reveal(viewport.current, event.target);
+              revealInScrollStrip(viewport.current, event.target);
           }}
         >
           <TabsList className="detail-section-list" aria-label={ariaLabel}>

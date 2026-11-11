@@ -28,7 +28,10 @@ pub fn router(json_limit: usize) -> Router<AppState> {
             _ => continue,
         };
         router = router.route(&op.path, on(method, dispatch));
-        router = router.route(&op.path.replacen("/api/v2", "/api/v1", 1), on(method, dispatch));
+        router = router.route(
+            &op.path.replacen("/api/v2", "/api/v1", 1),
+            on(method, dispatch),
+        );
     }
     router
         .layer(axum::extract::DefaultBodyLimit::max(22 * 1024 * 1024))
@@ -43,6 +46,7 @@ pub fn failure(error: Failure) -> Response {
         "payload_too_large" => 413,
         "unsupported_media_type" => 415,
         "storage_unavailable" => 503,
+        "operation_removed" => 410,
         "internal_error" => 500,
         _ => 409,
     };
@@ -214,7 +218,9 @@ async fn handle(
         upload,
     };
     let mut result = state.backend().execute(command).await?;
-    if legacy { crate::dto::worker_contract::response(op, &mut result.data, true)?; }
+    if legacy {
+        crate::dto::worker_contract::response(op, &mut result.data, true)?;
+    }
     let mut response = if let Some(file) = result.file {
         let mut response = Response::new(Body::from(file.bytes));
         let name: String = file

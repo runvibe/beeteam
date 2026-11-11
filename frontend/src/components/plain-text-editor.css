@@ -1,0 +1,12 @@
+.plain-text-editor {
+  position: relative;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.plain-text-editor[data-empty][data-placeholder]::before {
+  position: absolute;
+  color: var(--muted-foreground);
+  content: attr(data-placeholder);
+  pointer-events: none;
+}

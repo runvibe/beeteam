@@ -1,5 +1,7 @@
 // Generated from contracts/ra-openapi.yaml. Do not edit.
 export type Agent = {
+  /** @description True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it. */
+  readonly system?: boolean;
   slug: import("./Slug").Slug;
   /** Format: uuid */
   id: string;

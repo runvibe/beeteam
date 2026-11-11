@@ -25,8 +25,10 @@ async fn main() -> Result<()> {
         None
     };
     let mut state = AppState::new(database);
+    let mut recovery_pending = false;
     if let Some(transfer) = transfer {
         if transfer.recover().await.is_err() {
+            recovery_pending = true;
             tracing::warn!("transfer recovery pending; background maintenance will retry");
         }
         let maintenance = transfer.clone();
@@ -41,11 +43,53 @@ async fn main() -> Result<()> {
         });
         state = state.with_transfers(transfer);
     }
-
-    let router = create_router_with_frontend(state, &config, frontend_mode);
+    // Never write over a restore whose outcome is still unknown; the next start seeds.
+    if recovery_pending {
+        tracing::warn!("Bee Team HQ onboarding seed skipped until transfer recovery completes");
+    } else {
+        state
+            .backend()
+            .ensure_onboarding()
+            .await
+            .map_err(|e| anyhow::anyhow!("Bee Team HQ onboarding seed failed ({}): {}", e.code, e.error))?;
+    }
 
     let addr = config.listen_addr()?;
     let listener = TcpListener::bind(addr).await?;
+    let actual = listener.local_addr()?;
+    let ip = match actual.ip() {
+        std::net::IpAddr::V4(ip) if ip.is_unspecified() => {
+            std::net::IpAddr::V4(std::net::Ipv4Addr::LOCALHOST)
+        }
+        std::net::IpAddr::V6(ip) if ip.is_unspecified() => {
+            std::net::IpAddr::V6(std::net::Ipv6Addr::LOCALHOST)
+        }
+        other => other,
+    };
+    let endpoint = config.mcp.enabled.then(|| {
+        format!(
+            "http://{}{}",
+            std::net::SocketAddr::new(ip, actual.port()),
+            config.mcp.path
+        )
+    });
+    // Configure once before cloning into HTTP and Conversation dispatch.
+    let mut runtime_config = config.clone();
+    runtime_config.host = ip;
+    runtime_config.port = actual.port();
+    if config.host.is_loopback() {
+        state = state.with_leader_chat_runtime(&runtime_config);
+    }
+    let managed_runtime = state.managed_session_runtime(endpoint.as_deref())?;
+    state.managed_agents().start().await?;
+    let router = create_router_with_frontend(state, &config, frontend_mode);
+    if let Some((runtime, lease)) = managed_runtime {
+        tokio::spawn(async move {
+            if runtime.run(lease).await.is_err() {
+                tracing::error!("Managed session runtime stopped");
+            }
+        });
+    }
     tracing::info!("listening on {}", addr);
     if let Some(mcp_url) = config.mcp_endpoint_url() {
         tracing::info!("mcp enabled at {}", mcp_url);

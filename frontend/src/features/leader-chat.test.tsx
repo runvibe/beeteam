@@ -1,0 +1,456 @@
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { expect, it, vi } from "vitest";
+import { LeaderChat } from "./leader-chat";
+import type { LeaderChatApi } from "@/api/leader-chat";
+import type { Snapshot } from "@/api/leader-chat-types";
+import { ApiError } from "@/api/types";
+import { editPlainText } from "@/test/editable";
+vi.mock("@/components/names", () => ({
+  AgentName: ({ id }: { id: string }) => <span>{id}</span>,
+}));
+const snapshot: Snapshot = {
+  chat: {
+    id: "chat",
+    teamId: "team",
+    leaderAgentId: "leader",
+    bindingId: "binding",
+    title: "Planning",
+    version: 1,
+    createdAt: "2026-11-08T00:00:00Z",
+    updatedAt: "2026-11-08T00:00:00Z",
+  },
+  messages: [],
+  activeTurn: null,
+  pendingApprovals: [],
+  toolActivities: [],
+  olderMessagesCursor: null,
+  eventCursor: "cursor",
+};
+function api(): LeaderChatApi {
+  return {
+    runtime: vi.fn().mockResolvedValue({
+      agentId: "leader",
+      mode: "integrated",
+      bindingId: "binding",
+      harness: "codex",
+      readiness: "ready",
+      capabilities: { interrupt: true },
+    }),
+    list: vi
+      .fn()
+      .mockResolvedValue({ items: [snapshot.chat], nextCursor: null }),
+    snapshot: vi.fn().mockResolvedValue(snapshot),
+    stream: vi
+      .fn()
+      .mockImplementation(
+        (_c, _cursor, signal) =>
+          new Promise((resolve) =>
+            signal.addEventListener("abort", resolve, { once: true }),
+          ),
+      ),
+    send: vi.fn().mockResolvedValue({
+      message: {
+        id: "message",
+        chatId: "chat",
+        turnId: "turn",
+        role: "user",
+        content: "Olá",
+        revision: 1,
+        taskId: null,
+        clientMessageId: "client",
+        createdAt: "2026-11-08T00:00:00Z",
+      },
+      turn: {
+        id: "turn",
+        chatId: "chat",
+        bindingId: "binding",
+        status: "queued",
+        version: 1,
+        failure: null,
+        createdAt: "2026-11-08T00:00:00Z",
+        updatedAt: "2026-11-08T00:00:00Z",
+      },
+    }),
+    create: vi.fn(),
+    createSession: vi.fn(),
+    messages: vi.fn(),
+    cancel: vi.fn(),
+    reconcile: vi.fn(),
+    decide: vi.fn(),
+  };
+}
+it("sends one message, retains focus, and blocks a second send while turn is queued", async () => {
+  const transport = api();
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  editPlainText(composer, "Olá");
+  fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(1));
+  await waitFor(() => expect(composer.textContent).toBe(""));
+  expect(composer).toHaveFocus();
+  expect(
+    screen.getByRole("button", { name: "Enviar mensagem" }),
+  ).toBeDisabled();
+  expect(transport.create).not.toHaveBeenCalled();
+});
+it("focuses the legacy composer when its label is clicked", async () => {
+  render(<LeaderChat api={api()} teamId="team" leaderAgentId="leader" />);
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  fireEvent.click(screen.getByText("Mensagem para o líder"));
+  expect(composer).toHaveFocus();
+});
+it("keeps the legacy Ctrl+Enter shortcut and ignores it during composition", async () => {
+  const transport = api();
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" />);
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  expect(composer).toHaveAttribute("contenteditable", "plaintext-only");
+  const content = "Olá\n**equipe**";
+  composer.textContent = content;
+  fireEvent.input(composer);
+  fireEvent.keyDown(composer, { key: "Enter" });
+  fireEvent.compositionStart(composer);
+  fireEvent.keyDown(composer, { key: "Enter", ctrlKey: true });
+  expect(transport.send).not.toHaveBeenCalled();
+  fireEvent.compositionEnd(composer);
+  fireEvent.keyDown(composer, { key: "Enter", ctrlKey: true });
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(1));
+  expect(vi.mocked(transport.send).mock.calls[0][1].content).toBe(content);
+});
+it("keeps external mode explicit and never starts a session automatically", async () => {
+  const transport = api();
+  vi.mocked(transport.runtime).mockResolvedValue({
+    agentId: "leader",
+    mode: "external",
+    bindingId: "external",
+    harness: "codex",
+    readiness: "external",
+  } as never);
+  vi.mocked(transport.list).mockResolvedValue({ items: [], nextCursor: null });
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  expect(
+    await screen.findByText(
+      "Continue usando seu assistente com MCP e skills. O Bee Team não controla esse chat externo.",
+    ),
+  ).toBeInTheDocument();
+  expect(transport.createSession).not.toHaveBeenCalled();
+});
+it("does not fabricate chat support when transport is unavailable", () => {
+  render(<LeaderChat teamId="team" leaderAgentId="leader" leaderVersion={1} />);
+  expect(
+    screen.getByText("O chat integrado requer uma API Bee Team compatível."),
+  ).toBeInTheDocument();
+});
+it("routes a worker approval by its ID and keeps a delayed pending event dismissed", async () => {
+  const approval = {
+    id: "approval",
+    chatId: "chat",
+    turnId: "worker-turn",
+    bindingId: "worker-binding",
+    agentId: "worker",
+    taskId: null,
+    kind: "command" as const,
+    title: "Run tests",
+    description: "npm test",
+    command: "npm test",
+    host: null,
+    paths: [],
+    status: "pending" as const,
+    version: 1,
+    expiresAt: "2026-11-08T15:00:00Z",
+  };
+  const transport = api();
+  let emit: Parameters<LeaderChatApi["stream"]>[3] | undefined;
+  vi.mocked(transport.snapshot).mockResolvedValue({
+    ...snapshot,
+    pendingApprovals: [approval],
+  });
+  vi.mocked(transport.stream).mockImplementation(
+    (_id, _cursor, signal, onEvent) => {
+      emit = onEvent;
+      return new Promise((resolve) =>
+        signal.addEventListener("abort", () => resolve(), { once: true }),
+      );
+    },
+  );
+  vi.mocked(transport.decide).mockResolvedValue({
+    ...approval,
+    status: "accepted",
+    version: 2,
+  });
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Aprovar esta ação" }),
+  );
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Aprovar esta ação" }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(vi.mocked(transport.decide).mock.calls[0].slice(0, 3)).toEqual([
+    "chat",
+    approval,
+    "accept",
+  ]);
+  act(() =>
+    emit?.({
+      schemaVersion: 1,
+      id: "late",
+      chatId: "chat",
+      turnId: "worker-turn",
+      createdAt: "2026-11-08T00:00:00Z",
+      type: "approval.updated",
+      data: { approval },
+    }),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Aprovar esta ação" }),
+  ).not.toBeInTheDocument();
+});
+it("allows editing a definitively rejected message rather than retrying the old payload", async () => {
+  const transport = api();
+  vi.mocked(transport.send).mockRejectedValueOnce(
+    new ApiError(409, "turn_in_progress", "busy"),
+  );
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  editPlainText(composer, "first");
+  fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
+  await screen.findByText("Aguarde o término da execução atual.");
+  expect(composer).toHaveAttribute("contenteditable", "plaintext-only");
+  editPlainText(composer, "second");
+  fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(transport.send).mock.calls[1][1].content).toBe("second");
+  expect(vi.mocked(transport.send).mock.calls[0][2]).not.toBe(
+    vi.mocked(transport.send).mock.calls[1][2],
+  );
+});
+it("retries the exact identity after an ambiguous transport failure", async () => {
+  const transport = api();
+  vi.mocked(transport.send).mockRejectedValueOnce(
+    new ApiError(0, "network_error", "offline"),
+  );
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  const composer = await screen.findByRole("textbox", {
+    name: "Mensagem para o líder",
+  });
+  editPlainText(composer, "same");
+  fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
+  const retry = await screen.findByRole("button", { name: "Verificar envio anterior" });
+  expect(composer).toHaveAttribute("aria-disabled", "true");
+  composer.blur();
+  fireEvent.click(screen.getByText("Mensagem para o líder"));
+  expect(composer).not.toHaveFocus();
+  fireEvent.click(retry);
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(transport.send).mock.calls[0]).toEqual(
+    vi.mocked(transport.send).mock.calls[1],
+  );
+});
+it("requires explicit replacement and sends configured tools when creating an integrated session", async () => {
+  const transport = api();
+  vi.mocked(transport.runtime).mockResolvedValue({
+    agentId: "leader",
+    mode: "external",
+    bindingId: "external",
+    harness: "codex",
+    readiness: "external",
+  } as never);
+  vi.mocked(transport.list).mockResolvedValue({ items: [], nextCursor: null });
+  vi.mocked(transport.createSession).mockResolvedValue({
+    agentId: "leader",
+    bindingId: "new",
+    harness: "codex",
+    mode: "integrated",
+    externalId: "thread",
+    projectRoot: "C:\\project",
+  });
+  render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={4}
+    />,
+  );
+  await screen.findByRole("button", { name: "Criar sessão integrada" });
+  expect(screen.queryByLabelText("Diretório do projeto neste computador")).toBeNull();
+  expect(
+    screen.getByRole("button", { name: "Criar sessão integrada" }),
+  ).toBeDisabled();
+  fireEvent.click(
+    screen.getByRole("checkbox", {
+      name: "Quero substituir o vínculo atual do agente por uma nova sessão integrada, preservando o histórico.",
+    }),
+  );
+  fireEvent.change(
+    screen.getByLabelText(
+      "Nomes dos servidores MCP configurados, um por linha",
+    ),
+    { target: { value: "docs\ndocs\nsearch" } },
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Criar sessão integrada" }),
+  );
+  await waitFor(() => expect(transport.createSession).toHaveBeenCalledTimes(1));
+  expect(vi.mocked(transport.createSession).mock.calls[0].slice(0, 3)).toEqual([
+    "leader",
+    {
+      expectedBindingId: "external",
+      toolProfile: {
+        webSearch: "live",
+        networkAccess: true,
+        enabledMcpServers: ["docs", "search"],
+        skillRoots: [],
+      },
+    },
+    4,
+  ]);
+});
+it("does not reuse another team chat when the selected team changes", async () => {
+  const transport = api();
+  const view = render(
+    <LeaderChat
+      api={transport}
+      teamId="team"
+      leaderAgentId="leader"
+      leaderVersion={1}
+    />,
+  );
+  await screen.findByRole("textbox", { name: "Mensagem para o líder" });
+  const second = {
+    ...snapshot,
+    chat: {
+      ...snapshot.chat,
+      id: "second",
+      teamId: "other",
+      leaderAgentId: "other-leader",
+    },
+  };
+  vi.mocked(transport.list).mockResolvedValue({
+    items: [second.chat],
+    nextCursor: null,
+  });
+  vi.mocked(transport.snapshot).mockResolvedValue(second);
+  view.rerender(
+    <LeaderChat
+      api={transport}
+      teamId="other"
+      leaderAgentId="other-leader"
+      leaderVersion={1}
+    />,
+  );
+  await waitFor(() =>
+    expect(transport.snapshot).toHaveBeenLastCalledWith(
+      "second",
+      expect.any(AbortSignal),
+    ),
+  );
+});
+it.each([['session_busy', false], ['session_creation_uncertain', true], ['invalid_response', true]] as const)('handles bootstrap %s without losing settings or retry identity', async (code, uncertain) => {
+  const transport = api();
+  vi.mocked(transport.runtime).mockResolvedValue({agentId:'leader', mode:'external', bindingId:null, harness:'codex', readiness:'external'} as never);
+  vi.mocked(transport.list).mockResolvedValue({items:[],nextCursor:null});
+  vi.mocked(transport.createSession).mockRejectedValue(new ApiError(code === 'invalid_response' ? 201 : 409, code, 'bootstrap'));
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
+  await screen.findByRole('button',{name:'Criar sessão integrada'});
+  const settings = screen.getByLabelText('Nomes dos servidores MCP configurados, um por linha');
+  fireEvent.change(settings,{target:{value:'docs'}});
+  fireEvent.click(screen.getByRole('button',{name:'Criar sessão integrada'}));
+  await screen.findByRole('alert');
+  expect(settings).toHaveValue('docs');
+  if (uncertain) expect(settings).toBeDisabled(); else expect(settings).toBeEnabled();
+  fireEvent.click(screen.getByRole('button',{name: uncertain ? 'Verificar criação da sessão' : 'Criar sessão integrada'}));
+  await waitFor(()=>expect(transport.createSession).toHaveBeenCalledTimes(2));
+  const calls=vi.mocked(transport.createSession).mock.calls;
+  if(uncertain) expect(calls[0]).toEqual(calls[1]); else expect(calls[0][3]).not.toEqual(calls[1][3]);
+});
+it('checks an uncertain turn without resending and retains retry identity only on network failure', async () => {
+ const transport=api();
+ const turn={id:'turn',chatId:'chat',bindingId:'binding',status:'uncertain' as const,version:2,failure:null,createdAt:snapshot.chat.createdAt,updatedAt:snapshot.chat.updatedAt};
+ vi.mocked(transport.snapshot).mockResolvedValue({...snapshot,activeTurn:turn});
+ vi.mocked(transport.reconcile).mockRejectedValueOnce(new TypeError('network')).mockResolvedValue({resolved:false,turn});
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
+ const composer=await screen.findByRole('textbox',{name:'Mensagem para o líder'});
+ editPlainText(composer,'draft preserved');
+ const check=screen.getByRole('button',{name:'Verificar resultado'});
+ fireEvent.click(check); await screen.findByRole('alert'); fireEvent.click(check);
+ await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(2));
+ await screen.findByText('O provedor ainda não confirmou o resultado. Nenhuma mensagem foi reenviada. Você pode verificar novamente.');
+ expect(vi.mocked(transport.reconcile).mock.calls[0]).toEqual(vi.mocked(transport.reconcile).mock.calls[1]);
+ expect(composer.textContent).toBe('draft preserved'); expect(screen.getByRole('button',{name:'Enviar mensagem'})).toBeDisabled();
+ fireEvent.click(check); await waitFor(()=>expect(transport.reconcile).toHaveBeenCalledTimes(3));
+ expect(vi.mocked(transport.reconcile).mock.calls[2][2]).not.toEqual(vi.mocked(transport.reconcile).mock.calls[1][2]);
+ expect(transport.send).not.toHaveBeenCalled();
+});
+
+it('stops forbidden SSE and shows the local origin error', async () => {
+ const transport=api();
+ vi.mocked(transport.stream).mockRejectedValue(new ApiError(403,'local_action_forbidden','Forbidden'));
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader"/>);
+ await screen.findByRole('alert');
+ expect(screen.getByText('Esta a\u00e7\u00e3o exige uma origem local autorizada. Abra o Bee Team pelo endere\u00e7o local configurado.')).toBeVisible();
+ expect(screen.getByText('Conex\u00e3o interrompida')).toBeVisible();
+ expect(transport.stream).toHaveBeenCalledTimes(1);
+});
+it('retries the original message when a successful HTTP response has invalid JSON', async () => {
+ const transport=api();
+ vi.mocked(transport.send).mockRejectedValue(new ApiError(202,'invalid_response','Invalid JSON'));
+ render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader"/>);
+ const composer=await screen.findByRole('textbox',{name:'Mensagem para o l\u00edder'});
+ editPlainText(composer,'preserved');
+ fireEvent.click(screen.getByRole('button',{name:'Enviar mensagem'}));
+ fireEvent.click(await screen.findByRole('button',{name:'Verificar envio anterior'}));
+ await waitFor(()=>expect(transport.send).toHaveBeenCalledTimes(2));
+ expect(vi.mocked(transport.send).mock.calls[0]).toEqual(vi.mocked(transport.send).mock.calls[1]);
+ expect(composer.textContent).toBe('preserved');
+});

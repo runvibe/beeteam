@@ -256,5 +256,22 @@
   "progressHistoryTitle_one": "Recorded progress over time: {{count}} record",
   "progressHistoryTitle_other": "Recorded progress over time: {{count}} records",
   "progressHistoryTitle_many": "Recorded progress over time: {{count}} records",
-  "backToTask": "Back to task"
+  "backToTask": "Back to task",
+  "writeConversation": "Message",
+  "mentionHint": "Type @ to select an agent from this team.",
+  "chooseRecipient": "Choose a recipient",
+  "sendConversation": "Send",
+  "sendingConversation": "Sending…",
+  "deliveryState_waiting_binding": "Awaiting a linked session",
+  "deliveryState_waiting_external": "Available via external MCP",
+  "deliveryState_pending": "Queued",
+  "deliveryState_dispatching": "Sending",
+  "deliveryState_acknowledged": "Accepted; awaiting response",
+  "deliveryState_completed": "Delivered",
+  "deliveryState_failed": "Delivery failed",
+  "deliveryState_uncertain": "Result unknown; check the original session before sending again",
+  "deliveryState_superseded": "Session changed; message not sent",
+  "deliveryState_managed": "In agent queue",
+  "deliveryState_managed_backpressure": "Waiting for queue capacity",
+  "deliveryState_cancelled": "Cancelled"
 }

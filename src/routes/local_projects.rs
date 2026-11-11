@@ -7,13 +7,13 @@ use crate::{
 };
 use axum::{
     extract::{rejection::JsonRejection, ConnectInfo, DefaultBodyLimit, Path, Request, State},
-    http::{uri::Authority, HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode},
     middleware::{self, Next},
     response::{IntoResponse, Response},
     routing::post,
     Json, Router,
 };
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 
 pub fn router(loopback_listener: bool) -> Router<AppState> {
     Router::new()
@@ -27,47 +27,12 @@ pub fn router(loopback_listener: bool) -> Router<AppState> {
             local_only,
         ))
 }
-fn local_host(host: &str) -> bool {
-    host.eq_ignore_ascii_case("localhost")
-        || host
-            .trim_matches(['[', ']'])
-            .parse::<IpAddr>()
-            .is_ok_and(|ip| ip.is_loopback())
-}
 fn allowed(bound_local: bool, peer: Option<SocketAddr>, headers: &HeaderMap) -> bool {
-    if !bound_local
-        || !peer.is_some_and(|p| p.ip().is_loopback())
-        || headers
-            .get("x-bee-local-action")
-            .and_then(|h| h.to_str().ok())
-            != Some("open-project")
-        || headers
-            .keys()
-            .any(|k| k == "forwarded" || k.as_str().starts_with("x-forwarded-") || k == "x-real-ip")
-    {
-        return false;
-    }
-    let host_ok = headers
-        .get("host")
+    headers
+        .get("x-bee-local-action")
         .and_then(|h| h.to_str().ok())
-        .and_then(|h| h.parse::<Authority>().ok())
-        .is_some_and(|a| local_host(a.host()));
-    let origin_ok = headers.get("origin").is_none_or(|origin| {
-        origin
-            .to_str()
-            .ok()
-            .and_then(|o| url::Url::parse(o).ok())
-            .is_some_and(|o| {
-                matches!(o.scheme(), "http" | "https")
-                    && o.host_str().is_some_and(local_host)
-                    && o.username().is_empty()
-                    && o.password().is_none()
-                    && o.query().is_none()
-                    && o.fragment().is_none()
-                    && o.path() == "/"
-            })
-    });
-    host_ok && origin_ok
+        == Some("open-project")
+        && super::local_access::allowed(bound_local, peer, headers, &[])
 }
 async fn local_only(State(bound_local): State<bool>, request: Request, next: Next) -> Response {
     let peer = request

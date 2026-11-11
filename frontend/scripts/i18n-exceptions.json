@@ -1,5 +1,20 @@
 [
   {
+    "file": "src/components/plain-text-editor.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/leader-chat.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/managed-agent-chat-parts.tsx",
+    "text": "Enter",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
     "file": "src/launch/bootstrap.ts",
     "text": "npx skills@1.7.6 add https://github.com/runvibe/beeteam/tree/{{value1}}/skills --skill setup-bee-team get-a-team-lead get-a-worker -a {{value2}} --copy",
     "reason": "Verified CLI syntax with immutable release tag and closed harness identifier; command tokens are technical."
@@ -27,6 +42,11 @@
   {
     "file": "src/components/filter-summary.tsx",
     "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/components/use-focus-source.ts",
+    "text": "Tab",
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
   },
   {
@@ -268,5 +288,35 @@
     "file": "src/analytics/frame-client.ts",
     "text": "allow-scripts allow-same-origin",
     "reason": "Closed iframe sandbox capability tokens. The separate metrics origin prevents parent DOM/history access."
+  },
+  {
+    "file": "src/features/workspace-panel-dock.ts",
+    "text": "Escape",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/workspace-panel-dock.ts",
+    "text": "Cannot rearrange workspace panels: layout bounds are unavailable.",
+    "reason": "Developer diagnostic for missing layout measurements; not displayed as product copy."
+  },
+  {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid workspace panel order",
+    "reason": "Developer-only invariant error for an invalid internal panel order."
+  },
+  {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid workspace panel width",
+    "reason": "Developer-only invariant error for a non-finite internal panel width."
+  },
+  {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid saved sessions panel width; using the default.",
+    "reason": "Developer diagnostic for malformed local layout preferences, not rendered product copy."
+  },
+  {
+    "file": "src/state/workspace-layout.ts",
+    "text": "Invalid workspace panel move",
+    "reason": "Developer-only invariant error for an invalid internal panel move."
   }
 ]

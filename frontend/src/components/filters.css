@@ -71,9 +71,12 @@
 .inline-filter-search input::-webkit-search-cancel-button {
   display: none;
 }
-.inline-filter-search:focus-within {
+:root:not([data-focus-source="pointer"]) .inline-filter-search:has(input:focus-visible) {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
+}
+.inline-filter-search input:focus-visible {
+  outline: none;
 }
 .filter-summary-toggle,
 .filter-summary-tag {

@@ -17,4 +17,12 @@ export type Comment = {
   deletedAt: string | null;
   /** @enum {string} */
   actorKind: "human" | "agent";
+  /** @description Explicit stable recipient IDs selected from the task board team. Display names and body text never select a managed destination. */
+  mentionedAgentIds?: string[];
+  /** Format: uuid */
+  sourceSummaryId?: string;
+  /** Format: uuid */
+  inReplyToCommentId?: string;
+  /** Format: uuid */
+  deliveryId?: string;
 };

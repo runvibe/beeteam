@@ -6,6 +6,8 @@ import {
 import { DetailRecordList } from "./detail-record-list";
 import { useApiCompatibility } from "@/api/compatibility";
 import { teamSettingsPatch } from "./team-settings-patch";
+import { useEffect } from "react";
+import { useChatPanel } from "@/state/chat-panel";
 import { useLocale, t as tr } from "@/i18n";
 
 import { CardKindMark } from "@/components/card-kind-mark";
@@ -39,6 +41,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { SystemBadge } from "@/components/system-badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -134,6 +137,7 @@ export function Teams() {
                     >
                       <CardHeader>
                         <CardTitle>{t.name}</CardTitle>
+                        <SystemBadge system={t.system} />
                       </CardHeader>
                       <CardContent>
                         <CardExcerpt
@@ -172,6 +176,12 @@ export function TeamPage() {
 }
 function TeamDetail({ id }: { id: string }) {
   useLocale();
+  const [tab] = useUrlState<string>("team.tab", "overview", {
+    values: ["overview", "chat"],
+  });
+  useEffect(() => {
+    if (tab === "chat") useChatPanel.getState().openTeam(id);
+  }, [tab, id]);
   const configuring = useLocation().split("?")[0].endsWith("/settings");
   const q = useEntity("teams", id);
   const memberLimit = usePageSize("members", 10),
@@ -204,7 +214,8 @@ function TeamDetail({ id }: { id: string }) {
                   <dd>
                     {q.data.archivedAt
                       ? tr("common.archived")
-                      : tr("agents.active")}
+                      : tr("agents.active")}{" "}
+                    <SystemBadge system={q.data.system} />
                   </dd>
                 </div>
                 <div>
@@ -254,6 +265,12 @@ function TeamDetail({ id }: { id: string }) {
       <QueryState query={q}>
         {q.data && (
           <>
+            <Button
+              variant="outline"
+              onClick={() => useChatPanel.getState().openTeam(id)}
+            >
+              {tr("chat.title")}
+            </Button>
             <div className="team-intro">
               <TextBlock>{q.data.context}</TextBlock>
             </div>

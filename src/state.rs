@@ -7,6 +7,8 @@ pub struct AppState {
     inner: Arc<SharedState>,
     api_info: crate::services::api_info::ApiInfoService,
     transfers: Option<Arc<crate::services::data_transfer::service::TransferService>>,
+    leader_chat: crate::services::leader_chat::LeaderChatService,
+    managed_agents: crate::services::managed_agents::ManagedAgentService,
 }
 
 struct SharedState {
@@ -16,6 +18,44 @@ struct SharedState {
 }
 
 impl AppState {
+    pub fn managed_agents(&self) -> &crate::services::managed_agents::ManagedAgentService {
+        &self.managed_agents
+    }
+    pub fn leader_chat(&self) -> &crate::services::leader_chat::LeaderChatService {
+        &self.leader_chat
+    }
+    pub fn with_leader_chat_provider(
+        mut self,
+        provider: Arc<dyn crate::repositories::integrated_provider::IntegratedProvider>,
+        installation: String,
+    ) -> Self {
+        self.managed_agents = self
+            .managed_agents
+            .with_provider(provider.clone(), installation.clone());
+        self.leader_chat = self.leader_chat.with_provider(provider, installation);
+        self
+    }
+    pub fn with_leader_chat_runtime(self, config: &crate::config::AppConfig) -> Self {
+        if self.leader_chat.is_configured() || !config.host.is_loopback() || !config.mcp.enabled {
+            return self;
+        }
+        match crate::services::managed_sessions::config::ManagedSessionConfig::from_env() {
+            Ok(Some(runtime)) => {
+                let endpoint = format!("http://{}:{}{}", config.host, config.port, config.mcp.path);
+                let provider = crate::repositories::codex_integrated::CodexIntegratedProvider {
+                    executable: runtime.executable,
+                    mcp_endpoint: endpoint,
+                    profile: Default::default(),
+                };
+                self.with_leader_chat_provider(Arc::new(provider), runtime.installation_id)
+            }
+            Ok(None) => self,
+            Err(error) => {
+                tracing::warn!(%error,"Integrated chat unavailable");
+                self
+            }
+        }
+    }
     pub fn new(database: DatabaseRepository) -> Self {
         Self::with_project_discovery(
             database,
@@ -41,6 +81,9 @@ impl AppState {
         let changes = crate::services::changes::ChangeFeed::new(source);
         let local_projects =
             crate::services::local_projects::LocalProjectService::new(resources.clone(), opener);
+        let leader_chat = crate::services::leader_chat::LeaderChatService::new(resources.clone());
+        let managed_agents =
+            crate::services::managed_agents::ManagedAgentService::new(resources.clone());
         let backend = crate::services::backend::service::BackendService::new(resources, discovery);
         let inner = SharedState {
             backend,
@@ -50,6 +93,8 @@ impl AppState {
         Self {
             inner: Arc::new(inner),
             transfers: None,
+            leader_chat,
+            managed_agents,
             api_info: crate::services::api_info::ApiInfoService::new(false, false, false),
         }
     }
@@ -58,7 +103,9 @@ impl AppState {
     pub(crate) fn with_api_info(mut self, mcp_enabled: bool, local_projects_enabled: bool) -> Self {
         self.api_info = crate::services::api_info::ApiInfoService::new(
             mcp_enabled,
-            self.transfers.as_ref().is_some_and(|service| service.config.enabled),
+            self.transfers
+                .as_ref()
+                .is_some_and(|service| service.config.enabled),
             local_projects_enabled,
         );
         self
@@ -86,6 +133,54 @@ impl AppState {
 
     pub fn backend(&self) -> &crate::services::backend::service::BackendService {
         &self.inner.backend
+    }
+    /// Explicit local opt-in. Executable and installation never come from requests.
+    pub fn managed_session_runtime(
+        &self,
+        mcp_endpoint: Option<&str>,
+    ) -> anyhow::Result<
+        Option<(
+            Arc<crate::services::managed_sessions::dispatch::ManagedSessionService>,
+            crate::repositories::session_dispatch_lease::DispatchLease,
+        )>,
+    > {
+        let Some(config) =
+            crate::services::managed_sessions::config::ManagedSessionConfig::from_env()?
+        else {
+            return Ok(None);
+        };
+        anyhow::ensure!(
+            self.leader_chat.is_configured(),
+            "Integrated delivery requires a configured loopback-only chat runtime"
+        );
+        let mcp_endpoint = mcp_endpoint
+            .ok_or_else(|| {
+                anyhow::anyhow!("Managed session delivery requires this instance's MCP endpoint")
+            })?
+            .to_owned();
+        let lease = crate::repositories::session_dispatch_lease::DispatchLease::acquire(
+            &config.state_dir,
+            &config.installation_id,
+        )?;
+        let backend_origin = mcp_endpoint
+            .split('/')
+            .take(3)
+            .collect::<Vec<_>>()
+            .join("/");
+        let provider = Arc::new(
+            crate::services::leader_chat::worker_delivery::WorkerDeliveryProvider::new(
+                self.leader_chat.clone(),
+                backend_origin,
+            ),
+        );
+        let service = Arc::new(
+            crate::services::managed_sessions::dispatch::ManagedSessionService::new(
+                self.inner.backend.resources(),
+                provider,
+                config.installation_id,
+            ),
+        );
+        Ok(Some((service, lease)))
     }
     pub fn local_projects(&self) -> &crate::services::local_projects::LocalProjectService {
         &self.inner.local_projects

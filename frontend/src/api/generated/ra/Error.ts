@@ -3,6 +3,7 @@ export type Error = {
   error: string;
   /** @enum {string} */
   code:
+    | "session_binding_conflict"
     | "invalid_request"
     | "coordination_context_required"
     | "coordination_mode_mismatch"
@@ -27,6 +28,7 @@ export type Error = {
     | "leader_required"
     | "leadership_cycle"
     | "agent_in_use"
+    | "system_resource_protected"
     | "assignment_in_use"
     | "composition_conflict"
     | "invalid_actor_context"

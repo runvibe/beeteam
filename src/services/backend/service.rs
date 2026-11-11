@@ -11,6 +11,7 @@ pub struct BackendService {
     discovery: Arc<dyn ProjectDiscovery>,
 }
 impl BackendService {
+    pub(crate) fn resources(&self) -> Arc<dyn ResourceStore> { self.repository.clone() }
     pub fn new(repository: Arc<dyn ResourceStore>, discovery: Arc<dyn ProjectDiscovery>) -> Self {
         Self {
             repository,
@@ -22,6 +23,10 @@ impl BackendService {
         let mut result = super::execute(self.repository.as_ref(), self.discovery.as_ref(), command).await?;
         crate::dto::worker_contract::response(op, &mut result.data, false)?;
         Ok(result)
+    }
+    /// Idempotently creates the protected Bee Team HQ onboarding workspace.
+    pub async fn ensure_onboarding(&self) -> Result<super::onboarding::OnboardingIds> {
+        super::onboarding::ensure(self.repository.as_ref()).await
     }
     pub async fn execute_compound(&self, name: &str, input: Value) -> Result<Value> {
         let mut result = super::composite::execute(self.repository.as_ref(), name, input).await?;
