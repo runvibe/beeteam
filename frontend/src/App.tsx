@@ -14,6 +14,7 @@ import {
   isKnownRoute,
 } from "./routing/location";
 import { NavigationRail } from "./components/navigation-rail";
+import { useFocusSource } from "./components/use-focus-source";
 import { useUi } from "./state/ui";
 import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
@@ -33,6 +34,7 @@ import "./navigation.css";
 import "./scrollbars.css";
 export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   useLocale();
+  useFocusSource();
   const [filterTarget, setFilterTarget] = useState<HTMLDivElement | null>(null);
   const [detailContainer, setDetailContainer] = useState<HTMLDivElement | null>(
     null,

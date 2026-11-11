@@ -297,13 +297,10 @@
   border-radius: var(--chat-radius);
   background: var(--card);
   box-shadow: var(--shadow-sm);
-  transition:
-    border-color 150ms var(--chat-ease),
-    box-shadow 150ms var(--chat-ease);
 }
-.assistant-composer-box:focus-within {
-  border-color: var(--bee);
-  box-shadow: 0 0 0 3px var(--bee-soft);
+:root:not([data-focus-source="pointer"]) .assistant-composer-box:has(.plain-text-editor:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }
 .assistant-composer .plain-text-editor {
   width: 100%;

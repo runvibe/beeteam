@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove pointer-focus highlights from text fields, searches, and chat composers while retaining visible keyboard focus.
+
 - Add a collapsible **Sessions** sidebar next to the main navigation that lists team-leader chats with title search, searchable filters by team, board and agent, update-time sorting, and up to three nested grouping levels in any order (for example Team > Board > Agent). Sessions load as you scroll; filter, sort, grouping and visibility choices are saved on this device, and narrow screens open a drawer. Sessions can be linked to a board at creation or later; historical boards remain visible after transfer, and previous leaders' sessions open read-only. Switching sessions preserves an uncertain send's original message and key for an explicit retry, while rejected drafts and errors are restored when reopening chat. HTTP and MCP expose listing, individual conversation lookup and board updates.
 
 - Expand the chat panel to 80% of the viewport, keep wide conversations centered, move the chat toggle to the main navigation, and keep narrow content, detail views, and filters usable beside it. Apply a half-rem gutter to the content and its header, including the breadcrumb. Preserve the default HQ draft when the panel is closed and reopened.

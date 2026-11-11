@@ -94,9 +94,9 @@
   outline: none;
   font: inherit;
 }
-.leader-chat-composer .plain-text-editor:focus-visible {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+:root:not([data-focus-source="pointer"]) .leader-chat-composer .plain-text-editor:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
 }
 .leader-chat-composer .plain-text-editor[aria-disabled="true"] {
   cursor: not-allowed;

@@ -45,6 +45,11 @@
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
   },
   {
+    "file": "src/components/use-focus-source.ts",
+    "text": "Tab",
+    "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
     "file": "src/components/inline-filter-search.tsx",
     "text": "Escape",
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
