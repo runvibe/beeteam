@@ -715,7 +715,7 @@ it("opens and updates an older session selected outside the first conversation p
     configurationVersion: 1,
     taskId: null,
     teamId: "team-a",
-    boardId: "board-a",
+    boardId: "board-a" as string | null,
     title: "Earlier sprint",
     readOnly: false,
     version: 5,
@@ -734,8 +734,8 @@ it("opens and updates an older session selected outside the first conversation p
     conversation: vi.fn().mockImplementation(async () => selected),
     requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
-    updateConversation: vi.fn().mockImplementation(async () => {
-      selected = { ...selected, boardId: "board-b", version: 6 };
+    updateConversation: vi.fn().mockImplementation(async (_id: string, body: { boardId: string | null }) => {
+      selected = { ...selected, boardId: body.boardId, version: selected.version + 1 };
       return selected;
     }),
   } as unknown as ManagedAgentApi;
@@ -750,16 +750,26 @@ it("opens and updates an older session selected outside the first conversation p
       />
     </QueryClientProvider>,
   );
-  expect(await screen.findByRole("option", { name: "Earlier sprint" })).toHaveValue("older");
-  expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("older");
-  const board = screen.getByRole("combobox", { name: "Session board" });
-  expect(board).toHaveValue("board-a");
-  fireEvent.change(board, { target: { value: "board-b" } });
-  await waitFor(() => expect(board).toHaveValue("board-b"));
+  expect(await screen.findByText("Earlier sprint")).toBeVisible();
+  expect(screen.queryByRole("combobox", { name: "Conversation" })).toBeNull();
+  const board = screen.getByRole("button", { name: "Session board" });
+  expect(board).toHaveTextContent("Planning");
+  fireEvent.click(board);
+  fireEvent.click(await screen.findByRole("radio", { name: "Delivery" }));
+  await waitFor(() => expect(board).toHaveTextContent("Delivery"));
   expect(api.updateConversation).toHaveBeenCalledWith(
     "older",
     { boardId: "board-b" },
     5,
+    expect.any(String),
+  );
+  fireEvent.click(board);
+  fireEvent.click(await screen.findByRole("radio", { name: "No board" }));
+  await waitFor(() => expect(board).toHaveTextContent("No board"));
+  expect(api.updateConversation).toHaveBeenCalledWith(
+    "older",
+    { boardId: null },
+    6,
     expect.any(String),
   );
 });
@@ -803,12 +813,13 @@ it("waits for the selected session version before changing its board", async () 
       />
     </QueryClientProvider>,
   );
-  const board = await screen.findByRole("combobox", { name: "Session board" });
+  const board = await screen.findByRole("button", { name: "Session board" });
   await waitFor(() => expect(api.conversation).toHaveBeenCalledWith("selected"));
   expect(board).toBeDisabled();
   await act(async () => resolveDetail({ ...initial, version: 2 }));
   await waitFor(() => expect(board).toBeEnabled());
-  fireEvent.change(board, { target: { value: "board-b" } });
+  fireEvent.click(board);
+  fireEvent.click(await screen.findByRole("radio", { name: "Delivery" }));
   await waitFor(() => expect(api.updateConversation).toHaveBeenCalledWith(
     "selected",
     { boardId: "board-b" },

@@ -28,6 +28,7 @@
 /* Toolbar */
 .assistant-toolbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.25rem;
   min-width: 0;
@@ -58,6 +59,70 @@
 }
 .assistant-pill-narrow {
   flex: 0 1 9rem;
+}
+.assistant-session-title {
+  min-width: 0;
+  flex: 1 1 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.assistant-board-trigger {
+  min-width: 0;
+  max-width: 9rem;
+  color: var(--muted-foreground);
+}
+.assistant-board-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.assistant-board-popover {
+  z-index: 60;
+  width: min(280px, calc(100vw - 24px));
+  max-height: min(440px, var(--radix-popover-content-available-height));
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: var(--shadow-md);
+}
+.assistant-board-popover h2 {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.assistant-board-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.assistant-board-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-size: 13px;
+}
+.assistant-board-option:hover,
+.assistant-board-option[data-state="checked"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.assistant-board-option:disabled {
+  opacity: 0.6;
+}
+.assistant-board-check {
+  width: 16px;
+  flex-shrink: 0;
+}
+.assistant-board-check svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* Thread */

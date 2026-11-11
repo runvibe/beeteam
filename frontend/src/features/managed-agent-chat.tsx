@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { ListPlus, Settings2, SquarePen } from "lucide-react";
+import { Settings2, SquarePen } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import type { LeaderChatApi } from "@/api/leader-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
@@ -19,6 +19,7 @@ import { useManagedActions } from "./use-managed-actions";
 import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
+import { SessionBoardPicker } from "./session-board-picker";
 import "./leader-chat.css";
 import "./managed-agent-chat.css";
 type S = components["schemas"];
@@ -292,6 +293,7 @@ export function ManagedAgentChat({
   }
   const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error || detail.error || boardDetail.error;
   const showHistory = ready || mode === "management";
+  const teamChat = mode === "chat" && !!teamId;
   return (
     <section
       className="leader-chat managed-agent-chat"
@@ -299,7 +301,13 @@ export function ManagedAgentChat({
     >
       {showHistory && (
         <div className="assistant-toolbar">
-          <select
+          {teamChat ? (
+            <span className="assistant-session-title" title={currentConversation?.title}>
+              {conversation
+                ? currentConversation?.title ?? t("sessions.loading")
+                : t("managed.new")}
+            </span>
+          ) : <select
             className="assistant-pill"
             aria-label={t("managed.conversation")}
             value={conversation}
@@ -321,16 +329,20 @@ export function ManagedAgentChat({
                 {c.readOnly ? " · " + t("managed.readonly") : ""}
               </option>
             ))}
-          </select>
-          {mode === "chat" && teamId && (!!boards?.length || !!selectedBoardId) &&
+          </select>}
+          {teamChat &&
             (!conversation || currentConversation) && (
-              <select
-                className="assistant-pill assistant-pill-narrow"
-                aria-label={t("managed.sessionBoard")}
+              <SessionBoardPicker
                 value={conversation ? (currentConversation?.boardId ?? "") : newBoard}
+                boards={boards ?? []}
+                historicalBoard={missingBoard && selectedBoardId
+                  ? { id: selectedBoardId, name: boardDetail.data?.name ?? t("sessions.unknown") }
+                  : undefined}
                 disabled={busy || !!pending || !!readOnly || waitingForDetail}
-                onChange={(e) => {
-                  const next = e.target.value;
+                hasMore={hasMoreBoards}
+                loading={loadingBoards}
+                onMore={onMoreBoards}
+                onChange={(next) => {
                   if (!currentConversation) return setNewBoard(next);
                   const c = currentConversation;
                   void act(() =>
@@ -344,33 +356,8 @@ export function ManagedAgentChat({
                     ),
                   );
                 }}
-              >
-                <option value="">{t("managed.noBoard")}</option>
-                {missingBoard && (
-                  <option value={selectedBoardId!} disabled>
-                    {boardDetail.data?.name ?? t("sessions.unknown")}
-                  </option>
-                )}
-                {boards?.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
+              />
             )}
-          {mode === "chat" && teamId && hasMoreBoards && onMoreBoards && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label={t("managed.moreBoards")}
-              title={t("managed.moreBoards")}
-              disabled={loadingBoards}
-              onClick={onMoreBoards}
-            >
-              <ListPlus />
-            </Button>
-          )}
           {conversationRequests.length > 1 && (
             <select
               className="assistant-pill assistant-pill-narrow"
@@ -386,9 +373,9 @@ export function ManagedAgentChat({
               ))}
             </select>
           )}
-          {showHistory && (conversations.hasNextPage || requests.hasNextPage) && (
+          {((!teamChat && conversations.hasNextPage) || requests.hasNextPage) && (
             <div className="assistant-history-pages">
-              {conversations.hasNextPage && (
+              {!teamChat && conversations.hasNextPage && (
                 <Button type="button" variant="ghost" size="sm" disabled={conversations.isFetchingNextPage} onClick={() => void conversations.fetchNextPage()}>
                   {t("managed.moreConversations")}
                 </Button>

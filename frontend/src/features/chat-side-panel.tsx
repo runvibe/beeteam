@@ -23,6 +23,7 @@ import { QueryState } from "@/components/shared";
 import { ManagedAgentChat } from "./managed-agent-chat";
 import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
+import { SessionsToggle } from "./sessions-sidebar";
 import {
   WorkspaceDockContext,
   usePresentWorkspacePanels,
@@ -202,6 +203,7 @@ export function ChatWorkspace({
         title={dock.draggable ? t("workspace.dragToDock") : undefined}
       >
         <strong>{t("chat.title")}</strong>
+        {sessions && <SessionsToggle />}
         <WorkspacePanelControls panel="chat" />
         <Button
           variant="ghost"

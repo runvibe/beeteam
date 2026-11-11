@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Show the current conversation title in team chat and navigate conversations from Sessions, with a shortcut in the chat header. Set or clear the session board through a compact action; worker and legacy history controls remain available.
+
 - Highlight the active session with a subtle background instead of a side border.
 
 - Remove drag-grip icons from panel headers while retaining drag and keyboard controls.

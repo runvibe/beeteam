@@ -543,10 +543,9 @@ it("loads further board options before creating a team session", async () => {
       <ChatWorkspace><main>Content</main></ChatWorkspace>
     </QueryClientProvider>,
   );
+  fireEvent.click(await screen.findByRole("button", { name: "Session board" }));
   fireEvent.click(await screen.findByRole("button", { name: "More boards" }));
-  const board = await screen.findByRole("combobox", { name: "Session board" });
-  expect(await screen.findByRole("option", { name: "Later board" })).toBeVisible();
-  fireEvent.change(board, { target: { value: "later-board" } });
+  fireEvent.click(await screen.findByRole("radio", { name: "Later board" }));
   editPlainText(await screen.findByRole("textbox", { name: "Message to agent" }), "Plan work");
   fireEvent.click(screen.getByRole("button", { name: "Send request" }));
   await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
@@ -585,8 +584,10 @@ it("shows the assigned board even when it is outside the available board page", 
       <ChatWorkspace><main>Content</main></ChatWorkspace>
     </QueryClientProvider>,
   );
-  expect(await screen.findByRole("option", { name: "Transferred board" })).toHaveValue("transferred-board");
-  expect(screen.getByRole("combobox", { name: "Session board" })).toHaveValue("transferred-board");
+  const board = await screen.findByRole("button", { name: "Session board" });
+  await waitFor(() => expect(board).toHaveTextContent("Transferred board"));
+  fireEvent.click(board);
+  expect(await screen.findByRole("radio", { name: "Transferred board" })).toBeDisabled();
   expect(managed.get).toHaveBeenCalledWith("boards", "transferred-board");
 });
 
@@ -636,12 +637,42 @@ it("starts a blank session when the sidebar targets a different team", async () 
       </ChatWorkspace>
     </QueryClientProvider>,
   );
-  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("old-session"));
+  expect(await screen.findByText("Old session")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "New session" }));
   await waitFor(() => expect(useChatPanel.getState().teamId).toBe("team-b"));
   await waitFor(() => expect(managed.requests.mock.calls.length).toBeGreaterThanOrEqual(2));
-  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue(""));
+  expect(await screen.findByText("New conversation")).toBeVisible();
   expect(screen.getByText("How can I help?")).toBeVisible();
   managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
   managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+});
+
+it("opens the sessions panel from the chat when it is hidden", async () => {
+  useSessionsSidebar.setState({ open: false, drawer: false });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace sessions={<SessionsSidebar />}><main>Content</main></ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  const toggle = screen.getByRole("button", { name: "Show or hide sessions" });
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(screen.getByRole("complementary", { name: "Sessions" })).toHaveAttribute("data-open", "true");
+});
+
+it("opens the sessions drawer from the chat on a narrow screen", () => {
+  vi.stubGlobal("matchMedia", () => ({ matches: true }));
+  useSessionsSidebar.setState({ open: false, drawer: false });
+  try {
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <ChatWorkspace sessions={<SessionsSidebar />}><main>Content</main></ChatWorkspace>
+      </QueryClientProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Show or hide sessions" }));
+    expect(screen.getByRole("complementary", { name: "Sessions" })).toHaveAttribute("data-drawer", "true");
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });
