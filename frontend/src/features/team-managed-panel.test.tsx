@@ -631,8 +631,7 @@ it("starts a blank session when the sidebar targets a different team", async () 
   });
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <ChatWorkspace>
-        <SessionsSidebar />
+      <ChatWorkspace sessions={<SessionsSidebar />}>
         <main>Content</main>
       </ChatWorkspace>
     </QueryClientProvider>,

@@ -37,6 +37,10 @@ import {
 } from "./session-grouping";
 import { SessionFilterSection } from "./session-filter-section";
 import { useSessionNames } from "./use-session-names";
+import {
+  WorkspacePanelControls,
+  WorkspacePanelGrip,
+} from "./workspace-panel-controls";
 import "./sessions-sidebar.css";
 
 const NARROW_QUERY = "(max-width: 850px)";
@@ -160,11 +164,14 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
         id="sessions-sidebar"
         className="sessions-sidebar"
         aria-label={t("sessions.title")}
+        data-workspace-panel="sessions"
         data-open={open}
         data-drawer={drawer}
       >
-        <header className="sessions-heading">
+        <header className="sessions-heading" data-dock-handle="sessions">
+          <WorkspacePanelGrip panel="sessions" />
           <strong>{t("sessions.title")}</strong>
+          <WorkspacePanelControls panel="sessions" />
           <Button
             variant="ghost"
             size="icon-sm"

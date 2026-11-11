@@ -5,12 +5,31 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { App } from "./App";
 import { ApiProvider } from "./api/context";
 import { createMockApi } from "./api/mock";
+import { useChatPanel } from "./state/chat-panel";
 
 import { ids } from "./api/seed";
 describe("Bee Team interface", () => {
   beforeEach(() => {
     window.history.replaceState({}, "", "/boards");
     window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+  it("moves the content panel from its header without dragging", async () => {
+    useChatPanel.setState(useChatPanel.getInitialState());
+    useChatPanel.setState({ open: true });
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    const topbar = document.querySelector(".topbar") as HTMLElement;
+    await userEvent.click(
+      within(topbar).getByRole("button", { name: "Mover conteúdo para a direita" }),
+    );
+    expect(document.querySelector(".chat-workspace")).toHaveAttribute(
+      "data-panel-order",
+      "sessions,chat,content",
+    );
+    expect(useChatPanel.getState().side).toBe("left");
   });
   it("keeps global controls in the rail and contextual filters in the compact header", async () => {
     render(

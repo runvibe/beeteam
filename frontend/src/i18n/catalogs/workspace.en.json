@@ -1,0 +1,9 @@
+{
+  "chat": "Chat",
+  "content": "Content",
+  "sessions": "Sessions",
+  "dragToDock": "Drag to rearrange panels",
+  "moveLeft": "Move {{panel}} to the left",
+  "moveRight": "Move {{panel}} to the right",
+  "moved": "{{panel}} moved to position {{position}} of {{total}}"
+}

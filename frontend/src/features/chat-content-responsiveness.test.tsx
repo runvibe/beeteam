@@ -51,6 +51,31 @@ it("allows header filters to scroll when desktop content becomes narrow", () => 
   }
 });
 
+it("keeps the breadcrumb beside the panel controls in the content header", () => {
+  const removeStyles = installStyles("src/features/chat-side-panel.css");
+  try {
+    render(
+      <div className="icon-navigation">
+        <div className="main-shell">
+          <header className="topbar">
+            <span className="workspace-panel-grip" />
+            <span className="workspace-panel-controls" />
+            <nav className="context-path" aria-label="Path">
+              A path
+            </nav>
+          </header>
+        </div>
+      </div>,
+    );
+    expect(
+      getComputedStyle(screen.getByRole("navigation", { name: "Path" }))
+        .flexGrow,
+    ).toBe("1");
+  } finally {
+    removeStyles();
+  }
+});
+
 it("keeps the fixed detail button on the content side of a right-docked chat", () => {
   const removeStyles = installStyles(
     "src/components/detail-layout/detail-layout.css",
@@ -81,6 +106,55 @@ it("keeps the fixed detail button on the content side of a right-docked chat", (
     inheritedTransitions.remove();
     removeStyles();
   }
+});
+
+it("reserves header space for the fixed compact detail button", () => {
+  const removeStyles = installStyles(
+    "src/components/detail-layout/detail-layout.css",
+  );
+  try {
+    const { container } = render(
+      <div className="icon-navigation">
+        <div className="main-shell">
+          <header className="topbar">
+            <nav className="context-path" aria-label="Path">
+              A long path
+            </nav>
+            <div className="header-filter-slot">
+              <button className="detail-info-button">Details</button>
+            </div>
+          </header>
+        </div>
+      </div>,
+    );
+    const header = container.querySelector(".topbar")!;
+    const path = screen.getByRole("navigation", { name: "Path" });
+    expect(getComputedStyle(header).paddingRight).toContain("52px");
+    expect(getComputedStyle(path).overflow).toBe("hidden");
+    screen.getByRole("button", { name: "Details" }).hidden = true;
+    expect(getComputedStyle(header).paddingRight).not.toContain("52px");
+  } finally {
+    removeStyles();
+  }
+});
+
+it("keeps the breadcrumb on its own row in very narrow desktop content", () => {
+  const workspaceStyles = readFileSync(
+    "src/features/chat-side-panel.css",
+    "utf8",
+  );
+  const detailStyles = readFileSync(
+    "src/components/detail-layout/detail-layout.css",
+    "utf8",
+  );
+  expect(workspaceStyles).toContain(
+    "container: workspace-content / inline-size",
+  );
+  expect(detailStyles).toContain(
+    "@container workspace-content (max-width: 280px)",
+  );
+  expect(detailStyles).toContain("grid-column: 1 / -1");
+  expect(detailStyles).toContain("grid-row: 2");
 });
 
 it("hides background detail controls while the mobile chat overlay is open", () => {

@@ -46,3 +46,59 @@ it("preserves widths above the old 720 px limit", async () => {
   await useChatPanel.persist.rehydrate();
   expect(useChatPanel.getState().width).toBe(1100);
 });
+
+it("restores the original left-docked layout from older saved preferences", async () => {
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({ state: { side: "left", width: 500 }, version: 0 }),
+  );
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState()).toMatchObject({
+    side: "left",
+    width: 500,
+    panelOrder: ["sessions", "chat", "content"],
+  });
+});
+
+it("moves the chat across the content when its appearance setting changes", async () => {
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({
+      state: { side: "left", panelOrder: ["chat", "sessions", "content"] },
+      version: 0,
+    }),
+  );
+  await useChatPanel.persist.rehydrate();
+  useChatPanel.getState().setSide("right");
+  expect(useChatPanel.getState()).toMatchObject({
+    side: "right",
+    panelOrder: ["sessions", "content", "chat"],
+  });
+});
+
+it("restores a saved panel arrangement and derives the current chat side", async () => {
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({
+      state: { side: "right", panelOrder: ["chat", "content", "sessions"] },
+      version: 0,
+    }),
+  );
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState()).toMatchObject({
+    side: "left",
+    panelOrder: ["chat", "content", "sessions"],
+  });
+});
+
+it("falls back to the saved side when an arrangement is malformed", async () => {
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({ state: { side: "right", panelOrder: ["chat", "chat", "other"] }, version: 0 }),
+  );
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState()).toMatchObject({
+    side: "right",
+    panelOrder: ["sessions", "content", "chat"],
+  });
+});

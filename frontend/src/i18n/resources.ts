@@ -28,6 +28,8 @@ import usageEn from "./catalogs/usage.en.json";
 import usagePt from "./catalogs/usage.pt.json";
 import sessionsEn from "./catalogs/sessions.en.json";
 import sessionsPt from "./catalogs/sessions.pt.json";
+import workspaceEn from "./catalogs/workspace.en.json";
+import workspacePt from "./catalogs/workspace.pt.json";
 export const resources = {
   en: {
     translation: {
@@ -46,6 +48,7 @@ export const resources = {
       transfer: transferEn,
       usage: usageEn,
       sessions: sessionsEn,
+      workspace: workspaceEn,
     },
   },
   pt: {
@@ -65,6 +68,7 @@ export const resources = {
       transfer: transferPt,
       usage: usagePt,
       sessions: sessionsPt,
+      workspace: workspacePt,
     },
   },
 };

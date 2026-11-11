@@ -290,8 +290,23 @@
     "reason": "Closed iframe sandbox capability tokens. The separate metrics origin prevents parent DOM/history access."
   },
   {
-    "file": "src/features/use-chat-panel-dock.ts",
+    "file": "src/features/workspace-panel-dock.ts",
     "text": "Escape",
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."
+  },
+  {
+    "file": "src/features/workspace-panel-dock.ts",
+    "text": "Cannot rearrange workspace panels: layout bounds are unavailable.",
+    "reason": "Developer diagnostic for missing layout measurements; not displayed as product copy."
+  },
+  {
+    "file": "src/state/chat-panel.ts",
+    "text": "Invalid workspace panel order",
+    "reason": "Developer-only invariant error for an invalid internal panel order."
+  },
+  {
+    "file": "src/state/workspace-layout.ts",
+    "text": "Invalid workspace panel move",
+    "reason": "Developer-only invariant error for an invalid internal panel move."
   }
 ]

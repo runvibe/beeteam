@@ -28,6 +28,10 @@ import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import { ChatWorkspace } from "./features/chat-side-panel";
 import { SessionsSidebar } from "./features/sessions-sidebar";
+import {
+  WorkspacePanelControls,
+  WorkspacePanelGrip,
+} from "./features/workspace-panel-controls";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -54,11 +58,16 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
         <div className="app-shell icon-navigation">
           <NavigationRail homeEnabled={homeEnabled} />
           <DetailContainerContext.Provider value={detailContainer}>
-            <ChatWorkspace>
-              <SessionsSidebar />
-              <div className="main-shell" ref={setDetailContainer}>
+            <ChatWorkspace sessions={<SessionsSidebar />}>
+              <div
+                className="main-shell"
+                data-workspace-panel="content"
+                ref={setDetailContainer}
+              >
                 <ApiCompatibilityBanner />
-                <header className="topbar">
+                <header className="topbar" data-dock-handle="content">
+                  <WorkspacePanelGrip panel="content" />
+                  <WorkspacePanelControls panel="content" />
                   <AppPath />
                   <MobileContextPath />
                   <div className="header-filter-slot" ref={setFilterTarget} />

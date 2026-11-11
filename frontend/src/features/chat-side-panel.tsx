@@ -1,30 +1,39 @@
-import { useCallback, useState, useSyncExternalStore } from "react";
+import { Fragment, useCallback, useState, useSyncExternalStore } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
-import {
-  ArrowLeftRight,
-  GripHorizontal,
-  MessageSquare,
-  PanelLeft,
-  PanelRight,
-  X,
-} from "lucide-react";
+import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
 import {
-  CHAT_PANEL_MAX_VIEWPORT_PERCENT,
   CHAT_PANEL_MIN_WIDTH,
   getMaxChatPanelWidth,
   useChatPanel,
 } from "@/state/chat-panel";
-import type { ChatPanelSide } from "@/state/chat-panel";
+import { useSessionsSidebar } from "@/state/sessions-sidebar";
+import {
+  CONTENT_PANEL_MIN_WIDTH,
+  SESSIONS_PANEL_WIDTH,
+  chatSide,
+  movePanel,
+  type WorkspacePanel,
+} from "@/state/workspace-layout";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/shared";
 import { ManagedAgentChat } from "./managed-agent-chat";
 import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
-import { useChatPanelDock } from "./use-chat-panel-dock";
+import {
+  WorkspaceDockContext,
+  usePresentWorkspacePanels,
+  useWorkspacePanelDock,
+  useWorkspaceWidth,
+  workspacePanelName,
+} from "./workspace-panel-dock";
+import {
+  WorkspacePanelControls,
+  WorkspacePanelGrip,
+} from "./workspace-panel-controls";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle({
@@ -60,145 +69,222 @@ function subscribeViewportWidth(notify: () => void) {
 }
 const viewportWidth = () => window.innerWidth;
 
-export function ChatWorkspace({ children }: { children: ReactNode }) {
+export function ChatWorkspace({
+  children,
+  sessions,
+}: {
+  children: ReactNode;
+  sessions?: ReactNode;
+}) {
   useLocale();
-  const { teamId, picking, open, side, width, close, setWidth, setSide } =
-    useChatPanel();
-  const maxWidth = getMaxChatPanelWidth(
-    useSyncExternalStore(subscribeViewportWidth, viewportWidth, () => 0),
+  const {
+    teamId,
+    picking,
+    open,
+    side,
+    panelOrder,
+    width,
+    close,
+    setWidth,
+    setPanelOrder,
+  } = useChatPanel();
+  const sessionsOpen = useSessionsSidebar((state) => state.open);
+  const viewport = useSyncExternalStore(
+    subscribeViewportWidth,
+    viewportWidth,
+    () => 0,
   );
-  const visibleWidth = Math.min(width, maxWidth);
+  const [workspace, setWorkspace] = useState<HTMLDivElement | null>(null);
+  const measuredWidth = useWorkspaceWidth(workspace);
+  const present = usePresentWorkspacePanels(workspace);
+  const visible = panelOrder.filter(
+    (panel) =>
+      present.includes(panel) &&
+      (panel === "chat" ? open : panel === "sessions" ? sessionsOpen : true),
+  );
   const [announcement, setAnnouncement] = useState("");
-  const dockTo = useCallback(
-    (next: ChatPanelSide) => {
-      setSide(next);
+  const reorder = useCallback(
+    (
+      panel: WorkspacePanel,
+      active: readonly WorkspacePanel[],
+      position: number,
+    ) => {
+      const current = useChatPanel.getState().panelOrder;
+      const next = movePanel(current, panel, active, position);
+      if (next.every((item, index) => item === current[index])) return;
+      setPanelOrder(next);
+      const moved = t("workspace.moved", {
+        panel: workspacePanelName(panel),
+        position:
+          next.filter((item) => active.includes(item)).indexOf(panel) + 1,
+        total: active.length,
+      });
       setAnnouncement(
-        t(next === "left" ? "chat.dockedLeft" : "chat.dockedRight"),
+        panel === "chat"
+          ? `${t(chatSide(next) === "left" ? "chat.dockedLeft" : "chat.dockedRight")}. ${moved}`
+          : moved,
       );
     },
-    [setSide],
+    [setPanelOrder],
   );
-  const dock = useChatPanelDock(dockTo);
-  const otherSide = side === "left" ? "right" : "left";
-  const moveLabel = t(
-    otherSide === "left" ? "chat.moveLeft" : "chat.moveRight",
+  const dock = useWorkspacePanelDock(workspace, panelOrder, visible, reorder);
+  const sessionsVisible = !dock.narrow && visible.includes("sessions");
+  const maxViewportWidth = getMaxChatPanelWidth(viewport);
+  const maxWidth = sessionsVisible
+    ? Math.max(
+        CHAT_PANEL_MIN_WIDTH,
+        Math.min(
+          maxViewportWidth,
+          (measuredWidth || viewport) -
+            SESSIONS_PANEL_WIDTH -
+            CONTENT_PANEL_MIN_WIDTH,
+        ),
+      )
+    : maxViewportWidth;
+  const visibleWidth = Math.min(width, maxWidth);
+  const sessionsAfterContent =
+    sessionsVisible &&
+    panelOrder.indexOf("sessions") > panelOrder.indexOf("content");
+  const currentVisibleWidth = () =>
+    Math.min(useChatPanel.getState().width, maxWidth);
+  const resizeChat = (nextWidth: number) => {
+    const constrained = Math.max(
+      CHAT_PANEL_MIN_WIDTH,
+      Math.min(maxWidth, nextWidth),
+    );
+    if (constrained !== currentVisibleWidth()) setWidth(constrained);
+  };
+  const chatPanel = (
+    <aside
+      id="leader-chat-panel"
+      className="chat-side-panel"
+      hidden={!open}
+      aria-label={t("chat.title")}
+      data-workspace-panel="chat"
+      data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
+    >
+      <div
+        className="chat-panel-resizer"
+        role="separator"
+        tabIndex={0}
+        aria-orientation="vertical"
+        aria-label={t("chat.resizePanel")}
+        aria-valuemin={CHAT_PANEL_MIN_WIDTH}
+        aria-valuemax={maxWidth}
+        aria-valuenow={visibleWidth}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          event.preventDefault();
+          resizeChat(
+            currentVisibleWidth() +
+              (event.key === "ArrowRight" ? 20 : -20) *
+                (side === "left" ? 1 : -1),
+          );
+        }}
+        onPointerDown={(event) => {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+          const bounds =
+            event.currentTarget.parentElement!.getBoundingClientRect();
+          resizeChat(
+            side === "left"
+              ? event.clientX - bounds.left
+              : bounds.right - event.clientX,
+          );
+        }}
+        onPointerUp={(event) =>
+          event.currentTarget.releasePointerCapture(event.pointerId)
+        }
+      />
+      <header
+        className="chat-panel-heading"
+        data-dock-handle="chat"
+        data-draggable={dock.draggable ? "true" : undefined}
+        title={dock.draggable ? t("workspace.dragToDock") : undefined}
+      >
+        <WorkspacePanelGrip panel="chat" />
+        <strong>{t("chat.title")}</strong>
+        <WorkspacePanelControls panel="chat" />
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={close}
+          aria-label={t("chat.closePanel")}
+          title={t("chat.closePanel")}
+        >
+          <X />
+        </Button>
+      </header>
+      <div className="chat-panel-body">
+        <div className="chat-panel-content">
+          {teamId ? (
+            <PanelTeam key={teamId} teamId={teamId} />
+          ) : picking ? (
+            <PanelTeamPicker enabled={open} />
+          ) : (
+            <PanelDefault enabled={open} />
+          )}
+        </div>
+      </div>
+    </aside>
   );
   return (
-    <div
-      className="chat-workspace"
-      data-chat-side={side}
-      data-chat-open={open}
-      style={
-        {
-          "--chat-panel-width": `${width}px`,
-          "--chat-panel-max-width": `${CHAT_PANEL_MAX_VIEWPORT_PERCENT}vw`,
-        } as CSSProperties
-      }
-    >
-      {children}
-      <aside
-        id="leader-chat-panel"
-        className="chat-side-panel"
-        hidden={!open}
-        aria-label={t("chat.title")}
-        data-dragging={dock.drag ? "true" : undefined}
+    <WorkspaceDockContext.Provider value={dock}>
+      <div
+        ref={setWorkspace}
+        className="chat-workspace"
+        data-chat-side={side}
+        data-chat-open={open}
+        data-panel-order={panelOrder.join(",")}
+        data-sessions-after-content={sessionsAfterContent ? "true" : undefined}
+        data-dockable={dock.draggable ? "true" : undefined}
+        data-dragging-panel={dock.drag?.panel}
+        onPointerDown={dock.onPointerDown}
         style={
-          dock.drag
-            ? ({
-                "--chat-drag-x": `${dock.drag.dx}px`,
-                "--chat-drag-y": `${dock.drag.dy}px`,
-              } as CSSProperties)
-            : undefined
+          {
+            "--chat-panel-width": `${width}px`,
+            "--chat-panel-max-width": `${maxWidth}px`,
+            "--sessions-panel-width": `${SESSIONS_PANEL_WIDTH}px`,
+            "--sessions-after-content-width": sessionsAfterContent
+              ? `${SESSIONS_PANEL_WIDTH}px`
+              : "0px",
+            "--sessions-panel-order": panelOrder.indexOf("sessions"),
+            "--content-panel-order": panelOrder.indexOf("content"),
+            "--chat-panel-order": panelOrder.indexOf("chat"),
+            "--panel-drag-x": `${dock.drag?.dx ?? 0}px`,
+            "--panel-drag-y": `${dock.drag?.dy ?? 0}px`,
+          } as CSSProperties
         }
       >
-        <div
-          className="chat-panel-resizer"
-          role="separator"
-          tabIndex={0}
-          aria-orientation="vertical"
-          aria-label={t("chat.resizePanel")}
-          aria-valuemin={CHAT_PANEL_MIN_WIDTH}
-          aria-valuemax={maxWidth}
-          aria-valuenow={visibleWidth}
-          onKeyDown={(event) => {
-            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-            event.preventDefault();
-            setWidth(
-              visibleWidth +
-                (event.key === "ArrowRight" ? 20 : -20) *
-                  (side === "left" ? 1 : -1),
-            );
-          }}
-          onPointerDown={(event) => {
-            event.currentTarget.setPointerCapture(event.pointerId);
-          }}
-          onPointerMove={(event) => {
-            if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
-            const bounds =
-              event.currentTarget.parentElement!.getBoundingClientRect();
-            setWidth(
-              side === "left"
-                ? event.clientX - bounds.left
-                : bounds.right - event.clientX,
-            );
-          }}
-          onPointerUp={(event) =>
-            event.currentTarget.releasePointerCapture(event.pointerId)
-          }
-        />
-        <header
-          className="chat-panel-heading"
-          data-draggable={dock.draggable ? "true" : undefined}
-          title={dock.draggable ? t("chat.dragToDock") : undefined}
-          onPointerDown={dock.onPointerDown}
-        >
-          {dock.draggable && (
-            <GripHorizontal className="chat-panel-grip" aria-hidden />
-          )}
-          <strong>{t("chat.title")}</strong>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="chat-panel-move"
-            onClick={() => dockTo(otherSide)}
-            aria-label={moveLabel}
-            title={moveLabel}
-          >
-            {otherSide === "left" ? <PanelLeft /> : <PanelRight />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={close}
-            aria-label={t("chat.closePanel")}
-            title={t("chat.closePanel")}
-          >
-            <X />
-          </Button>
-        </header>
-        <div className="chat-panel-body">
-          <div className="chat-panel-content">
-            {teamId ? (
-              <PanelTeam key={teamId} teamId={teamId} />
-            ) : picking ? (
-              <PanelTeamPicker enabled={open} />
-            ) : (
-              <PanelDefault enabled={open} />
-            )}
-          </div>
-        </div>
+        {panelOrder.map((panel) => (
+          <Fragment key={panel}>
+            {panel === "sessions"
+              ? sessions
+              : panel === "content"
+                ? children
+                : chatPanel}
+          </Fragment>
+        ))}
         <span className="sr-only" role="status" aria-live="polite">
           {announcement}
         </span>
-      </aside>
-      {dock.drag && (
-        <div
-          className="chat-dock-preview"
-          data-side={dock.drag.target}
-          aria-hidden
-        />
-      )}
-    </div>
+        {dock.drag && (
+          <div
+            className="chat-dock-preview"
+            data-side={dock.drag.side}
+            data-position={dock.drag.position}
+            aria-hidden
+            style={{
+              left: dock.drag.preview.left,
+              width: dock.drag.preview.width,
+              right: "auto",
+            }}
+          />
+        )}
+      </div>
+    </WorkspaceDockContext.Provider>
   );
 }
 /** Without an explicit selection, the panel opens the protected Bee Team HQ guide. */

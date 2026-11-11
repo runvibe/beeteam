@@ -1,5 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  chatSide,
+  defaultPanelOrder,
+  isPanelOrder,
+  type WorkspacePanel,
+} from "./workspace-layout";
 
 export const CHAT_PANEL_MIN_WIDTH = 320;
 export const CHAT_PANEL_MAX_VIEWPORT_PERCENT = 80;
@@ -22,6 +28,7 @@ type ChatPanelState = {
   picking: boolean;
   open: boolean;
   side: ChatPanelSide;
+  panelOrder: WorkspacePanel[];
   width: number;
   openTeam: (teamId: string) => void;
   startNewSession: (teamId: string | null) => void;
@@ -31,6 +38,7 @@ type ChatPanelState = {
   show: () => void;
   chooseTeam: () => void;
   setSide: (side: ChatPanelSide) => void;
+  setPanelOrder: (order: readonly WorkspacePanel[]) => void;
   setWidth: (width: number) => void;
 };
 export const useChatPanel = create<ChatPanelState>()(
@@ -42,6 +50,7 @@ export const useChatPanel = create<ChatPanelState>()(
       picking: false,
       open: true,
       side: "right",
+      panelOrder: defaultPanelOrder("right"),
       width: 440,
       openTeam: (teamId) =>
         set({ teamId, conversationId: null, freshConversation: false, picking: false, open: true }),
@@ -54,7 +63,21 @@ export const useChatPanel = create<ChatPanelState>()(
       show: () => set({ open: true }),
       chooseTeam: () =>
         set({ teamId: null, conversationId: null, freshConversation: false, picking: true, open: true }),
-      setSide: (side) => set({ side }),
+      setSide: (side) =>
+        set((state) => {
+          if (chatSide(state.panelOrder) === side) return { side };
+          const order: WorkspacePanel[] = state.panelOrder.filter(
+            (panel) => panel !== "chat",
+          );
+          const content = order.indexOf("content");
+          order.splice(side === "left" ? content : content + 1, 0, "chat");
+          return { side, panelOrder: order };
+        }),
+      setPanelOrder: (order) => {
+        if (!isPanelOrder(order))
+          throw new Error("Invalid workspace panel order");
+        set({ panelOrder: [...order], side: chatSide(order) });
+      },
       setWidth: (width) =>
         set({
           width: Math.min(
@@ -65,14 +88,26 @@ export const useChatPanel = create<ChatPanelState>()(
     }),
     {
       name: "beeteam-chat-panel",
-      partialize: ({ side, width, teamId, conversationId, picking, open }) => ({
+      partialize: ({ side, panelOrder, width, teamId, conversationId, picking, open }) => ({
         side,
+        panelOrder,
         width,
         teamId,
         conversationId,
         picking,
         open,
       }),
+      merge: (persisted, current) => {
+        const saved = (persisted ?? {}) as Partial<ChatPanelState>;
+        const side =
+          saved.side === "left" || saved.side === "right"
+            ? saved.side
+            : current.side;
+        const panelOrder = isPanelOrder(saved.panelOrder)
+          ? [...saved.panelOrder]
+          : defaultPanelOrder(side);
+        return { ...current, ...saved, panelOrder, side: chatSide(panelOrder) };
+      },
     },
   ),
 );

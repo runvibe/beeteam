@@ -191,7 +191,10 @@ body:has(.detail-page) {
 .detail-info-button:not([hidden]) {
   position: fixed;
   top: max(8px, env(safe-area-inset-top));
-  right: max(12px, env(safe-area-inset-right));
+  right: calc(
+    var(--sessions-after-content-width, 0px) +
+      max(12px, env(safe-area-inset-right))
+  );
   z-index: 40;
   /* Do not animate position while the chat panel is resized. */
   transition-property:
@@ -202,10 +205,52 @@ body:has(.detail-page) {
   height: 44px;
   border-radius: 50%;
 }
+.icon-navigation .main-shell > .topbar:has(.detail-info-button:not([hidden])) {
+  padding-right: calc(52px + max(12px, env(safe-area-inset-right)));
+}
+.icon-navigation
+  .main-shell
+  > .topbar:has(.detail-info-button:not([hidden]))
+  > .context-path {
+  overflow: hidden;
+}
+@media (min-width: 851px) {
+  @container workspace-content (max-width: 280px) {
+    .icon-navigation
+      .main-shell
+      > .topbar:has(.detail-info-button:not([hidden])) {
+      display: grid;
+      grid-template-columns: 16px auto minmax(0, 1fr) 44px;
+      grid-template-rows: 50px auto;
+      height: auto;
+      gap: 0 8px;
+      padding: 2px 0.5rem;
+    }
+    .topbar:has(.detail-info-button:not([hidden])) > .workspace-panel-grip {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .topbar:has(.detail-info-button:not([hidden])) > .workspace-panel-controls {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .topbar:has(.detail-info-button:not([hidden])) > .context-path {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .topbar:has(.detail-info-button:not([hidden])) > .header-filter-slot {
+      grid-column: 3 / -1;
+      grid-row: 1;
+      max-width: 100%;
+      padding-right: 52px;
+    }
+  }
+}
 .chat-workspace[data-chat-open="true"][data-chat-side="right"]
   .detail-info-button:not([hidden]) {
   right: calc(
     min(var(--chat-panel-width), var(--chat-panel-max-width)) +
+      var(--sessions-after-content-width, 0px) +
       max(12px, env(safe-area-inset-right))
   );
 }

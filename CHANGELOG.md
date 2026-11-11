@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Rearrange the sessions, content and chat panels by dragging their headers or using keyboard-accessible move buttons. A blue preview shows the drop position, including the middle; the order is saved, drafts stay intact, and chat resizing leaves space for the other open panels.
+
 - Remove pointer-focus highlights from text fields, searches, and chat composers while retaining visible keyboard focus.
 
 - Add a collapsible **Sessions** sidebar next to the main navigation that lists team-leader chats with title search, searchable filters by team, board and agent, update-time sorting, and up to three nested grouping levels in any order (for example Team > Board > Agent). Sessions load as you scroll; filter, sort, grouping and visibility choices are saved on this device, and narrow screens open a drawer. Sessions can be linked to a board at creation or later; historical boards remain visible after transfer, and previous leaders' sessions open read-only. Switching sessions preserves an uncertain send's original message and key for an explicit retry, while rejected drafts and errors are restored when reopening chat. HTTP and MCP expose listing, individual conversation lookup and board updates.
