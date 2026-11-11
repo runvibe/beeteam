@@ -110,6 +110,15 @@ fn public(r: &Record) -> Value {
     for key in fields {
         v[*key] = r.data[*key].clone();
     }
+    if r.table == "managed_messages" {
+        v["images"] = json!(r.data["images"]
+            .as_array()
+            .map(|images| images
+                .iter()
+                .map(|i| json!({"id":i["id"],"mediaType":i["mediaType"],"description":i["description"]}))
+                .collect::<Vec<_>>())
+            .unwrap_or_default());
+    }
     v["version"] = json!(r.version);
     if r.table != "managed_approvals" {
         v["createdAt"] = json!(r.created_at);

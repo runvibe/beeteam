@@ -259,7 +259,7 @@ impl WorkerDeliveryProvider {
                 ));
             }
             // Tool details are scoped to the worker; do not replace the leader's active tool list.
-            IntegratedEvent::Tool { .. } => {}
+            IntegratedEvent::Tool { .. } | IntegratedEvent::Image { .. } => {}
         }
         Ok(())
     }

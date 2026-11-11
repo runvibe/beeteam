@@ -1,4 +1,5 @@
 //! Official local Codex process adapter for Bee Team-owned chats.
+mod images;
 mod recovery;
 use super::{
     codex_mcp_scope::{CodexToolProfile, McpScope},
@@ -437,6 +438,15 @@ impl CodexIntegratedProvider {
                         _ => return Err(fail("turn_failed", "Codex turn failed", false)),
                     }
                     return Ok(());
+                }
+                "item/completed" if p["item"]["type"] == "imageGeneration" => {
+                    let root = images::generated_images_root();
+                    let event = images::generated_image(&p["item"], root.as_deref())
+                        .unwrap_or_else(|| IntegratedEvent::Tool {
+                            name: "imageGeneration".into(),
+                            summary: "Tool operation finished.".into(),
+                        });
+                    emit(&events, event).await?;
                 }
                 "item/completed" if is_tool_item(p["item"]["type"].as_str().unwrap_or("")) => {
                     emit(

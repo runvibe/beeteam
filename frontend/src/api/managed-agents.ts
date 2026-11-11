@@ -24,6 +24,16 @@ function sessionQuery(q: SessionQuery) {
   const text = params.toString();
   return text ? `?${text}` : "";
 }
+/** Browser-loadable URL for an image generated in a managed conversation. */
+export function managedMessageImageUrl(
+  baseUrl: string,
+  conversationId: string,
+  messageId: string,
+  imageId: string,
+) {
+  const base = baseUrl.replace(/\/$/, "").replace(/\/v[12]$/, "/v2");
+  return `${base}/agent-conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/images/${encodeURIComponent(imageId)}`;
+}
 export function createManagedAgentApi(options: HttpOptions = {}) {
   const request = createTransport({
     ...options,

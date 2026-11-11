@@ -103,6 +103,14 @@ impl LeaderChatService {
         Ok(())
     }
     pub(super) async fn persist_event(&self, id: Uuid, e: IntegratedEvent) -> Result<()> {
+        // Leader chat has no image surface yet; keep the visible tool trace.
+        let e = match e {
+            IntegratedEvent::Image { .. } => IntegratedEvent::Tool {
+                name: "imageGeneration".into(),
+                summary: "Image generated.".into(),
+            },
+            e => e,
+        };
         let mut u = self.store.begin().await?;
         let turn = u.records.get("leader_chat_turns", id)?.clone();
         let chat = turn.reference("chatId").ok_or_else(Failure::missing)?;
@@ -210,6 +218,7 @@ impl LeaderChatService {
                     json!({"approval":v}),
                 );
             }
+            IntegratedEvent::Image { .. } => {}
             IntegratedEvent::Tool { name, summary } => {
                 let row = Record::new(
                     "leader_chat_tools",

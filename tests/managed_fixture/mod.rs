@@ -14,6 +14,7 @@ use std::sync::{
 };
 use tokio::sync::mpsc;
 use uuid::Uuid;
+pub const TEST_PNG: &[u8] = b"\x89PNG\r\n\x1a\nbee";
 pub struct TestProvider(pub AtomicUsize, pub AtomicBool);
 impl IntegratedProvider for TestProvider {
     fn default_workspace(
@@ -96,6 +97,19 @@ impl IntegratedProvider for TestProvider {
                 assert!(matches!(controls.recv().await, Some(Control::Cancel)));
                 events.send(IntegratedEvent::Cancelled).await.unwrap();
                 return Ok(());
+            }
+            if text == "draw" {
+                for _ in 0..2 {
+                    events
+                        .send(IntegratedEvent::Image {
+                            item_id: "image-item".into(),
+                            media_type: "image/png".into(),
+                            bytes: TEST_PNG.to_vec(),
+                            revised_prompt: Some("Robot bees".into()),
+                        })
+                        .await
+                        .unwrap();
+                }
             }
             events
                 .send(IntegratedEvent::Text("Res".into()))

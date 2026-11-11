@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/markdown";
 import { PlainTextEditor } from "@/components/plain-text-editor";
 import type { components } from "@/api/generated/managed-agents";
+import { managedMessageImageUrl } from "@/api/managed-agents";
+import { runtimeConfig } from "@/runtime";
 
 type Message = components["schemas"]["Message"];
 
@@ -39,6 +41,31 @@ export function AgentMark({
   );
 }
 
+function MessageImages({ message }: { message: Message }) {
+  if (!message.images?.length) return null;
+  return (
+    <div className="assistant-msg-images">
+      {message.images.map((image) => {
+        const src = managedMessageImageUrl(
+          runtimeConfig.apiBaseUrl,
+          message.conversationId,
+          message.id,
+          image.id,
+        );
+        return (
+          <a key={image.id} href={src} target="_blank" rel="noreferrer">
+            <img
+              src={src}
+              alt={image.description ?? t("managed.generatedImage")}
+              loading="lazy"
+            />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
 export function ChatMessage({ message }: { message: Message }) {
   const label = t(`managed.${message.role}`);
   if (message.role === "requester")
@@ -59,7 +86,8 @@ export function ChatMessage({ message }: { message: Message }) {
     <article className="assistant-msg assistant-msg-agent" aria-label={label}>
       <AgentMark />
       <div className="assistant-msg-body">
-        <Markdown>{message.content}</Markdown>
+        {message.content ? <Markdown>{message.content}</Markdown> : null}
+        <MessageImages message={message} />
       </div>
     </article>
   );

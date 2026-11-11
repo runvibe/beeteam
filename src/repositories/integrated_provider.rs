@@ -25,6 +25,13 @@ pub enum IntegratedEvent {
         name: String,
         summary: String,
     },
+    /// An image produced by the provider; bytes are already validated as PNG, JPEG or WebP.
+    Image {
+        item_id: String,
+        media_type: String,
+        bytes: Vec<u8>,
+        revised_prompt: Option<String>,
+    },
 }
 #[derive(Debug)]
 pub enum Control {

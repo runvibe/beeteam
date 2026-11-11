@@ -767,3 +767,68 @@ async fn automatic_workspace_is_resolved_and_replayed() {
     .await;
     assert_eq!(sent.0, 202, "{sent:?}");
 }
+
+#[tokio::test]
+async fn generated_images_are_stored_once_and_served_from_the_conversation() {
+    let (app, agent, _, _) = configured().await;
+    let sent = request_key(
+        &app,
+        "POST",
+        &format!("/api/v2/agents/{}/requests", id(&agent)),
+        json!({"content":"draw"}),
+        None,
+        Uuid::new_v4(),
+    )
+    .await;
+    assert_eq!(sent.0, 202, "{sent:?}");
+    let snapshot = wait_state(&app, &sent.1, "completed").await;
+    let message = &snapshot["messages"]["items"][1];
+    assert_eq!(message["content"], "Response");
+    let images = message["images"].as_array().unwrap();
+    assert_eq!(images.len(), 1, "{message}");
+    assert_eq!(images[0]["mediaType"], "image/png");
+    assert_eq!(images[0]["description"], "Robot bees");
+    assert!(images[0].get("providerItemId").is_none());
+    let conversation = sent.1["conversationId"].as_str().unwrap();
+    let path = format!(
+        "/api/v2/agent-conversations/{conversation}/messages/{}/images/{}",
+        id(message),
+        id(&images[0])
+    );
+    let (status, headers, bytes) = raw_get(&app, &path).await;
+    assert_eq!(status, 200);
+    assert_eq!(headers["content-type"], "image/png");
+    assert_eq!(headers["x-content-type-options"], "nosniff");
+    assert_eq!(bytes, TEST_PNG);
+    let foreign = format!(
+        "/api/v2/agent-conversations/{}/messages/{}/images/{}",
+        Uuid::now_v7(),
+        id(message),
+        id(&images[0])
+    );
+    assert_eq!(raw_get(&app, &foreign).await.0, 404);
+    let unknown = format!(
+        "/api/v2/agent-conversations/{conversation}/messages/{}/images/{}",
+        id(message),
+        Uuid::now_v7()
+    );
+    assert_eq!(raw_get(&app, &unknown).await.0, 404);
+}
+
+async fn raw_get(app: &axum::Router, path: &str) -> (u16, axum::http::HeaderMap, Vec<u8>) {
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+    let response = app
+        .clone()
+        .oneshot(
+            axum::http::Request::get(path)
+                .body(axum::body::Body::empty())
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let status = response.status().as_u16();
+    let headers = response.headers().clone();
+    let bytes = response.into_body().collect().await.unwrap().to_bytes().to_vec();
+    (status, headers, bytes)
+}

@@ -41,6 +41,10 @@ pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
             "/api/v2/agent-conversations/{conversationId}/messages",
             get(read),
         )
+        .route(
+            "/api/v2/agent-conversations/{conversationId}/messages/{messageId}/images/{imageId}",
+            get(image),
+        )
         .route("/api/v2/agent-approvals/{approvalId}/decision", post(write))
         .layer(axum::middleware::from_fn_with_state(
             super::local_access::Policy::new(config, false),
@@ -143,6 +147,31 @@ async fn sessions(
         Ok(v) => json_response(v, StatusCode::OK),
         Err(e) => error(e),
     }
+}
+async fn image(
+    State(state): State<AppState>,
+    Path((conversation, message, image)): Path<(String, String, String)>,
+) -> Response {
+    let result = async {
+        let parse = crate::dto::backend::parse_id;
+        let out = state
+            .managed_agents()
+            .message_image(parse(&conversation)?, parse(&message)?, parse(&image)?)
+            .await?;
+        let mut response = Response::new(axum::body::Body::from(out.bytes));
+        let headers = response.headers_mut();
+        headers.insert(
+            "Content-Type",
+            out.media_type
+                .parse()
+                .map_err(|_| Failure::new("internal_error", "Invalid stored image type"))?,
+        );
+        headers.insert("X-Content-Type-Options", "nosniff".parse().unwrap());
+        headers.insert("Cache-Control", "private, max-age=31536000, immutable".parse().unwrap());
+        Ok::<_, Failure>(response)
+    }
+    .await;
+    result.unwrap_or_else(error)
 }
 fn json_response(v: Value, status: StatusCode) -> Response {
     let version = v["version"].as_i64();

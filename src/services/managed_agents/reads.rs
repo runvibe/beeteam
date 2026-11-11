@@ -23,7 +23,38 @@ fn page(rows: Vec<&Record>, limit: usize, owner: Uuid, kind: &str, ascending: bo
     }
     json!({"items":rows.iter().map(|r|public(r)).collect::<Vec<_>>(),"nextCursor":next})
 }
+/// Bytes and validated media type of an image attached to a conversation message.
+pub struct MessageImage {
+    pub media_type: String,
+    pub bytes: Vec<u8>,
+}
 impl ManagedAgentService {
+    pub async fn message_image(
+        &self,
+        conversation: Uuid,
+        message: Uuid,
+        image: Uuid,
+    ) -> Result<MessageImage> {
+        let mut c = command("message-image");
+        c.params
+            .insert("conversationId".into(), conversation.to_string());
+        c.params.insert("messageId".into(), message.to_string());
+        let mut u = self.store.read(&c).await?;
+        let m = u.records.get("managed_messages", message)?;
+        if m.reference("conversationId") != Some(conversation) {
+            return Err(Failure::missing());
+        }
+        let media_type = m.data["images"]
+            .as_array()
+            .and_then(|images| images.iter().find(|i| i["id"] == json!(image)))
+            .and_then(|i| i["mediaType"].as_str())
+            .filter(|t| matches!(*t, "image/png" | "image/jpeg" | "image/webp"))
+            .ok_or_else(Failure::missing)?
+            .to_owned();
+        let bytes = u.file(image).await?;
+        u.rollback().await?;
+        Ok(MessageImage { media_type, bytes })
+    }
     pub async fn read(&self, mut c: Command) -> Result<Value> {
         self.recover().await?;
         if c.operation == "managed:team-approvals" {

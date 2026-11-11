@@ -202,6 +202,21 @@ impl ManagedAgentService {
                 }
             }
             IntegratedEvent::Tool { .. } => {}
+            IntegratedEvent::Image {
+                item_id,
+                media_type,
+                bytes,
+                revised_prompt,
+            } => {
+                if !has_image(&u.records, id, &item_id) {
+                    let content = u.put_file(&bytes).await?;
+                    attach_image(
+                        &mut u.records,
+                        &r,
+                        json!({"id":content,"mediaType":media_type,"providerItemId":item_id,"description":revised_prompt}),
+                    )?;
+                }
+            }
         }
         u.records.get_mut("managed_requests", id)?.touch();
         event(&mut u.records, id)?;
@@ -317,18 +332,50 @@ fn decline_error(r: &Record) -> Value {
 fn save_text(records: &mut Records, request: &Record, text: String) -> Result<()> {
     let text = bounded_text(text);
     let id = request.id;
-    let existing = records
-        .list("managed_messages")
-        .iter()
-        .find(|m| m.reference("requestId") == Some(id) && m.data["role"] == "agent")
-        .map(|m| m.id);
-    if let Some(mid) = existing {
+    if let Some(mid) = agent_message(records, id) {
         let m = records.get_mut("managed_messages", mid)?;
         m.data["content"] = json!(text);
         m.touch();
     } else {
         records.insert(Record::new("managed_messages",json!({"conversationId":request.data["conversationId"],"requestId":id,"role":"agent","content":text})));
     }
+    Ok(())
+}
+fn agent_message(records: &Records, request: Uuid) -> Option<Uuid> {
+    records
+        .list("managed_messages")
+        .iter()
+        .find(|m| m.reference("requestId") == Some(request) && m.data["role"] == "agent")
+        .map(|m| m.id)
+}
+fn has_image(records: &Records, request: Uuid, item: &str) -> bool {
+    agent_message(records, request).is_some_and(|mid| {
+        records.get("managed_messages", mid).is_ok_and(|m| {
+            m.data["images"]
+                .as_array()
+                .is_some_and(|images| images.iter().any(|i| i["providerItemId"] == item))
+        })
+    })
+}
+fn attach_image(records: &mut Records, request: &Record, image: Value) -> Result<()> {
+    let mid = match agent_message(records, request.id) {
+        Some(mid) => mid,
+        None => {
+            let m = Record::new(
+                "managed_messages",
+                json!({"conversationId":request.data["conversationId"],"requestId":request.id,"role":"agent","content":""}),
+            );
+            let mid = m.id;
+            records.insert(m);
+            mid
+        }
+    };
+    let m = records.get_mut("managed_messages", mid)?;
+    if !m.data["images"].is_array() {
+        m.data["images"] = json!([]);
+    }
+    m.data["images"].as_array_mut().unwrap().push(image);
+    m.touch();
     Ok(())
 }
 fn bounded_text(mut text: String) -> String {

@@ -46,7 +46,8 @@ for (const tool of mcp.tools) {
   const response=Object.entries(op.responses).find(([status])=>status.startsWith("2"))[1].content["application/json"].schema;
   if (JSON.stringify(inline(response))!==JSON.stringify(tool.outputSchema.properties.data)) throw new Error(`MCP/HTTP response drift: ${tool.name}`);
 }
-if (mcp.tools.length !== operations.length-1) throw new Error("Missing MCP operation (except SSE)");
+const jsonOperations=operations.filter(op=>Object.entries(op.responses).some(([status,r])=>status.startsWith("2")&&r.content?.["application/json"]));
+if (mcp.tools.length !== jsonOperations.length) throw new Error("Missing MCP operation (JSON operations only)");
 const generated=astToString(await openapiTS(spec));
 const target=new URL("../../frontend/src/api/generated/managed-agents.ts",import.meta.url);
 if (process.argv.includes("--write")) await fs.writeFile(target,generated);

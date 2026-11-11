@@ -202,6 +202,12 @@
         "Caminho absoluto do executável oficial Codex, obrigatório com envio gerenciado. Requisições não escolhem o executável."
       ],
       [
+        "CODEX_HOME",
+        "~/.codex",
+        "Codex home used to locate generated images; only files inside its generated_images directory are copied into Bee Team.",
+        "Pasta do Codex usada para localizar imagens geradas; apenas arquivos dentro de generated_images são copiados para o Bee Team."
+      ],
+      [
         "BEE_SESSION_STATE_DIR",
         "user home/.beeteam/managed-session-locks",
         "Absolute directory for exclusive OS-backed installation leases. No session credentials are stored here.",
@@ -216,8 +222,8 @@
       [
         "HOME",
         "OS-provided",
-        "User-home fallback for the default managed-session lease directory when USERPROFILE is absent.",
-        "Pasta pessoal alternativa para as travas de sessões quando USERPROFILE está ausente."
+        "User-home fallback for the default managed-session lease directory when USERPROFILE is absent, and for the default Codex home when CODEX_HOME is absent.",
+        "Pasta pessoal alternativa para as travas de sessões quando USERPROFILE está ausente, e para a pasta padrão do Codex quando CODEX_HOME está ausente."
       ]
     ]
   }

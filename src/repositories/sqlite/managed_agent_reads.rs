@@ -11,6 +11,7 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
         ("teamId", "teams"),
         ("requestId", "managed_requests"),
         ("conversationId", "managed_conversations"),
+        ("messageId", "managed_messages"),
     ] {
         if let Some(id) = c.params.get(key) {
             load(tx, &mut r, table, "CAST(id AS TEXT)=$1", id, "", 1, false).await?;

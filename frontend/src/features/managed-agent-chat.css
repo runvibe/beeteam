@@ -113,6 +113,20 @@
 .assistant-msg-body {
   padding-top: 0.125rem;
 }
+.assistant-msg-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.assistant-msg-images img {
+  display: block;
+  max-width: min(100%, 22rem);
+  max-height: 22rem;
+  border-radius: var(--radius-md, 0.5rem);
+  object-fit: contain;
+  background: var(--muted);
+}
 .assistant-msg-system {
   align-self: center;
   max-width: 90%;
