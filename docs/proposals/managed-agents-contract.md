@@ -27,6 +27,7 @@ The OpenAPI is the source for request and response schemas. `managed-agents-mcp.
 | POST request reconcile | reconcileAgentRequest | inspect the original accepted work, never repeat inference |
 | POST approval decision | decideAgentRequestApproval | accept/decline one approval, If-Match approval version |
 | GET agent-conversations | listAgentSessions | team sessions filtered by team, agent and board (`none` = no board); `updated_desc`/`updated_asc` with sort-bound cursor |
+| GET agent-conversation | getAgentConversation | current metadata and version for one conversation |
 | PATCH agent-conversation | updateAgentConversation | title and/or board (`null` clears), If-Match conversation version |
 | GET request events | none; MCP polls snapshot | SSE notifications and reconnect cursor |
 

@@ -193,6 +193,56 @@ async fn team_sessions_are_filtered_sorted_and_paginated() {
 }
 
 #[tokio::test]
+async fn an_individual_conversation_can_be_loaded_without_paging() {
+    let (app, agent, team, _) = configured().await;
+    let board = board(&app, &team, "Planning").await;
+    let sid = session(
+        &app,
+        &agent,
+        json!({"content":"older session","teamId":id(&team),"boardId":id(&board)}),
+    )
+    .await;
+
+    let response = request(
+        &app,
+        "GET",
+        &format!("/api/v2/agent-conversations/{sid}"),
+        json!({}),
+        None,
+    )
+    .await;
+    assert_eq!(response.0, 200, "{response:?}");
+    conforms("Conversation", &response.1);
+    assert_eq!(response.1["id"], sid);
+    assert_eq!(response.1["boardId"], id(&board));
+
+    let missing = request(
+        &app,
+        "GET",
+        &format!("/api/v2/agent-conversations/{}", Uuid::now_v7()),
+        json!({}),
+        None,
+    )
+    .await;
+    assert_eq!(missing.0, 404, "{missing:?}");
+
+    let invalid_query = request(
+        &app,
+        "GET",
+        &format!("/api/v2/agent-conversations/{sid}?limit=1"),
+        json!({}),
+        None,
+    )
+    .await;
+    assert_eq!(invalid_query.0, 400, "{invalid_query:?}");
+
+    let direct = session(&app, &agent, json!({"content":"direct"})).await;
+    let direct = get(&app, &format!("/api/v2/agent-conversations/{direct}")).await;
+    conforms("Conversation", &direct);
+    assert_eq!(direct["teamId"], Value::Null);
+}
+
+#[tokio::test]
 async fn session_board_and_title_are_versioned_updates() {
     let (app, a, team, _) = configured().await;
     let (_, other) = second_team(&app).await;
@@ -260,7 +310,7 @@ async fn mcp_lists_sessions_like_http() {
     use http_body_util::BodyExt;
     use tower::ServiceExt;
     let (app, a, team, _) = configured().await;
-    session(&app, &a, json!({"content":"hello","teamId":id(&team)})).await;
+    let sid = session(&app, &a, json!({"content":"hello","teamId":id(&team)})).await;
     let http = list(&app, &format!("?teamId={}", id(&team))).await;
     let call = json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"listAgentSessions","arguments":{"query":{"teamId":id(&team)}}}});
     let response = app
@@ -282,4 +332,26 @@ async fn mcp_lists_sessions_like_http() {
         serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(result["result"]["isError"], false, "{result}");
     assert_eq!(result["result"]["structuredContent"]["data"], http);
+
+    let detail = get(&app, &format!("/api/v2/agent-conversations/{sid}")).await;
+    let call = json!({"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"getAgentConversation","arguments":{"params":{"conversationId":sid}}}});
+    let response = app
+        .clone()
+        .oneshot(
+            Request::builder()
+                .method("POST")
+                .uri("/mcp")
+                .header("host", "127.0.0.1")
+                .header("content-type", "application/json")
+                .header("accept", "application/json, text/event-stream")
+                .header("mcp-protocol-version", "2025-11-25")
+                .body(Body::from(call.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+    let result: Value =
+        serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+    assert_eq!(result["result"]["isError"], false, "{result}");
+    assert_eq!(result["result"]["structuredContent"]["data"], detail);
 }

@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { Popover } from "radix-ui";
 import {
@@ -21,12 +21,12 @@ import type { ManagedAgentApi, ManagedConversation } from "@/api/managed-agents"
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { RelativeTime } from "@/components/relative-time";
+import { useInfiniteScroll } from "@/components/use-infinite-scroll";
 import { useChatPanel } from "@/state/chat-panel";
 import {
   SESSION_GROUP_KEYS,
   SESSION_GROUP_MAX_DEPTH,
   useSessionsSidebar,
-  type SessionFilters,
   type SessionGroupKey,
 } from "@/state/sessions-sidebar";
 import {
@@ -35,6 +35,8 @@ import {
   type SessionGroup,
   type SessionNames,
 } from "./session-grouping";
+import { SessionFilterSection } from "./session-filter-section";
+import { useSessionNames } from "./use-session-names";
 import "./sessions-sidebar.css";
 
 const NARROW_QUERY = "(max-width: 850px)";
@@ -42,12 +44,19 @@ const isNarrow = () =>
   typeof window !== "undefined" &&
   typeof window.matchMedia === "function" &&
   window.matchMedia(NARROW_QUERY).matches;
+const subscribeViewport = (notify: () => void) => {
+  window.addEventListener("resize", notify);
+  return () => window.removeEventListener("resize", notify);
+};
+const useNarrowViewport = () =>
+  useSyncExternalStore(subscribeViewport, isNarrow, () => false);
 const PAGE_SIZE = 50;
 const groupLabel = (key: SessionGroupKey) => t(`sessions.${key}`);
 
 export function SessionsToggle({ className }: { className?: string }) {
   useLocale();
   const api = useApi();
+  const narrow = useNarrowViewport();
   const open = useSessionsSidebar((s) => s.open),
     drawer = useSessionsSidebar((s) => s.drawer),
     toggle = useSessionsSidebar((s) => s.toggle);
@@ -60,8 +69,8 @@ export function SessionsToggle({ className }: { className?: string }) {
       aria-label={t("sessions.toggle")}
       title={t("sessions.toggle")}
       aria-controls="sessions-sidebar"
-      aria-expanded={isNarrow() ? drawer : open}
-      onClick={() => toggle(isNarrow())}
+      aria-expanded={narrow ? drawer : open}
+      onClick={() => toggle(narrow)}
     >
       <History aria-hidden="true" />
     </Button>
@@ -78,6 +87,10 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
   useLocale();
   const state = useSessionsSidebar();
   const { open, drawer, search, sort, groupBy, filters } = state;
+  const narrow = useNarrowViewport();
+  useEffect(() => {
+    if (!narrow && drawer) state.setDrawer(false);
+  }, [narrow, drawer, state.setDrawer]);
   const activeId = useChatPanel((s) => s.conversationId);
   const sessions = useInfiniteQuery({
     queryKey: ["managed-sessions", filters, sort],
@@ -91,52 +104,52 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (page) => page.nextCursor ?? undefined,
     refetchInterval: 5000,
-    enabled: open || drawer,
+    enabled: narrow ? drawer : open,
   });
   const teams = useList("teams", "", { limit: 100 });
   const agents = useList("agents", "", { limit: 100 });
   const boards = useList("boards", "", { limit: 100 });
-  const names = useMemo<SessionNames>(() => {
-    const find = (items: { id: string; name: string }[] | undefined, id: string) =>
-      items?.find((item) => item.id === id)?.name ?? t("sessions.unknown");
-    return {
-      team: (id) => find(teams.data?.items, id),
-      agent: (id) => find(agents.data?.items, id),
-      board: (id) => (id ? find(boards.data?.items, id) : t("sessions.noBoard")),
-    };
-  }, [teams.data, agents.data, boards.data]);
-  const items = (sessions.data?.pages.flatMap((page) => page.items) ?? []).filter(
-    (item) => matchesSearch(item, search),
-  );
+  const list = useRef<HTMLElement>(null);
+  const sentinel = useRef<HTMLDivElement>(null);
+  useInfiniteScroll({
+    sentinel,
+    getRoot: () => list.current,
+    identity: JSON.stringify([filters, sort]),
+    progress: sessions.data?.pages.at(-1)?.nextCursor ?? "",
+    enabled: narrow ? drawer : open,
+    hasMore: !!sessions.hasNextPage,
+    fetching: sessions.isFetching,
+    error: sessions.error,
+    loadMore: () => sessions.fetchNextPage({ cancelRefetch: false }),
+  });
+  const items = [
+    ...new Map(
+      sessions.data?.pages.flatMap((page) => page.items.map((item) => [item.id, item] as const)) ?? [],
+    ).values(),
+  ].filter((item) => matchesSearch(item, search));
+  const names = useSessionNames(items, {
+    teams: teams.data?.items,
+    agents: agents.data?.items,
+    boards: boards.data?.items,
+  });
+  const failedLists = [teams, boards, agents].filter((query) => query.error);
   const tree = groupSessions(items, groupBy, names);
   const filtered =
     !!search.trim() || Object.values(filters).some((ids) => ids.length > 0);
   const choose = (item: ManagedConversation) => {
     if (!item.teamId) return;
     useChatPanel.getState().openConversation(item.teamId, item.id);
-    if (isNarrow()) state.setDrawer(false);
+    if (narrow) state.setDrawer(false);
   };
   const startNew = () => {
     const chat = useChatPanel.getState();
     const team = filters.teamIds.length === 1 ? filters.teamIds[0] : chat.teamId;
-    if (team) chat.openTeam(team);
-    else {
-      chat.setConversation(null);
-      chat.show();
-    }
-    if (isNarrow()) state.setDrawer(false);
+    chat.startNewSession(team);
+    if (narrow) state.setDrawer(false);
   };
-  const leaders = (teams.data?.items ?? [])
-    .map((team) => team.leaderId)
-    .filter((id, index, all) => id && all.indexOf(id) === index);
-  const boardChoices = (boards.data?.items ?? []).filter(
-    (board) =>
-      !filters.teamIds.length ||
-      (board.teamId && filters.teamIds.includes(board.teamId)),
-  );
   return (
     <>
-      {drawer && (
+      {narrow && drawer && (
         <div
           className="sessions-backdrop"
           aria-hidden
@@ -168,7 +181,7 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
             aria-label={t("sessions.close")}
             title={t("sessions.close")}
             onClick={() =>
-              isNarrow() ? state.setDrawer(false) : state.setOpen(false)
+              narrow ? state.setDrawer(false) : state.setOpen(false)
             }
           >
             <X />
@@ -191,29 +204,23 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
               icon={<Filter />}
               active={Object.values(filters).some((ids) => ids.length > 0)}
             >
-              <FilterSection
+              <SessionFilterSection
                 title={t("sessions.filterTeams")}
+                searchLabel={t("sessions.searchTeams")}
                 kind="teamIds"
-                options={(teams.data?.items ?? []).map((team) => ({
-                  id: team.id,
-                  name: team.name,
-                }))}
+                resource="teams"
               />
-              <FilterSection
+              <SessionFilterSection
                 title={t("sessions.filterBoards")}
+                searchLabel={t("sessions.searchBoards")}
                 kind="boardIds"
-                options={[
-                  { id: "none", name: t("sessions.noBoard") },
-                  ...boardChoices.map((board) => ({
-                    id: board.id,
-                    name: board.name,
-                  })),
-                ]}
+                resource="boards"
               />
-              <FilterSection
+              <SessionFilterSection
                 title={t("sessions.filterAgents")}
+                searchLabel={t("sessions.searchAgents")}
                 kind="agentIds"
-                options={leaders.map((id) => ({ id, name: names.agent(id) }))}
+                resource="agents"
               />
               <Button
                 variant="ghost"
@@ -244,7 +251,7 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
             </Menu>
           </div>
         </div>
-        <nav className="sessions-list" aria-label={t("sessions.title")}>
+        <nav ref={list} className="sessions-list" aria-label={t("sessions.title")}>
           {sessions.isPending && <p role="status">{t("sessions.loading")}</p>}
           {sessions.error && (
             <div role="alert" className="sessions-message">
@@ -254,9 +261,33 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
               </Button>
             </div>
           )}
+          {(names.error || failedLists.length > 0) && (
+            <div role="alert" className="sessions-message">
+              {t("sessions.namesError")}
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={names.isFetching || failedLists.some((query) => query.isFetching)}
+                onClick={() =>
+                  void Promise.all([
+                    names.retry(),
+                    ...failedLists.map((query) => query.refetch()),
+                  ])
+                }
+              >
+                {t("sessions.retry")}
+              </Button>
+            </div>
+          )}
           {sessions.isSuccess && items.length === 0 && (
             <p className="sessions-message">
-              {t(filtered ? "sessions.noMatches" : "sessions.empty")}
+              {t(
+                filtered
+                  ? sessions.hasNextPage
+                    ? "sessions.searchMore"
+                    : "sessions.noMatches"
+                  : "sessions.empty",
+              )}
             </p>
           )}
           {groupBy.length ? (
@@ -285,6 +316,7 @@ function SessionsSidebarContent({ api }: { api: ManagedAgentApi }) {
               {t("sessions.loadMore")}
             </Button>
           )}
+          <div ref={sentinel} className="sessions-sentinel" aria-hidden="true" />
         </nav>
       </aside>
     </>
@@ -328,35 +360,6 @@ function Menu({
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
-  );
-}
-
-function FilterSection({
-  title,
-  kind,
-  options,
-}: {
-  title: string;
-  kind: keyof SessionFilters;
-  options: { id: string; name: string }[];
-}) {
-  const selected = useSessionsSidebar((s) => s.filters[kind]);
-  const toggle = useSessionsSidebar((s) => s.toggleFilter);
-  if (!options.length) return null;
-  return (
-    <fieldset className="sessions-filter">
-      <legend>{title}</legend>
-      {options.map((option) => (
-        <label key={option.id}>
-          <input
-            type="checkbox"
-            checked={selected.includes(option.id)}
-            onChange={() => toggle(kind, option.id)}
-          />
-          <span>{option.name}</span>
-        </label>
-      ))}
-    </fieldset>
   );
 }
 

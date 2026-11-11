@@ -64,7 +64,7 @@ async fn sdk_tools_resources_prompts_and_atomic_compounds() {
     assert!(init["result"]["capabilities"].get("prompts").is_some());
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 101);
+    assert_eq!(tools.len(), 102);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"])
             .unwrap_or_else(|e| panic!("{}: {e}", tool["name"]));
@@ -496,7 +496,7 @@ async fn bundled_comment_protocol_catalog_and_hashes() {
     let app = app().await;
     let listing = rpc(&app, "tools/list", json!({})).await;
     let tools = listing["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 101);
+    assert_eq!(tools.len(), 102);
     for tool in tools {
         jsonschema::validator_for(&tool["inputSchema"]).unwrap();
         if let Some(schema) = tool.get("outputSchema") {

@@ -22,11 +22,18 @@
   "unknown": "Unavailable",
   "empty": "No sessions yet. Start a conversation with a team leader to create one.",
   "noMatches": "No sessions match the current filters.",
+  "searchMore": "No matches in loaded sessions. Load more to continue searching.",
   "error": "Sessions could not be loaded.",
+  "namesError": "Some session names could not be loaded.",
   "retry": "Try again",
   "loadMore": "Load more sessions",
   "loading": "Loading sessions…",
   "filterTeams": "Teams",
   "filterBoards": "Boards",
-  "filterAgents": "Leaders"
+  "filterAgents": "Agents",
+  "searchTeams": "Search teams",
+  "searchBoards": "Search boards",
+  "searchAgents": "Search agents",
+  "archivedOnly": "Archived only",
+  "filterLimit": "Select up to 50 values."
 }

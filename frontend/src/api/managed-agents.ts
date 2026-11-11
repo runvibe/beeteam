@@ -74,6 +74,8 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
       ),
     sessions: (query: SessionQuery = {}) =>
       request<S["ConversationPage"]>(`/agent-conversations${sessionQuery(query)}`),
+    conversation: (id: string) =>
+      request<S["Conversation"]>(`/agent-conversations/${encodeURIComponent(id)}`),
     updateConversation: (
       id: string,
       body: S["PatchConversation"],

@@ -16,12 +16,15 @@ type ChatPanelState = {
   teamId: string | null;
   /** Session to show in the team chat; null starts a new conversation or restores the latest one. */
   conversationId: string | null;
+  /** An explicit request for a blank session, rather than restoring the latest one. */
+  freshConversation: boolean;
   /** True while the user is choosing a team; otherwise no selection means the system team. */
   picking: boolean;
   open: boolean;
   side: ChatPanelSide;
   width: number;
   openTeam: (teamId: string) => void;
+  startNewSession: (teamId: string | null) => void;
   openConversation: (teamId: string, conversationId: string) => void;
   setConversation: (conversationId: string | null) => void;
   close: () => void;
@@ -35,19 +38,22 @@ export const useChatPanel = create<ChatPanelState>()(
     (set) => ({
       teamId: null,
       conversationId: null,
+      freshConversation: false,
       picking: false,
       open: true,
       side: "right",
       width: 440,
       openTeam: (teamId) =>
-        set({ teamId, conversationId: null, picking: false, open: true }),
+        set({ teamId, conversationId: null, freshConversation: false, picking: false, open: true }),
+      startNewSession: (teamId) =>
+        set({ teamId, conversationId: null, freshConversation: true, picking: false, open: true }),
       openConversation: (teamId, conversationId) =>
-        set({ teamId, conversationId, picking: false, open: true }),
-      setConversation: (conversationId) => set({ conversationId }),
+        set({ teamId, conversationId, freshConversation: false, picking: false, open: true }),
+      setConversation: (conversationId) => set({ conversationId, freshConversation: false }),
       close: () => set({ open: false }),
       show: () => set({ open: true }),
       chooseTeam: () =>
-        set({ teamId: null, conversationId: null, picking: true, open: true }),
+        set({ teamId: null, conversationId: null, freshConversation: false, picking: true, open: true }),
       setSide: (side) => set({ side }),
       setWidth: (width) =>
         set({

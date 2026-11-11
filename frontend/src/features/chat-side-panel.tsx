@@ -1,5 +1,5 @@
 import { useCallback, useState, useSyncExternalStore } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import {
   ArrowLeftRight,
@@ -9,7 +9,8 @@ import {
   PanelRight,
   X,
 } from "lucide-react";
-import { useApi, useEntity, useList } from "@/api/context";
+import { useApi, useEntity } from "@/api/context";
+import { nextPageOffset } from "@/api/page-continuation";
 import {
   CHAT_PANEL_MAX_VIEWPORT_PERCENT,
   CHAT_PANEL_MIN_WIDTH,
@@ -258,8 +259,22 @@ function PanelLeader({
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
-  const boards = useList("boards", "", { teamId, limit: 100 });
+  const boards = useInfiniteQuery({
+    queryKey: ["session-board-options", teamId],
+    queryFn: ({ pageParam, signal }) =>
+      api.list("boards", "", { teamId, limit: 100, offset: pageParam, sortBy: "name" }, signal),
+    initialPageParam: 0,
+    getNextPageParam: (last, pages) => nextPageOffset(last, pages, (board) => board.id),
+    enabled: !!api.managedAgents,
+  });
+  const boardItems = [
+    ...new Map(
+      boards.data?.pages.flatMap((page) => page.items.map((board) => [board.id, board] as const)) ?? [],
+    ).values(),
+  ];
+  const getBoard = useCallback((id: string) => api.get("boards", id), [api]);
   const conversationId = useChatPanel((s) => s.conversationId);
+  const freshConversation = useChatPanel((s) => s.freshConversation);
   const setConversation = useChatPanel((s) => s.setConversation);
   if (api.managedAgents)
     return (
@@ -268,6 +283,22 @@ function PanelLeader({
           <span>{t("common.leader")}</span>
           <strong>{leader.data?.name ?? leaderId}</strong>
         </div>
+        {boards.error && (
+          <div className="assistant-alert" role="alert">
+            {t("managed.boardLoadError")}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                void (boards.isFetchNextPageError
+                  ? boards.fetchNextPage({ cancelRefetch: false })
+                  : boards.refetch())
+              }
+            >
+              {t("sessions.retry")}
+            </Button>
+          </div>
+        )}
         <TeamManagedApprovals
           key={teamId}
           teamId={teamId}
@@ -281,8 +312,13 @@ function PanelLeader({
           teamId={teamId}
           starters={system}
           conversationId={conversationId}
+          freshConversation={freshConversation}
           onConversationChange={setConversation}
-          boards={boards.data?.items}
+          boards={boardItems}
+          getBoard={getBoard}
+          hasMoreBoards={!!boards.hasNextPage}
+          loadingBoards={boards.isFetchingNextPage}
+          onMoreBoards={() => void boards.fetchNextPage({ cancelRefetch: false })}
         />
       </>
     );

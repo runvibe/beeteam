@@ -12,7 +12,7 @@ use axum::{
         sse::{Event, KeepAlive, Sse},
         IntoResponse, Response,
     },
-    routing::{get, patch, post},
+    routing::{get, post},
     Json, Router,
 };
 use futures_util::stream;
@@ -35,7 +35,7 @@ pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
         .route("/api/v2/agent-conversations", get(sessions))
         .route(
             "/api/v2/agent-conversations/{conversationId}",
-            patch(write),
+            get(read).patch(write),
         )
         .route(
             "/api/v2/agent-conversations/{conversationId}/messages",
@@ -94,6 +94,16 @@ async fn read(
             "messages"
         } else if path.as_str().ends_with("/conversations") {
             "conversations"
+        } else if path
+            .as_str()
+            .ends_with("/agent-conversations/{conversationId}")
+        {
+            if !q.is_empty() {
+                return Err(Failure::invalid(
+                    "Conversation lookup accepts no query parameters",
+                ));
+            }
+            "conversation"
         } else if path.as_str().ends_with("/requests") {
             "requests"
         } else {

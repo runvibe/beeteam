@@ -22,11 +22,18 @@
   "unknown": "Indisponível",
   "empty": "Ainda não há sessões. Converse com o líder de um time para criar uma.",
   "noMatches": "Nenhuma sessão corresponde aos filtros atuais.",
+  "searchMore": "Nenhuma sessão carregada corresponde à busca. Carregue mais para continuar procurando.",
   "error": "Não foi possível carregar as sessões.",
+  "namesError": "Não foi possível carregar alguns nomes das sessões.",
   "retry": "Tentar novamente",
   "loadMore": "Carregar mais sessões",
   "loading": "Carregando sessões…",
   "filterTeams": "Times",
   "filterBoards": "Boards",
-  "filterAgents": "Líderes"
+  "filterAgents": "Agentes",
+  "searchTeams": "Buscar times",
+  "searchBoards": "Buscar boards",
+  "searchAgents": "Buscar agentes",
+  "archivedOnly": "Somente arquivados",
+  "filterLimit": "Selecione até 50 opções."
 }

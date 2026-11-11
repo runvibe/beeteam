@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   useInfiniteQuery,
   useQuery,
@@ -6,17 +6,17 @@ import {
 } from "@tanstack/react-query";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Settings2, SquarePen } from "lucide-react";
+import { ListPlus, Settings2, SquarePen } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import type { LeaderChatApi } from "@/api/leader-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
-import { ApiError } from "@/api/types";
 import {
   AgentMark,
   Composer,
 } from "./managed-agent-chat-parts";
 import { useManagedActions } from "./use-managed-actions";
+import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
 import "./leader-chat.css";
@@ -30,8 +30,13 @@ export function ManagedAgentChat({
   starters,
   mode = "chat",
   conversationId,
+  freshConversation = false,
   onConversationChange,
   boards,
+  getBoard,
+  hasMoreBoards = false,
+  loadingBoards = false,
+  onMoreBoards,
 }: {
   api: ManagedAgentApi;
   agentId: string;
@@ -42,9 +47,14 @@ export function ManagedAgentChat({
   mode?: "chat" | "management";
   /** Externally selected session; null asks for a new or restored conversation. */
   conversationId?: string | null;
+  freshConversation?: boolean;
   onConversationChange?: (conversationId: string | null) => void;
   /** Boards of the team, offered as optional session context. */
   boards?: { id: string; name: string }[];
+  getBoard?: (id: string) => Promise<{ id: string; name: string }>;
+  hasMoreBoards?: boolean;
+  loadingBoards?: boolean;
+  onMoreBoards?: () => void;
 }) {
   useLocale();
   const queryClient = useQueryClient();
@@ -68,10 +78,19 @@ export function ManagedAgentChat({
   });
   const conversationItems = conversations.data?.pages.flatMap((page) => page.items) ?? [];
   const requestItems = requests.data?.pages.flatMap((page) => page.items) ?? [];
+  const { pending, send: sendPending, acknowledge } = useManagedSend(agentId, api);
   const [conversation, setConversation] = useState(""),
     [request, setRequest] = useState(""),
-    [draft, setDraft] = useState(""),
+    [draft, setDraft] = useState(() => pending?.body.content ?? ""),
     [newBoard, setNewBoard] = useState("");
+  const selection = useRef({ teamId, conversation, externalConversation: conversationId });
+  useLayoutEffect(() => {
+    selection.current = { teamId, conversation, externalConversation: conversationId };
+  }, [teamId, conversation, conversationId]);
+  const pendingText = pending?.body.content;
+  useEffect(() => {
+    if (pendingText !== undefined) setDraft(pendingText);
+  }, [pendingText]);
   const [search, setSearch] = useState<"live" | "cached" | "disabled">("live"),
     [network, setNetwork] = useState(false),
     [mcps, setMcps] = useState(""),
@@ -91,9 +110,6 @@ export function ManagedAgentChat({
   const [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>(null),
     [older, setOlder] = useState<S["Message"][]>([]);
-  const pending = useRef<{ key: string; body: S["SendAgentRequest"] } | null>(
-    null,
-  );
   const managedActions = useManagedActions();
   const action = managedActions.actions.find((item) => item.agentId === agentId);
   async function mutate(
@@ -113,6 +129,13 @@ export function ManagedAgentChat({
     queryFn: () => api.messages(conversation),
     enabled: !!conversation && !request,
   });
+  const needsConversationDetail = mode === "chat" && !!teamId && !!conversation;
+  const detail = useQuery({
+    queryKey: ["managed-conversation", conversation],
+    queryFn: () => api.conversation(conversation),
+    enabled: needsConversationDetail,
+    refetchInterval: needsConversationDetail ? 5000 : false,
+  });
   const page = request ? snapshot.data?.messages : history.data;
   const current = snapshot.data?.request;
   const restored = useRef(false);
@@ -123,14 +146,46 @@ export function ManagedAgentChat({
     setOlder([]);
     setOlderCursor(undefined);
   }, [conversation]);
-  function select(id: string, requestId = "") {
+  const select = useCallback((id: string, requestId = "") => {
     setConversation(id);
     setRequest(requestId);
     onConversationChange?.(id || null);
-  }
+  }, [onConversationChange]);
+  useEffect(() => {
+    if (
+      mode !== "chat" ||
+      !pending ||
+      (pending.state !== "completed" && pending.state !== "rejected")
+    )
+      return;
+    if (!acknowledge(pending.key)) return;
+    if (pending.state === "rejected") {
+      setDraft(pending.body.content);
+      setError(pending.error);
+      return;
+    }
+    const current = selection.current;
+    const context = pending.context;
+    if (
+      current.teamId === context.teamId &&
+      current.conversation === context.conversation &&
+      current.externalConversation === context.externalConversation
+    ) {
+      select(pending.request.conversationId, pending.request.id);
+    }
+    setDraft("");
+    setNewBoard("");
+  }, [acknowledge, mode, pending, select]);
   const latestRequest = (id: string) =>
     requestItems.find((r) => r.conversationId === id)?.id ?? "";
   useEffect(() => {
+    if (freshConversation) {
+      restored.current = true;
+      setConversation("");
+      setRequest("");
+      setOlder([]);
+      return;
+    }
     if (conversationId === undefined || (conversationId ?? "") === conversation)
       return;
     if (!conversationId && !restored.current) return;
@@ -138,9 +193,9 @@ export function ManagedAgentChat({
     setConversation(conversationId ?? "");
     setRequest(conversationId ? latestRequest(conversationId) : "");
     setOlder([]);
-  }, [conversationId]);
+  }, [conversationId, freshConversation]);
   useEffect(() => {
-    if (!restored.current && requests.data) {
+    if (!freshConversation && !restored.current && requests.data) {
       restored.current = true;
       const first =
         requestItems.find((r) =>
@@ -150,7 +205,7 @@ export function ManagedAgentChat({
       const r = first;
       select(r.conversationId, r.id);
     }
-  }, [requests.data, requestItems]);
+  }, [requests.data, requestItems, freshConversation]);
   useEffect(() => {
     if (!conversation || request) return;
     const latest = latestRequest(conversation);
@@ -166,6 +221,7 @@ export function ManagedAgentChat({
         conversations.refetch(),
         requests.refetch(),
         request ? snapshot.refetch() : Promise.resolve(),
+        needsConversationDetail ? detail.refetch() : Promise.resolve(),
         queryClient.invalidateQueries({ queryKey: ["managed-sessions"] }),
       ]);
     } catch (e) {
@@ -180,10 +236,21 @@ export function ManagedAgentChat({
       .map((v) => v.trim())
       .filter(Boolean);
   const ready = !!config.data?.configuration;
-  const currentConversation = conversationItems.find(
-    (c) => c.id === conversation,
-  );
-  const readOnly = currentConversation?.readOnly;
+  const currentConversation =
+    detail.data ?? conversationItems.find((c) => c.id === conversation);
+  const selectedBoardId = conversation ? currentConversation?.boardId : null;
+  const missingBoard = !!selectedBoardId && !boards?.some((board) => board.id === selectedBoardId);
+  const boardDetail = useQuery({
+    queryKey: ["boards", selectedBoardId],
+    queryFn: () => getBoard!(selectedBoardId!),
+    enabled: !!getBoard && missingBoard,
+  });
+  const previousLeader = !!currentConversation && !!teamId &&
+    currentConversation.teamId === teamId &&
+    currentConversation.agentId !== agentId;
+  const readOnly = !!currentConversation &&
+    (currentConversation.readOnly || (!!teamId && currentConversation.agentId !== agentId));
+  const waitingForDetail = needsConversationDetail && !detail.data;
   const messages = [...older, ...(page?.items ?? [])].filter(
     (m, i, all) => all.findIndex((x) => x.id === m.id) === i,
   );
@@ -194,39 +261,25 @@ export function ManagedAgentChat({
   const canSend =
     !busy &&
     !readOnly &&
-    (!!pending.current ||
+    (!waitingForDetail || !!pending) &&
+    (pending ? pending.state === "uncertain" :
       (!!draft.trim() && new TextEncoder().encode(draft).length <= 65536));
   function send() {
     void act(async () => {
-      pending.current ??= {
-        key: crypto.randomUUID(),
-        body: {
-          content: draft,
-          ...(conversation
-            ? { conversationId: conversation }
-            : {
-                ...(teamId ? { teamId } : {}),
-                ...(teamId && newBoard ? { boardId: newBoard } : {}),
-              }),
-        },
+      const body: S["SendAgentRequest"] = {
+        content: draft,
+        ...(conversation
+          ? { conversationId: conversation }
+          : {
+              ...(teamId ? { teamId } : {}),
+              ...(teamId && newBoard ? { boardId: newBoard } : {}),
+            }),
       };
-      const p = pending.current;
-      try {
-        const r = await api.send(agentId, p.body, p.key);
-        select(r.conversationId, r.id);
-        setDraft("");
-        setNewBoard("");
-        pending.current = null;
-      } catch (e) {
-        if (
-          e instanceof ApiError &&
-          e.status >= 400 &&
-          e.status < 500 &&
-          e.status !== 408
-        )
-          pending.current = null;
-        throw e;
-      }
+      await sendPending(body, {
+        teamId,
+        conversation,
+        externalConversation: conversationId,
+      });
     });
   }
   function openSettings() {
@@ -237,7 +290,7 @@ export function ManagedAgentChat({
     setSkills(c.toolProfile.skillRoots.join("\n"));
     setEditing(!editing);
   }
-  const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error;
+  const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error || detail.error || boardDetail.error;
   const showHistory = ready || mode === "management";
   return (
     <section
@@ -250,12 +303,18 @@ export function ManagedAgentChat({
             className="assistant-pill"
             aria-label={t("managed.conversation")}
             value={conversation}
-            disabled={!!pending.current}
+            disabled={!!pending}
             onChange={(e) =>
               select(e.target.value, latestRequest(e.target.value))
             }
           >
             <option value="">{t(mode === "management" ? "managed.chooseConversation" : "managed.new")}</option>
+            {currentConversation && !conversationItems.some((item) => item.id === currentConversation.id) && (
+              <option value={currentConversation.id}>
+                {currentConversation.title}
+                {readOnly ? " · " + t("managed.readonly") : ""}
+              </option>
+            )}
             {conversationItems.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title}
@@ -263,13 +322,13 @@ export function ManagedAgentChat({
               </option>
             ))}
           </select>
-          {mode === "chat" && teamId && !!boards?.length &&
+          {mode === "chat" && teamId && (!!boards?.length || !!selectedBoardId) &&
             (!conversation || currentConversation) && (
               <select
                 className="assistant-pill assistant-pill-narrow"
                 aria-label={t("managed.sessionBoard")}
                 value={conversation ? (currentConversation?.boardId ?? "") : newBoard}
-                disabled={busy || !!pending.current || !!readOnly}
+                disabled={busy || !!pending || !!readOnly || waitingForDetail}
                 onChange={(e) => {
                   const next = e.target.value;
                   if (!currentConversation) return setNewBoard(next);
@@ -287,13 +346,31 @@ export function ManagedAgentChat({
                 }}
               >
                 <option value="">{t("managed.noBoard")}</option>
-                {boards.map((b) => (
+                {missingBoard && (
+                  <option value={selectedBoardId!} disabled>
+                    {boardDetail.data?.name ?? t("sessions.unknown")}
+                  </option>
+                )}
+                {boards?.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
                 ))}
               </select>
             )}
+          {mode === "chat" && teamId && hasMoreBoards && onMoreBoards && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label={t("managed.moreBoards")}
+              title={t("managed.moreBoards")}
+              disabled={loadingBoards}
+              onClick={onMoreBoards}
+            >
+              <ListPlus />
+            </Button>
+          )}
           {conversationRequests.length > 1 && (
             <select
               className="assistant-pill assistant-pill-narrow"
@@ -329,7 +406,7 @@ export function ManagedAgentChat({
               size="icon-sm"
               aria-label={t("managed.new")}
               title={t("managed.new")}
-              disabled={!!pending.current}
+              disabled={!!pending}
               onClick={() => {
                 select("");
                 setOlder([]);
@@ -474,15 +551,21 @@ export function ManagedAgentChat({
             )}
           />
           {mode === "chat" && (
-            <Composer
-              value={draft}
-              onChange={setDraft}
-              onSubmit={send}
-              locked={!!pending.current}
-              canSend={canSend}
-              retry={!!pending.current}
-              readOnly={readOnly}
-            />
+            <>
+              {previousLeader && <p className="assistant-readonly">{t("managed.previousLeader")}</p>}
+              {pending?.state === "uncertain" && (
+                <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
+              )}
+              <Composer
+                value={draft}
+                onChange={setDraft}
+                onSubmit={send}
+                locked={!!pending || waitingForDetail}
+                canSend={canSend}
+                retry={!!pending}
+                readOnly={readOnly}
+              />
+            </>
           )}
         </>
       )}

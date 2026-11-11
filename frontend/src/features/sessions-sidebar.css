@@ -182,6 +182,9 @@
   width: 100%;
   margin-top: 6px;
 }
+.sessions-sentinel {
+  height: 1px;
+}
 .sessions-popover {
   width: min(280px, calc(100vw - 24px));
   max-height: min(440px, var(--radix-popover-content-available-height));
@@ -221,6 +224,37 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
+}
+.sessions-filter-search {
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 12px;
+}
+.sessions-filter-archived {
+  color: var(--muted-foreground);
+}
+.sessions-filter-options {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 120px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.sessions-filter-limit {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.sessions-filter .pager {
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
 }
 .sessions-grouping ol {
   list-style: none;

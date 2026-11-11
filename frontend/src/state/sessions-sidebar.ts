@@ -5,6 +5,7 @@ import type { SessionSort } from "@/api/managed-agents";
 export type SessionGroupKey = "team" | "board" | "agent";
 export const SESSION_GROUP_KEYS: SessionGroupKey[] = ["team", "board", "agent"];
 export const SESSION_GROUP_MAX_DEPTH = 3;
+export const SESSION_FILTER_MAX_VALUES = 50;
 export type SessionFilters = {
   teamIds: string[];
   boardIds: string[];
@@ -58,6 +59,8 @@ export const useSessionsSidebar = create<SessionsSidebarState>()(
       toggleFilter: (kind, id) =>
         set((s) => {
           const current = s.filters[kind];
+          if (!current.includes(id) && current.length >= SESSION_FILTER_MAX_VALUES)
+            return s;
           return {
             filters: {
               ...s.filters,

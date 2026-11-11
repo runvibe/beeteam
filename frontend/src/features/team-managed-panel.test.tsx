@@ -3,9 +3,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { editPlainText } from "@/test/editable";
 import { beforeEach, expect, it, vi } from "vitest";
 import { useChatPanel } from "@/state/chat-panel";
+import { useSessionsSidebar } from "@/state/sessions-sidebar";
 import { i18n } from "@/i18n";
 import { ApiError } from "@/api/types";
 import { ChatWorkspace } from "./chat-side-panel";
+import { SessionsSidebar } from "./sessions-sidebar";
 import { useManagedActions } from "./use-managed-actions";
 
 const managed = vi.hoisted(() => ({
@@ -22,6 +24,9 @@ const managed = vi.hoisted(() => ({
   }),
   conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
   requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+  sessions: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+  messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+  conversation: vi.fn(),
   send: vi
     .fn()
     .mockResolvedValue({ id: "request", conversationId: "conversation" }),
@@ -33,6 +38,7 @@ const managed = vi.hoisted(() => ({
   teamApprovals: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
   decide: vi.fn(),
   list: vi.fn(),
+  get: vi.fn(),
   leaderId: "leader",
 }));
 
@@ -41,6 +47,7 @@ vi.mock("@/api/context", () => ({
   useApi: () => ({
     managedAgents: managed,
     list: managed.list,
+    get: managed.get,
   }),
   useEntity: (resource: string) => ({
     data:
@@ -67,6 +74,7 @@ beforeEach(async () => {
     hasMore: false,
     nextOffset: null,
   });
+  managed.get.mockReset();
   managed.teamApprovals
     .mockReset()
     .mockResolvedValue({ items: [], nextCursor: null });
@@ -513,4 +521,128 @@ it("clears the draft when the team's leader changes", async () => {
       .textContent,
   ).toBe("");
   expect(managed.send).not.toHaveBeenCalled();
+});
+
+it("loads further board options before creating a team session", async () => {
+  managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.send.mockReset().mockResolvedValue({ id: "request", conversationId: "conversation" });
+  const firstPage = Array.from({ length: 100 }, (_, index) => ({
+    id: `board-${index}`,
+    name: `Board ${index}`,
+  }));
+  managed.list.mockImplementation(async (resource: string, _scope: string, filters: { offset?: number }) => {
+    if (resource !== "boards") return { items: [], hasMore: false, nextOffset: null };
+    return filters.offset === 100
+      ? { items: [{ id: "later-board", name: "Later board" }], offset: 100, limit: 100, total: 101, hasMore: false, nextOffset: null }
+      : { items: firstPage, offset: 0, limit: 100, total: 101, hasMore: true, nextOffset: 100 };
+  });
+  useChatPanel.setState({ conversationId: null, freshConversation: true });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace><main>Content</main></ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "More boards" }));
+  const board = await screen.findByRole("combobox", { name: "Session board" });
+  expect(await screen.findByRole("option", { name: "Later board" })).toBeVisible();
+  fireEvent.change(board, { target: { value: "later-board" } });
+  editPlainText(await screen.findByRole("textbox", { name: "Message to agent" }), "Plan work");
+  fireEvent.click(screen.getByRole("button", { name: "Send request" }));
+  await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
+    "leader",
+    { content: "Plan work", teamId: "team-a", boardId: "later-board" },
+    expect.any(String),
+  ));
+});
+
+it("shows the assigned board even when it is outside the available board page", async () => {
+  const selected = {
+    id: "older-session",
+    agentId: "leader",
+    configurationVersion: 1,
+    taskId: null,
+    teamId: "team-a",
+    boardId: "transferred-board",
+    title: "Older session",
+    readOnly: false,
+    version: 1,
+    createdAt: "2026-11-01T00:00:00Z",
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.conversation.mockReset().mockResolvedValue(selected);
+  managed.get.mockResolvedValue({ id: "transferred-board", name: "Transferred board", teamId: "team-b" });
+  managed.list.mockImplementation(async (resource: string) =>
+    resource === "boards"
+      ? { items: [{ id: "current-board", name: "Current board" }], offset: 0, limit: 100, total: 1, hasMore: false, nextOffset: null }
+      : { items: [], hasMore: false, nextOffset: null },
+  );
+  useChatPanel.setState({ conversationId: "older-session", freshConversation: false });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace><main>Content</main></ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByRole("option", { name: "Transferred board" })).toHaveValue("transferred-board");
+  expect(screen.getByRole("combobox", { name: "Session board" })).toHaveValue("transferred-board");
+  expect(managed.get).toHaveBeenCalledWith("boards", "transferred-board");
+});
+
+it("starts a blank session when the sidebar targets a different team", async () => {
+  const old = {
+    id: "old-session",
+    agentId: "leader",
+    configurationVersion: 1,
+    taskId: null,
+    teamId: "team-b",
+    boardId: null,
+    title: "Old session",
+    readOnly: false,
+    version: 1,
+    createdAt: "2026-11-01T00:00:00Z",
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  const request = {
+    id: "old-request",
+    agentId: "leader",
+    conversationId: old.id,
+    version: 1,
+    state: "completed",
+    createdAt: "2026-11-01T00:00:00Z",
+  };
+  managed.requests.mockReset().mockResolvedValue({ items: [request], nextCursor: null });
+  managed.conversations.mockReset().mockResolvedValue({ items: [old], nextCursor: null });
+  managed.conversation.mockResolvedValue(old);
+  managed.snapshot.mockResolvedValue({
+    request,
+    messages: { items: [], nextCursor: null },
+    approvals: [],
+  });
+  useChatPanel.setState({ teamId: "team-a", conversationId: old.id, open: true, picking: false });
+  useSessionsSidebar.setState({
+    open: true,
+    drawer: false,
+    search: "",
+    sort: "updated_desc",
+    groupBy: ["team"],
+    filters: { teamIds: ["team-b"], boardIds: [], agentIds: [] },
+  });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace>
+        <SessionsSidebar />
+        <main>Content</main>
+      </ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("old-session"));
+  fireEvent.click(screen.getByRole("button", { name: "New session" }));
+  await waitFor(() => expect(useChatPanel.getState().teamId).toBe("team-b"));
+  await waitFor(() => expect(managed.requests.mock.calls.length).toBeGreaterThanOrEqual(2));
+  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue(""));
+  expect(screen.getByText("How can I help?")).toBeVisible();
+  managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
 });

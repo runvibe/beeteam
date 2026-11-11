@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { useQueryClient, type QueryClient } from "@tanstack/react-query";
-import { ApiError } from "@/api/types";
 import { t } from "@/i18n";
+import { isDefinitiveManagedFailure } from "./managed-idempotency";
 
 type PendingAction = {
   agentId: string;
@@ -36,6 +36,7 @@ class ManagedActionRegistry {
     if (action && (action.signature !== signature || action.running)) {
       throw new Error(t("managed.retryAction"));
     }
+    const hadUncertainAttempt = !!action;
     action ??= {
       agentId,
       signature,
@@ -53,12 +54,7 @@ class ManagedActionRegistry {
       this.update(this.actions.filter((item) => item !== active));
       return result;
     } catch (error) {
-      if (
-        error instanceof ApiError &&
-        error.status >= 400 &&
-        error.status < 500 &&
-        error.status !== 408
-      ) {
+      if (isDefinitiveManagedFailure(error, hadUncertainAttempt)) {
         this.update(this.actions.filter((item) => item !== active));
       } else {
         this.update(

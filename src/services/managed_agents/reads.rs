@@ -111,6 +111,7 @@ impl ManagedAgentService {
                     false,
                 )
             }
+            "managed:conversation" => public(r.get("managed_conversations", owner)?),
             "managed:messages" => {
                 r.get("managed_conversations", owner)?;
                 page(r.list("managed_messages"), limit, owner, "messages", true)

@@ -70780,6 +70780,143 @@
         ],
         "type": "object"
       }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "conversationId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params"
+        ],
+        "type": "object"
+      },
+      "name": "getAgentConversation",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "agentId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "boardId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Optional board context of a team session."
+              },
+              "configurationVersion": {
+                "minimum": 1,
+                "type": "integer"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "readOnly": {
+                "type": "boolean"
+              },
+              "taskId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "teamId": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Team whose leader owns this session; null for task and direct agent conversations."
+              },
+              "title": {
+                "allOf": [
+                  {
+                    "pattern": "[^\\u0009-\\u000D\\u0020\\u0085\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]"
+                  },
+                  {
+                    "pattern": "^[^\\u0000]*$"
+                  }
+                ],
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string",
+                "x-maxBytes": 200
+              },
+              "updatedAt": {
+                "description": "Last session activity or metadata change.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "agentId",
+              "configurationVersion",
+              "taskId",
+              "teamId",
+              "boardId",
+              "title",
+              "readOnly",
+              "version",
+              "createdAt",
+              "updatedAt"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
     }
   ]
 }

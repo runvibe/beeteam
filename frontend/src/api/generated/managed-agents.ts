@@ -87,7 +87,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: operations["getAgentConversation"];
         put?: never;
         post?: never;
         delete?: never;
@@ -607,6 +607,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConversationPage"];
+                };
+            };
+            /** @description See normative status mapping. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    getAgentConversation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                conversationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current conversation metadata. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversation"];
                 };
             };
             /** @description See normative status mapping. */

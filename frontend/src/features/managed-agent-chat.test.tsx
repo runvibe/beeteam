@@ -1,8 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { act, render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ManagedAgentChat } from "./managed-agent-chat";
 import type { ManagedAgentApi } from "@/api/managed-agents";
+import { ApiError } from "@/api/types";
 import { i18n } from "@/i18n";
 import { editPlainText } from "@/test/editable";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
@@ -104,6 +105,7 @@ it("keeps the original action retry after the approval disappears", async () => 
         completed = true;
         throw new TypeError("Receipt lost");
       })
+      .mockRejectedValueOnce(new ApiError(403, "forbidden", "Retry denied"))
       .mockResolvedValue({}),
   } as unknown as ManagedAgentApi;
   const client = new QueryClient({
@@ -120,7 +122,14 @@ it("keeps the original action retry after the approval disappears", async () => 
   await waitFor(() => expect(screen.queryByText("Approve")).toBeNull());
   fireEvent.click(screen.getByText("Retry previous action"));
   await waitFor(() => expect(api.decide).toHaveBeenCalledTimes(2));
+  await screen.findByText(/Retry denied/);
+  expect(screen.getByText("Retry previous action")).toBeEnabled();
+  fireEvent.click(screen.getByText("Retry previous action"));
+  await waitFor(() => expect(api.decide).toHaveBeenCalledTimes(3));
   expect(vi.mocked(api.decide).mock.calls[1]).toEqual(
+    vi.mocked(api.decide).mock.calls[0],
+  );
+  expect(vi.mocked(api.decide).mock.calls[2]).toEqual(
     vi.mocked(api.decide).mock.calls[0],
   );
 });
@@ -226,6 +235,267 @@ it("retries the identical multiline text and key after an uncertain send", async
     vi.mocked(api.send).mock.calls[0],
   );
   await waitFor(() => expect(editor.textContent).toBe(""));
+});
+
+it("preserves an uncertain send and its original key across a chat remount", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockRejectedValueOnce(new TypeError("Receipt lost")).mockResolvedValue({
+      id: "request",
+      conversationId: "conversation",
+    }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const renderView = () => render(
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const first = renderView();
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await screen.findByRole("button", { name: "Check send with the same key" });
+  first.unmount();
+  renderView();
+  const retry = await screen.findByRole("button", { name: "Check send with the same key" });
+  expect(screen.getByRole("textbox", { name: "Message to agent" })).toHaveTextContent("Original draft");
+  fireEvent.click(retry);
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(api.send).mock.calls[1]).toEqual(vi.mocked(api.send).mock.calls[0]);
+});
+
+it("keeps an uncertain send after a later rejected retry", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn()
+      .mockRejectedValueOnce(new TypeError("Receipt lost"))
+      .mockRejectedValueOnce(new ApiError(403, "forbidden", "Retry denied"))
+      .mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  fireEvent.click(await screen.findByRole("button", { name: "Check send with the same key" }));
+  await screen.findByText(/Retry denied/);
+  expect(editor).toHaveAttribute("aria-disabled", "true");
+  expect(editor).toHaveTextContent("Original draft");
+  fireEvent.click(screen.getByRole("button", { name: "Check send with the same key" }));
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(3));
+  expect(vi.mocked(api.send).mock.calls[1]).toEqual(vi.mocked(api.send).mock.calls[0]);
+  expect(vi.mocked(api.send).mock.calls[2]).toEqual(vi.mocked(api.send).mock.calls[0]);
+});
+
+it("allows revising a send rejected before any uncertain attempt", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn()
+      .mockRejectedValueOnce(new ApiError(400, "invalid_request", "Invalid request"))
+      .mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await screen.findByText(/Invalid request/);
+  expect(editor).not.toHaveAttribute("aria-disabled", "true");
+  expect(editor).toHaveTextContent("Original draft");
+  editPlainText(editor, "Revised draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(2));
+  const calls = vi.mocked(api.send).mock.calls;
+  expect(calls[1][1]).toEqual({ content: "Revised draft" });
+  expect(calls[1][2]).not.toBe(calls[0][2]);
+});
+
+it("restores a definitively rejected draft and error after the chat remounts", async () => {
+  await i18n.changeLanguage("en");
+  let rejectSend!: (error: Error) => void;
+  const send = new Promise<never>((_, reject) => { rejectSend = reject; });
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockReturnValue(send),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const renderView = () => render(
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const first = renderView();
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  first.unmount();
+  await act(async () => rejectSend(new ApiError(400, "invalid_request", "Invalid request")));
+  renderView();
+  await screen.findByText(/Invalid request/);
+  const restored = screen.getByRole("textbox", { name: "Message to agent" });
+  expect(restored).toHaveTextContent("Original draft");
+  expect(restored).not.toHaveAttribute("aria-disabled", "true");
+});
+
+it("clears a delivered draft without resending when the chat remounts during the send", async () => {
+  await i18n.changeLanguage("en");
+  let resolveSend!: (result: { id: string; conversationId: string }) => void;
+  const send = new Promise<{ id: string; conversationId: string }>((resolve) => {
+    resolveSend = resolve;
+  });
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockReturnValue(send),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const renderView = () => render(
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat agentId="agent" api={api} />
+    </QueryClientProvider>,
+  );
+  const first = renderView();
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  first.unmount();
+  renderView();
+  const retry = await screen.findByRole("button", { name: "Check send with the same key" });
+  expect(retry).toBeDisabled();
+  await act(async () => resolveSend({ id: "request", conversationId: "conversation" }));
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Message to agent" }).textContent).toBe(""));
+  expect(screen.getByRole("button", { name: "Send request" })).toBeDisabled();
+  expect(api.send).toHaveBeenCalledTimes(1);
+});
+
+it("does not change the selected chat when an in-flight send completes after unmount", async () => {
+  await i18n.changeLanguage("en");
+  let resolveSend!: (result: { id: string; conversationId: string }) => void;
+  const send = new Promise<{ id: string; conversationId: string }>((resolve) => {
+    resolveSend = resolve;
+  });
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockReturnValue(send),
+  } as unknown as ManagedAgentApi;
+  const onConversationChange = vi.fn();
+  const view = render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="agent" api={api} onConversationChange={onConversationChange} />
+    </QueryClientProvider>,
+  );
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  view.unmount();
+  await act(async () => resolveSend({ id: "request", conversationId: "previous-conversation" }));
+  expect(onConversationChange).not.toHaveBeenCalled();
+});
+
+it("keeps a different session selected when an earlier send completes", async () => {
+  await i18n.changeLanguage("en");
+  let resolveSend!: (result: { id: string; conversationId: string }) => void;
+  const send = new Promise<{ id: string; conversationId: string }>((resolve) => {
+    resolveSend = resolve;
+  });
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({
+      items: [{ id: "first", title: "First" }, { id: "second", title: "Second" }],
+      nextCursor: null,
+    }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockReturnValue(send),
+  } as unknown as ManagedAgentApi;
+  const onConversationChange = vi.fn();
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const chat = (conversationId: string) => (
+    <QueryClientProvider client={client}>
+      <ManagedAgentChat
+        agentId="agent"
+        api={api}
+        conversationId={conversationId}
+        onConversationChange={onConversationChange}
+      />
+    </QueryClientProvider>
+  );
+  const view = render(chat("first"));
+  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("first"));
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Original draft");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  view.rerender(chat("second"));
+  await waitFor(() => expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("second"));
+  await act(async () => resolveSend({ id: "request", conversationId: "first" }));
+  expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("second");
+  expect(onConversationChange).not.toHaveBeenCalled();
 });
 
 it("applies the 65536-byte limit to the UTF-8 editor text", async () => {
@@ -435,6 +705,156 @@ it("loads older managed conversations instead of hiding them after the first pag
   fireEvent.click(await screen.findByRole("button", { name: "More conversations" }));
   expect(await screen.findByRole("option", { name: "Older conversation" })).toBeVisible();
   expect(conversations).toHaveBeenCalledWith("paginated-worker", "next-page");
+});
+
+it("opens and updates an older session selected outside the first conversation page", async () => {
+  await i18n.changeLanguage("en");
+  let selected = {
+    id: "older",
+    agentId: "leader",
+    configurationVersion: 1,
+    taskId: null,
+    teamId: "team-a",
+    boardId: "board-a",
+    title: "Earlier sprint",
+    readOnly: false,
+    version: 5,
+    createdAt: "2026-11-01T00:00:00Z",
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({
+      items: [{ ...selected, id: "recent", title: "Recent" }],
+      nextCursor: "next-page",
+    }),
+    conversation: vi.fn().mockImplementation(async () => selected),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    updateConversation: vi.fn().mockImplementation(async () => {
+      selected = { ...selected, boardId: "board-b", version: 6 };
+      return selected;
+    }),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat
+        agentId="leader"
+        api={api}
+        teamId="team-a"
+        conversationId="older"
+        boards={[{ id: "board-a", name: "Planning" }, { id: "board-b", name: "Delivery" }]}
+      />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByRole("option", { name: "Earlier sprint" })).toHaveValue("older");
+  expect(screen.getByRole("combobox", { name: "Conversation" })).toHaveValue("older");
+  const board = screen.getByRole("combobox", { name: "Session board" });
+  expect(board).toHaveValue("board-a");
+  fireEvent.change(board, { target: { value: "board-b" } });
+  await waitFor(() => expect(board).toHaveValue("board-b"));
+  expect(api.updateConversation).toHaveBeenCalledWith(
+    "older",
+    { boardId: "board-b" },
+    5,
+    expect.any(String),
+  );
+});
+
+it("waits for the selected session version before changing its board", async () => {
+  await i18n.changeLanguage("en");
+  const initial = {
+    id: "selected",
+    agentId: "leader",
+    configurationVersion: 1,
+    taskId: null,
+    teamId: "team-a",
+    boardId: "board-a",
+    title: "Selected session",
+    readOnly: false,
+    version: 1,
+    createdAt: "2026-11-01T00:00:00Z",
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  let resolveDetail!: (value: typeof initial) => void;
+  const detail = new Promise<typeof initial>((resolve) => { resolveDetail = resolve; });
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [initial], nextCursor: null }),
+    conversation: vi.fn().mockReturnValue(detail),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    updateConversation: vi.fn().mockResolvedValue({}),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat
+        agentId="leader"
+        api={api}
+        teamId="team-a"
+        conversationId="selected"
+        boards={[{ id: "board-a", name: "Planning" }, { id: "board-b", name: "Delivery" }]}
+      />
+    </QueryClientProvider>,
+  );
+  const board = await screen.findByRole("combobox", { name: "Session board" });
+  await waitFor(() => expect(api.conversation).toHaveBeenCalledWith("selected"));
+  expect(board).toBeDisabled();
+  await act(async () => resolveDetail({ ...initial, version: 2 }));
+  await waitFor(() => expect(board).toBeEnabled());
+  fireEvent.change(board, { target: { value: "board-b" } });
+  await waitFor(() => expect(api.updateConversation).toHaveBeenCalledWith(
+    "selected",
+    { boardId: "board-b" },
+    2,
+    expect.any(String),
+  ));
+});
+
+it("keeps a previous leader's session readable but does not send to the wrong agent", async () => {
+  await i18n.changeLanguage("en");
+  const historical = {
+    id: "historical",
+    agentId: "previous-leader",
+    configurationVersion: 1,
+    taskId: null,
+    teamId: "team-a",
+    boardId: null,
+    title: "Previous leader session",
+    readOnly: false,
+    version: 2,
+    createdAt: "2026-11-01T00:00:00Z",
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  const api = {
+    config: vi.fn().mockResolvedValue({
+      configuration: { toolProfile: { webSearch: "live", networkAccess: false, enabledMcpServers: [], skillRoots: [] } },
+      version: 1,
+    }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    conversation: vi.fn().mockResolvedValue(historical),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({
+      items: [{ id: "old-message", role: "agent", content: "Previous leader's reply" }],
+      nextCursor: null,
+    }),
+    send: vi.fn(),
+  } as unknown as ManagedAgentApi;
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ManagedAgentChat agentId="current-leader" api={api} teamId="team-a" conversationId="historical" />
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByText("Previous leader's reply")).toBeVisible();
+  expect(await screen.findByText("Read-only history")).toBeVisible();
+  expect(screen.getByLabelText("Message to agent")).toHaveAttribute("contenteditable", "false");
+  expect(api.send).not.toHaveBeenCalled();
 });
 
 it("retries an uncertain configuration with the original body and key after remount", async () => {
