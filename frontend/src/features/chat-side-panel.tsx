@@ -9,7 +9,7 @@ import {
   PanelRight,
   X,
 } from "lucide-react";
-import { useApi, useEntity } from "@/api/context";
+import { useApi, useEntity, useList } from "@/api/context";
 import {
   CHAT_PANEL_MAX_VIEWPORT_PERCENT,
   CHAT_PANEL_MIN_WIDTH,
@@ -258,6 +258,9 @@ function PanelLeader({
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
+  const boards = useList("boards", "", { teamId, limit: 100 });
+  const conversationId = useChatPanel((s) => s.conversationId);
+  const setConversation = useChatPanel((s) => s.setConversation);
   if (api.managedAgents)
     return (
       <>
@@ -277,6 +280,9 @@ function PanelLeader({
           legacyApi={api.leaderChat}
           teamId={teamId}
           starters={system}
+          conversationId={conversationId}
+          onConversationChange={setConversation}
+          boards={boards.data?.items}
         />
       </>
     );

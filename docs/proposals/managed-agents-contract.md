@@ -18,7 +18,7 @@ The OpenAPI is the source for request and response schemas. `managed-agents-mcp.
 | --- | --- | --- |
 | GET agent execution-config | getAgentExecutionConfiguration | readiness, configuration or null, agent version |
 | PUT agent execution-config | configureAgentExecution | full configuration replacement, If-Match agent version |
-| POST agent requests | sendAgentRequest | content, optional Bee Team conversation and task |
+| POST agent requests | sendAgentRequest | content, optional Bee Team conversation, task, team and board |
 | GET agent requests | listAgentRequests | bounded cursor pagination |
 | GET agent conversations | listAgentConversations | bounded cursor pagination |
 | GET agent-request | getAgentRequest | consistent snapshot with messages, approvals and cursor |
@@ -26,11 +26,15 @@ The OpenAPI is the source for request and response schemas. `managed-agents-mcp.
 | POST request cancel | cancelAgentRequest | targeted cancellation, If-Match request version |
 | POST request reconcile | reconcileAgentRequest | inspect the original accepted work, never repeat inference |
 | POST approval decision | decideAgentRequestApproval | accept/decline one approval, If-Match approval version |
+| GET agent-conversations | listAgentSessions | team sessions filtered by team, agent and board (`none` = no board); `updated_desc`/`updated_asc` with sort-bound cursor |
+| PATCH agent-conversation | updateAgentConversation | title and/or board (`null` clears), If-Match conversation version |
 | GET request events | none; MCP polls snapshot | SSE notifications and reconnect cursor |
 
 Path IDs are UUIDv7 Bee Team IDs. Configuration PUT uses the **agent version**, even when the configuration is null. ConfigurationState.version always denotes that same resource version; configurationVersion in conversations/requests pins the accepted version and is immutable. Shared writes require an Idempotency-Key; MCP uses `idempotencyKey` and `expectedVersion` for If-Match. Read tools have neither field. MCP outputs wrap the HTTP body as `{data: ...}`. No body is accepted for cancel/reconcile.
 
 ## Submission, origin and context
+
+Team sessions: a new conversation sent with `teamId` must target the team's current leader (otherwise `conversation_mismatch`); `boardId` requires `teamId` and must reference an active board of that team. Continuing a conversation with a different `teamId`/`boardId` is rejected, and every accepted request refreshes the conversation `updatedAt`. Only conversations with a `teamId` appear in `listAgentSessions`; task and direct agent conversations stay out of that list. Existing non-task conversations of active team leaders are backfilled with their team by migration.
 
 POST accepts at most 65536 UTF-8 bytes, nonblank and without NUL. DTO validation and the schema validator both enforce bytes, including emoji. Additional skill paths are absolute host paths, at most 4096 UTF-8 bytes without NUL/newlines/surrounding whitespace; filesystem existence/allowed-root checks belong to the service, not DTO parsing. Tool profile contains only configured MCP names, no credentials, arbitrary executable or server URL.
 

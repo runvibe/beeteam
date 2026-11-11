@@ -1,4 +1,7 @@
-use beeteam::dto::managed_agents::{ExecutionConfiguration, SendAgentRequest};
+use beeteam::dto::{
+    managed_agents::{ExecutionConfiguration, SendAgentRequest},
+    managed_sessions::PatchConversation,
+};
 use serde_json::{json, Value};
 
 #[test]
@@ -17,6 +20,8 @@ fn shared_json_schema_fixtures_match_rust_validation() {
             "SendAgentRequest" => {
                 serde_json::from_value::<SendAgentRequest>(body).is_ok_and(|v| v.validate().is_ok())
             }
+            "PatchConversation" => serde_json::from_value::<PatchConversation>(body)
+                .is_ok_and(|v| v.validate().is_ok()),
             "ExecutionConfiguration" => serde_json::from_value::<ExecutionConfiguration>(body)
                 .is_ok_and(|v| v.validate().is_ok()),
             "TeamManagedApprovalPage" => beeteam::dto::contracts::validate_schema(

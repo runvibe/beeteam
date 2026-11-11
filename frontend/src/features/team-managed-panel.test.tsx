@@ -37,6 +37,7 @@ const managed = vi.hoisted(() => ({
 }));
 
 vi.mock("@/api/context", () => ({
+  useList: () => ({ data: undefined }),
   useApi: () => ({
     managedAgents: managed,
     list: managed.list,
@@ -483,7 +484,7 @@ it("always sends to the displayed team leader without an agent selector", async 
   await waitFor(() =>
     expect(managed.send).toHaveBeenCalledWith(
       "leader",
-      { content: "Hello leader" },
+      { content: "Hello leader", teamId: "team-a" },
       expect.any(String),
     ),
   );

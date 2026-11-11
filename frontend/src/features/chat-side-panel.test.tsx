@@ -12,6 +12,7 @@ const systemTeams = vi.hoisted(() => ({
   listCalls: vi.fn(),
 }));
 vi.mock("@/api/context", () => ({
+  useList: () => ({ data: undefined }),
   useApi: () => ({
     list: async (_resource: string, _scope: string, filters?: { system?: boolean }) => {
       systemTeams.listCalls(filters);

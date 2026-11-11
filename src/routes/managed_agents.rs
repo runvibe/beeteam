@@ -12,7 +12,7 @@ use axum::{
         sse::{Event, KeepAlive, Sse},
         IntoResponse, Response,
     },
-    routing::{get, post},
+    routing::{get, patch, post},
     Json, Router,
 };
 use futures_util::stream;
@@ -32,6 +32,11 @@ pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
         .route("/api/v2/agent-requests/{requestId}/events", get(events))
         .route("/api/v2/agent-requests/{requestId}/cancel", post(write))
         .route("/api/v2/agent-requests/{requestId}/reconcile", post(write))
+        .route("/api/v2/agent-conversations", get(sessions))
+        .route(
+            "/api/v2/agent-conversations/{conversationId}",
+            patch(write),
+        )
         .route(
             "/api/v2/agent-conversations/{conversationId}/messages",
             get(read),
@@ -120,6 +125,15 @@ async fn read(
     .await;
     result.unwrap_or_else(error)
 }
+async fn sessions(
+    State(state): State<AppState>,
+    Query(q): Query<BTreeMap<String, String>>,
+) -> Response {
+    match state.managed_agents().sessions(&q).await {
+        Ok(v) => json_response(v, StatusCode::OK),
+        Err(e) => error(e),
+    }
+}
 fn json_response(v: Value, status: StatusCode) -> Response {
     let version = v["version"].as_i64();
     let mut r = (status, Json(v)).into_response();
@@ -144,6 +158,8 @@ async fn write(
             "cancel"
         } else if path.as_str().ends_with("/decision") {
             "decision"
+        } else if path.as_str().ends_with("/{conversationId}") {
+            "update-conversation"
         } else {
             "send"
         };

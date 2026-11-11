@@ -546,5 +546,41 @@
       "decision": "accept",
       "expectedTeamId": "019a629b451270008000000000000001"
     }
+  },
+  {
+    "schema": "SendAgentRequest",
+    "valid": true,
+    "value": {
+      "content": "Plan the board",
+      "teamId": "019a629b-4512-7000-8000-000000000002",
+      "boardId": "019a629b-4512-7000-8000-000000000002"
+    }
+  },
+  {
+    "schema": "PatchConversation",
+    "valid": true,
+    "value": {
+      "boardId": null
+    }
+  },
+  {
+    "schema": "PatchConversation",
+    "valid": true,
+    "value": {
+      "title": "Release planning",
+      "boardId": "019a629b-4512-7000-8000-000000000002"
+    }
+  },
+  {
+    "schema": "PatchConversation",
+    "valid": false,
+    "value": {}
+  },
+  {
+    "schema": "PatchConversation",
+    "valid": false,
+    "value": {
+      "teamId": "019a629b-4512-7000-8000-000000000002"
+    }
   }
 ]

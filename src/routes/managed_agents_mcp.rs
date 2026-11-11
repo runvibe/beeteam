@@ -36,6 +36,8 @@ pub async fn call(state: &AppState, name: &str, args: Value) -> Result<Value> {
         "cancelAgentRequest" => "cancel",
         "reconcileAgentRequest" => "reconcile",
         "decideAgentRequestApproval" => "decision",
+        "listAgentSessions" => "sessions",
+        "updateAgentConversation" => "update-conversation",
         _ => return Err(Failure::missing()),
     };
     let mut c = command(op);
@@ -57,9 +59,20 @@ pub async fn call(state: &AppState, name: &str, args: Value) -> Result<Value> {
         .map(uuid::Uuid::parse_str)
         .transpose()
         .map_err(|_| Failure::invalid("Invalid key"))?;
+    if op == "sessions" {
+        let query = c
+            .query
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().map_or_else(|| v.to_string(), str::to_owned)))
+            .collect();
+        return Ok(json!({"data":state.managed_agents().sessions(&query).await?}));
+    }
     let data = if op == "reconcile" {
         state.managed_agents().reconcile(c).await?
-    } else if matches!(op, "send" | "configure" | "cancel" | "decision") {
+    } else if matches!(
+        op,
+        "send" | "configure" | "cancel" | "decision" | "update-conversation"
+    ) {
         state.managed_agents().write(c, "mcp").await?
     } else {
         state.managed_agents().read(c).await?

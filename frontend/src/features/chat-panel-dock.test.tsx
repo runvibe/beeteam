@@ -7,6 +7,7 @@ import { setLocalePreference } from "@/i18n";
 import { ChatWorkspace } from "./chat-side-panel";
 
 vi.mock("@/api/context", () => ({
+  useList: () => ({ data: undefined }),
   useApi: () => ({
     list: async () => ({ items: [], total: 0, offset: 0, limit: 20 }),
   }),

@@ -26,6 +26,7 @@ import { TaskPage } from "./features/tasks";
 import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import { ChatWorkspace } from "./features/chat-side-panel";
+import { SessionsSidebar } from "./features/sessions-sidebar";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -52,6 +53,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
           <NavigationRail homeEnabled={homeEnabled} />
           <DetailContainerContext.Provider value={detailContainer}>
             <ChatWorkspace>
+              <SessionsSidebar />
               <div className="main-shell" ref={setDetailContainer}>
                 <ApiCompatibilityBanner />
                 <header className="topbar">

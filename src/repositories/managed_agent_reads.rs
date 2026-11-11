@@ -93,6 +93,36 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
             )
             .await?;
         }
+        "managed:sessions" => {
+            let ascending = c.q("ascending").as_bool().unwrap_or(false);
+            let (compare, order) = if ascending { (">", "ASC") } else { ("<", "DESC") };
+            let list = |key: &str| -> Vec<String> {
+                c.q(key)
+                    .as_array()
+                    .map(|v| v.iter().filter_map(|x| x.as_str().map(str::to_owned)).collect())
+                    .unwrap_or_default()
+            };
+            let sql = format!("SELECT * FROM managed_conversations WHERE deleted_at IS NULL AND data->>'teamId' IS NOT NULL AND (cardinality($1::text[])=0 OR data->>'teamId'=ANY($1::text[])) AND (cardinality($2::text[])=0 OR data->>'agentId'=ANY($2::text[])) AND (NOT $3 OR data->>'boardId'=ANY($4::text[]) OR ($5 AND data->>'boardId' IS NULL)) AND ($6::timestamptz IS NULL OR (updated_at,id) {compare} ($6::timestamptz,$7::uuid)) ORDER BY updated_at {order}, id {order} LIMIT $8");
+            let after = c
+                .q("afterTime")
+                .as_str()
+                .and_then(|t| chrono::DateTime::parse_from_rfc3339(t).ok())
+                .map(|t| t.with_timezone(&chrono::Utc));
+            for row in sqlx::query(sqlx::AssertSqlSafe(sql))
+                .bind(list("teamIds"))
+                .bind(list("agentIds"))
+                .bind(c.q("boardFilter").as_bool().unwrap_or(false))
+                .bind(list("boardIds"))
+                .bind(c.q("noBoard").as_bool().unwrap_or(false))
+                .bind(after)
+                .bind(c.q("afterId").as_str().map(str::to_owned))
+                .bind(limit + 1)
+                .fetch_all(&mut **tx)
+                .await?
+            {
+                r.insert(super::reads::record("managed_conversations", &row));
+            }
+        }
         "managed:messages" => {
             load(
                 tx,

@@ -26,6 +26,8 @@ import transferEn from "./catalogs/transfer.en.json";
 import transferPt from "./catalogs/transfer.pt.json";
 import usageEn from "./catalogs/usage.en.json";
 import usagePt from "./catalogs/usage.pt.json";
+import sessionsEn from "./catalogs/sessions.en.json";
+import sessionsPt from "./catalogs/sessions.pt.json";
 export const resources = {
   en: {
     translation: {
@@ -43,6 +45,7 @@ export const resources = {
       teams: teamsEn,
       transfer: transferEn,
       usage: usageEn,
+      sessions: sessionsEn,
     },
   },
   pt: {
@@ -61,6 +64,7 @@ export const resources = {
       teams: teamsPt,
       transfer: transferPt,
       usage: usagePt,
+      sessions: sessionsPt,
     },
   },
 };

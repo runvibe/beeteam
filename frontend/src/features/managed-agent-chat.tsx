@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Settings2, SquarePen } from "lucide-react";
@@ -25,6 +29,9 @@ export function ManagedAgentChat({
   teamId,
   starters,
   mode = "chat",
+  conversationId,
+  onConversationChange,
+  boards,
 }: {
   api: ManagedAgentApi;
   agentId: string;
@@ -33,8 +40,14 @@ export function ManagedAgentChat({
   /** Offer Bee Team onboarding prompts in an empty conversation. */
   starters?: boolean;
   mode?: "chat" | "management";
+  /** Externally selected session; null asks for a new or restored conversation. */
+  conversationId?: string | null;
+  onConversationChange?: (conversationId: string | null) => void;
+  /** Boards of the team, offered as optional session context. */
+  boards?: { id: string; name: string }[];
 }) {
   useLocale();
+  const queryClient = useQueryClient();
   const config = useQuery({
     queryKey: ["managed-config", agentId],
     queryFn: () => api.config(agentId),
@@ -57,7 +70,8 @@ export function ManagedAgentChat({
   const requestItems = requests.data?.pages.flatMap((page) => page.items) ?? [];
   const [conversation, setConversation] = useState(""),
     [request, setRequest] = useState(""),
-    [draft, setDraft] = useState("");
+    [draft, setDraft] = useState(""),
+    [newBoard, setNewBoard] = useState("");
   const [search, setSearch] = useState<"live" | "cached" | "disabled">("live"),
     [network, setNetwork] = useState(false),
     [mcps, setMcps] = useState(""),
@@ -109,6 +123,22 @@ export function ManagedAgentChat({
     setOlder([]);
     setOlderCursor(undefined);
   }, [conversation]);
+  function select(id: string, requestId = "") {
+    setConversation(id);
+    setRequest(requestId);
+    onConversationChange?.(id || null);
+  }
+  const latestRequest = (id: string) =>
+    requestItems.find((r) => r.conversationId === id)?.id ?? "";
+  useEffect(() => {
+    if (conversationId === undefined || (conversationId ?? "") === conversation)
+      return;
+    if (!conversationId && !restored.current) return;
+    restored.current = true;
+    setConversation(conversationId ?? "");
+    setRequest(conversationId ? latestRequest(conversationId) : "");
+    setOlder([]);
+  }, [conversationId]);
   useEffect(() => {
     if (!restored.current && requests.data) {
       restored.current = true;
@@ -118,10 +148,14 @@ export function ManagedAgentChat({
         ) ?? requestItems[0];
       if (!first) return;
       const r = first;
-      setConversation(r.conversationId);
-      setRequest(r.id);
+      select(r.conversationId, r.id);
     }
   }, [requests.data, requestItems]);
+  useEffect(() => {
+    if (!conversation || request) return;
+    const latest = latestRequest(conversation);
+    if (latest) setRequest(latest);
+  }, [conversation, request, requests.data]);
   async function act(fn: () => Promise<unknown>) {
     setBusy(true);
     setError(null);
@@ -132,6 +166,7 @@ export function ManagedAgentChat({
         conversations.refetch(),
         requests.refetch(),
         request ? snapshot.refetch() : Promise.resolve(),
+        queryClient.invalidateQueries({ queryKey: ["managed-sessions"] }),
       ]);
     } catch (e) {
       setError(e);
@@ -145,9 +180,10 @@ export function ManagedAgentChat({
       .map((v) => v.trim())
       .filter(Boolean);
   const ready = !!config.data?.configuration;
-  const readOnly = conversationItems.find(
+  const currentConversation = conversationItems.find(
     (c) => c.id === conversation,
-  )?.readOnly;
+  );
+  const readOnly = currentConversation?.readOnly;
   const messages = [...older, ...(page?.items ?? [])].filter(
     (m, i, all) => all.findIndex((x) => x.id === m.id) === i,
   );
@@ -166,15 +202,20 @@ export function ManagedAgentChat({
         key: crypto.randomUUID(),
         body: {
           content: draft,
-          ...(conversation ? { conversationId: conversation } : {}),
+          ...(conversation
+            ? { conversationId: conversation }
+            : {
+                ...(teamId ? { teamId } : {}),
+                ...(teamId && newBoard ? { boardId: newBoard } : {}),
+              }),
         },
       };
       const p = pending.current;
       try {
         const r = await api.send(agentId, p.body, p.key);
-        setConversation(r.conversationId);
-        setRequest(r.id);
+        select(r.conversationId, r.id);
         setDraft("");
+        setNewBoard("");
         pending.current = null;
       } catch (e) {
         if (
@@ -210,13 +251,9 @@ export function ManagedAgentChat({
             aria-label={t("managed.conversation")}
             value={conversation}
             disabled={!!pending.current}
-            onChange={(e) => {
-              setConversation(e.target.value);
-              const r = requestItems.find(
-                (r) => r.conversationId === e.target.value,
-              );
-              setRequest(r?.id ?? "");
-            }}
+            onChange={(e) =>
+              select(e.target.value, latestRequest(e.target.value))
+            }
           >
             <option value="">{t(mode === "management" ? "managed.chooseConversation" : "managed.new")}</option>
             {conversationItems.map((c) => (
@@ -226,6 +263,37 @@ export function ManagedAgentChat({
               </option>
             ))}
           </select>
+          {mode === "chat" && teamId && !!boards?.length &&
+            (!conversation || currentConversation) && (
+              <select
+                className="assistant-pill assistant-pill-narrow"
+                aria-label={t("managed.sessionBoard")}
+                value={conversation ? (currentConversation?.boardId ?? "") : newBoard}
+                disabled={busy || !!pending.current || !!readOnly}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  if (!currentConversation) return setNewBoard(next);
+                  const c = currentConversation;
+                  void act(() =>
+                    mutate(`board:${c.id}:${c.version}:${next}`, (key) =>
+                      api.updateConversation(
+                        c.id,
+                        { boardId: next || null },
+                        c.version,
+                        key,
+                      ),
+                    ),
+                  );
+                }}
+              >
+                <option value="">{t("managed.noBoard")}</option>
+                {boards.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+            )}
           {conversationRequests.length > 1 && (
             <select
               className="assistant-pill assistant-pill-narrow"
@@ -263,8 +331,7 @@ export function ManagedAgentChat({
               title={t("managed.new")}
               disabled={!!pending.current}
               onClick={() => {
-                setRequest("");
-                setConversation("");
+                select("");
                 setOlder([]);
               }}
             >

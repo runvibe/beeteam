@@ -2,9 +2,10 @@
 pub mod conversation;
 mod execution;
 mod reads;
+mod sessions;
 mod writes;
 use crate::{
-    dto::{backend::*, managed_agents::*},
+    dto::{backend::*, managed_agents::*, managed_sessions::*},
     repositories::{
         contracts::ResourceStore,
         integrated_provider::{Control, IntegratedProvider},
@@ -89,6 +90,8 @@ fn public(r: &Record) -> Value {
             "agentId",
             "configurationVersion",
             "taskId",
+            "teamId",
+            "boardId",
             "title",
             "readOnly",
         ],
@@ -107,13 +110,11 @@ fn public(r: &Record) -> Value {
     for key in fields {
         v[*key] = r.data[*key].clone();
     }
-    if r.table != "managed_conversations" {
-        v["version"] = json!(r.version);
-    }
+    v["version"] = json!(r.version);
     if r.table != "managed_approvals" {
         v["createdAt"] = json!(r.created_at);
     }
-    if r.table == "managed_requests" {
+    if matches!(r.table, "managed_requests" | "managed_conversations") {
         v["updatedAt"] = json!(r.updated_at);
     }
     v

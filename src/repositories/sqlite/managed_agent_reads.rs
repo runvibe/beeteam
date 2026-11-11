@@ -97,6 +97,25 @@ pub(super) async fn context(tx: &mut Transaction<'_, Sqlite>, c: &Command) -> Re
             )
             .await?;
         }
+        "managed:sessions" => {
+            let ascending = c.q("ascending").as_bool().unwrap_or(false);
+            let (compare, order) = if ascending { (">", "ASC") } else { ("<", "DESC") };
+            let sql = format!("SELECT * FROM managed_conversations WHERE deleted_at IS NULL AND json_extract(data,'$.teamId') IS NOT NULL AND (json_array_length($1)=0 OR json_extract(data,'$.teamId') IN (SELECT value FROM json_each($1))) AND (json_array_length($2)=0 OR json_extract(data,'$.agentId') IN (SELECT value FROM json_each($2))) AND (NOT $3 OR json_extract(data,'$.boardId') IN (SELECT value FROM json_each($4)) OR ($5 AND json_extract(data,'$.boardId') IS NULL)) AND ($6='' OR (updated_at,id) {compare} ($6,$7)) ORDER BY updated_at {order}, id {order} LIMIT $8");
+            for row in sqlx::query(sqlx::AssertSqlSafe(sql))
+                .bind(c.q("teamIds").to_string())
+                .bind(c.q("agentIds").to_string())
+                .bind(c.q("boardFilter").as_bool().unwrap_or(false))
+                .bind(c.q("boardIds").to_string())
+                .bind(c.q("noBoard").as_bool().unwrap_or(false))
+                .bind(c.q("afterTime").as_str().unwrap_or("").to_owned())
+                .bind(c.q("afterId").as_str().unwrap_or("").to_owned())
+                .bind(limit + 1)
+                .fetch_all(&mut **tx)
+                .await?
+            {
+                r.insert(super::reads::record("managed_conversations", &row));
+            }
+        }
         "managed:messages" => {
             load(
                 tx,

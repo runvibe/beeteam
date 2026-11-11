@@ -63,5 +63,7 @@
   "starterBoard": "Criar um board",
   "starterBoardPrompt": "Quero criar um board para organizar tarefas. Sugira as colunas e as primeiras tarefas.",
   "starterTour": "Como o Bee Team funciona?",
-  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team."
+  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team.",
+  "sessionBoard": "Board da sessão",
+  "noBoard": "Sem board"
 }

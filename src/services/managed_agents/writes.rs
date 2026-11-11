@@ -12,6 +12,12 @@ impl ManagedAgentService {
             b.validate()?;
             c.body = serde_json::to_value(b).unwrap();
         }
+        if c.operation == "managed:update-conversation" {
+            let b: PatchConversation = serde_json::from_value(c.body.clone())
+                .map_err(|e| Failure::invalid(e.to_string()))?;
+            b.validate()?;
+            c.body = serde_json::to_value(b).unwrap();
+        }
         let op = format!(
             "{}:{}",
             c.operation,
@@ -154,11 +160,27 @@ impl ManagedAgentService {
                     if row.data["installationId"] != self.installation {
                         return Err(Failure::new("provider_unavailable","Continue this conversation on its original installation, or start a new conversation here"));
                     }
+                    if b.team_id.is_some_and(|t| row.reference("teamId") != Some(t))
+                        || b.board_id.is_some_and(|t| row.reference("boardId") != Some(t))
+                    {
+                        return Err(Failure::new(
+                            "conversation_mismatch",
+                            "Conversation belongs to another context",
+                        ));
+                    }
+                    let row = u.records.get_mut("managed_conversations", cid)?;
+                    row.touch();
                     row.clone()
                 } else {
+                    if let Some(team) = b.team_id {
+                        sessions::team_leader(&u.records, team, id)?;
+                        if let Some(board) = b.board_id {
+                            sessions::team_board(&u.records, team, board)?;
+                        }
+                    }
                     let row = Record::new(
                         "managed_conversations",
-                        json!({"agentId":id,"configurationVersion":generation,"taskId":b.task_id,"title":b.content.chars().take(60).collect::<String>(),"readOnly":false,"providerThread":null,"installationId":self.installation}),
+                        json!({"agentId":id,"configurationVersion":generation,"taskId":b.task_id,"teamId":b.team_id,"boardId":b.board_id,"title":b.content.chars().take(60).collect::<String>(),"readOnly":false,"providerThread":null,"installationId":self.installation}),
                     );
                     u.records.insert(row.clone());
                     row
@@ -266,6 +288,30 @@ impl ManagedAgentService {
                     },
                 ));
                 (result, r.reference("agentId").unwrap())
+            }
+            "managed:update-conversation" => {
+                let id = c.id("conversationId")?;
+                let row = u.records.get("managed_conversations", id)?;
+                check_version(row, &c)?;
+                let patch: PatchConversation = serde_json::from_value(c.body.clone())
+                    .map_err(|e| Failure::invalid(e.to_string()))?;
+                patch.validate()?;
+                let agent = row.reference("agentId").ok_or_else(Failure::missing)?;
+                if let Some(Some(board)) = patch.board_id {
+                    let team = row
+                        .reference("teamId")
+                        .ok_or_else(|| Failure::invalid("Only team sessions accept a board"))?;
+                    sessions::team_board(&u.records, team, board)?;
+                }
+                let row = u.records.get_mut("managed_conversations", id)?;
+                if let Some(title) = patch.title {
+                    row.data["title"] = json!(title);
+                }
+                if let Some(board) = patch.board_id {
+                    row.data["boardId"] = json!(board);
+                }
+                row.touch();
+                (public(row), agent)
             }
             _ => return Err(Failure::invalid("Unknown managed mutation")),
         };

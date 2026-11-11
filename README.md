@@ -133,6 +133,10 @@ The chat shows persistent messages, tool activity and per-action approvals. Relo
 
 Integrated execution requires local listener/peer and a trusted browser origin. A hosted panel must be explicitly allowlisted through `APP_CORS_ALLOW_ORIGINS`; MCP origins are configured separately with `MCP_ALLOWED_ORIGINS`. A wildcard CORS policy does not authorize remote execution. The default external-only workflow remains unchanged.
 
+### Browse sessions
+
+The **Sessions** button in the main navigation shows or hides a sidebar between the navigation and the content. It lists your chats with team leaders, newest update first; select one to reopen it in the chat panel, or start a new one with the pencil button. Search by title, filter by team, board (including "No board") and leader, switch to oldest update first, and group the list by up to three levels in any order, such as Team > Board > Agent. These choices are saved on this device. On screens up to 850 px wide the sidebar opens as a drawer. Choose a board for a session from the chat toolbar when starting it or later; the board must belong to the session's team. The same listing and board update are available through `GET`/`PATCH /api/v2/agent-conversations` and the MCP tools `listAgentSessions` and `updateAgentConversation`.
+
 ### Metadata timestamp precision
 
 New record creation and update metadata use microsecond precision, shared by PostgreSQL and SQLite, so write responses agree with subsequent reads. Existing timestamps, authored JSON, historical replay snapshots and portable transfer data retain their original precision; this does not migrate or normalize stored records.

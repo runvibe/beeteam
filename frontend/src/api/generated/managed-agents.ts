@@ -63,6 +63,39 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/agent-conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Team leader sessions across agents. Filters accept comma-separated UUIDv7 lists (at most 50 each); boardId also accepts `none` for sessions without a board. */
+        get: operations["listAgentSessions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/agent-conversations/{conversationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updateAgentConversation"];
+        trace?: never;
+    };
     "/api/v2/agent-conversations/{conversationId}/messages": {
         parameters: {
             query?: never;
@@ -187,6 +220,10 @@ export interface components {
             content: string & (unknown & unknown);
             conversationId?: string | null;
             taskId?: string | null;
+            /** @description Creates the new conversation as a session of this team; the agent must be its current leader. On continuation it must match. */
+            teamId?: string | null;
+            /** @description Optional board of the team session; requires teamId and must belong to that team. */
+            boardId?: string | null;
         };
         /** @enum {unknown} */
         RequestState: "accepted" | "preparing" | "queued" | "running" | "awaiting_approval" | "completed" | "failed" | "cancelled" | "uncertain";
@@ -226,10 +263,25 @@ export interface components {
             agentId: string;
             configurationVersion: number;
             taskId: string | null;
+            /** @description Team whose leader owns this session; null for task and direct agent conversations. */
+            teamId: string | null;
+            /** @description Optional board context of a team session. */
+            boardId: string | null;
             title: string & (unknown & unknown);
             readOnly: boolean;
+            version: number;
             /** Format: date-time */
             createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last session activity or metadata change.
+             */
+            updatedAt: string;
+        };
+        PatchConversation: {
+            title?: string & (unknown & unknown);
+            /** @description Board of the team session, or null to clear it. */
+            boardId?: string | null;
         };
         Message: {
             /** Format: uuid */
@@ -516,6 +568,83 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RequestSnapshot"];
+                };
+            };
+            /** @description See normative status mapping. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    listAgentSessions: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated team IDs. */
+                teamId?: string;
+                /** @description Comma-separated leader agent IDs. */
+                agentId?: string;
+                /** @description Comma-separated board IDs or `none`. */
+                boardId?: string;
+                sort?: "updated_desc" | "updated_asc";
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful contract response. This proposal is not an active runtime endpoint. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConversationPage"];
+                };
+            };
+            /** @description See normative status mapping. */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Error"];
+                };
+            };
+        };
+    };
+    updateAgentConversation: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+                "If-Match": string;
+            };
+            path: {
+                conversationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatchConversation"];
+            };
+        };
+        responses: {
+            /** @description Successful contract response. This proposal is not an active runtime endpoint. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Conversation"];
                 };
             };
             /** @description See normative status mapping. */

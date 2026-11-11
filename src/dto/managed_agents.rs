@@ -26,8 +26,14 @@ pub struct SendAgentRequest {
     pub conversation_id: Option<Uuid>,
     #[serde(default, deserialize_with = "optional_uuid")]
     pub task_id: Option<Uuid>,
+    /// Team whose leader session this new conversation belongs to.
+    #[serde(default, deserialize_with = "optional_uuid", skip_serializing_if = "Option::is_none")]
+    pub team_id: Option<Uuid>,
+    /// Optional board context of the team session.
+    #[serde(default, deserialize_with = "optional_uuid", skip_serializing_if = "Option::is_none")]
+    pub board_id: Option<Uuid>,
 }
-fn optional_uuid<'de, D: serde::Deserializer<'de>>(
+pub(crate) fn optional_uuid<'de, D: serde::Deserializer<'de>>(
     deserializer: D,
 ) -> std::result::Result<Option<Uuid>, D::Error> {
     let value = Option::<String>::deserialize(deserializer)?;
@@ -54,7 +60,13 @@ impl SendAgentRequest {
                 "content exceeds 65536 UTF-8 bytes",
             ));
         }
-        for id in [self.conversation_id, self.task_id].into_iter().flatten() {
+        if self.board_id.is_some() && self.team_id.is_none() {
+            return Err(Failure::invalid("boardId requires teamId"));
+        }
+        for id in [self.conversation_id, self.task_id, self.team_id, self.board_id]
+            .into_iter()
+            .flatten()
+        {
             if id.get_version_num() != 7 || id.get_variant() != uuid::Variant::RFC4122 {
                 return Err(Failure::invalid("Bee Team references must be UUIDv7"));
             }
