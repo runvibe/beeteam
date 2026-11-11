@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Expand the chat panel to 80% of the viewport, keep wide conversations centered, move the chat toggle to the main navigation, and keep narrow content, detail views, and filters usable beside it with a half-rem content gutter. Preserve the default HQ draft when the panel is closed and reopened.
+- Expand the chat panel to 80% of the viewport, keep wide conversations centered, move the chat toggle to the main navigation, and keep narrow content, detail views, and filters usable beside it. Apply a half-rem gutter to the content and its header, including the breadcrumb. Preserve the default HQ draft when the panel is closed and reopened.
 
 - Drag the chat panel by its header to dock it on the left or right with a blue snap preview, move it from the keyboard with a header button, and resize it with a visible edge handle while it splits the screen with the content.
 

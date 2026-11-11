@@ -68,19 +68,11 @@
   .navigation-rail {
     padding: 6px 12px;
   }
-  .icon-navigation .topbar {
-    padding-inline: 8px;
-  }
-  .icon-navigation main {
-    padding-inline: 8px;
-  }
 }
 
-.icon-navigation main {
-  padding-inline: 0.5rem;
-}
+.icon-navigation main,
 .icon-navigation .topbar {
-  padding-inline: 8px;
+  padding-inline: 0.5rem;
 }
 
 .navigation-footer {
@@ -171,8 +163,6 @@
     width: 180px;
   }
 }
-
-.icon-navigation .topbar { padding-left: 0; }
 
 .navigation-rail .release-update-button,
 .navigation-rail .release-update-button:hover {

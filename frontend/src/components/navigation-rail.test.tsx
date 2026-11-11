@@ -76,17 +76,28 @@ it("puts the chat toggle in the main navigation and opens and closes the panel",
   expect(await screen.findByRole("tooltip")).toHaveTextContent("Chat com o líder");
 });
 
-it("keeps a half-rem horizontal gutter around the main content", () => {
+it("keeps the breadcrumb header aligned with the main content gutter", () => {
   const style = document.createElement("style");
   style.textContent = readFileSync("src/navigation.css", "utf8");
   document.head.append(style);
   try {
     render(
       <div className="app-shell icon-navigation">
-        <main>Content</main>
+        <div className="main-shell">
+          <header className="topbar">
+            <nav aria-label="Breadcrumb">Breadcrumb</nav>
+          </header>
+          <main>Content</main>
+        </div>
       </div>,
     );
-    expect(getComputedStyle(screen.getByRole("main")).paddingInline).toBe("0.5rem");
+    const header = getComputedStyle(screen.getByRole("banner"));
+    const main = getComputedStyle(screen.getByRole("main"));
+    // JSDOM leaves logical padding unresolved in the physical properties.
+    expect(header.paddingLeft).not.toBe("0px");
+    expect(header.paddingRight).not.toBe("0px");
+    expect(header.paddingInline).toBe("0.5rem");
+    expect(main.paddingInline).toBe("0.5rem");
   } finally {
     style.remove();
   }
