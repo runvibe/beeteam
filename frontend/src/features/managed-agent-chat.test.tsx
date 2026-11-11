@@ -707,15 +707,15 @@ it("loads older managed conversations instead of hiding them after the first pag
   expect(conversations).toHaveBeenCalledWith("paginated-worker", "next-page");
 });
 
-it("opens and updates an older session selected outside the first conversation page", async () => {
+it("opens an older session selected outside the first conversation page without changing its board", async () => {
   await i18n.changeLanguage("en");
-  let selected = {
+  const selected = {
     id: "older",
     agentId: "leader",
     configurationVersion: 1,
     taskId: null,
     teamId: "team-a",
-    boardId: "board-a" as string | null,
+    boardId: "board-a",
     title: "Earlier sprint",
     readOnly: false,
     version: 5,
@@ -734,9 +734,12 @@ it("opens and updates an older session selected outside the first conversation p
     conversation: vi.fn().mockImplementation(async () => selected),
     requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
-    updateConversation: vi.fn().mockImplementation(async (_id: string, body: { boardId: string | null }) => {
-      selected = { ...selected, boardId: body.boardId, version: selected.version + 1 };
-      return selected;
+    updateConversation: vi.fn(),
+    send: vi.fn().mockResolvedValue({ id: "request", conversationId: "older" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
     }),
   } as unknown as ManagedAgentApi;
   render(
@@ -746,35 +749,24 @@ it("opens and updates an older session selected outside the first conversation p
         api={api}
         teamId="team-a"
         conversationId="older"
-        boards={[{ id: "board-a", name: "Planning" }, { id: "board-b", name: "Delivery" }]}
       />
     </QueryClientProvider>,
   );
   expect(await screen.findByText("Earlier sprint")).toBeVisible();
   expect(screen.queryByRole("combobox", { name: "Conversation" })).toBeNull();
-  const board = screen.getByRole("button", { name: "Session board" });
-  expect(board).toHaveTextContent("Planning");
-  fireEvent.click(board);
-  fireEvent.click(await screen.findByRole("radio", { name: "Delivery" }));
-  await waitFor(() => expect(board).toHaveTextContent("Delivery"));
-  expect(api.updateConversation).toHaveBeenCalledWith(
-    "older",
-    { boardId: "board-b" },
-    5,
+  expect(screen.queryByRole("button", { name: "Session board" })).toBeNull();
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  editPlainText(editor, "Continue this session");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledWith(
+    "leader",
+    { content: "Continue this session", conversationId: "older" },
     expect.any(String),
-  );
-  fireEvent.click(board);
-  fireEvent.click(await screen.findByRole("radio", { name: "No board" }));
-  await waitFor(() => expect(board).toHaveTextContent("No board"));
-  expect(api.updateConversation).toHaveBeenCalledWith(
-    "older",
-    { boardId: null },
-    6,
-    expect.any(String),
-  );
+  ));
+  expect(api.updateConversation).not.toHaveBeenCalled();
 });
 
-it("waits for the selected session version before changing its board", async () => {
+it("waits for the selected session details before allowing a message", async () => {
   await i18n.changeLanguage("en");
   const initial = {
     id: "selected",
@@ -800,7 +792,12 @@ it("waits for the selected session version before changing its board", async () 
     conversation: vi.fn().mockReturnValue(detail),
     requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
-    updateConversation: vi.fn().mockResolvedValue({}),
+    send: vi.fn().mockResolvedValue({ id: "request", conversationId: "selected" }),
+    snapshot: vi.fn().mockResolvedValue({
+      request: { id: "request", state: "running", version: 1 },
+      messages: { items: [], nextCursor: null },
+      approvals: [],
+    }),
   } as unknown as ManagedAgentApi;
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
@@ -809,21 +806,19 @@ it("waits for the selected session version before changing its board", async () 
         api={api}
         teamId="team-a"
         conversationId="selected"
-        boards={[{ id: "board-a", name: "Planning" }, { id: "board-b", name: "Delivery" }]}
       />
     </QueryClientProvider>,
   );
-  const board = await screen.findByRole("button", { name: "Session board" });
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
   await waitFor(() => expect(api.conversation).toHaveBeenCalledWith("selected"));
-  expect(board).toBeDisabled();
+  expect(editor).toHaveAttribute("aria-disabled", "true");
   await act(async () => resolveDetail({ ...initial, version: 2 }));
-  await waitFor(() => expect(board).toBeEnabled());
-  fireEvent.click(board);
-  fireEvent.click(await screen.findByRole("radio", { name: "Delivery" }));
-  await waitFor(() => expect(api.updateConversation).toHaveBeenCalledWith(
-    "selected",
-    { boardId: "board-b" },
-    2,
+  await waitFor(() => expect(editor).not.toHaveAttribute("aria-disabled", "true"));
+  editPlainText(editor, "Continue");
+  fireEvent.keyDown(editor, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalledWith(
+    "leader",
+    { content: "Continue", conversationId: "selected" },
     expect.any(String),
   ));
 });

@@ -220,22 +220,18 @@ body:has(.detail-page) {
       .main-shell
       > .topbar:has(.detail-info-button:not([hidden])) {
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) 44px;
+      grid-template-columns: minmax(0, 1fr) 44px;
       grid-template-rows: 50px auto;
       height: auto;
       gap: 0 8px;
       padding: 2px 0.5rem;
-    }
-    .topbar:has(.detail-info-button:not([hidden])) > .workspace-panel-controls {
-      grid-column: 1;
-      grid-row: 1;
     }
     .topbar:has(.detail-info-button:not([hidden])) > .context-path {
       grid-column: 1 / -1;
       grid-row: 2;
     }
     .topbar:has(.detail-info-button:not([hidden])) > .header-filter-slot {
-      grid-column: 2 / -1;
+      grid-column: 1 / -1;
       grid-row: 1;
       max-width: 100%;
       padding-right: 52px;

@@ -13,6 +13,7 @@ import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
 import { ChatPanelToggle } from "@/features/chat-side-panel";
 import { SessionsToggle } from "@/features/sessions-sidebar";
+import { WorkspaceLayoutMenu } from "@/features/workspace-layout-menu";
 import {
   navigationHref,
   destination,
@@ -128,6 +129,7 @@ export function NavigationRail({
           <NavigationTooltip label={tr("chat.title")}>
             <ChatPanelToggle className="navigation-button" />
           </NavigationTooltip>
+          <WorkspaceLayoutMenu />
         </nav>
       </Tooltip.Provider>
       <div

@@ -19,7 +19,6 @@ import { useManagedActions } from "./use-managed-actions";
 import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
-import { SessionBoardPicker } from "./session-board-picker";
 import "./leader-chat.css";
 import "./managed-agent-chat.css";
 type S = components["schemas"];
@@ -33,11 +32,6 @@ export function ManagedAgentChat({
   conversationId,
   freshConversation = false,
   onConversationChange,
-  boards,
-  getBoard,
-  hasMoreBoards = false,
-  loadingBoards = false,
-  onMoreBoards,
 }: {
   api: ManagedAgentApi;
   agentId: string;
@@ -50,12 +44,6 @@ export function ManagedAgentChat({
   conversationId?: string | null;
   freshConversation?: boolean;
   onConversationChange?: (conversationId: string | null) => void;
-  /** Boards of the team, offered as optional session context. */
-  boards?: { id: string; name: string }[];
-  getBoard?: (id: string) => Promise<{ id: string; name: string }>;
-  hasMoreBoards?: boolean;
-  loadingBoards?: boolean;
-  onMoreBoards?: () => void;
 }) {
   useLocale();
   const queryClient = useQueryClient();
@@ -82,8 +70,7 @@ export function ManagedAgentChat({
   const { pending, send: sendPending, acknowledge } = useManagedSend(agentId, api);
   const [conversation, setConversation] = useState(""),
     [request, setRequest] = useState(""),
-    [draft, setDraft] = useState(() => pending?.body.content ?? ""),
-    [newBoard, setNewBoard] = useState("");
+    [draft, setDraft] = useState(() => pending?.body.content ?? "");
   const selection = useRef({ teamId, conversation, externalConversation: conversationId });
   useLayoutEffect(() => {
     selection.current = { teamId, conversation, externalConversation: conversationId };
@@ -175,7 +162,6 @@ export function ManagedAgentChat({
       select(pending.request.conversationId, pending.request.id);
     }
     setDraft("");
-    setNewBoard("");
   }, [acknowledge, mode, pending, select]);
   const latestRequest = (id: string) =>
     requestItems.find((r) => r.conversationId === id)?.id ?? "";
@@ -239,13 +225,6 @@ export function ManagedAgentChat({
   const ready = !!config.data?.configuration;
   const currentConversation =
     detail.data ?? conversationItems.find((c) => c.id === conversation);
-  const selectedBoardId = conversation ? currentConversation?.boardId : null;
-  const missingBoard = !!selectedBoardId && !boards?.some((board) => board.id === selectedBoardId);
-  const boardDetail = useQuery({
-    queryKey: ["boards", selectedBoardId],
-    queryFn: () => getBoard!(selectedBoardId!),
-    enabled: !!getBoard && missingBoard,
-  });
   const previousLeader = !!currentConversation && !!teamId &&
     currentConversation.teamId === teamId &&
     currentConversation.agentId !== agentId;
@@ -271,10 +250,7 @@ export function ManagedAgentChat({
         content: draft,
         ...(conversation
           ? { conversationId: conversation }
-          : {
-              ...(teamId ? { teamId } : {}),
-              ...(teamId && newBoard ? { boardId: newBoard } : {}),
-            }),
+          : { ...(teamId ? { teamId } : {}) }),
       };
       await sendPending(body, {
         teamId,
@@ -291,7 +267,7 @@ export function ManagedAgentChat({
     setSkills(c.toolProfile.skillRoots.join("\n"));
     setEditing(!editing);
   }
-  const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error || detail.error || boardDetail.error;
+  const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error || detail.error;
   const showHistory = ready || mode === "management";
   const teamChat = mode === "chat" && !!teamId;
   return (
@@ -330,34 +306,6 @@ export function ManagedAgentChat({
               </option>
             ))}
           </select>}
-          {teamChat &&
-            (!conversation || currentConversation) && (
-              <SessionBoardPicker
-                value={conversation ? (currentConversation?.boardId ?? "") : newBoard}
-                boards={boards ?? []}
-                historicalBoard={missingBoard && selectedBoardId
-                  ? { id: selectedBoardId, name: boardDetail.data?.name ?? t("sessions.unknown") }
-                  : undefined}
-                disabled={busy || !!pending || !!readOnly || waitingForDetail}
-                hasMore={hasMoreBoards}
-                loading={loadingBoards}
-                onMore={onMoreBoards}
-                onChange={(next) => {
-                  if (!currentConversation) return setNewBoard(next);
-                  const c = currentConversation;
-                  void act(() =>
-                    mutate(`board:${c.id}:${c.version}:${next}`, (key) =>
-                      api.updateConversation(
-                        c.id,
-                        { boardId: next || null },
-                        c.version,
-                        key,
-                      ),
-                    ),
-                  );
-                }}
-              />
-            )}
           {conversationRequests.length > 1 && (
             <select
               className="assistant-pill assistant-pill-narrow"

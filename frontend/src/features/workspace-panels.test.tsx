@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { Tooltip } from "radix-ui";
+import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { setLocalePreference } from "@/i18n";
@@ -7,6 +8,7 @@ import { useChatPanel } from "@/state/chat-panel";
 import { useSessionsSidebar } from "@/state/sessions-sidebar";
 import { ChatWorkspace } from "./chat-side-panel";
 import { SessionsSidebar } from "./sessions-sidebar";
+import { WorkspaceLayoutMenu } from "./workspace-layout-menu";
 
 vi.mock("@/api/context", () => ({
   useApi: () => ({
@@ -62,6 +64,7 @@ function renderWorkspace() {
         new QueryClient({ defaultOptions: { queries: { retry: false } } })
       }
     >
+      <Tooltip.Provider><WorkspaceLayoutMenu /></Tooltip.Provider>
       <ChatWorkspace sessions={<SessionsSidebar />}>
         <div className="main-shell" data-workspace-panel="content">
           <header className="topbar" data-dock-handle="content">
@@ -185,55 +188,67 @@ it("docks the chat between sessions and content", () => {
   expect(useChatPanel.getState().side).toBe("left");
 });
 
-it("moves panels by keyboard-accessible controls without dragging", async () => {
+it("applies a layout using the keyboard without moving focus into a panel", async () => {
   const { workspace, sessions } = renderWorkspace();
-  await userEvent.click(
-    within(sessions).getByRole("button", {
-      name: "Move sessions to the right",
-    }),
-  );
+  const trigger = screen.getByRole("button", { name: "Panel layouts" });
+  trigger.focus();
+  await userEvent.keyboard("{Enter}");
+  const layouts = screen.getByRole("radiogroup", { name: "Panel layouts" });
+  const first = within(layouts).getByRole("radio", { name: "Sessions, Content, Chat" });
+  const second = within(layouts).getByRole("radio", { name: "Sessions, Chat, Content" });
+  const next = within(layouts).getByRole("radio", { name: "Content, Sessions, Chat" });
+  expect(first).toHaveFocus();
+  await userEvent.keyboard("{ArrowDown>}");
+  await waitFor(() => expect(second).toHaveFocus());
+  await userEvent.keyboard("{/ArrowDown}");
+  await userEvent.keyboard("{ArrowDown>}");
+  await waitFor(() => expect(next).toHaveFocus());
+  await userEvent.keyboard("{/ArrowDown}");
   expect(workspace).toHaveAttribute(
     "data-panel-order",
     "content,sessions,chat",
   );
-  await userEvent.click(
-    within(sessions).getByRole("button", { name: "Move sessions to the left" }),
-  );
-  expect(workspace).toHaveAttribute(
-    "data-panel-order",
-    "sessions,content,chat",
-  );
-  expect(screen.getByRole("status")).toHaveTextContent("Sessions moved");
+  expect(next).toBeChecked();
+  expect(next).toHaveFocus();
+  expect(within(sessions).queryByRole("button", { name: /Move sessions to the/ })).toBeNull();
+  await userEvent.keyboard("{Escape}");
+  expect(trigger).toHaveFocus();
 });
 
-it("keeps keyboard focus on panel controls while the panel changes position", async () => {
+it.each([
+  ["Sessions, Content, Chat", "sessions,content,chat", "right"],
+  ["Sessions, Chat, Content", "sessions,chat,content", "left"],
+  ["Content, Sessions, Chat", "content,sessions,chat", "right"],
+  ["Content, Chat, Sessions", "content,chat,sessions", "right"],
+  ["Chat, Sessions, Content", "chat,sessions,content", "left"],
+  ["Chat, Content, Sessions", "chat,content,sessions", "left"],
+] as const)("applies and persists the %s layout", async (name, order, side) => {
+  const { workspace } = renderWorkspace();
+  await userEvent.click(screen.getByRole("button", { name: "Panel layouts" }));
+  const option = screen.getByRole("radio", { name });
+  await userEvent.click(option);
+  expect(option).toBeChecked();
+  expect(workspace).toHaveAttribute("data-panel-order", order);
+  expect(useChatPanel.getState().side).toBe(side);
+  expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.panelOrder)
+    .toEqual(order.split(","));
+});
+
+it("reflects a dragged panel order in the layout selector", async () => {
   const { sessions } = renderWorkspace();
-  const right = within(sessions).getByRole("button", {
-    name: "Move sessions to the right",
-  });
-  right.focus();
-  await userEvent.keyboard("{Enter}");
-  expect(
-    within(sessions).getByRole("button", {
-      name: "Move sessions to the right",
-    }),
-  ).toHaveFocus();
-  await userEvent.keyboard("{Enter}");
-  expect(
-    within(sessions).getByRole("button", { name: "Move sessions to the left" }),
-  ).toHaveFocus();
+  beginDrag(sessions.querySelector("header")!, 200, 700);
+  fireEvent.pointerUp(window, { clientX: 700, clientY: 40, pointerId: 1 });
+  await userEvent.click(screen.getByRole("button", { name: "Panel layouts" }));
+  expect(screen.getByRole("radio", { name: "Content, Sessions, Chat" })).toBeChecked();
 });
 
-it("retains a hidden chat and its draft while the visible panels are reordered", async () => {
-  const { workspace, sessions } = renderWorkspace();
+it("retains a hidden chat and its draft when a preset changes panel order", async () => {
+  const { workspace } = renderWorkspace();
   const chatDraft = screen.getByRole("textbox", { name: "Chat draft" });
   await userEvent.type(chatDraft, "keep this");
   act(() => useChatPanel.getState().close());
-  await userEvent.click(
-    within(sessions).getByRole("button", {
-      name: "Move sessions to the right",
-    }),
-  );
+  await userEvent.click(screen.getByRole("button", { name: "Panel layouts" }));
+  await userEvent.click(screen.getByRole("radio", { name: "Content, Sessions, Chat" }));
   expect(workspace).toHaveAttribute(
     "data-panel-order",
     "content,sessions,chat",
@@ -245,6 +260,21 @@ it("retains a hidden chat and its draft while the visible panels are reordered",
     "data-panel-order",
     "content,sessions,chat",
   );
+});
+
+it("preserves visible chat and content drafts when applying a layout", async () => {
+  const { workspace } = renderWorkspace();
+  const contentDraft = screen.getByRole("textbox", { name: "Content draft" });
+  const chatDraft = screen.getByRole("textbox", { name: "Chat draft" });
+  await userEvent.type(contentDraft, "content");
+  await userEvent.type(chatDraft, "chat");
+  await userEvent.click(screen.getByRole("button", { name: "Panel layouts" }));
+  await userEvent.click(screen.getByRole("radio", { name: "Chat, Sessions, Content" }));
+  expect(workspace).toHaveAttribute("data-panel-order", "chat,sessions,content");
+  expect(screen.getByRole("textbox", { name: "Content draft" })).toBe(contentDraft);
+  expect(screen.getByRole("textbox", { name: "Chat draft" })).toBe(chatDraft);
+  expect(contentDraft).toHaveValue("content");
+  expect(chatDraft).toHaveValue("chat");
 });
 
 it("cancels a sessions drag with Escape and ignores interactive header controls", () => {

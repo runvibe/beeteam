@@ -2,21 +2,21 @@
 
 ## Unreleased
 
-- Show the current conversation title in team chat and navigate conversations from Sessions, with a shortcut in the chat header. Set or clear the session board through a compact action; worker and legacy history controls remain available.
+- Show the current conversation title in team chat and navigate conversations from Sessions, with a shortcut in the chat header. Remove board and team selectors from managed chat; existing board associations and worker and legacy history remain available.
 
 - Highlight the active session with a subtle background instead of a side border.
 
 - Remove drag-grip icons from panel headers while retaining drag and keyboard controls.
 
-- Rearrange the sessions, content and chat panels by dragging their headers or using keyboard-accessible move buttons. A blue preview shows the drop position, including the middle; the order is saved, drafts stay intact, and chat resizing leaves space for the other open panels.
+- Rearrange the sessions, content and chat panels by dragging their headers or choosing one of six keyboard-accessible layouts from the navigation. A blue preview shows the drag position, including the middle; the order is saved, drafts stay intact, and chat resizing leaves space for the other open panels.
 
 - Remove pointer-focus highlights from text fields, searches, and chat composers while retaining visible keyboard focus.
 
-- Add a collapsible **Sessions** sidebar next to the main navigation that lists team-leader chats with title search, searchable filters by team, board and agent, update-time sorting, and up to three nested grouping levels in any order (for example Team > Board > Agent). Sessions load as you scroll; filter, sort, grouping and visibility choices are saved on this device, and narrow screens open a drawer. Sessions can be linked to a board at creation or later; historical boards remain visible after transfer, and previous leaders' sessions open read-only. Switching sessions preserves an uncertain send's original message and key for an explicit retry, while rejected drafts and errors are restored when reopening chat. HTTP and MCP expose listing, individual conversation lookup and board updates.
+- Add a collapsible **Sessions** sidebar next to the main navigation that lists team-leader chats with title search, searchable filters by team, board and agent, update-time sorting, and up to three nested grouping levels in any order (for example Team > Board > Agent). Sessions load as you scroll; filter, sort, grouping and visibility choices are saved on this device, and narrow screens open a drawer. HTTP and MCP can associate a board with a session; historical boards remain visible after transfer, and previous leaders' sessions open read-only. Switching sessions preserves an uncertain send's original message and key for an explicit retry, while rejected drafts and errors are restored when reopening chat.
 
 - Expand the chat panel to 80% of the viewport, keep wide conversations centered, move the chat toggle to the main navigation, and keep narrow content, detail views, and filters usable beside it. Apply a half-rem gutter to the content and its header, including the breadcrumb. Preserve the default HQ draft when the panel is closed and reopened.
 
-- Drag the chat panel by its header to dock it on the left or right with a blue snap preview, move it from the keyboard with a header button, and resize it with a visible edge handle while it splits the screen with the content.
+- Drag the chat panel by its header to dock it on the left or right with a blue snap preview, choose its position with the layout menu, and resize it with a visible edge handle while it splits the screen with the content.
 
 - Use a plain-text, multiline chat editor that preserves Markdown and existing keyboard shortcuts while removing rich formatting from pasted content.
 

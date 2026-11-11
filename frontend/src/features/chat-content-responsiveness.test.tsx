@@ -51,14 +51,13 @@ it("allows header filters to scroll when desktop content becomes narrow", () => 
   }
 });
 
-it("keeps the breadcrumb beside the panel controls in the content header", () => {
+it("keeps the breadcrumb filling the content header", () => {
   const removeStyles = installStyles("src/features/chat-side-panel.css");
   try {
     render(
       <div className="icon-navigation">
         <div className="main-shell">
           <header className="topbar">
-            <span className="workspace-panel-controls" />
             <nav className="context-path" aria-label="Path">
               A path
             </nav>

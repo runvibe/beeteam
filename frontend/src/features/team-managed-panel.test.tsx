@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { editPlainText } from "@/test/editable";
 import { beforeEach, expect, it, vi } from "vitest";
@@ -49,10 +49,10 @@ vi.mock("@/api/context", () => ({
     list: managed.list,
     get: managed.get,
   }),
-  useEntity: (resource: string) => ({
+  useEntity: (resource: string, id: string) => ({
     data:
       resource === "teams"
-        ? { name: "Team A", leaderId: managed.leaderId, system: false }
+        ? { name: id === "team-b" ? "Team B" : "Team A", leaderId: managed.leaderId, system: false }
         : { id: "leader", name: "Leader One", version: 1 },
     isPending: false,
     error: null,
@@ -523,39 +523,30 @@ it("clears the draft when the team's leader changes", async () => {
   expect(managed.send).not.toHaveBeenCalled();
 });
 
-it("loads further board options before creating a team session", async () => {
+it("starts a team session without a board selector or a board assignment", async () => {
   managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
   managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
   managed.send.mockReset().mockResolvedValue({ id: "request", conversationId: "conversation" });
-  const firstPage = Array.from({ length: 100 }, (_, index) => ({
-    id: `board-${index}`,
-    name: `Board ${index}`,
-  }));
-  managed.list.mockImplementation(async (resource: string, _scope: string, filters: { offset?: number }) => {
-    if (resource !== "boards") return { items: [], hasMore: false, nextOffset: null };
-    return filters.offset === 100
-      ? { items: [{ id: "later-board", name: "Later board" }], offset: 100, limit: 100, total: 101, hasMore: false, nextOffset: null }
-      : { items: firstPage, offset: 0, limit: 100, total: 101, hasMore: true, nextOffset: 100 };
-  });
   useChatPanel.setState({ conversationId: null, freshConversation: true });
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
       <ChatWorkspace><main>Content</main></ChatWorkspace>
     </QueryClientProvider>,
   );
-  fireEvent.click(await screen.findByRole("button", { name: "Session board" }));
-  fireEvent.click(await screen.findByRole("button", { name: "More boards" }));
-  fireEvent.click(await screen.findByRole("radio", { name: "Later board" }));
-  editPlainText(await screen.findByRole("textbox", { name: "Message to agent" }), "Plan work");
+  const editor = await screen.findByRole("textbox", { name: "Message to agent" });
+  expect(screen.queryByRole("button", { name: "Session board" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Choose team" })).toBeNull();
+  editPlainText(editor, "Plan work");
   fireEvent.click(screen.getByRole("button", { name: "Send request" }));
   await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
     "leader",
-    { content: "Plan work", teamId: "team-a", boardId: "later-board" },
+    { content: "Plan work", teamId: "team-a" },
     expect.any(String),
   ));
+  expect(managed.list.mock.calls.some(([resource]) => resource === "boards")).toBe(false);
 });
 
-it("shows the assigned board even when it is outside the available board page", async () => {
+it("opens a session with an existing board without changing or fetching that board in the chat", async () => {
   const selected = {
     id: "older-session",
     agentId: "leader",
@@ -572,23 +563,89 @@ it("shows the assigned board even when it is outside the available board page", 
   managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
   managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
   managed.conversation.mockReset().mockResolvedValue(selected);
-  managed.get.mockResolvedValue({ id: "transferred-board", name: "Transferred board", teamId: "team-b" });
-  managed.list.mockImplementation(async (resource: string) =>
-    resource === "boards"
-      ? { items: [{ id: "current-board", name: "Current board" }], offset: 0, limit: 100, total: 1, hasMore: false, nextOffset: null }
-      : { items: [], hasMore: false, nextOffset: null },
-  );
   useChatPanel.setState({ conversationId: "older-session", freshConversation: false });
   render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
       <ChatWorkspace><main>Content</main></ChatWorkspace>
     </QueryClientProvider>,
   );
-  const board = await screen.findByRole("button", { name: "Session board" });
-  await waitFor(() => expect(board).toHaveTextContent("Transferred board"));
-  fireEvent.click(board);
-  expect(await screen.findByRole("radio", { name: "Transferred board" })).toBeDisabled();
-  expect(managed.get).toHaveBeenCalledWith("boards", "transferred-board");
+  expect(await screen.findByText("Older session")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Session board" })).toBeNull();
+  expect(managed.get).not.toHaveBeenCalledWith("boards", "transferred-board");
+  editPlainText(await screen.findByRole("textbox", { name: "Message to agent" }), "Continue");
+  fireEvent.click(screen.getByRole("button", { name: "Send request" }));
+  await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
+    "leader",
+    { content: "Continue", conversationId: "older-session" },
+    expect.any(String),
+  ));
+});
+
+it("switches team by opening a session in the sidebar without a team selector in chat", async () => {
+  const selected = {
+    id: "team-b-session",
+    agentId: "leader",
+    teamId: "team-b",
+    boardId: null,
+    title: "Team B conversation",
+    readOnly: false,
+    version: 1,
+    updatedAt: "2026-11-01T00:00:00Z",
+  };
+  managed.requests.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.conversations.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+  managed.sessions.mockReset().mockResolvedValue({ items: [selected], nextCursor: null });
+  managed.conversation.mockReset().mockResolvedValue(selected);
+  managed.get.mockImplementation(async (resource: string) => ({
+    id: resource === "teams" ? "team-b" : "leader",
+    name: resource === "teams" ? "Team B" : "Leader One",
+  }));
+  useChatPanel.setState({ teamId: "team-a", conversationId: null, freshConversation: true });
+  useSessionsSidebar.setState({
+    open: true,
+    drawer: false,
+    search: "",
+    sort: "updated_desc",
+    groupBy: ["team"],
+    filters: { teamIds: [], boardIds: [], agentIds: [] },
+  });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace sessions={<SessionsSidebar />}><main>Content</main></ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  const chat = screen.getByRole("complementary", { name: "Chat with the leader" });
+  expect(await within(chat).findByText("Team A")).toBeVisible();
+  expect(within(chat).queryByRole("button", { name: "Choose team" })).toBeNull();
+  fireEvent.click(await screen.findByRole("button", { name: /Team B conversation/ }));
+  await waitFor(() => expect(useChatPanel.getState()).toMatchObject({
+    teamId: "team-b",
+    conversationId: "team-b-session",
+  }));
+  expect(await within(chat).findByText("Team B")).toBeVisible();
+  managed.sessions.mockReset().mockResolvedValue({ items: [], nextCursor: null });
+});
+
+it("ignores a previously persisted team-picker state in managed chat", async () => {
+  managed.list.mockImplementation(async (resource: string, _scope: string, filters?: { system?: boolean }) => ({
+    items: resource === "teams"
+      ? filters?.system
+        ? [{ id: "hq", name: "Bee Team HQ", system: true }]
+        : [{ id: "team-b", name: "Team B" }]
+      : [],
+    total: resource === "teams" ? 1 : 0,
+    hasMore: false,
+    nextOffset: null,
+  }));
+  useChatPanel.setState({ teamId: null, picking: true, open: true });
+  render(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+      <ChatWorkspace><main>Content</main></ChatWorkspace>
+    </QueryClientProvider>,
+  );
+  expect(await screen.findByRole("textbox", { name: "Message to agent" })).toBeVisible();
+  expect(managed.list).toHaveBeenCalledWith("teams", "", { system: true, limit: 1 });
+  expect(screen.queryByRole("region", { name: "Choose team" })).toBeNull();
 });
 
 it("starts a blank session when the sidebar targets a different team", async () => {

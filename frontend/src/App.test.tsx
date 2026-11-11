@@ -13,7 +13,7 @@ describe("Bee Team interface", () => {
     window.history.replaceState({}, "", "/boards");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
-  it("moves the content panel from its header without dragging", async () => {
+  it("moves the content panel using the navigation layout menu", async () => {
     useChatPanel.setState(useChatPanel.getInitialState());
     useChatPanel.setState({ open: true });
     render(
@@ -23,9 +23,9 @@ describe("Bee Team interface", () => {
     );
     const topbar = document.querySelector(".topbar") as HTMLElement;
     expect(topbar.querySelector(".workspace-panel-grip")).toBeNull();
-    await userEvent.click(
-      within(topbar).getByRole("button", { name: "Mover conteúdo para a direita" }),
-    );
+    expect(within(topbar).queryByRole("button", { name: /Mover conteúdo/ })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "Layouts dos painéis" }));
+    await userEvent.click(screen.getByRole("radio", { name: "Sessões, Chat, Conteúdo" }));
     expect(document.querySelector(".chat-workspace")).toHaveAttribute(
       "data-panel-order",
       "sessions,chat,content",

@@ -1,9 +1,8 @@
 import { Fragment, useCallback, useState, useSyncExternalStore } from "react";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
 import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
-import { nextPageOffset } from "@/api/page-continuation";
 import {
   CHAT_PANEL_MIN_WIDTH,
   getMaxChatPanelWidth,
@@ -25,13 +24,11 @@ import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
 import { SessionsToggle } from "./sessions-sidebar";
 import {
-  WorkspaceDockContext,
   usePresentWorkspacePanels,
   useWorkspacePanelDock,
   useWorkspaceWidth,
   workspacePanelName,
 } from "./workspace-panel-dock";
-import { WorkspacePanelControls } from "./workspace-panel-controls";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle({
@@ -75,6 +72,7 @@ export function ChatWorkspace({
   sessions?: ReactNode;
 }) {
   useLocale();
+  const api = useApi();
   const {
     teamId,
     picking,
@@ -204,7 +202,6 @@ export function ChatWorkspace({
       >
         <strong>{t("chat.title")}</strong>
         {sessions && <SessionsToggle />}
-        <WorkspacePanelControls panel="chat" />
         <Button
           variant="ghost"
           size="icon"
@@ -219,7 +216,7 @@ export function ChatWorkspace({
         <div className="chat-panel-content">
           {teamId ? (
             <PanelTeam key={teamId} teamId={teamId} />
-          ) : picking ? (
+          ) : picking && !api.managedAgents ? (
             <PanelTeamPicker enabled={open} />
           ) : (
             <PanelDefault enabled={open} />
@@ -229,60 +226,58 @@ export function ChatWorkspace({
     </aside>
   );
   return (
-    <WorkspaceDockContext.Provider value={dock}>
-      <div
-        ref={setWorkspace}
-        className="chat-workspace"
-        data-chat-side={side}
-        data-chat-open={open}
-        data-panel-order={panelOrder.join(",")}
-        data-sessions-after-content={sessionsAfterContent ? "true" : undefined}
-        data-dockable={dock.draggable ? "true" : undefined}
-        data-dragging-panel={dock.drag?.panel}
-        onPointerDown={dock.onPointerDown}
-        style={
-          {
-            "--chat-panel-width": `${width}px`,
-            "--chat-panel-max-width": `${maxWidth}px`,
-            "--sessions-panel-width": `${SESSIONS_PANEL_WIDTH}px`,
-            "--sessions-after-content-width": sessionsAfterContent
-              ? `${SESSIONS_PANEL_WIDTH}px`
-              : "0px",
-            "--sessions-panel-order": panelOrder.indexOf("sessions"),
-            "--content-panel-order": panelOrder.indexOf("content"),
-            "--chat-panel-order": panelOrder.indexOf("chat"),
-            "--panel-drag-x": `${dock.drag?.dx ?? 0}px`,
-            "--panel-drag-y": `${dock.drag?.dy ?? 0}px`,
-          } as CSSProperties
-        }
-      >
-        {panelOrder.map((panel) => (
-          <Fragment key={panel}>
-            {panel === "sessions"
-              ? sessions
-              : panel === "content"
-                ? children
-                : chatPanel}
-          </Fragment>
-        ))}
-        <span className="sr-only" role="status" aria-live="polite">
-          {announcement}
-        </span>
-        {dock.drag && (
-          <div
-            className="chat-dock-preview"
-            data-side={dock.drag.side}
-            data-position={dock.drag.position}
-            aria-hidden
-            style={{
-              left: dock.drag.preview.left,
-              width: dock.drag.preview.width,
-              right: "auto",
-            }}
-          />
-        )}
-      </div>
-    </WorkspaceDockContext.Provider>
+    <div
+      ref={setWorkspace}
+      className="chat-workspace"
+      data-chat-side={side}
+      data-chat-open={open}
+      data-panel-order={panelOrder.join(",")}
+      data-sessions-after-content={sessionsAfterContent ? "true" : undefined}
+      data-dockable={dock.draggable ? "true" : undefined}
+      data-dragging-panel={dock.drag?.panel}
+      onPointerDown={dock.onPointerDown}
+      style={
+        {
+          "--chat-panel-width": `${width}px`,
+          "--chat-panel-max-width": `${maxWidth}px`,
+          "--sessions-panel-width": `${SESSIONS_PANEL_WIDTH}px`,
+          "--sessions-after-content-width": sessionsAfterContent
+            ? `${SESSIONS_PANEL_WIDTH}px`
+            : "0px",
+          "--sessions-panel-order": panelOrder.indexOf("sessions"),
+          "--content-panel-order": panelOrder.indexOf("content"),
+          "--chat-panel-order": panelOrder.indexOf("chat"),
+          "--panel-drag-x": `${dock.drag?.dx ?? 0}px`,
+          "--panel-drag-y": `${dock.drag?.dy ?? 0}px`,
+        } as CSSProperties
+      }
+    >
+      {panelOrder.map((panel) => (
+        <Fragment key={panel}>
+          {panel === "sessions"
+            ? sessions
+            : panel === "content"
+              ? children
+              : chatPanel}
+        </Fragment>
+      ))}
+      <span className="sr-only" role="status" aria-live="polite">
+        {announcement}
+      </span>
+      {dock.drag && (
+        <div
+          className="chat-dock-preview"
+          data-side={dock.drag.side}
+          data-position={dock.drag.position}
+          aria-hidden
+          style={{
+            left: dock.drag.preview.left,
+            width: dock.drag.preview.width,
+            right: "auto",
+          }}
+        />
+      )}
+    </div>
   );
 }
 /** Without an explicit selection, the panel opens the protected Bee Team HQ guide. */
@@ -306,6 +301,7 @@ function PanelDefault({ enabled }: { enabled: boolean }) {
   );
 }
 function PanelTeam({ teamId }: { teamId: string }) {
+  const api = useApi();
   const team = useEntity("teams", teamId);
   return (
     <QueryState query={team}>
@@ -313,14 +309,16 @@ function PanelTeam({ teamId }: { teamId: string }) {
         <>
           <div className="chat-panel-team">
             <span title={team.data.name}>{team.data.name}</span>
-            <Button
-              variant="ghost"
-              size="xs"
-              onClick={useChatPanel.getState().chooseTeam}
-            >
-              <ArrowLeftRight />
-              {t("chat.chooseTeam")}
-            </Button>
+            {!api.managedAgents && (
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={useChatPanel.getState().chooseTeam}
+              >
+                <ArrowLeftRight />
+                {t("chat.chooseTeam")}
+              </Button>
+            )}
           </div>
           <PanelLeader
             teamId={teamId}
@@ -343,20 +341,6 @@ function PanelLeader({
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
-  const boards = useInfiniteQuery({
-    queryKey: ["session-board-options", teamId],
-    queryFn: ({ pageParam, signal }) =>
-      api.list("boards", "", { teamId, limit: 100, offset: pageParam, sortBy: "name" }, signal),
-    initialPageParam: 0,
-    getNextPageParam: (last, pages) => nextPageOffset(last, pages, (board) => board.id),
-    enabled: !!api.managedAgents,
-  });
-  const boardItems = [
-    ...new Map(
-      boards.data?.pages.flatMap((page) => page.items.map((board) => [board.id, board] as const)) ?? [],
-    ).values(),
-  ];
-  const getBoard = useCallback((id: string) => api.get("boards", id), [api]);
   const conversationId = useChatPanel((s) => s.conversationId);
   const freshConversation = useChatPanel((s) => s.freshConversation);
   const setConversation = useChatPanel((s) => s.setConversation);
@@ -367,22 +351,6 @@ function PanelLeader({
           <span>{t("common.leader")}</span>
           <strong>{leader.data?.name ?? leaderId}</strong>
         </div>
-        {boards.error && (
-          <div className="assistant-alert" role="alert">
-            {t("managed.boardLoadError")}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                void (boards.isFetchNextPageError
-                  ? boards.fetchNextPage({ cancelRefetch: false })
-                  : boards.refetch())
-              }
-            >
-              {t("sessions.retry")}
-            </Button>
-          </div>
-        )}
         <TeamManagedApprovals
           key={teamId}
           teamId={teamId}
@@ -398,11 +366,6 @@ function PanelLeader({
           conversationId={conversationId}
           freshConversation={freshConversation}
           onConversationChange={setConversation}
-          boards={boardItems}
-          getBoard={getBoard}
-          hasMoreBoards={!!boards.hasNextPage}
-          loadingBoards={boards.isFetchingNextPage}
-          onMoreBoards={() => void boards.fetchNextPage({ cancelRefetch: false })}
         />
       </>
     );

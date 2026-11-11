@@ -1,5 +1,4 @@
 import {
-  createContext,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -91,14 +90,6 @@ type DockMove = (
   visible: readonly WorkspacePanel[],
   position: number,
 ) => void;
-type DockContext = {
-  draggable: boolean;
-  visible: readonly WorkspacePanel[];
-  move: (panel: WorkspacePanel, position: number) => void;
-};
-
-export const WorkspaceDockContext = createContext<DockContext | null>(null);
-
 function positionAt(
   clientX: number,
   panel: WorkspacePanel,
@@ -241,12 +232,7 @@ export function useWorkspacePanelDock(
     [draggable, onMove, order, root, visible],
   );
 
-  const move = useCallback(
-    (panel: WorkspacePanel, position: number) =>
-      onMove(panel, visible, position),
-    [onMove, visible],
-  );
-  return { narrow, draggable, visible, drag, move, onPointerDown };
+  return { narrow, draggable, drag, onPointerDown };
 }
 
 export function workspacePanelName(panel: WorkspacePanel) {

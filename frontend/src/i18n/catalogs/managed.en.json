@@ -16,8 +16,6 @@
   "chooseConversation": "Select a conversation",
   "moreConversations": "More conversations",
   "moreRequests": "More requests",
-  "moreBoards": "More boards",
-  "boardLoadError": "Boards could not be loaded.",
   "teamApprovals": "Worker approvals",
   "loadingApprovals": "Loading worker approvals…",
   "invalidMemberPagination": "Unable to verify team membership: invalid pagination.",
@@ -67,7 +65,5 @@
   "starterBoard": "Create a board",
   "starterBoardPrompt": "I want to create a board to organize work. Suggest columns and the first tasks.",
   "starterTour": "How does Bee Team work?",
-  "starterTourPrompt": "Explain in a few steps how teams, agents, boards and tasks work together in Bee Team.",
-  "sessionBoard": "Session board",
-  "noBoard": "No board"
+  "starterTourPrompt": "Explain in a few steps how teams, agents, boards and tasks work together in Bee Team."
 }

@@ -6,6 +6,8 @@ import { App } from "@/App";
 import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { useChatPanel } from "@/state/chat-panel";
+import { useSessionsSidebar } from "@/state/sessions-sidebar";
+import { setLocalePreference } from "@/i18n";
 
 it("uses a fixed icon navigation with keyboard tooltips and updates the active route", async () => {
   window.history.replaceState({}, "", "/boards");
@@ -101,4 +103,42 @@ it("keeps the breadcrumb header aligned with the main content gutter", () => {
   } finally {
     style.remove();
   }
+});
+
+it("offers preset panel layouts in the navigation and persists the chosen order", async () => {
+  setLocalePreference("en");
+  window.history.replaceState({}, "", "/boards");
+  useChatPanel.setState({
+    teamId: null,
+    picking: false,
+    open: true,
+    panelOrder: ["sessions", "content", "chat"],
+    side: "right",
+  });
+  useSessionsSidebar.setState({ open: true, drawer: false });
+  const user = userEvent.setup();
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <App />
+    </ApiProvider>,
+  );
+  const nav = screen.getByRole("navigation", { name: "Main navigation" });
+  await user.click(within(nav).getByRole("button", { name: "Panel layouts" }));
+  const layouts = screen.getByRole("radiogroup", { name: "Panel layouts" });
+  expect(within(layouts).getAllByRole("radio")).toHaveLength(6);
+  const option = within(layouts).getByRole("radio", { name: "Chat, Content, Sessions" });
+  await user.click(option);
+  expect(option).toBeChecked();
+  expect(useChatPanel.getState()).toMatchObject({
+    panelOrder: ["chat", "content", "sessions"],
+    side: "left",
+  });
+  expect(document.querySelector(".chat-workspace")).toHaveAttribute(
+    "data-panel-order",
+    "chat,content,sessions",
+  );
+  expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.panelOrder).toEqual([
+    "chat", "content", "sessions",
+  ]);
+  expect(screen.queryByRole("button", { name: /Move (sessions|content|chat) to the/ })).toBeNull();
 });

@@ -16,8 +16,6 @@
   "chooseConversation": "Selecione uma conversa",
   "moreConversations": "Mais conversas",
   "moreRequests": "Mais pedidos",
-  "moreBoards": "Mais boards",
-  "boardLoadError": "Não foi possível carregar os boards.",
   "teamApprovals": "Aprovações dos workers",
   "loadingApprovals": "Carregando aprovações dos workers…",
   "invalidMemberPagination": "Não foi possível verificar os integrantes do time: paginação inválida.",
@@ -67,7 +65,5 @@
   "starterBoard": "Criar um board",
   "starterBoardPrompt": "Quero criar um board para organizar tarefas. Sugira as colunas e as primeiras tarefas.",
   "starterTour": "Como o Bee Team funciona?",
-  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team.",
-  "sessionBoard": "Board da sessão",
-  "noBoard": "Sem board"
+  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team."
 }

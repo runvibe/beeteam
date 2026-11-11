@@ -1,6 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { useChatPanel } from "@/state/chat-panel";
 import { setLocalePreference } from "@/i18n";
@@ -156,12 +155,12 @@ it("disables header dragging on narrow screens", () => {
   expect(useChatPanel.getState().side).toBe("right");
 });
 
-it("moves the panel to the other side from the keyboard and announces it", async () => {
+it("announces the panel's new position after dragging", () => {
   renderPanel();
-  await userEvent.click(screen.getByRole("button", { name: "Move chat to the left" }));
+  drag(1000, 150);
+  fireEvent.pointerUp(window, { clientX: 150, clientY: 60, pointerId: 1 });
   expect(useChatPanel.getState().side).toBe("left");
   expect(screen.getByRole("status")).toHaveTextContent("Chat docked on the left");
-  expect(screen.getByRole("button", { name: "Move chat to the right" })).toBeVisible();
   act(() => useChatPanel.getState().setSide("right"));
 });
 
