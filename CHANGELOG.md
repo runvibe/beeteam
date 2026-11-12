@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Order the navigation controls as Home, Chat, Sessions, Tasks, Agents, and Teams.
 - Make the fixed navigation rail and its icon buttons 25% smaller.
 
 - Clear the active destination highlight while the content panel is hidden.

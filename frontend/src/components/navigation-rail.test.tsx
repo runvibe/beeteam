@@ -5,9 +5,41 @@ import { expect, it } from "vitest";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
+import { createManagedAgentApi } from "@/api/managed-agents";
 import { useChatPanel } from "@/state/chat-panel";
 import { useSessionsSidebar } from "@/state/sessions-sidebar";
 import { setLocalePreference } from "@/i18n";
+
+it.each([true, false])("orders navigation controls when homeEnabled is %s", (homeEnabled) => {
+  setLocalePreference("pt");
+  window.history.replaceState({}, "", "/boards");
+  const api = {
+    ...createMockApi({ delay: 0 }),
+    managedAgents: {
+      ...createManagedAgentApi(),
+      sessions: async () => ({ items: [], nextCursor: null }),
+    },
+  };
+  useSessionsSidebar.setState({ open: false, drawer: false });
+  render(
+    <ApiProvider api={api}>
+      <App homeEnabled={homeEnabled} />
+    </ApiProvider>,
+  );
+  const nav = screen.getByRole("navigation", { name: "Navegação principal" });
+  const expected = [
+    ...(homeEnabled ? ["Início"] : []),
+    "Chat com o líder",
+    "Mostrar ou ocultar sessões",
+    "Tarefas",
+    "Recursos de Agentes",
+    "Times",
+  ];
+  const controls = expected.map((name) => within(nav).getByRole("button", { name }));
+  expect(
+    within(nav).getAllByRole("button").filter((button) => controls.includes(button)),
+  ).toEqual(controls);
+});
 
 it("uses a fixed icon navigation with keyboard tooltips and updates the active route", async () => {
   window.history.replaceState({}, "", "/boards");
@@ -30,6 +62,8 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
   expect(tasks).toHaveTextContent("");
   await user.tab();
   expect(brand).toHaveFocus();
+  await user.tab();
+  expect(within(nav).getByRole("button", { name: "Chat com o líder" })).toHaveFocus();
   await user.tab();
   expect(tasks).toHaveFocus();
   expect(await screen.findByRole("tooltip")).toHaveTextContent("Tarefas");
@@ -72,7 +106,7 @@ it("puts the chat toggle in the main navigation and opens and closes the panel",
   await user.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
   expect(screen.queryByRole("complementary", { name: "Chat com o líder" })).toBeNull();
-  within(nav).getByRole("button", { name: "Times" }).focus();
+  screen.getByRole("link", { name: "Bee Team - ir para boards" }).focus();
   await user.tab();
   expect(toggle).toHaveFocus();
   expect(await screen.findByRole("tooltip")).toHaveTextContent("Chat com o líder");

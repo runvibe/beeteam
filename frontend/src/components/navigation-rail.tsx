@@ -129,6 +129,12 @@ export function NavigationRail({
             </Button>
             </NavigationTooltip>
           )}
+          <NavigationTooltip label={tr("chat.title")}>
+            <ChatPanelToggle className="navigation-button" />
+          </NavigationTooltip>
+          <NavigationTooltip label={tr("sessions.title")}>
+            <SessionsToggle className="navigation-button" />
+          </NavigationTooltip>
           {sections.map(({ area: target, label, name, Icon }) => (
             <NavigationTooltip key={target} label={label}>
                 <Button
@@ -147,12 +153,6 @@ export function NavigationRail({
                 </Button>
             </NavigationTooltip>
           ))}
-          <NavigationTooltip label={tr("sessions.title")}>
-            <SessionsToggle className="navigation-button" />
-          </NavigationTooltip>
-          <NavigationTooltip label={tr("chat.title")}>
-            <ChatPanelToggle className="navigation-button" />
-          </NavigationTooltip>
         </nav>
       </Tooltip.Provider>
       <div
