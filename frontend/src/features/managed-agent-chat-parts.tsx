@@ -187,7 +187,7 @@ function AgentMessage({
     >
       <div className="assistant-msg-body">
         {message.content ? (
-          <Markdown fileCitations={cards.size ? cards : undefined}>
+          <Markdown copyTables fileCitations={cards.size ? cards : undefined}>
             {message.content}
           </Markdown>
         ) : null}
@@ -211,7 +211,7 @@ export function ChatMessage({
     return (
       <article className="assistant-msg assistant-msg-user" aria-label={label}>
         <div className="assistant-bubble">
-          <Markdown>{message.content}</Markdown>
+          <Markdown copyTables>{message.content}</Markdown>
         </div>
       </article>
     );
@@ -221,7 +221,7 @@ export function ChatMessage({
         className="assistant-msg assistant-msg-system"
         aria-label={label}
       >
-        <Markdown>{message.content}</Markdown>
+        <Markdown copyTables>{message.content}</Markdown>
       </article>
     );
   return <AgentMessage message={message} onRecover={onRecover} busy={busy} />;

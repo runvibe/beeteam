@@ -1,0 +1,27 @@
+.markdown-table.markdown-table-copyable {
+  position: relative;
+  overflow: visible;
+  padding-top: 2rem;
+}
+.markdown-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.markdown-table-copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.markdown-table-copyable:hover .markdown-table-copy,
+.markdown-table-copyable:focus-within .markdown-table-copy {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (hover: none) {
+  .markdown-table-copy {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

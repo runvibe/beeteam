@@ -37,6 +37,7 @@ type ChatPanelState = {
   /** True while the user is choosing a team; otherwise no selection means the system team. */
   picking: boolean;
   open: boolean;
+  contentOpen: boolean;
   side: ChatPanelSide;
   panelOrder: WorkspacePanel[];
   width: number;
@@ -47,6 +48,7 @@ type ChatPanelState = {
   setConversation: (conversationId: string | null) => void;
   close: () => void;
   show: () => void;
+  setContentOpen: (open: boolean) => void;
   chooseTeam: () => void;
   setSide: (side: ChatPanelSide) => void;
   setPanelOrder: (order: readonly WorkspacePanel[]) => void;
@@ -61,6 +63,7 @@ export const useChatPanel = create<ChatPanelState>()(
       freshConversation: false,
       picking: false,
       open: true,
+      contentOpen: true,
       side: "right",
       panelOrder: defaultPanelOrder("right"),
       width: 440,
@@ -74,6 +77,7 @@ export const useChatPanel = create<ChatPanelState>()(
       setConversation: (conversationId) => set({ conversationId, freshConversation: false }),
       close: () => set({ open: false }),
       show: () => set({ open: true }),
+      setContentOpen: (contentOpen) => set({ contentOpen }),
       chooseTeam: () =>
         set({ teamId: null, conversationId: null, freshConversation: false, picking: true, open: true }),
       setSide: (side) =>
@@ -121,6 +125,7 @@ export const useChatPanel = create<ChatPanelState>()(
         conversationId,
         picking,
         open,
+        contentOpen,
       }) => ({
         side,
         panelOrder,
@@ -130,6 +135,7 @@ export const useChatPanel = create<ChatPanelState>()(
         conversationId,
         picking,
         open,
+        contentOpen,
       }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<ChatPanelState>;
@@ -153,6 +159,10 @@ export const useChatPanel = create<ChatPanelState>()(
         return {
           ...current,
           ...saved,
+          contentOpen:
+            typeof saved.contentOpen === "boolean"
+              ? saved.contentOpen
+              : current.contentOpen,
           panelOrder,
           side: chatSide(panelOrder),
           sessionsWidth,

@@ -380,7 +380,7 @@ function LeaderChatBody({
                   </strong>
                   <time dateTime={m.createdAt}>{formatDate(m.createdAt)}</time>
                 </header>
-                <Markdown>{m.content}</Markdown>
+                <Markdown copyTables>{m.content}</Markdown>
                 {m.taskId && <ChatTaskLink id={m.taskId} />}
               </article>
             ))}

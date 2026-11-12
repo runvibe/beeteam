@@ -73,6 +73,7 @@ export function ChatWorkspace({
     teamId,
     picking,
     open,
+    contentOpen,
     side,
     panelOrder,
     width,
@@ -92,7 +93,7 @@ export function ChatWorkspace({
   const visible = panelOrder.filter(
     (panel) =>
       present.includes(panel) &&
-      (panel === "chat" ? open : panel === "sessions" ? sessionsOpen : true),
+      (panel === "chat" ? open : panel === "sessions" ? sessionsOpen : contentOpen),
   );
   const [announcement, setAnnouncement] = useState("");
   const reorder = useCallback(
@@ -178,6 +179,7 @@ export function ChatWorkspace({
       className="chat-workspace"
       data-chat-side={side}
       data-chat-open={open}
+      data-content-open={contentOpen}
       data-panel-order={panelOrder.join(",")}
       data-sessions-after-content={sessionsAfterContent ? "true" : undefined}
       data-dockable={dock.draggable ? "true" : undefined}

@@ -8,6 +8,7 @@ import { remarkMermaidLimit } from "./mermaid-policy";
 import { MermaidDiagram } from "./mermaid-diagram";
 import { HighlightedCode } from "./markdown-code";
 import { remarkFileCitations } from "./markdown-file-citations";
+import { ChatMarkdownTable } from "./markdown-table";
 
 const plainPlugins = [remarkGfm, remarkMermaidLimit];
 const sectionPlugins = [remarkGfm, remarkSectionDividers, remarkMermaidLimit];
@@ -97,15 +98,20 @@ export function Markdown({
   headingOffset = 0,
   sectionDividers = false,
   fileCitations,
+  copyTables = false,
 }: {
   children: string;
   headingOffset?: 0 | 2;
   sectionDividers?: boolean;
   fileCitations?: ReadonlyMap<number, ReactNode>;
+  copyTables?: boolean;
 }) {
   useLocale();
   const components = useMemo<Components>(() => {
-    const base = headingOffset ? documentComponents : baseComponents;
+    const defaultComponents = headingOffset ? documentComponents : baseComponents;
+    const base = copyTables
+      ? { ...defaultComponents, table: ChatMarkdownTable }
+      : defaultComponents;
     if (!fileCitations) return base;
     return {
       ...base,
@@ -125,7 +131,7 @@ export function Markdown({
         );
       },
     };
-  }, [headingOffset, fileCitations]);
+  }, [headingOffset, fileCitations, copyTables]);
   return (
     <div className="markdown-content">
       <ReactMarkdown

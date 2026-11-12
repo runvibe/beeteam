@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Close and reopen the content panel while keeping the current page and drafts.
+
+- Copy chat tables as CSV using an accessible button shown on hover or focus.
+
 - Remove vertical lines from Markdown tables in managed chat, keeping horizontal row separators.
 
 - Remove the assistant logo beside chat messages, giving their content the full available width.

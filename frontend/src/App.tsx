@@ -20,7 +20,7 @@ import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
 import { MobileContextPath } from "./components/mobile-context-path";
 import { DetailContainerContext } from "./components/detail-layout/use-detail-mobile";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HeaderFiltersContext } from "./components/header-filters";
 import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
@@ -28,6 +28,8 @@ import { Agents, AgentPage } from "./features/agents";
 import { Teams, TeamPage } from "./features/teams";
 import { ChatWorkspace } from "./features/chat-side-panel";
 import { SessionsSidebar } from "./features/sessions-sidebar";
+import { ContentPanelClose } from "./features/content-panel-controls";
+import { useChatPanel } from "./state/chat-panel";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
 import "./navigation.css";
@@ -42,10 +44,19 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   useRestorePosition();
   const routeEntity = useRouteEntity();
   const url = useLocation();
+  const path = url.split("?")[0];
+  const previousPath = useRef(path);
+  useEffect(() => {
+    if (previousPath.current !== path) {
+      previousPath.current = path;
+      useChatPanel.getState().setContentOpen(true);
+    }
+  }, [path]);
   const knownRoute = isKnownRoute(url);
   const pageIdentity = pageMotionIdentity(url, routeEntity.data?.id);
   const pageAnimation = usePageEntrance(pageIdentity);
   const { taskId, agentId, teamId } = useUi();
+  const contentOpen = useChatPanel((state) => state.contentOpen);
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
   return (
@@ -57,6 +68,8 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
             <ChatWorkspace sessions={<SessionsSidebar />}>
               <div
                 className="main-shell"
+                id="content-panel"
+                hidden={!contentOpen}
                 data-workspace-panel="content"
                 ref={setDetailContainer}
               >
@@ -65,6 +78,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
                   <AppPath />
                   <MobileContextPath />
                   <div className="header-filter-slot" ref={setFilterTarget} />
+                  <ContentPanelClose />
                 </header>
                 <motion.main
                   id="main-content"

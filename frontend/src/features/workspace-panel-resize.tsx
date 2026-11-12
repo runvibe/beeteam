@@ -26,9 +26,9 @@ export function WorkspacePanelResizer({ panel }: { panel: ResizablePanel }) {
     const next = Math.max(range.min, Math.min(range.max, width));
     if (next === current[panel]) return;
     const widths: Partial<Record<ResizablePanel, number>> = { [panel]: next };
-    if (range.neighbor !== "content")
+    if (range.neighbor !== "content" && config.visible.includes("content"))
       widths[range.neighbor] = range.total - next;
-    else {
+    else if (range.neighbor === "content") {
       // Preserve a constrained third panel at its visible width.
       const other = panel === "chat" ? "sessions" : "chat";
       if (config.visible.includes(other)) widths[other] = current[other];

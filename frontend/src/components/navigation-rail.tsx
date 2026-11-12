@@ -14,6 +14,8 @@ import { DataTransferSettings } from "@/features/data-transfer";
 import { ChatPanelToggle } from "@/features/chat-side-panel";
 import { SessionsToggle } from "@/features/sessions-sidebar";
 import { WorkspaceLayoutMenu } from "@/features/workspace-layout-menu";
+import { ContentPanelToggle } from "@/features/content-panel-controls";
+import { useChatPanel } from "@/state/chat-panel";
 import {
   navigationHref,
   destination,
@@ -60,9 +62,11 @@ export function NavigationRail({
   useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
+  const showContent = useChatPanel((state) => state.setContentOpen);
   const siteLink = useSiteLink();
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
+    showContent(true);
     if (area !== "home") navigate(homeHref);
   };
   return (
@@ -86,6 +90,7 @@ export function NavigationRail({
           )
             return;
           event.preventDefault();
+          showContent(true);
           if (homeEnabled) openHome();
           else setArea("boards");
         }}
@@ -117,7 +122,7 @@ export function NavigationRail({
                   size="icon"
                   aria-label={name}
                   aria-current={area === target ? "page" : undefined}
-                  onClick={() => setArea(target)}
+                  onClick={() => { showContent(true); setArea(target); }}
                 >
                   <Icon aria-hidden="true" />
                 </Button>
@@ -128,6 +133,9 @@ export function NavigationRail({
           </NavigationTooltip>
           <NavigationTooltip label={tr("chat.title")}>
             <ChatPanelToggle className="navigation-button" />
+          </NavigationTooltip>
+          <NavigationTooltip label={tr("workspace.contentPanel")}>
+            <ContentPanelToggle />
           </NavigationTooltip>
           <WorkspaceLayoutMenu />
         </nav>

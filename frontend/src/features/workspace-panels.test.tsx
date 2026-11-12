@@ -198,6 +198,7 @@ it("resizes sessions with the pointer while keeping neighboring panels usable", 
     configurable: true,
     value: 1132,
   });
+
   fireEvent(window, new Event("resize"));
   const resizer = within(sessions).getByRole("separator", {
     name: "Resize sessions panel",
@@ -216,6 +217,22 @@ it("resizes sessions with the pointer while keeping neighboring panels usable", 
   expect(useChatPanel.getState().sessionsWidth).toBe(200);
   expect(resizer).toHaveAttribute("aria-valuenow", "200");
   fireEvent.pointerUp(resizer, { pointerId: 1 });
+});
+
+it("resizes and rearranges the remaining panels while retaining the saved chat width", () => {
+  const { workspace, sessions } = renderWorkspace();
+  Object.defineProperty(workspace, "clientWidth", { configurable: true, value: 1132 });
+  fireEvent(window, new Event("resize"));
+  act(() => useChatPanel.getState().setContentOpen(false));
+  const resizer = within(sessions).getByRole("separator", { name: "Resize sessions panel" });
+  expect(resizer).toHaveAttribute("aria-valuemax", "812");
+  fireEvent.keyDown(resizer, { key: "ArrowRight" });
+  expect(useChatPanel.getState().sessionsWidth).toBe(300);
+  expect(useChatPanel.getState().width).toBe(440);
+  beginDrag(sessions.querySelector("header")!, 200, 1100);
+  fireEvent.pointerUp(window, { clientX: 1100, clientY: 40, pointerId: 1 });
+  expect(useChatPanel.getState().panelOrder.filter((panel) => panel !== "content"))
+    .toEqual(["chat", "sessions"]);
 });
 
 it("keeps a constrained chat at its visible width when resizing sessions and content", () => {

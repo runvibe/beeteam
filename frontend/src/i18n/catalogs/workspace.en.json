@@ -1,6 +1,8 @@
 {
   "chat": "Chat",
   "content": "Content",
+  "contentPanel": "Content panel",
+  "closeContent": "Close content panel",
   "sessions": "Sessions",
   "layouts": "Panel layouts",
   "dragToDock": "Drag to rearrange panels",

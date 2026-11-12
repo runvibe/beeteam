@@ -227,7 +227,11 @@ body:has(.detail-page) {
       padding: 2px 0.5rem;
     }
     .topbar:has(.detail-info-button:not([hidden])) > .context-path {
-      grid-column: 1 / -1;
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .topbar:has(.detail-info-button:not([hidden])) > .content-panel-close {
+      grid-column: 2;
       grid-row: 2;
     }
     .topbar:has(.detail-info-button:not([hidden])) > .header-filter-slot {

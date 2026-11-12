@@ -10,6 +10,20 @@
   min-width: 0;
   container: workspace-content / inline-size;
 }
+.chat-workspace > .main-shell[hidden] {
+  display: none;
+}
+@media (min-width: 851px) {
+  .chat-workspace[data-content-open="false"] > .chat-side-panel:not([hidden]) {
+    flex: 1;
+    width: auto;
+  }
+  .chat-workspace[data-content-open="false"][data-chat-open="false"]
+    > .sessions-sidebar[data-open="true"] {
+    flex: 1;
+    width: auto;
+  }
+}
 .icon-navigation .main-shell > .topbar > .context-path {
   flex-grow: 1;
 }

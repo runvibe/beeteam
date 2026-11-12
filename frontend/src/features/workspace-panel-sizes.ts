@@ -33,7 +33,25 @@ export function workspacePanelSizes(
 ): PanelSizes {
   const sessionsVisible = !config.narrow && config.visible.includes("sessions");
   const chatVisible = !config.narrow && config.visible.includes("chat");
+  const contentVisible = config.visible.includes("content");
   const viewportMax = getMaxChatPanelWidth(config.viewport);
+  if (!config.narrow && !contentVisible) {
+    const sessions = sessionsVisible
+      ? chatVisible
+        ? Math.max(
+            SESSIONS_PANEL_MIN_WIDTH,
+            Math.min(sessionsWidth, config.workspace - CHAT_PANEL_MIN_WIDTH),
+          )
+        : config.workspace
+      : 0;
+    return {
+      sessions,
+      chat: chatVisible ? Math.max(0, config.workspace - sessions) : 0,
+      content: 0,
+      chatMax: Math.max(0, config.workspace - sessions),
+      contentMin: 0,
+    };
+  }
   // Keep the existing 80%-viewport chat limit when sessions are hidden.
   const contentMin = sessionsVisible
     ? CONTENT_PANEL_MIN_WIDTH
@@ -81,7 +99,17 @@ export function workspaceResizeBounds(
 ) {
   const index = config.visible.indexOf(panel);
   const contentIndex = config.visible.indexOf("content");
-  if (config.narrow || index < 0 || contentIndex < 0) return null;
+  if (config.narrow || index < 0) return null;
+  if (contentIndex < 0) {
+    if (panel !== "sessions" || !config.visible.includes("chat")) return null;
+    return {
+      edge: index === 0 ? "right" : "left",
+      neighbor: "chat" as const,
+      min: SESSIONS_PANEL_MIN_WIDTH,
+      max: Math.max(SESSIONS_PANEL_MIN_WIDTH, config.workspace - CHAT_PANEL_MIN_WIDTH),
+      total: sizes.sessions + sizes.chat,
+    };
+  }
   const edge = index < contentIndex ? "right" : "left";
   const neighbor = config.visible[index + (edge === "right" ? 1 : -1)];
   if (!neighbor) return null;

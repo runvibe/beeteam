@@ -452,7 +452,7 @@ export function ManagedAgentChat({
           </select>
           {legacySnapshot.data?.messages.map((m) => (
             <article key={m.id}>
-              <Markdown>{m.content}</Markdown>
+              <Markdown copyTables>{m.content}</Markdown>
             </article>
           ))}
         </details>

@@ -67,6 +67,21 @@ it("persists both panel widths and defaults older saved preferences to a 280 px 
   expect(useChatPanel.getState()).toMatchObject({ width: 500, sessionsWidth: 280 });
 });
 
+it("persists content visibility and defaults older preferences to visible", async () => {
+  useChatPanel.setState(useChatPanel.getInitialState());
+  useChatPanel.getState().setContentOpen(false);
+  const saved = localStorage.getItem("beeteam-chat-panel")!;
+  useChatPanel.setState(useChatPanel.getInitialState());
+  localStorage.setItem("beeteam-chat-panel", saved);
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().contentOpen).toBe(false);
+
+  useChatPanel.setState(useChatPanel.getInitialState());
+  localStorage.setItem("beeteam-chat-panel", JSON.stringify({ state: {}, version: 0 }));
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().contentOpen).toBe(true);
+});
+
 it("rejects invalid resize values without changing saved widths", () => {
   useChatPanel.setState(useChatPanel.getInitialState());
   expect(() =>
