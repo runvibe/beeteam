@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { setLocalePreference } from "@/i18n";
@@ -6,6 +7,28 @@ import { ChatMarkdownTable } from "./markdown-table";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+it("overlays the copy button on the table instead of reserving a row above it", () => {
+  setLocalePreference("en");
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/components/markdown-table.css", "utf8");
+  document.head.append(style);
+  try {
+    render(<Markdown copyTables>{"| A |\n| --- |\n| B |"}</Markdown>);
+    const region = screen.getByRole("region", { name: "Table" });
+    const button = within(region).getByRole("button", { name: "Copy table as CSV" });
+    const regionStyle = getComputedStyle(region);
+    const buttonStyle = getComputedStyle(button);
+    expect(Number.parseFloat(regionStyle.paddingTop) || 0).toBe(0);
+    expect(regionStyle.position).toBe("relative");
+    expect(buttonStyle.position).toBe("absolute");
+    expect(Number.parseFloat(buttonStyle.top)).toBe(0);
+    expect(Number.parseFloat(buttonStyle.right)).toBe(0);
+    expect(getComputedStyle(within(region).getByRole("columnheader", { name: "A" })).paddingInlineEnd).toBe("2.5rem");
+  } finally {
+    style.remove();
+  }
 });
 
 it("copies the selected chat table as escaped CSV with its headers", async () => {

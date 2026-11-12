@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Overlay the chat table copy button in the upper-right corner and make generated file cards fill the available width.
 - Remove the keyboard shortcut hint from the managed chat composer.
 - Order the navigation controls as Home, Chat, Sessions, Tasks, Agents, and Teams.
 - Make the fixed navigation rail and its icon buttons 25% smaller.

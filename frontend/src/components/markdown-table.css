@@ -1,16 +1,19 @@
 .markdown-table.markdown-table-copyable {
   position: relative;
   overflow: visible;
-  padding-top: 2rem;
 }
 .markdown-table-scroll {
   max-width: 100%;
   overflow-x: auto;
 }
+.markdown-table-copyable thead th:last-child {
+  padding-inline-end: 2.5rem;
+}
 .markdown-table-copy {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
 }

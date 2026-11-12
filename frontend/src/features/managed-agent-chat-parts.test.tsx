@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { render, screen } from "@testing-library/react";
 import { it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
@@ -102,6 +103,33 @@ it("renders generated files in place without exposing citation markers", async (
     "href",
     "#beeteam-file-0",
   );
+});
+
+it("sizes generated file cards to the available message width", async () => {
+  await i18n.changeLanguage("en");
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/features/managed-agent-chat.css", "utf8");
+  document.head.append(style);
+  try {
+    render(
+      <ChatMessage
+        message={{
+          id: ids.message,
+          conversationId: ids.conversation,
+          requestId: ids.message,
+          role: "agent",
+          version: 1,
+          createdAt: "2026-01-01T00:00:00Z",
+          content: ":beeteam-file-citation{index=0}",
+          files: [{ index: 0, name: "example.pdf", status: "unavailable" }],
+        }}
+      />,
+    );
+    const card = screen.getByRole("group", { name: "example.pdf" });
+    expect(getComputedStyle(card).width).toBe("100%");
+  } finally {
+    style.remove();
+  }
 });
 
 it("offers recovery for unavailable historical files", async () => {
