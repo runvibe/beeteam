@@ -1,7 +1,6 @@
 import { Check, History, LayoutDashboard, MessageSquare, PanelsTopLeft } from "lucide-react";
 import { Popover, RadioGroup } from "radix-ui";
 import { Button } from "@/components/ui/button";
-import { NavigationTooltip } from "@/components/navigation-tooltip";
 import { useLocale, t } from "@/i18n";
 import { useChatPanel } from "@/state/chat-panel";
 import type { WorkspacePanel } from "@/state/workspace-layout";
@@ -25,23 +24,22 @@ export function WorkspaceLayoutMenu() {
   const label = t("workspace.layouts");
   return (
     <Popover.Root>
-      <NavigationTooltip label={label}>
-        <Popover.Trigger asChild>
-          <Button
-            className="navigation-button workspace-layout-toggle"
-            variant="ghost"
-            size="icon"
-            aria-label={label}
-          >
-            <PanelsTopLeft aria-hidden="true" />
-          </Button>
-        </Popover.Trigger>
-      </NavigationTooltip>
+      <Popover.Trigger asChild>
+        <Button
+          className="workspace-layout-toggle"
+          variant="ghost"
+          size="icon"
+          aria-label={label}
+          title={label}
+        >
+          <PanelsTopLeft aria-hidden="true" />
+        </Button>
+      </Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           className="workspace-layout-popover"
           side="right"
-          align="start"
+          align="end"
           sideOffset={10}
           collisionPadding={8}
           aria-label={label}

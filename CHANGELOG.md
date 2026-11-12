@@ -6,7 +6,8 @@
 
 - Clear the active destination highlight while the content panel is hidden.
 
-- Close and reopen the content panel while keeping the current page and drafts.
+- Move the panel layouts button to the navigation's bottom preferences.
+- Close and reopen the content panel from its active destination button while keeping the current page and drafts.
 
 - Copy chat tables as CSV using an accessible button shown on hover or focus.
 

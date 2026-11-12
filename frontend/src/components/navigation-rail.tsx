@@ -14,8 +14,8 @@ import { DataTransferSettings } from "@/features/data-transfer";
 import { ChatPanelToggle } from "@/features/chat-side-panel";
 import { SessionsToggle } from "@/features/sessions-sidebar";
 import { WorkspaceLayoutMenu } from "@/features/workspace-layout-menu";
-import { ContentPanelToggle } from "@/features/content-panel-controls";
 import { useChatPanel } from "@/state/chat-panel";
+import { CONTENT_DESTINATION_ID } from "@/features/content-panel-controls";
 import {
   navigationHref,
   destination,
@@ -70,6 +70,21 @@ export function NavigationRail({
     showContent(true);
     if (area !== "home") navigate(homeHref);
   };
+  const destinationState = (target: string) => {
+    const owner = area === target;
+    const active = contentOpen && owner;
+    return {
+      id: owner ? CONTENT_DESTINATION_ID : undefined,
+      variant: active ? ("secondary" as const) : ("ghost" as const),
+      "aria-current": active ? ("page" as const) : undefined,
+      "aria-controls": owner ? "content-panel" : undefined,
+      "aria-expanded": owner ? contentOpen : undefined,
+    };
+  };
+  const selectDestination = (target: string, open: () => void) => {
+    if (area === target) showContent(!contentOpen);
+    else open();
+  };
   return (
     <aside className="navigation-rail">
       <a
@@ -105,11 +120,10 @@ export function NavigationRail({
             <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
-              variant={contentOpen && area === "home" ? "secondary" : "ghost"}
+              {...destinationState("home")}
               size="icon"
               aria-label={tr("common.home")}
-              aria-current={contentOpen && area === "home" ? "page" : undefined}
-              onClick={openHome}
+              onClick={() => selectDestination("home", openHome)}
             >
               <House aria-hidden="true" />
             </Button>
@@ -119,11 +133,15 @@ export function NavigationRail({
             <NavigationTooltip key={target} label={label}>
                 <Button
                   className="navigation-button"
-                  variant={contentOpen && area === target ? "secondary" : "ghost"}
+                  {...destinationState(target)}
                   size="icon"
                   aria-label={name}
-                  aria-current={contentOpen && area === target ? "page" : undefined}
-                  onClick={() => { showContent(true); setArea(target); }}
+                  onClick={() =>
+                    selectDestination(target, () => {
+                      showContent(true);
+                      setArea(target);
+                    })
+                  }
                 >
                   <Icon aria-hidden="true" />
                 </Button>
@@ -135,10 +153,6 @@ export function NavigationRail({
           <NavigationTooltip label={tr("chat.title")}>
             <ChatPanelToggle className="navigation-button" />
           </NavigationTooltip>
-          <NavigationTooltip label={tr("workspace.contentPanel")}>
-            <ContentPanelToggle />
-          </NavigationTooltip>
-          <WorkspaceLayoutMenu />
         </nav>
       </Tooltip.Provider>
       <div
@@ -150,6 +164,7 @@ export function NavigationRail({
             <BookOpen aria-hidden="true" />
           </a>
         </Button>
+        <WorkspaceLayoutMenu />
         <DataTransferSettings />
         <ThemeControl />
       </div>

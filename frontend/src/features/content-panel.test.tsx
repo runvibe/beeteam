@@ -22,31 +22,62 @@ it.each([
   ["/boards", "Tasks"],
   ["/agents", "Agent Resources"],
   ["/teams", "Teams"],
-])("only highlights the %s destination while its content is visible", async (path, label) => {
+])("toggles content from the active %s destination", async (path, label) => {
   window.history.replaceState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
   const user = userEvent.setup();
   render(<ApiProvider api={createMockApi({ delay: 0 })}><App homeEnabled /></ApiProvider>);
   const nav = screen.getByRole("navigation", { name: "Main navigation" });
+  expect(within(nav).queryByRole("button", { name: "Content panel" })).not.toBeInTheDocument();
   const destination = within(nav).getByRole("button", { name: label });
   const content = document.querySelector<HTMLElement>("#content-panel")!;
-  const toggle = within(nav).getByRole("button", { name: "Content panel" });
 
   expect(destination).toHaveAttribute("data-variant", "secondary");
   expect(destination).toHaveAttribute("aria-current", "page");
+  expect(destination).toHaveAttribute("aria-controls", "content-panel");
+  expect(destination).toHaveAttribute("aria-expanded", "true");
   expect(content).toBeVisible();
-  await user.click(toggle);
+  await user.click(destination);
   expect(content).not.toBeVisible();
-  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(window.location.pathname).toBe(path);
+  expect(destination).toHaveAttribute("aria-expanded", "false");
   expect(destination).toHaveAttribute("data-variant", "ghost");
   expect(destination).not.toHaveAttribute("aria-current");
   expect(destination).toBeEnabled();
 
   await user.click(destination);
   expect(content).toBeVisible();
-  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(window.location.pathname).toBe(path);
+  expect(destination).toHaveAttribute("aria-expanded", "true");
   expect(destination).toHaveAttribute("data-variant", "secondary");
   expect(destination).toHaveAttribute("aria-current", "page");
+});
+
+it("keeps a detail route when its destination closes and reopens content", async () => {
+  window.history.replaceState({}, "", "/teams/team-x");
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  const user = userEvent.setup();
+  render(<ApiProvider api={createMockApi({ delay: 0 })}><App /></ApiProvider>);
+  const teams = screen.getByRole("button", { name: "Teams" });
+  await user.click(teams);
+  expect(useChatPanel.getState().contentOpen).toBe(false);
+  await user.click(teams);
+  expect(useChatPanel.getState().contentOpen).toBe(true);
+  expect(window.location.pathname).toBe("/teams/team-x");
+});
+
+it("navigates and opens content when another destination is chosen", async () => {
+  const user = userEvent.setup();
+  render(<ApiProvider api={createMockApi({ delay: 0 })}><App /></ApiProvider>);
+  const content = document.querySelector<HTMLElement>("#content-panel")!;
+  await user.click(screen.getByRole("button", { name: "Tasks" }));
+  expect(content).not.toBeVisible();
+  const agents = screen.getByRole("button", { name: "Agent Resources" });
+  await user.click(agents);
+  expect(content).toBeVisible();
+  expect(window.location.pathname).toBe("/agents");
+  expect(agents).toHaveAttribute("aria-current", "page");
+  expect(screen.getByRole("button", { name: "Tasks" })).not.toHaveAttribute("aria-current");
 });
 
 it("closes and reopens content without losing its mounted state, and navigation reopens it", async () => {
@@ -61,19 +92,16 @@ it("closes and reopens content without losing its mounted state, and navigation 
   await user.click(within(content).getByRole("button", { name: "Close content panel" }));
   expect(content).not.toBeVisible();
   expect(input).toHaveValue("draft");
-  const toggle = screen.getByRole("button", { name: "Content panel" });
-  expect(toggle).toHaveAttribute("aria-expanded", "false");
-  expect(toggle).toHaveFocus();
+  const tasks = screen.getByRole("button", { name: "Tasks" });
+  expect(tasks).toHaveAttribute("aria-expanded", "false");
+  expect(tasks).toHaveFocus();
   expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.contentOpen).toBe(false);
-  await user.click(toggle);
+  await user.click(tasks);
   expect(content).toBeVisible();
   expect(screen.getByRole("searchbox", { name: "Search boards" })).toBe(input);
   expect(input).toHaveValue("draft");
   expect(useChatPanel.getState().panelOrder).toEqual(order);
 
-  await user.click(within(content).getByRole("button", { name: "Close content panel" }));
-  await user.click(screen.getByRole("button", { name: "Agent Resources" }));
-  expect(content).toBeVisible();
   await user.click(within(content).getByRole("button", { name: "Close content panel" }));
   navigate("/teams");
   expect(await screen.findByRole("heading", { name: "Teams" })).toBeVisible();

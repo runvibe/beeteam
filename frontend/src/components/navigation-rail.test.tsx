@@ -140,7 +140,7 @@ it("keeps the breadcrumb header aligned with the main content gutter", () => {
   }
 });
 
-it("offers preset panel layouts in the navigation and persists the chosen order", async () => {
+it("offers preset panel layouts in the navigation footer and persists the chosen order", async () => {
   setLocalePreference("en");
   window.history.replaceState({}, "", "/boards");
   useChatPanel.setState({
@@ -158,7 +158,13 @@ it("offers preset panel layouts in the navigation and persists the chosen order"
     </ApiProvider>,
   );
   const nav = screen.getByRole("navigation", { name: "Main navigation" });
-  await user.click(within(nav).getByRole("button", { name: "Panel layouts" }));
+  expect(within(nav).queryByRole("button", { name: "Panel layouts" })).toBeNull();
+  const footer = document.querySelector<HTMLElement>(".navigation-footer")!;
+  const trigger = within(footer).getByRole("button", { name: "Panel layouts" });
+  expect(trigger.parentElement).toBe(footer);
+  expect(trigger).toHaveAttribute("title", "Panel layouts");
+  expect(trigger).not.toHaveClass("navigation-button");
+  await user.click(trigger);
   const layouts = screen.getByRole("radiogroup", { name: "Panel layouts" });
   expect(within(layouts).getAllByRole("radio")).toHaveLength(6);
   const option = within(layouts).getByRole("radio", { name: "Chat, Content, Sessions" });
