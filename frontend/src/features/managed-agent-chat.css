@@ -410,12 +410,8 @@
 .assistant-composer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 0.5rem;
-}
-.assistant-composer-row small {
-  color: var(--muted-foreground);
-  font-size: 0.7rem;
 }
 .assistant-send {
   border-radius: 999px;

@@ -67,6 +67,12 @@ it("exposes a multiline plaintext editor with an accessible placeholder", () => 
   expect(editor).toHaveAttribute("aria-placeholder");
 });
 
+it("does not display the keyboard shortcut hint in the composer", () => {
+  setup();
+  expect(screen.queryByText("Enter to send · Shift+Enter for a new line")).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Send request" })).toBeVisible();
+});
+
 it("preserves the caret when the edited draft is echoed by its parent", () => {
   const { editor, props, rerender } = setup();
   editor.textContent = "hello";

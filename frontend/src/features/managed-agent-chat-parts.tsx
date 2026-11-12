@@ -382,7 +382,6 @@ export function Composer({
           }}
         />
         <div className="assistant-composer-row">
-          <small>{t("managed.composerHint")}</small>
           {retry ? (
             <Button type="submit" size="sm" disabled={!canSend}>
               {label}
