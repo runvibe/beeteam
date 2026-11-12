@@ -129,7 +129,7 @@ Run the configured local backend on a loopback address and open the chat panel f
 
 The chat composer is a plain-text editable field: Markdown remains text, and pasting removes rich formatting. In managed chat, Enter sends and Shift+Enter starts a new line; the legacy leader chat keeps Ctrl/Cmd+Enter to send. Messages are limited to 65,536 UTF-8 bytes. Fields do not add a focus highlight when clicked, while keyboard navigation retains a visible focus outline.
 
-Close the content panel from its header and reopen it with the content icon in the navigation; choosing a destination also reopens it. The current page and drafts stay mounted, and the remaining panels use the available space.
+The fixed navigation rail uses compact icon buttons to leave more room for the workspace. Close the content panel from its header and reopen it with the content icon in the navigation; choosing a destination also reopens it. Its destination is highlighted only while the content panel is visible. The current page and drafts stay mounted, and the remaining panels use the available space.
 
 Fenced Markdown code blocks with a recognized language are syntax-highlighted in the chat and other Markdown views, using the card background and text colors for the current light or dark theme. Blocks without a recognized language remain plain text; Mermaid diagrams retain their dedicated renderer. Managed chat tables use horizontal row separators without vertical lines. Hover over a chat table or focus it to copy its headers and rows as CSV; the copy button is also available on touch devices.
 

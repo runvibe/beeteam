@@ -6,8 +6,8 @@ import {
 } from "react";
 
 const query = "(max-width: 1055px)";
-// Match the existing detail breakpoint after the 68px navigation rail.
-const compactContentWidth = 1055 - 68;
+// The compact detail threshold is based on content width, not the rail.
+const compactContentWidth = 987;
 export const DetailContainerContext = createContext<HTMLElement | null>(null);
 
 export function useDetailMobile() {

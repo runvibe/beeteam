@@ -9,6 +9,7 @@ import {
 it("docks the same filter DOM when the mobile origin is outside the viewport, even without selected filters", () => {
   let update = () => {};
   let bottom = 200;
+  let navigationTop = 300;
   vi.stubGlobal("matchMedia", () => ({
     matches: true,
     addEventListener() {},
@@ -28,8 +29,10 @@ it("docks the same filter DOM when the mobile origin is outside the viewport, ev
     .spyOn(HTMLElement.prototype, "getBoundingClientRect")
     .mockImplementation(function (this: HTMLElement) {
       if (this.classList.contains("navigation-logo"))
-        return { bottom: 50 } as DOMRect;
-      if (this.tagName === "NAV") return { top: 300 } as DOMRect;
+        return { bottom: 50, width: 33 } as DOMRect;
+      if (this.classList.contains("navigation-rail"))
+        return { left: 0, width: 51 } as DOMRect;
+      if (this.tagName === "NAV") return { top: navigationTop } as DOMRect;
       if (this.classList.contains("task-filter-origin"))
         return { bottom, top: bottom - 44 } as DOMRect;
       return { left: 0, height: 44 } as DOMRect;
@@ -60,9 +63,19 @@ it("docks the same filter DOM when the mobile origin is outside the viewport, ev
     act(update);
     expect(host).toHaveAttribute("data-docked", "true");
     expect(host.style.top).toBe("58px");
+    expect(host.style.left).toBe("9px");
     expect(screen.getByRole("button", { name: "Filter" })).toBe(control);
     expect(screen.getByLabelText("Draft")).toHaveValue("kept");
     expect(screen.getAllByRole("button", { name: "Filter" })).toHaveLength(1);
+    navigationTop = 100;
+    act(update);
+    expect(host).toHaveAttribute("data-docked", "false");
+    navigationTop = 110;
+    act(update);
+    expect(host).toHaveAttribute("data-docked", "true");
+    navigationTop = 300;
+    act(update);
+    expect(host).toHaveAttribute("data-docked", "true");
     act(() => screen.getByLabelText("Draft").focus());
     view.rerender(<Harness active={false} />);
     expect(host).toHaveAttribute("data-docked", "true");

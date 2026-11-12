@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Make the fixed navigation rail and its icon buttons 25% smaller.
+
+- Clear the active destination highlight while the content panel is hidden.
+
 - Close and reopen the content panel while keeping the current page and drafts.
 
 - Copy chat tables as CSV using an accessible button shown on hover or focus.

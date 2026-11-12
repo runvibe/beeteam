@@ -17,6 +17,38 @@ beforeEach(() => {
 });
 afterEach(() => setLocalePreference("pt"));
 
+it.each([
+  ["/home", "Home"],
+  ["/boards", "Tasks"],
+  ["/agents", "Agent Resources"],
+  ["/teams", "Teams"],
+])("only highlights the %s destination while its content is visible", async (path, label) => {
+  window.history.replaceState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  const user = userEvent.setup();
+  render(<ApiProvider api={createMockApi({ delay: 0 })}><App homeEnabled /></ApiProvider>);
+  const nav = screen.getByRole("navigation", { name: "Main navigation" });
+  const destination = within(nav).getByRole("button", { name: label });
+  const content = document.querySelector<HTMLElement>("#content-panel")!;
+  const toggle = within(nav).getByRole("button", { name: "Content panel" });
+
+  expect(destination).toHaveAttribute("data-variant", "secondary");
+  expect(destination).toHaveAttribute("aria-current", "page");
+  expect(content).toBeVisible();
+  await user.click(toggle);
+  expect(content).not.toBeVisible();
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  expect(destination).toHaveAttribute("data-variant", "ghost");
+  expect(destination).not.toHaveAttribute("aria-current");
+  expect(destination).toBeEnabled();
+
+  await user.click(destination);
+  expect(content).toBeVisible();
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(destination).toHaveAttribute("data-variant", "secondary");
+  expect(destination).toHaveAttribute("aria-current", "page");
+});
+
 it("closes and reopens content without losing its mounted state, and navigation reopens it", async () => {
   const user = userEvent.setup();
   render(<ApiProvider api={createMockApi({ delay: 0 })}><App /></ApiProvider>);

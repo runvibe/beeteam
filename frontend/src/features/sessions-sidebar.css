@@ -317,15 +317,15 @@
   .sessions-sidebar[data-drawer="true"] {
     display: flex;
     position: fixed;
-    inset: 0 auto 0 68px;
-    width: min(320px, calc(100vw - 68px));
+    inset: 0 auto 0 var(--navigation-rail-width);
+    width: min(320px, calc(100vw - var(--navigation-rail-width)));
     z-index: 45;
     box-shadow: var(--shadow-md);
   }
   .sessions-backdrop {
     display: block;
     position: fixed;
-    inset: 0 0 0 68px;
+    inset: 0 0 0 var(--navigation-rail-width);
     z-index: 44;
     background: color-mix(in oklch, var(--foreground) 20%, transparent);
   }

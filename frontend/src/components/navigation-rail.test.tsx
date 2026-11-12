@@ -78,6 +78,41 @@ it("puts the chat toggle in the main navigation and opens and closes the panel",
   expect(await screen.findByRole("tooltip")).toHaveTextContent("Chat com o líder");
 });
 
+it("keeps the navigation rail and its controls at most 75% of their former size", () => {
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/navigation.css", "utf8");
+  document.head.append(style);
+  const pixels = (element: Element, value: string) => {
+    const variable = /^var\((--[\w-]+)\)$/.exec(value)?.[1];
+    return Number.parseFloat(
+      variable ? getComputedStyle(element).getPropertyValue(variable) : value,
+    );
+  };
+  try {
+    window.history.replaceState({}, "", "/boards");
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App />
+      </ApiProvider>,
+    );
+    const shell = document.querySelector(".app-shell.icon-navigation")!;
+    const column = getComputedStyle(shell).gridTemplateColumns.split(/\s+/)[0];
+    expect(pixels(shell, column)).toBeLessThanOrEqual(68 * 0.75);
+    const rail = document.querySelector(".navigation-rail")!;
+    const controls = rail.querySelectorAll(".navigation-logo, .navigation-button, .navigation-footer button, .navigation-footer a");
+    expect(controls.length).toBeGreaterThan(0);
+    for (const control of Array.from(controls)) {
+      const { width, height } = getComputedStyle(control);
+      expect(pixels(control, width)).toBeLessThanOrEqual(44 * 0.75);
+      expect(pixels(control, height)).toBeLessThanOrEqual(44 * 0.75);
+      expect(pixels(control, width)).toBeGreaterThanOrEqual(24);
+      expect(pixels(control, height)).toBeGreaterThanOrEqual(24);
+    }
+  } finally {
+    style.remove();
+  }
+});
+
 it("keeps the breadcrumb header aligned with the main content gutter", () => {
   const style = document.createElement("style");
   style.textContent = readFileSync("src/navigation.css", "utf8");

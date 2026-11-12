@@ -232,7 +232,7 @@
 @media (max-width: 850px) {
   .chat-side-panel {
     position: fixed;
-    inset: 0 0 0 68px;
+    inset: 0 0 0 var(--navigation-rail-width);
     width: auto;
     z-index: 35;
     border: 0;

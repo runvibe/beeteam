@@ -13,6 +13,7 @@ import { FilterDirectionContext } from "@/components/filter-context";
 import "./task-filter-layout.css";
 
 type Dock = { top: number; left: number; height: number };
+const MIN_DOCK_HEIGHT = 44;
 const TaskFilterHost = createContext<{
   host: HTMLElement | null;
   setHost: (node: HTMLDivElement | null) => void;
@@ -56,7 +57,9 @@ export function TaskFilterSlot() {
     const nav = rail?.querySelector<HTMLElement>("nav");
     const update = () => {
       if (!dockedRef.current) setHeight(host.getBoundingClientRect().height);
-      const top = (logo?.getBoundingClientRect().bottom ?? 0) + 8;
+      const logoBounds = logo?.getBoundingClientRect();
+      const controlWidth = logoBounds?.width ?? 0;
+      const top = (logoBounds?.bottom ?? 0) + 8;
       const available = (nav?.getBoundingClientRect().top ?? 0) - top - 8;
       const bounds = node.getBoundingClientRect();
       const docked = !!(
@@ -65,7 +68,8 @@ export function TaskFilterSlot() {
         rail &&
         logo &&
         nav &&
-        available >= 44 &&
+        controlWidth > 0 &&
+        available >= Math.max(MIN_DOCK_HEIGHT, controlWidth) &&
         (bounds.bottom <= 0 || bounds.top >= window.innerHeight)
       );
       dockedRef.current = docked;
@@ -75,7 +79,7 @@ export function TaskFilterSlot() {
               top,
               left:
                 rail!.getBoundingClientRect().left +
-                (rail!.getBoundingClientRect().width - 44) / 2,
+                (rail!.getBoundingClientRect().width - controlWidth) / 2,
               height: available,
             }
           : null,

@@ -62,6 +62,7 @@ export function NavigationRail({
   useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
+  const contentOpen = useChatPanel((state) => state.contentOpen);
   const showContent = useChatPanel((state) => state.setContentOpen);
   const siteLink = useSiteLink();
   const homeHref = area === "home" ? currentUrl() : destination("/home");
@@ -104,10 +105,10 @@ export function NavigationRail({
             <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
-              variant={area === "home" ? "secondary" : "ghost"}
+              variant={contentOpen && area === "home" ? "secondary" : "ghost"}
               size="icon"
               aria-label={tr("common.home")}
-              aria-current={area === "home" ? "page" : undefined}
+              aria-current={contentOpen && area === "home" ? "page" : undefined}
               onClick={openHome}
             >
               <House aria-hidden="true" />
@@ -118,10 +119,10 @@ export function NavigationRail({
             <NavigationTooltip key={target} label={label}>
                 <Button
                   className="navigation-button"
-                  variant={area === target ? "secondary" : "ghost"}
+                  variant={contentOpen && area === target ? "secondary" : "ghost"}
                   size="icon"
                   aria-label={name}
-                  aria-current={area === target ? "page" : undefined}
+                  aria-current={contentOpen && area === target ? "page" : undefined}
                   onClick={() => { showContent(true); setArea(target); }}
                 >
                   <Icon aria-hidden="true" />
