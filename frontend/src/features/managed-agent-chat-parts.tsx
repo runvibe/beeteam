@@ -185,7 +185,6 @@ function AgentMessage({
       className="assistant-msg assistant-msg-agent"
       aria-label={t("managed.agent")}
     >
-      <AgentMark />
       <div className="assistant-msg-body">
         {message.content ? (
           <Markdown fileCitations={cards.size ? cards : undefined}>

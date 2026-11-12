@@ -131,7 +131,7 @@ The chat composer is a plain-text editable field: Markdown remains text, and pas
 
 Fenced Markdown code blocks with a recognized language are syntax-highlighted in the chat and other Markdown views, using the card background and text colors for the current light or dark theme. Blocks without a recognized language remain plain text; Mermaid diagrams retain their dedicated renderer.
 
-The chat shows persistent messages, tool activity and per-action approvals. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
+The chat shows persistent messages, tool activity and per-action approvals. Assistant messages use the available width without a repeated logo. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
 
 Integrated execution requires local listener/peer and a trusted browser origin. A hosted panel must be explicitly allowlisted through `APP_CORS_ALLOW_ORIGINS`; MCP origins are configured separately with `MCP_ALLOWED_ORIGINS`. A wildcard CORS policy does not authorize remote execution. The default external-only workflow remains unchanged.
 

@@ -104,12 +104,6 @@
     var(--chat-radius);
   background: var(--muted);
 }
-.assistant-msg-agent {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: start;
-}
 .assistant-msg-body {
   padding-top: 0.125rem;
 }
