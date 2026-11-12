@@ -127,6 +127,78 @@
   object-fit: contain;
   background: var(--muted);
 }
+.assistant-generated-file {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
+  gap: 0.65rem;
+  width: min(100%, 22rem);
+  padding: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 0.5rem);
+  background: var(--card);
+  color: var(--foreground);
+  text-align: left;
+}
+.assistant-generated-file-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.4rem;
+  background: var(--muted);
+}
+.assistant-generated-file-icon svg,
+.assistant-generated-file-actions svg {
+  width: 1rem;
+  height: 1rem;
+}
+.assistant-generated-file-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  line-height: 1.35;
+}
+.assistant-generated-file-info strong {
+  overflow: hidden;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.assistant-generated-file-info small {
+  color: var(--muted-foreground);
+  font-size: 0.72rem;
+}
+.assistant-generated-file-actions {
+  display: inline-flex;
+  flex: none;
+  gap: 0.15rem;
+}
+.assistant-generated-file-actions :is(a, button) {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.assistant-generated-file-actions :is(a, button):hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.assistant-generated-file-actions :is(a, button):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+.assistant-generated-file-actions button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
 .assistant-msg-system {
   align-self: center;
   max-width: 90%;
@@ -320,7 +392,8 @@
   background: var(--card);
   box-shadow: var(--shadow-sm);
 }
-:root:not([data-focus-source="pointer"]) .assistant-composer-box:has(.plain-text-editor:focus-visible) {
+:root:not([data-focus-source="pointer"])
+  .assistant-composer-box:has(.plain-text-editor:focus-visible) {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
 }

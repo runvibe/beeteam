@@ -34,6 +34,16 @@ export function managedMessageImageUrl(
   const base = baseUrl.replace(/\/$/, "").replace(/\/v[12]$/, "/v2");
   return `${base}/agent-conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/images/${encodeURIComponent(imageId)}`;
 }
+export function managedMessageFileUrl(
+  baseUrl: string,
+  conversationId: string,
+  messageId: string,
+  fileId: string,
+  preview = false,
+) {
+  const base = baseUrl.replace(/\/$/, "").replace(/\/v[12]$/, "/v2");
+  return `${base}/agent-conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/files/${encodeURIComponent(fileId)}${preview ? "/preview" : ""}`;
+}
 export function createManagedAgentApi(options: HttpOptions = {}) {
   const request = createTransport({
     ...options,
@@ -83,9 +93,13 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
         `/agents/${encodeURIComponent(id)}/conversations${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
       ),
     sessions: (query: SessionQuery = {}) =>
-      request<S["ConversationPage"]>(`/agent-conversations${sessionQuery(query)}`),
+      request<S["ConversationPage"]>(
+        `/agent-conversations${sessionQuery(query)}`,
+      ),
     conversation: (id: string) =>
-      request<S["Conversation"]>(`/agent-conversations/${encodeURIComponent(id)}`),
+      request<S["Conversation"]>(
+        `/agent-conversations/${encodeURIComponent(id)}`,
+      ),
     updateConversation: (
       id: string,
       body: S["PatchConversation"],
@@ -100,7 +114,9 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
         "PATCH",
       ),
     requests: (id: string, cursor?: string) =>
-      request<S["RequestPage"]>(`/agents/${encodeURIComponent(id)}/requests${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
+      request<S["RequestPage"]>(
+        `/agents/${encodeURIComponent(id)}/requests${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
+      ),
     teamApprovals: (id: string, cursor?: string) =>
       request<S["TeamManagedApprovalPage"]>(
         `/teams/${encodeURIComponent(id)}/managed-approvals${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`,
@@ -110,6 +126,18 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
     messages: (id: string, cursor?: string) =>
       request<S["MessagePage"]>(
         `/agent-conversations/${encodeURIComponent(id)}/messages${cursor ? "?cursor=" + encodeURIComponent(cursor) : ""}`,
+      ),
+    recoverFiles: (
+      conversationId: string,
+      messageId: string,
+      version: number,
+      key: string,
+    ) =>
+      write<S["Message"]>(
+        `/agent-conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/recover-files`,
+        undefined,
+        key,
+        version,
       ),
     cancel: (id: string, version: number, key: string) =>
       write<S["AgentRequest"]>(

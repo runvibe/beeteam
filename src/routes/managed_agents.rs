@@ -45,6 +45,18 @@ pub fn router(config: &crate::config::AppConfig) -> Router<AppState> {
             "/api/v2/agent-conversations/{conversationId}/messages/{messageId}/images/{imageId}",
             get(image),
         )
+        .route(
+            "/api/v2/agent-conversations/{conversationId}/messages/{messageId}/files/{fileId}",
+            get(file),
+        )
+        .route(
+            "/api/v2/agent-conversations/{conversationId}/messages/{messageId}/files/{fileId}/preview",
+            get(file_preview),
+        )
+        .route(
+            "/api/v2/agent-conversations/{conversationId}/messages/{messageId}/recover-files",
+            post(write),
+        )
         .route("/api/v2/agent-approvals/{approvalId}/decision", post(write))
         .layer(axum::middleware::from_fn_with_state(
             super::local_access::Policy::new(config, false),
@@ -167,7 +179,79 @@ async fn image(
                 .map_err(|_| Failure::new("internal_error", "Invalid stored image type"))?,
         );
         headers.insert("X-Content-Type-Options", "nosniff".parse().unwrap());
-        headers.insert("Cache-Control", "private, max-age=31536000, immutable".parse().unwrap());
+        headers.insert(
+            "Cache-Control",
+            "private, max-age=31536000, immutable".parse().unwrap(),
+        );
+        Ok::<_, Failure>(response)
+    }
+    .await;
+    result.unwrap_or_else(error)
+}
+async fn file(
+    State(state): State<AppState>,
+    Path(ids): Path<(String, String, String)>,
+) -> Response {
+    serve_file(state, ids, false).await
+}
+async fn file_preview(
+    State(state): State<AppState>,
+    Path(ids): Path<(String, String, String)>,
+) -> Response {
+    serve_file(state, ids, true).await
+}
+async fn serve_file(
+    state: AppState,
+    (conversation, message, file): (String, String, String),
+    preview: bool,
+) -> Response {
+    let result = async {
+        let parse = crate::dto::backend::parse_id;
+        let out = state
+            .managed_agents()
+            .message_file(parse(&conversation)?, parse(&message)?, parse(&file)?)
+            .await?;
+        if preview && out.media_type != "application/pdf" {
+            return Err(Failure::missing());
+        }
+        let name: String = out
+            .name
+            .chars()
+            .map(|c| {
+                if c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_') {
+                    c
+                } else {
+                    '_'
+                }
+            })
+            .collect();
+        let mut response = Response::new(axum::body::Body::from(out.bytes));
+        let headers = response.headers_mut();
+        headers.insert(
+            "Content-Type",
+            out.media_type
+                .parse()
+                .map_err(|_| Failure::new("internal_error", "Invalid stored file type"))?,
+        );
+        headers.insert(
+            "Content-Disposition",
+            format!(
+                "{}; filename=\"{}\"",
+                if preview { "inline" } else { "attachment" },
+                name
+            )
+            .parse()
+            .map_err(|_| Failure::new("internal_error", "Invalid filename"))?,
+        );
+        headers.insert("X-Content-Type-Options", "nosniff".parse().unwrap());
+        headers.insert(
+            "Content-Security-Policy",
+            "sandbox; default-src 'none'".parse().unwrap(),
+        );
+        headers.insert(
+            "Cache-Control",
+            "private, max-age=31536000, immutable".parse().unwrap(),
+        );
         Ok::<_, Failure>(response)
     }
     .await;
@@ -189,7 +273,9 @@ async fn write(
     request: Request,
 ) -> Response {
     let result = async {
-        let op = if path.as_str().ends_with("/execution-config") {
+        let op = if path.as_str().ends_with("/recover-files") {
+            "recover-files"
+        } else if path.as_str().ends_with("/execution-config") {
             "configure"
         } else if path.as_str().ends_with("/reconcile") {
             "reconcile"
@@ -230,10 +316,12 @@ async fn write(
         } else {
             serde_json::from_slice(&bytes).map_err(|_| Failure::invalid("Invalid JSON body"))?
         };
-        if matches!(op, "cancel" | "reconcile") && !c.body.is_null() {
+        if matches!(op, "cancel" | "reconcile" | "recover-files") && !c.body.is_null() {
             return Err(Failure::invalid("No body accepted"));
         }
-        let out = if op == "reconcile" {
+        let out = if op == "recover-files" {
+            state.managed_agents().recover_files(c).await?
+        } else if op == "reconcile" {
             state.managed_agents().reconcile(c).await?
         } else {
             state.managed_agents().write(c, "http").await?

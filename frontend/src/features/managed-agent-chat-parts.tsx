@@ -1,10 +1,13 @@
-import { type FormEvent, type ReactNode } from "react";
+import { useMemo, type FormEvent, type ReactNode } from "react";
 import {
   ArrowUp,
   Boxes,
+  Download,
+  ExternalLink,
   KanbanSquare,
   ShieldQuestion,
   Sparkles,
+  RefreshCw,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -13,8 +16,16 @@ import { Button } from "@/components/ui/button";
 import { Markdown } from "@/components/markdown";
 import { PlainTextEditor } from "@/components/plain-text-editor";
 import type { components } from "@/api/generated/managed-agents";
-import { managedMessageImageUrl } from "@/api/managed-agents";
+import {
+  managedMessageFileUrl,
+  managedMessageImageUrl,
+} from "@/api/managed-agents";
 import { runtimeConfig } from "@/runtime";
+import {
+  attachmentCategory,
+  formatAttachmentSize,
+} from "./attachment-presentation";
+import { categories } from "./attachment-categories";
 
 type Message = components["schemas"]["Message"];
 
@@ -66,7 +77,136 @@ function MessageImages({ message }: { message: Message }) {
   );
 }
 
-export function ChatMessage({ message }: { message: Message }) {
+function GeneratedFile({
+  message,
+  file,
+  onRecover,
+  busy,
+}: {
+  message: Message;
+  file: components["schemas"]["MessageFile"];
+  onRecover?: () => void;
+  busy?: boolean;
+}) {
+  const url =
+    file.status === "available" && file.id && file.mediaType
+      ? managedMessageFileUrl(
+          runtimeConfig.apiBaseUrl,
+          message.conversationId,
+          message.id,
+          file.id,
+        )
+      : undefined;
+  const category =
+    categories[attachmentCategory(file.mediaType ?? "", file.name)];
+  const Icon = category.icon;
+  return (
+    <span
+      className="assistant-generated-file"
+      role="group"
+      aria-label={file.name}
+    >
+      <span className="assistant-generated-file-icon">
+        <Icon aria-hidden="true" />
+      </span>
+      <span className="assistant-generated-file-info">
+        <strong title={file.name}>{file.name}</strong>
+        <small>
+          {url
+            ? `${category.label}${file.sizeBytes !== undefined ? ` · ${formatAttachmentSize(file.sizeBytes)}` : ""}`
+            : t("managed.fileUnavailable")}
+        </small>
+      </span>
+      <span className="assistant-generated-file-actions">
+        {url && file.mediaType === "application/pdf" && (
+          <a
+            href={`${url}/preview`}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={t("managed.previewFile", { name: file.name })}
+            title={t("managed.previewFile", { name: file.name })}
+          >
+            <ExternalLink aria-hidden="true" />
+          </a>
+        )}
+        {url && (
+          <a
+            href={url}
+            download={file.name}
+            aria-label={t("managed.downloadFile", { name: file.name })}
+            title={t("managed.downloadFile", { name: file.name })}
+          >
+            <Download aria-hidden="true" />
+          </a>
+        )}
+        {!url && onRecover && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onRecover}
+            aria-label={t("managed.recoverFile", { name: file.name })}
+            title={t("managed.recoverFile", { name: file.name })}
+          >
+            <RefreshCw aria-hidden="true" />
+          </button>
+        )}
+      </span>
+    </span>
+  );
+}
+
+function AgentMessage({
+  message,
+  onRecover,
+  busy,
+}: {
+  message: Message;
+  onRecover?: () => void;
+  busy?: boolean;
+}) {
+  const cards = useMemo(
+    () =>
+      new Map(
+        (message.files ?? []).map((file) => [
+          file.index,
+          <GeneratedFile
+            key={file.index}
+            message={message}
+            file={file}
+            onRecover={onRecover}
+            busy={busy}
+          />,
+        ]),
+      ),
+    [message, onRecover, busy],
+  );
+  return (
+    <article
+      className="assistant-msg assistant-msg-agent"
+      aria-label={t("managed.agent")}
+    >
+      <AgentMark />
+      <div className="assistant-msg-body">
+        {message.content ? (
+          <Markdown fileCitations={cards.size ? cards : undefined}>
+            {message.content}
+          </Markdown>
+        ) : null}
+        <MessageImages message={message} />
+      </div>
+    </article>
+  );
+}
+
+export function ChatMessage({
+  message,
+  onRecover,
+  busy,
+}: {
+  message: Message;
+  onRecover?: () => void;
+  busy?: boolean;
+}) {
   const label = t(`managed.${message.role}`);
   if (message.role === "requester")
     return (
@@ -78,19 +218,14 @@ export function ChatMessage({ message }: { message: Message }) {
     );
   if (message.role === "system")
     return (
-      <article className="assistant-msg assistant-msg-system" aria-label={label}>
+      <article
+        className="assistant-msg assistant-msg-system"
+        aria-label={label}
+      >
         <Markdown>{message.content}</Markdown>
       </article>
     );
-  return (
-    <article className="assistant-msg assistant-msg-agent" aria-label={label}>
-      <AgentMark />
-      <div className="assistant-msg-body">
-        {message.content ? <Markdown>{message.content}</Markdown> : null}
-        <MessageImages message={message} />
-      </div>
-    </article>
-  );
+  return <AgentMessage message={message} onRecover={onRecover} busy={busy} />;
 }
 
 export function RequestStatus({
@@ -147,7 +282,11 @@ export function ApprovalCard({
       </header>
       <p>{description}</p>
       <div className="assistant-approval-actions">
-        <Button size="sm" disabled={disabled} onClick={() => onDecide("accept")}>
+        <Button
+          size="sm"
+          disabled={disabled}
+          onClick={() => onDecide("accept")}
+        >
           {t("managed.accept")}
         </Button>
         <Button
@@ -186,10 +325,7 @@ export function ChatWelcome({
         <ul className="assistant-starters">
           {STARTERS.map(({ id, icon: Icon }) => (
             <li key={id}>
-              <button
-                type="button"
-                onClick={() => onPick(t(`${id}Prompt`))}
-              >
+              <button type="button" onClick={() => onPick(t(`${id}Prompt`))}>
                 <Icon aria-hidden="true" />
                 <span>{t(id)}</span>
               </button>
@@ -225,7 +361,9 @@ export function Composer({
   const label = t(retry ? "managed.retry" : "managed.send");
   return (
     <form className="assistant-composer" onSubmit={submit}>
-      {readOnly && <p className="assistant-readonly">{t("managed.readonly")}</p>}
+      {readOnly && (
+        <p className="assistant-readonly">{t("managed.readonly")}</p>
+      )}
       <div className="assistant-composer-box">
         <PlainTextEditor
           aria-label={t("managed.message")}

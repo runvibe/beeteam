@@ -1,7 +1,7 @@
 mod managed_fixture;
 mod support;
-use managed_fixture::*;
 use beeteam::config::CorsConfig;
+use managed_fixture::*;
 use serde_json::{json, Value};
 use std::sync::atomic::Ordering;
 use support::*;
@@ -815,6 +815,9 @@ async fn generated_images_are_stored_once_and_served_from_the_conversation() {
     assert_eq!(raw_get(&app, &unknown).await.0, 404);
 }
 
+#[path = "managed_agent_http/files.rs"]
+mod files;
+
 async fn raw_get(app: &axum::Router, path: &str) -> (u16, axum::http::HeaderMap, Vec<u8>) {
     use http_body_util::BodyExt;
     use tower::ServiceExt;
@@ -829,6 +832,12 @@ async fn raw_get(app: &axum::Router, path: &str) -> (u16, axum::http::HeaderMap,
         .unwrap();
     let status = response.status().as_u16();
     let headers = response.headers().clone();
-    let bytes = response.into_body().collect().await.unwrap().to_bytes().to_vec();
+    let bytes = response
+        .into_body()
+        .collect()
+        .await
+        .unwrap()
+        .to_bytes()
+        .to_vec();
     (status, headers, bytes)
 }

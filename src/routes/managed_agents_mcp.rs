@@ -39,6 +39,7 @@ pub async fn call(state: &AppState, name: &str, args: Value) -> Result<Value> {
         "decideAgentRequestApproval" => "decision",
         "listAgentSessions" => "sessions",
         "updateAgentConversation" => "update-conversation",
+        "recoverAgentConversationMessageFiles" => "recover-files",
         _ => return Err(Failure::missing()),
     };
     let mut c = command(op);
@@ -64,11 +65,18 @@ pub async fn call(state: &AppState, name: &str, args: Value) -> Result<Value> {
         let query = c
             .query
             .iter()
-            .map(|(k, v)| (k.clone(), v.as_str().map_or_else(|| v.to_string(), str::to_owned)))
+            .map(|(k, v)| {
+                (
+                    k.clone(),
+                    v.as_str().map_or_else(|| v.to_string(), str::to_owned),
+                )
+            })
             .collect();
         return Ok(json!({"data":state.managed_agents().sessions(&query).await?}));
     }
-    let data = if op == "reconcile" {
+    let data = if op == "recover-files" {
+        state.managed_agents().recover_files(c).await?
+    } else if op == "reconcile" {
         state.managed_agents().reconcile(c).await?
     } else if matches!(
         op,

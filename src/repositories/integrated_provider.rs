@@ -6,6 +6,11 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 pub type ProviderFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, SessionFailure>> + Send + 'a>>;
+pub struct GeneratedFile {
+    pub name: String,
+    pub media_type: &'static str,
+    pub bytes: Vec<u8>,
+}
 #[derive(Debug)]
 pub enum IntegratedEvent {
     Accepted(String),
@@ -64,6 +69,9 @@ pub struct ReconciledTurn {
 pub trait IntegratedProvider: Send + Sync {
     fn default_workspace(&self, agent: Uuid) -> Result<String, SessionFailure> {
         super::agent_workspace::prepare(agent)
+    }
+    fn read_output(&self, root: &str, path: &str) -> Result<GeneratedFile, SessionFailure> {
+        super::agent_output::read(root, path)
     }
     fn reconcile<'a>(
         &'a self,

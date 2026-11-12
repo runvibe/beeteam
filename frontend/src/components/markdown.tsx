@@ -1,15 +1,23 @@
 import { useLocale, t as tr } from "@/i18n";
 
-import { createElement, type ReactNode } from "react";
+import { createElement, useMemo, type ReactNode } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { remarkSectionDividers } from "./markdown-sections";
 import { remarkMermaidLimit } from "./mermaid-policy";
 import { MermaidDiagram } from "./mermaid-diagram";
 import { HighlightedCode } from "./markdown-code";
+import { remarkFileCitations } from "./markdown-file-citations";
 
 const plainPlugins = [remarkGfm, remarkMermaidLimit];
 const sectionPlugins = [remarkGfm, remarkSectionDividers, remarkMermaidLimit];
+const citationPlugins = [remarkGfm, remarkMermaidLimit, remarkFileCitations];
+const sectionCitationPlugins = [
+  remarkGfm,
+  remarkSectionDividers,
+  remarkMermaidLimit,
+  remarkFileCitations,
+];
 
 // Stable renderers retain focus and DOM identity during query refreshes.
 const baseComponents: Components = {
@@ -88,18 +96,50 @@ export function Markdown({
   children,
   headingOffset = 0,
   sectionDividers = false,
+  fileCitations,
 }: {
   children: string;
   headingOffset?: 0 | 2;
   sectionDividers?: boolean;
+  fileCitations?: ReadonlyMap<number, ReactNode>;
 }) {
   useLocale();
+  const components = useMemo<Components>(() => {
+    const base = headingOffset ? documentComponents : baseComponents;
+    if (!fileCitations) return base;
+    return {
+      ...base,
+      a: (props) => {
+        const match =
+          props.node?.properties["data-beeteam-citation"] === "true"
+            ? props.href?.match(/^#beeteam-file-(\d+)$/)
+            : undefined;
+        const card = match ? fileCitations.get(Number(match[1])) : undefined;
+        if (card) return <>{card}</>;
+        return props.href ? (
+          <a href={props.href} target="_blank" rel="noopener noreferrer">
+            {props.children}
+          </a>
+        ) : (
+          <span>{props.children}</span>
+        );
+      },
+    };
+  }, [headingOffset, fileCitations]);
   return (
     <div className="markdown-content">
       <ReactMarkdown
         skipHtml
-        remarkPlugins={sectionDividers ? sectionPlugins : plainPlugins}
-        components={headingOffset ? documentComponents : baseComponents}
+        remarkPlugins={
+          fileCitations
+            ? sectionDividers
+              ? sectionCitationPlugins
+              : citationPlugins
+            : sectionDividers
+              ? sectionPlugins
+              : plainPlugins
+        }
+        components={components}
       >
         {children}
       </ReactMarkdown>

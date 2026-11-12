@@ -23,6 +23,7 @@ The OpenAPI is the source for request and response schemas. `managed-agents-mcp.
 | GET agent conversations | listAgentConversations | bounded cursor pagination |
 | GET agent-request | getAgentRequest | consistent snapshot with messages, approvals and cursor |
 | GET conversation messages | listAgentConversationMessages | bounded message history |
+| POST message recover-files | recoverAgentConversationMessageFiles | recover cited files on the original installation using a message version and idempotency key |
 | POST request cancel | cancelAgentRequest | targeted cancellation, If-Match request version |
 | POST request reconcile | reconcileAgentRequest | inspect the original accepted work, never repeat inference |
 | POST approval decision | decideAgentRequestApproval | accept/decline one approval, If-Match approval version |
@@ -44,6 +45,8 @@ Omitted or null conversationId creates a new Bee Team conversation for this requ
 The service verifies agent/task existence, active state and applicable team/task context using current domain rules. It does not silently claim the caller as the executor. Public input cannot set `origin.transport`; the receiving adapter records http or mcp. Conversation/summary_notice origins are generated only by trusted internal orchestration, not caller fields. Origin labels are diagnostic metadata, not authenticated identities.
 
 Replies belong to the request and its conversation. Each message has immutable requestId, conversationId and role. A requester message is not a worker-authored execution summary. External callers consult by the returned request ID; no push to Desktop and no claim that the external harness is controlled. Requests to workers do not grant configuration or approval permissions. Existing authorization/boundary checks apply independently to configure, cancel and decide.
+
+Managed agent output citations are projected as safe markers and message file metadata; stored source text remains unchanged. Only regular, explicitly output-cited files confined to the agent workspace's `output/` can be copied into Bee Team storage. Recovery is an explicit, version-guarded mutation on the original installation; its replay returns the original message snapshot. Binary download and sandboxed PDF preview are HTTP-only and check conversation/message ownership. Missing, invalid or oversized outputs remain unavailable, not successful downloads.
 
 ## Queue, snapshots and idempotency
 

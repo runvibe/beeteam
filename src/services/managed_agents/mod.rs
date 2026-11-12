@@ -1,6 +1,7 @@
 //! Owned-agent orchestration; public identifiers belong exclusively to Bee Team.
 pub mod conversation;
 mod execution;
+mod files;
 mod reads;
 mod sessions;
 mod writes;
@@ -111,6 +112,7 @@ fn public(r: &Record) -> Value {
         v[*key] = r.data[*key].clone();
     }
     if r.table == "managed_messages" {
+        files::project_message(r, &mut v);
         v["images"] = json!(r.data["images"]
             .as_array()
             .map(|images| images
@@ -174,7 +176,9 @@ fn event(r: &mut Records, id: Uuid) -> Result<()> {
 fn configuration(r: &Records, agent: Uuid) -> Result<Value> {
     let a = r.get("agents", agent)?;
     let mut config = a.data["managedConfiguration"].clone();
-    if let Some(fields) = config.as_object_mut() { fields.remove("projectRoot"); }
+    if let Some(fields) = config.as_object_mut() {
+        fields.remove("projectRoot");
+    }
     Ok(
         json!({"agentId":agent,"version":a.version,"configuration":config,"readiness":if a.data["managedConfiguration"].is_null(){"unconfigured"}else{"configured"}}),
     )

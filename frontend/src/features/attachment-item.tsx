@@ -1,19 +1,7 @@
 import { useLocale, t as tr } from "@/i18n";
 
 import { useState } from "react";
-import {
-  Download,
-  File,
-  FileImage,
-  FileAudio,
-  FileVideo,
-  FileText,
-  FileSpreadsheet,
-  FileChartColumn,
-  FileArchive,
-  FileCode,
-  type LucideIcon,
-} from "lucide-react";
+import { Download } from "lucide-react";
 import { useApi } from "@/api/context";
 import type { Resources } from "@/api/types";
 import { AgentName } from "@/components/names";
@@ -24,81 +12,10 @@ import { Button } from "@/components/ui/button";
 import {
   attachmentCategory,
   formatAttachmentSize,
-  type AttachmentCategory,
 } from "./attachment-presentation";
+import { categories } from "./attachment-categories";
+export { categories } from "./attachment-categories";
 import "./attachment-item.css";
-
-export const categories: Record<
-  AttachmentCategory,
-  { icon: LucideIcon; label: string }
-> = {
-  image: {
-    icon: FileImage,
-    get label() {
-      return tr("files.image");
-    },
-  },
-  audio: {
-    icon: FileAudio,
-    get label() {
-      return tr("files.audio");
-    },
-  },
-  video: {
-    icon: FileVideo,
-    get label() {
-      return tr("files.video");
-    },
-  },
-  pdf: {
-    icon: FileText,
-    get label() {
-      return tr("files.pdf");
-    },
-  },
-  spreadsheet: {
-    icon: FileSpreadsheet,
-    get label() {
-      return tr("files.spreadsheet");
-    },
-  },
-  presentation: {
-    icon: FileChartColumn,
-    get label() {
-      return tr("files.presentation");
-    },
-  },
-  document: {
-    icon: FileText,
-    get label() {
-      return tr("files.document");
-    },
-  },
-  archive: {
-    icon: FileArchive,
-    get label() {
-      return tr("files.archive");
-    },
-  },
-  code: {
-    icon: FileCode,
-    get label() {
-      return tr("files.codeData");
-    },
-  },
-  text: {
-    icon: FileText,
-    get label() {
-      return tr("errors.text");
-    },
-  },
-  file: {
-    icon: File,
-    get label() {
-      return tr("files.file");
-    },
-  },
-};
 
 export function Attachment({ item }: { item: Resources["attachments"] }) {
   useLocale();

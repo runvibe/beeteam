@@ -26,6 +26,7 @@ export function ManagedAgentHistory({
   onPick,
   onControl,
   onDecide,
+  onRecover,
 }: {
   page: S["MessagePage"] | undefined;
   messages: S["Message"][];
@@ -40,6 +41,7 @@ export function ManagedAgentHistory({
   onPick: (draft: string) => void;
   onControl: (request: S["AgentRequest"]) => void;
   onDecide: (approval: S["Approval"], decision: "accept" | "decline") => void;
+  onRecover: (message: S["Message"]) => void;
 }) {
   const bottom = useRef<HTMLDivElement>(null);
   const scroll = useRef(true);
@@ -73,7 +75,12 @@ export function ManagedAgentHistory({
         <p className="assistant-history-empty">{t("managed.noHistory")}</p>
       )}
       {messages.map((message) => (
-        <ChatMessage key={message.id} message={message} />
+        <ChatMessage
+          key={message.id}
+          message={message}
+          busy={busy}
+          onRecover={() => onRecover(message)}
+        />
       ))}
       {current && current.state !== "completed" && (
         <RequestStatus

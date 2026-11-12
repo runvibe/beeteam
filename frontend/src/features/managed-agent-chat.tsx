@@ -208,6 +208,7 @@ export function ManagedAgentChat({
         conversations.refetch(),
         requests.refetch(),
         request ? snapshot.refetch() : Promise.resolve(),
+        !request && conversation ? history.refetch() : Promise.resolve(),
         needsConversationDetail ? detail.refetch() : Promise.resolve(),
         queryClient.invalidateQueries({ queryKey: ["managed-sessions"] }),
       ]);
@@ -483,6 +484,13 @@ export function ManagedAgentChat({
             )}
             onDecide={(approval, decision) => void act(() =>
               mutate(`decision:${approval.id}:${decision}`, (key) => api.decide(approval.id, approval.version, decision, key))
+            )}
+            onRecover={(message) => void act(() =>
+              mutate(`recover-files:${message.id}:${message.version}`, async (key) => {
+                const updated = await api.recoverFiles(message.conversationId, message.id, message.version, key);
+                setOlder((old) => old.map((item) => item.id === updated.id ? updated : item));
+                return updated;
+              })
             )}
           />
           {mode === "chat" && (

@@ -15,6 +15,7 @@ use std::sync::{
 use tokio::sync::mpsc;
 use uuid::Uuid;
 pub const TEST_PNG: &[u8] = b"\x89PNG\r\n\x1a\nbee";
+pub const TEST_PDF: &[u8] = b"%PDF-1.4\n% bee test\n%%EOF\n";
 pub struct TestProvider(pub AtomicUsize, pub AtomicBool);
 impl IntegratedProvider for TestProvider {
     fn default_workspace(
@@ -39,6 +40,20 @@ impl IntegratedProvider for TestProvider {
                 ));
             }
             Ok(Uuid::new_v4().to_string())
+        })
+    }
+    fn reconcile<'a>(
+        &'a self,
+        target: &'a SessionDestination,
+        _turn: &'a str,
+        _profile: &'a Value,
+    ) -> ProviderFuture<'a, ReconciledTurn> {
+        Box::pin(async move {
+            let path = std::path::Path::new(&target.project_root).join("output/example.pdf");
+            Ok(ReconciledTurn {
+                status: ReconciledStatus::Completed,
+                text: Some(format!("Recovered: :codex-file-citation{{path=\"{}\" purpose=\"output\"}}", path.display())),
+            })
         })
     }
     fn inspect<'a>(
@@ -110,6 +125,35 @@ impl IntegratedProvider for TestProvider {
                         .await
                         .unwrap();
                 }
+            }
+            if text == "create-file" || text == "legacy-file" || text == "fake-pdf" || text == "uncertain-file" {
+                let path = std::path::Path::new(&target.project_root)
+                    .join("output")
+                    .join("example.pdf");
+                std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+                if text != "legacy-file" {
+                    std::fs::write(
+                        &path,
+                        if text == "fake-pdf" {
+                            b"<html>not a pdf".as_slice()
+                        } else {
+                            TEST_PDF
+                        },
+                    )
+                    .unwrap();
+                }
+                events
+                    .send(IntegratedEvent::Text(format!(
+                        "Here is the file:\n\n:codex-file-citation{{path=\"{}\" purpose=\"output\"}}",
+                        path.display()
+                    )))
+                    .await
+                    .unwrap();
+                if text == "uncertain-file" {
+                    return Err(beeteam::dto::session_delivery::SessionFailure::new("outcome_unknown", "Outcome unknown", true));
+                }
+                events.send(IntegratedEvent::Completed).await.unwrap();
+                return Ok(());
             }
             events
                 .send(IntegratedEvent::Text("Res".into()))

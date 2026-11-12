@@ -69155,6 +69155,51 @@
                           "format": "date-time",
                           "type": "string"
                         },
+                        "files": {
+                          "description": "Files referenced by the agent, without provider-local paths.",
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "id": {
+                                "format": "uuid",
+                                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                                "type": "string"
+                              },
+                              "index": {
+                                "minimum": 0,
+                                "type": "integer"
+                              },
+                              "mediaType": {
+                                "enum": [
+                                  "application/pdf",
+                                  "application/octet-stream"
+                                ]
+                              },
+                              "name": {
+                                "maxLength": 255,
+                                "minLength": 1,
+                                "type": "string"
+                              },
+                              "sizeBytes": {
+                                "minimum": 0,
+                                "type": "integer"
+                              },
+                              "status": {
+                                "enum": [
+                                  "available",
+                                  "unavailable"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "index",
+                              "name",
+                              "status"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
                         "id": {
                           "format": "uuid",
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -69490,6 +69535,51 @@
                     "createdAt": {
                       "format": "date-time",
                       "type": "string"
+                    },
+                    "files": {
+                      "description": "Files referenced by the agent, without provider-local paths.",
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "id": {
+                            "format": "uuid",
+                            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                            "type": "string"
+                          },
+                          "index": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "mediaType": {
+                            "enum": [
+                              "application/pdf",
+                              "application/octet-stream"
+                            ]
+                          },
+                          "name": {
+                            "maxLength": 255,
+                            "minLength": 1,
+                            "type": "string"
+                          },
+                          "sizeBytes": {
+                            "minimum": 0,
+                            "type": "integer"
+                          },
+                          "status": {
+                            "enum": [
+                              "available",
+                              "unavailable"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "index",
+                          "name",
+                          "status"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
                     },
                     "id": {
                       "format": "uuid",
@@ -70984,6 +71074,191 @@
               "version",
               "createdAt",
               "updatedAt"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "description": "Send requests to Bee Team-owned agents or inspect/configure their execution. Never accepts an external provider session ID. Requests may execute code locally; actors are metadata, not authentication.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "idempotencyKey": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "params": {
+            "additionalProperties": false,
+            "properties": {
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "messageId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "conversationId",
+              "messageId"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "params",
+          "idempotencyKey",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "name": "recoverAgentConversationMessageFiles",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "content": {
+                "maxLength": 65536,
+                "type": "string",
+                "x-maxBytes": 65536
+              },
+              "conversationId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "createdAt": {
+                "format": "date-time",
+                "type": "string"
+              },
+              "files": {
+                "description": "Files referenced by the agent, without provider-local paths.",
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "index": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "mediaType": {
+                      "enum": [
+                        "application/pdf",
+                        "application/octet-stream"
+                      ]
+                    },
+                    "name": {
+                      "maxLength": 255,
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "sizeBytes": {
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    "status": {
+                      "enum": [
+                        "available",
+                        "unavailable"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "index",
+                    "name",
+                    "status"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "images": {
+                "description": "Images generated by the agent for this message. Fetch bytes from getAgentConversationMessageImage.",
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "description": {
+                      "anyOf": [
+                        {
+                          "maxLength": 2048,
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "id": {
+                      "format": "uuid",
+                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                      "type": "string"
+                    },
+                    "mediaType": {
+                      "enum": [
+                        "image/png",
+                        "image/jpeg",
+                        "image/webp"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "mediaType",
+                    "description"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "requestId": {
+                "format": "uuid",
+                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "requester",
+                  "agent",
+                  "system"
+                ]
+              },
+              "version": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "conversationId",
+              "requestId",
+              "role",
+              "content",
+              "version",
+              "createdAt"
             ],
             "type": "object"
           }

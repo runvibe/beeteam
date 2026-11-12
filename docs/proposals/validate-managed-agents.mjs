@@ -50,6 +50,16 @@ const jsonOperations=operations.filter(op=>Object.entries(op.responses).some(([s
 if (mcp.tools.length !== jsonOperations.length) throw new Error("Missing MCP operation (JSON operations only)");
 const generated=astToString(await openapiTS(spec));
 const target=new URL("../../frontend/src/api/generated/managed-agents.ts",import.meta.url);
-if (process.argv.includes("--write")) await fs.writeFile(target,generated);
-else if (await fs.readFile(target,"utf8") !== generated) throw new Error("Generated TS drift; run validator --write");
+const operationsTarget=new URL("../../frontend/src/api/generated/managed-agents-operations.ts",import.meta.url);
+const marker="export interface operations {";
+const split=generated.indexOf(marker);
+if (split < 0 || generated.indexOf(marker, split + marker.length) >= 0) throw new Error("Cannot split generated managed-agent operations");
+const outputs=[
+  [target, `import type { operations } from "./managed-agents-operations";\nexport type { operations } from "./managed-agents-operations";\n${generated.slice(0,split)}`],
+  [operationsTarget, `import type { components } from "./managed-agents";\n${generated.slice(split)}`],
+];
+for (const [path, content] of outputs) {
+  if (process.argv.includes("--write")) await fs.writeFile(path,content);
+  else if (await fs.readFile(path,"utf8") !== content) throw new Error("Generated TS drift; run validator --write");
+}
 console.log(`PASS: ${operations.length} HTTP operations, ${mcp.tools.length} proposed MCP tools, ${fixtures.length} fixtures, UTF-8 boundaries and generated TypeScript.`);

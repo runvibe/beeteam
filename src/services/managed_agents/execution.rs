@@ -67,13 +67,7 @@ impl ManagedAgentService {
         let thread = if let Some(t) = conversation.data["providerThread"].as_str() {
             t.to_owned()
         } else {
-            match provider
-                .create(
-                    &project_root,
-                    &config["toolProfile"],
-                )
-                .await
-            {
+            match provider.create(&project_root, &config["toolProfile"]).await {
                 Ok(t) => {
                     let mut u = self.store.begin().await?;
                     let c = u.records.get_mut("managed_conversations", cid)?;
@@ -103,13 +97,13 @@ impl ManagedAgentService {
         }
         transition(&mut u.records, id, "running", Value::Null)?;
         u.commit().await?;
-        let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record worker summaries using the assigned task.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
+        let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record worker summaries using the assigned task. Save files intended for the user under the workspace output/ directory and cite them as output files.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
         let work = provider.run(&target, &text, &config["toolProfile"], tx, control_rx);
         tokio::pin!(work);
         let result = loop {
             tokio::select! {
-                Some(e)=rx.recv()=>self.persist(id,e).await?,
-                result=&mut work=>{while let Ok(e)=rx.try_recv(){self.persist(id,e).await?;}break result;}
+                Some(e)=rx.recv()=>self.persist(id,e,&target.project_root).await?,
+                result=&mut work=>{while let Ok(e)=rx.try_recv(){self.persist(id,e,&target.project_root).await?;}break result;}
             }
         };
         self.controls.lock().await.remove(&id);
@@ -136,7 +130,12 @@ impl ManagedAgentService {
         )?;
         u.commit().await
     }
-    async fn persist(&self, id: Uuid, e: IntegratedEvent) -> Result<()> {
+    async fn persist(&self, id: Uuid, e: IntegratedEvent, root: &str) -> Result<()> {
+        let captured = if matches!(e, IntegratedEvent::Completed) {
+            self.capture_request_outputs(id, root).await?
+        } else {
+            None
+        };
         let mut u = self.store.begin().await?;
         let r = u.records.get("managed_requests", id)?.clone();
         if terminal(&r.data["state"]) {
@@ -178,6 +177,9 @@ impl ManagedAgentService {
                     json!("awaiting_approval");
             }
             IntegratedEvent::Completed | IntegratedEvent::Cancelled => {
+                if let Some(captured) = captured {
+                    super::files::save(&mut u, captured).await?;
+                }
                 let state = if r.data["declined"] == true {
                     "failed"
                 } else if matches!(e, IntegratedEvent::Completed) {
@@ -279,7 +281,9 @@ impl ManagedAgentService {
             harness: "codex".into(),
             installation_id: self.installation.clone(),
             external_id: thread.into(),
-            project_root: self.provider.as_ref()
+            project_root: self
+                .provider
+                .as_ref()
                 .ok_or_else(|| Failure::new("provider_unavailable", "Provider unavailable"))?
                 .default_workspace(r.reference("agentId").ok_or_else(Failure::missing)?)
                 .map_err(|e| Failure::new(e.code, e.message))?,
@@ -291,6 +295,15 @@ impl ManagedAgentService {
             .reconcile(&target, turn, &config["toolProfile"])
             .await
             .map_err(|e| Failure::new(e.code, "Could not inspect original turn"))?;
+        let mut captured = if result.status == ReconciledStatus::Completed && r.data["declined"] != true {
+            if let Some(text) = &result.text {
+                self.capture_text_outputs(&target.project_root, bounded_text(text.clone())).await?
+            } else {
+                self.capture_request_outputs(id, &target.project_root).await?
+            }
+        } else {
+            None
+        };
         let mut u = self.store.begin().await?;
         if let Some(out) = u.replay("managed-local", &op, key, &hash).await? {
             u.rollback().await?;
@@ -306,6 +319,12 @@ impl ManagedAgentService {
         };
         if let Some(text) = result.text {
             save_text(&mut u.records, &r, text)?;
+        }
+        if let Some(captured) = captured.as_mut() {
+            captured.bind_message(agent_message(&u.records, id).ok_or_else(Failure::missing)?);
+        }
+        if let Some(captured) = captured {
+            super::files::save(&mut u, captured).await?;
         }
         transition(&mut u.records, id, state, decline_error(&r))?;
         let out = public(u.records.get("managed_requests", id)?);
