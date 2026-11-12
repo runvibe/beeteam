@@ -104,6 +104,10 @@
     var(--chat-radius);
   background: var(--muted);
 }
+.managed-agent-chat .markdown-content th,
+.managed-agent-chat .markdown-content td {
+  border-inline: none;
+}
 .assistant-msg-body {
   padding-top: 0.125rem;
 }

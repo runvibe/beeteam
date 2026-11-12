@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove vertical lines from Markdown tables in managed chat, keeping horizontal row separators.
+
 - Remove the assistant logo beside chat messages, giving their content the full available width.
 
 - Show managed-agent output files as compact chat cards with download and sandboxed PDF preview. Store explicitly cited files from the agent's `output/` directory with the conversation, and allow recovery of older citations on their original installation without exposing local paths.
