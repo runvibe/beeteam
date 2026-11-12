@@ -129,7 +129,7 @@ Run the configured local backend on a loopback address and open the chat panel f
 
 The chat composer is a plain-text editable field: Markdown remains text, and pasting removes rich formatting. In managed chat, Enter sends and Shift+Enter starts a new line; the legacy leader chat keeps Ctrl/Cmd+Enter to send. Messages are limited to 65,536 UTF-8 bytes. Fields do not add a focus highlight when clicked, while keyboard navigation retains a visible focus outline.
 
-Fenced Markdown code blocks with a recognized language are syntax-highlighted in the chat and other Markdown views, with colors for the current light or dark theme. Blocks without a recognized language remain plain text; Mermaid diagrams retain their dedicated renderer.
+Fenced Markdown code blocks with a recognized language are syntax-highlighted in the chat and other Markdown views, using the card background and text colors for the current light or dark theme. Blocks without a recognized language remain plain text; Mermaid diagrams retain their dedicated renderer.
 
 The chat shows persistent messages, tool activity and per-action approvals. Reloading reconnects to persisted events. If an accepted turn becomes uncertain, use the explicit status check; it queries the original provider turn and never resends the message. Unknown outcomes without a saved provider ID stay unresolved. Native command/file/network approvals are implemented; OAuth and structured MCP forms are not.
 

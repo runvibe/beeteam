@@ -1,4 +1,5 @@
 import { Blob as NodeBlob } from "node:buffer";
+import { readFileSync } from "node:fs";
 import { render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Markdown } from "./markdown";
@@ -21,6 +22,41 @@ it("highlights a JavaScript block without changing its source", async () => {
   expect(keyword?.style.getPropertyValue("--code-light")).toBe("#D73A49");
   expect(keyword?.style.getPropertyValue("--code-dark")).toBe("#F97583");
 });
+
+it.each([
+  ["light", false, "#f1e2d3", "rgb(241, 226, 211)"],
+  ["dark", true, "#172637", "rgb(23, 38, 55)"],
+])(
+  "uses the card background for highlighted code in %s mode",
+  async (_mode, dark, cardColor, expectedBackground) => {
+    const root = document.documentElement;
+    const wasDark = root.classList.contains("dark");
+    const style = document.createElement("style");
+    style.textContent =
+      ".markdown-content pre { background: #abcdef; }" +
+      readFileSync("src/components/markdown-code.css", "utf8").replaceAll(
+        "var(--card)",
+        cardColor,
+      );
+    document.head.append(style);
+    root.classList.toggle("dark", dark);
+    try {
+      const { container } = render(
+        <Markdown>{"```js\nconst a = 1\n```"}</Markdown>,
+      );
+      await waitFor(() =>
+        expect(
+          container.querySelector("pre.markdown-highlight"),
+        ).not.toBeNull(),
+      );
+      const pre = container.querySelector("pre")!;
+      expect(getComputedStyle(pre).backgroundColor).toBe(expectedBackground);
+    } finally {
+      root.classList.toggle("dark", wasDark);
+      style.remove();
+    }
+  },
+);
 
 it("highlights another supported language using its grammar", async () => {
   const { container } = render(

@@ -1,15 +1,10 @@
 .markdown-content pre.markdown-highlight {
-  background: #fff;
-  color: #24292e;
+  background: var(--card);
+  color: var(--card-foreground);
 }
 
 .markdown-content pre.markdown-highlight span {
   color: var(--code-light);
-}
-
-.dark .markdown-content pre.markdown-highlight {
-  background: #24292e;
-  color: #e1e4e8;
 }
 
 .dark .markdown-content pre.markdown-highlight span {
