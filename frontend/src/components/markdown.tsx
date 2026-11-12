@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { remarkSectionDividers } from "./markdown-sections";
 import { remarkMermaidLimit } from "./mermaid-policy";
 import { MermaidDiagram } from "./mermaid-diagram";
+import { HighlightedCode } from "./markdown-code";
 
 const plainPlugins = [remarkGfm, remarkMermaidLimit];
 const sectionPlugins = [remarkGfm, remarkSectionDividers, remarkMermaidLimit];
@@ -14,23 +15,34 @@ const sectionPlugins = [remarkGfm, remarkSectionDividers, remarkMermaidLimit];
 const baseComponents: Components = {
   pre: ({ node, children, ...props }) => {
     const code = node?.children[0];
-    if (
-      code?.type === "element" &&
-      code.tagName === "code" &&
-      Array.isArray(code.properties.className) &&
-      code.properties.className.some(
-        (name) => String(name).toLowerCase() === "language-mermaid",
-      )
-    ) {
+    if (code?.type === "element" && code.tagName === "code") {
+      const classes = Array.isArray(code.properties.className)
+        ? code.properties.className.map(String)
+        : [];
+      const language = classes
+        .find((name) => name.toLowerCase().startsWith("language-"))
+        ?.slice("language-".length)
+        .toLowerCase();
       const source = code.children
         .map((child) => (child.type === "text" ? child.value : ""))
         .join("");
-      return (
-        <MermaidDiagram
-          source={source}
-          limited={code.properties["data-mermaid-limited"] === true}
-        />
-      );
+      if (language === "mermaid") {
+        return (
+          <MermaidDiagram
+            source={source}
+            limited={code.properties["data-mermaid-limited"] === true}
+          />
+        );
+      }
+      if (language) {
+        return (
+          <HighlightedCode
+            source={source}
+            language={language}
+            fallback={<pre {...props}>{children}</pre>}
+          />
+        );
+      }
     }
     return <pre {...props}>{children}</pre>;
   },
