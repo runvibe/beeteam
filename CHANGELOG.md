@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Place the main navigation buttons below the logo, keep preferences at the bottom, and allow the rail to scroll on short screens.
 - Overlay the chat table copy button in the upper-right corner and make generated file cards fill the available width.
 - Remove the keyboard shortcut hint from the managed chat composer.
 - Order the navigation controls as Home, Chat, Sessions, Tasks, Agents, and Teams.

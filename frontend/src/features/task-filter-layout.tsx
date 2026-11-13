@@ -55,35 +55,46 @@ export function TaskFilterSlot() {
     const rail = document.querySelector<HTMLElement>(".navigation-rail");
     const logo = rail?.querySelector<HTMLElement>(".navigation-logo");
     const nav = rail?.querySelector<HTMLElement>("nav");
+    const footer = rail?.querySelector<HTMLElement>(".navigation-footer");
     const update = () => {
       if (!dockedRef.current) setHeight(host.getBoundingClientRect().height);
       const logoBounds = logo?.getBoundingClientRect();
+      const railBounds = rail?.getBoundingClientRect();
       const controlWidth = logoBounds?.width ?? 0;
-      const top = (logoBounds?.bottom ?? 0) + 8;
-      const available = (nav?.getBoundingClientRect().top ?? 0) - top - 8;
+      const start = Math.max(
+        nav?.getBoundingClientRect().bottom ?? 0,
+        railBounds?.top ?? 0,
+        0,
+      );
+      const end = Math.min(
+        footer?.getBoundingClientRect().top ?? 0,
+        railBounds?.bottom ?? 0,
+        window.innerHeight,
+      );
+      const minimum = Math.max(MIN_DOCK_HEIGHT, controlWidth);
+      const space = end - start;
+      const gap = Math.min(8, Math.max(0, (space - minimum) / 2));
+      const top = start + gap;
+      const available = space - 2 * gap;
       const bounds = node.getBoundingClientRect();
-      const docked = !!(
+      const dock =
         host.childElementCount &&
         media.matches &&
-        rail &&
+        railBounds &&
         logo &&
         nav &&
+        footer &&
         controlWidth > 0 &&
-        available >= Math.max(MIN_DOCK_HEIGHT, controlWidth) &&
+        available >= minimum &&
         (bounds.bottom <= 0 || bounds.top >= window.innerHeight)
-      );
-      dockedRef.current = docked;
-      setDock(
-        docked
           ? {
               top,
-              left:
-                rail!.getBoundingClientRect().left +
-                (rail!.getBoundingClientRect().width - controlWidth) / 2,
+              left: railBounds.left + (railBounds.width - controlWidth) / 2,
               height: available,
             }
-          : null,
-      );
+          : null;
+      dockedRef.current = !!dock;
+      setDock(dock);
     };
     const observer =
       typeof IntersectionObserver === "undefined"
@@ -93,6 +104,8 @@ export function TaskFilterSlot() {
     const resize = new ResizeObserver(update);
     resize.observe(host);
     if (rail) resize.observe(rail);
+    if (nav) resize.observe(nav);
+    if (footer) resize.observe(footer);
     const focusChanged = () => queueMicrotask(update);
     host.addEventListener("focusin", focusChanged);
     host.addEventListener("focusout", focusChanged);
@@ -104,6 +117,7 @@ export function TaskFilterSlot() {
     });
     media.addEventListener("change", update);
     window.addEventListener("resize", update);
+    rail?.addEventListener("scroll", update);
     update();
     return () => {
       observer?.disconnect();
@@ -113,6 +127,7 @@ export function TaskFilterSlot() {
       host.removeEventListener("focusout", focusChanged);
       media.removeEventListener("change", update);
       window.removeEventListener("resize", update);
+      rail?.removeEventListener("scroll", update);
     };
   }, [host, active, setDock]);
   return (

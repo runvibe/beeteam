@@ -147,6 +147,28 @@ it("keeps the navigation rail and its controls at most 75% of their former size"
   }
 });
 
+it("keeps the navigation immediately below the logo and preferences at the bottom", () => {
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/navigation.css", "utf8");
+  document.head.append(style);
+  try {
+    render(
+      <ApiProvider api={createMockApi({ delay: 0 })}>
+        <App homeEnabled />
+      </ApiProvider>,
+    );
+    const rail = document.querySelector(".navigation-rail")!;
+    const footer = rail.querySelector(".navigation-footer")!;
+    expect(getComputedStyle(rail).gridTemplateRows).toMatch(
+      /^var\(--navigation-control-size\)\s+auto\s/,
+    );
+    expect(getComputedStyle(rail).overflowY).toBe("auto");
+    expect(getComputedStyle(footer).alignSelf).toBe("end");
+  } finally {
+    style.remove();
+  }
+});
+
 it("keeps the breadcrumb header aligned with the main content gutter", () => {
   const style = document.createElement("style");
   style.textContent = readFileSync("src/navigation.css", "utf8");
