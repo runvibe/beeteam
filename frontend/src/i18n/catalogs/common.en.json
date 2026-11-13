@@ -170,6 +170,8 @@
   "agentResources": "Agent Resources",
   "beeTeamGoToBoards": "Bee Team - go to boards",
   "mainNavigation": "Main navigation",
+  "hive": "Hive",
+  "hiveNavigation": "Hive navigation",
   "globalPreferences": "Global preferences",
   "dateUnavailable": "Date unavailable",
   "retrySaving": "Retry saving",

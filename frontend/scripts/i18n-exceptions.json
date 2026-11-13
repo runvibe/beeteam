@@ -60,19 +60,19 @@
     "reason": "HTML rel security tokens, not rendered content."
   },
   {
-    "file": "src/components/navigation-rail.tsx",
+    "file": "src/features/hive-navigation.tsx",
     "text": "boards",
-    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+    "reason": "Stable area ID for navigation state and URLs; the separate label functions are translated."
   },
   {
-    "file": "src/components/navigation-rail.tsx",
+    "file": "src/features/hive-navigation.tsx",
     "text": "agents",
-    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+    "reason": "Stable area ID for navigation state and URLs; the separate label functions are translated."
   },
   {
-    "file": "src/components/navigation-rail.tsx",
+    "file": "src/features/hive-navigation.tsx",
     "text": "teams",
-    "reason": "Stable area ID for navigation state and URLs; the separate label/name getters are translated."
+    "reason": "Stable area ID for navigation state and URLs; the separate label functions are translated."
   },
   {
     "file": "src/components/navigation-rail.tsx",

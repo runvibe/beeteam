@@ -29,6 +29,8 @@ import { Teams, TeamPage } from "./features/teams";
 import { ChatWorkspace } from "./features/chat-side-panel";
 import { SessionsSidebar } from "./features/sessions-sidebar";
 import { ContentPanelClose } from "./features/content-panel-controls";
+import { HiveNavigation } from "./features/hive-navigation";
+import { isHiveArea } from "./state/hive-navigation";
 import { useChatPanel } from "./state/chat-panel";
 import { ConnectedHome } from "./launch/connected-home";
 import "./App.css";
@@ -59,6 +61,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   const contentOpen = useChatPanel((state) => state.contentOpen);
   const area = useUi((s) => s.area),
     setArea = useUi((s) => s.setArea);
+  const hive = isHiveArea(area);
   return (
     <MotionConfig reducedMotion="user">
       <HeaderFiltersContext.Provider value={filterTarget}>
@@ -71,8 +74,10 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
                 id="content-panel"
                 hidden={!contentOpen}
                 data-workspace-panel="content"
+                data-hive={hive || undefined}
                 ref={setDetailContainer}
               >
+                {hive && <HiveNavigation />}
                 <ApiCompatibilityBanner />
                 <header className="topbar" data-dock-handle="content">
                   <AppPath />

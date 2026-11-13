@@ -146,7 +146,7 @@ describe("Bee Team interface", () => {
       </ApiProvider>,
     );
     await userEvent.click(
-      screen.getByRole("button", { name: "Recursos de Agentes" }),
+      screen.getByRole("link", { name: "Agentes" }),
     );
     await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
     const agent = await screen.findByRole("region", { name: "Agente" });
@@ -180,7 +180,7 @@ describe("Bee Team interface", () => {
       </ApiProvider>,
     );
     await userEvent.click(
-      screen.getByRole("button", { name: "Recursos de Agentes" }),
+      screen.getByRole("link", { name: "Agentes" }),
     );
     await userEvent.click(await screen.findByRole("link", { name: "Lia" }));
     await userEvent.click(

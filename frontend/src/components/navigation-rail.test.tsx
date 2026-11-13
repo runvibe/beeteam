@@ -31,9 +31,7 @@ it.each([true, false])("orders navigation controls when homeEnabled is %s", (hom
     ...(homeEnabled ? ["Início"] : []),
     "Chat com o líder",
     "Mostrar ou ocultar sessões",
-    "Tarefas",
-    "Recursos de Agentes",
-    "Times",
+    "Hive",
   ];
   const controls = expected.map((name) => within(nav).getByRole("button", { name }));
   expect(
@@ -57,28 +55,33 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
   const brand = screen.getByRole("link", { name: "Bee Team - ir para boards" });
   expect(brand).toHaveTextContent("");
   const nav = screen.getByRole("navigation", { name: "Navegação principal" });
-  const tasks = within(nav).getByRole("button", { name: "Tarefas" });
-  expect(tasks).toHaveAttribute("aria-current", "page");
-  expect(tasks).toHaveTextContent("");
+  const hive = within(nav).getByRole("button", { name: "Hive" });
+  expect(within(nav).queryByRole("button", { name: "Tarefas" })).toBeNull();
+  expect(within(nav).queryByRole("button", { name: "Times" })).toBeNull();
+  expect(hive).toHaveAttribute("aria-current", "page");
+  expect(hive).toHaveTextContent("");
   await user.tab();
   expect(brand).toHaveFocus();
   await user.tab();
   expect(within(nav).getByRole("button", { name: "Chat com o líder" })).toHaveFocus();
   await user.tab();
-  expect(tasks).toHaveFocus();
-  expect(await screen.findByRole("tooltip")).toHaveTextContent("Tarefas");
+  expect(hive).toHaveFocus();
+  expect(await screen.findByRole("tooltip")).toHaveTextContent("Hive");
   await user.keyboard("{Escape}");
   expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
-  await user.tab();
-  const agents = within(nav).getByRole("button", {
-    name: "Recursos de Agentes",
-  });
-  expect(agents).toHaveFocus();
-  await user.keyboard("{Enter}");
+  const sections = screen.getByRole("navigation", { name: "Navegação do Hive" });
+  expect(
+    within(sections).getAllByRole("link").map((link) => link.getAttribute("aria-label")),
+  ).toEqual(["Boards", "Agentes", "Times"]);
+  const boards = within(sections).getByRole("link", { name: "Boards" });
+  expect(boards).toHaveAttribute("aria-current", "page");
+  const agents = within(sections).getByRole("link", { name: "Agentes" });
+  await user.click(agents);
   expect(location.pathname).toBe("/agents");
   expect(agents).toHaveAttribute("aria-current", "page");
-  expect(tasks).not.toHaveAttribute("aria-current");
-  await user.click(within(nav).getByRole("button", { name: "Times" }));
+  expect(boards).not.toHaveAttribute("aria-current");
+  expect(hive).toHaveAttribute("aria-current", "page");
+  await user.click(within(sections).getByRole("link", { name: "Times" }));
   expect(location.pathname).toBe("/teams");
   expect(
     screen.getByRole("button", { name: "Configurações globais" }),

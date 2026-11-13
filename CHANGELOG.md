@@ -5,7 +5,7 @@
 - Place the main navigation buttons below the logo, keep preferences at the bottom, and allow the rail to scroll on short screens.
 - Overlay the chat table copy button in the upper-right corner and make generated file cards fill the available width.
 - Remove the keyboard shortcut hint from the managed chat composer.
-- Order the navigation controls as Home, Chat, Sessions, Tasks, Agents, and Teams.
+- Order the navigation controls as Home, Chat, Sessions, and Hive. Hive groups Boards, Agents, and Teams in its own sidebar inside the content panel, turns into tabs on narrow screens, and reopens the last Hive section visited.
 - Make the fixed navigation rail and its icon buttons 25% smaller.
 
 - Clear the active destination highlight while the content panel is hidden.

@@ -6,12 +6,14 @@ import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { setLocalePreference } from "@/i18n";
 import { useChatPanel } from "@/state/chat-panel";
+import { useHiveNavigation } from "@/state/hive-navigation";
 import { navigate } from "@/routing/location";
 import { workspacePanelSizes, workspaceResizeBounds } from "./workspace-panel-sizes";
 
 beforeEach(() => {
   setLocalePreference("en");
   useChatPanel.setState(useChatPanel.getInitialState());
+  useHiveNavigation.setState(useHiveNavigation.getInitialState());
   window.history.replaceState({}, "", "/boards");
   window.dispatchEvent(new PopStateEvent("popstate"));
 });
@@ -19,9 +21,9 @@ afterEach(() => setLocalePreference("pt"));
 
 it.each([
   ["/home", "Home"],
-  ["/boards", "Tasks"],
-  ["/agents", "Agent Resources"],
-  ["/teams", "Teams"],
+  ["/boards", "Hive"],
+  ["/agents", "Hive"],
+  ["/teams", "Hive"],
 ])("toggles content from the active %s destination", async (path, label) => {
   window.history.replaceState({}, "", path);
   window.dispatchEvent(new PopStateEvent("popstate"));
@@ -58,26 +60,38 @@ it("keeps a detail route when its destination closes and reopens content", async
   window.dispatchEvent(new PopStateEvent("popstate"));
   const user = userEvent.setup();
   render(<ApiProvider api={createMockApi({ delay: 0 })}><App /></ApiProvider>);
-  const teams = screen.getByRole("button", { name: "Teams" });
-  await user.click(teams);
+  const hive = screen.getByRole("button", { name: "Hive" });
+  await user.click(hive);
   expect(useChatPanel.getState().contentOpen).toBe(false);
-  await user.click(teams);
+  await user.click(hive);
   expect(useChatPanel.getState().contentOpen).toBe(true);
   expect(window.location.pathname).toBe("/teams/team-x");
 });
 
-it("navigates and opens content when another destination is chosen", async () => {
+it("opens content at the last Hive section when another destination is active", async () => {
+  window.history.replaceState({}, "", "/home");
+  window.dispatchEvent(new PopStateEvent("popstate"));
   const user = userEvent.setup();
-  render(<ApiProvider api={createMockApi({ delay: 0 })}><App /></ApiProvider>);
+  render(<ApiProvider api={createMockApi({ delay: 0 })}><App homeEnabled /></ApiProvider>);
   const content = document.querySelector<HTMLElement>("#content-panel")!;
-  await user.click(screen.getByRole("button", { name: "Tasks" }));
+  const nav = screen.getByRole("navigation", { name: "Main navigation" });
+  const home = within(nav).getByRole("button", { name: "Home" });
+  const hive = within(nav).getByRole("button", { name: "Hive" });
+  expect(screen.queryByRole("navigation", { name: "Hive navigation" })).toBeNull();
+  await user.click(home);
   expect(content).not.toBeVisible();
-  const agents = screen.getByRole("button", { name: "Agent Resources" });
-  await user.click(agents);
+  await user.click(hive);
   expect(content).toBeVisible();
-  expect(window.location.pathname).toBe("/agents");
-  expect(agents).toHaveAttribute("aria-current", "page");
-  expect(screen.getByRole("button", { name: "Tasks" })).not.toHaveAttribute("aria-current");
+  expect(window.location.pathname).toBe("/boards");
+  expect(hive).toHaveAttribute("aria-current", "page");
+  expect(home).not.toHaveAttribute("aria-current");
+  const sections = screen.getByRole("navigation", { name: "Hive navigation" });
+  await user.click(within(sections).getByRole("link", { name: "Teams" }));
+  expect(window.location.pathname).toBe("/teams");
+  await user.click(home);
+  expect(window.location.pathname).toBe("/home");
+  await user.click(hive);
+  expect(window.location.pathname).toBe("/teams");
 });
 
 it("closes and reopens content without losing its mounted state, and navigation reopens it", async () => {
@@ -92,7 +106,7 @@ it("closes and reopens content without losing its mounted state, and navigation 
   await user.click(within(content).getByRole("button", { name: "Close content panel" }));
   expect(content).not.toBeVisible();
   expect(input).toHaveValue("draft");
-  const tasks = screen.getByRole("button", { name: "Tasks" });
+  const tasks = screen.getByRole("button", { name: "Hive" });
   expect(tasks).toHaveAttribute("aria-expanded", "false");
   expect(tasks).toHaveFocus();
   expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.contentOpen).toBe(false);
