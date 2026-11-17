@@ -239,7 +239,8 @@ impl ManagedAgentService {
                     a.touch();
                 }
             }
-            IntegratedEvent::Tool { .. } | IntegratedEvent::Reasoning(_) => {}
+            IntegratedEvent::Reasoning(text) => save_reasoning(&mut u.records, &r, text)?,
+            IntegratedEvent::Tool { .. } => {}
             IntegratedEvent::Image {
                 item_id,
                 media_type,
@@ -415,8 +416,8 @@ fn has_image(records: &Records, request: Uuid, item: &str) -> bool {
         })
     })
 }
-fn attach_image(records: &mut Records, request: &Record, image: Value) -> Result<()> {
-    let mid = match agent_message(records, request.id) {
+fn ensure_agent_message(records: &mut Records, request: &Record) -> Uuid {
+    match agent_message(records, request.id) {
         Some(mid) => mid,
         None => {
             let m = Record::new(
@@ -427,7 +428,10 @@ fn attach_image(records: &mut Records, request: &Record, image: Value) -> Result
             records.insert(m);
             mid
         }
-    };
+    }
+}
+fn attach_image(records: &mut Records, request: &Record, image: Value) -> Result<()> {
+    let mid = ensure_agent_message(records, request);
     let m = records.get_mut("managed_messages", mid)?;
     if !m.data["images"].is_array() {
         m.data["images"] = json!([]);
@@ -436,10 +440,31 @@ fn attach_image(records: &mut Records, request: &Record, image: Value) -> Result
     m.touch();
     Ok(())
 }
+fn save_reasoning(records: &mut Records, request: &Record, text: String) -> Result<()> {
+    let text = bounded_reasoning(text);
+    let mid = ensure_agent_message(records, request);
+    let m = records.get_mut("managed_messages", mid)?;
+    m.data["reasoning"] = json!(text);
+    m.touch();
+    Ok(())
+}
 fn bounded_text(mut text: String) -> String {
     const NOTICE: &str = "\n[Response shortened to the 65536-byte display limit.]";
     if text.len() > 65536 {
         let mut end = 65536 - NOTICE.len();
+        while !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        text.truncate(end);
+        text.push_str(NOTICE);
+    }
+    text
+}
+fn bounded_reasoning(mut text: String) -> String {
+    const LIMIT: usize = 16384;
+    const NOTICE: &str = "\n[Reasoning shortened to the 16384-byte display limit.]";
+    if text.len() > LIMIT {
+        let mut end = LIMIT - NOTICE.len();
         while !text.is_char_boundary(end) {
             end -= 1;
         }
@@ -456,5 +481,14 @@ mod output_tests {
         let text = bounded_text("\u{1f41d}".repeat(20000));
         assert!(text.len() <= 65536);
         assert!(text.ends_with("display limit.]"));
+    }
+}
+#[cfg(test)]
+mod reasoning_tests {
+    #[test]
+    fn reasoning_is_bounded_on_a_char_boundary() {
+        let text = super::bounded_reasoning("é".repeat(9000));
+        assert!(text.len() <= 16384);
+        assert!(text.ends_with("[Reasoning shortened to the 16384-byte display limit.]"));
     }
 }

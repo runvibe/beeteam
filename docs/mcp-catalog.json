@@ -69274,6 +69274,19 @@
                           },
                           "type": "array"
                         },
+                        "reasoning": {
+                          "anyOf": [
+                            {
+                              "maxLength": 16384,
+                              "type": "string",
+                              "x-maxBytes": 16384
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
+                        },
                         "requestId": {
                           "format": "uuid",
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -69665,6 +69678,19 @@
                         "type": "object"
                       },
                       "type": "array"
+                    },
+                    "reasoning": {
+                      "anyOf": [
+                        {
+                          "maxLength": 16384,
+                          "type": "string",
+                          "x-maxBytes": 16384
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
                     },
                     "requestId": {
                       "format": "uuid",
@@ -71308,6 +71334,19 @@
                   "type": "object"
                 },
                 "type": "array"
+              },
+              "reasoning": {
+                "anyOf": [
+                  {
+                    "maxLength": 16384,
+                    "type": "string",
+                    "x-maxBytes": 16384
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
               },
               "requestId": {
                 "format": "uuid",

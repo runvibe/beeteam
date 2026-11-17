@@ -1680,6 +1680,13 @@
               "$ref": "#/components/schemas/MessageImage"
             }
           },
+          "reasoning": {
+            "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning.",
+            "anyOf": [
+              { "type": "string", "maxLength": 16384, "x-maxBytes": 16384 },
+              { "type": "null" }
+            ]
+          },
           "version": {
             "type": "integer",
             "minimum": 1

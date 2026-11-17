@@ -123,6 +123,10 @@ fn public(r: &Record) -> Value {
                 .map(|i| json!({"id":i["id"],"mediaType":i["mediaType"],"description":i["description"]}))
                 .collect::<Vec<_>>())
             .unwrap_or_default());
+        v["reasoning"] = match r.data["reasoning"].as_str() {
+            Some(text) if !text.is_empty() => json!(text),
+            _ => Value::Null,
+        };
     }
     v["version"] = json!(r.version);
     if r.table != "managed_approvals" {
