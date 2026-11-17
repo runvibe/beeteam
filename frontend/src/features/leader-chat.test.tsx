@@ -98,6 +98,27 @@ function api(): LeaderChatApi {
     decide: vi.fn(),
   };
 }
+it("does not present the binding's worker tools as chat tools", async () => {
+  const transport = api();
+  vi.mocked(transport.runtime).mockResolvedValue({
+    agentId: "leader",
+    mode: "integrated",
+    bindingId: "binding",
+    harness: "codex",
+    readiness: "ready",
+    capabilities: { interrupt: true },
+    tools: {
+      webSearch: "live",
+      networkAccess: true,
+      skills: [{ id: "worker-skill", name: "Worker skill", enabled: true, available: true }],
+      mcpServers: [{ id: "worker-server", name: "Worker server", enabled: true, status: "connected" }],
+    },
+  } as never);
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" />);
+  await screen.findByText(/chat-tools\.toml/);
+  expect(screen.queryByText(/Worker skill/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Worker server/)).not.toBeInTheDocument();
+});
 it("sends one message, retains focus, and blocks a second send while turn is queued", async () => {
   const transport = api();
   render(
@@ -309,7 +330,7 @@ it("retries the exact identity after an ambiguous transport failure", async () =
     vi.mocked(transport.send).mock.calls[1],
   );
 });
-it("requires explicit replacement and sends configured tools when creating an integrated session", async () => {
+it("requires explicit replacement and uses file-based chat tools", async () => {
   const transport = api();
   vi.mocked(transport.runtime).mockResolvedValue({
     agentId: "leader",
@@ -345,12 +366,8 @@ it("requires explicit replacement and sends configured tools when creating an in
       name: "Quero substituir o vínculo atual do agente por uma nova sessão integrada, preservando o histórico.",
     }),
   );
-  fireEvent.change(
-    screen.getByLabelText(
-      "Nomes dos servidores MCP configurados, um por linha",
-    ),
-    { target: { value: "docs\ndocs\nsearch" } },
-  );
+  expect(screen.queryByLabelText("Nomes dos servidores MCP configurados, um por linha")).toBeNull();
+  expect(screen.getByText(/chat-tools\.toml/)).toBeInTheDocument();
   fireEvent.click(
     screen.getByRole("button", { name: "Criar sessão integrada" }),
   );
@@ -362,7 +379,7 @@ it("requires explicit replacement and sends configured tools when creating an in
       toolProfile: {
         webSearch: "live",
         networkAccess: true,
-        enabledMcpServers: ["docs", "search"],
+        enabledMcpServers: [],
         skillRoots: [],
       },
     },
@@ -416,11 +433,11 @@ it.each([['session_busy', false], ['session_creation_uncertain', true], ['invali
   vi.mocked(transport.createSession).mockRejectedValue(new ApiError(code === 'invalid_response' ? 201 : 409, code, 'bootstrap'));
   render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" leaderVersion={1}/>);
   await screen.findByRole('button',{name:'Criar sessão integrada'});
-  const settings = screen.getByLabelText('Nomes dos servidores MCP configurados, um por linha');
-  fireEvent.change(settings,{target:{value:'docs'}});
+  const settings = screen.getByLabelText('Pesquisa na web');
+  fireEvent.change(settings,{target:{value:'cached'}});
   fireEvent.click(screen.getByRole('button',{name:'Criar sessão integrada'}));
   await screen.findByRole('alert');
-  expect(settings).toHaveValue('docs');
+  expect(settings).toHaveValue('cached');
   if (uncertain) expect(settings).toBeDisabled(); else expect(settings).toBeEnabled();
   fireEvent.click(screen.getByRole('button',{name: uncertain ? 'Verificar criação da sessão' : 'Criar sessão integrada'}));
   await waitFor(()=>expect(transport.createSession).toHaveBeenCalledTimes(2));

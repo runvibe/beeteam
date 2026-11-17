@@ -8,6 +8,47 @@ use support::*;
 use uuid::Uuid;
 
 #[tokio::test]
+async fn team_chat_starts_without_configuring_agent_or_enabling_worker_requests() {
+    let (app, agent, team, _) = fixture().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let direct = request_key(&app, "POST", &path,
+        json!({"content":"worker-tools"}), None, Uuid::new_v4()).await;
+    assert_eq!(direct.0, 400, "{direct:?}");
+    let first = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-defaults","teamId":id(&team)}), None, Uuid::new_v4()).await;
+    assert_eq!(first.0, 202, "{first:?}");
+    assert_eq!(first.1["configurationVersion"], 1);
+    wait_state(&app, &first.1, "completed").await;
+    let next = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-defaults","conversationId":first.1["conversationId"]}), None, Uuid::new_v4()).await;
+    assert_eq!(next.0, 202, "{next:?}");
+    wait_state(&app, &next.1, "completed").await;
+    let config = get(&app, &format!("/api/v2/agents/{}/execution-config", id(&agent))).await;
+    assert!(config["configuration"].is_null());
+    let updated = request_key(&app, "PUT", &format!("/api/v2/agents/{}/execution-config", id(&agent)),
+        json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}}),
+        ver(&agent), Uuid::new_v4()).await;
+    assert_eq!(updated.0, 200, "{updated:?}");
+    let stale = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-tools","conversationId":first.1["conversationId"]}), None, Uuid::new_v4()).await;
+    assert_eq!(stale.0, 409, "{stale:?}");
+}
+
+#[tokio::test]
+async fn team_chat_uses_file_scope_while_direct_requests_keep_agent_scope() {
+    let (app, agent, team, _) = configured().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let team_request = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-tools","teamId":id(&team)}), None, Uuid::new_v4()).await;
+    assert_eq!(team_request.0, 202, "{team_request:?}");
+    wait_state(&app, &team_request.1, "completed").await;
+    let direct = request_key(&app, "POST", &path,
+        json!({"content":"worker-tools"}), None, Uuid::new_v4()).await;
+    assert_eq!(direct.0, 202, "{direct:?}");
+    wait_state(&app, &direct.1, "completed").await;
+}
+
+#[tokio::test]
 async fn omitted_mode_is_legacy_and_conflicts_with_an_explicit_standard_retry() {
     let (app, agent, _, _) = configured().await;
     let leader = ok(&app, "POST", "/api/v2/agents", json!({"name":"Worker test leader"}), None).await;
@@ -78,6 +119,20 @@ async fn configuration_read_failure_is_clear_and_not_uncertain() {
     let snapshot = wait_state(&app, &result.1, "failed").await;
     assert_eq!(snapshot["request"]["error"]["code"], "codex_config_invalid");
     assert!(snapshot["request"]["error"]["message"].as_str().unwrap().contains("Codex configuration"));
+    let spec: Value = serde_json::from_str(include_str!("../docs/proposals/managed-agents-openapi.json")).unwrap();
+    beeteam::dto::contracts::validate_schema(&spec, &spec["components"]["schemas"]["RequestSnapshot"], &snapshot).unwrap();
+}
+
+#[tokio::test]
+async fn chat_tools_file_errors_are_reported_without_marking_the_turn_uncertain() {
+    let (app, agent, _, _) = configured().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let result = request_key(&app, "POST", &path, json!({"content":"chat-tools-error"}), None, Uuid::new_v4()).await;
+    let snapshot = wait_state(&app, &result.1, "failed").await;
+    assert_eq!(snapshot["request"]["error"]["code"], "chat_tools_config_invalid");
+    assert!(snapshot["request"]["error"]["message"].as_str().unwrap().contains("chat-tools.toml"));
+    let spec: Value = serde_json::from_str(include_str!("../docs/proposals/managed-agents-openapi.json")).unwrap();
+    beeteam::dto::contracts::validate_schema(&spec, &spec["components"]["schemas"]["RequestSnapshot"], &snapshot).unwrap();
 }
 
 #[tokio::test]

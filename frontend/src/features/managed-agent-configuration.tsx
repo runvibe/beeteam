@@ -11,6 +11,7 @@ export function ManagedAgentConfigurationFields({
   skills,
   disabled,
   showNetwork = true,
+  showTools = true,
   onSearch,
   onNetwork,
   onMcps,
@@ -22,6 +23,7 @@ export function ManagedAgentConfigurationFields({
   skills: string;
   disabled: boolean;
   showNetwork?: boolean;
+  showTools?: boolean;
   onSearch: (value: ToolProfile["webSearch"]) => void;
   onNetwork: (value: boolean) => void;
   onMcps: (value: string) => void;
@@ -58,22 +60,27 @@ export function ManagedAgentConfigurationFields({
           {t("managed.network")}
         </label>
       )}
-      <label>
-        {t("managed.mcps")}
-        <Textarea
-          value={mcps}
-          onChange={(event) => onMcps(event.target.value)}
-          disabled={disabled}
-        />
-      </label>
-      <label>
-        {t("managed.skills")}
-        <Textarea
-          value={skills}
-          onChange={(event) => onSkills(event.target.value)}
-          disabled={disabled}
-        />
-      </label>
+      {showTools && (
+        <label>
+          {t("managed.mcps")}
+          <Textarea
+            value={mcps}
+            onChange={(event) => onMcps(event.target.value)}
+            disabled={disabled}
+          />
+        </label>
+      )}
+      {showTools && (
+        <label>
+          {t("managed.skills")}
+          <Textarea
+            value={skills}
+            onChange={(event) => onSkills(event.target.value)}
+            disabled={disabled}
+          />
+        </label>
+      )}
+      {!showTools && <p className="small-note">{t("managed.chatToolsFile")}</p>}
     </>
   );
 }

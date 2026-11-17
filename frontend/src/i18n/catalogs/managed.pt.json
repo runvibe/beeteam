@@ -10,6 +10,7 @@
   "search": "Busca na internet",
   "network": "Permitir rede nos comandos",
   "mcps": "Servidores MCP configurados (um por linha)",
+  "chatToolsFile": "Servidores MCP e pastas de skills do chat são configurados em ~/.beeteam/chat-tools.toml.",
   "skills": "Pastas de skills (uma por linha)",
   "configure": "Configurar agente",
   "conversation": "Conversa",

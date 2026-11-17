@@ -81,7 +81,12 @@ impl LeaderChatService {
         let operation_id=u.records.insert(Record::new("leader_session_operations",json!({"operation":op,"actor":actor.key(),"requestKey":key,"hash":hash,"state":"pending"})));
         u.commit().await?;
         let external = match provider
-            .create(&project_root, &req.tool_profile, None)
+            .create(
+                &project_root,
+                &req.tool_profile,
+                crate::repositories::integrated_provider::ToolSource::Configured,
+                None,
+            )
             .await
         {
             Ok(external) => external,

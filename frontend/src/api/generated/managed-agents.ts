@@ -303,7 +303,7 @@ export interface components {
         RequestState: "accepted" | "preparing" | "queued" | "running" | "awaiting_approval" | "completed" | "failed" | "cancelled" | "uncertain";
         RequestError: {
             /** @enum {unknown} */
-            code: "needs_configuration" | "needs_auth" | "provider_unavailable" | "execution_failed" | "configuration_changed" | "cancelled" | "outcome_unknown";
+            code: "needs_configuration" | "needs_auth" | "codex_config_invalid" | "chat_tools_config_invalid" | "provider_unavailable" | "execution_failed" | "configuration_changed" | "cancelled" | "outcome_unknown";
             message: string & (unknown & unknown);
             retryable: boolean;
         };

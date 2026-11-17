@@ -115,6 +115,16 @@ pub struct ToolProfile {
     pub enabled_mcp_servers: Vec<String>,
     pub skill_roots: Vec<String>,
 }
+impl Default for ToolProfile {
+    fn default() -> Self {
+        Self {
+            web_search: WebSearch::Live,
+            network_access: true,
+            enabled_mcp_servers: Vec::new(),
+            skill_roots: Vec::new(),
+        }
+    }
+}
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ExecutionConfiguration {

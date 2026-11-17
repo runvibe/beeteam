@@ -23,8 +23,9 @@ impl IntegratedProvider for TestProvider {
     }
 
 
-    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, tools: ToolSource, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async move {
+            assert_eq!(tools, ToolSource::Configured);
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
                 return Err(beeteam::dto::session_delivery::SessionFailure::new(
@@ -40,6 +41,7 @@ impl IntegratedProvider for TestProvider {
         &'a self,
         _target: &'a SessionDestination,
         _profile: &'a Value,
+        _: ToolSource,
     ) -> ProviderFuture<'a, Value> {
         Box::pin(async {
             Ok(
@@ -52,6 +54,7 @@ impl IntegratedProvider for TestProvider {
         _target: &'a SessionDestination,
         text: &'a str,
         _profile: &'a Value,
+        _: ToolSource,
         access: Option<beeteam::dto::access_mode::AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,

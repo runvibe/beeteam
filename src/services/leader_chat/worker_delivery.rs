@@ -105,7 +105,15 @@ impl WorkerDeliveryProvider {
         provider: std::sync::Arc<dyn crate::repositories::integrated_provider::IntegratedProvider>,
     ) -> std::result::Result<(), SessionFailure> {
         let (tx, mut rx) = mpsc::channel(32);
-        let run = provider.run(target, text, profile, None, tx, controls);
+        let run = provider.run(
+            target,
+            text,
+            profile,
+            crate::repositories::integrated_provider::ToolSource::Configured,
+            None,
+            tx,
+            controls,
+        );
         tokio::pin!(run);
         let mut accepted = None;
         let mut response = String::new();

@@ -146,7 +146,18 @@ impl ManagedAgentService {
             "managed:send" => {
                 let id = c.id("agentId")?;
                 let a = u.records.get("agents", id)?.clone();
-                if a.archived_at.is_some() || a.data["managedConfiguration"].is_null() {
+                let b: SendAgentRequest = serde_json::from_value(c.body.clone()).unwrap();
+                let team_chat = if let Some(cid) = b.conversation_id {
+                    u.records
+                        .get("managed_conversations", cid)?
+                        .reference("teamId")
+                        .is_some()
+                } else {
+                    b.team_id.is_some()
+                };
+                if a.archived_at.is_some()
+                    || (a.data["managedConfiguration"].is_null() && !team_chat)
+                {
                     return Err(Failure::new(
                         "invalid_request",
                         "Configure an active agent before sending",
@@ -161,14 +172,17 @@ impl ManagedAgentService {
                 {
                     return Err(Failure::new("queue_full", "Agent queue is full"));
                 }
-                let b: SendAgentRequest = serde_json::from_value(c.body.clone()).unwrap();
                 if let Some(t) = b.task_id {
                     let task = u.records.get("tasks", t)?;
                     if task.archived_at.is_some() {
                         return Err(Failure::invalid("Task archived"));
                     }
                 }
-                let generation = a.data["managedGeneration"].clone();
+                let generation = if a.data["managedConfiguration"].is_null() {
+                    json!(1)
+                } else {
+                    a.data["managedGeneration"].clone()
+                };
                 let conversation = if let Some(cid) = b.conversation_id {
                     let row = u.records.get("managed_conversations", cid)?;
                     if row.reference("agentId") != Some(id)

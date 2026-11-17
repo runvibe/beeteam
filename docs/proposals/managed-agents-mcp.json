@@ -577,6 +577,8 @@
                         "enum": [
                           "needs_configuration",
                           "needs_auth",
+                          "codex_config_invalid",
+                          "chat_tools_config_invalid",
                           "provider_unavailable",
                           "execution_failed",
                           "configuration_changed",
@@ -805,6 +807,8 @@
                               "enum": [
                                 "needs_configuration",
                                 "needs_auth",
+                                "codex_config_invalid",
+                                "chat_tools_config_invalid",
                                 "provider_unavailable",
                                 "execution_failed",
                                 "configuration_changed",
@@ -1216,6 +1220,8 @@
                             "enum": [
                               "needs_configuration",
                               "needs_auth",
+                              "codex_config_invalid",
+                              "chat_tools_config_invalid",
                               "provider_unavailable",
                               "execution_failed",
                               "configuration_changed",
@@ -1896,6 +1902,8 @@
                         "enum": [
                           "needs_configuration",
                           "needs_auth",
+                          "codex_config_invalid",
+                          "chat_tools_config_invalid",
                           "provider_unavailable",
                           "execution_failed",
                           "configuration_changed",
@@ -2112,6 +2120,8 @@
                         "enum": [
                           "needs_configuration",
                           "needs_auth",
+                          "codex_config_invalid",
+                          "chat_tools_config_invalid",
                           "provider_unavailable",
                           "execution_failed",
                           "configuration_changed",
@@ -2562,6 +2572,8 @@
                                   "enum": [
                                     "needs_configuration",
                                     "needs_auth",
+                                    "codex_config_invalid",
+                                    "chat_tools_config_invalid",
                                     "provider_unavailable",
                                     "execution_failed",
                                     "configuration_changed",

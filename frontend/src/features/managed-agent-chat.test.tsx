@@ -8,10 +8,35 @@ import { i18n } from "@/i18n";
 import { editPlainText } from "@/test/editable";
 import { useChatAccess } from "@/state/chat-access";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
-it("configures a new team leader without a separate network checkbox", async () => {
+it("opens a new team chat without configuring the agent", async () => {
   await i18n.changeLanguage("en");
   const api = {
     config: vi.fn().mockResolvedValue({ version: 1, configuration: null }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    configure: vi.fn().mockResolvedValue({}),
+    send: vi.fn().mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({ request: { id: "request", state: "running" }, messages: { items: [] }, approvals: [] }),
+  } as unknown as ManagedAgentApi;
+  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <ManagedAgentChat agentId="leader" teamId="team" api={api} />
+  </QueryClientProvider>);
+  const composer = await screen.findByRole("textbox", { name: /message/i });
+  expect(screen.queryByRole("checkbox", { name: /network/i })).toBeNull();
+  expect(screen.queryByLabelText(/configured MCP servers/i)).toBeNull();
+  expect(screen.queryByLabelText(/skill folders/i)).toBeNull();
+  expect(screen.queryByText("Configure agent")).toBeNull();
+  editPlainText(composer, "Hello");
+  fireEvent.keyDown(composer, { key: "Enter" });
+  await waitFor(() => expect(api.send).toHaveBeenCalled());
+  expect(api.configure).not.toHaveBeenCalled();
+});
+it("preserves worker tool selections when editing team chat settings", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({ version: 3, configuration: { toolProfile: {
+      webSearch: "live", networkAccess: false, enabledMcpServers: ["docs"], skillRoots: ["/skills"],
+    } } }),
     conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
     configure: vi.fn().mockResolvedValue({}),
@@ -19,11 +44,15 @@ it("configures a new team leader without a separate network checkbox", async () 
   render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
     <ManagedAgentChat agentId="leader" teamId="team" api={api} />
   </QueryClientProvider>);
-  const configure = await screen.findByText("Configure agent");
-  expect(screen.queryByRole("checkbox", { name: /network/i })).toBeNull();
-  fireEvent.click(configure);
+  fireEvent.click(await screen.findByRole("button", { name: "Edit configuration" }));
+  expect(screen.queryByLabelText(/configured MCP servers/i)).toBeNull();
+  expect(screen.queryByLabelText(/skill folders/i)).toBeNull();
+  fireEvent.change(screen.getByLabelText("Web search"), { target: { value: "cached" } });
+  fireEvent.click(screen.getByRole("button", { name: "Configure agent" }));
   await waitFor(() => expect(api.configure).toHaveBeenCalled());
-  expect(vi.mocked(api.configure).mock.calls[0][1].toolProfile.networkAccess).toBe(true);
+  expect(vi.mocked(api.configure).mock.calls[0][1].toolProfile).toEqual({
+    webSearch: "cached", networkAccess: false, enabledMcpServers: ["docs"], skillRoots: ["/skills"],
+  });
 });
 it("sends the selected team chat mode and preserves it when retrying an uncertain send", async () => {
   await i18n.changeLanguage("en");
@@ -79,6 +108,8 @@ it("configures an agent without exposing a workspace setting", async () => {
   );
   await waitFor(() => expect(screen.getByText("Configure agent")).not.toBeDisabled());
   expect(screen.queryByLabelText("Project folder")).toBeNull();
+  expect(screen.getByLabelText(/configured MCP servers/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/skill folders/i)).toBeInTheDocument();
   fireEvent.click(screen.getByText("Configure agent"));
   await waitFor(() => expect(api.configure).toHaveBeenCalled());
   const call = vi.mocked(api.configure).mock.calls[0];

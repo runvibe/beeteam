@@ -1,7 +1,7 @@
 use super::*;
 use crate::{
     dto::session_delivery::SessionDestination,
-    repositories::integrated_provider::{IntegratedEvent, ReconciledStatus},
+    repositories::integrated_provider::{IntegratedEvent, ReconciledStatus, ToolSource},
 };
 
 impl ManagedAgentService {
@@ -52,7 +52,17 @@ impl ManagedAgentService {
         }
         let cid = request.reference("conversationId").unwrap();
         let conversation = u.records.get("managed_conversations", cid)?.clone();
+        let tools = if conversation.reference("teamId").is_some() {
+            ToolSource::TeamChat
+        } else {
+            ToolSource::Configured
+        };
         let config = a.data["managedConfiguration"].clone();
+        let profile = if config.is_null() && tools == ToolSource::TeamChat {
+            serde_json::to_value(crate::dto::managed_agents::ToolProfile::default()).unwrap()
+        } else {
+            config["toolProfile"].clone()
+        };
         let access = match crate::dto::access_mode::AccessMode::from_record(
             request.data.get("accessMode"),
         ) {
@@ -77,7 +87,7 @@ impl ManagedAgentService {
             t.to_owned()
         } else {
             match provider
-                .create(&project_root, &config["toolProfile"], access)
+                .create(&project_root, &profile, tools, access)
                 .await
             {
                 Ok(t) => {
@@ -113,7 +123,8 @@ impl ManagedAgentService {
         let work = provider.run(
             &target,
             &text,
-            &config["toolProfile"],
+            &profile,
+            tools,
             access,
             tx,
             control_rx,
@@ -145,7 +156,7 @@ impl ManagedAgentService {
             &mut u.records,
             id,
             if uncertain { "uncertain" } else { "failed" },
-            json!({"code":if uncertain{"outcome_unknown"}else if code=="needs_auth"{"needs_auth"}else if code=="codex_config_invalid"{"codex_config_invalid"}else{"execution_failed"},"message":if code=="needs_auth"{"Sign in to Codex locally before sending a new request"}else if code=="codex_config_invalid"{"Cannot read or resolve the effective Codex configuration for this project"}else{"Provider execution could not complete"},"retryable":false}),
+            json!({"code":if uncertain{"outcome_unknown"}else if code=="needs_auth"{"needs_auth"}else if code=="codex_config_invalid"{"codex_config_invalid"}else if code=="chat_tools_config_invalid"{"chat_tools_config_invalid"}else{"execution_failed"},"message":if code=="needs_auth"{"Sign in to Codex locally before sending a new request"}else if code=="codex_config_invalid"{"Cannot read or resolve the effective Codex configuration for this project"}else if code=="chat_tools_config_invalid"{"Cannot read ~/.beeteam/chat-tools.toml"}else{"Provider execution could not complete"},"retryable":false}),
         )?;
         u.commit().await
     }

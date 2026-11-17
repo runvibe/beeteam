@@ -235,7 +235,8 @@ export function ManagedAgentChat({
       .split("\n")
       .map((v) => v.trim())
       .filter(Boolean);
-  const ready = !!config.data?.configuration;
+  const teamChat = mode === "chat" && !!teamId;
+  const ready = !!config.data && (teamChat || !!config.data.configuration);
   const currentConversation =
     detail.data ?? conversationItems.find((c) => c.id === conversation);
   const previousLeader = !!currentConversation && !!teamId &&
@@ -283,7 +284,6 @@ export function ManagedAgentChat({
   }
   const failure = error || config.error || conversations.error || history.error || snapshot.error || requests.error || detail.error;
   const showHistory = ready || mode === "management";
-  const teamChat = mode === "chat" && !!teamId;
   return (
     <section
       className="leader-chat managed-agent-chat"
@@ -364,7 +364,7 @@ export function ManagedAgentChat({
               <SquarePen />
             </Button>
           )}
-          {ready && (
+          {!!config.data?.configuration && (
             <Button
               variant="ghost"
               size="icon-sm"
@@ -437,6 +437,7 @@ export function ManagedAgentChat({
             skills={skills}
             disabled={busy || !!action}
             showNetwork={!teamId || mode !== "chat"}
+            showTools={!teamId || mode !== "chat"}
             onSearch={setSearch}
             onNetwork={setNetwork}
             onMcps={setMcps}

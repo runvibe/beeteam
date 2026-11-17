@@ -20,6 +20,7 @@ export function ChatAccessSettings() {
         options={accessModes.map((value) => ({ value, label: accessLabel(value) }))}
       />
       <p className="small-note">{t("settings.chatDefaultAccessHelp")}</p>
+      <p className="small-note">{t("managed.chatToolsFile")}</p>
     </section>
   );
 }

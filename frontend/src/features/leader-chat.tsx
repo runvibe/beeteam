@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { useLocale, t as tr } from "@/i18n";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Markdown } from "@/components/markdown";
 import { PlainTextEditor } from "@/components/plain-text-editor";
 import { formatDate } from "@/components/shared";
@@ -94,9 +93,7 @@ function LeaderChatBody({
     [setupError, setSetupError] = useState<unknown>(null);
   const [webSearch, setWebSearch] = useState<"live" | "cached" | "disabled">(
       "live",
-    ),
-    [mcpNames, setMcpNames] = useState(""),
-    [skillRoots, setSkillRoots] = useState("");
+    );
   const setupRequest = useRef<{
     key: string;
     body: CreateIntegratedSession;
@@ -147,14 +144,6 @@ function LeaderChatBody({
     if (!api || leaderVersion === undefined || setupBusy) return;
     setSetupBusy(true);
     setSetupError(null);
-    const lines = (value: string) => [
-      ...new Set(
-        value
-          .split(/\r?\n/)
-          .map((v) => v.trim())
-          .filter(Boolean),
-      ),
-    ];
     setupRequest.current ??= {
       key: crypto.randomUUID(),
       body: {
@@ -162,8 +151,8 @@ function LeaderChatBody({
         toolProfile: {
           webSearch,
           networkAccess: true,
-          enabledMcpServers: lines(mcpNames),
-          skillRoots: lines(skillRoots),
+          enabledMcpServers: [],
+          skillRoots: [],
         },
       },
       version: leaderVersion,
@@ -248,20 +237,7 @@ function LeaderChatBody({
                     <option value="cached">{tr("chat.webCached")}</option>
                     <option value="disabled">{tr("chat.disabled")}</option>
                   </select>
-                  <label htmlFor="leader-mcp">{tr("chat.mcpNames")}</label>
-                  <Textarea
-                    id="leader-mcp"
-                    value={mcpNames}
-                    onChange={(e) => setMcpNames(e.target.value)}
-                  />
-                  <p className="small-note">{tr("chat.mcpHint")}</p>
-                  <label htmlFor="leader-skills">{tr("chat.skillRoots")}</label>
-                  <Textarea
-                    id="leader-skills"
-                    value={skillRoots}
-                    onChange={(e) => setSkillRoots(e.target.value)}
-                  />
-                  <p className="small-note">{tr("chat.skillsHint")}</p>
+                  <p className="small-note">{tr("managed.chatToolsFile")}</p>
                 </fieldset>
               </details>
               {runtime.bindingId && (
@@ -522,20 +498,7 @@ function RuntimeTools({ runtime }: { runtime: AgentRuntime }) {
         {tr("chat.network")}:{" "}
         {runtime.tools.networkAccess ? tr("chat.enabled") : tr("chat.disabled")}
       </p>
-      {runtime.tools.skills.map((s) => (
-        <p key={s.id}>
-          {s.name} ·{" "}
-          {s.enabled && s.available ? tr("chat.enabled") : tr("chat.disabled")}
-        </p>
-      ))}
-      {runtime.tools.mcpServers.map((s) => (
-        <p key={s.id}>
-          {s.name} ·{" "}
-          {s.enabled && s.status === "connected"
-            ? tr("chat.enabled")
-            : tr("chat.disabled")}
-        </p>
-      ))}
+      <p className="small-note">{tr("managed.chatToolsFile")}</p>
     </details>
   );
 }

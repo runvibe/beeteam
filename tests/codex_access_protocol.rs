@@ -5,7 +5,7 @@ use beeteam::{
     repositories::{
         codex_integrated::CodexIntegratedProvider,
         codex_mcp_scope::CodexToolProfile,
-        integrated_provider::{IntegratedEvent, IntegratedProvider},
+        integrated_provider::{IntegratedEvent, IntegratedProvider, ToolSource},
     },
 };
 use serde_json::{json, Value};
@@ -48,7 +48,7 @@ async fn run_scenario(mode: Option<AccessMode>, scenario: &str) -> (Result<(), S
     let (tx, mut rx) = mpsc::channel(16);
     let (_control_tx, control_rx) = mpsc::channel(2);
     let result = provider
-        .run(&target, "test", &profile, mode, tx, control_rx)
+        .run(&target, "test", &profile, ToolSource::Configured, mode, tx, control_rx)
         .await
         .map_err(|e| e.code.to_string());
     let mut events = Vec::new();

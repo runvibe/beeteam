@@ -28,7 +28,7 @@ impl LeaderChatService {
                 if let Ok(mut target) = serde_json::from_value::<SessionDestination>(b.data.clone()) {
                     target.project_root = provider.default_workspace(agent)
                         .map_err(|e| crate::dto::backend::Failure::new(e.code, e.message))?;
-                    observed = match provider.inspect(&target, &b.data["toolProfile"]).await {
+                    observed = match provider.inspect(&target, &b.data["toolProfile"], crate::repositories::integrated_provider::ToolSource::Configured).await {
                         Ok(v) => v,
                         Err(e) => {
                             json!({"readiness":if e.code=="needs_auth"{"needs_auth"}else{"unavailable"},"tools":{"webSearch":"disabled","networkAccess":false,"skills":[],"mcpServers":[]}})

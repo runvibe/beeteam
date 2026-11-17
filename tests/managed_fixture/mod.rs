@@ -29,7 +29,7 @@ impl IntegratedProvider for TestProvider {
         Ok(path.to_str().unwrap().into())
     }
 
-    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: ToolSource, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
@@ -60,6 +60,7 @@ impl IntegratedProvider for TestProvider {
         &'a self,
         _target: &'a SessionDestination,
         _profile: &'a Value,
+        _: ToolSource,
     ) -> ProviderFuture<'a, Value> {
         Box::pin(async {
             Ok(
@@ -71,7 +72,8 @@ impl IntegratedProvider for TestProvider {
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
-        _profile: &'a Value,
+        profile: &'a Value,
+        tools: ToolSource,
         access: Option<beeteam::dto::access_mode::AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
@@ -81,10 +83,27 @@ impl IntegratedProvider for TestProvider {
             assert!(std::path::Path::new(&target.project_root).is_dir());
             assert!(target.project_root.contains("beeteam-test-workspaces"));
             let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
+            if text == "team-chat-tools" {
+                assert_eq!(tools, ToolSource::TeamChat);
+            }
+            if text == "team-chat-defaults" {
+                assert_eq!(tools, ToolSource::TeamChat);
+                assert_eq!(profile, &json!({"webSearch":"live","networkAccess":true,"enabledMcpServers":[],"skillRoots":[]}));
+            }
+            if text == "worker-tools" {
+                assert_eq!(tools, ToolSource::Configured);
+            }
             if text == "config-error" {
                 return Err(beeteam::dto::session_delivery::SessionFailure::new(
                     "codex_config_invalid",
                     "Cannot read configuration",
+                    false,
+                ));
+            }
+            if text == "chat-tools-error" {
+                return Err(beeteam::dto::session_delivery::SessionFailure::new(
+                    "chat_tools_config_invalid",
+                    "Invalid chat tools configuration",
                     false,
                 ));
             }

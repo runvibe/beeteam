@@ -102,6 +102,7 @@ impl LeaderChatService {
             &target,
             &text,
             &b.data["toolProfile"],
+            crate::repositories::integrated_provider::ToolSource::TeamChat,
             access,
             tx,
             control_rx,

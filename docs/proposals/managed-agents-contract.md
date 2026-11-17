@@ -1,6 +1,6 @@
 # Bee Team-owned agents: contract v1
 
-Status: implemented on the review branch. HTTP/MCP adapters, shared services, additive persistence and the side panel use these contracts. Explicit agent configuration enables the managed path; the global legacy cutover remains pending as described below. No main merge or release is authorized.
+Status: implemented on the review branch. HTTP/MCP adapters, shared services, additive persistence and the side panel use these contracts. Explicit agent configuration enables managed worker execution; a team leader chat can also start with chat defaults. The global legacy cutover remains pending as described below. No main merge or release is authorized.
 
 ## Decisions for parallel implementation
 
@@ -52,7 +52,7 @@ Managed agent output citations are projected as safe markers and message file me
 
 ## Queue, snapshots and idempotency
 
-Submission durably records a request and returns 202 with its current state; acceptance is not provider delivery. Terminal execution failures are read as 200 snapshots with failed state/error, not mistaken for submission HTTP errors. Acceptance requires a configured active agent; unconfigured submission returns 400 invalid_request with an actionable message and creates no request. Authentication/provider availability is checked during preparation, yielding explicit failure if unavailable.
+Submission durably records a request and returns 202 with its current state; acceptance is not provider delivery. Terminal execution failures are read as 200 snapshots with failed state/error, not mistaken for submission HTTP errors. Direct requests require a configured active agent. A team conversation to its current leader can start without agent configuration using default chat settings and configurationVersion 1; this does not configure worker execution. Reconfiguration makes those conversations read-only as usual. Authentication/provider availability is checked during preparation, yielding explicit failure if unavailable.
 
 V1 permits one active turn per agent and at most **32 pending nonterminal requests** (including the active/uncertain request). Admission and capacity check are atomic. Pending order is durable acceptance sequence, with UUIDv7 as tie-breaker; no per-caller quota is claimed without authenticated callers. Full queue returns 429 queue_full with Retry-After seconds. Polling, reconnects, retries and approved duplicate notices do not change queue position or start extra work.
 
@@ -101,6 +101,6 @@ The runtime checkpoint below supersedes the original contract-only status.
 
 ## Runtime implementation checkpoint
 
-HTTP/MCP requests, owned per-conversation execution, durable per-agent queue, snapshots/SSE and the side panel are implemented on the review branch. The migration is additive. Explicitly configuring an agent switches that agent to managed requests and rejects its legacy bind/bootstrap writes; other legacy agents remain compatible until the global cutover is accepted. The final `agents.managed-requests.v1` capability is intentionally withheld during that transition. This staged retirement supersedes the all-at-once proposal above for the review build, preserving existing in-flight work. Existing owned sessions remain readable in legacy history, rather than being silently assigned to a new conversation.
+HTTP/MCP requests, owned per-conversation execution, durable per-agent queue, snapshots/SSE and the side panel are implemented on the review branch. The migration is additive. Explicitly configuring an agent switches that agent to managed requests and rejects its legacy bind/bootstrap writes; opening a team chat with defaults does not change that agent configuration. Other legacy agents remain compatible until the global cutover is accepted. The final `agents.managed-requests.v1` capability is intentionally withheld during that transition. This staged retirement supersedes the all-at-once proposal above for the review build, preserving existing in-flight work. Existing owned sessions remain readable in legacy history, rather than being silently assigned to a new conversation.
 
 Provider output uses the same UTF-8-safe 65536-byte display bound during streaming and reconciliation, with an explicit truncation notice; the original turn is still consumed through its terminal outcome. Managed mutation receipts remain durable without the legacy 24-hour expiration.

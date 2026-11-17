@@ -179,13 +179,29 @@ impl Wire {
     }
 }
 impl CodexIntegratedProvider {
-    fn selected_profile(&self, profile: &Value) -> Result<CodexToolProfile, SessionFailure> {
-        if profile.is_null() {
-            Ok(self.profile.clone())
+    fn selected_profile(
+        &self,
+        profile: &Value,
+        tools: ToolSource,
+    ) -> Result<CodexToolProfile, SessionFailure> {
+        let mut selected = if profile.is_null() {
+            self.profile.clone()
         } else {
             serde_json::from_value(profile.clone())
-                .map_err(|_| fail("invalid_request", "Invalid tool profile", false))
+                .map_err(|_| fail("invalid_request", "Invalid tool profile", false))?
+        };
+        if tools == ToolSource::TeamChat {
+            super::chat_tools::apply(&mut selected, super::chat_tools::local()?);
+            McpScope::with_tools(&self.mcp_endpoint, "beeteam_validation", selected.clone())
+                .map_err(|_| {
+                    fail(
+                        "chat_tools_config_invalid",
+                        "Invalid MCP servers or skill roots in ~/.beeteam/chat-tools.toml",
+                        false,
+                    )
+                })?;
         }
+        Ok(selected)
     }
 
     async fn session(
@@ -193,6 +209,7 @@ impl CodexIntegratedProvider {
         root: &str,
         thread: Option<&str>,
         profile: &Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
     ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>), SessionFailure> {
         let config_failure = || {
@@ -231,8 +248,11 @@ impl CodexIntegratedProvider {
             ));
         }
         let ns = format!("beeteam_{}", &Uuid::new_v4().simple().to_string()[..12]);
-        let mut scope =
-            McpScope::with_tools(&self.mcp_endpoint, &ns, self.selected_profile(profile)?)?;
+        let mut scope = McpScope::with_tools(
+            &self.mcp_endpoint,
+            &ns,
+            self.selected_profile(profile, tools)?,
+        )?;
         scope.observe(&w.inventory(None).await?)?;
         if !scope.skill_roots().is_empty() {
             w.request(
@@ -345,6 +365,7 @@ impl CodexIntegratedProvider {
         target: &SessionDestination,
         text: &str,
         profile: &Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
@@ -361,6 +382,7 @@ impl CodexIntegratedProvider {
                 &target.project_root,
                 Some(&target.external_id),
                 profile,
+                tools,
                 access,
             )
             .await?;
@@ -368,7 +390,7 @@ impl CodexIntegratedProvider {
         if let Some(access) = access {
             let overrides = super::codex_access::turn_overrides(
                 access,
-                self.selected_profile(profile)?.network_access,
+                self.selected_profile(profile, ToolSource::Configured)?.network_access,
                 effective.as_ref(),
             )?;
             params
@@ -604,7 +626,7 @@ impl IntegratedProvider for CodexIntegratedProvider {
         McpScope::with_tools(
             &self.mcp_endpoint,
             "beeteam_validation",
-            self.selected_profile(profile)?,
+            self.selected_profile(profile, ToolSource::Configured)?,
         )?;
         Ok(())
     }
@@ -612,11 +634,12 @@ impl IntegratedProvider for CodexIntegratedProvider {
         &'a self,
         root: &'a str,
         profile: &'a Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             let (mut wire, id, _scope, _disabled_plugins, _effective) =
-                self.session(root, None, profile, access).await?;
+                self.session(root, None, profile, tools, access).await?;
             // Codex defers the empty rollout until a persisted mutation. Naming an
             // owned thread materializes it without sending a synthetic model turn.
             wire.request(
@@ -632,19 +655,21 @@ impl IntegratedProvider for CodexIntegratedProvider {
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
-        Box::pin(self.execute(target, text, profile, access, events, controls))
+        Box::pin(self.execute(target, text, profile, tools, access, events, controls))
     }
     fn inspect<'a>(
         &'a self,
         target: &'a SessionDestination,
         profile: &'a Value,
+        tools: ToolSource,
     ) -> ProviderFuture<'a, Value> {
         Box::pin(async move {
-            let selected = self.selected_profile(profile)?;
+            let selected = self.selected_profile(profile, tools)?;
             let mut w = Wire::open(&self.executable, &target.project_root).await?;
             let account = w
                 .request("account/read", json!({"refreshToken":false}))

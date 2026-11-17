@@ -10,6 +10,7 @@
   "search": "Web search",
   "network": "Allow command network access",
   "mcps": "Configured MCP servers (one per line)",
+  "chatToolsFile": "Chat MCP servers and skill folders are configured in ~/.beeteam/chat-tools.toml.",
   "skills": "Skill folders (one per line)",
   "configure": "Configure agent",
   "conversation": "Conversation",

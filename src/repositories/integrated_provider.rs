@@ -7,6 +7,11 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 pub type ProviderFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, SessionFailure>> + Send + 'a>>;
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ToolSource {
+    Configured,
+    TeamChat,
+}
 pub struct GeneratedFile {
     pub name: String,
     pub media_type: &'static str,
@@ -95,6 +100,7 @@ pub trait IntegratedProvider: Send + Sync {
         &'a self,
         root: &'a str,
         profile: &'a Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String>;
     fn run<'a>(
@@ -102,6 +108,7 @@ pub trait IntegratedProvider: Send + Sync {
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
+        tools: ToolSource,
         access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
@@ -110,6 +117,7 @@ pub trait IntegratedProvider: Send + Sync {
         &'a self,
         target: &'a SessionDestination,
         profile: &'a Value,
+        tools: ToolSource,
     ) -> ProviderFuture<'a, Value>;
     fn tools(&self) -> Value {
         serde_json::json!({"webSearch":"live","networkAccess":true,"skills":[],"mcpServers":[]})
