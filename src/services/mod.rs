@@ -8,6 +8,7 @@ pub mod changes;
 pub mod data_transfer;
 pub mod frontend;
 pub mod leader_chat;
+pub(crate) mod agent_guidance;
 pub mod local_projects;
 pub mod managed_sessions;
 

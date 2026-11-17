@@ -6,7 +6,8 @@ import sys
 
 root = os.getcwd()
 namespace = None
-config_mode = False
+developer_instructions = None
+resume_config = None
 
 
 def send(value):
@@ -23,9 +24,12 @@ for line in sys.stdin:
     result = {}
     error = None
     if method == "config/read":
-        config_mode = True
-        if params.get("cwd") != root or root.endswith(("invalid", "legacy")):
+        if params.get("cwd") != root or root.endswith("invalid"):
             error = {"code": -32603, "message": "fixture config error"}
+        elif root.endswith("guidance"):
+            result = {"config": {"developer_instructions": "Existing user instructions"}}
+        elif root.endswith("malformed"):
+            result = {"config": {"developer_instructions": ["invalid"]}}
         else:
             result = {"config": {"sandbox_mode": None, "approval_policy": None}} if root.endswith("defaults") else {"config": {}}
     elif method == "account/read":
@@ -57,17 +61,16 @@ for line in sys.stdin:
                 os.rmdir(root)
     elif method == "thread/resume":
         config = params.get("config", {})
-        if config_mode and "sandbox_workspace_write.network_access" in config:
-            error = {"code": -32602, "message": "configuration was overridden"}
-        else:
-            namespace = next(iter(config["mcp_servers"]))
-            result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root,
-                      "approvalPolicy": "never", "sandbox": {"type": "dangerFullAccess"}}
+        developer_instructions = params.get("developerInstructions")
+        resume_config = config
+        namespace = next(iter(config["mcp_servers"]))
+        result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root,
+                  "approvalPolicy": "never", "sandbox": {"type": "dangerFullAccess"}}
     elif method == "turn/start":
         if root.endswith("legacy") and any(k in params for k in ("sandboxPolicy", "approvalPolicy", "approvalsReviewer")):
             send({"id": ident, "error": {"code": -32602, "message": "legacy policy must not be overridden"}})
             continue
-        policy = {"approvalPolicy": params.get("approvalPolicy"), "approvalsReviewer": params.get("approvalsReviewer"), "sandboxPolicy": params.get("sandboxPolicy")}
+        policy = {"approvalPolicy": params.get("approvalPolicy"), "approvalsReviewer": params.get("approvalsReviewer"), "sandboxPolicy": params.get("sandboxPolicy"), "developerInstructions": developer_instructions, "resumeConfig": resume_config}
         send({"id": ident, "result": {"turn": {"id": "turn"}}})
         send({"method": "item/completed", "params": {"threadId": "thread", "turnId": "turn",
             "item": {"id": "answer", "type": "agentMessage", "text": json.dumps(policy)}}})

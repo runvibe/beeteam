@@ -76,6 +76,7 @@ impl LeaderChatService {
             .find(|m| m.reference("turnId") == Some(id) && m.data["role"] == "user")
             .ok_or_else(Failure::missing)?;
         let text = super::context::prompt(&chat, &b, message);
+        let guidance = crate::services::agent_guidance::Role::Leader.instructions();
         let access = match crate::dto::access_mode::AccessMode::from_record(
             turn.data.get("accessMode"),
         ) {
@@ -101,6 +102,7 @@ impl LeaderChatService {
         let work = provider.run(
             &target,
             &text,
+            &guidance,
             &b.data["toolProfile"],
             crate::repositories::integrated_provider::ToolSource::TeamChat,
             access,

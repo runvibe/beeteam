@@ -51,6 +51,12 @@ impl WorkerDeliveryProvider {
             .clone();
         let mut u = self.service.store.begin().await.map_err(storage_failure)?;
         let turn = reserve(&mut u.records, delivery_id, target).map_err(reservation_failure)?;
+        let guidance = crate::services::agent_guidance::resolve(
+            &u.records,
+            turn.reference("ownerAgentId").ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?,
+            None,
+            turn.reference("taskId"),
+        ).map_err(storage_failure)?.instructions();
         let binding = u
             .records
             .get(
@@ -76,7 +82,7 @@ impl WorkerDeliveryProvider {
             .insert(turn_id, control_tx);
         let result = self
             .pump(
-                target, text, &profile, turn_id, events, control_rx, provider,
+                target, text, &guidance, &profile, turn_id, events, control_rx, provider,
             )
             .await;
         self.service.controls.lock().await.remove(&turn_id);
@@ -98,6 +104,7 @@ impl WorkerDeliveryProvider {
         &self,
         target: &SessionDestination,
         text: &str,
+        guidance: &str,
         profile: &Value,
         turn_id: Uuid,
         events: mpsc::Sender<SessionEvent>,
@@ -108,6 +115,7 @@ impl WorkerDeliveryProvider {
         let run = provider.run(
             target,
             text,
+            guidance,
             profile,
             crate::repositories::integrated_provider::ToolSource::Configured,
             None,

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Give Bee Team-owned Codex chats built-in, non-removable coordination guidance for leaders and workers, while preserving local developer instructions.
 - Remove the web search and MCP permissions note from the chat access menu.
 - Open new team chats without manually configuring the leader; the first message starts an owned session with default settings.
 - Configure team chat MCP servers and additional skill folders through a local Bee Team TOML file instead of chat setup fields.

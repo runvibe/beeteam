@@ -48,7 +48,7 @@ async fn run_scenario(mode: Option<AccessMode>, scenario: &str) -> (Result<(), S
     let (tx, mut rx) = mpsc::channel(16);
     let (_control_tx, control_rx) = mpsc::channel(2);
     let result = provider
-        .run(&target, "test", &profile, ToolSource::Configured, mode, tx, control_rx)
+        .run(&target, "test", "Bee Team managed guidance", &profile, ToolSource::Configured, mode, tx, control_rx)
         .await
         .map_err(|e| e.code.to_string());
     let mut events = Vec::new();
@@ -59,9 +59,22 @@ async fn run_scenario(mode: Option<AccessMode>, scenario: &str) -> (Result<(), S
 }
 
 #[tokio::test]
-async fn legacy_turn_does_not_resolve_or_override_policy() {
+async fn legacy_turn_does_not_override_policy() {
     let (result, _) = run_scenario(None, "codex-access-legacy").await;
     assert!(result.is_ok(), "{result:?}");
+}
+
+#[tokio::test]
+async fn resumed_managed_thread_receives_guidance_and_preserves_user_developer_instructions() {
+    let (result, events) = run_scenario(None, "codex-access-guidance").await;
+    result.unwrap();
+    let response = events.iter().find_map(|event| match event {
+        IntegratedEvent::Text(text) => Some(serde_json::from_str::<Value>(text).unwrap()),
+        _ => None,
+    }).unwrap();
+    let instructions = response["developerInstructions"].as_str().expect("managed guidance missing");
+    assert!(instructions.contains("Bee Team"));
+    assert!(instructions.contains("Existing user instructions"));
 }
 
 #[tokio::test]
@@ -88,6 +101,7 @@ async fn every_turn_receives_its_own_policy_and_config_is_resolved_without_threa
             assert_eq!(response["sandboxPolicy"]["networkAccess"], false);
         }
         if mode == AccessMode::CodexConfig {
+            assert!(response["resumeConfig"].get("sandbox_workspace_write.network_access").is_none());
             assert_eq!(response["sandboxPolicy"]["networkAccess"], true);
             assert_eq!(response["sandboxPolicy"]["excludeSlashTmp"], true);
             assert_eq!(response["sandboxPolicy"]["excludeTmpdirEnvVar"], true);
@@ -105,6 +119,20 @@ async fn every_turn_receives_its_own_policy_and_config_is_resolved_without_threa
 #[tokio::test]
 async fn config_read_failure_never_submits_a_turn() {
     let (result, events) = run(AccessMode::CodexConfig, true, false).await;
+    assert_eq!(result.unwrap_err(), "codex_config_invalid");
+    assert!(events.is_empty());
+}
+
+#[tokio::test]
+async fn guidance_config_failure_never_submits_a_legacy_turn() {
+    let (result, events) = run_scenario(None, "codex-access-invalid").await;
+    assert_eq!(result.unwrap_err(), "codex_config_invalid");
+    assert!(events.is_empty());
+}
+
+#[tokio::test]
+async fn malformed_developer_instructions_never_submit_a_turn() {
+    let (result, events) = run_scenario(None, "codex-access-malformed").await;
     assert_eq!(result.unwrap_err(), "codex_config_invalid");
     assert!(events.is_empty());
 }

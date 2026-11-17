@@ -107,6 +107,7 @@ pub trait IntegratedProvider: Send + Sync {
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
+        guidance: &'a str,
         profile: &'a Value,
         tools: ToolSource,
         access: Option<AccessMode>,

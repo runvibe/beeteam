@@ -49,6 +49,8 @@
 
 - Integrated chat owns its Codex threads. External bindings remain MCP/skills references and never authorize App Server takeover. Use shared DTO/service bootstrap for HTTP and MCP, preserve original turn IDs during recovery, and never retry inference to resolve an uncertain result. Apply the loopback/origin execution boundary to chat routes and all API/MCP writes whenever the integrated runtime is enabled. Actor metadata is not authentication.
 
+- Bee Team-owned turns receive bundled `resources/bee-team/integrated-rules` guidance through Codex `developerInstructions`; resolve the active role from the conversation or task, preserve configured Codex developer instructions, and fail before submission if configuration cannot be read. Never make these rules optional in tool settings or apply them to external sessions. Keep instructions aligned with the role skills and enforce critical invariants in services, not by prompt alone.
+
 - Team chat sends only to the current leader; HTTP/MCP direct requests to workers remain supported. Managed worker configuration and read-only history/controls live in agent details, separately from external chat references. List managed worker approvals through the paginated team endpoint/tool using current worker membership, not task ownership; leave leader approvals in their own request flow. Team-originated decisions supply the atomic `expectedTeamId` precondition; this is not authentication. This is separate from legacy leader-chat approval routing. Preserve original IDs, versions and idempotency keys on uncertain decisions, including across UI remounts and transfers.
 
 ## Release changelog

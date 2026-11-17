@@ -211,6 +211,7 @@ impl CodexIntegratedProvider {
         profile: &Value,
         tools: ToolSource,
         access: Option<AccessMode>,
+        guidance: Option<&str>,
     ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>), SessionFailure> {
         let config_failure = || {
             fail(
@@ -228,13 +229,26 @@ impl CodexIntegratedProvider {
                 e
             }
         })?;
-        if access == Some(AccessMode::CodexConfig) {
+        let mut developer_instructions = None;
+        if access == Some(AccessMode::CodexConfig) || guidance.is_some() {
             let config = w
                 .request("config/read", json!({"cwd":root,"includeLayers":false}))
                 .await
                 .map_err(|_| config_failure())?;
             if !config["config"].is_object() {
                 return Err(config_failure());
+            }
+            if let Some(guidance) = guidance {
+                let existing = match config["config"].get("developer_instructions") {
+                    None | Some(Value::Null) => "",
+                    Some(Value::String(value)) => value,
+                    Some(_) => return Err(config_failure()),
+                };
+                developer_instructions = Some(if existing.is_empty() {
+                    guidance.to_owned()
+                } else {
+                    format!("{guidance}\n\nExisting Codex developer instructions:\n{existing}")
+                });
             }
         }
         let account = w
@@ -312,6 +326,9 @@ impl CodexIntegratedProvider {
             None
         };
         let mut params = json!({"config":configuration,"cwd":root});
+        if let Some(instructions) = developer_instructions {
+            params["developerInstructions"] = json!(instructions);
+        }
         let method = if let Some(t) = thread {
             params["threadId"] = json!(t);
             "thread/resume"
@@ -364,6 +381,7 @@ impl CodexIntegratedProvider {
         &self,
         target: &SessionDestination,
         text: &str,
+        guidance: &str,
         profile: &Value,
         tools: ToolSource,
         access: Option<AccessMode>,
@@ -384,6 +402,7 @@ impl CodexIntegratedProvider {
                 profile,
                 tools,
                 access,
+                Some(guidance),
             )
             .await?;
         let mut params = json!({"threadId":thread,"disabledPluginIds":disabled_plugins,"input":[{"type":"text","text":format!("{}{}",scope.context(),text)}]});
@@ -639,7 +658,7 @@ impl IntegratedProvider for CodexIntegratedProvider {
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             let (mut wire, id, _scope, _disabled_plugins, _effective) =
-                self.session(root, None, profile, tools, access).await?;
+                self.session(root, None, profile, tools, access, None).await?;
             // Codex defers the empty rollout until a persisted mutation. Naming an
             // owned thread materializes it without sending a synthetic model turn.
             wire.request(
@@ -654,13 +673,14 @@ impl IntegratedProvider for CodexIntegratedProvider {
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
+        guidance: &'a str,
         profile: &'a Value,
         tools: ToolSource,
         access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
-        Box::pin(self.execute(target, text, profile, tools, access, events, controls))
+        Box::pin(self.execute(target, text, guidance, profile, tools, access, events, controls))
     }
     fn inspect<'a>(
         &'a self,

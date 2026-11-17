@@ -72,6 +72,7 @@ impl IntegratedProvider for TestProvider {
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
+        guidance: &'a str,
         profile: &'a Value,
         tools: ToolSource,
         access: Option<beeteam::dto::access_mode::AccessMode>,
@@ -120,6 +121,11 @@ impl IntegratedProvider for TestProvider {
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
                 .unwrap();
+            if text == "show-guidance" {
+                events.send(IntegratedEvent::Text(guidance.into())).await.unwrap();
+                events.send(IntegratedEvent::Completed).await.unwrap();
+                return Ok(());
+            }
             if text == "uncertain-access-test" {
                 assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
                 return Err(beeteam::dto::session_delivery::SessionFailure::new(

@@ -52,6 +52,15 @@ impl ManagedAgentService {
         }
         let cid = request.reference("conversationId").unwrap();
         let conversation = u.records.get("managed_conversations", cid)?.clone();
+        let guidance = match crate::services::agent_guidance::resolve(
+            &u.records, agent, conversation.reference("teamId"), request.reference("taskId"),
+        ) {
+            Ok(role) => role.instructions(),
+            Err(_) => {
+                u.rollback().await?;
+                return self.fail(id, false, "execution_failed").await;
+            }
+        };
         let tools = if conversation.reference("teamId").is_some() {
             ToolSource::TeamChat
         } else {
@@ -119,10 +128,11 @@ impl ManagedAgentService {
         }
         transition(&mut u.records, id, "running", Value::Null)?;
         u.commit().await?;
-        let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record worker summaries using the assigned task. Save files intended for the user under the workspace output/ directory and cite them as output files.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
+        let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record work summaries under the relevant task when required. Save files intended for the user under the workspace output/ directory and cite them as output files.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
         let work = provider.run(
             &target,
             &text,
+            &guidance,
             &profile,
             tools,
             access,

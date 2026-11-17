@@ -143,6 +143,7 @@ impl IntegratedProvider for ApprovalProvider {
         &'a self,
         _: &'a SessionDestination,
         text: &'a str,
+        guidance: &'a str,
         _: &'a Value,
         tools: ToolSource,
         access: Option<beeteam::dto::access_mode::AccessMode>,
@@ -152,10 +153,18 @@ impl IntegratedProvider for ApprovalProvider {
         Box::pin(async move {
             assert_eq!(access, None);
             assert_eq!(tools, ToolSource::Configured);
+            if text == "normal" {
+                assert!(guidance.contains("Bee Team role: leader"));
+            }
             events
                 .send(IntegratedEvent::Accepted("worker-provider-turn".into()))
                 .await
                 .unwrap();
+            if text == "guidance-worker" {
+                events.send(IntegratedEvent::Text(guidance.into())).await.unwrap();
+                events.send(IntegratedEvent::Completed).await.unwrap();
+                return Ok(());
+            }
             if text == "approval" {
                 let approval_id = Uuid::now_v7();
                 events
@@ -224,6 +233,21 @@ async fn stored(
     let service =
         LeaderChatService::new(store.clone()).with_provider(provider.clone(), "test".into());
     (dir, store, service, provider)
+}
+#[tokio::test]
+async fn integrated_worker_delivery_receives_worker_guidance() {
+    let (mut r, id, target, worker, _) = fixture(true);
+    let team = r.list("teams")[0].id;
+    r.insert(Record::new("memberships", json!({"agentId":worker,"teamId":team})));
+    let (_dir, _store, service, _) = stored(r).await;
+    let bridge = WorkerDeliveryProvider::new(service, "http://localhost".into());
+    let (tx, mut rx) = mpsc::channel(8);
+    bridge.deliver_context(&target, "guidance-worker", tx, id).await.unwrap();
+    let mut response = String::new();
+    while let Ok(event) = rx.try_recv() {
+        if let SessionEvent::Completed { text, .. } = event { response = text; }
+    }
+    assert!(response.contains("Bee Team role: worker"), "{response}");
 }
 #[tokio::test]
 async fn worker_approval_routes_to_leader_and_decision_reaches_only_origin_turn() {
@@ -472,6 +496,7 @@ impl IntegratedProvider for RecoveryProvider {
     fn run<'a>(
         &'a self,
         _: &'a SessionDestination,
+        _: &'a str,
         _: &'a str,
         _: &'a Value,
         _: ToolSource,

@@ -53,6 +53,7 @@ impl IntegratedProvider for TestProvider {
         &'a self,
         _target: &'a SessionDestination,
         text: &'a str,
+        guidance: &'a str,
         _profile: &'a Value,
         _: ToolSource,
         access: Option<beeteam::dto::access_mode::AccessMode>,
@@ -61,6 +62,7 @@ impl IntegratedProvider for TestProvider {
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
             assert!(text.contains("Bee Team persisted execution context"));
+            assert!(guidance.contains("Bee Team role: leader"));
             let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
             if text == "access-mode-test" {
                 assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
