@@ -11,6 +11,7 @@ import type { LeaderChatApi } from "@/api/leader-chat";
 import type { Snapshot } from "@/api/leader-chat-types";
 import { ApiError } from "@/api/types";
 import { editPlainText } from "@/test/editable";
+import { useChatAccess } from "@/state/chat-access";
 vi.mock("@/components/names", () => ({
   AgentName: ({ id }: { id: string }) => <span>{id}</span>,
 }));
@@ -32,6 +33,18 @@ const snapshot: Snapshot = {
   olderMessagesCursor: null,
   eventCursor: "cursor",
 };
+it("sends the selected access mode in the legacy leader chat", async () => {
+  useChatAccess.setState({ defaultMode: "standard", byChat: {} });
+  const transport = api();
+  render(<LeaderChat api={transport} teamId="team" leaderAgentId="leader" />);
+  const composer = await screen.findByRole("textbox", { name: "Mensagem para o líder" });
+  fireEvent.click(screen.getByRole("button", { name: /modo de acesso: padrão/i }));
+  fireEvent.click(screen.getByRole("radio", { name: /somente leitura/i }));
+  editPlainText(composer, "Olá");
+  fireEvent.click(screen.getByRole("button", { name: "Enviar mensagem" }));
+  await waitFor(() => expect(transport.send).toHaveBeenCalledTimes(1));
+  expect(vi.mocked(transport.send).mock.calls[0][1]).toMatchObject({ accessMode: "read_only" });
+});
 function api(): LeaderChatApi {
   return {
     runtime: vi.fn().mockResolvedValue({

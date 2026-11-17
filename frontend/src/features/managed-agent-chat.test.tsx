@@ -6,7 +6,55 @@ import type { ManagedAgentApi } from "@/api/managed-agents";
 import { ApiError } from "@/api/types";
 import { i18n } from "@/i18n";
 import { editPlainText } from "@/test/editable";
+import { useChatAccess } from "@/state/chat-access";
 beforeEach(() => { Element.prototype.scrollIntoView = vi.fn(); });
+it("configures a new team leader without a separate network checkbox", async () => {
+  await i18n.changeLanguage("en");
+  const api = {
+    config: vi.fn().mockResolvedValue({ version: 1, configuration: null }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    configure: vi.fn().mockResolvedValue({}),
+  } as unknown as ManagedAgentApi;
+  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <ManagedAgentChat agentId="leader" teamId="team" api={api} />
+  </QueryClientProvider>);
+  const configure = await screen.findByText("Configure agent");
+  expect(screen.queryByRole("checkbox", { name: /network/i })).toBeNull();
+  fireEvent.click(configure);
+  await waitFor(() => expect(api.configure).toHaveBeenCalled());
+  expect(vi.mocked(api.configure).mock.calls[0][1].toolProfile.networkAccess).toBe(true);
+});
+it("sends the selected team chat mode and preserves it when retrying an uncertain send", async () => {
+  await i18n.changeLanguage("en");
+  useChatAccess.setState({ defaultMode: "standard", byChat: {} });
+  const api = {
+    config: vi.fn().mockResolvedValue({ configuration: { toolProfile: {
+      webSearch: "live", networkAccess: true, enabledMcpServers: [], skillRoots: [],
+    } }, version: 1 }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    send: vi.fn().mockRejectedValueOnce(new TypeError("Receipt lost"))
+      .mockResolvedValue({ id: "request", conversationId: "conversation" }),
+    snapshot: vi.fn().mockResolvedValue({ request: { id: "request", state: "running" }, messages: { items: [] }, approvals: [] }),
+  } as unknown as ManagedAgentApi;
+  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+    <ManagedAgentChat agentId="leader" teamId="team" freshConversation api={api} />
+  </QueryClientProvider>);
+  const composer = await screen.findByRole("textbox", { name: /message/i });
+  fireEvent.click(screen.getByRole("button", { name: /access mode: standard/i }));
+  fireEvent.click(screen.getByRole("radio", { name: /read only/i }));
+  editPlainText(composer, "Inspect files");
+  fireEvent.keyDown(composer, { key: "Enter" });
+  const retry = await screen.findByRole("button", { name: "Check send with the same key" });
+  expect(vi.mocked(api.send).mock.calls[0][1]).toMatchObject({ content: "Inspect files", accessMode: "read_only" });
+  expect(screen.getByRole("button", { name: /access mode: read only/i })).toBeDisabled();
+  fireEvent.click(retry);
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(2));
+  expect(vi.mocked(api.send).mock.calls[1]).toEqual(vi.mocked(api.send).mock.calls[0]);
+  await waitFor(() => expect(useChatAccess.getState().byChat.conversation).toBe("read_only"));
+  expect(useChatAccess.getState().byChat["draft:team:leader"]).toBeUndefined();
+});
 it("configures an agent without exposing a workspace setting", async () => {
   await i18n.changeLanguage("en");
   const api = {
@@ -760,7 +808,7 @@ it("opens an older session selected outside the first conversation page without 
   fireEvent.keyDown(editor, { key: "Enter" });
   await waitFor(() => expect(api.send).toHaveBeenCalledWith(
     "leader",
-    { content: "Continue this session", conversationId: "older" },
+    { content: "Continue this session", conversationId: "older", accessMode: "standard" },
     expect.any(String),
   ));
   expect(api.updateConversation).not.toHaveBeenCalled();
@@ -818,7 +866,7 @@ it("waits for the selected session details before allowing a message", async () 
   fireEvent.keyDown(editor, { key: "Enter" });
   await waitFor(() => expect(api.send).toHaveBeenCalledWith(
     "leader",
-    { content: "Continue", conversationId: "selected" },
+    { content: "Continue", conversationId: "selected", accessMode: "standard" },
     expect.any(String),
   ));
 });

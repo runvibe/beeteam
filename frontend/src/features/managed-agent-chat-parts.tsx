@@ -344,6 +344,7 @@ export function Composer({
   canSend,
   retry,
   readOnly,
+  accessControl,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -352,6 +353,7 @@ export function Composer({
   canSend: boolean;
   retry: boolean;
   readOnly?: boolean;
+  accessControl?: ReactNode;
 }) {
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -382,6 +384,7 @@ export function Composer({
           }}
         />
         <div className="assistant-composer-row">
+          {accessControl}
           {retry ? (
             <Button type="submit" size="sm" disabled={!canSend}>
               {label}

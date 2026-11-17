@@ -1,5 +1,15 @@
 [
   {
+    "file": "src/state/chat-access.ts",
+    "text": "Invalid saved chat access mode",
+    "reason": "Developer console diagnostic for invalid persisted state, not user-facing copy."
+  },
+  {
+    "file": "src/state/chat-access.ts",
+    "text": "Invalid saved default chat access mode",
+    "reason": "Developer console diagnostic for invalid persisted state, not user-facing copy."
+  },
+  {
     "file": "src/components/plain-text-editor.tsx",
     "text": "Enter",
     "reason": "KeyboardEvent.key protocol value used for key comparisons, never displayed as copy."

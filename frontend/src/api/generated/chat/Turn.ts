@@ -6,7 +6,7 @@ export type Turn = {
   chatId: string;
   /** Format: uuid */
   bindingId: string;
-  /** @description Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied. */
+  /** @description Absent when no per-turn mode was selected; execution retains legacy provider behavior. */
   accessMode?: import("./AccessMode").AccessMode;
   /** @enum {string} */
   status:

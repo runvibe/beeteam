@@ -22,6 +22,8 @@ import type {
   CreateIntegratedSession,
 } from "@/api/leader-chat-types";
 import { useLeaderChat } from "./use-leader-chat";
+import { ChatAccessPicker } from "./chat-access-picker";
+import { useChatAccess } from "@/state/chat-access";
 import { turnBlocksSending } from "./leader-chat-state";
 import "./leader-chat.css";
 
@@ -82,6 +84,10 @@ function LeaderChatBody({
 }: LeaderChatProps) {
   useLocale();
   const chat = useLeaderChat(api, teamId, leaderAgentId);
+  const accessKey = chat.chatId ?? `legacy-draft:${teamId}:${leaderAgentId}`;
+  const accessMode = useChatAccess(
+    (state) => state.byChat[accessKey] ?? state.defaultMode,
+  );
   const [draft, setDraft] = useState(""),
     [replace, setReplace] = useState(false),
     [setupBusy, setSetupBusy] = useState(false),
@@ -89,7 +95,6 @@ function LeaderChatBody({
   const [webSearch, setWebSearch] = useState<"live" | "cached" | "disabled">(
       "live",
     ),
-    [network, setNetwork] = useState(true),
     [mcpNames, setMcpNames] = useState(""),
     [skillRoots, setSkillRoots] = useState("");
   const setupRequest = useRef<{
@@ -127,7 +132,7 @@ function LeaderChatBody({
   }, [chat.resolvedSend]);
   if (!api) return <p className="muted-copy">{tr("chat.unavailable")}</p>;
   async function send() {
-    if (await chat.send(draft)) {
+    if (await chat.send(draft, accessMode)) {
       setDraft("");
       composer.current?.focus();
     }
@@ -156,7 +161,7 @@ function LeaderChatBody({
         expectedBindingId: runtime?.bindingId ?? null,
         toolProfile: {
           webSearch,
-          networkAccess: network,
+          networkAccess: true,
           enabledMcpServers: lines(mcpNames),
           skillRoots: lines(skillRoots),
         },
@@ -243,14 +248,6 @@ function LeaderChatBody({
                     <option value="cached">{tr("chat.webCached")}</option>
                     <option value="disabled">{tr("chat.disabled")}</option>
                   </select>
-                  <label className="leader-chat-replace">
-                    <input
-                      type="checkbox"
-                      checked={network}
-                      onChange={(e) => setNetwork(e.target.checked)}
-                    />
-                    {tr("chat.network")}
-                  </label>
                   <label htmlFor="leader-mcp">{tr("chat.mcpNames")}</label>
                   <Textarea
                     id="leader-mcp"
@@ -472,6 +469,10 @@ function LeaderChatBody({
                 <p role="status">{tr("chat.uncertainSend")}</p>
               )}
               <div className="leader-chat-actions">
+                <ChatAccessPicker
+                  chatId={accessKey}
+                  disabled={chat.working || chat.sendUncertain}
+                />
                 <Button
                   type="submit"
                   aria-label={

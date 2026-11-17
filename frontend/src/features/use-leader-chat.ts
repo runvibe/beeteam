@@ -10,6 +10,7 @@ import type {
 } from "@/api/leader-chat-types";
 import { ApiError } from "@/api/types";
 import { t as tr } from "@/i18n";
+import type { AccessMode } from "@/state/chat-access";
 import {
   applyApproval,
   applyChatEvent,
@@ -241,7 +242,7 @@ export function useLeaderChat(
       refresh();
     }
   }
-  async function send(content: string) {
+  async function send(content: string, accessMode: AccessMode) {
     if (!api || !chatId || !snapshotRef.current || busy.current) return false;
     if (pending.current && pending.current.chatId !== chatId) return false;
     pending.current ??= {
@@ -251,6 +252,7 @@ export function useLeaderChat(
         clientMessageId: crypto.randomUUID(),
         bindingId: snapshotRef.current.chat.bindingId,
         content,
+        accessMode,
       },
     };
     const request = pending.current;

@@ -492,7 +492,7 @@ it("always sends to the displayed team leader without an agent selector", async 
   await waitFor(() =>
     expect(managed.send).toHaveBeenCalledWith(
       "leader",
-      { content: "Hello leader", teamId: "team-a" },
+      { content: "Hello leader", teamId: "team-a", accessMode: "standard" },
       expect.any(String),
     ),
   );
@@ -540,7 +540,7 @@ it("starts a team session without a board selector or a board assignment", async
   fireEvent.click(screen.getByRole("button", { name: "Send request" }));
   await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
     "leader",
-    { content: "Plan work", teamId: "team-a" },
+    { content: "Plan work", teamId: "team-a", accessMode: "standard" },
     expect.any(String),
   ));
   expect(managed.list.mock.calls.some(([resource]) => resource === "boards")).toBe(false);
@@ -576,7 +576,7 @@ it("opens a session with an existing board without changing or fetching that boa
   fireEvent.click(screen.getByRole("button", { name: "Send request" }));
   await waitFor(() => expect(managed.send).toHaveBeenCalledWith(
     "leader",
-    { content: "Continue", conversationId: "older-session" },
+    { content: "Continue", conversationId: "older-session", accessMode: "standard" },
     expect.any(String),
   ));
 });

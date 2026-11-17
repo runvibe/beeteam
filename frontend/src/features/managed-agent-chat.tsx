@@ -19,6 +19,8 @@ import { useManagedActions } from "./use-managed-actions";
 import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
+import { ChatAccessPicker } from "./chat-access-picker";
+import { useChatAccess } from "@/state/chat-access";
 import "./leader-chat.css";
 import "./managed-agent-chat.css";
 type S = components["schemas"];
@@ -71,6 +73,11 @@ export function ManagedAgentChat({
   const [conversation, setConversation] = useState(""),
     [request, setRequest] = useState(""),
     [draft, setDraft] = useState(() => pending?.body.content ?? "");
+  const draftAccessKey = `draft:${teamId ?? ""}:${agentId}`;
+  const accessKey = conversation || draftAccessKey;
+  const accessMode = useChatAccess(
+    (state) => state.byChat[accessKey] ?? state.defaultMode,
+  );
   const selection = useRef({ teamId, conversation, externalConversation: conversationId });
   useLayoutEffect(() => {
     selection.current = { teamId, conversation, externalConversation: conversationId };
@@ -80,7 +87,7 @@ export function ManagedAgentChat({
     if (pendingText !== undefined) setDraft(pendingText);
   }, [pendingText]);
   const [search, setSearch] = useState<"live" | "cached" | "disabled">("live"),
-    [network, setNetwork] = useState(false),
+    [network, setNetwork] = useState(!!teamId && mode === "chat"),
     [mcps, setMcps] = useState(""),
     [skills, setSkills] = useState("");
   const [editing, setEditing] = useState(false),
@@ -152,6 +159,11 @@ export function ManagedAgentChat({
       setError(pending.error);
       return;
     }
+    if (!pending.context.conversation && pending.context.teamId)
+      useChatAccess.getState().moveChoice(
+        `draft:${pending.context.teamId}:${agentId}`,
+        pending.request.conversationId,
+      );
     const current = selection.current;
     const context = pending.context;
     if (
@@ -162,7 +174,7 @@ export function ManagedAgentChat({
       select(pending.request.conversationId, pending.request.id);
     }
     setDraft("");
-  }, [acknowledge, mode, pending, select]);
+  }, [acknowledge, agentId, mode, pending, select]);
   const latestRequest = (id: string) =>
     requestItems.find((r) => r.conversationId === id)?.id ?? "";
   useEffect(() => {
@@ -249,6 +261,7 @@ export function ManagedAgentChat({
     void act(async () => {
       const body: S["SendAgentRequest"] = {
         content: draft,
+        ...(teamId ? { accessMode } : {}),
         ...(conversation
           ? { conversationId: conversation }
           : { ...(teamId ? { teamId } : {}) }),
@@ -423,6 +436,7 @@ export function ManagedAgentChat({
             mcps={mcps}
             skills={skills}
             disabled={busy || !!action}
+            showNetwork={!teamId || mode !== "chat"}
             onSearch={setSearch}
             onNetwork={setNetwork}
             onMcps={setMcps}
@@ -507,6 +521,12 @@ export function ManagedAgentChat({
                 canSend={canSend}
                 retry={!!pending}
                 readOnly={readOnly}
+                accessControl={teamId ? (
+                  <ChatAccessPicker
+                    chatId={accessKey}
+                    disabled={busy || !!pending || readOnly}
+                  />
+                ) : undefined}
               />
             </>
           )}

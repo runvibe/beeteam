@@ -16,6 +16,9 @@
   "darkAppearance": "Dark",
   "appearanceHelp": "The palette and appearance are saved on this device. Default restores the original colors.",
   "globalSettingsHelp": "Appearance, language and data for this Bee Team installation.",
+  "chatAccessSection": "Chat",
+  "chatDefaultAccess": "Default chat access",
+  "chatDefaultAccessHelp": "Saved on this device for integrated team chats without their own selection.",
   "chatPosition": "Chat position",
   "chatRight": "Right",
   "chatLeft": "Left"

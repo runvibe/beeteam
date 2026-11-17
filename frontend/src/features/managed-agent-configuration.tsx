@@ -10,6 +10,7 @@ export function ManagedAgentConfigurationFields({
   mcps,
   skills,
   disabled,
+  showNetwork = true,
   onSearch,
   onNetwork,
   onMcps,
@@ -20,6 +21,7 @@ export function ManagedAgentConfigurationFields({
   mcps: string;
   skills: string;
   disabled: boolean;
+  showNetwork?: boolean;
   onSearch: (value: ToolProfile["webSearch"]) => void;
   onNetwork: (value: boolean) => void;
   onMcps: (value: string) => void;
@@ -45,15 +47,17 @@ export function ManagedAgentConfigurationFields({
           ))}
         </select>
       </label>
-      <label className="assistant-check">
-        <input
-          type="checkbox"
-          checked={network}
-          onChange={(event) => onNetwork(event.target.checked)}
-          disabled={disabled}
-        />
-        {t("managed.network")}
-      </label>
+      {showNetwork && (
+        <label className="assistant-check">
+          <input
+            type="checkbox"
+            checked={network}
+            onChange={(event) => onNetwork(event.target.checked)}
+            disabled={disabled}
+          />
+          {t("managed.network")}
+        </label>
+      )}
       <label>
         {t("managed.mcps")}
         <Textarea
