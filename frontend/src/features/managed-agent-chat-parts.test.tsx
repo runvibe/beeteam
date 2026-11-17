@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { ChatMessage } from "./managed-agent-chat-parts";
@@ -154,4 +154,46 @@ it("offers recovery for unavailable historical files", async () => {
     screen.getByRole("button", { name: /recover old.pdf/i }),
   );
   expect(recover).toHaveBeenCalledOnce();
+});
+
+const reasoningMessage = {
+  id: ids.message,
+  conversationId: ids.conversation,
+  requestId: ids.message,
+  role: "agent" as const,
+  content: "Done",
+  reasoning: "**Plan** steps",
+  images: [],
+  version: 1,
+  createdAt: "2026-01-01T00:00:00Z",
+};
+
+it("keeps reasoning open while the request is active and collapses it when done", async () => {
+  await i18n.changeLanguage("en");
+  const { rerender, container } = render(
+    <ChatMessage message={reasoningMessage} active />,
+  );
+  const details = container.querySelector("details.assistant-reasoning")!;
+  expect(details).toHaveAttribute("open");
+  expect(screen.getByText("Thinking…")).toBeInTheDocument();
+  rerender(<ChatMessage message={reasoningMessage} active={false} />);
+  expect(details).not.toHaveAttribute("open");
+  expect(screen.getByText("Reasoning")).toBeInTheDocument();
+  expect(screen.getByText("Plan")).toBeInTheDocument();
+});
+
+it("lets the user reopen collapsed reasoning from history", async () => {
+  await i18n.changeLanguage("en");
+  const { container } = render(<ChatMessage message={reasoningMessage} />);
+  const details = container.querySelector("details.assistant-reasoning")!;
+  expect(details).not.toHaveAttribute("open");
+  fireEvent.click(screen.getByText("Reasoning"));
+  expect(details).toHaveAttribute("open");
+});
+
+it("renders nothing when there is no reasoning", () => {
+  const { container } = render(
+    <ChatMessage message={{ ...reasoningMessage, reasoning: null }} active />,
+  );
+  expect(container.querySelector("details.assistant-reasoning")).toBeNull();
 });

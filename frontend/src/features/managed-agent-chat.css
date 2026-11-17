@@ -506,3 +506,35 @@
     transition: none !important;
   }
 }
+
+.assistant-reasoning {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted-foreground);
+}
+.assistant-reasoning > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  list-style: none;
+  opacity: 0.75;
+}
+.assistant-reasoning > summary::-webkit-details-marker {
+  display: none;
+}
+.assistant-reasoning > summary:hover,
+.assistant-reasoning > summary:focus-visible {
+  opacity: 1;
+}
+.assistant-reasoning > summary svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+.assistant-reasoning-body {
+  margin-top: 0.375rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+  max-height: 16rem;
+  overflow-y: auto;
+}

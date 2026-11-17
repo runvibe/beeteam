@@ -26,6 +26,8 @@
   "readonly": "Histórico somente para leitura",
   "previousLeader": "Esta sessão pertence a um líder anterior do time. Inicie uma nova sessão para conversar com o líder atual.",
   "older": "Mensagens anteriores",
+  "reasoning": "Raciocínio",
+  "reasoningActive": "Pensando…",
   "requester": "Você",
   "agent": "Agente",
   "system": "Sistema",

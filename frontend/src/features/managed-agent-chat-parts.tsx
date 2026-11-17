@@ -26,6 +26,7 @@ import {
   formatAttachmentSize,
 } from "./attachment-presentation";
 import { categories } from "./attachment-categories";
+import { MessageReasoning } from "./managed-agent-reasoning";
 
 type Message = components["schemas"]["Message"];
 
@@ -159,10 +160,12 @@ function AgentMessage({
   message,
   onRecover,
   busy,
+  active,
 }: {
   message: Message;
   onRecover?: () => void;
   busy?: boolean;
+  active?: boolean;
 }) {
   const cards = useMemo(
     () =>
@@ -186,6 +189,9 @@ function AgentMessage({
       aria-label={t("managed.agent")}
     >
       <div className="assistant-msg-body">
+        {message.reasoning ? (
+          <MessageReasoning text={message.reasoning} active={!!active} />
+        ) : null}
         {message.content ? (
           <Markdown copyTables fileCitations={cards.size ? cards : undefined}>
             {message.content}
@@ -201,10 +207,12 @@ export function ChatMessage({
   message,
   onRecover,
   busy,
+  active,
 }: {
   message: Message;
   onRecover?: () => void;
   busy?: boolean;
+  active?: boolean;
 }) {
   const label = t(`managed.${message.role}`);
   if (message.role === "requester")
@@ -224,7 +232,7 @@ export function ChatMessage({
         <Markdown copyTables>{message.content}</Markdown>
       </article>
     );
-  return <AgentMessage message={message} onRecover={onRecover} busy={busy} />;
+  return <AgentMessage message={message} onRecover={onRecover} busy={busy} active={active} />;
 }
 
 export function RequestStatus({

@@ -26,6 +26,8 @@
   "readonly": "Read-only history",
   "previousLeader": "This session belongs to a previous team leader. Start a new session to talk to the current leader.",
   "older": "Earlier messages",
+  "reasoning": "Reasoning",
+  "reasoningActive": "Thinking…",
   "requester": "You",
   "agent": "Agent",
   "system": "System",

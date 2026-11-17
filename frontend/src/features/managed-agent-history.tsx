@@ -79,6 +79,13 @@ export function ManagedAgentHistory({
           key={message.id}
           message={message}
           busy={busy}
+          active={
+            !!current &&
+            message.requestId === current.id &&
+            ["queued", "preparing", "running", "awaiting_approval"].includes(
+              current.state,
+            )
+          }
           onRecover={() => onRecover(message)}
         />
       ))}
