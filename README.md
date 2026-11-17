@@ -133,6 +133,8 @@ New team chats open without an agent setup step. The first message starts a Bee 
 
 The access button below the team chat composer selects the Codex policy for each message: **Read only** runs commands in a read-only sandbox without command network access; **Standard** uses the workspace sandbox and asks for approval; **Full access** removes the sandbox and approvals after explicit confirmation; **Codex configuration** uses the effective local `config.toml` policy. Read-only sandboxing does not restrict web search or MCP tools, and an approved action can run outside the sandbox. The default for chats without a specific choice is set in global settings and saved on this device. Existing sessions configured without command network access retain that restriction in Standard mode. These controls affect integrated team leader chats, not external chats or automatic worker delivery.
 
+While a request runs, the chat shows the Codex reasoning *summary* in a muted "Reasoning" section that collapses automatically when the reply finishes and can be reopened later. Summaries are limited to 16 KiB per message; raw reasoning is never persisted. Summaries appear only when the selected model and Codex configuration produce them (`model_reasoning_summary`).
+
 Team chat MCP servers and additional skill folders are selected only through the local file `~/.beeteam/chat-tools.toml`:
 
 ```toml
