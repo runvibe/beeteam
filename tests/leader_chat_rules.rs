@@ -19,6 +19,34 @@ fn cmd(op: &str, body: Value) -> Command {
     }
 }
 #[test]
+fn historic_mode_less_and_standard_retries_return_original_receipt() {
+    for historic_mode in [None, Some("standard")] {
+        let mut records = Records::default();
+        let chat = records.insert(Record::new("leader_chats", json!({})));
+        let binding = Uuid::now_v7();
+        let client = Uuid::now_v7();
+        let mut turn = Record::new("leader_chat_turns", json!({"chatId":chat,"status":"uncertain"}));
+        if let Some(mode) = historic_mode {
+            turn.data["accessMode"] = json!(mode);
+        }
+        let turn_id = records.insert(turn);
+        let receipt = json!({"turn":{"id":turn_id,"status":"queued"}});
+        records.insert(Record::new("leader_chat_messages", json!({
+            "chatId":chat,"turnId":turn_id,"clientMessageId":client,"content":"hello",
+            "taskId":null,"requestBindingId":binding,"initialResult":receipt
+        })));
+        let mut send = cmd("integrated:send", json!({"clientMessageId":client,"bindingId":binding,"content":"hello"}));
+        send.params.insert("chatId".into(), chat.to_string());
+        assert_eq!(rules::send(&mut records, &send).unwrap().data, receipt);
+        send.body["accessMode"] = json!("standard");
+        assert_eq!(rules::send(&mut records, &send).unwrap().data, receipt);
+        send.body["accessMode"] = json!("full_access");
+        assert_eq!(rules::send(&mut records, &send).unwrap_err().code, "idempotency_conflict");
+        assert_eq!(records.list("leader_chat_turns").len(), 1);
+    }
+}
+
+#[test]
 fn external_bindings_are_not_adopted_and_message_retries_do_not_create_turns() {
     let mut records = Records::default();
     let agent = records.insert(Record::new("agents", json!({})));

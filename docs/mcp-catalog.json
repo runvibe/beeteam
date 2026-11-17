@@ -68334,7 +68334,6 @@
             "additionalProperties": false,
             "properties": {
               "accessMode": {
-                "default": "standard",
                 "enum": [
                   "read_only",
                   "standard",
@@ -68447,7 +68446,6 @@
             "additionalProperties": false,
             "properties": {
               "accessMode": {
-                "default": "standard",
                 "enum": [
                   "read_only",
                   "standard",
@@ -68674,7 +68672,6 @@
                   "additionalProperties": false,
                   "properties": {
                     "accessMode": {
-                      "default": "standard",
                       "enum": [
                         "read_only",
                         "standard",
@@ -69327,7 +69324,6 @@
                 "additionalProperties": false,
                 "properties": {
                   "accessMode": {
-                    "default": "standard",
                     "enum": [
                       "read_only",
                       "standard",
@@ -69764,7 +69760,6 @@
             "additionalProperties": false,
             "properties": {
               "accessMode": {
-                "default": "standard",
                 "enum": [
                   "read_only",
                   "standard",
@@ -69980,7 +69975,6 @@
             "additionalProperties": false,
             "properties": {
               "accessMode": {
-                "default": "standard",
                 "enum": [
                   "read_only",
                   "standard",
@@ -70446,7 +70440,6 @@
                       "additionalProperties": false,
                       "properties": {
                         "accessMode": {
-                          "default": "standard",
                           "enum": [
                             "read_only",
                             "standard",

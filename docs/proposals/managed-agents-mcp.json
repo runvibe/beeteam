@@ -374,8 +374,7 @@
                   "standard",
                   "full_access",
                   "codex_config"
-                ],
-                "default": "standard"
+                ]
               },
               "content": {
                 "type": "string",
@@ -472,8 +471,7 @@
                   "standard",
                   "full_access",
                   "codex_config"
-                ],
-                "default": "standard"
+                ]
               },
               "id": {
                 "type": "string",
@@ -701,8 +699,7 @@
                         "standard",
                         "full_access",
                         "codex_config"
-                      ],
-                      "default": "standard"
+                      ]
                     },
                     "id": {
                       "type": "string",
@@ -1113,8 +1110,7 @@
                       "standard",
                       "full_access",
                       "codex_config"
-                    ],
-                    "default": "standard"
+                    ]
                   },
                   "id": {
                     "type": "string",
@@ -1794,8 +1790,7 @@
                   "standard",
                   "full_access",
                   "codex_config"
-                ],
-                "default": "standard"
+                ]
               },
               "id": {
                 "type": "string",
@@ -2011,8 +2006,7 @@
                   "standard",
                   "full_access",
                   "codex_config"
-                ],
-                "default": "standard"
+                ]
               },
               "id": {
                 "type": "string",
@@ -2462,8 +2456,7 @@
                             "standard",
                             "full_access",
                             "codex_config"
-                          ],
-                          "default": "standard"
+                          ]
                         },
                         "id": {
                           "type": "string",

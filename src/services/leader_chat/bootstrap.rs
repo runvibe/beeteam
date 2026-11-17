@@ -71,7 +71,8 @@ impl LeaderChatService {
             .provider
             .as_ref()
             .ok_or_else(|| Failure::new("session_not_ready", "Codex runtime not configured"))?;
-        let project_root = provider.default_workspace(agent)
+        let project_root = provider
+            .default_workspace(agent)
             .map_err(|e| Failure::new(e.code, e.message))?;
         provider
             .validate(&project_root, &req.tool_profile)
@@ -80,11 +81,7 @@ impl LeaderChatService {
         let operation_id=u.records.insert(Record::new("leader_session_operations",json!({"operation":op,"actor":actor.key(),"requestKey":key,"hash":hash,"state":"pending"})));
         u.commit().await?;
         let external = match provider
-            .create(
-                &project_root,
-                &req.tool_profile,
-                crate::dto::access_mode::AccessMode::Standard,
-            )
+            .create(&project_root, &req.tool_profile, None)
             .await
         {
             Ok(external) => external,

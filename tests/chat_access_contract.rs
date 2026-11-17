@@ -3,7 +3,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 #[test]
-fn access_modes_are_accepted_by_both_chat_requests_and_default_to_standard() {
+fn access_modes_are_accepted_and_omission_remains_distinct() {
     let binding = Uuid::now_v7();
     let message = Uuid::now_v7();
     for mode in ["read_only", "standard", "full_access", "codex_config"] {
@@ -17,15 +17,14 @@ fn access_modes_are_accepted_by_both_chat_requests_and_default_to_standard() {
         json!({"bindingId":binding,"clientMessageId":message,"content":"hi"}),
     )
     .unwrap();
-    assert_eq!(
-        serde_json::to_value(legacy).unwrap()["accessMode"],
-        "standard"
-    );
+    assert!(serde_json::to_value(legacy).unwrap().get("accessMode").is_none());
     let managed: SendAgentRequest = serde_json::from_value(json!({"content":"hi"})).unwrap();
     assert!(serde_json::from_value::<SendAgentRequest>(
         json!({"content":"hi","accessMode":"root"})
     )
     .is_err());
+    assert!(serde_json::from_value::<SendAgentRequest>(json!({"content":"hi","accessMode":null})).is_err());
+    assert!(serde_json::from_value::<SendMessage>(json!({"bindingId":binding,"clientMessageId":message,"content":"hi","accessMode":null})).is_err());
     assert!(serde_json::from_value::<SendMessage>(
         json!({"bindingId":binding,"clientMessageId":message,"content":"hi","accessMode":"root"})
     )

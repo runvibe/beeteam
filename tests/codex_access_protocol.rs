@@ -24,10 +24,10 @@ async fn run(
         } else {
             "codex-access-valid"
         };
-    run_scenario(mode, scenario).await
+    run_scenario(Some(mode), scenario).await
 }
 
-async fn run_scenario(mode: AccessMode, scenario: &str) -> (Result<(), String>, Vec<IntegratedEvent>) {
+async fn run_scenario(mode: Option<AccessMode>, scenario: &str) -> (Result<(), String>, Vec<IntegratedEvent>) {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join(".local")
         .join(scenario);
@@ -56,6 +56,12 @@ async fn run_scenario(mode: AccessMode, scenario: &str) -> (Result<(), String>, 
         events.push(event);
     }
     (result, events)
+}
+
+#[tokio::test]
+async fn legacy_turn_does_not_resolve_or_override_policy() {
+    let (result, _) = run_scenario(None, "codex-access-legacy").await;
+    assert!(result.is_ok(), "{result:?}");
 }
 
 #[tokio::test]
@@ -105,7 +111,7 @@ async fn config_read_failure_never_submits_a_turn() {
 
 #[tokio::test]
 async fn missing_project_during_config_resolution_never_submits_a_turn() {
-    let (result, events) = run_scenario(AccessMode::CodexConfig, "codex-access-removed").await;
+    let (result, events) = run_scenario(Some(AccessMode::CodexConfig), "codex-access-removed").await;
     assert_eq!(result.unwrap_err(), "codex_config_invalid");
     assert!(events.is_empty());
 }

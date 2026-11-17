@@ -16,8 +16,12 @@ pub struct SendMessage {
     pub client_message_id: Uuid,
     pub binding_id: Uuid,
     pub content: String,
-    #[serde(default)]
-    pub access_mode: crate::dto::access_mode::AccessMode,
+    #[serde(
+        default,
+        deserialize_with = "crate::dto::access_mode::present",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub access_mode: Option<crate::dto::access_mode::AccessMode>,
     #[serde(default)]
     pub task_id: Option<Uuid>,
 }

@@ -6,10 +6,12 @@ impl ManagedAgentService {
             .idempotency_key
             .ok_or_else(|| Failure::new("version_required", "Idempotency-Key required"))?;
         // Canonicalize nullable references before comparing durable replay bodies.
+        let mut requested_mode = None;
         if c.operation == "managed:send" {
             let b: SendAgentRequest = serde_json::from_value(c.body.clone())
                 .map_err(|e| Failure::invalid(e.to_string()))?;
             b.validate()?;
+            requested_mode = b.access_mode;
             c.body = serde_json::to_value(b).unwrap();
         }
         if c.operation == "managed:update-conversation" {
@@ -23,10 +25,39 @@ impl ManagedAgentService {
             c.operation,
             serde_json::to_string(&c.params).unwrap()
         );
+        // Historical hashes collapsed omitted and explicit standard. Preserve them for replay,
+        // then compare the durable selection marker on newly accepted requests.
+        let mut hash_body = c.body.clone();
+        if c.operation == "managed:send"
+            && requested_mode == Some(crate::dto::access_mode::AccessMode::Standard)
+        {
+            hash_body.as_object_mut().unwrap().remove("accessMode");
+        }
         let hash =
-            serde_json::to_string(&json!({"body":c.body,"version":c.expected_version})).unwrap();
+            serde_json::to_string(&json!({"body":hash_body,"version":c.expected_version})).unwrap();
         let mut u = self.store.begin().await?;
         if let Some(out) = u.replay("managed-local", &op, key, &hash).await? {
+            if c.operation == "managed:send" {
+                if let Some(id) = out.data["id"]
+                    .as_str()
+                    .and_then(|id| Uuid::parse_str(id).ok())
+                {
+                    if let Ok(row) = u.records.get("managed_requests", id) {
+                        if row.data.get("accessModeSelectionVersion").is_some()
+                            && crate::dto::access_mode::AccessMode::from_record(
+                                row.data.get("accessMode"),
+                            )
+                            .map_err(|_| Failure::invalid("Invalid stored access mode"))?
+                                != requested_mode
+                        {
+                            return Err(Failure::new(
+                                "idempotency_conflict",
+                                "Idempotency key was already used",
+                            ));
+                        }
+                    }
+                }
+            }
             u.rollback().await?;
             return Ok(out.data);
         }
@@ -160,8 +191,10 @@ impl ManagedAgentService {
                     if row.data["installationId"] != self.installation {
                         return Err(Failure::new("provider_unavailable","Continue this conversation on its original installation, or start a new conversation here"));
                     }
-                    if b.team_id.is_some_and(|t| row.reference("teamId") != Some(t))
-                        || b.board_id.is_some_and(|t| row.reference("boardId") != Some(t))
+                    if b.team_id
+                        .is_some_and(|t| row.reference("teamId") != Some(t))
+                        || b.board_id
+                            .is_some_and(|t| row.reference("boardId") != Some(t))
                     {
                         return Err(Failure::new(
                             "conversation_mismatch",
@@ -186,10 +219,13 @@ impl ManagedAgentService {
                     row
                 };
                 validate_context(&u.records, id, conversation.reference("taskId"))?;
-                let row = Record::new(
+                let mut row = Record::new(
                     "managed_requests",
-                    json!({"agentId":id,"conversationId":conversation.id,"taskId":conversation.data["taskId"],"configurationVersion":generation,"state":"queued","origin":{"transport":origin,"label":null},"error":null,"content":b.content,"providerTurn":null,"accessMode":b.access_mode}),
+                    json!({"agentId":id,"conversationId":conversation.id,"taskId":conversation.data["taskId"],"configurationVersion":generation,"state":"queued","origin":{"transport":origin,"label":null},"error":null,"content":b.content,"providerTurn":null,"accessModeSelectionVersion":1}),
                 );
+                if let Some(mode) = b.access_mode {
+                    row.data["accessMode"] = json!(mode);
+                }
                 u.records.insert(Record::new("managed_messages",json!({"conversationId":conversation.id,"requestId":row.id,"role":"requester","content":b.content})));
                 u.records.insert(row.clone());
                 event(&mut u.records, row.id)?;

@@ -24,18 +24,27 @@ pub struct SendAgentRequest {
     pub content: String,
     #[serde(
         default,
-        skip_serializing_if = "crate::dto::access_mode::AccessMode::is_standard"
+        deserialize_with = "crate::dto::access_mode::present",
+        skip_serializing_if = "Option::is_none"
     )]
-    pub access_mode: crate::dto::access_mode::AccessMode,
+    pub access_mode: Option<crate::dto::access_mode::AccessMode>,
     #[serde(default, deserialize_with = "optional_uuid")]
     pub conversation_id: Option<Uuid>,
     #[serde(default, deserialize_with = "optional_uuid")]
     pub task_id: Option<Uuid>,
     /// Team whose leader session this new conversation belongs to.
-    #[serde(default, deserialize_with = "optional_uuid", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "optional_uuid",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub team_id: Option<Uuid>,
     /// Optional board context of the team session.
-    #[serde(default, deserialize_with = "optional_uuid", skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "optional_uuid",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub board_id: Option<Uuid>,
 }
 pub(crate) fn optional_uuid<'de, D: serde::Deserializer<'de>>(
@@ -68,9 +77,14 @@ impl SendAgentRequest {
         if self.board_id.is_some() && self.team_id.is_none() {
             return Err(Failure::invalid("boardId requires teamId"));
         }
-        for id in [self.conversation_id, self.task_id, self.team_id, self.board_id]
-            .into_iter()
-            .flatten()
+        for id in [
+            self.conversation_id,
+            self.task_id,
+            self.team_id,
+            self.board_id,
+        ]
+        .into_iter()
+        .flatten()
         {
             if id.get_version_num() != 7 || id.get_variant() != uuid::Variant::RFC4122 {
                 return Err(Failure::invalid("Bee Team references must be UUIDv7"));

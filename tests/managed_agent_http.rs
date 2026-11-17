@@ -8,6 +8,31 @@ use support::*;
 use uuid::Uuid;
 
 #[tokio::test]
+async fn omitted_mode_is_legacy_and_conflicts_with_an_explicit_standard_retry() {
+    let (app, agent, _, _) = configured().await;
+    let leader = ok(&app, "POST", "/api/v2/agents", json!({"name":"Worker test leader"}), None).await;
+    ok(&app, "POST", "/api/v2/teams", json!({"name":"Worker test team","leaderId":id(&leader),"workerIds":[id(&agent)],"coordinationContext":manual()}), None).await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let key = Uuid::new_v4();
+    let body = json!({"content":"legacy-access-test"});
+    let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
+    assert_eq!(first.0, 202, "{first:?}");
+    assert!(first.1.get("accessMode").is_none());
+    let snapshot = wait_state(&app, &first.1, "completed").await;
+    assert!(snapshot["request"].get("accessMode").is_none());
+    assert_eq!(request_key(&app, "POST", &path, body, None, key).await, first);
+    let changed = request_key(&app, "POST", &path, json!({"content":"legacy-access-test","accessMode":"standard"}), None, key).await;
+    assert_eq!(changed.0, 409, "{changed:?}");
+
+    let explicit_key = Uuid::new_v4();
+    let explicit = request_key(&app, "POST", &path, json!({"content":"explicit-standard","accessMode":"standard"}), None, explicit_key).await;
+    assert_eq!(explicit.1["accessMode"], "standard");
+    wait_state(&app, &explicit.1, "completed").await;
+    let changed = request_key(&app, "POST", &path, json!({"content":"explicit-standard"}), None, explicit_key).await;
+    assert_eq!(changed.0, 409, "{changed:?}");
+}
+
+#[tokio::test]
 async fn uncertain_mode_replay_never_starts_another_turn() {
     let (app, agent, _, provider) = configured().await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
@@ -749,6 +774,33 @@ async fn decline_is_not_reported_as_completed() {
     assert_eq!(result.0, 200, "{result:?}");
     wait_state(&app, &r.1, "failed").await;
 }
+#[tokio::test]
+async fn omitted_mode_replay_is_shared_by_http_and_mcp() {
+    use axum::{body::Body, http::Request};
+    use http_body_util::BodyExt;
+    use tower::ServiceExt;
+    let (app, agent, _, provider) = configured().await;
+    let key = Uuid::new_v4();
+    let body = json!({"content":"legacy-access-test"});
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
+    wait_state(&app, &first.1, "completed").await;
+    for (mode, conflict) in [(None, false), (Some("standard"), true)] {
+        let mut mcp_body = body.clone();
+        if let Some(mode) = mode {
+            mcp_body["accessMode"] = json!(mode);
+        }
+        let response=app.clone().oneshot(Request::builder().method("POST").uri("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"sendAgentRequest","arguments":{"params":{"agentId":id(&agent)},"body":mcp_body,"idempotencyKey":key}}}).to_string())).unwrap()).await.unwrap();
+        let result: Value = serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
+        assert_eq!(result["result"]["isError"], conflict, "{result}");
+        if !conflict {
+            assert_eq!(result["result"]["structuredContent"]["data"], first.1);
+        }
+    }
+    assert_eq!(provider.2.load(Ordering::SeqCst), 1);
+}
+
+#[cfg(feature = "mcp")]
 #[tokio::test]
 async fn mcp_and_http_share_the_original_receipt() {
     use axum::{body::Body, http::Request};

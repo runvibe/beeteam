@@ -110,10 +110,9 @@ fn public(r: &Record) -> Value {
     };
     let mut v = json!({"id":r.id});
     for key in fields {
-        v[*key] = r.data[*key].clone();
-    }
-    if r.table == "managed_requests" && r.data.get("accessMode").is_none() {
-        v["accessMode"] = json!("standard");
+        if *key != "accessMode" || r.data.get(*key).is_some() {
+            v[*key] = r.data[*key].clone();
+        }
     }
     if r.table == "managed_messages" {
         files::project_message(r, &mut v);

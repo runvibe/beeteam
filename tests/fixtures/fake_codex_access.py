@@ -24,7 +24,7 @@ for line in sys.stdin:
     error = None
     if method == "config/read":
         config_mode = True
-        if params.get("cwd") != root or root.endswith("invalid"):
+        if params.get("cwd") != root or root.endswith(("invalid", "legacy")):
             error = {"code": -32603, "message": "fixture config error"}
         else:
             result = {"config": {"sandbox_mode": None, "approval_policy": None}} if root.endswith("defaults") else {"config": {}}
@@ -40,7 +40,9 @@ for line in sys.stdin:
             })
         result = {"data": servers, "nextCursor": None}
     elif method == "thread/start":
-        if not params.get("ephemeral") or params.get("cwd") != root or "sandbox_workspace_write.network_access" in params.get("config", {}):
+        if root.endswith("legacy"):
+            error = {"code": -32602, "message": "legacy execution must not start a helper thread"}
+        elif not params.get("ephemeral") or params.get("cwd") != root or "sandbox_workspace_write.network_access" in params.get("config", {}):
             error = {"code": -32602, "message": "configuration was overridden"}
         else:
             result = {
@@ -62,6 +64,9 @@ for line in sys.stdin:
             result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root,
                       "approvalPolicy": "never", "sandbox": {"type": "dangerFullAccess"}}
     elif method == "turn/start":
+        if root.endswith("legacy") and any(k in params for k in ("sandboxPolicy", "approvalPolicy", "approvalsReviewer")):
+            send({"id": ident, "error": {"code": -32602, "message": "legacy policy must not be overridden"}})
+            continue
         policy = {"approvalPolicy": params.get("approvalPolicy"), "approvalsReviewer": params.get("approvalsReviewer"), "sandboxPolicy": params.get("sandboxPolicy")}
         send({"id": ident, "result": {"turn": {"id": "turn"}}})
         send({"method": "item/completed", "params": {"threadId": "thread", "turnId": "turn",

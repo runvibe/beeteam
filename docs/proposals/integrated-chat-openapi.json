@@ -1716,8 +1716,7 @@
       },
       "AccessMode": {
         "type": "string",
-        "enum": ["read_only", "standard", "full_access", "codex_config"],
-        "default": "standard"
+        "enum": ["read_only", "standard", "full_access", "codex_config"]
       },
       "SendMessage": {
         "type": "object",
@@ -1738,7 +1737,8 @@
             "description": "Non-whitespace Markdown, additionally limited to 65536 UTF-8 bytes."
           },
           "accessMode": {
-            "$ref": "#/components/schemas/AccessMode"
+            "$ref": "#/components/schemas/AccessMode",
+            "description": "Omit to retain legacy provider behavior; explicit modes apply to this turn."
           },
           "taskId": {
             "anyOf": [
@@ -1776,7 +1776,7 @@
           },
           "accessMode": {
             "$ref": "#/components/schemas/AccessMode",
-            "description": "Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied."
+            "description": "Absent when no per-turn mode was selected; execution retains legacy provider behavior."
           },
           "status": {
             "type": "string",

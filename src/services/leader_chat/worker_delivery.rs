@@ -60,7 +60,11 @@ impl WorkerDeliveryProvider {
             .map_err(storage_failure)?;
         let profile = binding.data["toolProfile"].clone();
         let mut owned_target = target.clone();
-        owned_target.project_root = provider.default_workspace(binding.reference("agentId").ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?)?;
+        owned_target.project_root = provider.default_workspace(
+            binding
+                .reference("agentId")
+                .ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?,
+        )?;
         let target = &owned_target;
         let turn_id = turn.id;
         u.commit().await.map_err(storage_failure)?;
@@ -101,14 +105,7 @@ impl WorkerDeliveryProvider {
         provider: std::sync::Arc<dyn crate::repositories::integrated_provider::IntegratedProvider>,
     ) -> std::result::Result<(), SessionFailure> {
         let (tx, mut rx) = mpsc::channel(32);
-        let run = provider.run(
-            target,
-            text,
-            profile,
-            crate::dto::access_mode::AccessMode::Standard,
-            tx,
-            controls,
-        );
+        let run = provider.run(target, text, profile, None, tx, controls);
         tokio::pin!(run);
         let mut accepted = None;
         let mut response = String::new();

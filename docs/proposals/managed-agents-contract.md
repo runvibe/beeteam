@@ -36,6 +36,8 @@ Path IDs are UUIDv7 Bee Team IDs. Configuration PUT uses the **agent version**, 
 
 ## Submission, origin and context
 
+`accessMode` is optional and non-null. Omission retains legacy provider behavior (no per-turn sandbox or approval overrides); automatic Conversation deliveries also omit it. Explicit `standard` is a different request and applies the standard policy. New idempotent retries must retain the original selection, while old receipts remain replayable without starting another turn. Older stored `standard` values may have originated from omitted input and cannot be distinguished retrospectively.
+
 Team sessions: a new conversation sent with `teamId` must target the team's current leader (otherwise `conversation_mismatch`); `boardId` requires `teamId` and must reference an active board of that team. Continuing a conversation with a different `teamId`/`boardId` is rejected, and every accepted request refreshes the conversation `updatedAt`. Only conversations with a `teamId` appear in `listAgentSessions`; task and direct agent conversations stay out of that list. Existing non-task conversations of active team leaders are backfilled with their team by migration.
 
 POST accepts at most 65536 UTF-8 bytes, nonblank and without NUL. DTO validation and the schema validator both enforce bytes, including emoji. Additional skill paths are absolute host paths, at most 4096 UTF-8 bytes without NUL/newlines/surrounding whitespace; filesystem existence/allowed-root checks belong to the service, not DTO parsing. Tool profile contains only configured MCP names, no credentials, arbitrary executable or server URL.

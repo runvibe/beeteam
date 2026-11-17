@@ -23,9 +23,9 @@ pub fn project(r: &Record) -> Value {
     }
     if r.table == "leader_chat_turns" {
         v.as_object_mut().unwrap().remove("taskId");
-        if !v.as_object().unwrap().contains_key("accessMode") {
-            v["accessMode"] = json!("standard");
-        }
+        v.as_object_mut()
+            .unwrap()
+            .remove("accessModeSelectionVersion");
     }
     if matches!(r.table, "leader_chats" | "leader_chat_turns") {
         v["updatedAt"] = json!(r.updated_at);
@@ -142,10 +142,13 @@ pub fn send(records: &mut Records, c: &Command) -> Result<Outcome> {
         let prior_mode =
             crate::dto::access_mode::AccessMode::from_record(prior_turn.data.get("accessMode"))
                 .map_err(|_| Failure::invalid("Invalid stored access mode"))?;
+        // Older records cannot distinguish omitted input from an explicit standard selection.
         if old.data["content"] != req.content
             || old.reference("taskId") != req.task_id
             || old.data["requestBindingId"] != json!(req.binding_id)
-            || prior_mode != req.access_mode
+            || (prior_mode != req.access_mode
+                && !(prior_turn.data.get("accessModeSelectionVersion").is_none()
+                    && prior_mode.unwrap_or_default() == req.access_mode.unwrap_or_default()))
         {
             return Err(Failure::new(
                 "idempotency_conflict",
@@ -188,10 +191,13 @@ pub fn send(records: &mut Records, c: &Command) -> Result<Outcome> {
             "There is already a turn for this session",
         ));
     }
-    let turn = Record::new(
+    let mut turn = Record::new(
         "leader_chat_turns",
-        json!({"chatId":chat.id,"bindingId":b.id,"status":"queued","failure":null,"accessMode":req.access_mode}),
+        json!({"chatId":chat.id,"bindingId":b.id,"status":"queued","failure":null,"accessModeSelectionVersion":1}),
     );
+    if let Some(mode) = req.access_mode {
+        turn.data["accessMode"] = json!(mode);
+    }
     let turn_id = turn.id;
     let turn_value = project(&turn);
     records.insert(turn);

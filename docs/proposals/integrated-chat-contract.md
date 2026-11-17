@@ -33,6 +33,8 @@ Bootstrap integrado: POST integrated-session recebe `{expectedBindingId}` e tool
 
 ## Autoria, versões e idempotência
 
+O campo `accessMode` é opcional e não aceita null. Sua ausência mantém o comportamento legado do provedor, sem sobrescrever a política no turno; `standard` explícito aplica a política padrão do Bee Team. Novas tentativas devem manter a mesma escolha. Recibos antigos continuam reproduzíveis sem novo turno; registros históricos com `standard` não permitem distinguir se o cliente havia omitido o campo.
+
 Preservar convenções RA/Kanban: X-Actor-Kind obrigatório nas escritas; X-Actor-Id somente quando kind=agent. São metadados, não autenticação. Não usar esses headers como fronteira de segurança. O deployment continua local; contrato não autoriza publicação da API local na internet. Aplicar a política de origem existente também ao stream e aos comandos.
 
 Todas as escritas exigem Idempotency-Key com replay por 24h. Resolver replay antes de checar versões atuais. Payload diferente com a mesma chave dá 409 idempotency_conflict. POST de mensagem também deduplica clientMessageId por chat durante toda a vida do histórico, inclusive com nova chave: mesma mensagem retorna o resultado original, conteúdo diferente dá 409. A intenção e a mensagem são uma única transação.

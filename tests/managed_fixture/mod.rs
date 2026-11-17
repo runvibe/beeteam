@@ -29,7 +29,7 @@ impl IntegratedProvider for TestProvider {
         Ok(path.to_str().unwrap().into())
     }
 
-    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: beeteam::dto::access_mode::AccessMode) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
@@ -72,7 +72,7 @@ impl IntegratedProvider for TestProvider {
         target: &'a SessionDestination,
         text: &'a str,
         _profile: &'a Value,
-        access: beeteam::dto::access_mode::AccessMode,
+        access: Option<beeteam::dto::access_mode::AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
@@ -89,14 +89,20 @@ impl IntegratedProvider for TestProvider {
                 ));
             }
             if text == "access-mode-test" {
-                assert_eq!(access, beeteam::dto::access_mode::AccessMode::ReadOnly);
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
+            }
+            if text == "legacy-access-test" {
+                assert_eq!(access, None);
+            }
+            if text == "explicit-standard" {
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::Standard));
             }
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
                 .unwrap();
             if text == "uncertain-access-test" {
-                assert_eq!(access, beeteam::dto::access_mode::AccessMode::ReadOnly);
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
                 return Err(beeteam::dto::session_delivery::SessionFailure::new(
                     "provider_io",
                     "Outcome unknown",

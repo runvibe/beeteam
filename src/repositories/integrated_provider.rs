@@ -95,14 +95,14 @@ pub trait IntegratedProvider: Send + Sync {
         &'a self,
         root: &'a str,
         profile: &'a Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String>;
     fn run<'a>(
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()>;

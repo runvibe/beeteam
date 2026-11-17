@@ -129,7 +129,7 @@ use std::sync::{
 use tokio::sync::mpsc;
 struct ApprovalProvider(AtomicUsize);
 impl IntegratedProvider for ApprovalProvider {
-    fn create<'a>(&'a self, _: &'a str, _: &'a Value, _: beeteam::dto::access_mode::AccessMode) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _: &'a str, _: &'a Value, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async { Ok("unused".into()) })
     }
     fn inspect<'a>(&'a self, _: &'a SessionDestination, _: &'a Value) -> ProviderFuture<'a, Value> {
@@ -143,12 +143,12 @@ impl IntegratedProvider for ApprovalProvider {
         _: &'a SessionDestination,
         text: &'a str,
         _: &'a Value,
-        access: beeteam::dto::access_mode::AccessMode,
+        access: Option<beeteam::dto::access_mode::AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
-            assert_eq!(access, beeteam::dto::access_mode::AccessMode::Standard);
+            assert_eq!(access, None);
             events
                 .send(IntegratedEvent::Accepted("worker-provider-turn".into()))
                 .await
@@ -460,7 +460,7 @@ struct RecoveryProvider {
     calls: AtomicUsize,
 }
 impl IntegratedProvider for RecoveryProvider {
-    fn create<'a>(&'a self, _: &'a str, _: &'a Value, _: beeteam::dto::access_mode::AccessMode) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _: &'a str, _: &'a Value, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async { panic!("recovery must not create") })
     }
     fn inspect<'a>(&'a self, _: &'a SessionDestination, _: &'a Value) -> ProviderFuture<'a, Value> {
@@ -471,7 +471,7 @@ impl IntegratedProvider for RecoveryProvider {
         _: &'a SessionDestination,
         _: &'a str,
         _: &'a Value,
-        _: beeteam::dto::access_mode::AccessMode,
+        _: Option<beeteam::dto::access_mode::AccessMode>,
         _: mpsc::Sender<IntegratedEvent>,
         _: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {

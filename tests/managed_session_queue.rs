@@ -22,6 +22,29 @@ fn fixture() -> (Records, Uuid, Uuid, Uuid, Uuid) {
     (r, task, leader, worker, team)
 }
 #[test]
+fn automatic_managed_delivery_has_no_per_turn_access_selection() {
+    let (mut r, task, leader, worker, _) = fixture();
+    let agent = r.get_mut("agents", worker).unwrap();
+    agent.data["managedConfiguration"] = json!({"provider":"codex"});
+    agent.data["managedGeneration"] = json!(1);
+    agent.data["managedInstallation"] = json!("local");
+    let comment = add(
+        &mut r,
+        "comments",
+        json!({"taskId":task,"actorId":leader,"body":"Please inspect"}),
+    );
+    assert!(beeteam::services::managed_agents::conversation::enqueue(
+        &mut r, task, comment, worker, "conversation", comment, true
+    ).unwrap());
+    let request = r.list("managed_requests")[0];
+    assert!(request.data.get("accessMode").is_none());
+    assert_eq!(
+        beeteam::dto::access_mode::AccessMode::from_record(request.data.get("accessMode")).unwrap(),
+        None
+    );
+}
+
+#[test]
 fn external_or_legacy_sessions_are_never_dispatched() {
     for mode in [serde_json::Value::Null, json!("external")] {
         let (mut r, task, leader, worker, _) = fixture();

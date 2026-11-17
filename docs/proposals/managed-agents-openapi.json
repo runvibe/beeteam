@@ -1254,14 +1254,14 @@
       },
       "AccessMode": {
         "type": "string",
-        "enum": ["read_only", "standard", "full_access", "codex_config"],
-        "default": "standard"
+        "enum": ["read_only", "standard", "full_access", "codex_config"]
       },
       "SendAgentRequest": {
         "type": "object",
         "properties": {
           "accessMode": {
-            "$ref": "#/components/schemas/AccessMode"
+            "$ref": "#/components/schemas/AccessMode",
+            "description": "Omit to retain legacy provider behavior; explicit modes apply to this request."
           },
           "content": {
             "type": "string",
@@ -1429,7 +1429,7 @@
         "properties": {
           "accessMode": {
             "$ref": "#/components/schemas/AccessMode",
-            "description": "Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied."
+            "description": "Absent when no per-turn mode was selected; execution retains legacy provider behavior."
           },
           "id": {
             "type": "string",

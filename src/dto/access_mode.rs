@@ -12,14 +12,17 @@ pub enum AccessMode {
 }
 
 impl AccessMode {
-    pub fn is_standard(&self) -> bool {
-        *self == Self::Standard
+    pub fn from_record(
+        value: Option<&serde_json::Value>,
+    ) -> Result<Option<Self>, serde_json::Error> {
+        value
+            .map(|value| serde_json::from_value(value.clone()))
+            .transpose()
     }
+}
 
-    pub fn from_record(value: Option<&serde_json::Value>) -> Result<Self, serde_json::Error> {
-        match value {
-            None => Ok(Self::Standard),
-            Some(value) => serde_json::from_value(value.clone()),
-        }
-    }
+pub fn present<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<AccessMode>, D::Error> {
+    AccessMode::deserialize(deserializer).map(Some)
 }

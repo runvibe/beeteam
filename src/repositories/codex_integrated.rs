@@ -33,7 +33,10 @@ fn fail(code: &'static str, text: &str, uncertain: bool) -> SessionFailure {
     SessionFailure::new(code, text, uncertain)
 }
 fn same_project(actual: &str, expected: &str) -> bool {
-    match (std::fs::canonicalize(actual), std::fs::canonicalize(expected)) {
+    match (
+        std::fs::canonicalize(actual),
+        std::fs::canonicalize(expected),
+    ) {
         (Ok(actual), Ok(expected)) => actual == expected,
         _ => false,
     }
@@ -190,7 +193,7 @@ impl CodexIntegratedProvider {
         root: &str,
         thread: Option<&str>,
         profile: &Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
     ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>), SessionFailure> {
         let config_failure = || {
             fail(
@@ -200,7 +203,7 @@ impl CodexIntegratedProvider {
             )
         };
         let mut w = Wire::open(&self.executable, root).await.map_err(|e| {
-            if access == AccessMode::CodexConfig
+            if access == Some(AccessMode::CodexConfig)
                 && matches!(e.code, "provider_exited" | "invalid_protocol")
             {
                 config_failure()
@@ -208,7 +211,7 @@ impl CodexIntegratedProvider {
                 e
             }
         })?;
-        if access == AccessMode::CodexConfig {
+        if access == Some(AccessMode::CodexConfig) {
             let config = w
                 .request("config/read", json!({"cwd":root,"includeLayers":false}))
                 .await
@@ -239,13 +242,15 @@ impl CodexIntegratedProvider {
             .await?;
         }
         let mut configuration = scope.configuration().clone();
-        if access == AccessMode::CodexConfig {
+        if access == Some(AccessMode::CodexConfig) {
             configuration
                 .as_object_mut()
                 .unwrap()
                 .remove("sandbox_workspace_write.network_access");
         }
-        let effective = if thread.is_some() || access == AccessMode::CodexConfig {
+        let effective = if (thread.is_some() && access.is_some())
+            || access == Some(AccessMode::CodexConfig)
+        {
             let mut native_config = configuration.clone();
             native_config
                 .as_object_mut()
@@ -258,7 +263,7 @@ impl CodexIntegratedProvider {
                 )
                 .await
                 .map_err(|e| {
-                    if access == AccessMode::CodexConfig {
+                    if access == Some(AccessMode::CodexConfig) {
                         config_failure()
                     } else {
                         e
@@ -279,8 +284,8 @@ impl CodexIntegratedProvider {
                 ));
             }
             let policy = json!({"sandbox":native["sandbox"],"approvalPolicy":native["approvalPolicy"],"approvalsReviewer":native["approvalsReviewer"]});
-            if access == AccessMode::CodexConfig {
-                super::codex_access::turn_overrides(access, false, Some(&policy))?;
+            if access == Some(AccessMode::CodexConfig) {
+                super::codex_access::turn_overrides(AccessMode::CodexConfig, false, Some(&policy))?;
             }
             Some(policy)
         } else {
@@ -340,7 +345,7 @@ impl CodexIntegratedProvider {
         target: &SessionDestination,
         text: &str,
         profile: &Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> Result<(), SessionFailure> {
@@ -359,27 +364,29 @@ impl CodexIntegratedProvider {
                 access,
             )
             .await?;
-        let overrides = super::codex_access::turn_overrides(
-            access,
-            self.selected_profile(profile)?.network_access,
-            effective.as_ref(),
-        )?;
         let mut params = json!({"threadId":thread,"disabledPluginIds":disabled_plugins,"input":[{"type":"text","text":format!("{}{}",scope.context(),text)}]});
-        params
-            .as_object_mut()
-            .unwrap()
-            .extend(overrides.as_object().unwrap().clone());
-        params["approvalsReviewer"] = effective
-            .as_ref()
-            .and_then(|v| v.get("approvalsReviewer"))
-            .cloned()
-            .ok_or_else(|| {
-                fail(
-                    "unsupported_capability",
-                    "Cannot determine the effective Codex approval reviewer",
-                    false,
-                )
-            })?;
+        if let Some(access) = access {
+            let overrides = super::codex_access::turn_overrides(
+                access,
+                self.selected_profile(profile)?.network_access,
+                effective.as_ref(),
+            )?;
+            params
+                .as_object_mut()
+                .unwrap()
+                .extend(overrides.as_object().unwrap().clone());
+            params["approvalsReviewer"] = effective
+                .as_ref()
+                .and_then(|v| v.get("approvalsReviewer"))
+                .cloned()
+                .ok_or_else(|| {
+                    fail(
+                        "unsupported_capability",
+                        "Cannot determine the effective Codex approval reviewer",
+                        false,
+                    )
+                })?;
+        }
         let result = w.request("turn/start", params).await.map_err(|mut e| {
             e.uncertain = true;
             e
@@ -605,7 +612,7 @@ impl IntegratedProvider for CodexIntegratedProvider {
         &'a self,
         root: &'a str,
         profile: &'a Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             let (mut wire, id, _scope, _disabled_plugins, _effective) =
@@ -625,7 +632,7 @@ impl IntegratedProvider for CodexIntegratedProvider {
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
-        access: AccessMode,
+        access: Option<AccessMode>,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
