@@ -6,6 +6,40 @@ use uuid::Uuid;
 
 pub type RepositoryFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T>> + Send + 'a>>;
 
+/// Local harness adapters own protocol I/O; services own recipients and delivery state.
+pub trait SessionProvider: Send + Sync {
+    /// Structured delivery identity for adapters that route approvals and history.
+    fn deliver_context<'a>(
+        &'a self,
+        destination: &'a crate::dto::session_delivery::SessionDestination,
+        text: &'a str,
+        events: tokio::sync::mpsc::Sender<crate::dto::session_delivery::SessionEvent>,
+        _delivery_id: Uuid,
+    ) -> Pin<
+        Box<
+            dyn Future<
+                    Output = std::result::Result<(), crate::dto::session_delivery::SessionFailure>,
+                > + Send
+                + 'a,
+        >,
+    > {
+        self.deliver(destination, text, events)
+    }
+    fn deliver<'a>(
+        &'a self,
+        destination: &'a crate::dto::session_delivery::SessionDestination,
+        text: &'a str,
+        events: tokio::sync::mpsc::Sender<crate::dto::session_delivery::SessionEvent>,
+    ) -> Pin<
+        Box<
+            dyn Future<
+                    Output = std::result::Result<(), crate::dto::session_delivery::SessionFailure>,
+                > + Send
+                + 'a,
+        >,
+    >;
+}
+
 pub trait ChangeSource: Send + Sync {
     fn is_closed(&self) -> bool;
     fn connect(&self) -> RepositoryFuture<'_, Box<dyn ChangeStream>>;

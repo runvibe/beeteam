@@ -116,7 +116,7 @@ impl SqliteWork {
         hash: &str,
     ) -> Result<Option<Outcome>> {
         self.writable()?;
-        sqlx::query("UPDATE request_replays SET deleted_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE deleted_at IS NULL AND julianday(expires_at)<=julianday('now')").execute(&mut *self.tx).await?;
+        sqlx::query("UPDATE request_replays SET deleted_at=strftime('%Y-%m-%dT%H:%M:%fZ','now') WHERE deleted_at IS NULL AND actor_key <> 'managed-local' AND julianday(expires_at)<=julianday('now')").execute(&mut *self.tx).await?;
         let row=sqlx::query("SELECT request_hash,response FROM request_replays WHERE actor_key=$1 AND operation=$2 AND request_key=$3 AND deleted_at IS NULL")
             .bind(actor).bind(operation).bind(key.to_string()).fetch_optional(&mut *self.tx).await?;
         if let Some(row) = row {
@@ -189,11 +189,12 @@ impl SqliteWork {
         }
         // Release old unique role assignments inside the transaction before applying swaps.
         // Historical rows stay present; readers cannot observe this intermediate state.
-        for r in records
-            .rows
-            .values()
-            .filter(|r| matches!(r.table, "teams" | "memberships" | "images" | "statuses"))
-        {
+        for r in records.rows.values().filter(|r| {
+            matches!(
+                r.table,
+                "teams" | "memberships" | "images" | "statuses" | "agent_session_bindings"
+            )
+        }) {
             if self
                 .original
                 .rows
@@ -214,9 +215,17 @@ impl SqliteWork {
         for deleted in [true, false] {
             for &table in TABLES {
                 let rows: Vec<_> = if table == "tasks" {
-                    ordered_tasks.iter().copied().filter(|r| r.deleted_at.is_some() == deleted).collect()
+                    ordered_tasks
+                        .iter()
+                        .copied()
+                        .filter(|r| r.deleted_at.is_some() == deleted)
+                        .collect()
                 } else {
-                    records.rows.values().filter(|r| r.table == table && r.deleted_at.is_some() == deleted).collect()
+                    records
+                        .rows
+                        .values()
+                        .filter(|r| r.table == table && r.deleted_at.is_some() == deleted)
+                        .collect()
                 };
                 for r in rows {
                     if self.original.rows.get(&(table, r.id)) == Some(r) {
@@ -306,7 +315,10 @@ impl TransactionStore for SqliteWork {
         Box::pin(SqliteWork::sequence(self))
     }
     fn rollback(self: Box<Self>) -> RepositoryFuture<'static, ()> {
-        Box::pin(async move { self.tx.rollback().await?; Ok(()) })
+        Box::pin(async move {
+            self.tx.rollback().await?;
+            Ok(())
+        })
     }
     fn commit(self: Box<Self>, records: Records) -> RepositoryFuture<'static, ()> {
         Box::pin(SqliteWork::commit(*self, records))

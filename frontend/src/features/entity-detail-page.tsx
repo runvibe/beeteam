@@ -47,7 +47,11 @@ export function EntityDetailPage({
     if (!screen) heading.current?.focus({ preventScroll: true });
   }, []);
   return (
-    <section className="detail-page entity-page" aria-label={label}>
+    <section
+      className="detail-page entity-page"
+      aria-label={label}
+      data-detail-compact={mobile}
+    >
       <DetailShell
         primaryHidden={screen}
         hero={

@@ -39,7 +39,11 @@ it("enters Home from the connected root and leaves direct list links intact", as
   expect(location.pathname).toBe("/home");
   expect(document.querySelector(".mobile-context-path")).toHaveTextContent("Início");
   expect(location.search).toContain("boards.name=preserved");
-  expect(list).not.toHaveBeenCalled();
+  // The default chat panel only resolves the system team; Home itself loads no lists.
+  for (const [resource, , filters] of list.mock.calls) {
+    expect(resource).toBe("teams");
+    expect(filters).toMatchObject({ system: true });
+  }
   for (const link of screen.getAllByRole("link", { name: "Documentação" })) expect(link).toHaveAttribute("href", "https://getbee.team/guide/?theme=default&mode=light");
   expect(screen.getByRole("link", { name: "Rever instruções de instalação" })).toHaveAttribute("href", "https://getbee.team/pt/guide/installation?theme=default&mode=light");
   fireEvent.click(screen.getByRole("button", { name: "Abrir boards" }));

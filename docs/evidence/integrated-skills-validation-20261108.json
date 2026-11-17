@@ -1,0 +1,45 @@
+{
+  "timeUtc": "20261108T163640Z",
+  "sourceCommit": "3600162fa36009efc3d65cb0ce8460b8b8a037bb",
+  "provenanceSourceCommit": "ea3e3b70415ac965882b8d6dda47d61cc6f007d4",
+  "skillsCli": "1.7.6",
+  "globalInstall": false,
+  "telemetry": false,
+  "harnesses": [
+    "codex",
+    "claude-code",
+    "github-copilot"
+  ],
+  "packages": [
+    {
+      "kind": "skill",
+      "name": "setup-bee-team",
+      "fileName": "beeteam-0.1.4-skill-setup-bee-team.zip",
+      "sha256": "81b0612698dfed85fd0dda4e40f2aee87edea630e353c48dfcca33e1e5019155",
+      "size": 21231
+    },
+    {
+      "kind": "skill",
+      "name": "get-a-team-lead",
+      "fileName": "beeteam-0.1.4-skill-get-a-team-lead.zip",
+      "sha256": "692a1312eff4d324a0434cb5893e423140c2de87971dfa398a7fed0c48f11dce",
+      "size": 114617
+    },
+    {
+      "kind": "skill",
+      "name": "get-a-worker",
+      "fileName": "beeteam-0.1.4-skill-get-a-worker.zip",
+      "sha256": "e1e8c7515245710c5d5c17516ca5ca38c4271c4498d7180d12146163f2dd8329",
+      "size": 113726
+    }
+  ],
+  "result": "passed",
+  "checks": [
+    "source commit and bundled hashes",
+    "skills CLI discovery",
+    "isolated project install --copy",
+    "installed file byte parity"
+  ],
+  "localValidationOnly": true,
+  "published": false
+}

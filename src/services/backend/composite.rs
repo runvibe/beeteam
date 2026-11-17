@@ -128,7 +128,7 @@ pub async fn execute(repository: &dyn ResourceStore, name: &str, mut input: Valu
     } else {
         return Err(Failure::missing());
     }
-    let mut data = json!({"createdComments":created_comments,"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. No external execution, approval or chat control performed."});
+    let mut data = json!({"createdComments":created_comments,"task":task_value(&unit,id)?,"updatedTasks":updated.into_iter().map(|id|task_value(&unit,id)).collect::<Result<Vec<_>>>()?,"notice":"Stored atomically. Configured managed Conversation delivery runs separately after commit; harness execution and approval remain distinct."});
     if name=="close_activity" {
         let sid=value_id(&unit.records.get("tasks",id)?.data["latestExecutionSummaryId"])?;
         let doc=&contracts::operation("createExecutionSummary")?.document;

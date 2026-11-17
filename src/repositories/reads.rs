@@ -40,6 +40,12 @@ async fn load_ids(
 }
 
 pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> Result<Records> {
+    if c.operation.starts_with("managed:") {
+        return super::managed_agent_reads::context(tx, c).await;
+    }
+    if c.operation.starts_with("integrated:") {
+        return super::leader_chat_reads::context(tx, c).await;
+    }
     let mut records = Records::default();
     for (key, table) in [
         ("agentId", "agents"),
@@ -90,8 +96,21 @@ pub(super) async fn context(tx: &mut Transaction<'_, Postgres>, c: &Command) -> 
         }
     }
     // Point reads need task/actor existence only, never task summaries or related payloads.
-    if matches!(c.operation.as_str(), "getTimelinePoints" | "getAgentLatestActivity") { return Ok(records); }
-    hydrate_scoped(tx, &mut records, !matches!(c.operation.as_str(),"getTaskOverview"|"getTaskUsage"|"listTaskUsageDimensions")).await?;
+    if matches!(
+        c.operation.as_str(),
+        "getTimelinePoints" | "getAgentLatestActivity"
+    ) {
+        return Ok(records);
+    }
+    hydrate_scoped(
+        tx,
+        &mut records,
+        !matches!(
+            c.operation.as_str(),
+            "getTaskOverview" | "getTaskUsage" | "listTaskUsageDimensions"
+        ),
+    )
+    .await?;
     Ok(records)
 }
 

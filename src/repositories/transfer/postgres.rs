@@ -25,8 +25,9 @@ impl TransferDatabase for TransferRepository {
                 .await?;
             let mut empty = true;
             for table in groups().into_iter().chain(["authors", "posts"]) {
-                let n: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
-                    "SELECT count(*) FROM {table}"
+                let n: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(super::seed::count(
+                    table,
+                    super::seed::Dialect::Postgres,
                 )))
                 .fetch_one(&self.pool)
                 .await?;

@@ -190,3 +190,34 @@ fn legacy_archives_omit_all_interval_groups_but_partial_sets_fail() {
         if partial{assert!(store.validate_archive(id).is_err());}else{let m=store.validate_archive(id).unwrap();assert!(!m.entries.contains_key("records/task_executions.jsonl"));assert!(store.rows(id,"task_execution_intervals").unwrap().is_empty());}
     }
 }
+
+#[test]
+fn legacy_archive_without_session_ledger_keeps_original_manifest_and_payloads() {
+    use std::io::{Read,Write};
+    let dir=tempfile::tempdir().unwrap();
+    let store=ArchiveStore::new(dir.path().into(),Limits::default()).unwrap();
+    let id=uuid::Uuid::now_v7();store.create_stage(id).unwrap();store.seal(id,"sqlite",0).unwrap();
+    let path=store.archive_path(id);
+    let mut source=zip::ZipArchive::new(std::fs::File::open(&path).unwrap()).unwrap();
+    let mut entries=Vec::new();
+    for i in 0..source.len() {
+        let mut file=source.by_index(i).unwrap();let name=file.name().to_owned();
+        if name=="records/agent_session_bindings.jsonl" {continue;}
+        let mut bytes=Vec::new();file.read_to_end(&mut bytes).unwrap();
+        if name=="manifest.json" {
+            let mut manifest:serde_json::Value=serde_json::from_slice(&bytes).unwrap();
+            manifest["entries"].as_object_mut().unwrap().remove("records/agent_session_bindings.jsonl");
+            bytes=serde_json::to_vec(&manifest).unwrap();
+        }
+        entries.push((name,bytes));
+    }
+    drop(source);
+    let mut output=zip::ZipWriter::new(std::fs::File::create(&path).unwrap());
+    for (name,bytes) in entries {output.start_file(name,zip::write::SimpleFileOptions::default()).unwrap();output.write_all(&bytes).unwrap();}
+    output.finish().unwrap();
+    let before=std::fs::read(&path).unwrap();
+    let manifest=store.validate_archive(id).unwrap();
+    assert!(!manifest.entries.contains_key("records/agent_session_bindings.jsonl"));
+    assert!(store.rows(id,"agent_session_bindings").unwrap().is_empty());
+    assert_eq!(std::fs::read(path).unwrap(),before);
+}

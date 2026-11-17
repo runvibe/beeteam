@@ -1,0 +1,122 @@
+/* Hive sections live inside the content panel, beside its header and page. */
+.main-shell[data-hive] {
+  position: relative;
+}
+.main-shell[data-hive] > * {
+  --hive-navigation-width: 152px;
+}
+.main-shell[data-hive] > :not(.hive-navigation) {
+  margin-inline-start: var(--hive-navigation-width);
+}
+.hive-navigation {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--hive-navigation-width);
+  border-inline-end: 1px solid var(--border);
+}
+.hive-navigation-list {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px 8px;
+}
+.hive-navigation-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  margin: 0;
+  padding-inline: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+.hive-navigation-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.hive-navigation-link:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.hive-navigation-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+.hive-navigation-link[aria-current="page"] {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-weight: 500;
+}
+.hive-navigation :is(.hive-navigation-title, .hive-navigation-link) svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Narrow content panels keep the Hive sections as icons. */
+@container workspace-content (max-width: 640px) {
+  .main-shell[data-hive] > * {
+    --hive-navigation-width: 46px;
+  }
+  .hive-navigation-list {
+    align-items: center;
+    padding-inline: 6px;
+  }
+  .hive-navigation-title,
+  .hive-navigation-link {
+    justify-content: center;
+    width: 32px;
+    padding-inline: 0;
+  }
+  .hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
+    display: none;
+  }
+}
+
+/* Small screens show the Hive sections as tabs above the content. */
+@media (max-width: 850px) {
+  .main-shell[data-hive] > :not(.hive-navigation) {
+    margin-inline-start: 0;
+  }
+  .hive-navigation {
+    position: static;
+    width: auto;
+    border-inline-end: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .hive-navigation-list {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .hive-navigation-title {
+    display: none;
+  }
+  .hive-navigation-link {
+    width: auto;
+    flex-shrink: 0;
+    padding-inline: 10px;
+  }
+  .hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
+    display: inline;
+  }
+}

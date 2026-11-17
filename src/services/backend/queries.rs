@@ -6,9 +6,16 @@ use crate::{
 use serde_json::{json, Value};
 use uuid::Uuid;
 
+/// Read-only projection of the internal systemKey; the key itself is never exposed.
+fn mark_system(table: &str, value: &mut Value) {
+    if matches!(table, "agents" | "teams" | "boards") {
+        value["system"] = json!(value["systemKey"].is_string());
+    }
+}
 pub(super) fn resource(records: &Records, table: &str, id: Uuid) -> Result<Value> {
     let r = records.get(table, id)?;
     let mut value = r.value();
+    mark_system(table, &mut value);
     match table {
         "agents" => {
             let leader = records
@@ -133,6 +140,7 @@ async fn list(unit: &mut UnitOfWork, c: &Command) -> Result<Value> {
     if page.table == "teams" {
         items.iter_mut().for_each(super::team_role_icons::resolve);
     }
+    items.iter_mut().for_each(|item| mark_system(page.table, item));
     if c.operation == "getTimelinePoints" {
         // SQL keeps actorId only for filtering. The output contract has exactly five fields.
         items = items.into_iter().map(|item| {

@@ -9,6 +9,8 @@ import {
   message,
 } from "@/i18n";
 import { AppearanceSettings } from "@/components/appearance-settings";
+import { ChatAccessSettings } from "./chat-access-settings";
+import { useChatAccessSettings } from "@/state/chat-access";
 import { ApiCompatibilityDetails } from "@/components/api-compatibility";
 import { LanguageControl } from "@/components/language-control";
 
@@ -44,7 +46,9 @@ const ongoing = (state: string) =>
   ["running", "restoring", "queued"].includes(state);
 export function DataTransferSettings() {
   useLocale();
-  const [open, setOpen] = useState(false);
+  const open = useChatAccessSettings((state) => state.open);
+  const setOpen = useChatAccessSettings((state) => state.setOpen);
+  useEffect(() => () => setOpen(false), [setOpen]);
   return (
     <>
       <Tooltip.Provider delayDuration={300}>
@@ -76,6 +80,7 @@ export function DataTransferSettings() {
             </DialogDescription>
           </DialogHeader>
           <AppearanceSettings />
+          <ChatAccessSettings />
           <LanguageControl />
           <CookiePreferences />
           <ApiCompatibilityDetails />

@@ -1,9 +1,70 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { createPortal } from "react-dom";
 import userEvent from "@testing-library/user-event";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { App } from "@/App";
 import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
+import { FilterBar } from "./filter-bar";
+
+it("reveals keyboard-focused filters within the scrollable filter row", () => {
+  render(
+    <FilterBar onClear={() => {}}>
+      <button>First filter</button>
+      <button>Last filter</button>
+    </FilterBar>,
+  );
+  const row = document.querySelector<HTMLElement>(".filter-controls-row")!;
+  const first = screen.getByRole("button", { name: "First filter" });
+  const last = screen.getByRole("button", { name: "Last filter" });
+  vi.spyOn(row, "getBoundingClientRect").mockReturnValue(
+    new DOMRect(100, 0, 120, 40),
+  );
+  const firstBounds = vi.spyOn(first, "getBoundingClientRect");
+  firstBounds.mockReturnValue(new DOMRect(110, 0, 36, 36));
+  vi.spyOn(last, "getBoundingClientRect").mockReturnValue(
+    new DOMRect(230, 0, 36, 36),
+  );
+
+  fireEvent.focus(first);
+  expect(row.scrollLeft).toBe(0);
+  fireEvent.focus(last);
+  expect(row.scrollLeft).toBe(46);
+  firstBounds.mockReturnValue(new DOMRect(80, 0, 36, 36));
+  fireEvent.focus(first);
+  expect(row.scrollLeft).toBe(26);
+});
+
+it("does not scroll the filter row when focus moves into a portaled popover", () => {
+  const portal = document.createElement("div");
+  document.body.append(portal);
+  try {
+    render(
+      <FilterBar onClear={() => {}}>
+        {createPortal(<button>Popover control</button>, portal)}
+      </FilterBar>,
+    );
+    const row = document.querySelector<HTMLElement>(".filter-controls-row")!;
+    vi.spyOn(row, "getBoundingClientRect").mockReturnValue(
+      new DOMRect(100, 0, 120, 40),
+    );
+    const control = screen.getByRole("button", { name: "Popover control" });
+    vi.spyOn(control, "getBoundingClientRect").mockReturnValue(
+      new DOMRect(300, 0, 36, 36),
+    );
+    fireEvent.focus(control);
+    expect(row.scrollLeft).toBe(0);
+  } finally {
+    portal.remove();
+  }
+});
+
 it("opens focused search, keeps URL filters through Escape/history, and clears from the toolbar", async () => {
   window.history.replaceState({}, "", "/agents?agents.limit=1");
   const user = userEvent.setup();

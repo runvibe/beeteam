@@ -1,0 +1,16 @@
+{
+  "origin": "http://127.0.0.1:56865",
+  "canaryOrigin": "http://127.0.0.1:56866",
+  "checks": {
+    "modelReadAndWriteThroughCurrentMcp": true,
+    "wrongInstanceSameIdsUnchanged": true,
+    "verifiedBackendOrigin": true,
+    "unmanagedResumePolicyAndMcpUnchanged": true
+  },
+  "threadId": "01a1b670-d8f4-78d0-af6d-fbcffcd13cc3",
+  "taskId": "01a1b670-ee1c-7180-a626-a25a7620bcff",
+  "deliveryId": "01a1b670-f703-77c0-b0a1-7b4eed8fad1d",
+  "turnId": "01a1b671-23b1-79a0-9759-8d7ad3b672af",
+  "binarySha256": "669bd72dba2f3cbade9ab878b6ae3ed5e5e693e53ed9cc7a7e849d0444dbc6a2",
+  "cliVersion": "0.166.0"
+}

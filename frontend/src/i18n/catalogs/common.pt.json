@@ -160,6 +160,9 @@
   "couldNotLoadTasks": "Não foi possível carregar as tarefas.",
   "loading2": "Carregando",
   "table": "Tabela",
+  "copyTableCsv": "Copiar tabela em CSV",
+  "tableCopied": "Tabela copiada.",
+  "tableCopyFailed": "Não foi possível copiar a tabela.",
   "compactPath": "Caminho compacto",
   "agentUnavailable": "Agente indisponível",
   "localUser": "Usuário local",
@@ -167,6 +170,8 @@
   "agentResources": "Recursos de Agentes",
   "beeTeamGoToBoards": "Bee Team - ir para boards",
   "mainNavigation": "Navegação principal",
+  "hive": "Hive",
+  "hiveNavigation": "Navegação do Hive",
   "globalPreferences": "Preferências globais",
   "dateUnavailable": "Data indisponível",
   "retrySaving": "Tentar salvar novamente",
@@ -286,5 +291,7 @@
   "analyticsAccept": "Aceitar analytics",
   "analyticsReject": "Rejeitar analytics",
   "analyticsManage": "Preferências de cookies",
-  "analyticsFrameTitle": "Estatísticas de uso"
+  "analyticsFrameTitle": "Estatísticas de uso",
+  "system": "Sistema",
+  "systemHint": "Criado pelo Bee Team para ajudar você a começar. Não pode ser arquivado nem reatribuído."
 }

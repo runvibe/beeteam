@@ -26,7 +26,7 @@ fn model<T: DeserializeOwned>(value: Value) -> Result<T, ErrorData> {
 }
 impl ServerHandler for BeeServer {
     fn get_info(&self) -> ServerInfo {
-        ServerInfo::new(ServerCapabilities::builder().enable_tools().enable_resources().enable_prompts().build()).with_server_info(Implementation::new("beeteam-mcp",env!("CARGO_PKG_VERSION"))).with_instructions("Bee Team local storage. Declared actors are not authenticated. Tools never execute work or control chats. Resources are bundled Bee Team materials, not arbitrary filesystem access.")
+        ServerInfo::new(ServerCapabilities::builder().enable_tools().enable_resources().enable_prompts().build()).with_server_info(Implementation::new("beeteam-mcp",env!("CARGO_PKG_VERSION"))).with_instructions("Bee Team local storage. Declared actors are not authenticated. External chats remain externally controlled. Explicit integrated-session creation starts a Bee Team-owned local Codex thread; integrated Conversation delivery may execute work. Resources are bundled Bee Team materials, not arbitrary filesystem access.")
     }
     async fn list_tools(
         &self,

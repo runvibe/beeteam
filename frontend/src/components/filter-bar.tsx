@@ -17,6 +17,7 @@ import {
 import { FilterSummary } from "./filter-summary";
 import "./filters.css";
 import { HeaderFilters } from "./header-filters";
+import { revealInScrollStrip } from "./scroll-reveal";
 export function FilterBar({
   search,
   children,
@@ -62,7 +63,17 @@ export function FilterBar({
               aria-label={tr("common.filters")}
             >
               <LayoutGroup id={groupId}>
-                <motion.div className="filter-controls-row" layoutScroll>
+                <motion.div
+                  className="filter-controls-row"
+                  layoutScroll
+                  onFocusCapture={(event) => {
+                    if (
+                      event.target instanceof HTMLElement &&
+                      event.currentTarget.contains(event.target)
+                    )
+                      revealInScrollStrip(event.currentTarget, event.target);
+                  }}
+                >
                   {movingControls(search, "search", active, reduced)}
                   {movingControls(children, "filter", active, reduced)}
                   <AnimatePresence initial={false}>

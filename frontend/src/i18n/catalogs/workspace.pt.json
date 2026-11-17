@@ -1,0 +1,9 @@
+{
+  "chat": "Chat",
+  "content": "Conteúdo",
+  "closeContent": "Fechar painel de conteúdo",
+  "sessions": "Sessões",
+  "layouts": "Layouts dos painéis",
+  "dragToDock": "Arraste para reorganizar os painéis",
+  "moved": "Painel {{panel}} na posição {{position}} de {{total}}"
+}
