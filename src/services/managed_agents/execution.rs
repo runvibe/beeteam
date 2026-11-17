@@ -53,7 +53,10 @@ impl ManagedAgentService {
         let cid = request.reference("conversationId").unwrap();
         let conversation = u.records.get("managed_conversations", cid)?.clone();
         let guidance = match crate::services::agent_guidance::resolve(
-            &u.records, agent, conversation.reference("teamId"), request.reference("taskId"),
+            &u.records,
+            agent,
+            conversation.reference("teamId"),
+            request.reference("taskId"),
         ) {
             Ok(role) => role.instructions(),
             Err(_) => {
@@ -130,14 +133,7 @@ impl ManagedAgentService {
         u.commit().await?;
         let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record work summaries under the relevant task when required. Save files intended for the user under the workspace output/ directory and cite them as output files.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
         let work = provider.run(
-            &target,
-            &text,
-            &guidance,
-            &profile,
-            tools,
-            access,
-            tx,
-            control_rx,
+            &target, &text, &guidance, &profile, tools, access, tx, control_rx,
         );
         tokio::pin!(work);
         let result = loop {
@@ -243,7 +239,7 @@ impl ManagedAgentService {
                     a.touch();
                 }
             }
-            IntegratedEvent::Tool { .. } => {}
+            IntegratedEvent::Tool { .. } | IntegratedEvent::Reasoning(_) => {}
             IntegratedEvent::Image {
                 item_id,
                 media_type,
@@ -335,15 +331,18 @@ impl ManagedAgentService {
             .reconcile(&target, turn, &config["toolProfile"])
             .await
             .map_err(|e| Failure::new(e.code, "Could not inspect original turn"))?;
-        let mut captured = if result.status == ReconciledStatus::Completed && r.data["declined"] != true {
-            if let Some(text) = &result.text {
-                self.capture_text_outputs(&target.project_root, bounded_text(text.clone())).await?
+        let mut captured =
+            if result.status == ReconciledStatus::Completed && r.data["declined"] != true {
+                if let Some(text) = &result.text {
+                    self.capture_text_outputs(&target.project_root, bounded_text(text.clone()))
+                        .await?
+                } else {
+                    self.capture_request_outputs(id, &target.project_root)
+                        .await?
+                }
             } else {
-                self.capture_request_outputs(id, &target.project_root).await?
-            }
-        } else {
-            None
-        };
+                None
+            };
         let mut u = self.store.begin().await?;
         if let Some(out) = u.replay("managed-local", &op, key, &hash).await? {
             u.rollback().await?;

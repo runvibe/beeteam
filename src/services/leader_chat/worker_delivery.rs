@@ -53,10 +53,13 @@ impl WorkerDeliveryProvider {
         let turn = reserve(&mut u.records, delivery_id, target).map_err(reservation_failure)?;
         let guidance = crate::services::agent_guidance::resolve(
             &u.records,
-            turn.reference("ownerAgentId").ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?,
+            turn.reference("ownerAgentId")
+                .ok_or_else(|| SessionFailure::new("invalid_request", "Missing agent", false))?,
             None,
             turn.reference("taskId"),
-        ).map_err(storage_failure)?.instructions();
+        )
+        .map_err(storage_failure)?
+        .instructions();
         let binding = u
             .records
             .get(
@@ -279,7 +282,9 @@ impl WorkerDeliveryProvider {
                 ));
             }
             // Tool details are scoped to the worker; do not replace the leader's active tool list.
-            IntegratedEvent::Tool { .. } | IntegratedEvent::Image { .. } => {}
+            IntegratedEvent::Tool { .. }
+            | IntegratedEvent::Image { .. }
+            | IntegratedEvent::Reasoning(_) => {}
         }
         Ok(())
     }

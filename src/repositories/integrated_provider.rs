@@ -21,6 +21,8 @@ pub struct GeneratedFile {
 pub enum IntegratedEvent {
     Accepted(String),
     Text(String),
+    /// Cumulative Markdown reasoning summary for the turn (never raw reasoning).
+    Reasoning(String),
     Approval {
         approval_id: Uuid,
         kind: String,

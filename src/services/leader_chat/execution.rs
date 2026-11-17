@@ -67,7 +67,8 @@ impl LeaderChatService {
         }
         let mut target: SessionDestination =
             serde_json::from_value(b.data.clone()).map_err(|e| Failure::invalid(e.to_string()))?;
-        target.project_root = provider.default_workspace(b.reference("agentId").ok_or_else(Failure::missing)?)
+        target.project_root = provider
+            .default_workspace(b.reference("agentId").ok_or_else(Failure::missing)?)
             .map_err(|e| Failure::new(e.code, e.message))?;
         let message = u
             .records
@@ -243,6 +244,7 @@ impl LeaderChatService {
                 );
             }
             IntegratedEvent::Image { .. } => {}
+            IntegratedEvent::Reasoning(_) => {}
             IntegratedEvent::Tool { name, summary } => {
                 let row = Record::new(
                     "leader_chat_tools",

@@ -1,5 +1,6 @@
 //! Official local Codex process adapter for Bee Team-owned chats.
 mod images;
+mod reasoning;
 mod recovery;
 use super::{
     codex_mcp_scope::{CodexToolProfile, McpScope},
@@ -409,7 +410,8 @@ impl CodexIntegratedProvider {
         if let Some(access) = access {
             let overrides = super::codex_access::turn_overrides(
                 access,
-                self.selected_profile(profile, ToolSource::Configured)?.network_access,
+                self.selected_profile(profile, ToolSource::Configured)?
+                    .network_access,
                 effective.as_ref(),
             )?;
             params
@@ -439,6 +441,8 @@ impl CodexIntegratedProvider {
         emit(&events, IntegratedEvent::Accepted(turn.clone())).await?;
         let mut last_emit = std::time::Instant::now() - Duration::from_secs(1);
         let mut texts: Vec<(String, String)> = Vec::new();
+        let mut reasoning = reasoning::ReasoningSummary::default();
+        let mut last_reasoning = std::time::Instant::now() - Duration::from_secs(1);
         let mut changed_files: HashMap<String, Vec<String>> = HashMap::new();
         let mut approvals: HashMap<Uuid, (Value, tokio::time::Instant)> = HashMap::new();
         loop {
@@ -584,6 +588,36 @@ impl CodexIntegratedProvider {
                     )
                     .await?;
                 }
+                "item/reasoning/summaryTextDelta" => {
+                    reasoning.delta(
+                        p["itemId"].as_str().unwrap_or("reasoning"),
+                        p["summaryIndex"].as_u64().unwrap_or(0) as usize,
+                        p["delta"].as_str().unwrap_or(""),
+                    );
+                    if last_reasoning.elapsed() >= Duration::from_millis(250)
+                        && !reasoning.is_empty()
+                    {
+                        emit(&events, IntegratedEvent::Reasoning(reasoning.text())).await?;
+                        last_reasoning = std::time::Instant::now();
+                    }
+                }
+                "item/reasoning/summaryPartAdded" => reasoning.part(
+                    p["itemId"].as_str().unwrap_or("reasoning"),
+                    p["summaryIndex"].as_u64().unwrap_or(0) as usize,
+                ),
+                "item/completed" if p["item"]["type"] == "reasoning" => {
+                    let summary = p["item"]["summary"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .filter_map(|s| s.as_str().map(str::to_owned))
+                        .collect();
+                    reasoning.complete(p["item"]["id"].as_str().unwrap_or("reasoning"), summary);
+                    if !reasoning.is_empty() {
+                        emit(&events, IntegratedEvent::Reasoning(reasoning.text())).await?;
+                        last_reasoning = std::time::Instant::now();
+                    }
+                }
                 "turn/completed" => {
                     if p["turn"]["id"] != turn {
                         return Err(fail(
@@ -657,8 +691,9 @@ impl IntegratedProvider for CodexIntegratedProvider {
         access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
-            let (mut wire, id, _scope, _disabled_plugins, _effective) =
-                self.session(root, None, profile, tools, access, None).await?;
+            let (mut wire, id, _scope, _disabled_plugins, _effective) = self
+                .session(root, None, profile, tools, access, None)
+                .await?;
             // Codex defers the empty rollout until a persisted mutation. Naming an
             // owned thread materializes it without sending a synthetic model turn.
             wire.request(
@@ -680,7 +715,9 @@ impl IntegratedProvider for CodexIntegratedProvider {
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
-        Box::pin(self.execute(target, text, guidance, profile, tools, access, events, controls))
+        Box::pin(self.execute(
+            target, text, guidance, profile, tools, access, events, controls,
+        ))
     }
     fn inspect<'a>(
         &'a self,
