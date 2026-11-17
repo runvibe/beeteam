@@ -51,8 +51,3 @@
   width: 15px;
   height: 15px;
 }
-.chat-access-note {
-  margin: 8px 9px;
-  color: var(--muted-foreground);
-  font-size: 0.75rem;
-}

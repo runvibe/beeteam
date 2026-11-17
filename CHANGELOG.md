@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Remove the web search and MCP permissions note from the chat access menu.
 - Open new team chats without manually configuring the leader; the first message starts an owned session with default settings.
 - Configure team chat MCP servers and additional skill folders through a local Bee Team TOML file instead of chat setup fields.
 - Choose a per-chat Codex access mode below the team chat composer and set the default in global settings on this device. Full access requires confirmation; the Codex configuration option uses the local configuration.

@@ -11,7 +11,6 @@
   "accessDescription_full_access": "Commands run without sandbox or approval.",
   "accessDescription_codex_config": "Follows Codex config.toml, which may permit full access.",
   "accessFullWarning": "With full access, commands can modify files and access the network without approval. Continue?",
-  "accessToolsNote": "Web search and MCP servers use their own permissions.",
   "accessSetDefault": "Set default",
   "keyboardSend": "Ctrl/⌘ + Enter to send. Enter adds a new line.",
   "notice": "Conversation notice",

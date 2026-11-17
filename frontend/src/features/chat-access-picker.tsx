@@ -91,7 +91,6 @@ export function ChatAccessPicker({
               );
             })}
           </RadioGroup.Root>
-          <p className="chat-access-note">{t("chat.accessToolsNote")}</p>
           <Popover.Close asChild>
             <Button
               type="button"
