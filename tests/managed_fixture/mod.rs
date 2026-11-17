@@ -29,13 +29,7 @@ impl IntegratedProvider for TestProvider {
         Ok(path.to_str().unwrap().into())
     }
 
-    fn create<'a>(
-        &'a self,
-        _root: &'a str,
-        _profile: &'a Value,
-        _: ToolSource,
-        _: Option<beeteam::dto::access_mode::AccessMode>,
-    ) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: ToolSource, _: Option<beeteam::dto::access_mode::AccessMode>) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
@@ -58,10 +52,7 @@ impl IntegratedProvider for TestProvider {
             let path = std::path::Path::new(&target.project_root).join("output/example.pdf");
             Ok(ReconciledTurn {
                 status: ReconciledStatus::Completed,
-                text: Some(format!(
-                    "Recovered: :codex-file-citation{{path=\"{}\" purpose=\"output\"}}",
-                    path.display()
-                )),
+                text: Some(format!("Recovered: :codex-file-citation{{path=\"{}\" purpose=\"output\"}}", path.display())),
             })
         })
     }
@@ -98,10 +89,7 @@ impl IntegratedProvider for TestProvider {
             }
             if text == "team-chat-defaults" {
                 assert_eq!(tools, ToolSource::TeamChat);
-                assert_eq!(
-                    profile,
-                    &json!({"webSearch":"live","networkAccess":true,"enabledMcpServers":[],"skillRoots":[]})
-                );
+                assert_eq!(profile, &json!({"webSearch":"live","networkAccess":true,"enabledMcpServers":[],"skillRoots":[]}));
             }
             if text == "worker-tools" {
                 assert_eq!(tools, ToolSource::Configured);
@@ -121,37 +109,25 @@ impl IntegratedProvider for TestProvider {
                 ));
             }
             if text == "access-mode-test" {
-                assert_eq!(
-                    access,
-                    Some(beeteam::dto::access_mode::AccessMode::ReadOnly)
-                );
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
             }
             if text == "legacy-access-test" {
                 assert_eq!(access, None);
             }
             if text == "explicit-standard" {
-                assert_eq!(
-                    access,
-                    Some(beeteam::dto::access_mode::AccessMode::Standard)
-                );
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::Standard));
             }
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
                 .unwrap();
             if text == "show-guidance" {
-                events
-                    .send(IntegratedEvent::Text(guidance.into()))
-                    .await
-                    .unwrap();
+                events.send(IntegratedEvent::Text(guidance.into())).await.unwrap();
                 events.send(IntegratedEvent::Completed).await.unwrap();
                 return Ok(());
             }
             if text == "uncertain-access-test" {
-                assert_eq!(
-                    access,
-                    Some(beeteam::dto::access_mode::AccessMode::ReadOnly)
-                );
+                assert_eq!(access, Some(beeteam::dto::access_mode::AccessMode::ReadOnly));
                 return Err(beeteam::dto::session_delivery::SessionFailure::new(
                     "provider_io",
                     "Outcome unknown",
@@ -209,11 +185,7 @@ impl IntegratedProvider for TestProvider {
                         .unwrap();
                 }
             }
-            if text == "create-file"
-                || text == "legacy-file"
-                || text == "fake-pdf"
-                || text == "uncertain-file"
-            {
+            if text == "create-file" || text == "legacy-file" || text == "fake-pdf" || text == "uncertain-file" {
                 let path = std::path::Path::new(&target.project_root)
                     .join("output")
                     .join("example.pdf");
@@ -237,11 +209,7 @@ impl IntegratedProvider for TestProvider {
                     .await
                     .unwrap();
                 if text == "uncertain-file" {
-                    return Err(beeteam::dto::session_delivery::SessionFailure::new(
-                        "outcome_unknown",
-                        "Outcome unknown",
-                        true,
-                    ));
+                    return Err(beeteam::dto::session_delivery::SessionFailure::new("outcome_unknown", "Outcome unknown", true));
                 }
                 events.send(IntegratedEvent::Completed).await.unwrap();
                 return Ok(());
@@ -303,11 +271,7 @@ pub async fn fixture_with_repo(
             .await
             .unwrap()
     };
-    let provider = Arc::new(TestProvider(
-        AtomicUsize::new(0),
-        AtomicBool::new(false),
-        AtomicUsize::new(0),
-    ));
+    let provider = Arc::new(TestProvider(AtomicUsize::new(0), AtomicBool::new(false), AtomicUsize::new(0)));
     let state =
         AppState::new(db.clone()).with_leader_chat_provider(provider.clone(), "isolated".into());
     let config = AppConfig {

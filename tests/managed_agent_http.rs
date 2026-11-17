@@ -11,58 +11,26 @@ use uuid::Uuid;
 async fn team_chat_starts_without_configuring_agent_or_enabling_worker_requests() {
     let (app, agent, team, _) = fixture().await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
-    let direct = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"worker-tools"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let direct = request_key(&app, "POST", &path,
+        json!({"content":"worker-tools"}), None, Uuid::new_v4()).await;
     assert_eq!(direct.0, 400, "{direct:?}");
-    let first = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"team-chat-defaults","teamId":id(&team)}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let first = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-defaults","teamId":id(&team)}), None, Uuid::new_v4()).await;
     assert_eq!(first.0, 202, "{first:?}");
     assert_eq!(first.1["configurationVersion"], 1);
     wait_state(&app, &first.1, "completed").await;
-    let next = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"team-chat-defaults","conversationId":first.1["conversationId"]}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let next = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-defaults","conversationId":first.1["conversationId"]}), None, Uuid::new_v4()).await;
     assert_eq!(next.0, 202, "{next:?}");
     wait_state(&app, &next.1, "completed").await;
-    let config = get(
-        &app,
-        &format!("/api/v2/agents/{}/execution-config", id(&agent)),
-    )
-    .await;
+    let config = get(&app, &format!("/api/v2/agents/{}/execution-config", id(&agent))).await;
     assert!(config["configuration"].is_null());
     let updated = request_key(&app, "PUT", &format!("/api/v2/agents/{}/execution-config", id(&agent)),
         json!({"provider":"codex","toolProfile":{"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}}),
         ver(&agent), Uuid::new_v4()).await;
     assert_eq!(updated.0, 200, "{updated:?}");
-    let stale = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"team-chat-tools","conversationId":first.1["conversationId"]}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let stale = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-tools","conversationId":first.1["conversationId"]}), None, Uuid::new_v4()).await;
     assert_eq!(stale.0, 409, "{stale:?}");
 }
 
@@ -70,26 +38,12 @@ async fn team_chat_starts_without_configuring_agent_or_enabling_worker_requests(
 async fn team_chat_uses_file_scope_while_direct_requests_keep_agent_scope() {
     let (app, agent, team, _) = configured().await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
-    let team_request = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"team-chat-tools","teamId":id(&team)}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let team_request = request_key(&app, "POST", &path,
+        json!({"content":"team-chat-tools","teamId":id(&team)}), None, Uuid::new_v4()).await;
     assert_eq!(team_request.0, 202, "{team_request:?}");
     wait_state(&app, &team_request.1, "completed").await;
-    let direct = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"worker-tools"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let direct = request_key(&app, "POST", &path,
+        json!({"content":"worker-tools"}), None, Uuid::new_v4()).await;
     assert_eq!(direct.0, 202, "{direct:?}");
     wait_state(&app, &direct.1, "completed").await;
 }
@@ -97,14 +51,7 @@ async fn team_chat_uses_file_scope_while_direct_requests_keep_agent_scope() {
 #[tokio::test]
 async fn omitted_mode_is_legacy_and_conflicts_with_an_explicit_standard_retry() {
     let (app, agent, _, _) = configured().await;
-    let leader = ok(
-        &app,
-        "POST",
-        "/api/v2/agents",
-        json!({"name":"Worker test leader"}),
-        None,
-    )
-    .await;
+    let leader = ok(&app, "POST", "/api/v2/agents", json!({"name":"Worker test leader"}), None).await;
     ok(&app, "POST", "/api/v2/teams", json!({"name":"Worker test team","leaderId":id(&leader),"workerIds":[id(&agent)],"coordinationContext":manual()}), None).await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
     let key = Uuid::new_v4();
@@ -114,42 +61,15 @@ async fn omitted_mode_is_legacy_and_conflicts_with_an_explicit_standard_retry() 
     assert!(first.1.get("accessMode").is_none());
     let snapshot = wait_state(&app, &first.1, "completed").await;
     assert!(snapshot["request"].get("accessMode").is_none());
-    assert_eq!(
-        request_key(&app, "POST", &path, body, None, key).await,
-        first
-    );
-    let changed = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"legacy-access-test","accessMode":"standard"}),
-        None,
-        key,
-    )
-    .await;
+    assert_eq!(request_key(&app, "POST", &path, body, None, key).await, first);
+    let changed = request_key(&app, "POST", &path, json!({"content":"legacy-access-test","accessMode":"standard"}), None, key).await;
     assert_eq!(changed.0, 409, "{changed:?}");
 
     let explicit_key = Uuid::new_v4();
-    let explicit = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"explicit-standard","accessMode":"standard"}),
-        None,
-        explicit_key,
-    )
-    .await;
+    let explicit = request_key(&app, "POST", &path, json!({"content":"explicit-standard","accessMode":"standard"}), None, explicit_key).await;
     assert_eq!(explicit.1["accessMode"], "standard");
     wait_state(&app, &explicit.1, "completed").await;
-    let changed = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"explicit-standard"}),
-        None,
-        explicit_key,
-    )
-    .await;
+    let changed = request_key(&app, "POST", &path, json!({"content":"explicit-standard"}), None, explicit_key).await;
     assert_eq!(changed.0, 409, "{changed:?}");
 }
 
@@ -162,19 +82,8 @@ async fn uncertain_mode_replay_never_starts_another_turn() {
     let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
     let snapshot = wait_state(&app, &first.1, "uncertain").await;
     assert_eq!(snapshot["request"]["accessMode"], "read_only");
-    assert_eq!(
-        request_key(&app, "POST", &path, body, None, key).await,
-        first
-    );
-    let conflict = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"uncertain-access-test","accessMode":"full_access"}),
-        None,
-        key,
-    )
-    .await;
+    assert_eq!(request_key(&app, "POST", &path, body, None, key).await, first);
+    let conflict = request_key(&app, "POST", &path, json!({"content":"uncertain-access-test","accessMode":"full_access"}), None, key).await;
     assert_eq!(conflict.0, 409);
     assert_eq!(provider.2.load(Ordering::SeqCst), 1);
 }
@@ -182,8 +91,7 @@ async fn uncertain_mode_replay_never_starts_another_turn() {
 #[tokio::test]
 async fn pre_access_mode_managed_replay_keeps_its_original_receipt() {
     use beeteam::dto::backend::Outcome;
-    let (app, agent, _, _, db) =
-        fixture_with_repo(CorsConfig::Permissive, CorsConfig::Permissive).await;
+    let (app, agent, _, _, db) = fixture_with_repo(CorsConfig::Permissive, CorsConfig::Permissive).await;
     let key = Uuid::new_v4();
     let params = json!({"agentId":id(&agent)});
     let canonical = json!({"content":"historic","conversationId":null,"taskId":null});
@@ -191,47 +99,15 @@ async fn pre_access_mode_managed_replay_keeps_its_original_receipt() {
     let historical = json!({"id":Uuid::now_v7(),"state":"queued"});
     let (store, _) = db.stores();
     let mut unit = store.begin().await.unwrap();
-    unit.save_replay(
-        "managed-local",
-        &format!("managed:send:{params}"),
-        key,
-        &hash,
-        &Outcome::data(historical.clone()),
-    )
-    .await
-    .unwrap();
+    unit.save_replay("managed-local", &format!("managed:send:{params}"), key, &hash, &Outcome::data(historical.clone())).await.unwrap();
     unit.commit().await.unwrap();
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
-    let replay = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"historic"}),
-        None,
-        key,
-    )
-    .await;
+    let replay = request_key(&app, "POST", &path, json!({"content":"historic"}), None, key).await;
     assert_eq!(replay.0, 202, "{replay:?}");
     assert_eq!(replay.1, historical);
-    let replay_explicit_default = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"historic","accessMode":"standard"}),
-        None,
-        key,
-    )
-    .await;
+    let replay_explicit_default = request_key(&app, "POST", &path, json!({"content":"historic","accessMode":"standard"}), None, key).await;
     assert_eq!(replay_explicit_default, replay);
-    let conflict = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"historic","accessMode":"full_access"}),
-        None,
-        key,
-    )
-    .await;
+    let conflict = request_key(&app, "POST", &path, json!({"content":"historic","accessMode":"full_access"}), None, key).await;
     assert_eq!(conflict.0, 409);
 }
 
@@ -239,65 +115,24 @@ async fn pre_access_mode_managed_replay_keeps_its_original_receipt() {
 async fn configuration_read_failure_is_clear_and_not_uncertain() {
     let (app, agent, _, _) = configured().await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
-    let result = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"config-error","accessMode":"codex_config"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let result = request_key(&app, "POST", &path, json!({"content":"config-error","accessMode":"codex_config"}), None, Uuid::new_v4()).await;
     let snapshot = wait_state(&app, &result.1, "failed").await;
     assert_eq!(snapshot["request"]["error"]["code"], "codex_config_invalid");
-    assert!(snapshot["request"]["error"]["message"]
-        .as_str()
-        .unwrap()
-        .contains("Codex configuration"));
-    let spec: Value = serde_json::from_str(include_str!(
-        "../docs/proposals/managed-agents-openapi.json"
-    ))
-    .unwrap();
-    beeteam::dto::contracts::validate_schema(
-        &spec,
-        &spec["components"]["schemas"]["RequestSnapshot"],
-        &snapshot,
-    )
-    .unwrap();
+    assert!(snapshot["request"]["error"]["message"].as_str().unwrap().contains("Codex configuration"));
+    let spec: Value = serde_json::from_str(include_str!("../docs/proposals/managed-agents-openapi.json")).unwrap();
+    beeteam::dto::contracts::validate_schema(&spec, &spec["components"]["schemas"]["RequestSnapshot"], &snapshot).unwrap();
 }
 
 #[tokio::test]
 async fn chat_tools_file_errors_are_reported_without_marking_the_turn_uncertain() {
     let (app, agent, _, _) = configured().await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
-    let result = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"chat-tools-error"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
+    let result = request_key(&app, "POST", &path, json!({"content":"chat-tools-error"}), None, Uuid::new_v4()).await;
     let snapshot = wait_state(&app, &result.1, "failed").await;
-    assert_eq!(
-        snapshot["request"]["error"]["code"],
-        "chat_tools_config_invalid"
-    );
-    assert!(snapshot["request"]["error"]["message"]
-        .as_str()
-        .unwrap()
-        .contains("chat-tools.toml"));
-    let spec: Value = serde_json::from_str(include_str!(
-        "../docs/proposals/managed-agents-openapi.json"
-    ))
-    .unwrap();
-    beeteam::dto::contracts::validate_schema(
-        &spec,
-        &spec["components"]["schemas"]["RequestSnapshot"],
-        &snapshot,
-    )
-    .unwrap();
+    assert_eq!(snapshot["request"]["error"]["code"], "chat_tools_config_invalid");
+    assert!(snapshot["request"]["error"]["message"].as_str().unwrap().contains("chat-tools.toml"));
+    let spec: Value = serde_json::from_str(include_str!("../docs/proposals/managed-agents-openapi.json")).unwrap();
+    beeteam::dto::contracts::validate_schema(&spec, &spec["components"]["schemas"]["RequestSnapshot"], &snapshot).unwrap();
 }
 
 #[tokio::test]
@@ -309,19 +144,8 @@ async fn access_mode_is_durable_and_part_of_managed_replay() {
     let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
     assert_eq!(first.0, 202, "{first:?}");
     assert_eq!(first.1["accessMode"], "read_only");
-    assert_eq!(
-        first,
-        request_key(&app, "POST", &path, body, None, key).await
-    );
-    let changed = request_key(
-        &app,
-        "POST",
-        &path,
-        json!({"content":"access-mode-test","accessMode":"full_access"}),
-        None,
-        key,
-    )
-    .await;
+    assert_eq!(first, request_key(&app, "POST", &path, body, None, key).await);
+    let changed = request_key(&app, "POST", &path, json!({"content":"access-mode-test","accessMode":"full_access"}), None, key).await;
     assert_eq!(changed.0, 409, "{changed:?}");
     let snapshot = wait_state(&app, &first.1, "completed").await;
     assert_eq!(snapshot["request"]["accessMode"], "read_only");
@@ -1022,9 +846,7 @@ async fn omitted_mode_replay_is_shared_by_http_and_mcp() {
             mcp_body["accessMode"] = json!(mode);
         }
         let response=app.clone().oneshot(Request::builder().method("POST").uri("/mcp").header("host","127.0.0.1").header("content-type","application/json").header("accept","application/json, text/event-stream").header("mcp-protocol-version","2025-11-25").body(Body::from(json!({"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"sendAgentRequest","arguments":{"params":{"agentId":id(&agent)},"body":mcp_body,"idempotencyKey":key}}}).to_string())).unwrap()).await.unwrap();
-        let result: Value =
-            serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes())
-                .unwrap();
+        let result: Value = serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
         assert_eq!(result["result"]["isError"], conflict, "{result}");
         if !conflict {
             assert_eq!(result["result"]["structuredContent"]["data"], first.1);
@@ -1165,48 +987,10 @@ async fn generated_images_are_stored_once_and_served_from_the_conversation() {
     assert_eq!(raw_get(&app, &unknown).await.0, 404);
 }
 
-#[tokio::test]
-async fn reasoning_summaries_are_kept_on_the_agent_message() {
-    let (app, agent, _, _) = configured().await;
-    let sent = request_key(
-        &app,
-        "POST",
-        &format!("/api/v2/agents/{}/requests", id(&agent)),
-        json!({"content":"think"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
-    assert_eq!(sent.0, 202, "{sent:?}");
-    let snapshot = wait_state(&app, &sent.1, "completed").await;
-    let requester = &snapshot["messages"]["items"][0];
-    let agent_message = &snapshot["messages"]["items"][1];
-    assert_eq!(agent_message["content"], "Response");
-    assert_eq!(
-        agent_message["reasoning"],
-        "**Plan** steps\n\nRaw-free summary"
-    );
-    assert!(requester["reasoning"].is_null(), "{requester}");
-}
-
-#[tokio::test]
-async fn messages_without_reasoning_expose_null() {
-    let (app, agent, _, _) = configured().await;
-    let sent = request_key(
-        &app,
-        "POST",
-        &format!("/api/v2/agents/{}/requests", id(&agent)),
-        json!({"content":"hello"}),
-        None,
-        Uuid::new_v4(),
-    )
-    .await;
-    let snapshot = wait_state(&app, &sent.1, "completed").await;
-    assert!(snapshot["messages"]["items"][1]["reasoning"].is_null());
-}
-
 #[path = "managed_agent_http/files.rs"]
 mod files;
+#[path = "managed_agent_http/reasoning.rs"]
+mod reasoning;
 
 async fn raw_get(app: &axum::Router, path: &str) -> (u16, axum::http::HeaderMap, Vec<u8>) {
     use http_body_util::BodyExt;
