@@ -77,6 +77,21 @@ async fn resumed_managed_thread_receives_guidance_and_preserves_user_developer_i
     assert!(instructions.contains("Existing user instructions"));
 }
 
+async fn turn_summary(scenario: &str) -> Value {
+    let (result, events) = run_scenario(None, scenario).await;
+    result.unwrap();
+    events.iter().find_map(|event| match event {
+        IntegratedEvent::Text(text) => serde_json::from_str::<Value>(text).ok(),
+        _ => None,
+    }).unwrap()["summary"].clone()
+}
+
+#[tokio::test]
+async fn turns_request_reasoning_summaries_unless_codex_config_sets_them() {
+    assert_eq!(turn_summary("codex-access-guidance").await, "detailed");
+    assert!(turn_summary("codex-access-summary").await.is_null());
+}
+
 #[tokio::test]
 async fn every_turn_receives_its_own_policy_and_config_is_resolved_without_thread_overrides() {
     for (mode, sandbox, approval) in [

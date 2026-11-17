@@ -28,6 +28,8 @@ for line in sys.stdin:
             error = {"code": -32603, "message": "fixture config error"}
         elif root.endswith("guidance"):
             result = {"config": {"developer_instructions": "Existing user instructions"}}
+        elif root.endswith("summary"):
+            result = {"config": {"model_reasoning_summary": "concise"}}
         elif root.endswith("malformed"):
             result = {"config": {"developer_instructions": ["invalid"]}}
         else:
@@ -70,7 +72,7 @@ for line in sys.stdin:
         if root.endswith("legacy") and any(k in params for k in ("sandboxPolicy", "approvalPolicy", "approvalsReviewer")):
             send({"id": ident, "error": {"code": -32602, "message": "legacy policy must not be overridden"}})
             continue
-        policy = {"approvalPolicy": params.get("approvalPolicy"), "approvalsReviewer": params.get("approvalsReviewer"), "sandboxPolicy": params.get("sandboxPolicy"), "developerInstructions": developer_instructions, "resumeConfig": resume_config}
+        policy = {"approvalPolicy": params.get("approvalPolicy"), "approvalsReviewer": params.get("approvalsReviewer"), "sandboxPolicy": params.get("sandboxPolicy"), "developerInstructions": developer_instructions, "resumeConfig": resume_config, "summary": params.get("summary")}
         send({"id": ident, "result": {"turn": {"id": "turn"}}})
         send({"method": "item/completed", "params": {"threadId": "thread", "turnId": "turn",
             "item": {"id": "answer", "type": "agentMessage", "text": json.dumps(policy)}}})

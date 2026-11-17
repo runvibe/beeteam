@@ -213,7 +213,7 @@ impl CodexIntegratedProvider {
         tools: ToolSource,
         access: Option<AccessMode>,
         guidance: Option<&str>,
-    ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>), SessionFailure> {
+    ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>, bool), SessionFailure> {
         let config_failure = || {
             fail(
                 "codex_config_invalid",
@@ -231,6 +231,7 @@ impl CodexIntegratedProvider {
             }
         })?;
         let mut developer_instructions = None;
+        let mut default_reasoning_summary = false;
         if access == Some(AccessMode::CodexConfig) || guidance.is_some() {
             let config = w
                 .request("config/read", json!({"cwd":root,"includeLayers":false}))
@@ -239,6 +240,9 @@ impl CodexIntegratedProvider {
             if !config["config"].is_object() {
                 return Err(config_failure());
             }
+            default_reasoning_summary = config["config"]
+                .get("model_reasoning_summary")
+                .is_none_or(Value::is_null);
             if let Some(guidance) = guidance {
                 let existing = match config["config"].get("developer_instructions") {
                     None | Some(Value::Null) => "",
@@ -376,7 +380,14 @@ impl CodexIntegratedProvider {
             return Err(error);
         }
         let disabled_plugins = scope.disabled_plugins(&inventory);
-        Ok((w, id, scope, disabled_plugins, effective))
+        Ok((
+            w,
+            id,
+            scope,
+            disabled_plugins,
+            effective,
+            default_reasoning_summary,
+        ))
     }
     async fn execute(
         &self,
@@ -396,7 +407,7 @@ impl CodexIntegratedProvider {
                 false,
             ));
         }
-        let (mut w, thread, scope, disabled_plugins, effective) = self
+        let (mut w, thread, scope, disabled_plugins, effective, default_reasoning_summary) = self
             .session(
                 &target.project_root,
                 Some(&target.external_id),
@@ -429,6 +440,10 @@ impl CodexIntegratedProvider {
                         false,
                     )
                 })?;
+        }
+        // Summaries power the chat's reasoning view; a locally configured value wins.
+        if default_reasoning_summary {
+            params["summary"] = json!("detailed");
         }
         let result = w.request("turn/start", params).await.map_err(|mut e| {
             e.uncertain = true;
@@ -691,7 +706,7 @@ impl IntegratedProvider for CodexIntegratedProvider {
         access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
-            let (mut wire, id, _scope, _disabled_plugins, _effective) = self
+            let (mut wire, id, _scope, _disabled_plugins, _effective, _summary) = self
                 .session(root, None, profile, tools, access, None)
                 .await?;
             // Codex defers the empty rollout until a persisted mutation. Naming an
