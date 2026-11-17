@@ -1714,6 +1714,11 @@
           "title"
         ]
       },
+      "AccessMode": {
+        "type": "string",
+        "enum": ["read_only", "standard", "full_access", "codex_config"],
+        "default": "standard"
+      },
       "SendMessage": {
         "type": "object",
         "additionalProperties": false,
@@ -1731,6 +1736,9 @@
             "minLength": 1,
             "maxLength": 65536,
             "description": "Non-whitespace Markdown, additionally limited to 65536 UTF-8 bytes."
+          },
+          "accessMode": {
+            "$ref": "#/components/schemas/AccessMode"
           },
           "taskId": {
             "anyOf": [
@@ -1765,6 +1773,10 @@
           "bindingId": {
             "type": "string",
             "format": "uuid"
+          },
+          "accessMode": {
+            "$ref": "#/components/schemas/AccessMode",
+            "description": "Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied."
           },
           "status": {
             "type": "string",

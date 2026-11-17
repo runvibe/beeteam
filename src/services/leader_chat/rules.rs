@@ -23,6 +23,9 @@ pub fn project(r: &Record) -> Value {
     }
     if r.table == "leader_chat_turns" {
         v.as_object_mut().unwrap().remove("taskId");
+        if !v.as_object().unwrap().contains_key("accessMode") {
+            v["accessMode"] = json!("standard");
+        }
     }
     if matches!(r.table, "leader_chats" | "leader_chat_turns") {
         v["updatedAt"] = json!(r.updated_at);
@@ -132,9 +135,17 @@ pub fn send(records: &mut Records, c: &Command) -> Result<Outcome> {
         r.reference("chatId") == Some(chat.id)
             && r.reference("clientMessageId") == Some(req.client_message_id)
     }) {
+        let prior_turn = records.get(
+            "leader_chat_turns",
+            old.reference("turnId").ok_or_else(Failure::missing)?,
+        )?;
+        let prior_mode =
+            crate::dto::access_mode::AccessMode::from_record(prior_turn.data.get("accessMode"))
+                .map_err(|_| Failure::invalid("Invalid stored access mode"))?;
         if old.data["content"] != req.content
             || old.reference("taskId") != req.task_id
             || old.data["requestBindingId"] != json!(req.binding_id)
+            || prior_mode != req.access_mode
         {
             return Err(Failure::new(
                 "idempotency_conflict",
@@ -179,7 +190,7 @@ pub fn send(records: &mut Records, c: &Command) -> Result<Outcome> {
     }
     let turn = Record::new(
         "leader_chat_turns",
-        json!({"chatId":chat.id,"bindingId":b.id,"status":"queued","failure":null}),
+        json!({"chatId":chat.id,"bindingId":b.id,"status":"queued","failure":null,"accessMode":req.access_mode}),
     );
     let turn_id = turn.id;
     let turn_value = project(&turn);

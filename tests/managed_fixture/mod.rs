@@ -16,7 +16,7 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 pub const TEST_PNG: &[u8] = b"\x89PNG\r\n\x1a\nbee";
 pub const TEST_PDF: &[u8] = b"%PDF-1.4\n% bee test\n%%EOF\n";
-pub struct TestProvider(pub AtomicUsize, pub AtomicBool);
+pub struct TestProvider(pub AtomicUsize, pub AtomicBool, pub AtomicUsize);
 impl IntegratedProvider for TestProvider {
     fn default_workspace(
         &self,
@@ -29,7 +29,7 @@ impl IntegratedProvider for TestProvider {
         Ok(path.to_str().unwrap().into())
     }
 
-    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: beeteam::dto::access_mode::AccessMode) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
@@ -72,17 +72,37 @@ impl IntegratedProvider for TestProvider {
         target: &'a SessionDestination,
         text: &'a str,
         _profile: &'a Value,
+        access: beeteam::dto::access_mode::AccessMode,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
+            self.2.fetch_add(1, Ordering::SeqCst);
             assert!(std::path::Path::new(&target.project_root).is_dir());
             assert!(target.project_root.contains("beeteam-test-workspaces"));
             let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
+            if text == "config-error" {
+                return Err(beeteam::dto::session_delivery::SessionFailure::new(
+                    "codex_config_invalid",
+                    "Cannot read configuration",
+                    false,
+                ));
+            }
+            if text == "access-mode-test" {
+                assert_eq!(access, beeteam::dto::access_mode::AccessMode::ReadOnly);
+            }
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
                 .unwrap();
+            if text == "uncertain-access-test" {
+                assert_eq!(access, beeteam::dto::access_mode::AccessMode::ReadOnly);
+                return Err(beeteam::dto::session_delivery::SessionFailure::new(
+                    "provider_io",
+                    "Outcome unknown",
+                    true,
+                ));
+            }
             if text == "approve" || text == "decline" {
                 let aid = Uuid::now_v7();
                 events
@@ -212,7 +232,7 @@ pub async fn fixture_with_repo(
             .await
             .unwrap()
     };
-    let provider = Arc::new(TestProvider(AtomicUsize::new(0), AtomicBool::new(false)));
+    let provider = Arc::new(TestProvider(AtomicUsize::new(0), AtomicBool::new(false), AtomicUsize::new(0)));
     let state =
         AppState::new(db.clone()).with_leader_chat_provider(provider.clone(), "isolated".into());
     let config = AppConfig {

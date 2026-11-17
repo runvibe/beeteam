@@ -79,7 +79,14 @@ impl LeaderChatService {
         // Durable reservation prevents duplicate provider threads across timeout/restart.
         let operation_id=u.records.insert(Record::new("leader_session_operations",json!({"operation":op,"actor":actor.key(),"requestKey":key,"hash":hash,"state":"pending"})));
         u.commit().await?;
-        let external = match provider.create(&project_root, &req.tool_profile).await {
+        let external = match provider
+            .create(
+                &project_root,
+                &req.tool_profile,
+                crate::dto::access_mode::AccessMode::Standard,
+            )
+            .await
+        {
             Ok(external) => external,
             Err(error) => {
                 let mut u = self.store.begin().await?;

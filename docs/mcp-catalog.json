@@ -68333,6 +68333,16 @@
           "body": {
             "additionalProperties": false,
             "properties": {
+              "accessMode": {
+                "default": "standard",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "type": "string"
+              },
               "boardId": {
                 "anyOf": [
                   {
@@ -68436,6 +68446,16 @@
           "data": {
             "additionalProperties": false,
             "properties": {
+              "accessMode": {
+                "default": "standard",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "type": "string"
+              },
               "agentId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -68653,6 +68673,16 @@
                 "items": {
                   "additionalProperties": false,
                   "properties": {
+                    "accessMode": {
+                      "default": "standard",
+                      "enum": [
+                        "read_only",
+                        "standard",
+                        "full_access",
+                        "codex_config"
+                      ],
+                      "type": "string"
+                    },
                     "agentId": {
                       "format": "uuid",
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -69296,6 +69326,16 @@
               "request": {
                 "additionalProperties": false,
                 "properties": {
+                  "accessMode": {
+                    "default": "standard",
+                    "enum": [
+                      "read_only",
+                      "standard",
+                      "full_access",
+                      "codex_config"
+                    ],
+                    "type": "string"
+                  },
                   "agentId": {
                     "format": "uuid",
                     "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -69723,6 +69763,16 @@
           "data": {
             "additionalProperties": false,
             "properties": {
+              "accessMode": {
+                "default": "standard",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "type": "string"
+              },
               "agentId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -69929,6 +69979,16 @@
           "data": {
             "additionalProperties": false,
             "properties": {
+              "accessMode": {
+                "default": "standard",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "type": "string"
+              },
               "agentId": {
                 "format": "uuid",
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
@@ -70385,6 +70445,16 @@
                     "request": {
                       "additionalProperties": false,
                       "properties": {
+                        "accessMode": {
+                          "default": "standard",
+                          "enum": [
+                            "read_only",
+                            "standard",
+                            "full_access",
+                            "codex_config"
+                          ],
+                          "type": "string"
+                        },
                         "agentId": {
                           "format": "uuid",
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",

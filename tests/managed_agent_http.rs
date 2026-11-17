@@ -8,6 +8,70 @@ use support::*;
 use uuid::Uuid;
 
 #[tokio::test]
+async fn uncertain_mode_replay_never_starts_another_turn() {
+    let (app, agent, _, provider) = configured().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let key = Uuid::new_v4();
+    let body = json!({"content":"uncertain-access-test","accessMode":"read_only"});
+    let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
+    let snapshot = wait_state(&app, &first.1, "uncertain").await;
+    assert_eq!(snapshot["request"]["accessMode"], "read_only");
+    assert_eq!(request_key(&app, "POST", &path, body, None, key).await, first);
+    let conflict = request_key(&app, "POST", &path, json!({"content":"uncertain-access-test","accessMode":"full_access"}), None, key).await;
+    assert_eq!(conflict.0, 409);
+    assert_eq!(provider.2.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn pre_access_mode_managed_replay_keeps_its_original_receipt() {
+    use beeteam::dto::backend::Outcome;
+    let (app, agent, _, _, db) = fixture_with_repo(CorsConfig::Permissive, CorsConfig::Permissive).await;
+    let key = Uuid::new_v4();
+    let params = json!({"agentId":id(&agent)});
+    let canonical = json!({"content":"historic","conversationId":null,"taskId":null});
+    let hash = serde_json::to_string(&json!({"body":canonical,"version":null})).unwrap();
+    let historical = json!({"id":Uuid::now_v7(),"state":"queued"});
+    let (store, _) = db.stores();
+    let mut unit = store.begin().await.unwrap();
+    unit.save_replay("managed-local", &format!("managed:send:{params}"), key, &hash, &Outcome::data(historical.clone())).await.unwrap();
+    unit.commit().await.unwrap();
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let replay = request_key(&app, "POST", &path, json!({"content":"historic"}), None, key).await;
+    assert_eq!(replay.0, 202, "{replay:?}");
+    assert_eq!(replay.1, historical);
+    let replay_explicit_default = request_key(&app, "POST", &path, json!({"content":"historic","accessMode":"standard"}), None, key).await;
+    assert_eq!(replay_explicit_default, replay);
+    let conflict = request_key(&app, "POST", &path, json!({"content":"historic","accessMode":"full_access"}), None, key).await;
+    assert_eq!(conflict.0, 409);
+}
+
+#[tokio::test]
+async fn configuration_read_failure_is_clear_and_not_uncertain() {
+    let (app, agent, _, _) = configured().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let result = request_key(&app, "POST", &path, json!({"content":"config-error","accessMode":"codex_config"}), None, Uuid::new_v4()).await;
+    let snapshot = wait_state(&app, &result.1, "failed").await;
+    assert_eq!(snapshot["request"]["error"]["code"], "codex_config_invalid");
+    assert!(snapshot["request"]["error"]["message"].as_str().unwrap().contains("Codex configuration"));
+}
+
+#[tokio::test]
+async fn access_mode_is_durable_and_part_of_managed_replay() {
+    let (app, agent, _, _) = configured().await;
+    let path = format!("/api/v2/agents/{}/requests", id(&agent));
+    let key = Uuid::new_v4();
+    let body = json!({"content":"access-mode-test","accessMode":"read_only"});
+    let first = request_key(&app, "POST", &path, body.clone(), None, key).await;
+    assert_eq!(first.0, 202, "{first:?}");
+    assert_eq!(first.1["accessMode"], "read_only");
+    assert_eq!(first, request_key(&app, "POST", &path, body, None, key).await);
+    let changed = request_key(&app, "POST", &path, json!({"content":"access-mode-test","accessMode":"full_access"}), None, key).await;
+    assert_eq!(changed.0, 409, "{changed:?}");
+    let snapshot = wait_state(&app, &first.1, "completed").await;
+    assert_eq!(snapshot["request"]["accessMode"], "read_only");
+}
+
+#[tokio::test]
 async fn owned_requests_continue_without_external_binding() {
     let (app, agent, _, provider) = fixture().await;
     let root = format!("/api/v2/agents/{}", id(&agent));
@@ -692,7 +756,7 @@ async fn mcp_and_http_share_the_original_receipt() {
     use tower::ServiceExt;
     let (app, a, _, _) = configured().await;
     let key = Uuid::new_v4();
-    let body = json!({"content":"same request"});
+    let body = json!({"content":"same request","accessMode":"read_only"});
     let first = request_key(
         &app,
         "POST",
@@ -707,6 +771,7 @@ async fn mcp_and_http_share_the_original_receipt() {
         serde_json::from_slice(&response.into_body().collect().await.unwrap().to_bytes()).unwrap();
     assert_eq!(result["result"]["isError"], false, "{result}");
     assert_eq!(result["result"]["structuredContent"]["data"], first.1);
+    assert_eq!(first.1["accessMode"], "read_only");
 }
 
 #[tokio::test]

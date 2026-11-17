@@ -1252,9 +1252,17 @@
         ],
         "additionalProperties": false
       },
+      "AccessMode": {
+        "type": "string",
+        "enum": ["read_only", "standard", "full_access", "codex_config"],
+        "default": "standard"
+      },
       "SendAgentRequest": {
         "type": "object",
         "properties": {
+          "accessMode": {
+            "$ref": "#/components/schemas/AccessMode"
+          },
           "content": {
             "type": "string",
             "minLength": 1,
@@ -1419,6 +1427,10 @@
       "AgentRequest": {
         "type": "object",
         "properties": {
+          "accessMode": {
+            "$ref": "#/components/schemas/AccessMode",
+            "description": "Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied."
+          },
           "id": {
             "type": "string",
             "format": "uuid",

@@ -76,6 +76,20 @@ impl LeaderChatService {
             .find(|m| m.reference("turnId") == Some(id) && m.data["role"] == "user")
             .ok_or_else(Failure::missing)?;
         let text = super::context::prompt(&chat, &b, message);
+        let access = match crate::dto::access_mode::AccessMode::from_record(
+            turn.data.get("accessMode"),
+        ) {
+            Ok(access) => access,
+            Err(_) => {
+                rules::transition(
+                    &mut u.records,
+                    id,
+                    "failed",
+                    json!({"code":"invalid_access_mode","message":"Stored access mode is invalid"}),
+                )?;
+                return u.commit().await;
+            }
+        };
         rules::transition(&mut u.records, id, "running", Value::Null)?;
         let (control_tx, control_rx) = mpsc::channel(16);
         self.controls.lock().await.insert(id, control_tx);
@@ -84,7 +98,14 @@ impl LeaderChatService {
             return Err(error);
         }
         let (tx, mut rx) = mpsc::channel(32);
-        let work = provider.run(&target, &text, &b.data["toolProfile"], tx, control_rx);
+        let work = provider.run(
+            &target,
+            &text,
+            &b.data["toolProfile"],
+            access,
+            tx,
+            control_rx,
+        );
         tokio::pin!(work);
         let mut got_terminal = false;
         let mut receiving = true;

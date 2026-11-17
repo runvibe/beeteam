@@ -17,6 +17,8 @@ pub struct SendMessage {
     pub binding_id: Uuid,
     pub content: String,
     #[serde(default)]
+    pub access_mode: crate::dto::access_mode::AccessMode,
+    #[serde(default)]
     pub task_id: Option<Uuid>,
 }
 impl SendMessage {

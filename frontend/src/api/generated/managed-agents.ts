@@ -286,7 +286,13 @@ export interface components {
             /** @enum {unknown} */
             readiness: "unconfigured" | "ready" | "needs_auth" | "unavailable" | "busy" | "uncertain" | "configured";
         };
+        /**
+         * @default standard
+         * @enum {string}
+         */
+        AccessMode: "read_only" | "standard" | "full_access" | "codex_config";
         SendAgentRequest: {
+            accessMode?: components["schemas"]["AccessMode"];
             content: string & (unknown & unknown);
             conversationId?: string | null;
             taskId?: string | null;
@@ -309,6 +315,8 @@ export interface components {
             label: (string & (unknown & unknown)) | null;
         };
         AgentRequest: {
+            /** @description Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied. */
+            accessMode?: components["schemas"]["AccessMode"];
             /** Format: uuid */
             id: string;
             /** Format: uuid */

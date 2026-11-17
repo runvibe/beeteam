@@ -22,6 +22,11 @@ pub struct ManagedApprovalAgent {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SendAgentRequest {
     pub content: String,
+    #[serde(
+        default,
+        skip_serializing_if = "crate::dto::access_mode::AccessMode::is_standard"
+    )]
+    pub access_mode: crate::dto::access_mode::AccessMode,
     #[serde(default, deserialize_with = "optional_uuid")]
     pub conversation_id: Option<Uuid>,
     #[serde(default, deserialize_with = "optional_uuid")]

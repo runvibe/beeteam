@@ -367,6 +367,16 @@
           "body": {
             "type": "object",
             "properties": {
+              "accessMode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "default": "standard"
+              },
               "content": {
                 "type": "string",
                 "minLength": 1,
@@ -455,6 +465,16 @@
           "data": {
             "type": "object",
             "properties": {
+              "accessMode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "default": "standard"
+              },
               "id": {
                 "type": "string",
                 "format": "uuid",
@@ -674,6 +694,16 @@
                 "items": {
                   "type": "object",
                   "properties": {
+                    "accessMode": {
+                      "type": "string",
+                      "enum": [
+                        "read_only",
+                        "standard",
+                        "full_access",
+                        "codex_config"
+                      ],
+                      "default": "standard"
+                    },
                     "id": {
                       "type": "string",
                       "format": "uuid",
@@ -1076,6 +1106,16 @@
               "request": {
                 "type": "object",
                 "properties": {
+                  "accessMode": {
+                    "type": "string",
+                    "enum": [
+                      "read_only",
+                      "standard",
+                      "full_access",
+                      "codex_config"
+                    ],
+                    "default": "standard"
+                  },
                   "id": {
                     "type": "string",
                     "format": "uuid",
@@ -1747,6 +1787,16 @@
           "data": {
             "type": "object",
             "properties": {
+              "accessMode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "default": "standard"
+              },
               "id": {
                 "type": "string",
                 "format": "uuid",
@@ -1954,6 +2004,16 @@
           "data": {
             "type": "object",
             "properties": {
+              "accessMode": {
+                "type": "string",
+                "enum": [
+                  "read_only",
+                  "standard",
+                  "full_access",
+                  "codex_config"
+                ],
+                "default": "standard"
+              },
               "id": {
                 "type": "string",
                 "format": "uuid",
@@ -2395,6 +2455,16 @@
                     "request": {
                       "type": "object",
                       "properties": {
+                        "accessMode": {
+                          "type": "string",
+                          "enum": [
+                            "read_only",
+                            "standard",
+                            "full_access",
+                            "codex_config"
+                          ],
+                          "default": "standard"
+                        },
                         "id": {
                           "type": "string",
                           "format": "uuid",

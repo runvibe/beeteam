@@ -5,6 +5,7 @@ pub mod resources;
 
 pub mod changes;
 
+pub mod codex_access;
 pub mod codex_integrated;
 pub mod codex_mcp_scope;
 pub mod codex_session;

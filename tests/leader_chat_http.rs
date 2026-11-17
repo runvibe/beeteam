@@ -23,7 +23,7 @@ impl IntegratedProvider for TestProvider {
     }
 
 
-    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value) -> ProviderFuture<'a, String> {
+    fn create<'a>(&'a self, _root: &'a str, _profile: &'a Value, _: beeteam::dto::access_mode::AccessMode) -> ProviderFuture<'a, String> {
         Box::pin(async move {
             self.0.fetch_add(1, Ordering::SeqCst);
             if self.1.swap(false, Ordering::SeqCst) {
@@ -52,12 +52,16 @@ impl IntegratedProvider for TestProvider {
         _target: &'a SessionDestination,
         text: &'a str,
         _profile: &'a Value,
+        access: beeteam::dto::access_mode::AccessMode,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
         Box::pin(async move {
             assert!(text.contains("Bee Team persisted execution context"));
             let text = text.rsplit("\nUser message:\n").next().unwrap_or(text);
+            if text == "access-mode-test" {
+                assert_eq!(access, beeteam::dto::access_mode::AccessMode::ReadOnly);
+            }
             events
                 .send(IntegratedEvent::Accepted("test-turn".into()))
                 .await
@@ -192,6 +196,22 @@ async fn wait_snapshot(app: &axum::Router, chat: &Value, approval: bool) -> Valu
     }
     panic!("state did not arrive")
 }
+#[tokio::test]
+async fn access_mode_is_durable_and_client_message_id_replay_is_guarded() {
+    let (app, agent, team, _) = fixture().await;
+    let chat = chat(&app, &agent, &team).await;
+    let path = format!("/api/v2/leader-chats/{}/messages", id(&chat));
+    let body = json!({"clientMessageId":Uuid::new_v4(),"bindingId":chat["bindingId"],"content":"access-mode-test","accessMode":"read_only"});
+    let first = request_key(&app, "POST", &path, body.clone(), None, Uuid::new_v4()).await;
+    assert_eq!(first.0, 202, "{first:?}");
+    assert_eq!(first.1["turn"]["accessMode"], "read_only");
+    let mut changed = body;
+    changed["accessMode"] = json!("full_access");
+    let conflict = request_key(&app, "POST", &path, changed, None, Uuid::new_v4()).await;
+    assert_eq!(conflict.0, 409, "{conflict:?}");
+    wait_snapshot(&app, &chat, false).await;
+}
+
 #[tokio::test]
 async fn session_creation_replay_chat_send_and_persistent_snapshot() {
     let (app, agent, team, provider) = fixture().await;

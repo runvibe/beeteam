@@ -188,7 +188,7 @@ impl ManagedAgentService {
                 validate_context(&u.records, id, conversation.reference("taskId"))?;
                 let row = Record::new(
                     "managed_requests",
-                    json!({"agentId":id,"conversationId":conversation.id,"taskId":conversation.data["taskId"],"configurationVersion":generation,"state":"queued","origin":{"transport":origin,"label":null},"error":null,"content":b.content,"providerTurn":null}),
+                    json!({"agentId":id,"conversationId":conversation.id,"taskId":conversation.data["taskId"],"configurationVersion":generation,"state":"queued","origin":{"transport":origin,"label":null},"error":null,"content":b.content,"providerTurn":null,"accessMode":b.access_mode}),
                 );
                 u.records.insert(Record::new("managed_messages",json!({"conversationId":conversation.id,"requestId":row.id,"role":"requester","content":b.content})));
                 u.records.insert(row.clone());

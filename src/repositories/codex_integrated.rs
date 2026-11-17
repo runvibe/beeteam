@@ -5,7 +5,10 @@ use super::{
     codex_mcp_scope::{CodexToolProfile, McpScope},
     integrated_provider::*,
 };
-use crate::dto::session_delivery::{SessionDestination, SessionFailure};
+use crate::dto::{
+    access_mode::AccessMode,
+    session_delivery::{SessionDestination, SessionFailure},
+};
 use serde_json::{json, Value};
 use std::{collections::HashMap, path::PathBuf, process::Stdio, time::Duration};
 use tokio::{
@@ -28,6 +31,12 @@ struct Wire {
 }
 fn fail(code: &'static str, text: &str, uncertain: bool) -> SessionFailure {
     SessionFailure::new(code, text, uncertain)
+}
+fn same_project(actual: &str, expected: &str) -> bool {
+    match (std::fs::canonicalize(actual), std::fs::canonicalize(expected)) {
+        (Ok(actual), Ok(expected)) => actual == expected,
+        _ => false,
+    }
 }
 impl Wire {
     async fn open(executable: &PathBuf, root: &str) -> Result<Self, SessionFailure> {
@@ -181,8 +190,33 @@ impl CodexIntegratedProvider {
         root: &str,
         thread: Option<&str>,
         profile: &Value,
-    ) -> Result<(Wire, String, McpScope, Vec<String>), SessionFailure> {
-        let mut w = Wire::open(&self.executable, root).await?;
+        access: AccessMode,
+    ) -> Result<(Wire, String, McpScope, Vec<String>, Option<Value>), SessionFailure> {
+        let config_failure = || {
+            fail(
+                "codex_config_invalid",
+                "Cannot read or resolve the effective Codex configuration for this project",
+                false,
+            )
+        };
+        let mut w = Wire::open(&self.executable, root).await.map_err(|e| {
+            if access == AccessMode::CodexConfig
+                && matches!(e.code, "provider_exited" | "invalid_protocol")
+            {
+                config_failure()
+            } else {
+                e
+            }
+        })?;
+        if access == AccessMode::CodexConfig {
+            let config = w
+                .request("config/read", json!({"cwd":root,"includeLayers":false}))
+                .await
+                .map_err(|_| config_failure())?;
+            if !config["config"].is_object() {
+                return Err(config_failure());
+            }
+        }
         let account = w
             .request("account/read", json!({"refreshToken":false}))
             .await?;
@@ -204,7 +238,55 @@ impl CodexIntegratedProvider {
             )
             .await?;
         }
-        let mut params = json!({"config":scope.configuration(),"cwd":root});
+        let mut configuration = scope.configuration().clone();
+        if access == AccessMode::CodexConfig {
+            configuration
+                .as_object_mut()
+                .unwrap()
+                .remove("sandbox_workspace_write.network_access");
+        }
+        let effective = if thread.is_some() || access == AccessMode::CodexConfig {
+            let mut native_config = configuration.clone();
+            native_config
+                .as_object_mut()
+                .unwrap()
+                .remove("sandbox_workspace_write.network_access");
+            let native = w
+                .request(
+                    "thread/start",
+                    json!({"cwd":root,"ephemeral":true,"config":native_config}),
+                )
+                .await
+                .map_err(|e| {
+                    if access == AccessMode::CodexConfig {
+                        config_failure()
+                    } else {
+                        e
+                    }
+                })?;
+            let native_cwd = native["cwd"].as_str().ok_or_else(config_failure)?;
+            if !same_project(native_cwd, root) {
+                return Err(config_failure());
+            }
+            if !matches!(
+                native["approvalsReviewer"].as_str(),
+                Some("user" | "auto_review" | "guardian_subagent")
+            ) {
+                return Err(fail(
+                    "unsupported_capability",
+                    "Cannot determine the effective Codex approval reviewer",
+                    false,
+                ));
+            }
+            let policy = json!({"sandbox":native["sandbox"],"approvalPolicy":native["approvalPolicy"],"approvalsReviewer":native["approvalsReviewer"]});
+            if access == AccessMode::CodexConfig {
+                super::codex_access::turn_overrides(access, false, Some(&policy))?;
+            }
+            Some(policy)
+        } else {
+            None
+        };
+        let mut params = json!({"config":configuration,"cwd":root});
         let method = if let Some(t) = thread {
             params["threadId"] = json!(t);
             "thread/resume"
@@ -230,7 +312,7 @@ impl CodexIntegratedProvider {
             .as_str()
             .or_else(|| result["thread"]["cwd"].as_str())
             .unwrap_or("");
-        if std::fs::canonicalize(cwd).ok() != std::fs::canonicalize(root).ok() {
+        if !same_project(cwd, root) {
             return Err(fail(
                 "project_mismatch",
                 "Provider project differs from binding",
@@ -251,13 +333,14 @@ impl CodexIntegratedProvider {
             return Err(error);
         }
         let disabled_plugins = scope.disabled_plugins(&inventory);
-        Ok((w, id, scope, disabled_plugins))
+        Ok((w, id, scope, disabled_plugins, effective))
     }
     async fn execute(
         &self,
         target: &SessionDestination,
         text: &str,
         profile: &Value,
+        access: AccessMode,
         events: mpsc::Sender<IntegratedEvent>,
         mut controls: mpsc::Receiver<Control>,
     ) -> Result<(), SessionFailure> {
@@ -268,10 +351,39 @@ impl CodexIntegratedProvider {
                 false,
             ));
         }
-        let (mut w, thread, scope, disabled_plugins) = self
-            .session(&target.project_root, Some(&target.external_id), profile)
+        let (mut w, thread, scope, disabled_plugins, effective) = self
+            .session(
+                &target.project_root,
+                Some(&target.external_id),
+                profile,
+                access,
+            )
             .await?;
-        let result=w.request("turn/start",json!({"threadId":thread,"disabledPluginIds":disabled_plugins,"input":[{"type":"text","text":format!("{}{}",scope.context(),text)}]})).await.map_err(|mut e|{e.uncertain=true;e})?;
+        let overrides = super::codex_access::turn_overrides(
+            access,
+            self.selected_profile(profile)?.network_access,
+            effective.as_ref(),
+        )?;
+        let mut params = json!({"threadId":thread,"disabledPluginIds":disabled_plugins,"input":[{"type":"text","text":format!("{}{}",scope.context(),text)}]});
+        params
+            .as_object_mut()
+            .unwrap()
+            .extend(overrides.as_object().unwrap().clone());
+        params["approvalsReviewer"] = effective
+            .as_ref()
+            .and_then(|v| v.get("approvalsReviewer"))
+            .cloned()
+            .ok_or_else(|| {
+                fail(
+                    "unsupported_capability",
+                    "Cannot determine the effective Codex approval reviewer",
+                    false,
+                )
+            })?;
+        let result = w.request("turn/start", params).await.map_err(|mut e| {
+            e.uncertain = true;
+            e
+        })?;
         let turn = result["turn"]["id"]
             .as_str()
             .ok_or_else(|| fail("invalid_protocol", "Turn ID unavailable", true))?
@@ -489,10 +601,15 @@ impl IntegratedProvider for CodexIntegratedProvider {
         )?;
         Ok(())
     }
-    fn create<'a>(&'a self, root: &'a str, profile: &'a Value) -> ProviderFuture<'a, String> {
+    fn create<'a>(
+        &'a self,
+        root: &'a str,
+        profile: &'a Value,
+        access: AccessMode,
+    ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
-            let (mut wire, id, _scope, _disabled_plugins) =
-                self.session(root, None, profile).await?;
+            let (mut wire, id, _scope, _disabled_plugins, _effective) =
+                self.session(root, None, profile, access).await?;
             // Codex defers the empty rollout until a persisted mutation. Naming an
             // owned thread materializes it without sending a synthetic model turn.
             wire.request(
@@ -508,10 +625,11 @@ impl IntegratedProvider for CodexIntegratedProvider {
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
+        access: AccessMode,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()> {
-        Box::pin(self.execute(target, text, profile, events, controls))
+        Box::pin(self.execute(target, text, profile, access, events, controls))
     }
     fn inspect<'a>(
         &'a self,

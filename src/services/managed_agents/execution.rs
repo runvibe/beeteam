@@ -53,6 +53,15 @@ impl ManagedAgentService {
         let cid = request.reference("conversationId").unwrap();
         let conversation = u.records.get("managed_conversations", cid)?.clone();
         let config = a.data["managedConfiguration"].clone();
+        let access = match crate::dto::access_mode::AccessMode::from_record(
+            request.data.get("accessMode"),
+        ) {
+            Ok(access) => access,
+            Err(_) => {
+                u.rollback().await?;
+                return self.fail(id, false, "invalid_access_mode").await;
+            }
+        };
         u.rollback().await?;
         let Some(provider) = self.provider.clone() else {
             return self.fail(id, false, "provider_unavailable").await;
@@ -67,7 +76,10 @@ impl ManagedAgentService {
         let thread = if let Some(t) = conversation.data["providerThread"].as_str() {
             t.to_owned()
         } else {
-            match provider.create(&project_root, &config["toolProfile"]).await {
+            match provider
+                .create(&project_root, &config["toolProfile"], access)
+                .await
+            {
                 Ok(t) => {
                     let mut u = self.store.begin().await?;
                     let c = u.records.get_mut("managed_conversations", cid)?;
@@ -98,7 +110,14 @@ impl ManagedAgentService {
         transition(&mut u.records, id, "running", Value::Null)?;
         u.commit().await?;
         let text=format!("Bee Team persisted execution context (not user-authored):\nAgent: {agent}; conversation: {cid}; task: {}. You are this Bee Team-managed agent. Do not claim, bind or replace sessions. Communicate with other agents only through the task Conversation. Record worker summaries using the assigned task. Save files intended for the user under the workspace output/ directory and cite them as output files.\nUser message:\n{}",request.data["taskId"],request.data["content"].as_str().unwrap());
-        let work = provider.run(&target, &text, &config["toolProfile"], tx, control_rx);
+        let work = provider.run(
+            &target,
+            &text,
+            &config["toolProfile"],
+            access,
+            tx,
+            control_rx,
+        );
         tokio::pin!(work);
         let result = loop {
             tokio::select! {
@@ -126,7 +145,7 @@ impl ManagedAgentService {
             &mut u.records,
             id,
             if uncertain { "uncertain" } else { "failed" },
-            json!({"code":if uncertain{"outcome_unknown"}else if code=="needs_auth"{"needs_auth"}else{"execution_failed"},"message":if code=="needs_auth"{"Sign in to Codex locally before sending a new request"}else{"Provider execution could not complete"},"retryable":false}),
+            json!({"code":if uncertain{"outcome_unknown"}else if code=="needs_auth"{"needs_auth"}else if code=="codex_config_invalid"{"codex_config_invalid"}else{"execution_failed"},"message":if code=="needs_auth"{"Sign in to Codex locally before sending a new request"}else if code=="codex_config_invalid"{"Cannot read or resolve the effective Codex configuration for this project"}else{"Provider execution could not complete"},"retryable":false}),
         )?;
         u.commit().await
     }

@@ -1,4 +1,5 @@
 //! Provider protocol boundary for sessions owned by Bee Team.
+use crate::dto::access_mode::AccessMode;
 use crate::dto::session_delivery::{SessionDestination, SessionFailure};
 use serde_json::Value;
 use std::{future::Future, pin::Pin};
@@ -90,12 +91,18 @@ pub trait IntegratedProvider: Send + Sync {
     fn validate(&self, root: &str, _profile: &Value) -> Result<(), SessionFailure> {
         validate_root(root)
     }
-    fn create<'a>(&'a self, root: &'a str, profile: &'a Value) -> ProviderFuture<'a, String>;
+    fn create<'a>(
+        &'a self,
+        root: &'a str,
+        profile: &'a Value,
+        access: AccessMode,
+    ) -> ProviderFuture<'a, String>;
     fn run<'a>(
         &'a self,
         target: &'a SessionDestination,
         text: &'a str,
         profile: &'a Value,
+        access: AccessMode,
         events: mpsc::Sender<IntegratedEvent>,
         controls: mpsc::Receiver<Control>,
     ) -> ProviderFuture<'a, ()>;

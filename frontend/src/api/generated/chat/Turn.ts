@@ -6,6 +6,8 @@ export type Turn = {
   chatId: string;
   /** Format: uuid */
   bindingId: string;
+  /** @description Absent only in legacy idempotency replay snapshots; otherwise standard when not supplied. */
+  accessMode?: import("./AccessMode").AccessMode;
   /** @enum {string} */
   status:
     | "queued"
