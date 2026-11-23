@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { CircleStop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { components } from "@/api/generated/managed-agents";
@@ -13,6 +13,7 @@ import {
 type S = components["schemas"];
 
 export function ManagedAgentHistory({
+  scrollToBottomRequest = 0,
   page,
   messages,
   current,
@@ -28,6 +29,7 @@ export function ManagedAgentHistory({
   onDecide,
   onRecover,
 }: {
+  scrollToBottomRequest?: number;
   page: S["MessagePage"] | undefined;
   messages: S["Message"][];
   current: S["AgentRequest"] | undefined;
@@ -43,8 +45,15 @@ export function ManagedAgentHistory({
   onDecide: (approval: S["Approval"], decision: "accept" | "decline") => void;
   onRecover: (message: S["Message"]) => void;
 }) {
+  const viewport = useRef<HTMLDivElement>(null);
   const bottom = useRef<HTMLDivElement>(null);
   const scroll = useRef(true);
+  useLayoutEffect(() => {
+    if (!scrollToBottomRequest || !viewport.current) return;
+    // Read after the avatar's padding has been applied to this same commit.
+    viewport.current.scrollTop = viewport.current.scrollHeight;
+    scroll.current = true;
+  }, [scrollToBottomRequest]);
   useEffect(() => {
     if (scroll.current) bottom.current?.scrollIntoView({ block: "nearest" });
   }, [page]);
@@ -52,6 +61,7 @@ export function ManagedAgentHistory({
     !current || ["completed", "failed", "cancelled"].includes(current.state);
   return (
     <div
+      ref={viewport}
       className="assistant-thread"
       aria-live="polite"
       onScroll={(e) => {

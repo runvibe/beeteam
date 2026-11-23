@@ -40,7 +40,7 @@ beforeEach(async () => {
   await i18n.changeLanguage("en");
 });
 
-it("locks text during native startup while retaining the end-call action", async () => {
+it("scrolls to the bottom once on each activation while locking text during startup", async () => {
   mock.autoStart = false;
   const api = {
     voice: {},
@@ -58,7 +58,7 @@ it("locks text during native startup while retaining the end-call action", async
       }),
     send: vi.fn(),
   } as unknown as ManagedAgentApi;
-  render(
+  const { container } = render(
     <QueryClientProvider
       client={
         new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -72,11 +72,23 @@ it("locks text during native startup while retaining the end-call action", async
       />
     </QueryClientProvider>,
   );
-  fireEvent.click(await screen.findByRole("button", { name: "Talk by voice" }));
+  const start = await screen.findByRole("button", { name: "Talk by voice" });
+  const history = container.querySelector(".assistant-thread") as HTMLElement;
+  Object.defineProperties(history, {
+    scrollHeight: { configurable: true, value: 1200 },
+    clientHeight: { configurable: true, value: 300 },
+  });
+  history.scrollTop = 120;
+  fireEvent.scroll(history);
+  fireEvent.click(start);
+  expect(history.scrollTop).toBe(1200);
   expect(screen.getByRole("textbox")).toHaveAttribute("aria-disabled", "true");
   expect(screen.getByRole("button", { name: "End voice call" })).toBeEnabled();
   fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
   expect(api.send).not.toHaveBeenCalled();
+  history.scrollTop = 100;
+  fireEvent.scroll(history);
+  vi.mocked(Element.prototype.scrollIntoView).mockClear();
   act(() => {
     expect(mock.callbacks!.associated("created")).toBe(true);
     mock.callbacks!.connected();
@@ -88,6 +100,12 @@ it("locks text during native startup while retaining the end-call action", async
     ),
   );
   expect(api.send).not.toHaveBeenCalled();
+  expect(history.scrollTop).toBe(100);
+  expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "End voice call" }));
+  expect(history.scrollTop).toBe(100);
+  fireEvent.click(screen.getByRole("button", { name: "Talk by voice" }));
+  expect(history.scrollTop).toBe(1200);
 });
 
 it("preserves active voice through the actual shared registry completion of a first typed request", async () => {
@@ -237,7 +255,8 @@ it("persists both spoken roles in the main timeline and restores a speech-only c
   });
   await screen.findByText("How does this board work?");
   await screen.findByText("Each column represents a work status.");
-  expect(screen.getAllByText("Voice")).toHaveLength(2);
+  expect(screen.queryByText("Voice")).not.toBeInTheDocument();
+  for (const message of saved) expect(message).toHaveProperty("source", "voice");
   expect(screen.queryByText("Call transcript")).not.toBeInTheDocument();
   expect(api.send).not.toHaveBeenCalled();
   await act(async () => {
@@ -260,6 +279,6 @@ it("persists both spoken roles in the main timeline and restores a speech-only c
   renderChat(false);
   await screen.findByText("How does this board work?");
   await screen.findByText("The conversation is saved here.");
-  expect(screen.getAllByText("Voice")).toHaveLength(3);
+  expect(screen.queryByText("Voice")).not.toBeInTheDocument();
   expect(api.send).not.toHaveBeenCalled();
 });

@@ -51,6 +51,7 @@ export function ManagedAgentChat({
   useLocale();
   const queryClient = useQueryClient();
   const voiceControl = useRef<ManagedVoiceControl | null>(null);
+  const [voiceScrollRequest, setVoiceScrollRequest] = useState(0);
   const config = useQuery({
     queryKey: ["managed-config", agentId],
     queryFn: () => api.config(agentId),
@@ -483,6 +484,7 @@ export function ManagedAgentChat({
       {showHistory && (
         <>
           <ManagedAgentHistory
+            scrollToBottomRequest={voiceScrollRequest}
             page={page}
             messages={messages}
             current={current}
@@ -523,6 +525,7 @@ export function ManagedAgentChat({
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
               <ManagedVoiceChat controlRef={voiceControl} api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
+                onActivate={() => setVoiceScrollRequest((value) => value + 1)}
                 conversation={conversation} selectionToken={conversationId} accessMode={accessMode}
                 disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
                 readOnly={readOnly}

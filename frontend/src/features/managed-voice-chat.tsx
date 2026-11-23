@@ -36,6 +36,7 @@ type Props = {
   onQueued: (request: S["AgentRequest"]) => void;
   onAssociated: (conversationId: string) => void;
   onTranscript: (conversationId: string) => void;
+  onActivate?: () => void;
 };
 
 export function ManagedVoiceChat(props: Props) {
@@ -150,6 +151,7 @@ export function ManagedVoiceChat(props: Props) {
     if (connection.current || latest.current.disabled) return;
     setError("");
     setState("connecting");
+    latest.current.onActivate?.();
     targetConversation.current = latest.current.conversation;
     const original = {
       agentId: props.agentId,
