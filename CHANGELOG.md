@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Show a luminous animated voice orb during calls, reacting to the assistant audio and respecting reduced-motion preferences.
+- Show a thin amber voice hexagon with a subtle echo and three audio-reactive bars during calls, following the site theme and reduced-motion preferences.
 
 - Add live voice conversations to managed chats, with clear execution requests delegated to Codex while the voice session continues.
 

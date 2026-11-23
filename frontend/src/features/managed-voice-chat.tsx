@@ -5,7 +5,7 @@ import { t, useLocale } from "@/i18n";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { RealtimeVoice, type VoiceTranscript } from "./realtime-voice";
-import "./voice-orb.css";
+import "./voice-hexagon.css";
 type S = components["schemas"];
 type Props = {
   api: ManagedAgentApi;
@@ -25,7 +25,7 @@ export function ManagedVoiceChat(props: Props) {
   const latest = useRef(props);
   latest.current = props;
   const connection = useRef<RealtimeVoice | null>(null);
-  const orb = useRef<HTMLDivElement>(null);
+  const voiceVisual = useRef<HTMLDivElement>(null);
   const targetConversation = useRef(props.conversation);
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
   const [state, setState] = useState<"idle" | "connecting" | "live">("idle");
@@ -124,7 +124,10 @@ export function ManagedVoiceChat(props: Props) {
     const voice = new RealtimeVoice(props.api.voice, {
       outputLevel: (level) => {
         if (connection.current === voice)
-          orb.current?.style.setProperty("--voice-level", level.toFixed(3));
+          voiceVisual.current?.style.setProperty(
+            "--voice-level",
+            level.toFixed(3),
+          );
       },
       connected: () => {
         if (connection.current !== voice) return;
@@ -190,41 +193,49 @@ export function ManagedVoiceChat(props: Props) {
   return (
     <div className="managed-voice-chat" data-call-active={state !== "idle"}>
       {state !== "idle" && (
-        <div
-          className="voice-orb-stage"
-          data-state={state}
-          ref={orb}
-          role="img"
-          aria-label={t("managed.voiceVisual")}
-        >
-          <div className="voice-orb-halo" />
-          <div className="voice-orb-orbit voice-orb-orbit-one" />
-          <div className="voice-orb-orbit voice-orb-orbit-two" />
-          <div className="voice-orb-ripple" />
-          <div className="voice-orb-body">
-            <div className="voice-orb-surface" />
+        <>
+          <h3 className="voice-call-heading">
+            <span className="voice-call-brand" aria-hidden="true" />
+            {t("managed.voiceTitle")}
+          </h3>
+          <div
+            className="voice-hexagon-stage"
+            data-state={state}
+            ref={voiceVisual}
+            role="img"
+            aria-label={t("managed.voiceVisual")}
+          >
+            <div className="voice-hexagon-outline voice-hexagon-echo" />
+            <div className="voice-hexagon-outline" />
+            <div className="voice-hexagon-bars">
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
-        </div>
+        </>
       )}
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={state === "idle" && props.disabled}
-        onClick={state === "idle" ? start : stop}
-      >
-        {state === "idle" ? <Mic /> : <PhoneOff />}
-        {t(state === "idle" ? "managed.voiceStart" : "managed.voiceStop")}
-      </Button>
-      {state !== "idle" && (
-        <span role="status">
-          {t(
-            state === "connecting"
-              ? "managed.voiceConnecting"
-              : "managed.voiceLive",
-          )}
-        </span>
-      )}
+      <div className="voice-call-controls">
+        {state !== "idle" && (
+          <span role="status">
+            {t(
+              state === "connecting"
+                ? "managed.voiceConnecting"
+                : "managed.voiceLive",
+            )}
+          </span>
+        )}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={state === "idle" && props.disabled}
+          onClick={state === "idle" ? start : stop}
+        >
+          {state === "idle" ? <Mic /> : <PhoneOff />}
+          {t(state === "idle" ? "managed.voiceStart" : "managed.voiceStop")}
+        </Button>
+      </div>
       {error && <p role="alert">{error}</p>}
       {transcript.length > 0 && (
         <details>

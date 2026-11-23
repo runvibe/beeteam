@@ -59,17 +59,22 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
-  it("shows the orb only during a call and updates its output level without rerendering", () => {
+  it("shows the amber hexagon only during a call and updates its output level without rerendering", () => {
     render(<ManagedVoiceChat {...setup()} />);
     expect(
       screen.queryByRole("img", { name: /voice visualization|Visualização/ }),
     ).toBeNull();
     start();
-    const orb = screen.getByRole("img", {
+    const visual = screen.getByRole("img", {
       name: /voice visualization|Visualização/,
     });
+    expect(visual.querySelectorAll(".voice-hexagon-outline")).toHaveLength(2);
+    expect(visual.querySelectorAll(".voice-hexagon-bars > span")).toHaveLength(
+      3,
+    );
+    expect(visual.querySelector(".voice-hexagon-echo")).not.toBeNull();
     mock.callbacks!.outputLevel!(0.65);
-    expect(orb.style.getPropertyValue("--voice-level")).toBe("0.650");
+    expect(visual.style.getPropertyValue("--voice-level")).toBe("0.650");
     fireEvent.click(
       screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
     );

@@ -1,5 +1,6 @@
 {
-  "voiceVisual": "Assistant voice visualization",
+  "voiceTitle": "Voice conversation",
+  "voiceVisual": "Assistant voice visualization: amber hexagon",
   "title": "Agent conversation",
   "execution": "Managed execution",
   "loadingExecution": "Loading agent execution…",

@@ -1,5 +1,6 @@
 {
-  "voiceVisual": "Visualização da voz da assistente",
+  "voiceTitle": "Conversa por voz",
+  "voiceVisual": "Visualização da voz da assistente: hexágono amarelo",
   "title": "Conversa com o agente",
   "execution": "Execução gerenciada",
   "loadingExecution": "Carregando execução do agente…",
