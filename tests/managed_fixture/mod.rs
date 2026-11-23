@@ -16,6 +16,11 @@ use tokio::sync::mpsc;
 use uuid::Uuid;
 pub const TEST_PNG: &[u8] = b"\x89PNG\r\n\x1a\nbee";
 pub const TEST_PDF: &[u8] = b"%PDF-1.4\n% bee test\n%%EOF\n";
+fn output_citation(path: &std::path::Path) -> String {
+    let path = serde_json::to_string(path.to_str().expect("UTF-8 fixture path")).unwrap();
+    format!(":codex-file-citation{{path={path} purpose=\"output\"}}")
+}
+
 pub struct TestProvider(pub AtomicUsize, pub AtomicBool, pub AtomicUsize);
 impl IntegratedProvider for TestProvider {
     fn default_workspace(
@@ -52,7 +57,7 @@ impl IntegratedProvider for TestProvider {
             let path = std::path::Path::new(&target.project_root).join("output/example.pdf");
             Ok(ReconciledTurn {
                 status: ReconciledStatus::Completed,
-                text: Some(format!("Recovered: :codex-file-citation{{path=\"{}\" purpose=\"output\"}}", path.display())),
+                text: Some(format!("Recovered: {}", output_citation(&path))),
             })
         })
     }
@@ -203,8 +208,8 @@ impl IntegratedProvider for TestProvider {
                 }
                 events
                     .send(IntegratedEvent::Text(format!(
-                        "Here is the file:\n\n:codex-file-citation{{path=\"{}\" purpose=\"output\"}}",
-                        path.display()
+                        "Here is the file:\n\n{}",
+                        output_citation(&path)
                     )))
                     .await
                     .unwrap();

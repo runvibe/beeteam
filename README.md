@@ -66,6 +66,8 @@ The public site lives in [runvibe/beeteam-site](https://github.com/runvibe/beete
 
 Run the backend and Vite separately for frontend development, or build the embedded distribution for a single executable. [Development and tests](docs/guides/development.md) · [Runtime modes](docs/guides/runtime.md).
 
+The complete Rust test suite requires a dedicated PostgreSQL 18+ instance through `BEE_TEST_DATABASE_URL`, with permission to create databases. Each shared PostgreSQL test creates its own database. With Docker hosted in WSL, keep the distribution running for the duration of the suite and use its reachable published endpoint. Generated-file test fixtures JSON-escape citation paths so the same tests work with Windows and Unix paths.
+
 ### Live voice in managed chats
 
 Live voice uses the Codex executable installed on the userâ€™s machine and its local authentication. Configure the existing managed-session runtime with `BEE_CODEX_EXECUTABLE` and `BEE_SESSION_INSTALLATION_ID`. Browser microphone access requires localhost or HTTPS. Voice availability depends on the installed Codex version and account capabilities.

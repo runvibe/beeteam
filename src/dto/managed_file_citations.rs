@@ -157,6 +157,19 @@ mod tests {
     }
 
     #[test]
+    fn decodes_json_escaped_windows_output_paths() {
+        let source = r#"Download :codex-file-citation{path="C:\\Users\\Example Name\\output\\report.pdf" purpose="output"}"#;
+        let (content, citations) = project(source);
+        assert_eq!(citations.len(), 1);
+        assert_eq!(
+            citations[0].path.as_deref(),
+            Some(r"C:\Users\Example Name\output\report.pdf")
+        );
+        assert_eq!(citations[0].name, "report.pdf");
+        assert_eq!(content, "Download :beeteam-file-citation{index=0}");
+    }
+
+    #[test]
     fn hides_incomplete_references_while_streaming() {
         let (content, refs) = project("Preparing\n\n:codex-file-citation{path=\"/secret");
         assert!(!content.contains("/secret"));
