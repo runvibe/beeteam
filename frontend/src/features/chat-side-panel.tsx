@@ -185,6 +185,7 @@ export function ChatWorkspace({
         id="leader-chat-panel"
         className="chat-side-panel"
         data-floating={!open ? "true" : undefined}
+        data-floating-settling={floating.settling ? "true" : undefined}
         style={!open ? floating.style : undefined}
         aria-label={t("chat.title")}
         data-workspace-panel="chat"

@@ -137,17 +137,20 @@ it("ends drag if the pointer returns with its button released", () => {
   hook.start();
   pointer("pointermove", 250, 250, 1, 0);
   pointer("pointermove", 300, 300);
-  expect(hook.result.current.style).toEqual({ left: 12, top: 150 });
+  expect(hook.result.current.style).toEqual({ left: 12, top: 12 });
   expect(hook.onPositionChange).toHaveBeenCalledTimes(1);
 });
 
-it.each([12, 350, 688].flatMap((x) => [12, 150, 288].map((y) => [x, y])))(
+it.each([12, 350, 688].flatMap((x) => [12, 288].map((y) => [x, y])))(
   "magnetizes anchor %s,%s and retains it after release",
   (x, y) => {
     const hook = setup({ x: 100, y: 100 });
     hook.start();
     pointer("pointermove", x + 20, y + 15);
-    expect(hook.result.current.style).toEqual({ left: x, top: y });
+    expect(Number(hook.result.current.style.left)).toBeGreaterThanOrEqual(x);
+    expect(Number(hook.result.current.style.left)).toBeLessThan(x + 20);
+    expect(Number(hook.result.current.style.top)).toBeGreaterThanOrEqual(y);
+    expect(Number(hook.result.current.style.top)).toBeLessThan(y + 15);
     pointer("pointerup", x + 20, y + 15);
     expect(hook.result.current.style).toEqual({ left: x, top: y });
   },
@@ -168,4 +171,59 @@ it("moves freely outside magnetic radius then settles on nearest anchor", () => 
   });
   act(() => window.dispatchEvent(new Event("resize")));
   expect(hook.result.current.style).toEqual({ left: 450, top: 288 });
+});
+
+it("attracts continuously at the capture boundary and animates only settling", () => {
+  vi.useFakeTimers();
+  const hook = setup({ x: 100, y: 100 });
+  hook.start();
+  pointer("pointermove", 350, 109);
+  expect(hook.result.current.style.top).toBe(109);
+  pointer("pointermove", 350, 107);
+  expect(Number(hook.result.current.style.top)).toBeGreaterThan(106);
+  expect(Number(hook.result.current.style.top)).toBeLessThan(107);
+  expect(hook.result.current.settling).toBe(false);
+  pointer("pointermove", 350, 60);
+  expect(Number(hook.result.current.style.top)).toBeLessThan(60);
+  expect(Number(hook.result.current.style.top)).toBeGreaterThan(12);
+  pointer("pointerup", 350, 60);
+  expect(hook.result.current.style.top).toBe(12);
+  expect(hook.result.current.settling).toBe(true);
+  act(() => vi.advanceTimersByTime(180));
+  expect(hook.result.current.settling).toBe(false);
+  hook.unmount();
+  vi.useRealTimers();
+});
+
+it.each([12, 350, 688])("does not settle at removed middle anchor %s", (x) => {
+  const hook = setup({ x: 100, y: 100 });
+  hook.start();
+  pointer("pointermove", x, 150);
+  expect(hook.result.current.style).toEqual({ left: x, top: 150 });
+  pointer("pointerup", x, 150);
+  expect(hook.result.current.style).toEqual({ left: x, top: 12 });
+});
+
+it("respects reduced motion on release and cancels settling for a new drag", () => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({ matches: true })),
+  );
+  const hook = setup({ x: 100, y: 100 });
+  hook.start();
+  pointer("pointermove", 240, 220);
+  pointer("pointerup", 240, 220);
+  expect(hook.result.current.settling).toBe(false);
+  expect(hook.result.current.style).toEqual({ left: 350, top: 288 });
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({ matches: false })),
+  );
+  hook.start();
+  pointer("pointermove", 200, 200);
+  pointer("pointerup", 200, 200);
+  expect(hook.result.current.settling).toBe(true);
+  hook.start();
+  expect(hook.result.current.settling).toBe(false);
+  hook.unmount();
 });

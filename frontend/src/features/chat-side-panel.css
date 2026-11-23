@@ -278,7 +278,7 @@
   z-index: 45;
   border: 1px solid var(--border);
   border-radius: 1rem;
-  box-shadow: 0 16px 48px rgb(0 0 0 / 0.2);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.08);
   overflow: hidden;
 }
 .chat-side-panel[data-floating="true"] > .chat-panel-heading {
@@ -288,4 +288,14 @@
 }
 .chat-side-panel[data-floating="true"] > .chat-panel-heading:active {
   cursor: grabbing;
+}
+
+.chat-side-panel[data-floating="true"][data-floating-settling="true"] {
+  transition: left 180ms ease-out, top 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-side-panel[data-floating="true"][data-floating-settling="true"] {
+    transition: none;
+  }
 }

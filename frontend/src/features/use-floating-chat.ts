@@ -19,6 +19,7 @@ const interactive =
 
 export function useFloatingChat(options: Options): {
   style: CSSProperties;
+  settling: boolean;
   onPointerDown: PointerEventHandler<HTMLElement>;
 } {
   const latest = useRef(options);
@@ -27,6 +28,13 @@ export function useFloatingChat(options: Options): {
   const [resolved, setResolved] = useState(options.position);
   const endDrag = useRef<(() => void) | null>(null);
   const settledAnchor = useRef<number | null>(null);
+  const [settling, setSettling] = useState(false);
+  const settlingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function clearSettlingTimer() {
+    if (settlingTimer.current !== null) clearTimeout(settlingTimer.current);
+    settlingTimer.current = null;
+  }
 
   function clamp(position: FloatingChatPosition | null): FloatingChatPosition {
     const rect = latest.current.element?.getBoundingClientRect();
@@ -61,7 +69,7 @@ export function useFloatingChat(options: Options): {
     const min = clamp({ x: 0, y: 0 });
     const max = clamp(null);
     return [min.x, (min.x + max.x) / 2, max.x].flatMap((x) =>
-      [min.y, (min.y + max.y) / 2, max.y].map((y) => ({ x, y })),
+      [min.y, max.y].map((y) => ({ x, y })),
     );
   }
 
@@ -88,6 +96,7 @@ export function useFloatingChat(options: Options): {
   ]);
 
   useLayoutEffect(() => {
+    setSettling(false);
     if (!options.active || !options.element) return;
     const resize = () =>
       update(
@@ -103,6 +112,7 @@ export function useFloatingChat(options: Options): {
       window.removeEventListener("resize", resize);
       observer?.disconnect();
       endDrag.current?.();
+      clearSettlingTimer();
     };
   }, [options.active, options.element]);
 
@@ -117,6 +127,14 @@ export function useFloatingChat(options: Options): {
     if (event.target instanceof Element && event.target.closest(interactive))
       return;
     endDrag.current?.();
+    clearSettlingTimer();
+    const visual = settling
+      ? latest.current.element.getBoundingClientRect()
+      : null;
+    if (visual && Number.isFinite(visual.left) && Number.isFinite(visual.top)) {
+      update({ x: visual.left, y: visual.top });
+    }
+    setSettling(false);
     // Only the draggable header owns this gesture; controls keep their normal behavior.
     event.stopPropagation();
     const origin = clamp(current.current);
@@ -128,6 +146,15 @@ export function useFloatingChat(options: Options): {
     const settle = () => {
       const anchor = nearest(clamp(current.current));
       settledAnchor.current = anchor.index;
+      const reducedMotion = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      setSettling(!reducedMotion);
+      if (!reducedMotion)
+        settlingTimer.current = setTimeout(() => {
+          settlingTimer.current = null;
+          setSettling(false);
+        }, 180);
       update(anchor.point);
       cleanup();
     };
@@ -142,8 +169,26 @@ export function useFloatingChat(options: Options): {
         x: origin.x + pointer.clientX - startX,
         y: origin.y + pointer.clientY - startY,
       });
-      const anchor = nearest(candidate);
-      update(anchor.distance <= 56 ? anchor.point : candidate);
+      // Smooth compact weights avoid a jump at the capture radius, including
+      // tiny viewports where the influence of neighboring anchors overlaps.
+      let weight = 0;
+      let offsetX = 0;
+      let offsetY = 0;
+      for (const anchor of anchors()) {
+        const distance = Math.hypot(
+          candidate.x - anchor.x,
+          candidate.y - anchor.y,
+        );
+        const proximity = Math.max(0, 1 - distance / 96);
+        const influence = proximity * proximity * (3 - 2 * proximity);
+        weight += influence;
+        offsetX += (anchor.x - candidate.x) * influence;
+        offsetY += (anchor.y - candidate.y) * influence;
+      }
+      update({
+        x: candidate.x + offsetX / Math.max(1, weight),
+        y: candidate.y + offsetY / Math.max(1, weight),
+      });
     };
     const finish = (pointer: PointerEvent) => {
       if (pointer.pointerId !== pointerId) return;
@@ -179,5 +224,6 @@ export function useFloatingChat(options: Options): {
       ? { left: resolved?.x ?? 12, top: resolved?.y ?? 12 }
       : {},
     onPointerDown,
+    settling: options.active && settling,
   };
 }
