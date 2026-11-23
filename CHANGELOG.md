@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Move team and leader metadata into a responsive, read-only session information sidebar opened from the chat's three-dot button.
+
 - Remove the request selector and duplicate new-conversation button from the team chat header; new conversations remain available in Sessions.
 
 - Add independent microphone and assistant playback mute buttons beside the live voice avatar.

@@ -1,7 +1,17 @@
-import { Fragment, useCallback, useState, useSyncExternalStore } from "react";
+import {
+  ChatSessionInformation,
+  sessionInformationMode,
+} from "./chat-session-information";
+import {
+  Fragment,
+  useCallback,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
-import { ArrowLeftRight, MessageSquare, X } from "lucide-react";
+import { ArrowLeftRight, MessageSquare, MoreHorizontal, X } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { useChatPanel } from "@/state/chat-panel";
 import { useSessionsSidebar } from "@/state/sessions-sidebar";
@@ -88,6 +98,15 @@ export function ChatWorkspace({
     close,
     setPanelOrder,
   } = useChatPanel();
+  const [informationOpen, setInformationOpen] = useState(false);
+  const [chatElement, setChatElement] = useState<HTMLElement | null>(null);
+  const informationButton = useRef<HTMLButtonElement>(null);
+  const chatWidth = useWorkspaceWidth(chatElement);
+  const conversationId = useChatPanel((state) => state.conversationId);
+  function closeInformation() {
+    setInformationOpen(false);
+    informationButton.current?.focus();
+  }
   const sessionsOpen = useSessionsSidebar((state) => state.open);
   const viewport = useSyncExternalStore(
     subscribeViewportWidth,
@@ -146,6 +165,7 @@ export function ChatWorkspace({
   const chatPanel = (
     <ChatPanelScrollArea>
       <aside
+        ref={setChatElement}
         id="leader-chat-panel"
         className="chat-side-panel"
         hidden={!open}
@@ -161,6 +181,21 @@ export function ChatWorkspace({
           title={dock.draggable ? t("workspace.dragToDock") : undefined}
         >
           <strong>{t("chat.title")}</strong>
+          {api.managedAgents && (
+            <Button
+              ref={informationButton}
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={t("chat.sessionInfo")}
+              title={t("chat.sessionInfo")}
+              aria-expanded={informationOpen}
+              aria-controls="chat-session-information"
+              onClick={() => setInformationOpen((value) => !value)}
+            >
+              <MoreHorizontal />
+            </Button>
+          )}
           {sessions && <SessionsToggle />}
           <Button
             variant="ghost"
@@ -172,16 +207,26 @@ export function ChatWorkspace({
             <X />
           </Button>
         </header>
-        <div className="chat-panel-body">
-          <div className="chat-panel-content">
-            {teamId ? (
-              <PanelTeam key={teamId} teamId={teamId} />
-            ) : picking && !api.managedAgents ? (
-              <PanelTeamPicker enabled={open} />
-            ) : (
-              <PanelDefault enabled={open} />
-            )}
+        <div className="chat-panel-layout">
+          <div className="chat-panel-body">
+            <div className="chat-panel-content">
+              {teamId ? (
+                <PanelTeam key={teamId} teamId={teamId} />
+              ) : picking && !api.managedAgents ? (
+                <PanelTeamPicker enabled={open} />
+              ) : (
+                <PanelDefault enabled={open} />
+              )}
+            </div>
           </div>
+          {informationOpen && api.managedAgents && (
+            <ChatSessionInformation
+              teamId={teamId}
+              conversationId={conversationId}
+              mode={sessionInformationMode(chatWidth, viewport)}
+              onClose={closeInformation}
+            />
+          )}
         </div>
         <ChatPanelScrollbar />
       </aside>
@@ -272,19 +317,21 @@ function PanelTeam({ teamId }: { teamId: string }) {
     <QueryState query={team}>
       {team.data && (
         <>
-          <div className="chat-panel-team">
-            <span title={team.data.name}>{team.data.name}</span>
-            {!api.managedAgents && (
-              <Button
-                variant="ghost"
-                size="xs"
-                onClick={useChatPanel.getState().chooseTeam}
-              >
-                <ArrowLeftRight />
-                {t("chat.chooseTeam")}
-              </Button>
-            )}
-          </div>
+          {!api.managedAgents && (
+            <div className="chat-panel-team">
+              <span title={team.data.name}>{team.data.name}</span>
+              {!api.managedAgents && (
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  onClick={useChatPanel.getState().chooseTeam}
+                >
+                  <ArrowLeftRight />
+                  {t("chat.chooseTeam")}
+                </Button>
+              )}
+            </div>
+          )}
           <PanelLeader
             teamId={teamId}
             leaderId={team.data.leaderId}
@@ -312,10 +359,6 @@ function PanelLeader({
   if (api.managedAgents)
     return (
       <>
-        <div className="chat-panel-leader">
-          <span>{t("common.leader")}</span>
-          <strong>{leader.data?.name ?? leaderId}</strong>
-        </div>
         <TeamManagedApprovals
           key={teamId}
           teamId={teamId}

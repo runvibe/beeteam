@@ -1,4 +1,11 @@
 {
+  "sessionUpdated": "Última atividade",
+  "sessionCreated": "Criada em",
+  "sessionName": "Sessão",
+  "sessionInfoError": "Não foi possível carregar todas as informações da sessão.",
+  "closeSessionInfo": "Fechar informações da sessão",
+  "sessionAccess": "Acesso",
+  "sessionInfo": "Informações da sessão",
   "title": "Chat com o líder",
   "accessTitle": "Acesso do chat",
   "accessCurrent": "Modo de acesso: {{mode}}",

@@ -202,3 +202,5 @@ The chat panel places its history scrollbar at the far right across the full pan
 During a voice call, the two buttons beside the avatar independently mute the user's microphone and the assistant's playback. Muting playback keeps the response and saved transcript running. Each new call starts unmuted.
 
 Team chats keep new-conversation creation in the sessions sidebar and no longer show the execution selector in the chat header.
+
+The chat's three-dot button opens read-only session information: session title, team, assigned agent, current team leader, board and activity dates. It docks inside a chat wider than half the window when at least 640px are available; otherwise it floats at the right inside the chat. Closing it preserves the conversation and draft. Team and leader metadata no longer occupy permanent chat header rows.

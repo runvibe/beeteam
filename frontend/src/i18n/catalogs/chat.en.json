@@ -1,4 +1,11 @@
 {
+  "sessionUpdated": "Last activity",
+  "sessionCreated": "Created",
+  "sessionName": "Session",
+  "sessionInfoError": "Some session information could not be loaded.",
+  "closeSessionInfo": "Close session information",
+  "sessionAccess": "Access",
+  "sessionInfo": "Session information",
   "title": "Chat with the leader",
   "accessTitle": "Chat access",
   "accessCurrent": "Access mode: {{mode}}",

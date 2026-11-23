@@ -328,5 +328,10 @@
     "file": "src/state/workspace-layout.ts",
     "text": "Invalid workspace panel move",
     "reason": "Developer-only invariant error for an invalid internal panel move."
+  },
+  {
+    "file": "src/features/chat-session-information.tsx",
+    "text": "Escape",
+    "reason": "DOM keyboard event key used to close the information sidebar, not displayed text."
   }
 ]
