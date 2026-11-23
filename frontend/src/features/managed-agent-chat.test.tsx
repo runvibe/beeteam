@@ -965,3 +965,13 @@ it("retries an uncertain configuration with the original body and key after remo
   await waitFor(() => expect(api.configure).toHaveBeenCalledTimes(2));
   expect(vi.mocked(api.configure).mock.calls[1]).toEqual(vi.mocked(api.configure).mock.calls[0]);
 });
+
+it("keeps request selection and new conversation out of the team chat header", async () => {
+  await i18n.changeLanguage("en");
+  const requests = ["first", "second"].map(id => ({id,conversationId:"conversation",state:"completed",createdAt:"2026-11-23T10:00:00Z"}));
+  const api={config:vi.fn().mockResolvedValue({version:1,configuration:null}),conversations:vi.fn().mockResolvedValue({items:[{id:"conversation",title:"Current chat"}],nextCursor:null}),requests:vi.fn().mockResolvedValue({items:requests,nextCursor:null}),conversation:vi.fn().mockResolvedValue({id:"conversation",title:"Current chat"}),messages:vi.fn().mockResolvedValue({items:[],nextCursor:null}),snapshot:vi.fn().mockResolvedValue({request:requests[0],messages:{items:[],nextCursor:null},approvals:[]})} as unknown as ManagedAgentApi;
+  render(<QueryClientProvider client={new QueryClient({defaultOptions:{queries:{retry:false}}})}><ManagedAgentChat agentId="leader" teamId="team" conversationId="conversation" api={api}/></QueryClientProvider>);
+  await screen.findByText("Current chat");
+  expect(screen.queryByRole("combobox",{name:"Request"})).not.toBeInTheDocument();
+  expect(screen.queryByRole("button",{name:"New conversation"})).not.toBeInTheDocument();
+});

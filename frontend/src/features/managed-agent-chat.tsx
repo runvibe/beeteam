@@ -328,7 +328,7 @@ export function ManagedAgentChat({
               </option>
             ))}
           </select>}
-          {conversationRequests.length > 1 && (
+          {!teamChat && conversationRequests.length > 1 && (
             <select
               className="assistant-pill assistant-pill-narrow"
               aria-label={t("managed.request")}
@@ -357,7 +357,7 @@ export function ManagedAgentChat({
               )}
             </div>
           )}
-          {mode === "chat" && (
+          {mode === "chat" && !teamChat && (
             <Button
               variant="ghost"
               size="icon-sm"

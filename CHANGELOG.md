@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove the request selector and duplicate new-conversation button from the team chat header; new conversations remain available in Sessions.
+
 - Add independent microphone and assistant playback mute buttons beside the live voice avatar.
 
 - Extend the chat history scrollbar across the full panel height at the right edge while keeping heading and composer fixed.
