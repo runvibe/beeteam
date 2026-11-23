@@ -1,0 +1,175 @@
+.managed-voice-chat[data-call-active="true"] {
+  justify-content: center;
+  position: relative;
+  isolation: isolate;
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, #94a5ff 22%, transparent);
+  border-radius: 1.2rem;
+  background: radial-gradient(
+    ellipse at 50% 36%,
+    #17213e 0%,
+    #0b1020 58%,
+    #080d18 100%
+  );
+  color: #e8f2ff;
+  overflow: hidden;
+}
+.managed-voice-chat[data-call-active="true"] > button {
+  background: #ffffff0a;
+  border-color: #b9c8ff30;
+  color: #e8f2ff;
+}
+.managed-voice-chat[data-call-active="true"] > [role="status"] {
+  color: #bdcbe1;
+  font-size: 0.8125rem;
+}
+.managed-voice-chat[data-call-active="true"] > details {
+  color: #c6d5ed;
+}
+.voice-orb-stage {
+  --voice-level: 0;
+  position: relative;
+  flex: 0 0 100%;
+  height: clamp(10rem, 23vh, 15rem);
+  display: grid;
+  place-items: center;
+  perspective: 600px;
+  pointer-events: none;
+  contain: layout style;
+}
+.voice-orb-halo {
+  position: absolute;
+  width: 15rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #8464ff38,
+    #39dfff16 40%,
+    transparent 68%
+  );
+  opacity: calc(0.5 + var(--voice-level) * 0.5);
+  transform: scale(calc(0.9 + var(--voice-level) * 0.4));
+}
+.voice-orb-body {
+  position: relative;
+  width: 7.4rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      ellipse at 30% 23%,
+      #e3ffff 0%,
+      #8af3ff 9%,
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 73% 78%,
+      #b98aff 0%,
+      #7a47de 24%,
+      transparent 60%
+    ),
+    radial-gradient(circle at 38% 40%, #44cdeb, #245c9f 52%, #181c51 77%);
+  box-shadow:
+    inset -10px -12px 22px #080e4b99,
+    inset 2px 2px 7px #d3ffffa6,
+    0 0 24px #42d9ff42,
+    0 0 50px #8a5bff29;
+  transform: scale(calc(1 + var(--voice-level) * 0.21));
+  filter: brightness(calc(1 + var(--voice-level) * 0.32));
+  overflow: hidden;
+}
+.voice-orb-surface {
+  position: absolute;
+  inset: -25%;
+  border-radius: 45%;
+  background: conic-gradient(
+    from 20deg,
+    transparent 15%,
+    #c1f9ff66 27%,
+    transparent 37%,
+    #b98aff66 58%,
+    transparent 73%
+  );
+  mix-blend-mode: screen;
+  filter: blur(8px);
+  animation: voice-orb-flow 13s linear infinite;
+}
+.voice-orb-orbit {
+  position: absolute;
+  width: 11.8rem;
+  aspect-ratio: 1;
+  border: 1px solid #88edff55;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #6fcfff18;
+}
+.voice-orb-orbit::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  width: 4px;
+  height: 4px;
+  background: #d7fcff;
+  border-radius: 50%;
+  box-shadow: 0 0 9px #77e9ff;
+}
+.voice-orb-orbit-one {
+  animation: voice-orb-orbit-one 18s linear infinite;
+}
+.voice-orb-orbit-two {
+  width: 12.6rem;
+  border-color: #b797ff38;
+  animation: voice-orb-orbit-two 23s linear infinite reverse;
+}
+.voice-orb-ripple {
+  position: absolute;
+  width: 9rem;
+  aspect-ratio: 1;
+  border: 1px solid #83dbff;
+  border-radius: 50%;
+  opacity: calc(var(--voice-level) * 0.52);
+  transform: scale(calc(1 + var(--voice-level) * 0.45));
+  box-shadow: 0 0 20px #8e83ff55;
+}
+.voice-orb-stage[data-state="connecting"] {
+  opacity: 0.65;
+}
+@keyframes voice-orb-flow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes voice-orb-orbit-one {
+  from {
+    transform: rotateZ(-25deg) rotateX(68deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(-25deg) rotateX(68deg) rotateZ(360deg);
+  }
+}
+@keyframes voice-orb-orbit-two {
+  from {
+    transform: rotateZ(35deg) rotateY(65deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(35deg) rotateY(65deg) rotateZ(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .voice-orb-surface,
+  .voice-orb-orbit {
+    animation: none;
+  }
+  .voice-orb-orbit-one {
+    transform: rotateZ(-25deg) rotateX(68deg);
+  }
+  .voice-orb-orbit-two {
+    transform: rotateZ(35deg) rotateY(65deg);
+  }
+  .voice-orb-body,
+  .voice-orb-halo,
+  .voice-orb-ripple {
+    transform: none;
+  }
+}

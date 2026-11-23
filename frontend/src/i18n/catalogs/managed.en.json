@@ -1,4 +1,5 @@
 {
+  "voiceVisual": "Assistant voice visualization",
   "title": "Agent conversation",
   "execution": "Managed execution",
   "loadingExecution": "Loading agent execution…",

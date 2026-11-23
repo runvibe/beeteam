@@ -74,6 +74,8 @@ Live voice uses the Codex executable installed on the userâ€™s machine and 
 
 Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone, while already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
 
+The active call displays a cyan and violet orb whose glow and size respond to the assistant's incoming audio. Quiet calls keep a gentle orbit animation. Reduced-motion preferences remove animated transforms. Audio visualization is optional and releases its audio analysis resources when the call ends.
+
 The voice transcript is displayed for the current call. Reloading the page clears that transcript. Availability requires a Codex build supporting the experimental realtime V3 WebRTC protocol and voice access on the signed-in account.
 
 

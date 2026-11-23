@@ -1,4 +1,5 @@
 {
+  "voiceVisual": "Visualização da voz da assistente",
   "title": "Conversa com o agente",
   "execution": "Execução gerenciada",
   "loadingExecution": "Carregando execução do agente…",

@@ -1,9 +1,11 @@
 import { t } from "@/i18n";
+import { VoiceOutputMeter } from "./voice-output-meter";
 
 export type VoiceTranscript = { role: "user" | "assistant"; text: string };
 import type { VoiceApi, VoiceEvent } from "@/api/voice";
 export type VoiceCallbacks = {
   connected: () => void;
+  outputLevel?: (level: number) => void;
   failed: (error: Error) => void;
   transcript: (entry: VoiceTranscript) => void;
   execute: (content: string, callId: string) => Promise<unknown>;
@@ -14,6 +16,7 @@ export class RealtimeVoice {
   private peer?: RTCPeerConnection;
   private stream?: MediaStream;
   private audio?: HTMLAudioElement;
+  private outputMeter?: VoiceOutputMeter;
   private sessionId?: string;
   private closed = false;
   private calls = new Set<string>();
@@ -34,6 +37,8 @@ export class RealtimeVoice {
         !globalThis.RTCPeerConnection
       )
         throw new Error(t("managed.voiceUnsupported"));
+      if (this.callbacks.outputLevel)
+        this.outputMeter = new VoiceOutputMeter(this.callbacks.outputLevel);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       if (this.closed) {
         stream.getTracks().forEach((track) => track.stop());
@@ -51,7 +56,9 @@ export class RealtimeVoice {
       this.audio = audio;
       peer.ontrack = (event) => {
         if (this.closed) return;
-        audio.srcObject = event.streams[0];
+        const output = event.streams[0] ?? new MediaStream([event.track]);
+        audio.srcObject = output;
+        this.outputMeter?.attach(output);
         void audio
           .play()
           .catch(() => this.fail(new Error(t("managed.voicePlaybackFailed"))));
@@ -185,6 +192,7 @@ export class RealtimeVoice {
     this.closed = true;
     clearTimeout(this.startupTimer);
     clearTimeout(this.pollTimer);
+    this.outputMeter?.close();
     this.peer?.close();
     this.stream?.getTracks().forEach((track) => track.stop());
     if (this.audio) {

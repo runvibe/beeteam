@@ -59,6 +59,24 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
+  it("shows the orb only during a call and updates its output level without rerendering", () => {
+    render(<ManagedVoiceChat {...setup()} />);
+    expect(
+      screen.queryByRole("img", { name: /voice visualization|Visualização/ }),
+    ).toBeNull();
+    start();
+    const orb = screen.getByRole("img", {
+      name: /voice visualization|Visualização/,
+    });
+    mock.callbacks!.outputLevel!(0.65);
+    expect(orb.style.getPropertyValue("--voice-level")).toBe("0.650");
+    fireEvent.click(
+      screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
+    );
+    expect(
+      screen.queryByRole("img", { name: /voice visualization|Visualização/ }),
+    ).toBeNull();
+  });
   it("hydrates prior user and assistant messages once after connecting", () => {
     const props = setup();
     props.contextMessages = [

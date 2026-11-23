@@ -5,6 +5,7 @@ import { t, useLocale } from "@/i18n";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { RealtimeVoice, type VoiceTranscript } from "./realtime-voice";
+import "./voice-orb.css";
 type S = components["schemas"];
 type Props = {
   api: ManagedAgentApi;
@@ -24,6 +25,7 @@ export function ManagedVoiceChat(props: Props) {
   const latest = useRef(props);
   latest.current = props;
   const connection = useRef<RealtimeVoice | null>(null);
+  const orb = useRef<HTMLDivElement>(null);
   const targetConversation = useRef(props.conversation);
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
   const [state, setState] = useState<"idle" | "connecting" | "live">("idle");
@@ -120,6 +122,10 @@ export function ManagedVoiceChat(props: Props) {
     let hydrated = false;
     let submissionUnknown = false;
     const voice = new RealtimeVoice(props.api.voice, {
+      outputLevel: (level) => {
+        if (connection.current === voice)
+          orb.current?.style.setProperty("--voice-level", level.toFixed(3));
+      },
       connected: () => {
         if (connection.current !== voice) return;
         setState("live");
@@ -182,7 +188,24 @@ export function ManagedVoiceChat(props: Props) {
   }
 
   return (
-    <div className="managed-voice-chat">
+    <div className="managed-voice-chat" data-call-active={state !== "idle"}>
+      {state !== "idle" && (
+        <div
+          className="voice-orb-stage"
+          data-state={state}
+          ref={orb}
+          role="img"
+          aria-label={t("managed.voiceVisual")}
+        >
+          <div className="voice-orb-halo" />
+          <div className="voice-orb-orbit voice-orb-orbit-one" />
+          <div className="voice-orb-orbit voice-orb-orbit-two" />
+          <div className="voice-orb-ripple" />
+          <div className="voice-orb-body">
+            <div className="voice-orb-surface" />
+          </div>
+        </div>
+      )}
       <Button
         type="button"
         variant="outline"

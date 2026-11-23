@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Show a luminous animated voice orb during calls, reacting to the assistant audio and respecting reduced-motion preferences.
+
 - Add live voice conversations to managed chats, with clear execution requests delegated to Codex while the voice session continues.
 
 - Show Codex reasoning summaries in team chats while the agent works; they collapse when the reply finishes and stay available in history. Raw model reasoning is never stored or displayed.

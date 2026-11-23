@@ -1,12 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { RealtimeVoice } from "./realtime-voice";
+import { VoiceOutputMeter } from "./voice-output-meter";
 import type { VoiceApi } from "@/api/voice";
 
 const stopTrack = vi.fn();
 const closePeer = vi.fn();
 const remote = vi.fn();
+let latestPeer: Peer;
 class Peer {
-  ontrack = null;
+  constructor() {
+    latestPeer = this;
+  }
+  ontrack:
+    | ((event: { streams: MediaStream[]; track: MediaStreamTrack }) => void)
+    | null = null;
   onconnectionstatechange = null;
   addTrack = vi.fn();
   createDataChannel = vi.fn();
@@ -28,6 +35,7 @@ function fixture() {
   };
   const callbacks = {
     connected: vi.fn(),
+    outputLevel: vi.fn(),
     failed: vi.fn(),
     transcript: vi.fn(),
     execute: vi.fn(async () => ({ state: "queued" })),
@@ -55,9 +63,23 @@ beforeEach(() => {
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe("native realtime voice lifecycle", () => {
+  it("analyses only the received assistant stream, never the microphone", async () => {
+    const attach = vi.spyOn(VoiceOutputMeter.prototype, "attach");
+    const close = vi.spyOn(VoiceOutputMeter.prototype, "close");
+    const { voice } = fixture();
+    await voice.start();
+    expect(attach).not.toHaveBeenCalled();
+    const output = {} as MediaStream;
+    latestPeer.ontrack!({ streams: [output], track: {} as MediaStreamTrack });
+    expect(attach).toHaveBeenCalledExactlyOnceWith(output);
+    expect(attach).not.toHaveBeenCalledWith(media);
+    voice.close();
+    expect(close).toHaveBeenCalledOnce();
+  });
   it("stops media and deletes the native session on close", async () => {
     const { voice, api } = fixture();
     await voice.start();
