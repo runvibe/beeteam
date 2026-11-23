@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add independent microphone and assistant playback mute buttons beside the live voice avatar.
+
 - Extend the chat history scrollbar across the full panel height at the right edge while keeping heading and composer fixed.
 
 - Choose the voice for future calls in general settings, using the installed Codex voice list and a device-local preference.

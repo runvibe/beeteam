@@ -21,6 +21,8 @@ export class RealtimeVoice {
   private outputMeter?: VoiceOutputMeter;
   private sessionId?: string;
   private closed = false;
+  private microphoneMuted = false;
+  private outputMuted = false;
   private calls = new Set<string>();
   private pollTimer?: ReturnType<typeof setTimeout>;
   private startupTimer?: ReturnType<typeof setTimeout>;
@@ -30,6 +32,18 @@ export class RealtimeVoice {
   constructor(api: VoiceApi, callbacks: VoiceCallbacks) {
     this.api = api;
     this.callbacks = callbacks;
+  }
+
+  setMicrophoneMuted(muted: boolean) {
+    this.microphoneMuted = muted;
+    this.stream?.getTracks().forEach((track) => {
+      track.enabled = !muted;
+    });
+  }
+
+  setOutputMuted(muted: boolean) {
+    this.outputMuted = muted;
+    if (this.audio) this.audio.muted = muted;
   }
 
   async start(context: VoiceContext) {
@@ -47,6 +61,7 @@ export class RealtimeVoice {
         return;
       }
       this.stream = stream;
+      this.setMicrophoneMuted(this.microphoneMuted);
       this.startupTimer = setTimeout(
         () => this.fail(new Error(t("managed.voiceConnectionFailed"))),
         60000,
@@ -55,6 +70,7 @@ export class RealtimeVoice {
       this.peer = peer;
       const audio = new Audio();
       audio.autoplay = true;
+      audio.muted = this.outputMuted;
       this.audio = audio;
       peer.ontrack = (event) => {
         if (this.closed) return;

@@ -1,3 +1,5 @@
+import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   useEffect,
   useRef,
@@ -53,6 +55,8 @@ export function ManagedVoiceChat(props: Props) {
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
   const [state, setState] = useState<"idle" | "connecting" | "live">("idle");
   const [error, setError] = useState("");
+  const [microphoneMuted, setMicrophoneMuted] = useState(false);
+  const [outputMuted, setOutputMuted] = useState(false);
 
   function stop() {
     connection.current?.close();
@@ -151,6 +155,8 @@ export function ManagedVoiceChat(props: Props) {
   function start() {
     if (connection.current || latest.current.disabled) return;
     setError("");
+    setMicrophoneMuted(false);
+    setOutputMuted(false);
     setState("connecting");
     latest.current.onActivate?.();
     targetConversation.current = latest.current.conversation;
@@ -289,6 +295,54 @@ export function ManagedVoiceChat(props: Props) {
     <div className="managed-voice-chat" data-call-active={state !== "idle"}>
       {state !== "idle" && (
         <div className="voice-avatar-overlay">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="voice-mute-button voice-mute-microphone"
+            aria-pressed={microphoneMuted}
+            aria-label={t(
+              microphoneMuted
+                ? "managed.voiceUnmuteMicrophone"
+                : "managed.voiceMuteMicrophone",
+            )}
+            title={t(
+              microphoneMuted
+                ? "managed.voiceUnmuteMicrophone"
+                : "managed.voiceMuteMicrophone",
+            )}
+            onClick={() => {
+              const muted = !microphoneMuted;
+              connection.current?.setMicrophoneMuted(muted);
+              setMicrophoneMuted(muted);
+            }}
+          >
+            {microphoneMuted ? <MicOff /> : <Mic />}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="voice-mute-button voice-mute-output"
+            aria-pressed={outputMuted}
+            aria-label={t(
+              outputMuted
+                ? "managed.voiceUnmuteOutput"
+                : "managed.voiceMuteOutput",
+            )}
+            title={t(
+              outputMuted
+                ? "managed.voiceUnmuteOutput"
+                : "managed.voiceMuteOutput",
+            )}
+            onClick={() => {
+              const muted = !outputMuted;
+              connection.current?.setOutputMuted(muted);
+              setOutputMuted(muted);
+            }}
+          >
+            {outputMuted ? <VolumeX /> : <Volume2 />}
+          </Button>
           <div
             className="voice-hexagon-stage"
             data-state={state}

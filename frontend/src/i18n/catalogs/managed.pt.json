@@ -1,4 +1,8 @@
 {
+  "voiceUnmuteMicrophone": "Ativar microfone",
+  "voiceUnmuteOutput": "Ativar som do assistente",
+  "voiceMuteMicrophone": "Silenciar microfone",
+  "voiceMuteOutput": "Silenciar assistente",
   "voiceSaveFailed": "A chamada terminou, mas não foi possível confirmar o salvamento da transcrição final. Confira o histórico antes de tentar novamente.",
   "voiceTitle": "Conversa por voz",
   "voiceVisual": "Visualização da voz da assistente: hexágono amarelo",

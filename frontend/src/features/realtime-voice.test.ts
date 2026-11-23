@@ -237,3 +237,54 @@ describe("native realtime voice lifecycle", () => {
     voice.close();
   });
 });
+
+it("mutes each audio direction independently without stopping transcripts", async () => {
+  const { voice, api, callbacks } = fixture();
+  const track = { enabled: true, stop: stopTrack };
+  vi.mocked(navigator.mediaDevices.getUserMedia).mockResolvedValue({
+    getTracks: () => [track],
+  } as unknown as MediaStream);
+  let output: HTMLAudioElement;
+  vi.stubGlobal(
+    "Audio",
+    class {
+      constructor() {
+        output = this as unknown as HTMLAudioElement;
+      }
+      muted = false;
+      autoplay = false;
+      srcObject = null;
+      play = vi.fn(async () => {});
+      pause = vi.fn();
+    },
+  );
+  voice.setMicrophoneMuted(true);
+  voice.setOutputMuted(true);
+  await voice.start({ agentId: "agent" });
+  expect(track.enabled).toBe(false);
+  expect(output!.muted).toBe(true);
+  voice.setMicrophoneMuted(false);
+  expect(track.enabled).toBe(true);
+  expect(output!.muted).toBe(true);
+  vi.mocked(api.events).mockResolvedValue({
+    events: [
+      {
+        cursor: 1,
+        type: "transcript",
+        role: "assistant",
+        content: "Still speaking",
+      },
+    ],
+    cursor: 1,
+  });
+  await vi.advanceTimersByTimeAsync(500);
+  expect(callbacks.transcript).toHaveBeenCalledWith({
+    role: "assistant",
+    text: "Still speaking",
+  });
+  expect(api.stop).not.toHaveBeenCalled();
+  voice.setOutputMuted(false);
+  expect(output!.muted).toBe(false);
+  expect(stopTrack).not.toHaveBeenCalled();
+  voice.close();
+});

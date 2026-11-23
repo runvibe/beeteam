@@ -43,6 +43,8 @@ const mock = vi.hoisted(() => ({
   start: vi.fn(),
   report: vi.fn(),
   hydrate: vi.fn(),
+  setMicrophoneMuted: vi.fn(),
+  setOutputMuted: vi.fn(),
 }));
 vi.mock("./realtime-voice", () => ({
   RealtimeVoice: class {
@@ -56,6 +58,8 @@ vi.mock("./realtime-voice", () => ({
     };
     report = mock.report;
     hydrate = mock.hydrate;
+    setMicrophoneMuted = mock.setMicrophoneMuted;
+    setOutputMuted = mock.setOutputMuted;
   },
 }));
 function setup() {
@@ -305,4 +309,32 @@ describe("managed voice routing", () => {
     });
     expect(props.onSend).toHaveBeenCalledOnce();
   });
+});
+
+it("shows independent mute controls only during the call and resets on restart", () => {
+  const props = setup();
+  render(<ManagedVoiceChat {...props} />);
+  expect(
+    screen.queryByRole("button", { name: "Silenciar microfone" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Conversar por voz" }));
+  fireEvent.click(screen.getByRole("button", { name: "Silenciar microfone" }));
+  expect(mock.setMicrophoneMuted).toHaveBeenLastCalledWith(true);
+  expect(
+    screen.getByRole("button", { name: "Ativar microfone" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  fireEvent.click(screen.getByRole("button", { name: "Silenciar assistente" }));
+  expect(mock.setOutputMuted).toHaveBeenLastCalledWith(true);
+  expect(mock.close).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Encerrar chamada" }));
+  expect(
+    screen.queryByRole("button", { name: "Ativar som do assistente" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Conversar por voz" }));
+  expect(
+    screen.getByRole("button", { name: "Silenciar microfone" }),
+  ).toHaveAttribute("aria-pressed", "false");
+  expect(
+    screen.getByRole("button", { name: "Silenciar assistente" }),
+  ).toHaveAttribute("aria-pressed", "false");
 });

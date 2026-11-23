@@ -4,7 +4,8 @@
   flex-shrink: 0;
   width: 100%;
 }
-.managed-agent-chat:has(> .managed-voice-chat[data-call-active="true"]) > .assistant-thread {
+.managed-agent-chat:has(> .managed-voice-chat[data-call-active="true"])
+  > .assistant-thread {
   /* Keep the viewport fixed; the final messages can clear the floating avatar. */
   padding-bottom: 148px;
   scroll-padding-bottom: 148px;
@@ -85,4 +86,24 @@
   .voice-hexagon-bars > span:nth-child(2) {
     height: 12px;
   }
+}
+
+.voice-mute-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  z-index: 2;
+  border-radius: 50%;
+  color: var(--muted-foreground);
+}
+.voice-mute-microphone {
+  right: calc(50% + 56px);
+}
+.voice-mute-output {
+  left: calc(50% + 56px);
+}
+.voice-mute-button[aria-pressed="true"] {
+  color: var(--voice-honey);
+  background: var(--muted);
 }

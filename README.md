@@ -198,3 +198,5 @@ Managed agent workspaces: Bee Team always creates and reuses `~/.beeteam/workspa
 The chat button is always available in the app header. HQ opens by default; the selected team and open/closed state are restored after reload.
 
 The chat panel places its history scrollbar at the far right across the full panel height. Only messages scroll; the heading and composer stay fixed, and activating voice still scrolls to the latest message once.
+
+During a voice call, the two buttons beside the avatar independently mute the user's microphone and the assistant's playback. Muting playback keeps the response and saved transcript running. Each new call starts unmuted.
