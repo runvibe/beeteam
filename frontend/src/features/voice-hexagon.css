@@ -4,13 +4,15 @@
   flex-shrink: 0;
   width: 100%;
 }
-.managed-voice-chat[data-call-active="true"] {
-  /* Reserve space outside the scrolling messages for the transparent avatar. */
-  padding-top: 132px;
+.managed-agent-chat:has(> .managed-voice-chat[data-call-active="true"]) > .assistant-thread {
+  /* Keep the viewport fixed; the final messages can clear the floating avatar. */
+  padding-bottom: 148px;
+  scroll-padding-bottom: 148px;
 }
 .voice-avatar-overlay {
   position: absolute;
-  inset: 0 0 auto;
+  inset: auto 0 100%;
+  z-index: 1;
   height: 132px;
   pointer-events: none;
 }
