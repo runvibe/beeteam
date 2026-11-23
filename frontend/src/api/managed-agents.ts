@@ -66,6 +66,7 @@ export function createManagedAgentApi(options: HttpOptions = {}) {
     });
   return {
     voice: {
+      voices: () => request<import("./voice").VoiceCatalog>("/voice/voices"),
       start: (sdp: string, context: import("./voice").VoiceContext) => request<import("./voice").VoiceSession>("/voice/sessions", { method: "POST", body: JSON.stringify({ sdp, ...context }) }),
       events: (id: string, after: number) => request<{ events: import("./voice").VoiceEvent[]; cursor: number }>(`/voice/sessions/${encodeURIComponent(id)}/events?after=${after}`),
       result: (id: string, callId: string, content: string) => request<unknown>(`/voice/sessions/${encodeURIComponent(id)}/results`, { method: "POST", body: JSON.stringify({ callId, content }) }),

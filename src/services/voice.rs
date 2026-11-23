@@ -38,12 +38,40 @@ impl VoiceService {
         self.managed = managed;
         self
     }
+    pub async fn voices(&self) -> Result<VoiceOptions> {
+        let voices = self
+            .provider
+            .voices()
+            .await?
+            .into_iter()
+            .map(|id| {
+                let mut characters = id.chars();
+                let name = characters
+                    .next()
+                    .map(|first| first.to_uppercase().chain(characters).collect())
+                    .unwrap_or_default();
+                VoiceOption { id, name }
+            })
+            .collect();
+        Ok(VoiceOptions {
+            voices,
+            default_voice: None,
+        })
+    }
     pub async fn create(&self, body: StartVoice) -> Result<VoiceSession> {
         validate_text(&body.sdp, 131072)?;
+        if let Some(voice) = &body.voice {
+            validate_text(voice, 128)?;
+            if !self.provider.voices().await?.contains(voice) {
+                return Err(Failure::invalid(
+                    "The selected voice is not available in the installed Codex",
+                ));
+            }
+        }
         let conversation = self.managed.prepare_voice_conversation(&body).await?;
         let connection = self
             .provider
-            .start(body.sdp, INSTRUCTIONS.to_owned())
+            .start(body.sdp, INSTRUCTIONS.to_owned(), body.voice)
             .await?;
         let mut recordings = self.recordings.lock().await;
         recordings.retain(|_, recording| {

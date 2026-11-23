@@ -9,6 +9,11 @@ export type VoiceContext = {
   agentId: string;
   teamId?: string;
   conversationId?: string;
+  voice?: string;
+};
+export type VoiceCatalog = {
+  voices: { id: string; name: string }[];
+  defaultVoice: string | null;
 };
 export type VoiceSession = { id: string; sdp: string; conversationId: string };
 export type VoiceApi = {

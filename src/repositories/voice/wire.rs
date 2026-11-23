@@ -13,7 +13,7 @@ pub(super) struct Wire {
     pending: VecDeque<Value>,
 }
 impl Wire {
-    pub async fn start(sdp: String, instructions: String) -> Result<(Self, String)> {
+    async fn open() -> Result<(Self, PathBuf)> {
         let executable = std::env::var_os("BEE_CODEX_EXECUTABLE")
             .map(PathBuf::from)
             .filter(|p| p.is_absolute() && p.is_file())
@@ -61,6 +61,20 @@ impl Wire {
         };
         wire.request("initialize",json!({"clientInfo":{"name":"beeteam-voice","version":env!("CARGO_PKG_VERSION")},"capabilities":{"experimentalApi":true}})).await?;
         wire.write(json!({"method":"initialized"})).await?;
+        Ok((wire, root))
+    }
+    pub async fn voices() -> Result<Vec<String>> {
+        let (mut wire, _) = Self::open().await?;
+        let response = wire.request("thread/realtime/listVoices", json!({})).await;
+        let _ = tokio::time::timeout(Duration::from_secs(5), wire.child.kill()).await;
+        parse_voices(response?)
+    }
+    pub async fn start(
+        sdp: String,
+        instructions: String,
+        voice: Option<String>,
+    ) -> Result<(Self, String)> {
+        let (mut wire, root) = Self::open().await?;
         let account = wire
             .request("account/read", json!({"refreshToken":false}))
             .await?;
@@ -79,7 +93,8 @@ impl Wire {
             .as_str()
             .ok_or_else(unavailable)?
             .to_owned();
-        wire.request("thread/realtime/start",json!({"threadId":wire.thread,"version":"v3","outputModality":"audio","transport":{"type":"webrtc","sdp":sdp},"includeStartupContext":false,"clientManagedHandoffs":false,"flushTranscriptTailOnSessionEnd":false,"prompt":instructions,"realtimeStartInstructions":instructions})).await?;
+        let params = realtime_start_params(&wire.thread, sdp, instructions, voice);
+        wire.request("thread/realtime/start", params).await?;
         loop {
             let message = wire.line().await?;
             match message["method"].as_str() {
@@ -199,6 +214,65 @@ impl Wire {
     }
 }
 
+fn realtime_start_params(
+    thread: &str,
+    sdp: String,
+    instructions: String,
+    voice: Option<String>,
+) -> Value {
+    let mut params = json!({
+        "threadId": thread,
+        "version": "v3",
+        "outputModality": "audio",
+        "transport": {"type": "webrtc", "sdp": sdp},
+        "includeStartupContext": false,
+        "clientManagedHandoffs": false,
+        "flushTranscriptTailOnSessionEnd": false,
+        "prompt": instructions,
+        "realtimeStartInstructions": instructions
+    });
+    if let Some(voice) = voice {
+        params["voice"] = json!(voice);
+    }
+    params
+}
+
+fn parse_voices(response: Value) -> Result<Vec<String>> {
+    let entries = response["voices"]["v3"]
+        .as_array()
+        .filter(|entries| entries.len() <= 128)
+        .ok_or_else(|| {
+            Failure::new(
+                "voice_unavailable",
+                "Installed Codex did not report realtime V3 voices",
+            )
+        })?;
+    let mut voices = Vec::new();
+    for entry in entries {
+        let id = entry
+            .as_str()
+            .filter(|id| {
+                !id.is_empty()
+                    && id.len() <= 128
+                    && id.chars().all(|character| {
+                        character.is_ascii_lowercase()
+                            || character.is_ascii_digit()
+                            || matches!(character, '_' | '-')
+                    })
+            })
+            .ok_or_else(|| {
+                Failure::new(
+                    "voice_unavailable",
+                    "Installed Codex returned an invalid voice catalog",
+                )
+            })?;
+        if !voices.iter().any(|voice| voice == id) {
+            voices.push(id.to_owned());
+        }
+    }
+    Ok(voices)
+}
+
 fn coordinator_config(config: &Value) -> Result<Value> {
     if !config.is_object() {
         return Err(unavailable());
@@ -236,6 +310,31 @@ pub(super) fn fixture() -> Wire {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn discovery_uses_only_reported_v3_choices_without_inventing_defaults() {
+        assert_eq!(parse_voices(json!({"voices":{"v1":["alloy"],"defaultV1":"alloy","v3":["marin","cedar","marin"]}})).unwrap(),vec!["marin","cedar"]);
+        assert!(parse_voices(json!({"voices":{"v1":["alloy"],"defaultV1":"alloy"}})).is_err());
+        assert!(parse_voices(json!({"voices":{"v3":[42]}})).is_err());
+        assert!(
+            parse_voices(json!({"voices":{"v3":[]}}))
+                .unwrap()
+                .is_empty()
+        );
+    }
+    #[test]
+    fn selected_voice_is_forwarded_and_omission_leaves_native_default() {
+        let defaults = realtime_start_params("owned", "offer".into(), "instructions".into(), None);
+        assert!(defaults.get("voice").is_none());
+        let selected = realtime_start_params(
+            "owned",
+            "offer".into(),
+            "instructions".into(),
+            Some("cedar".into()),
+        );
+        assert_eq!(selected["voice"], "cedar");
+        assert_eq!(selected["version"], "v3");
+    }
+
     #[tokio::test]
     async fn preserves_sdp_notification_before_rpc_response() {
         let mut wire = fixture();

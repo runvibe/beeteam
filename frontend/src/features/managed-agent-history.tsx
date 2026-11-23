@@ -1,3 +1,4 @@
+import { ChatHistoryViewport } from "./chat-panel-scroll-area";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { CircleStop } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -60,7 +61,7 @@ export function ManagedAgentHistory({
   const settled =
     !current || ["completed", "failed", "cancelled"].includes(current.state);
   return (
-    <div
+    <ChatHistoryViewport
       ref={viewport}
       className="assistant-thread"
       aria-live="polite"
@@ -133,6 +134,6 @@ export function ManagedAgentHistory({
         />
       ))}
       <div ref={bottom} />
-    </div>
+    </ChatHistoryViewport>
   );
 }

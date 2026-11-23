@@ -70,6 +70,8 @@ The complete Rust test suite requires a dedicated PostgreSQL 18+ instance throug
 
 ### Live voice in managed chats
 
+Choose the voice in general settings. The list comes from the installed Codex runtime. Codex default leaves voice selection to that installation. Your preference is saved on this device and applies when the next call starts. Unavailable saved voices remain visible so you can select a replacement.
+
 Live voice uses the Codex executable installed on the user's machine and its local authentication. Configure the existing managed-session runtime with `BEE_CODEX_EXECUTABLE` and `BEE_SESSION_INSTALLATION_ID`. Browser microphone access requires localhost or HTTPS. Voice availability depends on the installed Codex version and account capabilities.
 
 Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone immediately and refreshes the timeline after final transcript persistence. A save failure is shown in the chat. Already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
@@ -194,3 +196,5 @@ Files explicitly cited by the agent as output are shown as compact, full-width c
 Managed agent workspaces: Bee Team always creates and reuses `~/.beeteam/workspaces/<agent-id>`. HTTP/MCP requests and chat settings cannot choose a project folder. The directory is checked and recreated if missing before every execution, including conversation resumption. Old stored paths are ignored for execution; existing files and conversation history are preserved. Files remain separate from the SQLite database.
 
 The chat button is always available in the app header. HQ opens by default; the selected team and open/closed state are restored after reload.
+
+The chat panel places its history scrollbar at the far right across the full panel height. Only messages scroll; the heading and composer stay fixed, and activating voice still scrolls to the latest message once.

@@ -14,6 +14,7 @@ import type { VoiceCallbacks } from "./realtime-voice";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import type { ComponentProps } from "react";
+import { useVoicePreference } from "@/state/voice-preference";
 import { Composer } from "./managed-agent-chat-parts";
 function ManagedVoiceChat(
   props: Omit<ComponentProps<typeof VoiceController>, "children">,
@@ -88,13 +89,42 @@ function setup() {
     onQueued: vi.fn(),
   };
 }
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+  vi.clearAllMocks();
+  useVoicePreference.setState({ voiceId: null });
+});
 function start() {
   fireEvent.click(
     screen.getByRole("button", { name: /Talk by voice|Conversar por voz/ }),
   );
 }
 describe("managed voice routing", () => {
+  it("captures the saved voice on activation and applies changes only to the next call", () => {
+    useVoicePreference.getState().choose("marin");
+    render(<ManagedVoiceChat {...setup()} />);
+    start();
+    expect(mock.start).toHaveBeenCalledWith(
+      expect.objectContaining({ voice: "marin" }),
+    );
+    mock.close.mockClear();
+    act(() => {
+      useVoicePreference.getState().choose("cedar");
+    });
+    expect(mock.start).toHaveBeenCalledTimes(1);
+    expect(mock.close).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
+    );
+    start();
+    expect(mock.start).toHaveBeenLastCalledWith(
+      expect.objectContaining({ voice: "cedar" }),
+    );
+  });
+  it("omits a voice override when the native default is selected", () => {
+    render(<ManagedVoiceChat {...setup()} />);
+    start();
+    expect(mock.start.mock.calls[0][0]).not.toHaveProperty("voice");
+  });
   it("rejects stale startup association after external navigation before local selection catches up", () => {
     mock.start.mockReturnValueOnce(false);
     const p = setup();

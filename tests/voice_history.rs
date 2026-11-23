@@ -36,6 +36,8 @@ struct Stream {
 struct FakeVoice {
     stream: Mutex<Stream>,
     starts: AtomicUsize,
+    choices: Mutex<Vec<Option<String>>>,
+    discoveries: AtomicUsize,
 }
 impl FakeVoice {
     fn new() -> Self {
@@ -50,13 +52,27 @@ impl FakeVoice {
                 stopped: false,
             }),
             starts: AtomicUsize::new(0),
+            choices: Mutex::new(vec![]),
+            discoveries: AtomicUsize::new(0),
         }
     }
 }
 impl VoiceProvider for FakeVoice {
-    fn start(&self, _sdp: String, _instructions: String) -> RepositoryFuture<'_, VoiceConnection> {
+    fn voices(&self) -> RepositoryFuture<'_, Vec<String>> {
+        Box::pin(async move {
+            self.discoveries.fetch_add(1, Ordering::SeqCst);
+            Ok(vec!["marin".into(), "cedar".into()])
+        })
+    }
+    fn start(
+        &self,
+        _sdp: String,
+        _instructions: String,
+        voice: Option<String>,
+    ) -> RepositoryFuture<'_, VoiceConnection> {
         Box::pin(async move {
             self.starts.fetch_add(1, Ordering::SeqCst);
+            self.choices.lock().unwrap().push(voice);
             Ok(VoiceConnection {
                 id: "test-voice-session".into(),
                 sdp: "answer".into(),
@@ -156,6 +172,7 @@ impl Fixture {
     fn start(&self, conversation: Option<Uuid>) -> StartVoice {
         StartVoice {
             sdp: "offer".into(),
+            voice: None,
             agent_id: self.agent,
             team_id: Some(self.team),
             conversation_id: conversation,
@@ -306,4 +323,53 @@ async fn wrong_agent_context_is_rejected_before_provider_start() {
     body.agent_id = Uuid::parse_str(id(&other)).unwrap();
     assert!(fixture.voice.create(body).await.is_err());
     assert_eq!(fixture.fake.starts.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn available_voice_names_are_discovered_without_starting_conversation() {
+    let fixture = setup().await;
+    let options = fixture.voice.voices().await.unwrap();
+    assert!(options.default_voice.is_none());
+    assert_eq!(options.voices[0].id, "marin");
+    assert_eq!(options.voices[0].name, "Marin");
+    assert_eq!(fixture.fake.starts.load(Ordering::SeqCst), 0);
+    let conversations = get(
+        &fixture.app,
+        &format!("/api/v2/agents/{}/conversations", fixture.agent),
+    )
+    .await;
+    assert!(conversations["items"].as_array().unwrap().is_empty());
+}
+
+#[tokio::test]
+async fn unavailable_voice_is_rejected_before_conversation_is_created() {
+    let fixture = setup().await;
+    let mut body = fixture.start(None);
+    body.voice = Some("unavailable-choice".into());
+    assert_eq!(
+        fixture.voice.create(body).await.err().unwrap().code,
+        "invalid_request"
+    );
+    assert_eq!(fixture.fake.starts.load(Ordering::SeqCst), 0);
+    let conversations = get(
+        &fixture.app,
+        &format!("/api/v2/agents/{}/conversations", fixture.agent),
+    )
+    .await;
+    assert!(conversations["items"].as_array().unwrap().is_empty());
+}
+
+#[tokio::test]
+async fn explicit_voice_reaches_provider_and_default_skips_discovery() {
+    let fixture = setup().await;
+    fixture.voice.create(fixture.start(None)).await.unwrap();
+    assert_eq!(fixture.fake.discoveries.load(Ordering::SeqCst), 0);
+    assert_eq!(*fixture.fake.choices.lock().unwrap(), vec![None]);
+    let mut body = fixture.start(None);
+    body.voice = Some("cedar".into());
+    fixture.voice.create(body).await.unwrap();
+    assert_eq!(
+        *fixture.fake.choices.lock().unwrap(),
+        vec![None, Some("cedar".into())]
+    );
 }

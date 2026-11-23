@@ -30,4 +30,12 @@ A headless Edge browser connected to the actual local voice HTTP endpoint using 
 
 Frontend checks passed for 66 tests, production build and translations. Backend checks passed for the new voice protocol fixtures and library tests. Follow-up verification ran the full Cargo suite successfully against an isolated PostgreSQL 18.4 instance. The four generated-file failures were fixed by JSON-escaping Windows paths in the test provider fixture, with an additional cross-platform regression test.
 
-The live transcript remains local to the current call UI. Managed execution requests and results retain the existing database persistence. Reloading clears the live transcript.
+Completed user and assistant voice transcripts are persisted in the managed conversation history without creating execution requests. Voice provenance remains stored internally without a visible badge. Reloading restores the saved transcript.
+
+## Voice preferences and full-panel scrolling
+
+General settings stores a device-local voice preference for the next call. The local backend discovers the installed Codex V3 catalog; the default option omits the voice field. Explicit choices are validated before conversation creation. An active call retains its original choice.
+
+The scroll rail spans the full chat panel at the right edge, while its viewport contains only message history. Header and composer remain fixed. Voice activation scrolls the history to the bottom once; the transparent avatar remains overlaid with internal bottom padding.
+
+Browser validation covered 736px and 320px widths, rail geometry, thumb dragging, wheel scrolling, fixed composer/header geometry and voice activation. General settings retained the selected voice after reload. An isolated real call with Juniper connected, saved both transcript roles without duplicate rows, and queued no execution. The default voice also connected. Marin was returned by the native catalog but timed out during WebRTC connection on three attempts; this remains a native-call validation limitation, not evidence that every listed voice works.

@@ -7,6 +7,7 @@ import {
   type Ref,
 } from "react";
 import { t, useLocale } from "@/i18n";
+import { useVoicePreference } from "@/state/voice-preference";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { RealtimeVoice } from "./realtime-voice";
@@ -262,7 +263,9 @@ export function ManagedVoiceChat(props: Props) {
     });
     connection.current = voice;
     lastCall.current = voice;
+    const selectedVoice = useVoicePreference.getState().voiceId;
     void voice.start({
+      ...(selectedVoice ? { voice: selectedVoice } : {}),
       agentId: props.agentId,
       ...(props.teamId ? { teamId: props.teamId } : {}),
       ...(props.conversation ? { conversationId: props.conversation } : {}),

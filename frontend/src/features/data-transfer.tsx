@@ -10,6 +10,7 @@ import {
 } from "@/i18n";
 import { AppearanceSettings } from "@/components/appearance-settings";
 import { ChatAccessSettings } from "./chat-access-settings";
+import { VoiceSettings } from "./voice-settings";
 import { useChatAccessSettings } from "@/state/chat-access";
 import { ApiCompatibilityDetails } from "@/components/api-compatibility";
 import { LanguageControl } from "@/components/language-control";
@@ -81,6 +82,7 @@ export function DataTransferSettings() {
           </DialogHeader>
           <AppearanceSettings />
           <ChatAccessSettings />
+          <VoiceSettings />
           <LanguageControl />
           <CookiePreferences />
           <ApiCompatibilityDetails />

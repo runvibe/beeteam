@@ -173,7 +173,8 @@ pub trait ProjectOpener: Send + Sync {
 
 /// Local Codex voice integration lifecycle; process handles remain adapter-owned.
 pub trait VoiceProvider: Send + Sync {
-    fn start(&self, sdp: String, instructions: String) -> RepositoryFuture<'_, crate::dto::voice::VoiceConnection>;
+    fn voices(&self) -> RepositoryFuture<'_, Vec<String>>;
+    fn start(&self, sdp: String, instructions: String, voice: Option<String>) -> RepositoryFuture<'_, crate::dto::voice::VoiceConnection>;
     fn events(&self, id: String, after: u64) -> RepositoryFuture<'_, crate::dto::voice::VoiceEvents>;
     fn result(&self, id: String, call_id: String, content: String) -> RepositoryFuture<'_, ()>;
     fn context(&self, id: String, content: String) -> RepositoryFuture<'_, ()>;

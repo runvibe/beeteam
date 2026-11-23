@@ -24,7 +24,14 @@ import {
   workspacePanelName,
 } from "./workspace-panel-dock";
 import { WorkspacePanelResizer } from "./workspace-panel-resize";
-import { WorkspaceResizeContext, workspacePanelSizes } from "./workspace-panel-sizes";
+import {
+  WorkspaceResizeContext,
+  workspacePanelSizes,
+} from "./workspace-panel-sizes";
+import {
+  ChatPanelScrollArea,
+  ChatPanelScrollbar,
+} from "./chat-panel-scroll-area";
 import "./chat-side-panel.css";
 
 export function ChatPanelToggle({
@@ -93,7 +100,11 @@ export function ChatWorkspace({
   const visible = panelOrder.filter(
     (panel) =>
       present.includes(panel) &&
-      (panel === "chat" ? open : panel === "sessions" ? sessionsOpen : contentOpen),
+      (panel === "chat"
+        ? open
+        : panel === "sessions"
+          ? sessionsOpen
+          : contentOpen),
   );
   const [announcement, setAnnouncement] = useState("");
   const reorder = useCallback(
@@ -133,45 +144,48 @@ export function ChatWorkspace({
     sessionsVisible &&
     panelOrder.indexOf("sessions") > panelOrder.indexOf("content");
   const chatPanel = (
-    <aside
-      id="leader-chat-panel"
-      className="chat-side-panel"
-      hidden={!open}
-      aria-label={t("chat.title")}
-      data-workspace-panel="chat"
-      data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
-    >
-      <WorkspacePanelResizer panel="chat" />
-      <header
-        className="chat-panel-heading"
-        data-dock-handle="chat"
-        data-draggable={dock.draggable ? "true" : undefined}
-        title={dock.draggable ? t("workspace.dragToDock") : undefined}
+    <ChatPanelScrollArea>
+      <aside
+        id="leader-chat-panel"
+        className="chat-side-panel"
+        hidden={!open}
+        aria-label={t("chat.title")}
+        data-workspace-panel="chat"
+        data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
       >
-        <strong>{t("chat.title")}</strong>
-        {sessions && <SessionsToggle />}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={close}
-          aria-label={t("chat.closePanel")}
-          title={t("chat.closePanel")}
+        <WorkspacePanelResizer panel="chat" />
+        <header
+          className="chat-panel-heading"
+          data-dock-handle="chat"
+          data-draggable={dock.draggable ? "true" : undefined}
+          title={dock.draggable ? t("workspace.dragToDock") : undefined}
         >
-          <X />
-        </Button>
-      </header>
-      <div className="chat-panel-body">
-        <div className="chat-panel-content">
-          {teamId ? (
-            <PanelTeam key={teamId} teamId={teamId} />
-          ) : picking && !api.managedAgents ? (
-            <PanelTeamPicker enabled={open} />
-          ) : (
-            <PanelDefault enabled={open} />
-          )}
+          <strong>{t("chat.title")}</strong>
+          {sessions && <SessionsToggle />}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={close}
+            aria-label={t("chat.closePanel")}
+            title={t("chat.closePanel")}
+          >
+            <X />
+          </Button>
+        </header>
+        <div className="chat-panel-body">
+          <div className="chat-panel-content">
+            {teamId ? (
+              <PanelTeam key={teamId} teamId={teamId} />
+            ) : picking && !api.managedAgents ? (
+              <PanelTeamPicker enabled={open} />
+            ) : (
+              <PanelDefault enabled={open} />
+            )}
+          </div>
         </div>
-      </div>
-    </aside>
+        <ChatPanelScrollbar />
+      </aside>
+    </ChatPanelScrollArea>
   );
   return (
     <div

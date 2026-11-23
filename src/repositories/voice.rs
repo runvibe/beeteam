@@ -73,12 +73,14 @@ enum Command {
 pub struct CodexVoiceProvider {
     sessions: Arc<Mutex<HashMap<String, Session>>>,
     slots: Arc<Semaphore>,
+    voices: Mutex<Option<(Instant, Vec<String>)>>,
 }
 impl Default for CodexVoiceProvider {
     fn default() -> Self {
         Self {
             sessions: Arc::new(Mutex::new(HashMap::new())),
             slots: Arc::new(Semaphore::new(4)),
+            voices: Mutex::new(None),
         }
     }
 }
@@ -110,19 +112,41 @@ impl CodexVoiceProvider {
     }
 }
 impl VoiceProvider for CodexVoiceProvider {
-    fn start(&self, sdp: String, instructions: String) -> RepositoryFuture<'_, VoiceConnection> {
+    fn voices(&self) -> RepositoryFuture<'_, Vec<String>> {
+        Box::pin(async move {
+            let mut cached = self.voices.lock().await;
+            if let Some((created, voices)) = cached.as_ref() {
+                if created.elapsed() < Duration::from_secs(30) {
+                    return Ok(voices.clone());
+                }
+            }
+            let voices = tokio::time::timeout(Duration::from_secs(15), Wire::voices())
+                .await
+                .map_err(|_| {
+                    Failure::new("voice_timeout", "Installed Codex voice discovery timed out")
+                })??;
+            *cached = Some((Instant::now(), voices.clone()));
+            Ok(voices)
+        })
+    }
+    fn start(
+        &self,
+        sdp: String,
+        instructions: String,
+        voice: Option<String>,
+    ) -> RepositoryFuture<'_, VoiceConnection> {
         Box::pin(async move {
             let permit = self
                 .slots
                 .clone()
                 .try_acquire_owned()
                 .map_err(|_| Failure::new("voice_busy", "Too many active voice sessions"))?;
-            let (mut wire, answer) =
-                tokio::time::timeout(Duration::from_secs(45), Wire::start(sdp, instructions))
-                    .await
-                    .map_err(|_| {
-                        Failure::new("voice_timeout", "Local Codex voice startup timed out")
-                    })??;
+            let (mut wire, answer) = tokio::time::timeout(
+                Duration::from_secs(45),
+                Wire::start(sdp, instructions, voice),
+            )
+            .await
+            .map_err(|_| Failure::new("voice_timeout", "Local Codex voice startup timed out"))??;
             let id = Uuid::new_v4().to_string();
             let (tx, mut rx) = mpsc::channel(16);
             let (finished, done) = watch::channel(false);

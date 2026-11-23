@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StartVoice {
     pub sdp: String,
+    pub voice: Option<String>,
     pub agent_id: uuid::Uuid,
     pub team_id: Option<uuid::Uuid>,
     pub conversation_id: Option<uuid::Uuid>,
@@ -58,4 +59,16 @@ pub fn validate_text(text: &str, limit: usize) -> Result<()> {
 pub struct VoiceCursor {
     #[serde(default)]
     pub after: u64,
+}
+
+#[derive(Serialize)]
+pub struct VoiceOption {
+    pub id: String,
+    pub name: String,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VoiceOptions {
+    pub voices: Vec<VoiceOption>,
+    pub default_voice: Option<String>,
 }

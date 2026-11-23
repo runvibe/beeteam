@@ -13,6 +13,7 @@ use axum::{
 
 pub fn router(config: &AppConfig) -> Router<AppState> {
     Router::new()
+        .route("/api/v2/voice/voices", get(voices))
         .route("/api/v2/voice/sessions", post(create))
         .route("/api/v2/voice/sessions/{id}", delete(stop))
         .route("/api/v2/voice/sessions/{id}/events", get(events))
@@ -30,6 +31,12 @@ fn failure(error: Failure) -> Response {
         _ => StatusCode::SERVICE_UNAVAILABLE,
     };
     (status, Json(error)).into_response()
+}
+async fn voices(State(state): State<AppState>) -> Response {
+    match state.voice().voices().await {
+        Ok(value) => ([(header::CACHE_CONTROL, "no-store")], Json(value)).into_response(),
+        Err(error) => failure(error),
+    }
 }
 async fn create(State(state): State<AppState>, Json(body): Json<StartVoice>) -> Response {
     let response = match state.voice().create(body).await {

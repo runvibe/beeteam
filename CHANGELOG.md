@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Extend the chat history scrollbar across the full panel height at the right edge while keeping heading and composer fixed.
+
+- Choose the voice for future calls in general settings, using the installed Codex voice list and a device-local preference.
+
 - Scroll to the end of the chat once when voice is activated, then preserve manual scrolling.
 
 - Keep the chat viewport fixed during voice calls, with messages scrolling beneath the floating avatar and extra internal bottom padding.

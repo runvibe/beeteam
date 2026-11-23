@@ -68,12 +68,8 @@
   user-select: none;
 }
 .chat-workspace[data-dockable]
-  :is(
-    [data-dock-handle="chat"],
-    [data-dock-handle="sessions"]
-  ),
-.chat-workspace[data-dockable]
-  [data-dock-handle="content"] > .context-path {
+  :is([data-dock-handle="chat"], [data-dock-handle="sessions"]),
+.chat-workspace[data-dockable] [data-dock-handle="content"] > .context-path {
   touch-action: none;
 }
 .chat-workspace[data-dockable] [data-dock-handle] button {
@@ -241,4 +237,33 @@
   .chat-dock-preview {
     display: none;
   }
+}
+
+/* Keep the scroll rail at the panel edge, independent of the content width. */
+.chat-panel-scrollbar {
+  width: 7px;
+  padding: 2px;
+  z-index: 3;
+  touch-action: none;
+  user-select: none;
+}
+.chat-panel-scroll-thumb {
+  flex: 1;
+  min-height: 28px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
+}
+.chat-panel-scrollbar:hover .chat-panel-scroll-thumb {
+  background: var(--muted-foreground);
+}
+.chat-panel-body:has(.assistant-thread) {
+  overflow: hidden;
+}
+.chat-panel-body .assistant-thread {
+  min-height: 0;
+  scrollbar-gutter: auto;
+}
+.assistant-thread-content {
+  flex-direction: column;
+  gap: 1.25rem;
 }
