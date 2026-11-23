@@ -1,13 +1,27 @@
-import { useEffect, useRef, useState } from "react";
-import { Mic, PhoneOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useImperativeHandle,
+  type ReactNode,
+  type Ref,
+} from "react";
 import { t, useLocale } from "@/i18n";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { RealtimeVoice, type VoiceTranscript } from "./realtime-voice";
 import "./voice-hexagon.css";
 type S = components["schemas"];
+export type ManagedVoiceControl = {
+  active: boolean;
+  canStart: boolean;
+  start: () => void;
+  stop: () => void;
+  adoptConversation?: (id: string) => void;
+};
 type Props = {
+  controlRef?: Ref<ManagedVoiceControl>;
+  children: (control: ManagedVoiceControl) => ReactNode;
   api: ManagedAgentApi;
   contextMessages: S["Message"][];
   agentId: string;
@@ -190,14 +204,22 @@ export function ManagedVoiceChat(props: Props) {
     void voice.start();
   }
 
+  const currentCall = connection.current;
+  const control: ManagedVoiceControl = {
+    active: state !== "idle",
+    canStart: !props.disabled && !props.readOnly,
+    start,
+    stop,
+    adoptConversation: (id) => {
+      if (currentCall && connection.current === currentCall)
+        targetConversation.current = id;
+    },
+  };
+  useImperativeHandle(props.controlRef, () => control);
   return (
     <div className="managed-voice-chat" data-call-active={state !== "idle"}>
       {state !== "idle" && (
-        <>
-          <h3 className="voice-call-heading">
-            <span className="voice-call-brand" aria-hidden="true" />
-            {t("managed.voiceTitle")}
-          </h3>
+        <div className="voice-avatar-overlay">
           <div
             className="voice-hexagon-stage"
             data-state={state}
@@ -213,29 +235,16 @@ export function ManagedVoiceChat(props: Props) {
               <span />
             </div>
           </div>
-        </>
-      )}
-      <div className="voice-call-controls">
-        {state !== "idle" && (
-          <span role="status">
+          <span className="sr-only" role="status">
             {t(
               state === "connecting"
                 ? "managed.voiceConnecting"
                 : "managed.voiceLive",
             )}
           </span>
-        )}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={state === "idle" && props.disabled}
-          onClick={state === "idle" ? start : stop}
-        >
-          {state === "idle" ? <Mic /> : <PhoneOff />}
-          {t(state === "idle" ? "managed.voiceStart" : "managed.voiceStop")}
-        </Button>
-      </div>
+        </div>
+      )}
+      {props.children(control)}
       {error && <p role="alert">{error}</p>}
       {transcript.length > 0 && (
         <details>

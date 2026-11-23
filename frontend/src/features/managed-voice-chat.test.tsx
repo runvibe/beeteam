@@ -1,9 +1,34 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ManagedVoiceChat, voiceHistory } from "./managed-voice-chat";
+import {
+  ManagedVoiceChat as VoiceController,
+  voiceHistory,
+} from "./managed-voice-chat";
 import type { VoiceCallbacks } from "./realtime-voice";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
+import type { ComponentProps } from "react";
+import { Composer } from "./managed-agent-chat-parts";
+function ManagedVoiceChat(
+  props: Omit<ComponentProps<typeof VoiceController>, "children">,
+) {
+  return (
+    <VoiceController {...props}>
+      {(voice) => (
+        <Composer
+          voice={voice}
+          value=""
+          onChange={() => {}}
+          onSubmit={() => {}}
+          locked={props.disabled}
+          canSend={false}
+          retry={false}
+          readOnly={props.readOnly}
+        />
+      )}
+    </VoiceController>
+  );
+}
 type S = components["schemas"];
 const mock = vi.hoisted(() => ({
   callbacks: null as VoiceCallbacks | null,
@@ -59,6 +84,39 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
+  it("keeps voice active when its first typed request creates the conversation", () => {
+    const p = setup();
+    let control: import("./managed-voice-chat").ManagedVoiceControl;
+    const child = (
+      voice: import("./managed-voice-chat").ManagedVoiceControl,
+    ) => {
+      control = voice;
+      return (
+        <Composer
+          voice={voice}
+          value=""
+          onChange={() => {}}
+          onSubmit={() => {}}
+          locked={false}
+          canSend={false}
+          retry={false}
+        />
+      );
+    };
+    const view = render(<VoiceController {...p}>{child}</VoiceController>);
+    start();
+    mock.close.mockClear();
+    control!.adoptConversation!("typed-conversation");
+    view.rerender(
+      <VoiceController {...p} conversation="typed-conversation">
+        {child}
+      </VoiceController>,
+    );
+    expect(mock.close).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
+    ).toBeEnabled();
+  });
   it("shows the amber hexagon only during a call and updates its output level without rerendering", () => {
     render(<ManagedVoiceChat {...setup()} />);
     expect(

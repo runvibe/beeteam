@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Show a thin amber voice hexagon with a subtle echo and three audio-reactive bars during calls, following the site theme and reduced-motion preferences.
+- Place the transparent amber voice avatar above the composer and combine microphone, text send and end-call actions in its existing button. Keep audio-reactive bars and reduced-motion support.
 
 - Add live voice conversations to managed chats, with clear execution requests delegated to Codex while the voice session continues.
 

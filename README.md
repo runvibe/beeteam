@@ -74,7 +74,7 @@ Live voice uses the Codex executable installed on the userâ€™s machine and 
 
 Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone, while already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
 
-The active call displays a thin amber hexagonal outline with a faint outer echo and three central bars. The outline pulses subtly and the bars respond to the assistant's incoming audio. The panel follows the current site theme, and reduced-motion preferences remove animated transforms. Audio visualization is optional and releases its audio analysis resources when the call ends.
+The composer action starts voice when the draft is empty, sends text when it has content, and ends an active voice call with an X when the draft is empty. The X also remains available while a pending send locks the draft, without discarding its text. The thin amber hexagonal avatar floats above the composer on a transparent surface, with reserved space to keep messages clear. Its faint outer echo and three central bars respond to the assistant's incoming audio. Reduced-motion preferences keep the outline and bar geometry still. Audio visualization is optional and releases its audio analysis resources when the call ends.
 
 The voice transcript is displayed for the current call. Reloading the page clears that transcript. Availability requires a Codex build supporting the experimental realtime V3 WebRTC protocol and voice access on the signed-in account.
 

@@ -499,7 +499,7 @@ it("clears a delivered draft without resending when the chat remounts during the
   expect(retry).toBeDisabled();
   await act(async () => resolveSend({ id: "request", conversationId: "conversation" }));
   await waitFor(() => expect(screen.getByRole("textbox", { name: "Message to agent" }).textContent).toBe(""));
-  expect(screen.getByRole("button", { name: "Send request" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Talk by voice" })).toBeEnabled();
   expect(api.send).toHaveBeenCalledTimes(1);
 });
 
@@ -604,9 +604,9 @@ it("applies the 65536-byte limit to the UTF-8 editor text", async () => {
   );
   const editor = await screen.findByRole("textbox", { name: "Message to agent" });
   expect(editor).toHaveAttribute("contenteditable", "plaintext-only");
-  const send = screen.getByRole("button", { name: "Send request" });
   editor.textContent = "é".repeat(32768);
   fireEvent.input(editor);
+  const send = screen.getByRole("button", { name: "Send request" });
   expect(send).toBeEnabled();
   editor.textContent += "é";
   fireEvent.input(editor);

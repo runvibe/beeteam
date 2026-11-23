@@ -19,7 +19,7 @@ import { useManagedActions } from "./use-managed-actions";
 import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
-import { ManagedVoiceChat } from "./managed-voice-chat";
+import { ManagedVoiceChat, type ManagedVoiceControl } from "./managed-voice-chat";
 import { ChatAccessPicker } from "./chat-access-picker";
 import { useChatAccess } from "@/state/chat-access";
 import "./leader-chat.css";
@@ -50,6 +50,7 @@ export function ManagedAgentChat({
 }) {
   useLocale();
   const queryClient = useQueryClient();
+  const voiceControl = useRef<ManagedVoiceControl | null>(null);
   const config = useQuery({
     queryKey: ["managed-config", agentId],
     queryFn: () => api.config(agentId),
@@ -172,6 +173,7 @@ export function ManagedAgentChat({
       current.conversation === context.conversation &&
       current.externalConversation === context.externalConversation
     ) {
+      voiceControl.current?.adoptConversation?.(pending.request.conversationId);
       select(pending.request.conversationId, pending.request.id);
     }
     if (pending.context.source !== "voice") setDraft("");
@@ -515,7 +517,7 @@ export function ManagedAgentChat({
               {pending?.state === "uncertain" && (
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
-              <ManagedVoiceChat api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
+              <ManagedVoiceChat controlRef={voiceControl} api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
                 conversation={conversation} accessMode={accessMode}
                 disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
                 readOnly={readOnly}
@@ -526,8 +528,9 @@ export function ManagedAgentChat({
                   void queryClient.invalidateQueries({ queryKey: ["managed-requests", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
-                }} />
-              <Composer
+                }}>
+                {(voice) => <Composer
+                voice={voice}
                 value={draft}
                 onChange={setDraft}
                 onSubmit={send}
@@ -541,7 +544,8 @@ export function ManagedAgentChat({
                     disabled={busy || !!pending || readOnly}
                   />
                 ) : undefined}
-              />
+              />}
+              </ManagedVoiceChat>
             </>
           )}
         </>

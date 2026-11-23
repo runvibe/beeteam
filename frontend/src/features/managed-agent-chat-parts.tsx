@@ -1,6 +1,8 @@
 import { useMemo, type FormEvent, type ReactNode } from "react";
 import {
   ArrowUp,
+  Mic,
+  X,
   Boxes,
   Download,
   ExternalLink,
@@ -27,6 +29,8 @@ import {
 } from "./attachment-presentation";
 import { categories } from "./attachment-categories";
 import { MessageReasoning } from "./managed-agent-reasoning";
+
+import type { ManagedVoiceControl } from "./managed-voice-chat";
 
 type Message = components["schemas"]["Message"];
 
@@ -353,6 +357,7 @@ export function Composer({
   retry,
   readOnly,
   accessControl,
+  voice,
 }: {
   value: string;
   onChange: (value: string) => void;
@@ -362,12 +367,16 @@ export function Composer({
   retry: boolean;
   readOnly?: boolean;
   accessControl?: ReactNode;
+  voice?: ManagedVoiceControl;
 }) {
   const submit = (e: FormEvent) => {
     e.preventDefault();
     if (canSend) onSubmit();
   };
-  const label = t(retry ? "managed.retry" : "managed.send");
+  const stopVoice = !!voice?.active && (!value.trim() || locked);
+  const startVoice = !!voice && !voice.active && !value.trim() && !retry;
+  const voiceAction = stopVoice || startVoice;
+  const label = t(stopVoice ? "managed.voiceStop" : startVoice ? "managed.voiceStart" : retry ? "managed.retry" : "managed.send");
   return (
     <form className="assistant-composer" onSubmit={submit}>
       {readOnly && (
@@ -393,20 +402,21 @@ export function Composer({
         />
         <div className="assistant-composer-row">
           {accessControl}
-          {retry ? (
+          {retry && !voiceAction ? (
             <Button type="submit" size="sm" disabled={!canSend}>
               {label}
             </Button>
           ) : (
             <Button
-              type="submit"
+              type={voiceAction ? "button" : "submit"}
               size="icon"
               className="assistant-send"
-              disabled={!canSend}
+              disabled={stopVoice ? false : startVoice ? !voice?.canStart || locked || !!readOnly : !canSend}
+              onClick={stopVoice ? voice?.stop : startVoice ? voice?.start : undefined}
               aria-label={label}
               title={label}
             >
-              <ArrowUp />
+              {stopVoice ? <X /> : startVoice ? <Mic /> : <ArrowUp />}
             </Button>
           )}
         </div>
