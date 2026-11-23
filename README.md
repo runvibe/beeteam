@@ -70,13 +70,13 @@ The complete Rust test suite requires a dedicated PostgreSQL 18+ instance throug
 
 ### Live voice in managed chats
 
-Live voice uses the Codex executable installed on the userâ€™s machine and its local authentication. Configure the existing managed-session runtime with `BEE_CODEX_EXECUTABLE` and `BEE_SESSION_INSTALLATION_ID`. Browser microphone access requires localhost or HTTPS. Voice availability depends on the installed Codex version and account capabilities.
+Live voice uses the Codex executable installed on the user's machine and its local authentication. Configure the existing managed-session runtime with `BEE_CODEX_EXECUTABLE` and `BEE_SESSION_INSTALLATION_ID`. Browser microphone access requires localhost or HTTPS. Voice availability depends on the installed Codex version and account capabilities.
 
-Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone, while already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
+Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone immediately and refreshes the timeline after final transcript persistence. A save failure is shown in the chat. Already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
 
 The composer action starts voice when the draft is empty, sends text when it has content, and ends an active voice call with an X when the draft is empty. The X also remains available while a pending send locks the draft, without discarding its text. The thin amber hexagonal avatar floats above the composer on a transparent surface, with reserved space to keep messages clear. Its faint outer echo and three central bars respond to the assistant's incoming audio. Reduced-motion preferences keep the outline and bar geometry still. Audio visualization is optional and releases its audio analysis resources when the call ends.
 
-The voice transcript is displayed for the current call. Reloading the page clears that transcript. Availability requires a Codex build supporting the experimental realtime V3 WebRTC protocol and voice access on the signed-in account.
+Final user and assistant speech transcripts are saved in the selected managed conversation and displayed in the main timeline with a Voice label. A new voice call creates its conversation before accepting text or delegated work. Transcripts remain available after the call ends and after reloading, including conversations with no Codex execution requests. Spoken requests become execution requests only when explicitly delegated. Availability requires a Codex build supporting the experimental realtime V3 WebRTC protocol and voice access on the signed-in account.
 
 
 ## Troubleshooting

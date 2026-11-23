@@ -155,12 +155,17 @@ async fn handle_message(
             .push("execute_codex", Some(call), Some(content), None);
     }
     match method {
-        "thread/realtime/transcript/done" => events.lock().await.push(
-            "transcript",
-            None,
-            params["text"].as_str().map(str::to_owned),
-            params["role"].as_str().map(str::to_owned),
-        ),
+        "thread/realtime/transcript/done" => {
+            let content = params["text"].as_str().map(str::to_owned);
+            let role = params["role"].as_str().map(str::to_owned);
+            let mut events = events.lock().await;
+            if events.push("transcript", None, content.clone(), role.clone()) {
+                return true;
+            }
+            // Preserve the finalized notification that triggers backpressure before stopping.
+            events.push_final(content, role);
+            false
+        }
         "thread/realtime/error" => {
             events.lock().await.push(
                 "error",
@@ -213,6 +218,31 @@ mod tests {
         assert!(replies["replies"][1]["error"].is_object());
         wire.stop().await.unwrap();
     }
+    #[tokio::test]
+    async fn finalized_transcript_triggering_overflow_is_retained_for_stop_flush() {
+        let mut wire = super::super::wire::fixture();
+        let mut pending = Pending::default();
+        let mut queue = Events::default();
+        for _ in 0..MAX_EVENTS {
+            assert!(queue.push(
+                "transcript",
+                None,
+                Some("earlier".into()),
+                Some("user".into())
+            ));
+        }
+        let events = Arc::new(Mutex::new(queue));
+        let message = json!({"method":"thread/realtime/transcript/done","params":{"role":"assistant","text":"final words"}});
+        assert!(!handle_message(&mut wire, &mut pending, &events, message).await);
+        let queue = events.lock().await;
+        assert_eq!(queue.items.len(), MAX_EVENTS + 1);
+        assert_eq!(
+            queue.items.back().unwrap().content.as_deref(),
+            Some("final words")
+        );
+        wire.stop().await.unwrap();
+    }
+
     #[tokio::test]
     async fn rejects_context_when_provider_returns_error() {
         let mut wire = super::super::wire::fixture();

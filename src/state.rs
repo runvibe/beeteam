@@ -19,6 +19,10 @@ struct SharedState {
 }
 
 impl AppState {
+    pub fn with_voice_provider(mut self, provider: Arc<dyn crate::repositories::contracts::VoiceProvider>) -> Self {
+        self.voice = crate::services::voice::VoiceService::new(provider, self.managed_agents.clone());
+        self
+    }
     pub fn voice(&self) -> &crate::services::voice::VoiceService {
         &self.voice
     }
@@ -36,6 +40,7 @@ impl AppState {
         self.managed_agents = self
             .managed_agents
             .with_provider(provider.clone(), installation.clone());
+        self.voice = self.voice.with_managed_agents(self.managed_agents.clone());
         self.leader_chat = self.leader_chat.with_provider(provider, installation);
         self
     }
@@ -96,9 +101,10 @@ impl AppState {
         };
         Self {
             inner: Arc::new(inner),
-            voice: crate::services::voice::VoiceService::new(Arc::new(
-                crate::repositories::voice::CodexVoiceProvider::default(),
-            )),
+            voice: crate::services::voice::VoiceService::new(
+                Arc::new(crate::repositories::voice::CodexVoiceProvider::default()),
+                managed_agents.clone(),
+            ),
             transfers: None,
             leader_chat,
             managed_agents,

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Save user and assistant voice transcripts in the main conversation timeline, with Voice labels and history restored after calls and page reloads.
+
 - Place the transparent amber voice avatar above the composer and combine microphone, text send and end-call actions in its existing button. Keep audio-reactive bars and reduced-motion support.
 
 - Add live voice conversations to managed chats, with clear execution requests delegated to Codex while the voice session continues.

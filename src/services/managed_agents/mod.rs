@@ -5,6 +5,8 @@ mod files;
 mod reads;
 mod sessions;
 mod writes;
+mod prepare_conversation;
+mod voice_history;
 use crate::{
     dto::{backend::*, managed_agents::*, managed_sessions::*},
     repositories::{
@@ -115,6 +117,9 @@ fn public(r: &Record) -> Value {
         }
     }
     if r.table == "managed_messages" {
+        if r.data["source"] == "voice" {
+            v["source"] = json!("voice");
+        }
         files::project_message(r, &mut v);
         v["images"] = json!(r.data["images"]
             .as_array()

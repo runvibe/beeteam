@@ -1294,9 +1294,17 @@
                           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
                         },
                         "requestId": {
-                          "type": "string",
-                          "format": "uuid",
-                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uuid",
+                              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Execution request, or null for persisted voice conversation text."
                         },
                         "role": {
                           "enum": [
@@ -1413,6 +1421,13 @@
                             ],
                             "additionalProperties": false
                           }
+                        },
+                        "source": {
+                          "type": "string",
+                          "enum": [
+                            "voice"
+                          ],
+                          "description": "Present for finalized speech persisted without starting an execution request."
                         }
                       },
                       "required": [
@@ -1612,9 +1627,17 @@
                       "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
                     },
                     "requestId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Execution request, or null for persisted voice conversation text."
                     },
                     "role": {
                       "enum": [
@@ -1731,6 +1754,13 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "voice"
+                      ],
+                      "description": "Present for finalized speech persisted without starting an execution request."
                     }
                   },
                   "required": [
@@ -3275,9 +3305,17 @@
                 "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
               },
               "requestId": {
-                "type": "string",
-                "format": "uuid",
-                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Execution request, or null for persisted voice conversation text."
               },
               "role": {
                 "enum": [
@@ -3394,6 +3432,13 @@
                   ],
                   "additionalProperties": false
                 }
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "voice"
+                ],
+                "description": "Present for finalized speech persisted without starting an execution request."
               }
             },
             "required": [

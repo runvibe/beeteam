@@ -364,8 +364,8 @@ export interface components {
             id: string;
             /** Format: uuid */
             conversationId: string;
-            /** Format: uuid */
-            requestId: string;
+            /** @description Execution request, or null for persisted voice conversation text. */
+            requestId: string | null;
             /** @enum {unknown} */
             role: "requester" | "agent" | "system";
             content: string;
@@ -378,6 +378,11 @@ export interface components {
             createdAt: string;
             /** @description Files referenced by the agent, without provider-local paths. */
             files?: components["schemas"]["MessageFile"][];
+            /**
+             * @description Present for finalized speech persisted without starting an execution request.
+             * @enum {string}
+             */
+            source?: "voice";
         };
         RequestPage: {
             items: components["schemas"]["AgentRequest"][];

@@ -174,11 +174,28 @@ impl Wire {
         .await?;
         Ok(self.next)
     }
-    pub async fn stop(&mut self) -> Result<()> {
+    pub async fn stop(&mut self) -> Result<Vec<Value>> {
         self.next += 1;
-        let _=self.write(json!({"id":self.next,"method":"thread/realtime/stop","params":{"threadId":self.thread}})).await;
+        let _ = self.write(json!({"id":self.next,"method":"thread/realtime/stop","params":{"threadId":self.thread}})).await;
+        let mut final_messages = Vec::new();
+        let _ = tokio::time::timeout(Duration::from_secs(2), async {
+            while let Ok(message) = self.line().await {
+                if message.get("method").is_some() && message.get("id").is_some() {
+                    self.reject(message["id"].clone()).await?;
+                } else if message["method"] == "thread/realtime/closed" {
+                    break;
+                } else if message["method"] == "thread/realtime/transcript/done" {
+                    final_messages.push(message);
+                    if final_messages.len() >= MAX_EVENTS {
+                        break;
+                    }
+                }
+            }
+            Ok::<(), Failure>(())
+        })
+        .await;
         let _ = tokio::time::timeout(Duration::from_secs(5), self.child.kill()).await;
-        Ok(())
+        Ok(final_messages)
     }
 }
 

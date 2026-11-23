@@ -27,7 +27,11 @@ const media = {
 } as unknown as MediaStream;
 function fixture() {
   const api: VoiceApi = {
-    start: vi.fn(async () => ({ id: "session", sdp: "answer" })),
+    start: vi.fn(async () => ({
+      id: "session",
+      sdp: "answer",
+      conversationId: "conversation",
+    })),
     events: vi.fn(async () => ({ events: [], cursor: 0 })),
     result: vi.fn(async () => ({})),
     context: vi.fn(async () => ({})),
@@ -35,6 +39,8 @@ function fixture() {
   };
   const callbacks = {
     connected: vi.fn(),
+    associated: vi.fn(() => true),
+    stopped: vi.fn(),
     outputLevel: vi.fn(),
     failed: vi.fn(),
     transcript: vi.fn(),
@@ -67,11 +73,55 @@ afterEach(() => {
 });
 
 describe("native realtime voice lifecycle", () => {
+  it("associates a conversation before consuming transcript events and never executes a transcript", async () => {
+    const { voice, api, callbacks } = fixture();
+    const ordering: string[] = [];
+    callbacks.associated.mockImplementation(() => {
+      ordering.push("associated");
+      return true;
+    });
+    callbacks.transcript.mockImplementation(() => {
+      ordering.push("transcript");
+    });
+    vi.mocked(api.events).mockResolvedValue({
+      events: [
+        { cursor: 1, type: "transcript", role: "user", content: "Hello" },
+        {
+          cursor: 2,
+          type: "transcript",
+          role: "assistant",
+          content: "Welcome",
+        },
+      ],
+      cursor: 2,
+    });
+    await voice.start({ agentId: "agent" });
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(ordering).toEqual(["associated", "transcript", "transcript"]);
+    expect(callbacks.execute).not.toHaveBeenCalled();
+    voice.close();
+  });
+  it("releases media immediately and reports final transcript save failure from stop", async () => {
+    const { voice, api, callbacks } = fixture();
+    let rejectStop!: (error: Error) => void;
+    vi.mocked(api.stop).mockReturnValue(
+      new Promise((_, reject) => {
+        rejectStop = reject;
+      }),
+    );
+    await voice.start({ agentId: "agent" });
+    voice.close();
+    expect(stopTrack).toHaveBeenCalledOnce();
+    expect(callbacks.stopped).not.toHaveBeenCalled();
+    rejectStop(new Error("save failed"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(callbacks.stopped).toHaveBeenCalledWith(expect.any(Error));
+  });
   it("analyses only the received assistant stream, never the microphone", async () => {
     const attach = vi.spyOn(VoiceOutputMeter.prototype, "attach");
     const close = vi.spyOn(VoiceOutputMeter.prototype, "close");
     const { voice } = fixture();
-    await voice.start();
+    await voice.start({ agentId: "agent" });
     expect(attach).not.toHaveBeenCalled();
     const output = {} as MediaStream;
     latestPeer.ontrack!({ streams: [output], track: {} as MediaStreamTrack });
@@ -82,8 +132,8 @@ describe("native realtime voice lifecycle", () => {
   });
   it("stops media and deletes the native session on close", async () => {
     const { voice, api } = fixture();
-    await voice.start();
-    expect(api.start).toHaveBeenCalledWith("offer");
+    await voice.start({ agentId: "agent" });
+    expect(api.start).toHaveBeenCalledWith("offer", { agentId: "agent" });
     expect(remote).toHaveBeenCalledWith({ type: "answer", sdp: "answer" });
     voice.close();
     voice.close();
@@ -99,7 +149,7 @@ describe("native realtime voice lifecycle", () => {
       }),
     );
     const { voice, api } = fixture();
-    const starting = voice.start();
+    const starting = voice.start({ agentId: "agent" });
     voice.close();
     resolve(media);
     await starting;
@@ -108,16 +158,24 @@ describe("native realtime voice lifecycle", () => {
   });
   it("deletes a native session returned after cancellation", async () => {
     const { voice, api } = fixture();
-    let resolve!: (value: { id: string; sdp: string }) => void;
+    let resolve!: (value: {
+      id: string;
+      sdp: string;
+      conversationId: string;
+    }) => void;
     vi.mocked(api.start).mockReturnValue(
       new Promise((r) => {
         resolve = r;
       }),
     );
-    const starting = voice.start();
+    const starting = voice.start({ agentId: "agent" });
     await vi.waitFor(() => expect(api.start).toHaveBeenCalled());
     voice.close();
-    resolve({ id: "late-session", sdp: "answer" });
+    resolve({
+      id: "late-session",
+      sdp: "answer",
+      conversationId: "late-conversation",
+    });
     await starting;
     expect(api.stop).toHaveBeenCalledWith("late-session");
     expect(remote).not.toHaveBeenCalled();
@@ -140,7 +198,7 @@ describe("native realtime voice lifecycle", () => {
       events: [event, { ...event, cursor: 2 }],
       cursor: 2,
     });
-    await voice.start();
+    await voice.start({ agentId: "agent" });
     await vi.advanceTimersByTimeAsync(1000);
     expect(callbacks.execute).toHaveBeenCalledOnce();
     expect(api.events).toHaveBeenCalledTimes(3);
@@ -168,7 +226,7 @@ describe("native realtime voice lifecycle", () => {
       ],
       cursor: 1,
     });
-    await voice.start();
+    await voice.start({ agentId: "agent" });
     await vi.advanceTimersByTimeAsync(1000);
     expect(callbacks.execute).toHaveBeenCalledOnce();
     expect(api.result).toHaveBeenCalledWith(

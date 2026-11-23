@@ -1,4 +1,6 @@
 {
+  "voiceSaveFailed": "The call ended, but saving its final transcript could not be confirmed. Check the conversation history before retrying.",
+  "voiceMessage": "Voice",
   "voiceTitle": "Voice conversation",
   "voiceVisual": "Assistant voice visualization: amber hexagon",
   "title": "Agent conversation",

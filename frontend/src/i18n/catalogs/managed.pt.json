@@ -1,4 +1,6 @@
 {
+  "voiceSaveFailed": "A chamada terminou, mas não foi possível confirmar o salvamento da transcrição final. Confira o histórico antes de tentar novamente.",
+  "voiceMessage": "Voz",
   "voiceTitle": "Conversa por voz",
   "voiceVisual": "Visualização da voz da assistente: hexágono amarelo",
   "title": "Conversa com o agente",

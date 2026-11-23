@@ -14,7 +14,7 @@ use std::{
     sync::Arc,
     time::{Duration, Instant},
 };
-use tokio::sync::{Mutex, Semaphore, mpsc, oneshot};
+use tokio::sync::{Mutex, Semaphore, mpsc, oneshot, watch};
 use uuid::Uuid;
 use wire::Wire;
 const MAX_EVENTS: usize = 256;
@@ -22,6 +22,7 @@ const MAX_EVENTS: usize = 256;
 struct Session {
     commands: mpsc::Sender<Command>,
     events: Arc<Mutex<Events>>,
+    done: watch::Receiver<bool>,
 }
 #[derive(Default)]
 struct Events {
@@ -40,6 +41,20 @@ impl Events {
         if self.items.len() >= MAX_EVENTS {
             return false;
         }
+        self.insert(kind, call, content, role);
+        true
+    }
+    fn push_final(&mut self, content: Option<String>, role: Option<String>) {
+        // Shutdown drains at most MAX_EVENTS additional finalized notifications.
+        self.insert("transcript", None, content, role);
+    }
+    fn insert(
+        &mut self,
+        kind: &str,
+        call: Option<String>,
+        content: Option<String>,
+        role: Option<String>,
+    ) {
         self.cursor += 1;
         self.items.push_back(VoiceEvent {
             cursor: self.cursor,
@@ -48,7 +63,6 @@ impl Events {
             content,
             role,
         });
-        true
     }
 }
 enum Command {
@@ -96,7 +110,7 @@ impl CodexVoiceProvider {
     }
 }
 impl VoiceProvider for CodexVoiceProvider {
-    fn start(&self, sdp: String, instructions: String) -> RepositoryFuture<'_, VoiceSession> {
+    fn start(&self, sdp: String, instructions: String) -> RepositoryFuture<'_, VoiceConnection> {
         Box::pin(async move {
             let permit = self
                 .slots
@@ -111,6 +125,7 @@ impl VoiceProvider for CodexVoiceProvider {
                     })??;
             let id = Uuid::new_v4().to_string();
             let (tx, mut rx) = mpsc::channel(16);
+            let (finished, done) = watch::channel(false);
             let events = Arc::new(Mutex::new(Events {
                 last_seen: Some(Instant::now()),
                 ..Default::default()
@@ -120,6 +135,7 @@ impl VoiceProvider for CodexVoiceProvider {
                 Session {
                     commands: tx,
                     events: events.clone(),
+                    done,
                 },
             );
             let sessions = self.sessions.clone();
@@ -127,12 +143,23 @@ impl VoiceProvider for CodexVoiceProvider {
             tokio::spawn(async move {
                 let _permit = permit;
                 runner::run(&mut wire, &mut rx, &events).await;
-                let _ = wire.stop().await;
-                // Keep terminal events available briefly, then release the session record.
-                tokio::time::sleep(Duration::from_secs(3)).await;
+                let final_messages = wire.stop().await.unwrap_or_default();
+                for message in final_messages {
+                    if message["method"] == "thread/realtime/transcript/done" {
+                        let params = &message["params"];
+                        events.lock().await.push_final(
+                            params["text"].as_str().map(str::to_owned),
+                            params["role"].as_str().map(str::to_owned),
+                        );
+                    }
+                }
+                let _ = finished.send(true);
+                drop(_permit);
+                // Retain finalized text for persistence/retry after graceful stop or disconnect.
+                tokio::time::sleep(Duration::from_secs(120)).await;
                 sessions.lock().await.remove(&key);
             });
-            Ok(VoiceSession { id, sdp: answer })
+            Ok(VoiceConnection { id, sdp: answer })
         })
     }
     fn events(&self, id: String, after: u64) -> RepositoryFuture<'_, VoiceEvents> {
@@ -164,10 +191,21 @@ impl VoiceProvider for CodexVoiceProvider {
     }
     fn stop(&self, id: String) -> RepositoryFuture<'_, ()> {
         Box::pin(async move {
-            if let Some(session) = self.sessions.lock().await.remove(&id) {
-                let _ = session.commands.send(Command::Stop).await;
+            let Some(mut session) = self.sessions.lock().await.get(&id).cloned() else {
+                return Ok(());
+            };
+            if *session.done.borrow() {
+                return Ok(());
             }
-            Ok(())
+            let _ = session.commands.send(Command::Stop).await;
+            tokio::time::timeout(Duration::from_secs(12), async {
+                while !*session.done.borrow() {
+                    session.done.changed().await.map_err(|_| unavailable())?;
+                }
+                Ok(())
+            })
+            .await
+            .map_err(|_| unavailable())?
         })
     }
 }

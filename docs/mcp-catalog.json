@@ -69288,9 +69288,17 @@
                           "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
                         },
                         "requestId": {
-                          "format": "uuid",
-                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                          "type": "string"
+                          "anyOf": [
+                            {
+                              "format": "uuid",
+                              "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "description": "Execution request, or null for persisted voice conversation text."
                         },
                         "role": {
                           "enum": [
@@ -69298,6 +69306,13 @@
                             "agent",
                             "system"
                           ]
+                        },
+                        "source": {
+                          "description": "Present for finalized speech persisted without starting an execution request.",
+                          "enum": [
+                            "voice"
+                          ],
+                          "type": "string"
                         },
                         "version": {
                           "minimum": 1,
@@ -69693,9 +69708,17 @@
                       "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
                     },
                     "requestId": {
-                      "format": "uuid",
-                      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "format": "uuid",
+                          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "description": "Execution request, or null for persisted voice conversation text."
                     },
                     "role": {
                       "enum": [
@@ -69703,6 +69726,13 @@
                         "agent",
                         "system"
                       ]
+                    },
+                    "source": {
+                      "description": "Present for finalized speech persisted without starting an execution request.",
+                      "enum": [
+                        "voice"
+                      ],
+                      "type": "string"
                     },
                     "version": {
                       "minimum": 1,
@@ -71349,9 +71379,17 @@
                 "description": "Cumulative reasoning summary shown collapsed in chat. Never contains raw model reasoning."
               },
               "requestId": {
-                "format": "uuid",
-                "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Execution request, or null for persisted voice conversation text."
               },
               "role": {
                 "enum": [
@@ -71359,6 +71397,13 @@
                   "agent",
                   "system"
                 ]
+              },
+              "source": {
+                "description": "Present for finalized speech persisted without starting an execution request.",
+                "enum": [
+                  "voice"
+                ],
+                "type": "string"
               },
               "version": {
                 "minimum": 1,

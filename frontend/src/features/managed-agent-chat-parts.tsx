@@ -193,6 +193,7 @@ function AgentMessage({
       aria-label={t("managed.agent")}
     >
       <div className="assistant-msg-body">
+        {message.source === "voice" && <span className="assistant-voice-label"><Mic aria-hidden="true" />{t("managed.voiceMessage")}</span>}
         {message.reasoning ? (
           <MessageReasoning text={message.reasoning} active={!!active} />
         ) : null}
@@ -223,6 +224,7 @@ export function ChatMessage({
     return (
       <article className="assistant-msg assistant-msg-user" aria-label={label}>
         <div className="assistant-bubble">
+          {message.source === "voice" && <span className="assistant-voice-label"><Mic aria-hidden="true" />{t("managed.voiceMessage")}</span>}
           <Markdown copyTables>{message.content}</Markdown>
         </div>
       </article>

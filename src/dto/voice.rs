@@ -1,12 +1,22 @@
 use super::backend::{Failure, Result};
 use serde::{Deserialize, Serialize};
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct StartVoice {
+    pub sdp: String,
+    pub agent_id: uuid::Uuid,
+    pub team_id: Option<uuid::Uuid>,
+    pub conversation_id: Option<uuid::Uuid>,
+}
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct VoiceSession {
+    pub conversation_id: uuid::Uuid,
+    pub id: String,
     pub sdp: String,
 }
 #[derive(Serialize)]
-pub struct VoiceSession {
+pub struct VoiceConnection {
     pub id: String,
     pub sdp: String,
 }

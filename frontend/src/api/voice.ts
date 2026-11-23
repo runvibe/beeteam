@@ -5,8 +5,14 @@ export type VoiceEvent = {
   content?: string;
   role?: string;
 };
+export type VoiceContext = {
+  agentId: string;
+  teamId?: string;
+  conversationId?: string;
+};
+export type VoiceSession = { id: string; sdp: string; conversationId: string };
 export type VoiceApi = {
-  start: (sdp: string) => Promise<{ id: string; sdp: string }>;
+  start: (sdp: string, context: VoiceContext) => Promise<VoiceSession>;
   events: (
     id: string,
     after: number,

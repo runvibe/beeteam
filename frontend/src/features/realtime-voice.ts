@@ -2,9 +2,11 @@ import { t } from "@/i18n";
 import { VoiceOutputMeter } from "./voice-output-meter";
 
 export type VoiceTranscript = { role: "user" | "assistant"; text: string };
-import type { VoiceApi, VoiceEvent } from "@/api/voice";
+import type { VoiceApi, VoiceEvent, VoiceContext } from "@/api/voice";
 export type VoiceCallbacks = {
   connected: () => void;
+  associated: (conversationId: string) => boolean;
+  stopped?: (error?: Error) => void;
   outputLevel?: (level: number) => void;
   failed: (error: Error) => void;
   transcript: (entry: VoiceTranscript) => void;
@@ -30,7 +32,7 @@ export class RealtimeVoice {
     this.callbacks = callbacks;
   }
 
-  async start() {
+  async start(context: VoiceContext) {
     try {
       if (
         !navigator.mediaDevices?.getUserMedia ||
@@ -78,10 +80,14 @@ export class RealtimeVoice {
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
       if (this.closed) return;
-      const session = await this.api.start(offer.sdp ?? "");
+      const session = await this.api.start(offer.sdp ?? "", context);
       this.sessionId = session.id;
       if (this.closed) {
-        await this.api.stop(session.id);
+        await this.stopSession(session.id);
+        return;
+      }
+      if (!this.callbacks.associated(session.conversationId)) {
+        this.close();
         return;
       }
       await peer.setRemoteDescription({ type: "answer", sdp: session.sdp });
@@ -187,6 +193,15 @@ export class RealtimeVoice {
     this.callbacks.failed(error);
   }
 
+  private async stopSession(id: string) {
+    try {
+      await this.api.stop(id);
+      this.callbacks.stopped?.();
+    } catch {
+      this.callbacks.stopped?.(new Error(t("managed.voiceSaveFailed")));
+    }
+  }
+
   close() {
     if (this.closed) return;
     this.closed = true;
@@ -199,6 +214,6 @@ export class RealtimeVoice {
       this.audio.pause();
       this.audio.srcObject = null;
     }
-    if (this.sessionId) void this.api.stop(this.sessionId).catch(() => {});
+    if (this.sessionId) void this.stopSession(this.sessionId);
   }
 }

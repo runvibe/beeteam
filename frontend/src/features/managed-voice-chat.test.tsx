@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ManagedVoiceChat as VoiceController,
@@ -43,7 +49,10 @@ vi.mock("./realtime-voice", () => ({
       mock.callbacks = callbacks;
     }
     close = mock.close;
-    start = mock.start;
+    start = (context: { conversationId?: string }) => {
+      if (mock.start(context) === false) return;
+      mock.callbacks!.associated(context.conversationId ?? "created");
+    };
     report = mock.report;
     hydrate = mock.hydrate;
   },
@@ -73,6 +82,8 @@ function setup() {
     accessMode: "standard" as S["AccessMode"],
     disabled: false,
     readOnly: false,
+    onAssociated: vi.fn(),
+    onTranscript: vi.fn(),
     onSend: vi.fn(async () => request),
     onQueued: vi.fn(),
   };
@@ -84,6 +95,35 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
+  it("rejects stale startup association after external navigation before local selection catches up", () => {
+    mock.start.mockReturnValueOnce(false);
+    const p = setup();
+    const view = render(<ManagedVoiceChat {...p} selectionToken={null} />);
+    start();
+    view.rerender(<ManagedVoiceChat {...p} selectionToken="different" />);
+    expect(mock.callbacks!.associated("late-created")).toBe(false);
+    expect(p.onAssociated).not.toHaveBeenCalled();
+    expect(mock.close).toHaveBeenCalledOnce();
+  });
+  it("invalidates persisted history after stop and shows a final-save error without restoring the call", () => {
+    const p = setup();
+    const view = render(<ManagedVoiceChat {...p} />);
+    start();
+    view.rerender(<ManagedVoiceChat {...p} conversation="created" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
+    );
+    act(() => {
+      mock.callbacks!.stopped?.(new Error("Transcript save failed"));
+    });
+    expect(p.onTranscript).toHaveBeenCalledWith("created");
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Transcript save failed",
+    );
+    expect(
+      screen.getByRole("button", { name: /Talk by voice|Conversar por voz/ }),
+    ).toBeEnabled();
+  });
   it("keeps voice active when its first typed request creates the conversation", () => {
     const p = setup();
     let control: import("./managed-voice-chat").ManagedVoiceControl;
@@ -177,7 +217,7 @@ describe("managed voice routing", () => {
     await mock.callbacks!.execute("Run tests", "first");
     expect(props.onSend).toHaveBeenCalledWith({
       content: "Run tests",
-      teamId: "team",
+      conversationId: "created",
       accessMode: "standard",
     });
     view.rerender(<ManagedVoiceChat {...props} conversation="created" />);

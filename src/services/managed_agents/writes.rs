@@ -145,24 +145,7 @@ impl ManagedAgentService {
             }
             "managed:send" => {
                 let id = c.id("agentId")?;
-                let a = u.records.get("agents", id)?.clone();
                 let b: SendAgentRequest = serde_json::from_value(c.body.clone()).unwrap();
-                let team_chat = if let Some(cid) = b.conversation_id {
-                    u.records
-                        .get("managed_conversations", cid)?
-                        .reference("teamId")
-                        .is_some()
-                } else {
-                    b.team_id.is_some()
-                };
-                if a.archived_at.is_some()
-                    || (a.data["managedConfiguration"].is_null() && !team_chat)
-                {
-                    return Err(Failure::new(
-                        "invalid_request",
-                        "Configure an active agent before sending",
-                    ));
-                }
                 if u.records
                     .list("managed_requests")
                     .iter()
@@ -172,67 +155,8 @@ impl ManagedAgentService {
                 {
                     return Err(Failure::new("queue_full", "Agent queue is full"));
                 }
-                if let Some(t) = b.task_id {
-                    let task = u.records.get("tasks", t)?;
-                    if task.archived_at.is_some() {
-                        return Err(Failure::invalid("Task archived"));
-                    }
-                }
-                let generation = if a.data["managedConfiguration"].is_null() {
-                    json!(1)
-                } else {
-                    a.data["managedGeneration"].clone()
-                };
-                let conversation = if let Some(cid) = b.conversation_id {
-                    let row = u.records.get("managed_conversations", cid)?;
-                    if row.reference("agentId") != Some(id)
-                        || b.task_id
-                            .is_some_and(|t| row.reference("taskId") != Some(t))
-                    {
-                        return Err(Failure::new(
-                            "conversation_mismatch",
-                            "Conversation belongs to another context",
-                        ));
-                    }
-                    if row.data["configurationVersion"] != generation
-                        || row.data["readOnly"] == true
-                    {
-                        return Err(Failure::new(
-                            "configuration_changed",
-                            "Start a new conversation after configuration changes",
-                        ));
-                    }
-                    if row.data["installationId"] != self.installation {
-                        return Err(Failure::new("provider_unavailable","Continue this conversation on its original installation, or start a new conversation here"));
-                    }
-                    if b.team_id
-                        .is_some_and(|t| row.reference("teamId") != Some(t))
-                        || b.board_id
-                            .is_some_and(|t| row.reference("boardId") != Some(t))
-                    {
-                        return Err(Failure::new(
-                            "conversation_mismatch",
-                            "Conversation belongs to another context",
-                        ));
-                    }
-                    let row = u.records.get_mut("managed_conversations", cid)?;
-                    row.touch();
-                    row.clone()
-                } else {
-                    if let Some(team) = b.team_id {
-                        sessions::team_leader(&u.records, team, id)?;
-                        if let Some(board) = b.board_id {
-                            sessions::team_board(&u.records, team, board)?;
-                        }
-                    }
-                    let row = Record::new(
-                        "managed_conversations",
-                        json!({"agentId":id,"configurationVersion":generation,"taskId":b.task_id,"teamId":b.team_id,"boardId":b.board_id,"title":b.content.chars().take(60).collect::<String>(),"readOnly":false,"providerThread":null,"installationId":self.installation}),
-                    );
-                    u.records.insert(row.clone());
-                    row
-                };
-                validate_context(&u.records, id, conversation.reference("taskId"))?;
+                let conversation = prepare_conversation::prepare(&mut u.records, id, &b, &self.installation)?;
+                let generation = conversation.data["configurationVersion"].clone();
                 let mut row = Record::new(
                     "managed_requests",
                     json!({"agentId":id,"conversationId":conversation.id,"taskId":conversation.data["taskId"],"configurationVersion":generation,"state":"queued","origin":{"transport":origin,"label":null},"error":null,"content":b.content,"providerTurn":null,"accessModeSelectionVersion":1}),

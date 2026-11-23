@@ -9,11 +9,12 @@ import {
 import { t, useLocale } from "@/i18n";
 import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
-import { RealtimeVoice, type VoiceTranscript } from "./realtime-voice";
+import { RealtimeVoice } from "./realtime-voice";
 import "./voice-hexagon.css";
 type S = components["schemas"];
 export type ManagedVoiceControl = {
   active: boolean;
+  starting?: boolean;
   canStart: boolean;
   start: () => void;
   stop: () => void;
@@ -27,11 +28,14 @@ type Props = {
   agentId: string;
   teamId?: string;
   conversation: string;
+  selectionToken?: string | null;
   accessMode: S["AccessMode"];
   disabled: boolean;
   readOnly: boolean;
   onSend: (body: S["SendAgentRequest"]) => Promise<S["AgentRequest"]>;
   onQueued: (request: S["AgentRequest"]) => void;
+  onAssociated: (conversationId: string) => void;
+  onTranscript: (conversationId: string) => void;
 };
 
 export function ManagedVoiceChat(props: Props) {
@@ -39,12 +43,14 @@ export function ManagedVoiceChat(props: Props) {
   const latest = useRef(props);
   latest.current = props;
   const connection = useRef<RealtimeVoice | null>(null);
+  const lastCall = useRef<RealtimeVoice | null>(null);
+  const mounted = useRef(true);
   const voiceVisual = useRef<HTMLDivElement>(null);
   const targetConversation = useRef(props.conversation);
+  const selectedToken = useRef(props.selectionToken);
   const timers = useRef(new Set<ReturnType<typeof setTimeout>>());
   const [state, setState] = useState<"idle" | "connecting" | "live">("idle");
   const [error, setError] = useState("");
-  const [transcript, setTranscript] = useState<VoiceTranscript[]>([]);
 
   function stop() {
     connection.current?.close();
@@ -53,7 +59,13 @@ export function ManagedVoiceChat(props: Props) {
     timers.current.clear();
     setState("idle");
   }
-  useEffect(() => () => stop(), []);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      stop();
+    };
+  }, []);
   useEffect(() => {
     stop();
   }, [props.agentId, props.teamId]);
@@ -61,6 +73,14 @@ export function ManagedVoiceChat(props: Props) {
     if (props.conversation !== targetConversation.current) stop();
     targetConversation.current = props.conversation;
   }, [props.conversation]);
+  useEffect(() => {
+    if (
+      props.selectionToken !== selectedToken.current &&
+      props.selectionToken !== targetConversation.current
+    )
+      stop();
+    selectedToken.current = props.selectionToken;
+  }, [props.selectionToken]);
   useEffect(() => {
     if (props.readOnly) stop();
   }, [props.readOnly]);
@@ -129,13 +149,48 @@ export function ManagedVoiceChat(props: Props) {
   function start() {
     if (connection.current || latest.current.disabled) return;
     setError("");
-    setTranscript([]);
     setState("connecting");
     targetConversation.current = latest.current.conversation;
+    const original = {
+      agentId: props.agentId,
+      teamId: props.teamId,
+      conversation: props.conversation,
+      selectionToken: props.selectionToken,
+    };
+    let associated = false;
+    let associatedConversation = "";
     let submitting = false;
     let hydrated = false;
     let submissionUnknown = false;
     const voice = new RealtimeVoice(props.api.voice, {
+      associated: (id) => {
+        const context = latest.current;
+        if (
+          connection.current !== voice ||
+          context.agentId !== original.agentId ||
+          context.teamId !== original.teamId ||
+          context.conversation !== original.conversation ||
+          context.selectionToken !== original.selectionToken ||
+          context.readOnly
+        )
+          return false;
+        associated = true;
+        associatedConversation = id;
+        targetConversation.current = id;
+        context.onAssociated(id);
+        return true;
+      },
+      stopped: (failure) => {
+        if (!mounted.current) return;
+        if (associatedConversation)
+          latest.current.onTranscript(associatedConversation);
+        if (
+          failure &&
+          lastCall.current === voice &&
+          latest.current.conversation === associatedConversation
+        )
+          setError(failure.message);
+      },
       outputLevel: (level) => {
         if (connection.current === voice)
           voiceVisual.current?.style.setProperty(
@@ -157,12 +212,15 @@ export function ManagedVoiceChat(props: Props) {
           setError(failure.message);
         }
       },
-      transcript: (entry) =>
-        setTranscript((entries) => [...entries, entry].slice(-100)),
+      transcript: () => {
+        if (connection.current === voice && associated)
+          latest.current.onTranscript(targetConversation.current);
+      },
       execute: async (content) => {
         const context = latest.current;
         if (
           connection.current !== voice ||
+          !associated ||
           context.disabled ||
           context.readOnly ||
           submitting ||
@@ -201,12 +259,18 @@ export function ManagedVoiceChat(props: Props) {
       },
     });
     connection.current = voice;
-    void voice.start();
+    lastCall.current = voice;
+    void voice.start({
+      agentId: props.agentId,
+      ...(props.teamId ? { teamId: props.teamId } : {}),
+      ...(props.conversation ? { conversationId: props.conversation } : {}),
+    });
   }
 
   const currentCall = connection.current;
   const control: ManagedVoiceControl = {
     active: state !== "idle",
+    starting: state === "connecting",
     canStart: !props.disabled && !props.readOnly,
     start,
     stop,
@@ -246,24 +310,6 @@ export function ManagedVoiceChat(props: Props) {
       )}
       {props.children(control)}
       {error && <p role="alert">{error}</p>}
-      {transcript.length > 0 && (
-        <details>
-          <summary>{t("managed.voiceTranscript")}</summary>
-          <p>{t("managed.voiceTranscriptSession")}</p>
-          {transcript.map((entry, index) => (
-            <p key={index}>
-              <strong>
-                {t(
-                  entry.role === "user"
-                    ? "managed.voiceYou"
-                    : "managed.voiceAssistant",
-                )}
-              </strong>{" "}
-              {entry.text}
-            </p>
-          ))}
-        </details>
-      )}
     </div>
   );
 }

@@ -197,17 +197,21 @@ export function ManagedAgentChat({
     setOlder([]);
   }, [conversationId, freshConversation]);
   useEffect(() => {
-    if (!freshConversation && !restored.current && requests.data) {
-      restored.current = true;
-      const first =
-        requestItems.find((r) =>
-          ["uncertain", "awaiting_approval"].includes(r.state),
-        ) ?? requestItems[0];
-      if (!first) return;
-      const r = first;
-      select(r.conversationId, r.id);
+    if (freshConversation || restored.current || !requests.data || !conversations.data) return;
+    restored.current = true;
+    const pendingRequest = requestItems.find((r) => ["uncertain", "awaiting_approval"].includes(r.state));
+    if (pendingRequest) {
+      select(pendingRequest.conversationId, pendingRequest.id);
+      return;
     }
-  }, [requests.data, requestItems, freshConversation]);
+    const latestConversation = conversationItems[0];
+    if (latestConversation) {
+      select(latestConversation.id, latestRequest(latestConversation.id));
+      return;
+    }
+    const latest = requestItems[0];
+    if (latest) select(latest.conversationId, latest.id);
+  }, [requests.data, conversations.data, freshConversation]);
   useEffect(() => {
     if (!conversation || request) return;
     const latest = latestRequest(conversation);
@@ -360,6 +364,7 @@ export function ManagedAgentChat({
               title={t("managed.new")}
               disabled={!!pending}
               onClick={() => {
+                voiceControl.current?.stop();
                 select("");
                 setOlder([]);
               }}
@@ -518,9 +523,23 @@ export function ManagedAgentChat({
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
               <ManagedVoiceChat controlRef={voiceControl} api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
-                conversation={conversation} accessMode={accessMode}
+                conversation={conversation} selectionToken={conversationId} accessMode={accessMode}
                 disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
                 readOnly={readOnly}
+                onAssociated={(id) => {
+                  if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, id);
+                  if (conversation !== id) select(id);
+                  void queryClient.invalidateQueries({ queryKey: ["managed-history", id] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
+                }}
+                onTranscript={(id) => {
+                  void queryClient.invalidateQueries({ queryKey: ["managed-history", id] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-conversation", id] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
+                  if (request) void queryClient.invalidateQueries({ queryKey: ["managed-snapshot", request] });
+                }}
                 onSend={(body) => sendPending(body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, source: "voice" })}
                 onQueued={(item) => {
                   if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, item.conversationId);
@@ -534,8 +553,8 @@ export function ManagedAgentChat({
                 value={draft}
                 onChange={setDraft}
                 onSubmit={send}
-                locked={!!pending || waitingForDetail}
-                canSend={canSend}
+                locked={!!pending || waitingForDetail || !!voice.starting}
+                canSend={canSend && !voice.starting}
                 retry={!!pending}
                 readOnly={readOnly}
                 accessControl={teamId ? (
