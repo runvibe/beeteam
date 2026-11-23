@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Magnetically snap the floating chat to corners, edge centers or screen center when dragging and releasing it.
+
 - Keep the chat alive as a draggable floating window when retracted, with saved screen position and a control to dock it again.
 
 - Move team and leader metadata into a responsive, read-only session information sidebar opened from the chat's three-dot button.

@@ -137,6 +137,35 @@ it("ends drag if the pointer returns with its button released", () => {
   hook.start();
   pointer("pointermove", 250, 250, 1, 0);
   pointer("pointermove", 300, 300);
-  expect(hook.result.current.style).toEqual({ left: 100, top: 100 });
-  expect(hook.onPositionChange).not.toHaveBeenCalled();
+  expect(hook.result.current.style).toEqual({ left: 12, top: 150 });
+  expect(hook.onPositionChange).toHaveBeenCalledTimes(1);
+});
+
+it.each([12, 350, 688].flatMap((x) => [12, 150, 288].map((y) => [x, y])))(
+  "magnetizes anchor %s,%s and retains it after release",
+  (x, y) => {
+    const hook = setup({ x: 100, y: 100 });
+    hook.start();
+    pointer("pointermove", x + 20, y + 15);
+    expect(hook.result.current.style).toEqual({ left: x, top: y });
+    pointer("pointerup", x + 20, y + 15);
+    expect(hook.result.current.style).toEqual({ left: x, top: y });
+  },
+);
+
+it("moves freely outside magnetic radius then settles on nearest anchor", () => {
+  const hook = setup({ x: 100, y: 100 });
+  hook.start();
+  pointer("pointermove", 240, 220);
+  expect(hook.result.current.style).toEqual({ left: 240, top: 220 });
+  hook.rerender({ active: true, position: { x: 240, y: 220 } });
+  expect(hook.result.current.style).toEqual({ left: 240, top: 220 });
+  pointer("pointerup", 240, 220);
+  expect(hook.result.current.style).toEqual({ left: 350, top: 288 });
+  Object.defineProperty(window, "innerWidth", {
+    value: 1200,
+    configurable: true,
+  });
+  act(() => window.dispatchEvent(new Event("resize")));
+  expect(hook.result.current.style).toEqual({ left: 450, top: 288 });
 });

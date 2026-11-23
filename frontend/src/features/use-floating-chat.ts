@@ -26,6 +26,7 @@ export function useFloatingChat(options: Options): {
   const current = useRef<FloatingChatPosition | null>(options.position);
   const [resolved, setResolved] = useState(options.position);
   const endDrag = useRef<(() => void) | null>(null);
+  const settledAnchor = useRef<number | null>(null);
 
   function clamp(position: FloatingChatPosition | null): FloatingChatPosition {
     const rect = latest.current.element?.getBoundingClientRect();
@@ -56,6 +57,26 @@ export function useFloatingChat(options: Options): {
       latest.current.onPositionChange(next);
   }
 
+  function anchors() {
+    const min = clamp({ x: 0, y: 0 });
+    const max = clamp(null);
+    return [min.x, (min.x + max.x) / 2, max.x].flatMap((x) =>
+      [min.y, (min.y + max.y) / 2, max.y].map((y) => ({ x, y })),
+    );
+  }
+
+  function nearest(position: FloatingChatPosition) {
+    return anchors()
+      .map((point, index) => ({
+        point,
+        index,
+        distance: Math.hypot(position.x - point.x, position.y - point.y),
+      }))
+      .reduce((best, candidate) =>
+        candidate.distance < best.distance ? candidate : best,
+      );
+  }
+
   useLayoutEffect(() => {
     if (!options.active || !options.element) return;
     update(options.position);
@@ -68,7 +89,12 @@ export function useFloatingChat(options: Options): {
 
   useLayoutEffect(() => {
     if (!options.active || !options.element) return;
-    const resize = () => update(current.current);
+    const resize = () =>
+      update(
+        settledAnchor.current === null
+          ? current.current
+          : anchors()[settledAnchor.current],
+      );
     window.addEventListener("resize", resize);
     const observer =
       typeof ResizeObserver === "undefined" ? null : new ResizeObserver(resize);
@@ -94,29 +120,42 @@ export function useFloatingChat(options: Options): {
     // Only the draggable header owns this gesture; controls keep their normal behavior.
     event.stopPropagation();
     const origin = clamp(current.current);
+    const originAnchor = settledAnchor.current;
+    settledAnchor.current = null;
     const startX = event.clientX;
     const startY = event.clientY;
     const pointerId = event.pointerId;
+    const settle = () => {
+      const anchor = nearest(clamp(current.current));
+      settledAnchor.current = anchor.index;
+      update(anchor.point);
+      cleanup();
+    };
     const move = (pointer: PointerEvent) => {
       if (pointer.pointerId !== pointerId) return;
       if (pointer.buttons === 0) {
-        cleanup();
+        settle();
         return;
       }
       pointer.preventDefault();
-      update({
+      const candidate = clamp({
         x: origin.x + pointer.clientX - startX,
         y: origin.y + pointer.clientY - startY,
       });
+      const anchor = nearest(candidate);
+      update(anchor.distance <= 56 ? anchor.point : candidate);
     };
     const finish = (pointer: PointerEvent) => {
-      if (pointer.pointerId === pointerId) cleanup();
+      if (pointer.pointerId !== pointerId) return;
+      if (pointer.type === "pointerup") settle();
+      else cleanup();
     };
     const key = (keyboard: KeyboardEvent) => {
       if (keyboard.key !== "Escape") return;
       keyboard.preventDefault();
       keyboard.stopPropagation();
       update(origin);
+      settledAnchor.current = originAnchor;
       cleanup();
     };
     const cleanup = () => {
