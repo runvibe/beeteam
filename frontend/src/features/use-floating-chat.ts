@@ -20,6 +20,7 @@ const interactive =
 export function useFloatingChat(options: Options): {
   style: CSSProperties;
   settling: boolean;
+  onResizeStart: () => void;
   onPointerDown: PointerEventHandler<HTMLElement>;
 } {
   const latest = useRef(options);
@@ -220,6 +221,12 @@ export function useFloatingChat(options: Options): {
   };
 
   return {
+    onResizeStart: () => {
+      endDrag.current?.();
+      clearSettlingTimer();
+      settledAnchor.current = null;
+      setSettling(false);
+    },
     style: options.active
       ? { left: resolved?.x ?? 12, top: resolved?.y ?? 12 }
       : {},

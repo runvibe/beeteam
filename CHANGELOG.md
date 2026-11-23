@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Resize floating chat from its borders and corners without visible grips while preserving the conversation, with keyboard controls and independently saved floating dimensions.
+
 - Gently attract and smoothly settle the floating chat at six positions: corners and the top/bottom centers, respecting reduced motion and using a smaller, subtler floating-window shadow.
 
 - Keep the chat alive as a draggable floating window when retracted, with saved screen position and a control to dock it again.

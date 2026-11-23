@@ -20,6 +20,11 @@ export function ChatPanelScrollbar() {
     <ScrollArea.Scrollbar
       orientation="vertical"
       className="chat-panel-scrollbar"
+      style={{
+        right: "var(--chat-scrollbar-inset, 0px)",
+        top: "var(--chat-scrollbar-end-inset, 0px)",
+        bottom: "var(--chat-scrollbar-end-inset, 0px)",
+      }}
     >
       <ScrollArea.Thumb className="chat-panel-scroll-thumb" />
     </ScrollArea.Scrollbar>

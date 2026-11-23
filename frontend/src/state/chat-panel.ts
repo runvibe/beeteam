@@ -39,6 +39,13 @@ type ChatPanelState = {
   /** Whether chat is docked; false keeps it visible as a floating window. */
   open: boolean;
   floatingPosition: { x: number; y: number } | null;
+  floatingSize: { width: number; height: number } | null;
+  setFloatingBounds: (bounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => void;
   setFloatingPosition: (position: { x: number; y: number }) => void;
   contentOpen: boolean;
   side: ChatPanelSide;
@@ -67,6 +74,14 @@ export const useChatPanel = create<ChatPanelState>()(
       picking: false,
       open: true,
       floatingPosition: null,
+      floatingSize: null,
+      setFloatingBounds: ({ x, y, width, height }) => {
+        if (
+          [x, y, width, height].every(Number.isFinite) &&
+          width > 0 && height > 0
+        )
+          set({ floatingPosition: { x, y }, floatingSize: { width, height } });
+      },
       setFloatingPosition: (position) => {
         if (Number.isFinite(position.x) && Number.isFinite(position.y))
           set({ floatingPosition: position });
@@ -160,6 +175,7 @@ export const useChatPanel = create<ChatPanelState>()(
         open,
         contentOpen,
         floatingPosition,
+        floatingSize,
       }) => ({
         side,
         panelOrder,
@@ -171,6 +187,7 @@ export const useChatPanel = create<ChatPanelState>()(
         open,
         contentOpen,
         floatingPosition,
+        floatingSize,
       }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<ChatPanelState>;
@@ -196,6 +213,13 @@ export const useChatPanel = create<ChatPanelState>()(
         return {
           ...current,
           ...saved,
+          floatingSize:
+            saved.floatingSize &&
+            Number.isFinite(saved.floatingSize.width) &&
+            Number.isFinite(saved.floatingSize.height) &&
+            saved.floatingSize.width > 0 && saved.floatingSize.height > 0
+              ? saved.floatingSize
+              : null,
           floatingPosition:
             saved.floatingPosition &&
             Number.isFinite(saved.floatingPosition.x) &&

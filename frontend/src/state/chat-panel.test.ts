@@ -225,3 +225,19 @@ it("ignores corrupt saved floating coordinates", async () => {
   await useChatPanel.persist.rehydrate();
   expect(useChatPanel.getState().floatingPosition).toBeNull();
 });
+
+it("persists independent floating bounds across docking and rehydration", async () => {
+  const dockedWidth = useChatPanel.getState().width;
+  useChatPanel.getState().setFloatingBounds({x:12,y:20,width:700,height:500});
+  useChatPanel.getState().show();
+  useChatPanel.getState().close();
+  expect(useChatPanel.getState().width).toBe(dockedWidth);
+  useChatPanel.setState({floatingSize:null,floatingPosition:null});
+  localStorage.setItem("beeteam-chat-panel", JSON.stringify({state:{floatingSize:{width:700,height:500},floatingPosition:{x:12,y:20}},version:0}));
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().floatingSize).toEqual({width:700,height:500});
+  expect(useChatPanel.getState().floatingPosition).toEqual({x:12,y:20});
+  localStorage.setItem("beeteam-chat-panel",JSON.stringify({state:{floatingSize:{width:-1,height:"bad"}},version:0}));
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().floatingSize).toBeNull();
+});

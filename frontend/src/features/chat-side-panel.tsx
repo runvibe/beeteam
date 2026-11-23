@@ -1,4 +1,5 @@
 import { useFloatingChat } from "./use-floating-chat";
+import { useFloatingChatResize } from "./use-floating-chat-resize";
 import {
   ChatSessionInformation,
   sessionInformationMode,
@@ -105,6 +106,8 @@ export function ChatWorkspace({
     close,
     show,
     floatingPosition,
+    floatingSize,
+    setFloatingBounds,
     setFloatingPosition,
     setPanelOrder,
   } = useChatPanel();
@@ -117,6 +120,13 @@ export function ChatWorkspace({
     element: chatElement,
     position: floatingPosition,
     onPositionChange: setFloatingPosition,
+  });
+  const floatingResize = useFloatingChatResize({
+    active: !open,
+    element: chatElement,
+    size: floatingSize,
+    onBoundsChange: setFloatingBounds,
+    onResizeStart: floating.onResizeStart,
   });
   const conversationId = useChatPanel((state) => state.conversationId);
   function closeInformation() {
@@ -186,12 +196,29 @@ export function ChatWorkspace({
         className="chat-side-panel"
         data-floating={!open ? "true" : undefined}
         data-floating-settling={floating.settling ? "true" : undefined}
-        style={!open ? floating.style : undefined}
+        style={!open ? { ...floating.style, ...floatingSize } : undefined}
+        data-floating-resizing={floatingResize.resizing ? "true" : undefined}
         aria-label={t("chat.title")}
         data-workspace-panel="chat"
         data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
       >
         {open && <WorkspacePanelResizer panel="chat" />}
+        {!open && (["n", "s", "e", "w", "nw", "ne", "sw", "se"] as const).map(corner => (
+          <button
+            key={corner}
+            type="button"
+            className="floating-chat-resize-handle"
+            data-corner={corner}
+            aria-label={{
+              n: t("chat.resizeFloating.n"), s: t("chat.resizeFloating.s"),
+              e: t("chat.resizeFloating.e"), w: t("chat.resizeFloating.w"),
+              nw: t("chat.resizeFloating.nw"), ne: t("chat.resizeFloating.ne"),
+              sw: t("chat.resizeFloating.sw"), se: t("chat.resizeFloating.se"),
+            }[corner]}
+            title={t("chat.resizeFloatingHelp")}
+            {...floatingResize.handleProps(corner)}
+          />
+        ))}
         <header
           className="chat-panel-heading"
           data-dock-handle={open ? "chat" : undefined}

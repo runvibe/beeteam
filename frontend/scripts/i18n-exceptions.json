@@ -338,5 +338,6 @@
     "file": "src/features/use-floating-chat.ts",
     "text": "Escape",
     "reason": "DOM keyboard event key cancelling a drag gesture; not a user-facing string."
-  }
+  },
+  {"file":"src/features/use-floating-chat-resize.ts","text":"Escape","reason":"DOM keyboard event key cancelling a resize gesture; not displayed text."}
 ]

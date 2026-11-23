@@ -227,3 +227,17 @@ it("respects reduced motion on release and cancels settling for a new drag", () 
   expect(hook.result.current.settling).toBe(false);
   hook.unmount();
 });
+
+it("forgets magnetic anchor and settle animation before manual resize", () => {
+  const hook = setup({x:100,y:100});
+  hook.start();
+  pointer("pointermove",350,20);
+  pointer("pointerup",350,20);
+  expect(hook.result.current.settling).toBe(true);
+  act(() => hook.result.current.onResizeStart());
+  hook.rerender({active:true,position:{x:250,y:100}});
+  size = {width:500,height:400};
+  act(() => resizeElement());
+  expect(hook.result.current.settling).toBe(false);
+  expect(hook.result.current.style).toEqual({left:250,top:100});
+});

@@ -1,4 +1,6 @@
 {
+  "resizeFloating": {"n":"Redimensionar chat pela borda superior", "s":"Redimensionar chat pela borda inferior", "e":"Redimensionar chat pela borda direita", "w":"Redimensionar chat pela borda esquerda", "nw":"Redimensionar chat pelo canto superior esquerdo", "ne":"Redimensionar chat pelo canto superior direito", "sw":"Redimensionar chat pelo canto inferior esquerdo", "se":"Redimensionar chat pelo canto inferior direito"},
+  "resizeFloatingHelp": "Arraste para redimensionar; setas ajustam em 10 pixels, Shift em 40",
   "dragFloating": "Arraste para mover o chat",
   "restorePanel": "Encaixar chat no painel",
   "floatPanel": "Deixar chat flutuante",
