@@ -36,7 +36,10 @@ type ChatPanelState = {
   freshConversation: boolean;
   /** True while the user is choosing a team; otherwise no selection means the system team. */
   picking: boolean;
+  /** Whether chat is docked; false keeps it visible as a floating window. */
   open: boolean;
+  floatingPosition: { x: number; y: number } | null;
+  setFloatingPosition: (position: { x: number; y: number }) => void;
   contentOpen: boolean;
   side: ChatPanelSide;
   panelOrder: WorkspacePanel[];
@@ -63,23 +66,53 @@ export const useChatPanel = create<ChatPanelState>()(
       freshConversation: false,
       picking: false,
       open: true,
+      floatingPosition: null,
+      setFloatingPosition: (position) => {
+        if (Number.isFinite(position.x) && Number.isFinite(position.y))
+          set({ floatingPosition: position });
+      },
       contentOpen: true,
       side: "right",
       panelOrder: defaultPanelOrder("right"),
       width: 440,
       sessionsWidth: SESSIONS_PANEL_WIDTH,
       openTeam: (teamId) =>
-        set({ teamId, conversationId: null, freshConversation: false, picking: false, open: true }),
+        set({
+          teamId,
+          conversationId: null,
+          freshConversation: false,
+          picking: false,
+          open: true,
+        }),
       startNewSession: (teamId) =>
-        set({ teamId, conversationId: null, freshConversation: true, picking: false, open: true }),
+        set({
+          teamId,
+          conversationId: null,
+          freshConversation: true,
+          picking: false,
+          open: true,
+        }),
       openConversation: (teamId, conversationId) =>
-        set({ teamId, conversationId, freshConversation: false, picking: false, open: true }),
-      setConversation: (conversationId) => set({ conversationId, freshConversation: false }),
+        set({
+          teamId,
+          conversationId,
+          freshConversation: false,
+          picking: false,
+          open: true,
+        }),
+      setConversation: (conversationId) =>
+        set({ conversationId, freshConversation: false }),
       close: () => set({ open: false }),
       show: () => set({ open: true }),
       setContentOpen: (contentOpen) => set({ contentOpen }),
       chooseTeam: () =>
-        set({ teamId: null, conversationId: null, freshConversation: false, picking: true, open: true }),
+        set({
+          teamId: null,
+          conversationId: null,
+          freshConversation: false,
+          picking: true,
+          open: true,
+        }),
       setSide: (side) =>
         set((state) => {
           if (chatSide(state.panelOrder) === side) return { side };
@@ -126,6 +159,7 @@ export const useChatPanel = create<ChatPanelState>()(
         picking,
         open,
         contentOpen,
+        floatingPosition,
       }) => ({
         side,
         panelOrder,
@@ -136,6 +170,7 @@ export const useChatPanel = create<ChatPanelState>()(
         picking,
         open,
         contentOpen,
+        floatingPosition,
       }),
       merge: (persisted, current) => {
         const saved = (persisted ?? {}) as Partial<ChatPanelState>;
@@ -152,13 +187,21 @@ export const useChatPanel = create<ChatPanelState>()(
           Number.isFinite(savedSessionsWidth) &&
           savedSessionsWidth >= SESSIONS_PANEL_MIN_WIDTH;
         if (savedSessionsWidth !== undefined && !validSessionsWidth)
-          console.warn("Invalid saved sessions panel width; using the default.");
+          console.warn(
+            "Invalid saved sessions panel width; using the default.",
+          );
         const sessionsWidth = validSessionsWidth
           ? savedSessionsWidth
           : SESSIONS_PANEL_WIDTH;
         return {
           ...current,
           ...saved,
+          floatingPosition:
+            saved.floatingPosition &&
+            Number.isFinite(saved.floatingPosition.x) &&
+            Number.isFinite(saved.floatingPosition.y)
+              ? saved.floatingPosition
+              : null,
           contentOpen:
             typeof saved.contentOpen === "boolean"
               ? saved.contentOpen

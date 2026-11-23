@@ -47,7 +47,8 @@ function renderPanel() {
       </ChatWorkspace>
     </QueryClientProvider>,
   );
-  const workspace = view.container.querySelector<HTMLElement>(".chat-workspace")!;
+  const workspace =
+    view.container.querySelector<HTMLElement>(".chat-workspace")!;
   const content = view.container.querySelector<HTMLElement>("main")!;
   const chat = view.container.querySelector<HTMLElement>(".chat-side-panel")!;
   const chatOnLeft = useChatPanel.getState().side === "left";
@@ -67,8 +68,17 @@ const heading = () => document.querySelector(".chat-panel-heading")!;
 const preview = () => document.querySelector(".chat-dock-preview");
 
 function drag(fromX: number, toX: number) {
-  fireEvent.pointerDown(heading(), { clientX: fromX, clientY: 20, button: 0, pointerId: 1 });
-  fireEvent.pointerMove(window, { clientX: (fromX + toX) / 2, clientY: 40, pointerId: 1 });
+  fireEvent.pointerDown(heading(), {
+    clientX: fromX,
+    clientY: 20,
+    button: 0,
+    pointerId: 1,
+  });
+  fireEvent.pointerMove(window, {
+    clientX: (fromX + toX) / 2,
+    clientY: 40,
+    pointerId: 1,
+  });
   fireEvent.pointerMove(window, { clientX: toX, clientY: 60, pointerId: 1 });
 }
 
@@ -76,7 +86,10 @@ it("shows a snap preview on the target side while dragging the header", () => {
   renderPanel();
   drag(1000, 150);
   expect(preview()).toHaveAttribute("data-side", "left");
-  expect(document.querySelector(".chat-side-panel")).toHaveAttribute("data-dragging", "true");
+  expect(document.querySelector(".chat-side-panel")).toHaveAttribute(
+    "data-dragging",
+    "true",
+  );
   fireEvent.pointerUp(window, { clientX: 150, clientY: 60, pointerId: 1 });
   expect(preview()).toBeNull();
   expect(useChatPanel.getState().side).toBe("left");
@@ -110,9 +123,10 @@ it("does not guess a drop position when panel bounds are unavailable", () => {
   const warning = vi.spyOn(console, "warn").mockImplementation(() => {});
   try {
     const { container } = renderPanel();
-    vi.spyOn(container.querySelector("main")!, "getBoundingClientRect").mockReturnValue(
-      new DOMRect(0, 0, 0, 0),
-    );
+    vi.spyOn(
+      container.querySelector("main")!,
+      "getBoundingClientRect",
+    ).mockReturnValue(new DOMRect(0, 0, 0, 0));
     drag(1000, 150);
     expect(preview()).toBeNull();
     expect(warning).toHaveBeenCalled();
@@ -134,12 +148,22 @@ it("cancels the drag with Escape without changing side", () => {
 
 it("ignores tiny movements and clicks on header buttons", async () => {
   renderPanel();
-  fireEvent.pointerDown(heading(), { clientX: 1000, clientY: 20, button: 0, pointerId: 1 });
+  fireEvent.pointerDown(heading(), {
+    clientX: 1000,
+    clientY: 20,
+    button: 0,
+    pointerId: 1,
+  });
   fireEvent.pointerMove(window, { clientX: 997, clientY: 21, pointerId: 1 });
   expect(preview()).toBeNull();
   fireEvent.pointerUp(window, { clientX: 997, clientY: 21, pointerId: 1 });
-  const close = screen.getByRole("button", { name: "Close chat panel" });
-  fireEvent.pointerDown(close, { clientX: 1000, clientY: 20, button: 0, pointerId: 2 });
+  const close = screen.getByRole("button", { name: "Float chat" });
+  fireEvent.pointerDown(close, {
+    clientX: 1000,
+    clientY: 20,
+    button: 0,
+    pointerId: 2,
+  });
   fireEvent.pointerMove(window, { clientX: 100, clientY: 20, pointerId: 2 });
   expect(preview()).toBeNull();
   fireEvent.pointerUp(window, { clientX: 100, clientY: 20, pointerId: 2 });
@@ -160,7 +184,9 @@ it("announces the panel's new position after dragging", () => {
   drag(1000, 150);
   fireEvent.pointerUp(window, { clientX: 150, clientY: 60, pointerId: 1 });
   expect(useChatPanel.getState().side).toBe("left");
-  expect(screen.getByRole("status")).toHaveTextContent("Chat docked on the left");
+  expect(screen.getByRole("status")).toHaveTextContent(
+    "Chat docked on the left",
+  );
   act(() => useChatPanel.getState().setSide("right"));
 });
 
@@ -170,7 +196,9 @@ it.each(["left", "right"] as const)(
     vi.stubGlobal("innerWidth", 1600);
     useChatPanel.getState().setSide(side);
     renderPanel();
-    const resizer = screen.getByRole("separator", { name: "Resize chat panel" });
+    const resizer = screen.getByRole("separator", {
+      name: "Resize chat panel",
+    });
     const panel = resizer.parentElement!;
     const left = side === "left" ? 68 : 1160;
     vi.spyOn(panel, "getBoundingClientRect").mockReturnValue(

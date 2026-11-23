@@ -195,7 +195,7 @@ Files explicitly cited by the agent as output are shown as compact, full-width c
 
 Managed agent workspaces: Bee Team always creates and reuses `~/.beeteam/workspaces/<agent-id>`. HTTP/MCP requests and chat settings cannot choose a project folder. The directory is checked and recreated if missing before every execution, including conversation resumption. Old stored paths are ignored for execution; existing files and conversation history are preserved. Files remain separate from the SQLite database.
 
-The chat button is always available in the app header. HQ opens by default; the selected team and open/closed state are restored after reload.
+The chat button is always available in navigation. HQ opens by default; the selected team and docked/floating state are restored after reload.
 
 The chat panel places its history scrollbar at the far right across the full panel height. Only messages scroll; the heading and composer stay fixed, and activating voice still scrolls to the latest message once.
 
@@ -204,3 +204,5 @@ During a voice call, the two buttons beside the avatar independently mute the us
 Team chats keep new-conversation creation in the sessions sidebar and no longer show the execution selector in the chat header.
 
 The chat's three-dot button opens read-only session information: session title, team, assigned agent, current team leader, board and activity dates. It docks inside a chat wider than half the window when at least 640px are available; otherwise it floats at the right inside the chat. Closing it preserves the conversation and draft. Team and leader metadata no longer occupy permanent chat header rows.
+
+The chat always remains available. Retracting the docked panel turns the same mounted conversation into a draggable floating window; its restore button docks it again. Drafts and live voice continue across both modes. Floating coordinates are saved on this device and kept inside the viewport when it resizes. Escape cancels an active drag.

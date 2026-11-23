@@ -89,7 +89,7 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
   expect(screen.getByRole("button", { name: /Ativar tema/ })).toBeVisible();
 });
 
-it("puts the chat toggle in the main navigation and opens and closes the panel", async () => {
+it("puts the chat toggle in main navigation and switches between docked and floating", async () => {
   window.history.replaceState({}, "", "/boards");
   useChatPanel.setState({ teamId: null, picking: false, open: false });
   const user = userEvent.setup();
@@ -108,7 +108,7 @@ it("puts the chat toggle in the main navigation and opens and closes the panel",
   expect(screen.getByRole("complementary", { name: "Chat com o líder" })).toBeVisible();
   await user.click(toggle);
   expect(toggle).toHaveAttribute("aria-expanded", "false");
-  expect(screen.queryByRole("complementary", { name: "Chat com o líder" })).toBeNull();
+  expect(screen.getByRole("complementary", { name: "Chat com o líder" })).toHaveAttribute("data-floating", "true");
   screen.getByRole("link", { name: "Bee Team - ir para boards" }).focus();
   await user.tab();
   expect(toggle).toHaveFocus();

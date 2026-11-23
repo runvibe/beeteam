@@ -333,5 +333,10 @@
     "file": "src/features/chat-session-information.tsx",
     "text": "Escape",
     "reason": "DOM keyboard event key used to close the information sidebar, not displayed text."
+  },
+  {
+    "file": "src/features/use-floating-chat.ts",
+    "text": "Escape",
+    "reason": "DOM keyboard event key cancelling a drag gesture; not a user-facing string."
   }
 ]

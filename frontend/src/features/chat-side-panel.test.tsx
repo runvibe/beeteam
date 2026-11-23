@@ -14,7 +14,11 @@ const systemTeams = vi.hoisted(() => ({
 vi.mock("@/api/context", () => ({
   useList: () => ({ data: undefined }),
   useApi: () => ({
-    list: async (_resource: string, _scope: string, filters?: { system?: boolean }) => {
+    list: async (
+      _resource: string,
+      _scope: string,
+      filters?: { system?: boolean },
+    ) => {
       systemTeams.listCalls(filters);
       const items = filters?.system
         ? systemTeams.items
@@ -25,7 +29,11 @@ vi.mock("@/api/context", () => ({
   useEntity: (resource: string, id: string) => ({
     data:
       resource === "teams"
-        ? { name: id === "hq" ? "Bee Team HQ" : "Team A", leaderId: "leader", system: id === "hq" }
+        ? {
+            name: id === "hq" ? "Bee Team HQ" : "Team A",
+            leaderId: "leader",
+            system: id === "hq",
+          }
         : { version: 1 },
   }),
 }));
@@ -60,10 +68,12 @@ it("preserves mounted chat draft through navigation, side change and collapse", 
     </QueryClientProvider>,
   );
   expect(screen.getByRole("textbox", { name: "Draft" })).toBe(draft);
-  await userEvent.click(
-    screen.getByRole("button", { name: "Close chat panel" }),
+  await userEvent.click(screen.getByRole("button", { name: "Float chat" }));
+  expect(screen.getByRole("textbox", { name: "Draft" })).toBe(draft);
+  expect(draft.closest("#leader-chat-panel")).toHaveAttribute(
+    "data-floating",
+    "true",
   );
-  expect(screen.queryByRole("textbox", { name: "Draft" })).toBeNull();
   act(() => useChatPanel.getState().openTeam("team-a"));
   expect(screen.getByRole("textbox", { name: "Draft" })).toHaveValue(
     "Keep my draft",
@@ -86,7 +96,11 @@ it("preserves the default HQ draft when the chat is closed and reopened", async 
   await userEvent.type(draft, "Keep the HQ draft");
   const toggle = screen.getByRole("button", { name: "Chat with the leader" });
   await userEvent.click(toggle);
-  expect(screen.queryByRole("textbox", { name: "Draft" })).toBeNull();
+  expect(screen.getByRole("textbox", { name: "Draft" })).toBe(draft);
+  expect(draft.closest("#leader-chat-panel")).toHaveAttribute(
+    "data-floating",
+    "true",
+  );
   await userEvent.click(toggle);
   expect(await screen.findByRole("textbox", { name: "Draft" })).toBe(draft);
   expect(draft).toHaveValue("Keep the HQ draft");
@@ -95,34 +109,36 @@ it("preserves the default HQ draft when the chat is closed and reopened", async 
 it.each([
   ["default team", false, "Bee Team HQ", { system: true }],
   ["team picker", true, "Team A", { limit: 20 }],
-])("does not fetch the %s until an initially closed chat is opened", async (
-  _label,
-  picking,
-  name,
-  filters,
-) => {
-  setLocalePreference("en");
-  systemTeams.items = [{ id: "hq", name: "Bee Team HQ", system: true }];
-  systemTeams.listCalls.mockClear();
-  useChatPanel.setState({ teamId: null, picking, open: false });
-  render(
-    <QueryClientProvider client={new QueryClient()}>
-      <ChatPanelToggle />
-      <ChatWorkspace>
-        <main>Boards</main>
-      </ChatWorkspace>
-    </QueryClientProvider>,
-  );
-  await act(async () => {});
-  expect(systemTeams.listCalls).not.toHaveBeenCalled();
-  await userEvent.click(
-    screen.getByRole("button", { name: "Chat with the leader" }),
-  );
-  expect(await screen.findByText(name)).toBeVisible();
-  expect(systemTeams.listCalls).toHaveBeenCalledWith(
-    expect.objectContaining(filters),
-  );
-});
+])(
+  "loads the %s immediately when restoring a floating chat",
+  async (_label, picking, name, filters) => {
+    setLocalePreference("en");
+    systemTeams.items = [{ id: "hq", name: "Bee Team HQ", system: true }];
+    systemTeams.listCalls.mockClear();
+    useChatPanel.setState({ teamId: null, picking, open: false });
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <ChatPanelToggle />
+        <ChatWorkspace>
+          <main>Boards</main>
+        </ChatWorkspace>
+      </QueryClientProvider>,
+    );
+    await act(async () => {});
+    expect(await screen.findByText(name)).toBeVisible();
+    expect(document.querySelector("#leader-chat-panel")).toHaveAttribute(
+      "data-floating",
+      "true",
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Chat with the leader" }),
+    );
+    expect(await screen.findByText(name)).toBeVisible();
+    expect(systemTeams.listCalls).toHaveBeenCalledWith(
+      expect.objectContaining(filters),
+    );
+  },
+);
 
 it("opens the Bee Team HQ guide by default and still lets users choose a team", async () => {
   setLocalePreference("en");
@@ -143,7 +159,10 @@ it("opens the Bee Team HQ guide by default and still lets users choose a team", 
   expect(screen.getByRole("textbox", { name: "Draft" })).toBeVisible();
   await userEvent.click(screen.getByRole("button", { name: "Choose team" }));
   await userEvent.click(await screen.findByRole("button", { name: "Team A" }));
-  expect(useChatPanel.getState()).toMatchObject({ teamId: "team-a", picking: false });
+  expect(useChatPanel.getState()).toMatchObject({
+    teamId: "team-a",
+    picking: false,
+  });
   expect(screen.getByRole("textbox", { name: "Draft" })).toBeVisible();
 });
 it("falls back to the team picker when the API has no system team", async () => {
@@ -163,7 +182,11 @@ it("falls back to the team picker when the API has no system team", async () => 
 it("opens the panel on first visit", async () => {
   localStorage.removeItem("beeteam-chat-panel");
   useChatPanel.setState(useChatPanel.getInitialState());
-  expect(useChatPanel.getState()).toMatchObject({ open: true, teamId: null, picking: false });
+  expect(useChatPanel.getState()).toMatchObject({
+    open: true,
+    teamId: null,
+    picking: false,
+  });
 });
 it("restores the selected team and panel visibility after reload", async () => {
   useChatPanel.getState().openTeam("team-a");
@@ -197,7 +220,9 @@ it("keeps the team and chat content in a centered, readable-width column", () =>
     );
     const content = document.querySelector(".chat-panel-content");
     expect(content).toContainElement(screen.getByText("Team A"));
-    expect(content).toContainElement(screen.getByRole("textbox", { name: "Draft" }));
+    expect(content).toContainElement(
+      screen.getByRole("textbox", { name: "Draft" }),
+    );
     expect(getComputedStyle(content!).maxWidth).toBe("48rem");
     expect(getComputedStyle(content!).marginInline).toBe("auto");
   } finally {

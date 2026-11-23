@@ -1,4 +1,7 @@
 {
+  "dragFloating": "Drag to move chat",
+  "restorePanel": "Dock chat",
+  "floatPanel": "Float chat",
   "sessionUpdated": "Last activity",
   "sessionCreated": "Created",
   "sessionName": "Session",

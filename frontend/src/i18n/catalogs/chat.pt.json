@@ -1,4 +1,7 @@
 {
+  "dragFloating": "Arraste para mover o chat",
+  "restorePanel": "Encaixar chat no painel",
+  "floatPanel": "Deixar chat flutuante",
   "sessionUpdated": "Última atividade",
   "sessionCreated": "Criada em",
   "sessionName": "Sessão",

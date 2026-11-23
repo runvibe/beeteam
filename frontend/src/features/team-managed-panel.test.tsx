@@ -482,7 +482,9 @@ it("always sends to the displayed team leader without an agent selector", async 
       </ChatWorkspace>
     </QueryClientProvider>,
   );
-  expect(await screen.findByText("Leader One")).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Session information" }));
+  expect((await screen.findAllByText("Leader One"))[0]).toBeVisible();
+  fireEvent.click(screen.getByRole("button", { name: "Close session information" }));
   expect(screen.queryByRole("combobox", { name: "Agents" })).toBeNull();
   editPlainText(
     await screen.findByRole("textbox", { name: "Message to agent" }),
@@ -615,6 +617,7 @@ it("switches team by opening a session in the sidebar without a team selector in
     </QueryClientProvider>,
   );
   const chat = screen.getByRole("complementary", { name: "Chat with the leader" });
+  fireEvent.click(within(chat).getByRole("button", { name: "Session information" }));
   expect(await within(chat).findByText("Team A")).toBeVisible();
   expect(within(chat).queryByRole("button", { name: "Choose team" })).toBeNull();
   fireEvent.click(await screen.findByRole("button", { name: /Team B conversation/ }));

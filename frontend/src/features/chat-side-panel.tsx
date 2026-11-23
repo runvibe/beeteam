@@ -1,3 +1,4 @@
+import { useFloatingChat } from "./use-floating-chat";
 import {
   ChatSessionInformation,
   sessionInformationMode,
@@ -11,7 +12,13 @@ import {
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { ComponentProps, CSSProperties, ReactNode } from "react";
-import { ArrowLeftRight, MessageSquare, MoreHorizontal, X } from "lucide-react";
+import {
+  ArrowLeftRight,
+  MessageSquare,
+  MoreHorizontal,
+  PictureInPicture2,
+  Maximize2,
+} from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { useChatPanel } from "@/state/chat-panel";
 import { useSessionsSidebar } from "@/state/sessions-sidebar";
@@ -96,12 +103,21 @@ export function ChatWorkspace({
     width,
     sessionsWidth,
     close,
+    show,
+    floatingPosition,
+    setFloatingPosition,
     setPanelOrder,
   } = useChatPanel();
   const [informationOpen, setInformationOpen] = useState(false);
   const [chatElement, setChatElement] = useState<HTMLElement | null>(null);
   const informationButton = useRef<HTMLButtonElement>(null);
   const chatWidth = useWorkspaceWidth(chatElement);
+  const floating = useFloatingChat({
+    active: !open,
+    element: chatElement,
+    position: floatingPosition,
+    onPositionChange: setFloatingPosition,
+  });
   const conversationId = useChatPanel((state) => state.conversationId);
   function closeInformation() {
     setInformationOpen(false);
@@ -168,17 +184,25 @@ export function ChatWorkspace({
         ref={setChatElement}
         id="leader-chat-panel"
         className="chat-side-panel"
-        hidden={!open}
+        data-floating={!open ? "true" : undefined}
+        style={!open ? floating.style : undefined}
         aria-label={t("chat.title")}
         data-workspace-panel="chat"
         data-dragging={dock.drag?.panel === "chat" ? "true" : undefined}
       >
-        <WorkspacePanelResizer panel="chat" />
+        {open && <WorkspacePanelResizer panel="chat" />}
         <header
           className="chat-panel-heading"
-          data-dock-handle="chat"
+          data-dock-handle={open ? "chat" : undefined}
+          onPointerDown={!open ? floating.onPointerDown : undefined}
           data-draggable={dock.draggable ? "true" : undefined}
-          title={dock.draggable ? t("workspace.dragToDock") : undefined}
+          title={
+            !open
+              ? t("chat.dragFloating")
+              : dock.draggable
+                ? t("workspace.dragToDock")
+                : undefined
+          }
         >
           <strong>{t("chat.title")}</strong>
           {api.managedAgents && (
@@ -200,11 +224,11 @@ export function ChatWorkspace({
           <Button
             variant="ghost"
             size="icon"
-            onClick={close}
-            aria-label={t("chat.closePanel")}
-            title={t("chat.closePanel")}
+            onClick={open ? close : show}
+            aria-label={t(open ? "chat.floatPanel" : "chat.restorePanel")}
+            title={t(open ? "chat.floatPanel" : "chat.restorePanel")}
           >
-            <X />
+            {open ? <PictureInPicture2 /> : <Maximize2 />}
           </Button>
         </header>
         <div className="chat-panel-layout">
@@ -213,9 +237,9 @@ export function ChatWorkspace({
               {teamId ? (
                 <PanelTeam key={teamId} teamId={teamId} />
               ) : picking && !api.managedAgents ? (
-                <PanelTeamPicker enabled={open} />
+                <PanelTeamPicker enabled />
               ) : (
-                <PanelDefault enabled={open} />
+                <PanelDefault enabled />
               )}
             </div>
           </div>

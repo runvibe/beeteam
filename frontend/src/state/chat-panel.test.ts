@@ -15,9 +15,17 @@ it("keeps selected team when closing and changing side, and persists layout and 
   });
   const saved = JSON.parse(localStorage.getItem("beeteam-chat-panel")!);
   expect(saved.state.side).toBe("left");
-  expect(saved.state).toMatchObject({ teamId: "team-a", picking: false, open: false });
+  expect(saved.state).toMatchObject({
+    teamId: "team-a",
+    picking: false,
+    open: false,
+  });
   useChatPanel.getState().chooseTeam();
-  expect(useChatPanel.getState()).toMatchObject({ teamId: null, picking: true, open: true });
+  expect(useChatPanel.getState()).toMatchObject({
+    teamId: null,
+    picking: true,
+    open: true,
+  });
 });
 
 it.each([
@@ -28,7 +36,9 @@ it.each([
   vi.stubGlobal("innerWidth", viewport);
   useChatPanel.getState().setWidth(10000);
   expect(useChatPanel.getState().width).toBe(maximum);
-  expect(JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.width).toBe(maximum);
+  expect(
+    JSON.parse(localStorage.getItem("beeteam-chat-panel")!).state.width,
+  ).toBe(maximum);
 
   useChatPanel.getState().setWidth(1);
   expect(useChatPanel.getState().width).toBe(320);
@@ -51,12 +61,18 @@ it("persists both panel widths and defaults older saved preferences to a 280 px 
   useChatPanel.setState(useChatPanel.getInitialState());
   useChatPanel.getState().setLayoutWidths({ chat: 600, sessions: 370 });
   const saved = localStorage.getItem("beeteam-chat-panel")!;
-  expect(JSON.parse(saved).state).toMatchObject({ width: 600, sessionsWidth: 370 });
+  expect(JSON.parse(saved).state).toMatchObject({
+    width: 600,
+    sessionsWidth: 370,
+  });
 
   useChatPanel.setState(useChatPanel.getInitialState());
   localStorage.setItem("beeteam-chat-panel", saved);
   await useChatPanel.persist.rehydrate();
-  expect(useChatPanel.getState()).toMatchObject({ width: 600, sessionsWidth: 370 });
+  expect(useChatPanel.getState()).toMatchObject({
+    width: 600,
+    sessionsWidth: 370,
+  });
 
   useChatPanel.setState(useChatPanel.getInitialState());
   localStorage.setItem(
@@ -64,7 +80,10 @@ it("persists both panel widths and defaults older saved preferences to a 280 px 
     JSON.stringify({ state: { side: "right", width: 500 }, version: 0 }),
   );
   await useChatPanel.persist.rehydrate();
-  expect(useChatPanel.getState()).toMatchObject({ width: 500, sessionsWidth: 280 });
+  expect(useChatPanel.getState()).toMatchObject({
+    width: 500,
+    sessionsWidth: 280,
+  });
 });
 
 it("persists content visibility and defaults older preferences to visible", async () => {
@@ -77,7 +96,10 @@ it("persists content visibility and defaults older preferences to visible", asyn
   expect(useChatPanel.getState().contentOpen).toBe(false);
 
   useChatPanel.setState(useChatPanel.getInitialState());
-  localStorage.setItem("beeteam-chat-panel", JSON.stringify({ state: {}, version: 0 }));
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({ state: {}, version: 0 }),
+  );
   await useChatPanel.persist.rehydrate();
   expect(useChatPanel.getState().contentOpen).toBe(true);
 });
@@ -85,9 +107,14 @@ it("persists content visibility and defaults older preferences to visible", asyn
 it("rejects invalid resize values without changing saved widths", () => {
   useChatPanel.setState(useChatPanel.getInitialState());
   expect(() =>
-    useChatPanel.getState().setLayoutWidths({ chat: 500, sessions: Number.NaN }),
+    useChatPanel
+      .getState()
+      .setLayoutWidths({ chat: 500, sessions: Number.NaN }),
   ).toThrow("Invalid workspace panel width");
-  expect(useChatPanel.getState()).toMatchObject({ width: 440, sessionsWidth: 280 });
+  expect(useChatPanel.getState()).toMatchObject({
+    width: 440,
+    sessionsWidth: 280,
+  });
 });
 
 it("reports and replaces an invalid saved sessions width", async () => {
@@ -155,11 +182,46 @@ it("restores a saved panel arrangement and derives the current chat side", async
 it("falls back to the saved side when an arrangement is malformed", async () => {
   localStorage.setItem(
     "beeteam-chat-panel",
-    JSON.stringify({ state: { side: "right", panelOrder: ["chat", "chat", "other"] }, version: 0 }),
+    JSON.stringify({
+      state: { side: "right", panelOrder: ["chat", "chat", "other"] },
+      version: 0,
+    }),
   );
   await useChatPanel.persist.rehydrate();
   expect(useChatPanel.getState()).toMatchObject({
     side: "right",
     panelOrder: ["sessions", "content", "chat"],
   });
+});
+
+it("persists a finite floating position without changing the current chat", async () => {
+  useChatPanel.getState().openConversation("team-a", "session-a");
+  useChatPanel.getState().close();
+  useChatPanel.getState().setFloatingPosition({ x: 24, y: 80 });
+  expect(useChatPanel.getState()).toMatchObject({
+    open: false,
+    conversationId: "session-a",
+    floatingPosition: { x: 24, y: 80 },
+  });
+  const saved = localStorage.getItem("beeteam-chat-panel")!;
+  useChatPanel.setState(useChatPanel.getInitialState());
+  localStorage.setItem("beeteam-chat-panel", saved);
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().floatingPosition).toEqual({ x: 24, y: 80 });
+  useChatPanel.getState().show();
+  expect(useChatPanel.getState()).toMatchObject({
+    open: true,
+    conversationId: "session-a",
+  });
+});
+it("ignores corrupt saved floating coordinates", async () => {
+  localStorage.setItem(
+    "beeteam-chat-panel",
+    JSON.stringify({
+      state: { open: false, floatingPosition: { x: "bad", y: 8 } },
+      version: 0,
+    }),
+  );
+  await useChatPanel.persist.rehydrate();
+  expect(useChatPanel.getState().floatingPosition).toBeNull();
 });
