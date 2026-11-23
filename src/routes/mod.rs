@@ -28,6 +28,7 @@ mod mcp_adapter;
 #[cfg(feature = "mcp")]
 mod mcp_materials;
 pub mod system;
+mod voice;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -96,6 +97,7 @@ pub fn create_router_with_frontend(
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
+        .merge(voice::router(config))
         .merge(leader_chat::router(config))
         .merge(managed_agents::router(config))
         .merge(local_projects::router(config.host.is_loopback()))

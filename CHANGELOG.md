@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add live voice conversations to managed chats, with clear execution requests delegated to Codex while the voice session continues.
+
 - Show Codex reasoning summaries in team chats while the agent works; they collapse when the reply finishes and stay available in history. Raw model reasoning is never stored or displayed.
 - Give Bee Team-owned Codex chats built-in, non-removable coordination guidance for leaders and workers, while preserving local developer instructions.
 - Remove the web search and MCP permissions note from the chat access menu.

@@ -72,5 +72,18 @@
   "fileUnavailable": "File unavailable",
   "previewFile": "Preview {{name}}",
   "downloadFile": "Download {{name}}",
-  "recoverFile": "Recover {{name}}"
+  "recoverFile": "Recover {{name}}",
+  "voiceStart": "Talk by voice",
+  "voiceStop": "End voice call",
+  "voiceConnecting": "Connecting…",
+  "voiceLive": "Voice call active",
+  "voiceTranscript": "Call transcript",
+  "voiceTranscriptSession": "This transcript is available while this chat stays open. Requests sent to Codex are saved in the conversation.",
+  "voiceYou": "You",
+  "voiceAssistant": "Assistant",
+  "voiceUnsupported": "Voice calls require microphone access and WebRTC support.",
+  "voiceConnectionFailed": "The voice connection ended. Start a new call to reconnect.",
+  "voicePlaybackFailed": "Audio playback was blocked. Allow audio in your browser and start a new call.",
+  "voiceInvalidRequest": "The voice request could not be submitted.",
+  "voiceUnknownSubmission": "Request delivery could not be confirmed. Check the chat history before sending again."
 }

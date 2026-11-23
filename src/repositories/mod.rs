@@ -42,3 +42,5 @@ mod managed_agent_reads;
 
 pub mod agent_workspace;
 mod agent_output;
+
+pub mod voice;

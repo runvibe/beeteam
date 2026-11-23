@@ -66,6 +66,15 @@ The public site lives in [runvibe/beeteam-site](https://github.com/runvibe/beete
 
 Run the backend and Vite separately for frontend development, or build the embedded distribution for a single executable. [Development and tests](docs/guides/development.md) · [Runtime modes](docs/guides/runtime.md).
 
+### Live voice in managed chats
+
+Live voice uses the Codex executable installed on the userâ€™s machine and its local authentication. Configure the existing managed-session runtime with `BEE_CODEX_EXECUTABLE` and `BEE_SESSION_INSTALLATION_ID`. Browser microphone access requires localhost or HTTPS. Voice availability depends on the installed Codex version and account capabilities.
+
+Start a voice conversation from a writable managed chat. Clear execution requests are sent to the selected Codex agent while the voice conversation continues. Ambiguous requests are clarified first. Existing access modes and approval controls apply. Ending the voice call releases the microphone, while already submitted Codex work follows its normal lifecycle. Executed requests and results remain available through managed chat history.
+
+The voice transcript is displayed for the current call. Reloading the page clears that transcript. Availability requires a Codex build supporting the experimental realtime V3 WebRTC protocol and voice access on the signed-in account.
+
+
 ## Troubleshooting
 
 Start with service identity, port and version. If those checks pass, inspect the browser or harness connection handling the request. [Troubleshooting guide](docs/guides/troubleshooting.md).

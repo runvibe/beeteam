@@ -5,6 +5,7 @@ use crate::repositories::database::DatabaseRepository;
 #[derive(Clone)]
 pub struct AppState {
     inner: Arc<SharedState>,
+    voice: crate::services::voice::VoiceService,
     api_info: crate::services::api_info::ApiInfoService,
     transfers: Option<Arc<crate::services::data_transfer::service::TransferService>>,
     leader_chat: crate::services::leader_chat::LeaderChatService,
@@ -18,6 +19,9 @@ struct SharedState {
 }
 
 impl AppState {
+    pub fn voice(&self) -> &crate::services::voice::VoiceService {
+        &self.voice
+    }
     pub fn managed_agents(&self) -> &crate::services::managed_agents::ManagedAgentService {
         &self.managed_agents
     }
@@ -92,6 +96,9 @@ impl AppState {
         };
         Self {
             inner: Arc::new(inner),
+            voice: crate::services::voice::VoiceService::new(Arc::new(
+                crate::repositories::voice::CodexVoiceProvider::default(),
+            )),
             transfers: None,
             leader_chat,
             managed_agents,

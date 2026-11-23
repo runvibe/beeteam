@@ -19,6 +19,7 @@ import { useManagedActions } from "./use-managed-actions";
 import { useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
+import { ManagedVoiceChat } from "./managed-voice-chat";
 import { ChatAccessPicker } from "./chat-access-picker";
 import { useChatAccess } from "@/state/chat-access";
 import "./leader-chat.css";
@@ -82,7 +83,7 @@ export function ManagedAgentChat({
   useLayoutEffect(() => {
     selection.current = { teamId, conversation, externalConversation: conversationId };
   }, [teamId, conversation, conversationId]);
-  const pendingText = pending?.body.content;
+  const pendingText = pending?.context.source === "voice" ? undefined : pending?.body.content;
   useEffect(() => {
     if (pendingText !== undefined) setDraft(pendingText);
   }, [pendingText]);
@@ -155,7 +156,7 @@ export function ManagedAgentChat({
       return;
     if (!acknowledge(pending.key)) return;
     if (pending.state === "rejected") {
-      setDraft(pending.body.content);
+      if (pending.context.source !== "voice") setDraft(pending.body.content);
       setError(pending.error);
       return;
     }
@@ -173,7 +174,7 @@ export function ManagedAgentChat({
     ) {
       select(pending.request.conversationId, pending.request.id);
     }
-    setDraft("");
+    if (pending.context.source !== "voice") setDraft("");
   }, [acknowledge, agentId, mode, pending, select]);
   const latestRequest = (id: string) =>
     requestItems.find((r) => r.conversationId === id)?.id ?? "";
@@ -514,6 +515,18 @@ export function ManagedAgentChat({
               {pending?.state === "uncertain" && (
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
+              <ManagedVoiceChat api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
+                conversation={conversation} accessMode={accessMode}
+                disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
+                readOnly={readOnly}
+                onSend={(body) => sendPending(body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, source: "voice" })}
+                onQueued={(item) => {
+                  if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, item.conversationId);
+                  select(item.conversationId, item.id);
+                  void queryClient.invalidateQueries({ queryKey: ["managed-requests", agentId] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
+                  void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
+                }} />
               <Composer
                 value={draft}
                 onChange={setDraft}

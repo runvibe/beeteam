@@ -7,6 +7,7 @@ import { isDefinitiveManagedFailure } from "./managed-idempotency";
 
 type Schemas = components["schemas"];
 type SendContext = {
+  source?: "voice";
   teamId: string | undefined;
   conversation: string;
   externalConversation: string | null | undefined;
@@ -73,6 +74,7 @@ class ManagedSendRegistry {
     try {
       const request = await api.send(agentId, active.body, active.key);
       this.update(agentId, { ...active, state: "completed", request });
+      return request;
     } catch (error) {
       this.update(
         agentId,

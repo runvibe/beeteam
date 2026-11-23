@@ -13,3 +13,5 @@ pub mod local_projects;
 pub mod managed_sessions;
 
 pub mod managed_agents;
+
+pub mod voice;

@@ -32,3 +32,5 @@ pub mod integrated_chat_tools;
 pub mod managed_agents;
 pub mod managed_file_citations;
 pub mod managed_sessions;
+
+pub mod voice;
