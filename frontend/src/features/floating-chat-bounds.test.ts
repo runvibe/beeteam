@@ -58,3 +58,9 @@ it.each([
     );
   },
 );
+
+it("keeps resizing within an offset content area",()=>{
+  const area={x:250,y:80,width:750,height:720};
+  expect(resizeFloatingBounds({x:400,y:200,width:440,height:400},"nw",-1000,-1000,area)).toEqual({x:262,y:92,width:578,height:508});
+  expect(resizeFloatingBounds({x:400,y:200,width:440,height:400},"se",1000,1000,area)).toEqual({x:400,y:200,width:588,height:588});
+});

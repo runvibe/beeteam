@@ -5,6 +5,7 @@ import {
   type CSSProperties,
   type PointerEventHandler,
 } from "react";
+import type { FloatingLimits } from "./floating-chat-bounds";
 
 export type FloatingChatPosition = { x: number; y: number };
 type Options = {
@@ -12,6 +13,7 @@ type Options = {
   element: HTMLElement | null;
   position: FloatingChatPosition | null;
   onPositionChange: (position: FloatingChatPosition) => void;
+  bounds?: FloatingLimits;
 };
 
 const interactive =
@@ -21,6 +23,7 @@ export function useFloatingChat(options: Options): {
   style: CSSProperties;
   settling: boolean;
   onResizeStart: () => void;
+  wasDraggedRecently: () => boolean;
   onPointerDown: PointerEventHandler<HTMLElement>;
 } {
   const latest = useRef(options);
@@ -29,6 +32,7 @@ export function useFloatingChat(options: Options): {
   const [resolved, setResolved] = useState(options.position);
   const endDrag = useRef<(() => void) | null>(null);
   const settledAnchor = useRef<number | null>(null);
+  const lastDrag = useRef(-Infinity);
   const [settling, setSettling] = useState(false);
   const settlingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,18 +43,21 @@ export function useFloatingChat(options: Options): {
 
   function clamp(position: FloatingChatPosition | null): FloatingChatPosition {
     const rect = latest.current.element?.getBoundingClientRect();
+    const bounds = latest.current.bounds ?? { width: window.innerWidth, height: window.innerHeight };
+    const originX = bounds.x ?? 0;
+    const originY = bounds.y ?? 0;
     const width = rect?.width ?? 0;
     const height = rect?.height ?? 0;
-    const marginX = Math.min(12, Math.max(0, (window.innerWidth - width) / 2));
+    const marginX = Math.min(12, Math.max(0, (bounds.width - width) / 2));
     const marginY = Math.min(
       12,
-      Math.max(0, (window.innerHeight - height) / 2),
+      Math.max(0, (bounds.height - height) / 2),
     );
-    const maxX = Math.max(marginX, window.innerWidth - width - marginX);
-    const maxY = Math.max(marginY, window.innerHeight - height - marginY);
+    const maxX = originX + Math.max(marginX, bounds.width - width - marginX);
+    const maxY = originY + Math.max(marginY, bounds.height - height - marginY);
     return {
-      x: Math.min(maxX, Math.max(marginX, position?.x ?? maxX)),
-      y: Math.min(maxY, Math.max(marginY, position?.y ?? maxY)),
+      x: Math.min(maxX, Math.max(originX + marginX, position?.x ?? maxX)),
+      y: Math.min(maxY, Math.max(originY + marginY, position?.y ?? maxY)),
     };
   }
 
@@ -88,12 +95,16 @@ export function useFloatingChat(options: Options): {
 
   useLayoutEffect(() => {
     if (!options.active || !options.element) return;
-    update(options.position);
+    update(settledAnchor.current === null ? options.position : anchors()[settledAnchor.current]);
   }, [
     options.active,
     options.element,
     options.position?.x,
     options.position?.y,
+    options.bounds?.x,
+    options.bounds?.y,
+    options.bounds?.width,
+    options.bounds?.height,
   ]);
 
   useLayoutEffect(() => {
@@ -144,7 +155,9 @@ export function useFloatingChat(options: Options): {
     const startX = event.clientX;
     const startY = event.clientY;
     const pointerId = event.pointerId;
+    let moved = false;
     const settle = () => {
+      if (!moved) { cleanup(); return; }
       const anchor = nearest(clamp(current.current));
       settledAnchor.current = anchor.index;
       const reducedMotion = window.matchMedia?.(
@@ -166,6 +179,9 @@ export function useFloatingChat(options: Options): {
         return;
       }
       pointer.preventDefault();
+      if (Math.hypot(pointer.clientX - startX, pointer.clientY - startY) < 3 && !moved) return;
+      moved = true;
+      lastDrag.current = Date.now();
       const candidate = clamp({
         x: origin.x + pointer.clientX - startX,
         y: origin.y + pointer.clientY - startY,
@@ -221,6 +237,7 @@ export function useFloatingChat(options: Options): {
   };
 
   return {
+    wasDraggedRecently: () => Date.now() - lastDrag.current < 500,
     onResizeStart: () => {
       endDrag.current?.();
       clearSettlingTimer();

@@ -117,9 +117,12 @@ export const useChatPanel = create<ChatPanelState>()(
         }),
       setConversation: (conversationId) =>
         set({ conversationId, freshConversation: false }),
-      close: () => set({ open: false }),
+      close: () => set({ open: false, contentOpen: true }),
       show: () => set({ open: true }),
-      setContentOpen: (contentOpen) => set({ contentOpen }),
+      setContentOpen: (contentOpen) => set((state) => ({
+        contentOpen,
+        ...(!contentOpen && !state.open ? { open: true } : {}),
+      })),
       chooseTeam: () =>
         set({
           teamId: null,

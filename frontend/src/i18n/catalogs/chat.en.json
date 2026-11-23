@@ -1,6 +1,8 @@
 {
   "resizeFloating": {"n":"Resize chat from top border", "s":"Resize chat from bottom border", "e":"Resize chat from right border", "w":"Resize chat from left border", "nw":"Resize chat from top left", "ne":"Resize chat from top right", "sw":"Resize chat from bottom left", "se":"Resize chat from bottom right"},
   "resizeFloatingHelp": "Drag to resize; arrow keys adjust by 10 pixels, Shift by 40",
+  "compactFloating": "Drag to move; double-click to show only the composer",
+  "expandFloating": "Drag to move; double-click to show the conversation",
   "dragFloating": "Drag to move chat",
   "restorePanel": "Dock chat",
   "floatPanel": "Float chat",

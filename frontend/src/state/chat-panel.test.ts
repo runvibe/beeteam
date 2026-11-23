@@ -241,3 +241,11 @@ it("persists independent floating bounds across docking and rehydration", async 
   await useChatPanel.persist.rehydrate();
   expect(useChatPanel.getState().floatingSize).toBeNull();
 });
+
+it("keeps chat usable when floating from solo mode or hiding its content area",()=>{
+  useChatPanel.setState({open:true,contentOpen:false});
+  useChatPanel.getState().close();
+  expect(useChatPanel.getState()).toMatchObject({open:false,contentOpen:true});
+  useChatPanel.getState().setContentOpen(false);
+  expect(useChatPanel.getState()).toMatchObject({open:true,contentOpen:false});
+});

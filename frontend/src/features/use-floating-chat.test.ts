@@ -137,8 +137,8 @@ it("ends drag if the pointer returns with its button released", () => {
   hook.start();
   pointer("pointermove", 250, 250, 1, 0);
   pointer("pointermove", 300, 300);
-  expect(hook.result.current.style).toEqual({ left: 12, top: 12 });
-  expect(hook.onPositionChange).toHaveBeenCalledTimes(1);
+  expect(hook.result.current.style).toEqual({ left: 100, top: 100 });
+  expect(hook.onPositionChange).not.toHaveBeenCalled();
 });
 
 it.each([12, 350, 688].flatMap((x) => [12, 288].map((y) => [x, y])))(
@@ -240,4 +240,17 @@ it("forgets magnetic anchor and settle animation before manual resize", () => {
   act(() => resizeElement());
   expect(hook.result.current.settling).toBe(false);
   expect(hook.result.current.style).toEqual({left:250,top:100});
+});
+
+it("does not magnetize a click with no drag, so header double-click remains stable",()=>{
+  const hook=setup({x:100,y:100});hook.start();pointer("pointerup");
+  expect(hook.result.current.style).toEqual({left:100,top:100});
+  expect(hook.result.current.wasDraggedRecently()).toBe(false);
+});
+
+it("uses content area offsets for all magnetic positions",()=>{
+  const element=document.createElement("div");
+  element.getBoundingClientRect=()=>({width:300,height:300}) as DOMRect;
+  const hook=renderHook(()=>useFloatingChat({active:true,element,position:null,bounds:{x:250,y:80,width:750,height:720},onPositionChange:vi.fn()}));
+  expect(hook.result.current.style).toEqual({left:688,top:488});
 });

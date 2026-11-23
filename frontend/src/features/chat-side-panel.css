@@ -333,3 +333,13 @@
   --chat-scrollbar-end-inset: 18px;
 }
 .chat-side-panel[data-floating-resizing="true"] { transition: none; user-select: none; }
+
+.chat-side-panel[data-floating-compact="true"] :is(
+  .assistant-toolbar, .assistant-thread, .assistant-legacy,
+  .leader-chat-toolbar, .leader-chat-history, .leader-chat-messages,
+  .chat-panel-team, .chat-panel-leader, .chat-panel-scrollbar,
+  .chat-session-information
+) { display: none !important; }
+.chat-side-panel[data-floating-compact="true"] .managed-agent-chat { flex: 0; gap: 0; }
+.chat-side-panel[data-floating-compact="true"] .voice-avatar-overlay { position: relative; inset: auto; }
+.chat-side-panel[data-floating-compact="true"] .chat-panel-body { overflow-y: auto; }

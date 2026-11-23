@@ -1,5 +1,7 @@
 import { useFloatingChat } from "./use-floating-chat";
 import { useFloatingChatResize } from "./use-floating-chat-resize";
+import { useFloatingChatArea } from "./use-floating-chat-area";
+import { useCompactFloatingChat } from "./use-compact-floating-chat";
 import {
   ChatSessionInformation,
   sessionInformationMode,
@@ -7,6 +9,7 @@ import {
 import {
   Fragment,
   useCallback,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -99,6 +102,7 @@ export function ChatWorkspace({
     picking,
     open,
     contentOpen,
+    setContentOpen,
     side,
     panelOrder,
     width,
@@ -112,7 +116,12 @@ export function ChatWorkspace({
     setPanelOrder,
   } = useChatPanel();
   const [informationOpen, setInformationOpen] = useState(false);
+  useLayoutEffect(() => {
+    if (!open && !contentOpen) setContentOpen(true);
+  }, [open, contentOpen, setContentOpen]);
   const [chatElement, setChatElement] = useState<HTMLElement | null>(null);
+  const [workspace, setWorkspace] = useState<HTMLDivElement | null>(null);
+  const floatingArea = useFloatingChatArea(workspace, !open);
   const informationButton = useRef<HTMLButtonElement>(null);
   const chatWidth = useWorkspaceWidth(chatElement);
   const floating = useFloatingChat({
@@ -120,12 +129,32 @@ export function ChatWorkspace({
     element: chatElement,
     position: floatingPosition,
     onPositionChange: setFloatingPosition,
+    bounds: floatingArea,
+  });
+  const compactChat = useCompactFloatingChat({
+    active: !open,
+    element: chatElement,
+    wasDraggedRecently: floating.wasDraggedRecently,
+    onCollapse: () => {
+      setInformationOpen(false);
+      if (!floatingSize && chatElement) {
+        const rect = chatElement.getBoundingClientRect();
+        setFloatingBounds({x:rect.left,y:rect.top,width:rect.width,height:rect.height});
+      }
+    },
   });
   const floatingResize = useFloatingChatResize({
     active: !open,
     element: chatElement,
-    size: floatingSize,
-    onBoundsChange: setFloatingBounds,
+    size: compactChat.compact ? {width: floatingSize?.width ?? 440, height: compactChat.height} : floatingSize,
+    bounds: floatingArea,
+    minHeight: compactChat.compact ? 160 : 300,
+    onBoundsChange: (bounds) => {
+      if (compactChat.compact) {
+        compactChat.setHeight(bounds.height);
+        setFloatingBounds({...bounds,height:floatingSize?.height ?? 650});
+      } else setFloatingBounds(bounds);
+    },
     onResizeStart: floating.onResizeStart,
   });
   const conversationId = useChatPanel((state) => state.conversationId);
@@ -139,7 +168,6 @@ export function ChatWorkspace({
     viewportWidth,
     () => 0,
   );
-  const [workspace, setWorkspace] = useState<HTMLDivElement | null>(null);
   const measuredWidth = useWorkspaceWidth(workspace);
   const present = usePresentWorkspacePanels(workspace);
   const visible = panelOrder.filter(
@@ -196,7 +224,13 @@ export function ChatWorkspace({
         className="chat-side-panel"
         data-floating={!open ? "true" : undefined}
         data-floating-settling={floating.settling ? "true" : undefined}
-        style={!open ? { ...floating.style, ...floatingSize } : undefined}
+        data-floating-compact={compactChat.compact ? "true" : undefined}
+        style={!open ? {
+          ...floating.style, ...floatingSize,
+          ...(compactChat.compact ? {height:compactChat.height} : {}),
+          maxWidth: Math.max(0,floatingArea.width-24),
+          maxHeight: Math.max(0,floatingArea.height-24),
+        } : undefined}
         data-floating-resizing={floatingResize.resizing ? "true" : undefined}
         aria-label={t("chat.title")}
         data-workspace-panel="chat"
@@ -223,10 +257,11 @@ export function ChatWorkspace({
           className="chat-panel-heading"
           data-dock-handle={open ? "chat" : undefined}
           onPointerDown={!open ? floating.onPointerDown : undefined}
+          onDoubleClick={compactChat.onDoubleClick}
           data-draggable={dock.draggable ? "true" : undefined}
           title={
             !open
-              ? t("chat.dragFloating")
+              ? t(compactChat.compact ? "chat.expandFloating" : "chat.compactFloating")
               : dock.draggable
                 ? t("workspace.dragToDock")
                 : undefined
@@ -243,7 +278,10 @@ export function ChatWorkspace({
               title={t("chat.sessionInfo")}
               aria-expanded={informationOpen}
               aria-controls="chat-session-information"
-              onClick={() => setInformationOpen((value) => !value)}
+              onClick={() => {
+                compactChat.expand();
+                setInformationOpen((value) => !value);
+              }}
             >
               <MoreHorizontal />
             </Button>

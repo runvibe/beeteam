@@ -10,6 +10,7 @@ import {
   resizeFloatingBounds,
   type FloatingBounds,
   type FloatingSize,
+  type FloatingLimits,
   type ResizeCorner,
 } from "./floating-chat-bounds";
 
@@ -17,16 +18,18 @@ type Options = {
   active: boolean;
   element: HTMLElement | null;
   size: FloatingSize | null;
+  bounds?: FloatingLimits;
+  minHeight?: number;
   onBoundsChange: (bounds: FloatingBounds) => void;
   onResizeStart: () => void;
 };
-const viewport = () => ({
-  width: window.innerWidth,
-  height: window.innerHeight,
-});
-
 export function useFloatingChatResize(options: Options) {
   const latest = useRef(options);
+  const viewport = () =>
+    latest.current.bounds ?? {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
   latest.current = options;
   const cleanupRef = useRef<(() => void) | null>(null);
   const [resizing, setResizing] = useState(false);
@@ -45,6 +48,7 @@ export function useFloatingChatResize(options: Options) {
       const next = fitFloatingBounds(
         { ...bounds, ...latest.current.size },
         viewport(),
+        latest.current.minHeight,
       );
       if (
         next.x !== bounds.x ||
@@ -62,7 +66,15 @@ export function useFloatingChatResize(options: Options) {
       cleanupRef.current?.();
       window.removeEventListener("resize", fit);
     };
-  }, [options.active, options.element]);
+  }, [
+    options.active,
+    options.element,
+    options.bounds?.x,
+    options.bounds?.y,
+    options.bounds?.width,
+    options.bounds?.height,
+    options.minHeight,
+  ]);
 
   function handleProps(corner: ResizeCorner): {
     onPointerDown: PointerEventHandler<HTMLButtonElement>;
@@ -83,7 +95,9 @@ export function useFloatingChatResize(options: Options) {
         event.currentTarget.focus({ preventScroll: true });
         cleanupRef.current?.();
         latest.current.onResizeStart();
-        latest.current.onBoundsChange(fitFloatingBounds(initial, viewport()));
+        latest.current.onBoundsChange(
+          fitFloatingBounds(initial, viewport(), latest.current.minHeight),
+        );
         setResizing(true);
         const { clientX, clientY, pointerId } = event;
         const move = (pointer: PointerEvent) => {
@@ -100,6 +114,7 @@ export function useFloatingChatResize(options: Options) {
               pointer.clientX - clientX,
               pointer.clientY - clientY,
               viewport(),
+              latest.current.minHeight,
             ),
           );
         };
@@ -107,7 +122,7 @@ export function useFloatingChatResize(options: Options) {
           if (pointer.pointerId !== pointerId) return;
           if (pointer.type === "pointercancel")
             latest.current.onBoundsChange(
-              fitFloatingBounds(initial, viewport()),
+              fitFloatingBounds(initial, viewport(), latest.current.minHeight),
             );
           finish();
         };
@@ -115,7 +130,9 @@ export function useFloatingChatResize(options: Options) {
           if (keyboard.key !== "Escape") return;
           keyboard.preventDefault();
           keyboard.stopPropagation();
-          latest.current.onBoundsChange(fitFloatingBounds(initial, viewport()));
+          latest.current.onBoundsChange(
+            fitFloatingBounds(initial, viewport(), latest.current.minHeight),
+          );
           finish();
         };
         const cleanup = () => {
@@ -158,6 +175,7 @@ export function useFloatingChatResize(options: Options) {
             direction[0] * step,
             direction[1] * step,
             viewport(),
+            latest.current.minHeight,
           ),
         );
       },

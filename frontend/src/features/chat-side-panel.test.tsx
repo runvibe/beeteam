@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect, it, vi } from "vitest";
 import { useChatPanel } from "@/state/chat-panel";
@@ -8,12 +8,14 @@ import { setLocalePreference } from "@/i18n";
 import { ChatWorkspace, ChatPanelToggle } from "./chat-side-panel";
 
 const systemTeams = vi.hoisted(() => ({
+  managed: false,
   items: [{ id: "hq", name: "Bee Team HQ", system: true }] as unknown[],
   listCalls: vi.fn(),
 }));
 vi.mock("@/api/context", () => ({
   useList: () => ({ data: undefined }),
   useApi: () => ({
+    managedAgents: systemTeams.managed ? {} : undefined,
     list: async (
       _resource: string,
       _scope: string,
@@ -41,7 +43,20 @@ vi.mock("@/components/shared", () => ({
   QueryState: ({ children }: { children: React.ReactNode }) => children,
 }));
 vi.mock("./leader-chat", () => ({
-  LeaderChat: () => <textarea aria-label="Draft" defaultValue="" />,
+  LeaderChat: () => <section className="managed-agent-chat">
+    <div className="assistant-thread">Saved messages</div>
+    <div className="managed-voice-chat" data-call-active="true">
+      <div className="voice-avatar-overlay" aria-label="Active voice" />
+      <textarea aria-label="Draft" defaultValue="" />
+    </div>
+  </section>,
+}));
+vi.mock("./managed-agent-chat", () => ({
+  ManagedAgentChat: () => <textarea aria-label="Draft" />,
+}));
+vi.mock("./chat-session-information", () => ({
+  sessionInformationMode: () => "inline",
+  ChatSessionInformation: () => <div id="chat-session-information">Session information</div>,
 }));
 
 it("preserves mounted chat draft through navigation, side change and collapse", async () => {
@@ -228,4 +243,55 @@ it("keeps the team and chat content in a centered, readable-width column", () =>
   } finally {
     style.remove();
   }
+});
+
+it("toggles compact without remounting history, voice or draft, and restores expanded size", async()=>{
+  setLocalePreference("en");
+  useChatPanel.setState({teamId:"team-a",open:false,floatingSize:{width:440,height:600},floatingPosition:{x:12,y:12}});
+  const rect=vi.spyOn(HTMLElement.prototype,"getBoundingClientRect").mockImplementation(function(this:HTMLElement){
+    if(this.id==="leader-chat-panel")return {x:12,y:12,left:12,top:12,right:452,bottom:612,width:440,height:600} as DOMRect;
+    return {x:0,y:0,left:0,top:0,right:1000,bottom:800,width:1000,height:800} as DOMRect;
+  });
+  const view=render(<QueryClientProvider client={new QueryClient()}><ChatWorkspace><main>Content</main></ChatWorkspace></QueryClientProvider>);
+  const panel=document.getElementById("leader-chat-panel")!;
+  const heading=panel.querySelector(".chat-panel-heading")!;
+  const draft=screen.getByRole("textbox",{name:"Draft"});
+  const voice=screen.getByLabelText("Active voice");
+  const history=screen.getByText("Saved messages");
+  await userEvent.type(draft,"Do not lose this");
+  fireEvent.doubleClick(screen.getByRole("button", {name:"Dock chat"}));
+  expect(panel).not.toHaveAttribute("data-floating-compact");
+  await userEvent.dblClick(heading);
+  expect(panel).toHaveAttribute("data-floating-compact","true");
+  expect(useChatPanel.getState().floatingSize?.height).toBe(600);
+  expect(screen.getByRole("textbox",{name:"Draft"})).toBe(draft);
+  expect(screen.getByLabelText("Active voice")).toBe(voice);
+  expect(screen.getByText("Saved messages")).toBe(history);
+  await userEvent.dblClick(heading);
+  expect(panel).not.toHaveAttribute("data-floating-compact");
+  expect(panel.style.height).toBe("600px");
+  expect(draft).toHaveValue("Do not lose this");
+  await userEvent.dblClick(heading);
+  act(()=>useChatPanel.getState().show());
+  expect(panel).not.toHaveAttribute("data-floating-compact");
+  view.unmount();rect.mockRestore();
+});
+
+it("expands compact mode before opening session information",async()=>{
+  setLocalePreference("en");systemTeams.managed=true;
+  useChatPanel.setState({teamId:"team-a",open:false,floatingSize:null,floatingPosition:null});
+  const view=render(<QueryClientProvider client={new QueryClient()}><ChatWorkspace><main>Content</main></ChatWorkspace></QueryClientProvider>);
+  const panel=document.getElementById("leader-chat-panel")!;
+  const heading=panel.querySelector(".chat-panel-heading")!;
+  const info=panel.querySelector<HTMLButtonElement>('button[aria-controls="chat-session-information"]')!;
+  await userEvent.click(info);
+  expect(info).toHaveAttribute("aria-expanded","true");
+  await userEvent.dblClick(heading);
+  expect(panel).toHaveAttribute("data-floating-compact","true");
+  expect(info).toHaveAttribute("aria-expanded","false");
+  await userEvent.click(info);
+  expect(panel).not.toHaveAttribute("data-floating-compact");
+  expect(info).toHaveAttribute("aria-expanded","true");
+  expect(document.getElementById("chat-session-information")).toBeInTheDocument();
+  view.unmount();systemTeams.managed=false;
 });
