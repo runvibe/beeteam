@@ -20,6 +20,7 @@ async fn empty_install_gets_one_ready_hq_and_reseeding_is_idempotent() {
     assert_eq!(id(&leader), again.agent_id.to_string());
     assert_eq!(id(&board), again.board_id.to_string());
     assert_eq!(leader["name"], "Bee Team Guide");
+    assert!(leader["workInstructions"].as_str().unwrap().contains("get_creation_guidance"));
     assert_eq!(board["teamId"], team["id"]);
     assert_eq!(get(&app, "/api/v2/agents").await["total"], 1);
     assert_eq!(get(&app, "/api/v2/boards").await["total"], 1);
@@ -46,6 +47,19 @@ async fn seed_never_recreates_or_rewrites_user_edited_onboarding_tasks() {
     assert_eq!(get(&app, &path).await["total"], 6);
     let after = get(&app, &format!("/api/v2/tasks/{}", id(&task))).await;
     assert_eq!(after["title"], "Mine");
+    assert_eq!(after["version"], edited["version"]);
+}
+
+#[tokio::test]
+async fn reseeding_preserves_legacy_guide_and_custom_instructions() {
+    let (app, state) = seeded_app().await;
+    let (_, leader, _) = hq(&app).await;
+    let path = format!("/api/v2/agents/{}", id(&leader));
+    let instructions = "Guide the user through the Getting started board. Prefer the Bee Team MCP tools and skills to create teams, agents, boards and tasks on the user's behalf after they agree.\nMy customized workflow.";
+    let edited = ok(&app, "PATCH", &path, json!({"workInstructions":instructions}), ver(&leader)).await;
+    state.backend().ensure_onboarding().await.unwrap();
+    let after = get(&app, &path).await;
+    assert_eq!(after["workInstructions"], instructions);
     assert_eq!(after["version"], edited["version"]);
 }
 

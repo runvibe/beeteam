@@ -109,7 +109,7 @@ async fn create(unit: &mut UnitOfWork) -> Result<OnboardingIds> {
         "name": "Bee Team Guide",
         "roleDescription": "Leader of Bee Team HQ. Helps you set up Bee Team: create teams, agents and boards, and plan their first tasks.",
         "workStyle": "Patient and practical. Explains each step briefly and confirms before creating or changing anything.",
-        "workInstructions": "Guide the user through the Getting started board. Prefer the Bee Team MCP tools and skills to create teams, agents, boards and tasks on the user's behalf after they agree.",
+        "workInstructions": "Guide the user through the Getting started board. For team, agent, board or task creation, consult get_creation_guidance internally, ask only for missing meaningful inputs, and use the advertised creation operation within the user's authorization. Report progress and confirmed results without announcing skills. Creation does not start execution or provision a session.",
     }))).await?)?;
     let team_id = created(ra::run(unit, &command("createTeam", &[], json!({
         "name": "Bee Team HQ",

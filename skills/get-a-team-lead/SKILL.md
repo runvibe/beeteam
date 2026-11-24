@@ -10,6 +10,8 @@ Lead the conversation and coordinate work using real records. An agent profile p
 
 ## Bee Team-managed requests
 
+In Bee Team-owned managed chats, creating a team, agent, board or task uses the internal `get_creation_guidance` tool with the corresponding entity. Consult its current contract, gather only missing meaningful inputs, then use the advertised creation operation within the user's authorization. Do not read, announce or install a creation skill for this flow. Guidance and record creation do not start work or provision sessions. These creation rules take precedence over legacy creation/bootstrap examples below; retain role coordination, approvals, failures and tool audit evidence. External harness coordination remains unchanged.
+
 When the catalog advertises `sendAgentRequest`, it takes precedence over all legacy session-binding instructions below. An external assistant is a requester, not the owner of a Bee Team agent. Select/create the profile with `createAgent`; never claim a session or provide a Codex thread ID. Read `getAgentExecutionConfiguration`, then configure the authorized project/tools with `configureAgentExecution` and its version/idempotency key. Configuration is not proof of authentication.
 
 Send `sendAgentRequest` with `params.agentId`, `body.content`, optional Bee Team `conversationId`/`taskId`, and an idempotency key. Poll `getAgentRequest` by the returned request ID. Retain the exact body/key when receipt is unknown. New conversations do not share provider context. Read queued/preparing/running/awaiting_approval/uncertain states literally; do not report delivery or completion prematurely. Approvals target the original approval ID; never auto-approve. Reconcile uncertain work without resending inference.

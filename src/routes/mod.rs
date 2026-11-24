@@ -9,6 +9,7 @@ use crate::{config::AppConfig, state::AppState};
 pub mod backend;
 mod changes;
 mod cors;
+mod creation_guidance;
 mod data_transfer;
 #[cfg(feature = "mcp")]
 mod data_transfer_mcp;
@@ -97,6 +98,7 @@ pub fn create_router_with_frontend(
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
+        .merge(creation_guidance::router())
         .merge(voice::router(config))
         .merge(leader_chat::router(config))
         .merge(managed_agents::router(config))

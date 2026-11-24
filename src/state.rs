@@ -13,6 +13,7 @@ pub struct AppState {
 }
 
 struct SharedState {
+    creation_guidance: crate::services::creation_guidance::CreationGuidanceService,
     backend: crate::services::backend::service::BackendService,
     changes: crate::services::changes::ChangeFeed,
     local_projects: crate::services::local_projects::LocalProjectService,
@@ -95,6 +96,7 @@ impl AppState {
             crate::services::managed_agents::ManagedAgentService::new(resources.clone());
         let backend = crate::services::backend::service::BackendService::new(resources, discovery);
         let inner = SharedState {
+            creation_guidance: crate::services::creation_guidance::CreationGuidanceService,
             backend,
             changes,
             local_projects,
@@ -125,6 +127,9 @@ impl AppState {
     }
     pub fn api_info(&self) -> &crate::services::api_info::ApiInfoService {
         &self.api_info
+    }
+    pub fn creation_guidance(&self) -> &crate::services::creation_guidance::CreationGuidanceService {
+        &self.inner.creation_guidance
     }
 
     pub fn with_transfers(

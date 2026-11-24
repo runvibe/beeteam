@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Use internal, current-contract guidance when creating teams, agents, boards and tasks in managed chats, without creation-skill setup or announcements. Apply the same routing to resumed chats while preserving custom agent profiles and existing coordination workflows.
+
 - Replace the floating voice card with a transparent, freely draggable avatar and four icon controls. Use neutral theme colors for all voice states, preserve position when returning to the chat, and keep errors separately readable and dismissible.
 
 - Keep voice calls active in their original conversation while browsing or typing elsewhere, including Home. Show floating call controls with the original conversation, independent mutes, return and end actions; explicitly starting voice elsewhere replaces the previous call.

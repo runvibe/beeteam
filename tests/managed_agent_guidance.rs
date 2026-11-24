@@ -9,6 +9,10 @@ use uuid::Uuid;
 #[tokio::test]
 async fn team_chat_applies_leader_guidance_on_first_and_resumed_turns() {
     let (app, agent, team, _) = fixture().await;
+    let agent_path = format!("/api/v2/agents/{}", id(&agent));
+    let legacy_custom = "Guide the user through the Getting started board. Prefer the Bee Team MCP tools and skills to create teams, agents, boards and tasks on the user's behalf after they agree.\nMy custom instruction: preserve my workflow.";
+    ok(&app, "PATCH", &agent_path, json!({"workInstructions":legacy_custom}), ver(&agent)).await;
+    let before = get(&app, &agent_path).await;
     let path = format!("/api/v2/agents/{}/requests", id(&agent));
     let first = request_key(
         &app,
@@ -25,6 +29,7 @@ async fn team_chat_applies_leader_guidance_on_first_and_resumed_turns() {
         .as_str()
         .unwrap()
         .contains("Bee Team role: leader"));
+    assert_creation_route(snapshot["messages"]["items"][1]["content"].as_str().unwrap());
     let next = request_key(
         &app,
         "POST",
@@ -39,6 +44,10 @@ async fn team_chat_applies_leader_guidance_on_first_and_resumed_turns() {
         .as_str()
         .unwrap()
         .contains("Bee Team role: leader"));
+    assert_creation_route(snapshot["messages"]["items"][1]["content"].as_str().unwrap());
+    let after = get(&app, &agent_path).await;
+    assert_eq!(after["workInstructions"], legacy_custom);
+    assert_eq!(after["version"], before["version"]);
 }
 
 #[tokio::test]
@@ -111,5 +120,28 @@ async fn task_requests_use_current_team_role_and_contextless_requests_do_not_gue
             .as_str()
             .unwrap();
         assert!(guidance.contains(expected), "{guidance}");
+        assert_creation_route(guidance);
+        let resumed = request_key(
+            &app,
+            "POST",
+            &format!("/api/v2/agents/{}/requests", id(agent)),
+            json!({"content":"show-guidance","conversationId":request.1["conversationId"],"taskId":task_id}),
+            None,
+            Uuid::new_v4(),
+        )
+        .await;
+        assert_eq!(resumed.0, 202, "{resumed:?}");
+        let snapshot = wait_state(&app, &resumed.1, "completed").await;
+        let guidance = snapshot["messages"]["items"][1]["content"].as_str().unwrap();
+        assert!(guidance.contains(expected), "{guidance}");
+        assert_creation_route(guidance);
     }
+}
+
+fn assert_creation_route(guidance: &str) {
+    assert!(guidance.contains("get_creation_guidance"), "{guidance}");
+    assert!(guidance.contains("team, agent, board or task"));
+    assert!(guidance.contains("legacy Bee Team Guide"));
+    assert!(guidance.contains("Do not announce or read a creation skill"));
+    assert!(guidance.contains("Do not conceal approvals, failures or tool audit evidence"));
 }

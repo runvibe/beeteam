@@ -3,6 +3,7 @@ pub mod session_bindings;
 pub mod session_delivery;
 pub mod usage;
 pub mod contracts;
+pub mod creation_guidance;
 pub mod echo;
 pub mod health;
 pub mod api_info;

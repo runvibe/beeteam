@@ -1,5 +1,7 @@
 # Leader: onboarding and team formation
 
+In Bee Team-owned managed chats, creating a team, agent, board or task uses the internal `get_creation_guidance` tool with the corresponding entity. Consult its current contract, gather only missing meaningful inputs, then use the advertised creation operation within the user's authorization. Do not read, announce or install a creation skill for this flow. Guidance and record creation do not start work or provision sessions. These creation rules take precedence over legacy creation/bootstrap examples below; retain role coordination, approvals, failures and tool audit evidence. External harness coordination remains unchanged.
+
 Continuation after handoff: [Worker workflow](beeteam://references/worker-workflow), documented separately with Mermaid.
 
 

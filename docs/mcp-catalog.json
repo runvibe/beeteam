@@ -67421,6 +67421,89 @@
         "destructiveHint": false,
         "idempotentHint": true,
         "openWorldHint": false,
+        "readOnlyHint": true
+      },
+      "description": "Internal read-only guidance for creating a team, agent, board or task. Returns current creation contracts and workflow rules; creates no resources or sessions.",
+      "inputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "entity": {
+            "enum": [
+              "team",
+              "agent",
+              "board",
+              "task"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "entity"
+        ],
+        "type": "object"
+      },
+      "name": "get_creation_guidance",
+      "outputSchema": {
+        "additionalProperties": false,
+        "properties": {
+          "bodySchema": {
+            "type": "object"
+          },
+          "entity": {
+            "enum": [
+              "team",
+              "agent",
+              "board",
+              "task"
+            ],
+            "type": "string"
+          },
+          "method": {
+            "type": "string"
+          },
+          "operationId": {
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "path": {
+            "type": "string"
+          },
+          "requiredFields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "rules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "entity",
+          "operationId",
+          "method",
+          "path",
+          "parameters",
+          "bodySchema",
+          "requiredFields",
+          "rules"
+        ],
+        "type": "object"
+      }
+    },
+    {
+      "annotations": {
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false,
         "readOnlyHint": false
       },
       "description": "Portable data transfer administration. Imports must first be uploaded through HTTP; job IDs never denote filesystem paths. Restores require an empty destination and the preview confirmation. No authentication is implied.",

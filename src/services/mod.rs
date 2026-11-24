@@ -1,4 +1,5 @@
 pub mod api_info;
+pub mod creation_guidance;
 pub mod backend;
 pub mod echo;
 pub mod health;

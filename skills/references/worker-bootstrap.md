@@ -1,6 +1,8 @@
 # Worker bootstrap: chat before registration
 
-## Leader prepares and waits
+In Bee Team-owned managed chats, creating a team, agent, board or task uses the internal `get_creation_guidance` tool with the corresponding entity. Consult its current contract, gather only missing meaningful inputs, then use the advertised creation operation within the user's authorization. Do not read, announce or install a creation skill for this flow. Guidance and record creation do not start work or provision sessions. These creation rules take precedence over legacy creation/bootstrap examples below; retain role coordination, approvals, failures and tool audit evidence. External harness coordination remains unchanged.
+
+## External harness: leader prepares and waits
 
 After the applicable approval of team composition and chat creation, first create the new Worker's CHAT. Do not preregister its profile or announce it as ready. In the created chat, explicitly request use of the get-a-worker skill to identify/create/configure itself in Bee Team. Provide the approved role/context, actual team and its confirmed UUID, existing identity when available, and the authorization limits for creation/linking. The team and Leader identity may be prepared beforehand; this order concerns the Worker's profile.
 
@@ -8,7 +10,7 @@ Request the actual NAME when ready, accompanied by agentId, teamId, and readines
 
 Chat creation is asynchronous and does not prove registration or readiness. Wait for an actual response through the permitted channel and verify the registration/link through Bee Team before assigning work. If there is only a name, a missing ID, a mismatched link, or pending status, do not associate by similarity or assume readiness. Reconcile only the missing step, without duplicating the profile/chat. Only after confirmation, record/assign the task and send the work notification with commentID. A ready profile does not confirm understanding of the task.
 
-## Worker configures its own identity
+## External harness: worker configures its own identity
 
 Use the corresponding skill within the received chat. Look up the identity/team and actual contracts; reuse a confirmed existing profile and preserve its instructions, history, and links. A similar name does not authorize assuming an identity. When a new profile is explicitly authorized and there is no registration to reuse, the Worker itself creates/configures its registration and team link using actual DTOs/versions/idempotency. Do not create another identity to bypass the team limit. Confirm persistence and read back the profile/link before returning ready.
 
