@@ -7,3 +7,4 @@ __pycache__/
 # Cloudflare deployment tooling
 /node_modules/
 .wrangler/
+desktop/gen/

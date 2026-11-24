@@ -51,11 +51,7 @@ function run(program, args, cwd, env = process.env) {
   const result = spawnSync(program, args, { cwd, env, stdio: "inherit" });
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
-if (
-  process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
-) {
-  const root = fileURLToPath(new URL("..", import.meta.url));
+export function buildEmbeddedFrontend(root) {
   const staging = stageFrontend(root);
   if (process.platform === "win32")
     run(
@@ -65,10 +61,18 @@ if (
     );
   else run("npm", ["ci", "--include=dev"], staging);
   run(process.execPath, ["scripts/build-embedded.mjs"], staging);
+  return resolve(staging, "dist");
+}
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  const root = fileURLToPath(new URL("..", import.meta.url));
+  const dist = buildEmbeddedFrontend(root);
   run(
     "cargo",
     ["build", "--locked", "--release", "--features", "mcp,embedded-ui"],
     root,
-    { ...process.env, BEE_FRONTEND_DIST: resolve(staging, "dist") },
+    { ...process.env, BEE_FRONTEND_DIST: dist },
   );
 }
