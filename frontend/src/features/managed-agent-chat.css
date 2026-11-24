@@ -360,8 +360,7 @@
     background 150ms var(--chat-ease);
 }
 .assistant-starters button:hover {
-  border-color: var(--bee);
-  background: var(--bee-soft);
+  border-color: color-mix(in srgb, var(--border) 70%, var(--foreground) 30%);
 }
 .assistant-starters button:focus-visible {
   outline: 2px solid var(--ring);

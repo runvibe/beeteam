@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Use Source Sans 3 for interface text and headings, and neutral border-only hover for chat suggestions.
+
 - Replace the legacy yellow sparkle mark in agent status and configuration states with the standard Bee Team logo.
 
 - Suggest the relevant team leader from board, team and task pages, with explicit new-chat or latest-valid-conversation actions.
