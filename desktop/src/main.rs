@@ -12,13 +12,32 @@ struct ServerSlot(Mutex<Option<server::RunningServer>>);
 struct TelemetrySlot(#[allow(dead_code)] TelemetryGuard);
 
 fn boot() -> anyhow::Result<(server::RunningServer, TelemetryGuard)> {
-    let home =
-        std::env::home_dir().ok_or_else(|| anyhow::anyhow!("Cannot resolve user home"))?;
+    let home = std::env::home_dir().ok_or_else(|| anyhow::anyhow!("Cannot resolve user home"))?;
     env::load_desktop_env(&home.join(".beeteam").join("desktop.env"))?;
     let telemetry =
         beeteam::libs::telemetry::init_tracing(beeteam::config::otel_enabled_from_env())?;
     let running = tauri::async_runtime::block_on(server::start())?;
     Ok((running, telemetry))
+}
+
+/// Debug builds can open a live frontend dev server instead of starting the
+/// embedded server; the dev server proxies to an already running API.
+fn dev_url() -> Option<String> {
+    if cfg!(debug_assertions) {
+        std::env::var("BEE_DESKTOP_DEV_URL")
+            .ok()
+            .filter(|v| !v.is_empty())
+    } else {
+        None
+    }
+}
+
+fn open_main_window(app: &tauri::App, url: tauri::Url) -> tauri::Result<()> {
+    WebviewWindowBuilder::new(app, "main", WebviewUrl::External(url))
+        .title("Bee Team")
+        .inner_size(1280.0, 800.0)
+        .build()?;
+    Ok(())
 }
 
 fn main() {
@@ -32,15 +51,16 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .manage(ServerSlot::default())
         .setup(|app| {
+            if let Some(url) = dev_url() {
+                open_main_window(app, url.parse()?)?;
+                return Ok(());
+            }
             match boot() {
                 Ok((running, telemetry)) => {
                     let url = running.url.parse()?;
                     app.state::<ServerSlot>().0.lock().unwrap().replace(running);
                     app.manage(TelemetrySlot(telemetry));
-                    WebviewWindowBuilder::new(app, "main", WebviewUrl::External(url))
-                        .title("Bee Team")
-                        .inner_size(1280.0, 800.0)
-                        .build()?;
+                    open_main_window(app, url)?;
                 }
                 Err(error) => {
                     let handle = app.handle().clone();

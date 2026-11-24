@@ -79,7 +79,10 @@ Requires Rust, Node.js and the Xcode command line tools. Build or run it from th
 ```sh
 node scripts/build-desktop.mjs        # release binary in desktop/target/release/beeteam-desktop
 node scripts/build-desktop.mjs --run  # debug build, then launch
+node scripts/dev-desktop.mjs          # dev mode: live frontend reload, restart on desktop/src changes
 ```
+
+Dev mode opens the window on the Vite dev server (`cd frontend && npm run dev`, default `http://127.0.0.1:5173/app/`; override with `BEE_DESKTOP_DEV_URL`) instead of starting the embedded server, so frontend edits hot-reload and API calls go to whatever backend Vite proxies to (`BEE_API_TARGET`). Only debug builds honor `BEE_DESKTOP_DEV_URL`.
 
 Apps launched from Finder do not inherit terminal variables. The app reads optional settings from `~/.beeteam/desktop.env`; variables already set in its environment take precedence. Without the file, the integrated Codex chat stays disabled and the rest of the app works. Example:
 
