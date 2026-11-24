@@ -50,6 +50,19 @@
   min-width: 0;
   flex-shrink: 0;
 }
+/* Reserve header/footer space; only the description preview may shrink. */
+.balanced-card-grid .board-card [data-slot="card-content"],
+.balanced-card-grid .team-card > .task-card-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+  min-height: 0;
+}
+.balanced-card-grid .board-card .card-excerpt {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: var(--card-excerpt-height);
+}
 .balanced-card-grid [data-slot="card-title"] {
   height: 44px;
   line-height: 22px;

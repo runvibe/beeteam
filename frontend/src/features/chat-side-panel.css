@@ -99,11 +99,9 @@
   width: calc(min(var(--chat-panel-width), var(--chat-panel-max-width)) - 1rem);
   z-index: 39;
   border-radius: 0.75rem;
-  border: 2px solid rgb(96 165 250 / 0.9);
-  background: rgb(59 130 246 / 0.18);
-  box-shadow:
-    0 0 0 1px rgb(147 197 253 / 0.35) inset,
-    0 0 28px 4px rgb(59 130 246 / 0.45);
+  border: 1px solid color-mix(in srgb, var(--foreground) 32%, transparent);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--foreground) 10%, transparent);
   backdrop-filter: blur(4px);
   pointer-events: none;
   animation: chat-dock-preview-in 140ms ease-out;
@@ -216,8 +214,8 @@
 .workspace-panel-resizer:hover::after,
 .workspace-panel-resizer:active::after,
 .workspace-panel-resizer:focus-visible::after {
-  background: rgb(59 130 246);
-  box-shadow: 0 0 10px 1px rgb(59 130 246 / 0.55);
+  background: color-mix(in srgb, var(--foreground) 42%, transparent);
+  box-shadow: 0 0 4px color-mix(in srgb, var(--foreground) 12%, transparent);
 }
 .workspace-panel-resizer:focus-visible {
   outline: none;

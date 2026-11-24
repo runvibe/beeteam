@@ -329,7 +329,6 @@ export function ChatWelcome({
 }) {
   return (
     <div className="assistant-welcome">
-      <AgentMark size="lg" />
       <h3>{t("managed.welcomeTitle")}</h3>
       <p>{t(starters ? "managed.welcomeHq" : "managed.welcomeHint")}</p>
       {starters && (

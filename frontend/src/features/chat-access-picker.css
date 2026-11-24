@@ -8,6 +8,8 @@
   background: var(--popover);
   color: var(--popover-foreground);
   box-shadow: var(--shadow-md);
+  font-size: 13px;
+  line-height: 1.4;
 }
 .assistant-composer-row .chat-access-trigger {
   margin-right: auto;
@@ -20,6 +22,8 @@
   padding: 9px;
   border-radius: var(--radius-sm);
   text-align: left;
+  font-size: 13px;
+  line-height: 1.4;
 }
 .chat-access-option:hover,
 .chat-access-option[data-state="checked"] {
@@ -36,11 +40,16 @@
   flex: none;
   margin-top: 2px;
 }
-.chat-access-option span {
+.chat-access-option > span:not([data-state]) {
   flex: 1;
+  min-width: 0;
+}
+.chat-access-option > [data-state] {
+  flex: 0 0 15px;
 }
 .chat-access-option strong,
 .chat-access-option small {
+  font-size: 12px;
   display: block;
 }
 .chat-access-option small {

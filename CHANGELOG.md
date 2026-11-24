@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Use subtle theme-neutral highlights for panel dragging and resizing.
+
+- Compact chat-access menu typography and prevent its selection indicator from squeezing descriptions.
+
+- Remove the decorative hexagon above the chat welcome heading.
+
+- Keep listing-card footers visible by fitting description previews into the remaining card height.
+
 - Remove the redundant chat toggle from the navigation sidebar; retain floating and restoring in the chat header.
 
 - Show floating-chat session information in an external anchored panel without expanding compact chat or shifting its contents.
