@@ -3,7 +3,6 @@ import {
   ArrowUp,
   Mic,
   X,
-  Boxes,
   Download,
   ExternalLink,
   KanbanSquare,
@@ -317,7 +316,6 @@ const STARTERS = [
   { id: "managed.starterTeam", icon: Users },
   { id: "managed.starterAgent", icon: UserPlus },
   { id: "managed.starterBoard", icon: KanbanSquare },
-  { id: "managed.starterTour", icon: Boxes },
 ] as const;
 
 export function ChatWelcome({

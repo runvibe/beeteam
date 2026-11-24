@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Remove the introductory tour suggestion from the chat welcome screen.
+
 - Use Source Sans 3 for interface text and headings, and neutral border-only hover for chat suggestions.
 
 - Replace the legacy yellow sparkle mark in agent status and configuration states with the standard Bee Team logo.

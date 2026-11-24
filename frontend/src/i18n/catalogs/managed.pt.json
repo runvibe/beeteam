@@ -73,8 +73,6 @@
   "starterAgentPrompt": "Quero criar um novo agente. Me pergunte o que ele deve fazer e sugira nome e instruções.",
   "starterBoard": "Criar um board",
   "starterBoardPrompt": "Quero criar um board para organizar tarefas. Sugira as colunas e as primeiras tarefas.",
-  "starterTour": "Como o Bee Team funciona?",
-  "starterTourPrompt": "Explique em poucos passos como times, agentes, boards e tarefas funcionam juntos no Bee Team.",
   "generatedImage": "Imagem gerada",
   "fileUnavailable": "Arquivo indisponível",
   "previewFile": "Visualizar {{name}}",
