@@ -706,14 +706,23 @@ impl IntegratedProvider for CodexIntegratedProvider {
         access: Option<AccessMode>,
     ) -> ProviderFuture<'a, String> {
         Box::pin(async move {
-            let (mut wire, id, _scope, _disabled_plugins, _effective, _summary) = self
+            let (mut wire, id, _scope, disabled_plugins, _effective, _summary) = self
                 .session(root, None, profile, tools, access, None)
                 .await?;
-            // Codex defers the empty rollout until a persisted mutation. Naming an
-            // owned thread materializes it without sending a synthetic model turn.
             wire.request(
                 "thread/name/set",
                 json!({"threadId":id,"name":"Bee Team integrated agent"}),
+            )
+            .await?;
+            wire.request(
+                "thread/settings/update",
+                json!({"threadId":id,"disabledPluginIds":disabled_plugins}),
+            )
+            .await?;
+            // Codex checkpoints injected context without starting an inference turn.
+            wire.request(
+                "thread/inject_items",
+                json!({"threadId":id,"items":[{"type":"message","role":"developer","content":[{"type":"input_text","text":"This session is owned and managed by Bee Team."}]}]}),
             )
             .await?;
             Ok(id)

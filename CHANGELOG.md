@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Open directly to chat instead of a separate onboarding home page, while keeping Hive navigation and existing conversations available.
+
+- Allow managed chats to start when an unselected Codex plugin's MCP server is unavailable, without enabling other integrations.
+
+- Keep new managed Codex sessions resumable before their first message without submitting a synthetic model turn.
+
 - Use internal, current-contract guidance when creating teams, agents, boards and tasks in managed chats, without creation-skill setup or announcements. Apply the same routing to resumed chats while preserving custom agent profiles and existing coordination workflows.
 
 - Replace the floating voice card with a transparent, freely draggable avatar and four icon controls. Use neutral theme colors for all voice states, preserve position when returning to the chat, and keep errors separately readable and dismissible.

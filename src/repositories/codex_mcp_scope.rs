@@ -29,6 +29,7 @@ pub struct McpScope {
     name: String,
     configuration: Value,
     profile: Option<CodexToolProfile>,
+    disabled_plugin_ids: BTreeSet<String>,
 }
 /// Missing/malformed pagination metadata is not evidence of a complete inventory.
 pub fn inventory_cursor(result: &Value) -> Result<Option<&str>, SessionFailure> {
@@ -64,6 +65,7 @@ impl McpScope {
             name: name.into(),
             configuration,
             profile: None,
+            disabled_plugin_ids: BTreeSet::new(),
         })
     }
     pub fn with_tools(
@@ -143,10 +145,10 @@ impl McpScope {
             }
             if let Some(plugin) = server["pluginId"].as_str() {
                 self.configuration["plugins"][plugin] = json!({"enabled":false});
-            } else if name != "codex_apps" {
-                // CLI-injected servers may have no base-file transport after
-                // resume overrides. Use an inert, explicitly disabled transport;
-                // never read/copy their command, environment, headers or tokens.
+                self.disabled_plugin_ids.insert(plugin.to_owned());
+            }
+            if name != "codex_apps" {
+                // Shadow inherited and plugin transports without copying credentials.
                 self.configuration["mcp_servers"][name] = if server["httpOrigin"].is_string() {
                     json!({"url":"http://127.0.0.1:0/disabled","enabled":false,"required":false})
                 } else {
@@ -163,7 +165,7 @@ impl McpScope {
         &self.origin
     }
     pub fn disabled_plugins(&self, servers: &[Value]) -> Vec<String> {
-        let mut ids = std::collections::BTreeSet::new();
+        let mut ids = self.disabled_plugin_ids.clone();
         for server in servers {
             if let Some(id) = server["pluginId"].as_str() {
                 if !self.selected(server["name"].as_str().unwrap_or("")) {
@@ -195,6 +197,16 @@ impl McpScope {
                 }
                 found = true;
             } else if self.selected(server["name"].as_str().unwrap_or("")) {
+                if let Some(plugin) = server["pluginId"].as_str() {
+                    if self.disabled_plugin_ids.contains(plugin)
+                        || servers.iter().any(|other| {
+                            other["pluginId"] == plugin
+                                && !self.selected(other["name"].as_str().unwrap_or(""))
+                        })
+                    {
+                        return Err(fail());
+                    }
+                }
                 if server["runtimeStatus"] != "connected"
                     || !server["toolsError"].is_null()
                     || tools.is_none_or(|t| t.is_empty() || t.keys().any(|name| forbidden(name)))

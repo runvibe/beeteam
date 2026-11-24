@@ -5,9 +5,11 @@ import os
 import sys
 
 root = os.getcwd()
+bootstrap = os.path.basename(root).startswith("codex-bootstrap-")
 namespace = None
 developer_instructions = None
 resume_config = None
+disabled_plugins = None
 
 
 def send(value):
@@ -46,7 +48,10 @@ for line in sys.stdin:
             })
         result = {"data": servers, "nextCursor": None}
     elif method == "thread/start":
-        if root.endswith("legacy"):
+        if bootstrap and not params.get("ephemeral"):
+            namespace = next(iter(params["config"]["mcp_servers"]))
+            result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root}
+        elif root.endswith("legacy"):
             error = {"code": -32602, "message": "legacy execution must not start a helper thread"}
         elif not params.get("ephemeral") or params.get("cwd") != root or "sandbox_workspace_write.network_access" in params.get("config", {}):
             error = {"code": -32602, "message": "configuration was overridden"}
@@ -61,14 +66,40 @@ for line in sys.stdin:
                 result.update({"approvalPolicy": "on-request", "approvalsReviewer": "user", "sandbox": {"type": "readOnly", "networkAccess": False}})
             if root.endswith("removed"):
                 os.rmdir(root)
+    elif method == "thread/settings/update" and bootstrap:
+        disabled_plugins = params.get("disabledPluginIds")
+        if params.get("threadId") != "thread" or not isinstance(disabled_plugins, list):
+            error = {"code": -32602, "message": "missing plugin isolation"}
+    elif method == "thread/inject_items" and bootstrap:
+        items = params.get("items", [])
+        if "rejected" in os.path.basename(root):
+            error = {"code": -32601, "message": "injection unavailable"}
+        elif (
+            params.get("threadId") != "thread"
+            or disabled_plugins is None
+            or len(items) != 1
+            or items[0].get("type") != "message"
+            or items[0].get("role") != "developer"
+            or not items[0].get("content")
+        ):
+            error = {"code": -32602, "message": "invalid checkpoint"}
+        else:
+            with open(os.path.join(root, "fixture-durable"), "w", encoding="utf-8") as file:
+                file.write("persisted")
     elif method == "thread/resume":
-        config = params.get("config", {})
-        developer_instructions = params.get("developerInstructions")
-        resume_config = config
-        namespace = next(iter(config["mcp_servers"]))
-        result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root,
-                  "approvalPolicy": "never", "sandbox": {"type": "dangerFullAccess"}}
+        if bootstrap and not os.path.exists(os.path.join(root, "fixture-durable")):
+            error = {"code": -32600, "message": "no rollout found"}
+        else:
+            config = params.get("config", {})
+            developer_instructions = params.get("developerInstructions")
+            resume_config = config
+            namespace = next(iter(config["mcp_servers"]))
+            result = {"thread": {"id": "thread", "status": {"type": "idle"}}, "cwd": root,
+                      "approvalPolicy": "never", "sandbox": {"type": "dangerFullAccess"}}
     elif method == "turn/start":
+        if bootstrap:
+            with open(os.path.join(root, "fixture-turn-started"), "w", encoding="utf-8") as file:
+                file.write("started")
         if root.endswith("legacy") and any(k in params for k in ("sandboxPolicy", "approvalPolicy", "approvalsReviewer")):
             send({"id": ident, "error": {"code": -32602, "message": "legacy policy must not be overridden"}})
             continue

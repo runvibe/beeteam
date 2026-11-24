@@ -20,7 +20,7 @@ import { Button } from "./components/ui/button";
 import { AppPath } from "./components/context-path";
 import { MobileContextPath } from "./components/mobile-context-path";
 import { DetailContainerContext } from "./components/detail-layout/use-detail-mobile";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { HeaderFiltersContext } from "./components/header-filters";
 import { Boards } from "./features/boards";
 import { TaskPage } from "./features/tasks";
@@ -32,7 +32,6 @@ import { ContentPanelClose } from "./features/content-panel-controls";
 import { HiveNavigation } from "./features/hive-navigation";
 import { isHiveArea } from "./state/hive-navigation";
 import { useChatPanel } from "./state/chat-panel";
-import { ConnectedHome } from "./launch/connected-home";
 import { ManagedVoiceProvider } from "./features/managed-voice-chat";
 import "./App.css";
 import "./navigation.css";
@@ -48,15 +47,15 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   const routeEntity = useRouteEntity();
   const url = useLocation();
   const path = url.split("?")[0];
+  const home = path === "/home";
   const previousPath = useRef(path);
-  useEffect(() => {
-    if (previousPath.current !== path) {
-      previousPath.current = path;
-      const chat = useChatPanel.getState();
-      if (!(homeEnabled && path === "/home" && chat.freshConversation))
-        chat.setContentOpen(true);
-    }
-  }, [path, homeEnabled]);
+  useLayoutEffect(() => {
+    const chat = useChatPanel.getState();
+    if (home) chat.setContentOpen(false, "home");
+    else if (previousPath.current !== path || chat.contentHiddenForHome)
+      chat.setContentOpen(true);
+    previousPath.current = path;
+  }, [path, home]);
   const knownRoute = isKnownRoute(url);
   const pageIdentity = pageMotionIdentity(url, routeEntity.data?.id);
   const pageAnimation = usePageEntrance(pageIdentity);
@@ -76,7 +75,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
               <div
                 className="main-shell"
                 id="content-panel"
-                hidden={!contentOpen}
+                hidden={home || !contentOpen}
                 data-workspace-panel="content"
                 data-hive={hive || undefined}
                 ref={setDetailContainer}
@@ -112,7 +111,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
                   ) : teamId ? (
                     <TeamPage />
                   ) : area === "home" ? (
-                    <ConnectedHome />
+                    null
                   ) : area === "boards" ? (
                     <Boards />
                   ) : area === "agents" ? (

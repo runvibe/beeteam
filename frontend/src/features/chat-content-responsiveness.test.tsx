@@ -9,28 +9,6 @@ function installStyles(path: string) {
   return () => style.remove();
 }
 
-it("keeps home headings and destination links within narrow content", () => {
-  const removeStyles = installStyles("src/launch/connected-home.css");
-  try {
-    render(
-      <section className="connected-home">
-        <h1>A long home heading</h1>
-        <nav className="home-destinations">
-          <a href="/guide">A long documentation link</a>
-        </nav>
-      </section>,
-    );
-    expect(getComputedStyle(screen.getByRole("heading")).overflowWrap).toBe(
-      "anywhere",
-    );
-    const link = getComputedStyle(screen.getByRole("link"));
-    expect(link.maxWidth).toBe("100%");
-    expect(link.whiteSpace).toBe("normal");
-  } finally {
-    removeStyles();
-  }
-});
-
 it("allows header filters to scroll when desktop content becomes narrow", () => {
   const removeStyles = installStyles("src/navigation.css");
   try {

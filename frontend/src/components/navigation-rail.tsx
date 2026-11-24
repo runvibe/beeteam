@@ -40,7 +40,7 @@ export function NavigationRail({
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
     useChatPanel.getState().startNewSession(null);
-    showContent(false);
+    showContent(false, "home");
     if (area !== "home") navigate(homeHref);
   };
   const destinationState = (target: string) => {

@@ -106,7 +106,92 @@ fn plugin_selection_cannot_silently_enable_unselected_sibling_servers() {
         scope.configuration()["plugins"]["docs-plugin"]["enabled"],
         true
     );
+    assert!(scope.configuration()["mcp_servers"].get("docs").is_none());
+    assert!(scope.configuration()["mcp_servers"].get("files").is_none());
     assert!(scope.disabled_plugins(&inventory).is_empty());
+}
+
+#[test]
+fn unselected_plugin_servers_receive_disabled_transport_overrides() {
+    let mut scope = McpScope::new("http://127.0.0.1:59869/mcp", "owned_bee").unwrap();
+    scope
+        .observe(&[
+            json!({"name":"remote","pluginId":"remote-plugin","httpOrigin":"https://example.com"}),
+            json!({"name":"local","pluginId":"local-plugin","httpOrigin":null}),
+        ])
+        .unwrap();
+    let config = scope.configuration();
+    assert_eq!(
+        config["mcp_servers"]["remote"],
+        json!({"url":"http://127.0.0.1:0/disabled","enabled":false,"required":false})
+    );
+    assert_eq!(
+        config["mcp_servers"]["local"],
+        json!({"command":"beeteam-disabled-mcp","args":[],"enabled":false,"required":false})
+    );
+}
+
+#[test]
+fn shadowed_plugin_remains_disabled_for_the_turn() {
+    let mut scope = McpScope::new("http://127.0.0.1:59869/mcp", "owned_bee").unwrap();
+    scope
+        .observe(&[
+            json!({"name":"remote","pluginId":"remote-plugin","httpOrigin":"https://example.com"}),
+        ])
+        .unwrap();
+    let inventory = [
+        own(),
+        json!({"name":"remote","pluginId":null,"runtimeStatus":"disabled","tools":{}}),
+        json!({"name":"later","pluginId":"later-plugin","runtimeStatus":"connected","toolsError":null,"tools":{"search":{}}}),
+    ];
+    scope.verify(&inventory).unwrap();
+    assert_eq!(
+        scope.disabled_plugins(&inventory),
+        vec!["later-plugin", "remote-plugin"]
+    );
+}
+
+#[test]
+fn selected_server_cannot_switch_to_a_previously_disabled_plugin() {
+    use beeteam::repositories::codex_mcp_scope::CodexToolProfile;
+    let profile = CodexToolProfile {
+        enabled_mcp_servers: vec!["docs".into()],
+        ..Default::default()
+    };
+    let mut scope =
+        McpScope::with_tools("http://127.0.0.1:59869/mcp", "owned_bee", profile).unwrap();
+    scope
+        .observe(&[
+            json!({"name":"docs","pluginId":"docs-plugin"}),
+            json!({"name":"other","pluginId":"other-plugin"}),
+        ])
+        .unwrap();
+    let inventory = [
+        own(),
+        json!({"name":"docs","pluginId":"other-plugin","runtimeStatus":"connected","toolsError":null,"tools":{"search":{}}}),
+        json!({"name":"other","pluginId":null,"runtimeStatus":"disabled","tools":{}}),
+    ];
+    assert!(scope.verify(&inventory).is_err());
+}
+
+#[test]
+fn newly_discovered_plugin_sibling_cannot_silently_disable_selection() {
+    use beeteam::repositories::codex_mcp_scope::CodexToolProfile;
+    let profile = CodexToolProfile {
+        enabled_mcp_servers: vec!["docs".into()],
+        ..Default::default()
+    };
+    let mut scope =
+        McpScope::with_tools("http://127.0.0.1:59869/mcp", "owned_bee", profile).unwrap();
+    scope
+        .observe(&[json!({"name":"docs","pluginId":"docs-plugin"})])
+        .unwrap();
+    let inventory = [
+        own(),
+        json!({"name":"docs","pluginId":"docs-plugin","runtimeStatus":"connected","toolsError":null,"tools":{"search":{}}}),
+        json!({"name":"other","pluginId":"docs-plugin","runtimeStatus":"connected","toolsError":null,"tools":{"search":{}}}),
+    ];
+    assert!(scope.verify(&inventory).is_err());
 }
 
 #[test]

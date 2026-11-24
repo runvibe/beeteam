@@ -65,6 +65,79 @@ async fn legacy_turn_does_not_override_policy() {
 }
 
 #[tokio::test]
+async fn new_owned_thread_can_resume_without_a_synthetic_turn() {
+    let root = tempfile::Builder::new()
+        .prefix("codex-bootstrap-")
+        .tempdir()
+        .unwrap();
+    let provider = CodexIntegratedProvider {
+        executable: PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/fake_codex_access.py"),
+        mcp_endpoint: "http://127.0.0.1:59869/mcp".into(),
+        profile: CodexToolProfile::default(),
+    };
+    let canonical_root = root.path().canonicalize().unwrap();
+    let path = canonical_root.to_str().unwrap();
+    let profile = json!({"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]});
+    let thread = provider
+        .create(path, &profile, ToolSource::Configured, None)
+        .await
+        .unwrap();
+    assert!(!root.path().join("fixture-turn-started").exists());
+    let target = SessionDestination {
+        harness: "codex".into(),
+        installation_id: "test".into(),
+        external_id: thread,
+        project_root: path.into(),
+    };
+    let (events, mut receiver) = mpsc::channel(16);
+    let (_sender, controls) = mpsc::channel(2);
+    let result = provider
+        .run(
+            &target,
+            "test",
+            "Bee Team managed guidance",
+            &profile,
+            ToolSource::Configured,
+            None,
+            events,
+            controls,
+        )
+        .await;
+    assert!(result.is_ok(), "{result:?}");
+    let mut completed = false;
+    while let Ok(event) = receiver.try_recv() {
+        completed |= matches!(event, IntegratedEvent::Completed);
+    }
+    assert!(completed);
+}
+
+#[tokio::test]
+async fn failed_owned_thread_checkpoint_never_reports_creation_success() {
+    let root = tempfile::Builder::new()
+        .prefix("codex-bootstrap-rejected-")
+        .tempdir()
+        .unwrap();
+    let provider = CodexIntegratedProvider {
+        executable: PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/fake_codex_access.py"),
+        mcp_endpoint: "http://127.0.0.1:59869/mcp".into(),
+        profile: CodexToolProfile::default(),
+    };
+    let error = provider
+        .create(
+            root.path().to_str().unwrap(),
+            &json!({"webSearch":"disabled","networkAccess":false,"enabledMcpServers":[],"skillRoots":[]}),
+            ToolSource::Configured,
+            None,
+        )
+        .await
+        .unwrap_err();
+    assert_eq!(error.code, "provider_rejected");
+    assert!(!root.path().join("fixture-turn-started").exists());
+}
+
+#[tokio::test]
 async fn resumed_managed_thread_receives_guidance_and_preserves_user_developer_instructions() {
     let (result, events) = run_scenario(None, "codex-access-guidance").await;
     result.unwrap();

@@ -49,6 +49,7 @@ type ChatPanelState = {
   }) => void;
   setFloatingPosition: (position: { x: number; y: number }) => void;
   contentOpen: boolean;
+  contentHiddenForHome: boolean;
   side: ChatPanelSide;
   panelOrder: WorkspacePanel[];
   width: number;
@@ -59,7 +60,7 @@ type ChatPanelState = {
   setConversation: (conversationId: string | null) => void;
   close: () => void;
   show: () => void;
-  setContentOpen: (open: boolean) => void;
+  setContentOpen: (open: boolean, source?: "home") => void;
   chooseTeam: () => void;
   setSide: (side: ChatPanelSide) => void;
   setPanelOrder: (order: readonly WorkspacePanel[]) => void;
@@ -89,6 +90,7 @@ export const useChatPanel = create<ChatPanelState>()(
           set({ floatingPosition: position });
       },
       contentOpen: true,
+      contentHiddenForHome: false,
       side: "right",
       panelOrder: defaultPanelOrder("right"),
       width: 440,
@@ -120,10 +122,11 @@ export const useChatPanel = create<ChatPanelState>()(
         }),
       setConversation: (conversationId) =>
         set({ conversationId, freshConversation: false }),
-      close: () => set({ open: false, contentOpen: true }),
+      close: () => set({ open: false, contentOpen: true, contentHiddenForHome: false }),
       show: () => set({ open: true }),
-      setContentOpen: (contentOpen) => set((state) => ({
+      setContentOpen: (contentOpen, source) => set((state) => ({
         contentOpen,
+        contentHiddenForHome: !contentOpen && source === "home",
         ...(!contentOpen && !state.open ? { open: true } : {}),
       })),
       chooseTeam: () =>
@@ -180,6 +183,7 @@ export const useChatPanel = create<ChatPanelState>()(
         picking,
         open,
         contentOpen,
+        contentHiddenForHome,
         floatingPosition,
         floatingSize,
       }) => ({
@@ -192,6 +196,7 @@ export const useChatPanel = create<ChatPanelState>()(
         picking,
         open,
         contentOpen,
+        contentHiddenForHome,
         floatingPosition,
         floatingSize,
       }),
@@ -236,6 +241,8 @@ export const useChatPanel = create<ChatPanelState>()(
             typeof saved.contentOpen === "boolean"
               ? saved.contentOpen
               : current.contentOpen,
+          contentHiddenForHome:
+            saved.contentHiddenForHome === true && saved.contentOpen === false,
           panelOrder,
           side: chatSide(panelOrder),
           sessionsWidth,
