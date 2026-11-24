@@ -20,7 +20,6 @@ beforeEach(() => {
 afterEach(() => setLocalePreference("pt"));
 
 it.each([
-  ["/home", "Home"],
   ["/boards", "Hive"],
   ["/agents", "Hive"],
   ["/teams", "Hive"],

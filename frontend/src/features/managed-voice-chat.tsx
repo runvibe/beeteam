@@ -83,8 +83,11 @@ export function ManagedVoiceChat(props: Props) {
     if (
       props.selectionToken !== selectedToken.current &&
       props.selectionToken !== targetConversation.current
-    )
+    ) {
       stop();
+      setError("");
+      lastCall.current = null;
+    }
     selectedToken.current = props.selectionToken;
   }, [props.selectionToken]);
   useEffect(() => {
@@ -260,7 +263,8 @@ export function ManagedVoiceChat(props: Props) {
           };
         } catch {
           submissionUnknown = true;
-          setError(t("managed.voiceUnknownSubmission"));
+          if (connection.current === voice)
+            setError(t("managed.voiceUnknownSubmission"));
           return { state: "unknown", retrySubmission: false };
         } finally {
           submitting = false;

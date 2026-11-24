@@ -232,3 +232,20 @@ it("offers preset panel layouts in the navigation footer and persists the chosen
   ]);
   expect(screen.queryByRole("button", { name: /Move (sessions|content|chat) to the/ })).toBeNull();
 });
+
+it("always focuses a fresh blank chat when Home is clicked repeatedly", async () => {
+  setLocalePreference("pt");
+  window.history.replaceState({}, "", "/boards");
+  useChatPanel.setState({ teamId: "previous-team", conversationId: "saved", contentOpen: true, open: false });
+  const user = userEvent.setup();
+  render(<ApiProvider api={createMockApi({ delay: 0 })}><App homeEnabled /></ApiProvider>);
+  const home = screen.getByRole("button", { name: "Início" });
+  await user.click(home);
+  const first = useChatPanel.getState().resetGeneration;
+  expect(useChatPanel.getState()).toMatchObject({ teamId: null, conversationId: null, freshConversation: true, open: true, contentOpen: false });
+  expect(home).toHaveAttribute("aria-current", "page");
+  await user.click(home);
+  expect(useChatPanel.getState().resetGeneration).toBe(first + 1);
+  expect(useChatPanel.getState().contentOpen).toBe(false);
+  expect(home).toHaveAttribute("aria-current", "page");
+});

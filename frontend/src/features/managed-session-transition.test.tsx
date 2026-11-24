@@ -38,7 +38,7 @@ it("retries an earlier uncertain send with its original board and idempotency ke
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   function PreviousSend() {
-    const { send } = useManagedSend("leader", api);
+    const { send } = useManagedSend("leader", api, "draft:team-a:0");
     return (
       <button onClick={() => void send(
         { content: "Plan", teamId: "team-a", boardId: "board-a" },

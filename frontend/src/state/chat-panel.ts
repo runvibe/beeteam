@@ -34,6 +34,7 @@ type ChatPanelState = {
   conversationId: string | null;
   /** An explicit request for a blank session, rather than restoring the latest one. */
   freshConversation: boolean;
+  resetGeneration: number;
   /** True while the user is choosing a team; otherwise no selection means the system team. */
   picking: boolean;
   /** Whether chat is docked; false keeps it visible as a floating window. */
@@ -71,6 +72,7 @@ export const useChatPanel = create<ChatPanelState>()(
       teamId: null,
       conversationId: null,
       freshConversation: false,
+      resetGeneration: 0,
       picking: false,
       open: true,
       floatingPosition: null,
@@ -100,13 +102,14 @@ export const useChatPanel = create<ChatPanelState>()(
           open: true,
         }),
       startNewSession: (teamId) =>
-        set({
+        set((state) => ({
+          resetGeneration: state.resetGeneration + 1,
           teamId,
           conversationId: null,
           freshConversation: true,
           picking: false,
           open: true,
-        }),
+        })),
       openConversation: (teamId, conversationId) =>
         set({
           teamId,

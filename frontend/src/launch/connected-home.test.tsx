@@ -12,6 +12,8 @@ import { setLocalePreference } from "@/i18n";
 import { ConnectedApp } from "./connected-app";
 import { LaunchRoot } from "./launch-root";
 import { appVersion } from "@/app-version";
+import { goBack } from "@/routing/location";
+import { useChatPanel } from "@/state/chat-panel";
 import { makeSeed } from "@/api/seed";
 beforeEach(() =>
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline"))),
@@ -115,7 +117,9 @@ it("keeps the original task route when entering through the logo and activating 
     name: "Bee Team - ir para o início",
   });
   fireEvent.click(logo);
-  await screen.findByRole("button", { name: "Retomar de onde parei" });
+  await waitFor(() => expect(location.pathname).toBe("/home"));
+  expect(useChatPanel.getState()).toMatchObject({ freshConversation: true, contentOpen: false });
+  expect(new URLSearchParams(location.search).get("from")).toBe(requested);
   const home = location.pathname + location.search;
   const entries = history.length;
   fireEvent.click(screen.getByRole("button", { name: "Início" }));
@@ -124,9 +128,7 @@ it("keeps the original task route when entering through the logo and activating 
   );
   expect(location.pathname + location.search).toBe(home);
   expect(history.length).toBe(entries);
-  fireEvent.click(
-    screen.getByRole("button", { name: "Retomar de onde parei" }),
-  );
+  act(() => goBack());
   await waitFor(() =>
     expect(location.pathname + location.search).toBe(requested),
   );

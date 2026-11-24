@@ -40,7 +40,8 @@ export function NavigationRail({
   const section = isHiveArea(area) ? "hive" : area;
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
-    showContent(true);
+    useChatPanel.getState().startNewSession(null);
+    showContent(false);
     if (area !== "home") navigate(homeHref);
   };
   const destinationState = (target: string) => {
@@ -93,10 +94,12 @@ export function NavigationRail({
             <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
-              {...destinationState("home")}
+              variant={section === "home" ? "secondary" : "ghost"}
+              aria-current={section === "home" ? "page" : undefined}
+              aria-controls="leader-chat-panel"
               size="icon"
               aria-label={tr("common.home")}
-              onClick={() => selectDestination("home", openHome)}
+              onClick={openHome}
             >
               <House aria-hidden="true" />
             </Button>

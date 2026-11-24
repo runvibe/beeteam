@@ -454,6 +454,7 @@ function PanelLeader({
   const leader = useEntity("agents", leaderId);
   const conversationId = useChatPanel((s) => s.conversationId);
   const freshConversation = useChatPanel((s) => s.freshConversation);
+  const resetGeneration = useChatPanel((s) => s.resetGeneration);
   const setConversation = useChatPanel((s) => s.setConversation);
   if (api.managedAgents)
     return (
@@ -472,6 +473,7 @@ function PanelLeader({
           starters={system}
           conversationId={conversationId}
           freshConversation={freshConversation}
+          resetGeneration={resetGeneration}
           onConversationChange={setConversation}
         />
       </>

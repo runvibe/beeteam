@@ -34,6 +34,7 @@ export function ManagedAgentChat({
   mode = "chat",
   conversationId,
   freshConversation = false,
+  resetGeneration = 0,
   onConversationChange,
 }: {
   api: ManagedAgentApi;
@@ -46,6 +47,7 @@ export function ManagedAgentChat({
   /** Externally selected session; null asks for a new or restored conversation. */
   conversationId?: string | null;
   freshConversation?: boolean;
+  resetGeneration?: number;
   onConversationChange?: (conversationId: string | null) => void;
 }) {
   useLocale();
@@ -72,23 +74,27 @@ export function ManagedAgentChat({
   });
   const conversationItems = conversations.data?.pages.flatMap((page) => page.items) ?? [];
   const requestItems = requests.data?.pages.flatMap((page) => page.items) ?? [];
-  const { pending, send: sendPending, acknowledge } = useManagedSend(agentId, api);
-  const [conversation, setConversation] = useState(""),
-    [request, setRequest] = useState(""),
-    [draft, setDraft] = useState(() => pending?.body.content ?? "");
+  const [conversation, setConversation] = useState("");
+  const sendScope = (conversationId ?? conversation)
+    ? `conversation:${conversationId ?? conversation}`
+    : `draft:${teamId ?? ""}:${resetGeneration}`;
+  const { pending, send: sendPending, acknowledge } = useManagedSend(agentId, api, sendScope);
+  const [request, setRequest] = useState(""),
+    [draft, setDraft] = useState(() => (pending?.context.resetGeneration ?? 0) === resetGeneration ? pending?.body.content ?? "" : "");
+  const pendingHere = !!pending;
   const draftAccessKey = `draft:${teamId ?? ""}:${agentId}`;
   const accessKey = conversation || draftAccessKey;
   const accessMode = useChatAccess(
     (state) => state.byChat[accessKey] ?? state.defaultMode,
   );
-  const selection = useRef({ teamId, conversation, externalConversation: conversationId });
+  const selection = useRef({ teamId, conversation, externalConversation: conversationId, resetGeneration });
   useLayoutEffect(() => {
-    selection.current = { teamId, conversation, externalConversation: conversationId };
-  }, [teamId, conversation, conversationId]);
+    selection.current = { teamId, conversation, externalConversation: conversationId, resetGeneration };
+  }, [teamId, conversation, conversationId, resetGeneration]);
   const pendingText = pending?.context.source === "voice" ? undefined : pending?.body.content;
   useEffect(() => {
-    if (pendingText !== undefined) setDraft(pendingText);
-  }, [pendingText]);
+    if (pendingText !== undefined && (pending?.context.conversation === conversation || (pending?.context.resetGeneration ?? 0) === resetGeneration)) setDraft(pendingText);
+  }, [pendingText, pending?.context.resetGeneration, resetGeneration, pending?.context.conversation, conversation]);
   const [search, setSearch] = useState<"live" | "cached" | "disabled">("live"),
     [network, setNetwork] = useState(!!teamId && mode === "chat"),
     [mcps, setMcps] = useState(""),
@@ -156,13 +162,21 @@ export function ManagedAgentChat({
       (pending.state !== "completed" && pending.state !== "rejected")
     )
       return;
+    // External selection must settle before consuming a retained delivery result.
+    if (conversationId && conversation !== conversationId) return;
     if (!acknowledge(pending.key)) return;
+    const selectedConversation = selection.current.externalConversation === undefined
+      ? selection.current.conversation : selection.current.externalConversation;
+    const sameSelection = (pending.context.resetGeneration ?? 0) === selection.current.resetGeneration ||
+      (!!pending.context.conversation && pending.context.conversation === selectedConversation &&
+        pending.context.teamId === selection.current.teamId);
     if (pending.state === "rejected") {
+      if (!sameSelection) return;
       if (pending.context.source !== "voice") setDraft(pending.body.content);
       setError(pending.error);
       return;
     }
-    if (!pending.context.conversation && pending.context.teamId)
+    if (sameSelection && !pending.context.conversation && pending.context.teamId)
       useChatAccess.getState().moveChoice(
         `draft:${pending.context.teamId}:${agentId}`,
         pending.request.conversationId,
@@ -170,20 +184,27 @@ export function ManagedAgentChat({
     const current = selection.current;
     const context = pending.context;
     if (
+      sameSelection &&
       current.teamId === context.teamId &&
-      current.conversation === context.conversation &&
+      (current.conversation === context.conversation || selectedConversation === context.conversation) &&
       current.externalConversation === context.externalConversation
     ) {
       voiceControl.current?.adoptConversation?.(pending.request.conversationId);
       select(pending.request.conversationId, pending.request.id);
     }
-    if (pending.context.source !== "voice") setDraft("");
-  }, [acknowledge, agentId, mode, pending, select]);
+    if (sameSelection && pending.context.source !== "voice") setDraft("");
+  }, [acknowledge, agentId, conversation, conversationId, mode, pending, select]);
   const latestRequest = (id: string) =>
     requestItems.find((r) => r.conversationId === id)?.id ?? "";
   useEffect(() => {
     if (freshConversation) {
       restored.current = true;
+      voiceControl.current?.stop();
+      setDraft("");
+      setError(null);
+      setBusy(false);
+      setLegacy("");
+      setOlderCursor(undefined);
       setConversation("");
       setRequest("");
       setOlder([]);
@@ -196,7 +217,7 @@ export function ManagedAgentChat({
     setConversation(conversationId ?? "");
     setRequest(conversationId ? latestRequest(conversationId) : "");
     setOlder([]);
-  }, [conversationId, freshConversation]);
+  }, [conversationId, freshConversation, resetGeneration]);
   useEffect(() => {
     if (freshConversation || restored.current || !requests.data || !conversations.data) return;
     restored.current = true;
@@ -219,6 +240,7 @@ export function ManagedAgentChat({
     if (latest) setRequest(latest);
   }, [conversation, request, requests.data]);
   async function act(fn: () => Promise<unknown>) {
+    const generation = resetGeneration;
     setBusy(true);
     setError(null);
     try {
@@ -233,9 +255,9 @@ export function ManagedAgentChat({
         queryClient.invalidateQueries({ queryKey: ["managed-sessions"] }),
       ]);
     } catch (e) {
-      setError(e);
+      if (selection.current.resetGeneration === generation) setError(e);
     } finally {
-      setBusy(false);
+      if (selection.current.resetGeneration === generation) setBusy(false);
     }
   }
   const split = (value: string) =>
@@ -264,12 +286,16 @@ export function ManagedAgentChat({
     !busy &&
     !readOnly &&
     (!waitingForDetail || !!pending) &&
-    (pending ? pending.state === "uncertain" :
+    (pending ? pendingHere && pending.state === "uncertain" :
       (!!draft.trim() && new TextEncoder().encode(draft).length <= 65536));
-  function send() {
+  function send(content = draft, starter = false) {
+    if (!ready || busy || readOnly || voiceControl.current?.starting ||
+      (waitingForDetail && !pending) ||
+      (pending ? !pendingHere || starter || pending.state !== "uncertain" :
+        (!content.trim() || new TextEncoder().encode(content).length > 65536))) return;
     void act(async () => {
       const body: S["SendAgentRequest"] = {
-        content: draft,
+        content,
         ...(teamId ? { accessMode } : {}),
         ...(conversation
           ? { conversationId: conversation }
@@ -279,6 +305,7 @@ export function ManagedAgentChat({
         teamId,
         conversation,
         externalConversation: conversationId,
+        resetGeneration,
       });
     });
   }
@@ -494,11 +521,13 @@ export function ManagedAgentChat({
             starters={!!starters}
             empty={mode === "management" && conversations.isSuccess && conversationItems.length === 0}
             hasOlder={!!(olderCursor === undefined ? page?.nextCursor : olderCursor)}
-            onPick={setDraft}
+            onPick={(prompt) => send(prompt, true)}
             onOlder={() => void act(async () => {
               const cursor = olderCursor === undefined ? page?.nextCursor : olderCursor;
               if (!cursor) return;
+              const generation = resetGeneration;
               const p = await api.messages(conversation, cursor);
+              if (selection.current.resetGeneration !== generation || selection.current.conversation !== conversation) return;
               setOlder((old) => [...p.items, ...old]);
               setOlderCursor(p.nextCursor);
             })}
@@ -521,12 +550,12 @@ export function ManagedAgentChat({
           {mode === "chat" && (
             <>
               {previousLeader && <p className="assistant-readonly">{t("managed.previousLeader")}</p>}
-              {pending?.state === "uncertain" && (
+              {pendingHere && pending?.state === "uncertain" && (
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
               <ManagedVoiceChat controlRef={voiceControl} api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
                 onActivate={() => setVoiceScrollRequest((value) => value + 1)}
-                conversation={conversation} selectionToken={conversationId} accessMode={accessMode}
+                conversation={conversation} selectionToken={conversationId ?? `new:${resetGeneration}`} accessMode={accessMode}
                 disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
                 readOnly={readOnly}
                 onAssociated={(id) => {
@@ -543,7 +572,7 @@ export function ManagedAgentChat({
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
                   if (request) void queryClient.invalidateQueries({ queryKey: ["managed-snapshot", request] });
                 }}
-                onSend={(body) => sendPending(body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, source: "voice" })}
+                onSend={(body) => sendPending(body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, resetGeneration, source: "voice" })}
                 onQueued={(item) => {
                   if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, item.conversationId);
                   select(item.conversationId, item.id);
@@ -555,10 +584,10 @@ export function ManagedAgentChat({
                 voice={voice}
                 value={draft}
                 onChange={setDraft}
-                onSubmit={send}
+                onSubmit={() => send()}
                 locked={!!pending || waitingForDetail || !!voice.starting}
                 canSend={canSend && !voice.starting}
-                retry={!!pending}
+                retry={pendingHere}
                 readOnly={readOnly}
                 accessControl={teamId ? (
                   <ChatAccessPicker

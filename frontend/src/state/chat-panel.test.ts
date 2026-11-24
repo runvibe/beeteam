@@ -249,3 +249,11 @@ it("keeps chat usable when floating from solo mode or hiding its content area",(
   useChatPanel.getState().setContentOpen(false);
   expect(useChatPanel.getState()).toMatchObject({open:true,contentOpen:false});
 });
+
+it("assigns a new blank selection identity on every new session", () => {
+  useChatPanel.getState().startNewSession(null);
+  const first = useChatPanel.getState().resetGeneration;
+  useChatPanel.getState().startNewSession(null);
+  expect(useChatPanel.getState().resetGeneration).toBe(first + 1);
+  expect(useChatPanel.getState()).toMatchObject({ conversationId: null, freshConversation: true });
+});

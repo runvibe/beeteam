@@ -213,7 +213,7 @@ it("keeps the original action retry after the approval disappears", async () => 
   );
 });
 
-it("fills the composer from a starter and sends with Enter", async () => {
+it("submits a starter exactly once without another composer action", async () => {
   await i18n.changeLanguage("en");
   const api = {
     config: vi.fn().mockResolvedValue({
@@ -248,13 +248,6 @@ it("fills the composer from a starter and sends with Enter", async () => {
     </QueryClientProvider>,
   );
   fireEvent.click(await screen.findByText("Create a team"));
-  const box = screen.getByLabelText("Message to agent");
-  expect(box.textContent).toBe(
-    "I want to create my first team. Help me define its goal, leader and roles.",
-  );
-  fireEvent.keyDown(box, { key: "Enter", shiftKey: true });
-  expect(api.send).not.toHaveBeenCalled();
-  fireEvent.keyDown(box, { key: "Enter" });
   await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
   expect(vi.mocked(api.send).mock.calls[0][1]).toEqual({
     content:

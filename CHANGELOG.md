@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Make Home open a fresh chat without eagerly creating a session; send starter suggestions directly and keep late replies from reopening a previous chat.
+
 - Use subtle theme-neutral highlights for panel dragging and resizing.
 
 - Compact chat-access menu typography and prevent its selection indicator from squeezing descriptions.

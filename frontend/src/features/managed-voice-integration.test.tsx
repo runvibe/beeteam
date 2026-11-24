@@ -36,6 +36,7 @@ vi.mock("./realtime-voice", () => ({
 beforeEach(async () => {
   vi.clearAllMocks();
   mock.autoStart = true;
+  mock.callbacks = null;
   Element.prototype.scrollIntoView = vi.fn();
   await i18n.changeLanguage("en");
 });
@@ -281,4 +282,34 @@ it("persists both spoken roles in the main timeline and restores a speech-only c
   await screen.findByText("The conversation is saved here.");
   expect(screen.queryByText("Voice")).not.toBeInTheDocument();
   expect(api.send).not.toHaveBeenCalled();
+});
+
+it("stops the old voice call and ignores its late request failure on Home reset", async () => {
+  let reject!: (error: unknown) => void;
+  const api = {
+    voice: {},
+    config: vi.fn().mockResolvedValue({ version: 1, configuration: null }),
+    conversations: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    requests: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    messages: vi.fn().mockResolvedValue({ items: [], nextCursor: null }),
+    conversation: vi.fn().mockResolvedValue({ id: "created", teamId: "team", agentId: "leader", readOnly: false }),
+    send: vi.fn().mockReturnValue(new Promise((_yes, no) => { reject = no; })),
+  } as unknown as ManagedAgentApi;
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const view = (generation: number) => <QueryClientProvider client={client}>
+    <ManagedAgentChat api={api} agentId="leader" teamId="team" freshConversation resetGeneration={generation} />
+  </QueryClientProvider>;
+  const mounted = render(view(1));
+  await screen.findByRole("button", { name: "Talk by voice" });
+  expect(mock.callbacks).toBeNull();
+  fireEvent.click(screen.getByRole("button", { name: "Talk by voice" }));
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "Message to agent" })).toHaveAttribute("contenteditable", "plaintext-only"));
+  let execution!: Promise<unknown>;
+  act(() => { execution = mock.callbacks!.execute("Run old task", "old"); });
+  await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
+  mounted.rerender(view(2));
+  expect(mock.close).toHaveBeenCalled();
+  await act(async () => { reject(new TypeError("Old voice delivery failed")); await execution; });
+  expect(screen.queryByText("Request delivery could not be confirmed. Check the chat history before sending again.")).toBeNull();
+  expect(screen.getByRole("textbox", { name: "Message to agent" })).toHaveAttribute("contenteditable", "plaintext-only");
 });

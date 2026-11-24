@@ -8,6 +8,7 @@ import { isDefinitiveManagedFailure } from "./managed-idempotency";
 type Schemas = components["schemas"];
 type SendContext = {
   source?: "voice";
+  resetGeneration?: number;
   teamId: string | undefined;
   conversation: string;
   externalConversation: string | null | undefined;
@@ -26,6 +27,9 @@ type PendingSend = SendIdentity &
   );
 
 class ManagedSendRegistry {
+  private readonly client: QueryClient;
+  constructor(client: QueryClient) { this.client = client; }
+
   private sends = new Map<string, PendingSend>();
   private listeners = new Set<() => void>();
 
@@ -56,12 +60,13 @@ class ManagedSendRegistry {
   }
 
   async send(
+    scope: string,
     agentId: string,
     api: ManagedAgentApi,
     body: Schemas["SendAgentRequest"],
     context: SendContext,
   ) {
-    const previous = this.get(agentId);
+    const previous = this.get(scope);
     if (previous && previous.state !== "uncertain")
       throw new Error(t("managed.retryAction"));
     const active: PendingSend = {
@@ -70,14 +75,17 @@ class ManagedSendRegistry {
       context: previous?.context ?? context,
       state: "running",
     };
-    this.update(agentId, active);
+    this.update(scope, active);
     try {
       const request = await api.send(agentId, active.body, active.key);
-      this.update(agentId, { ...active, state: "completed", request });
+      this.update(scope, { ...active, state: "completed", request });
+      void this.client.invalidateQueries({ queryKey: ["managed-sessions"] });
+      void this.client.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
+      void this.client.invalidateQueries({ queryKey: ["managed-requests", agentId] });
       return request;
     } catch (error) {
       this.update(
-        agentId,
+        scope,
         isDefinitiveManagedFailure(error, !!previous)
           ? { ...active, state: "rejected", error }
           : { ...active, state: "uncertain" },
@@ -89,24 +97,25 @@ class ManagedSendRegistry {
 
 const registries = new WeakMap<QueryClient, ManagedSendRegistry>();
 
-export function useManagedSend(agentId: string, api: ManagedAgentApi) {
+export function useManagedSend(agentId: string, api: ManagedAgentApi, selectionScope: string) {
   const client = useQueryClient();
   let registry = registries.get(client);
   if (!registry) {
-    registry = new ManagedSendRegistry();
+    registry = new ManagedSendRegistry(client);
     registries.set(client, registry);
   }
   const current = registry;
-  const snapshot = useCallback(() => current.get(agentId), [current, agentId]);
+  const sendScope = `${agentId}:${selectionScope}`;
+  const snapshot = useCallback(() => current.get(sendScope), [current, sendScope]);
   const pending = useSyncExternalStore(current.subscribe, snapshot, snapshot);
   const acknowledge = useCallback(
-    (key: string) => current.acknowledge(agentId, key),
-    [current, agentId],
+    (key: string) => current.acknowledge(sendScope, key),
+    [current, sendScope],
   );
   const send = useCallback(
     (body: Schemas["SendAgentRequest"], context: SendContext) =>
-      current.send(agentId, api, body, context),
-    [current, agentId, api],
+      current.send(sendScope, agentId, api, body, context),
+    [current, sendScope, agentId, api],
   );
   return {
     pending,

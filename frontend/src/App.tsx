@@ -51,9 +51,11 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
   useEffect(() => {
     if (previousPath.current !== path) {
       previousPath.current = path;
-      useChatPanel.getState().setContentOpen(true);
+      const chat = useChatPanel.getState();
+      if (!(homeEnabled && path === "/home" && chat.freshConversation))
+        chat.setContentOpen(true);
     }
-  }, [path]);
+  }, [path, homeEnabled]);
   const knownRoute = isKnownRoute(url);
   const pageIdentity = pageMotionIdentity(url, routeEntity.data?.id);
   const pageAnimation = usePageEntrance(pageIdentity);
