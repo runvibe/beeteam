@@ -29,7 +29,6 @@ it.each([true, false])("orders navigation controls when homeEnabled is %s", (hom
   const nav = screen.getByRole("navigation", { name: "Navegação principal" });
   const expected = [
     ...(homeEnabled ? ["Início"] : []),
-    "Chat com o líder",
     "Mostrar ou ocultar sessões",
     "Hive",
   ];
@@ -63,8 +62,6 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
   await user.tab();
   expect(brand).toHaveFocus();
   await user.tab();
-  expect(within(nav).getByRole("button", { name: "Chat com o líder" })).toHaveFocus();
-  await user.tab();
   expect(hive).toHaveFocus();
   expect(await screen.findByRole("tooltip")).toHaveTextContent("Hive");
   await user.keyboard("{Escape}");
@@ -89,7 +86,7 @@ it("uses a fixed icon navigation with keyboard tooltips and updates the active r
   expect(screen.getByRole("button", { name: /Ativar tema/ })).toBeVisible();
 });
 
-it("puts the chat toggle in main navigation and switches between docked and floating", async () => {
+it("keeps chat available through its header without a sidebar toggle", async () => {
   window.history.replaceState({}, "", "/boards");
   useChatPanel.setState({ teamId: null, picking: false, open: false });
   const user = userEvent.setup();
@@ -98,21 +95,14 @@ it("puts the chat toggle in main navigation and switches between docked and floa
       <App />
     </ApiProvider>,
   );
-
   const nav = screen.getByRole("navigation", { name: "Navegação principal" });
-  const toggle = within(nav).getByRole("button", { name: "Chat com o líder" });
-  expect(screen.getAllByRole("button", { name: "Chat com o líder" })).toHaveLength(1);
-  expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await user.click(toggle);
-  expect(toggle).toHaveAttribute("aria-expanded", "true");
-  expect(screen.getByRole("complementary", { name: "Chat com o líder" })).toBeVisible();
-  await user.click(toggle);
-  expect(toggle).toHaveAttribute("aria-expanded", "false");
-  expect(screen.getByRole("complementary", { name: "Chat com o líder" })).toHaveAttribute("data-floating", "true");
-  screen.getByRole("link", { name: "Bee Team - ir para boards" }).focus();
-  await user.tab();
-  expect(toggle).toHaveFocus();
-  expect(await screen.findByRole("tooltip")).toHaveTextContent("Chat com o líder");
+  expect(within(nav).queryByRole("button", { name: "Chat com o líder" })).toBeNull();
+  const chat = screen.getByRole("complementary", { name: "Chat com o líder" });
+  expect(chat).toHaveAttribute("data-floating", "true");
+  await user.click(screen.getByRole("button", { name: "Encaixar chat no painel" }));
+  expect(chat).not.toHaveAttribute("data-floating");
+  await user.click(screen.getByRole("button", { name: "Deixar chat flutuante" }));
+  expect(chat).toHaveAttribute("data-floating", "true");
 });
 
 it("keeps the navigation rail and its controls at most 75% of their former size", () => {
