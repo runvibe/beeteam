@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Float the chat when its docked resize border is dragged beyond the minimum width, preserving conversation, draft and voice.
+
 - Remove the introductory tour suggestion from the chat welcome screen.
 
 - Use Source Sans 3 for interface text and headings, and neutral border-only hover for chat suggestions.

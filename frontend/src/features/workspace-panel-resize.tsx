@@ -71,11 +71,17 @@ export function WorkspacePanelResizer({ panel }: { panel: ResizablePanel }) {
       onPointerMove={(event) => {
         if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
         const rect = event.currentTarget.parentElement!.getBoundingClientRect();
-        resize(
-          bounds.edge === "right"
-            ? event.clientX - rect.left
-            : rect.right - event.clientX,
-        );
+        const requestedWidth = bounds.edge === "right"
+          ? event.clientX - rect.left
+          : rect.right - event.clientX;
+        if (panel === "chat" && requestedWidth < bounds.min) {
+          // End the docked gesture before its handle unmounts in floating mode.
+          event.currentTarget.releasePointerCapture(event.pointerId);
+          resize(bounds.min);
+          useChatPanel.getState().close();
+          return;
+        }
+        resize(requestedWidth);
       }}
       onPointerUp={(event) => {
         if (event.currentTarget.hasPointerCapture(event.pointerId))

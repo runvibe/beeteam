@@ -192,6 +192,33 @@ it.each([
   },
 );
 
+it.each(["left", "right"] as const)("floats chat only when dragging beyond its minimum on the %s", (side) => {
+  useChatPanel.getState().setSide(side);
+  const { chat } = renderWorkspace();
+  const draft = screen.getByRole("textbox", { name: "Chat draft" });
+  fireEvent.change(draft, { target: { value: "Keep this draft" } });
+  const resizer = within(chat).getByRole("separator", { name: "Resize chat panel" });
+  let captured = false;
+  resizer.setPointerCapture = vi.fn(() => { captured = true; });
+  resizer.hasPointerCapture = vi.fn(() => captured);
+  resizer.releasePointerCapture = vi.fn(() => { captured = false; });
+  const minimum = Number(resizer.getAttribute("aria-valuemin"));
+  const edge = resizer.getAttribute("data-resize-edge");
+  const rect = chat.getBoundingClientRect();
+  const pointerAt = (width: number) => edge === "right" ? rect.left + width : rect.right - width;
+  fireEvent.pointerMove(resizer, { pointerId: 1, clientX: pointerAt(minimum - 1) });
+  expect(useChatPanel.getState().open).toBe(true);
+  fireEvent.pointerDown(resizer, { pointerId: 1, button: 0 });
+  fireEvent.pointerMove(resizer, { pointerId: 1, clientX: pointerAt(minimum) });
+  expect(useChatPanel.getState().open).toBe(true);
+  fireEvent.pointerMove(resizer, { pointerId: 1, clientX: pointerAt(minimum - 1) });
+  expect(useChatPanel.getState().open).toBe(false);
+  expect(useChatPanel.getState().width).toBe(minimum);
+  expect(resizer.releasePointerCapture).toHaveBeenCalledWith(1);
+  expect(screen.getByRole("textbox", { name: "Chat draft" })).toBe(draft);
+  expect(draft).toHaveValue("Keep this draft");
+});
+
 it("resizes sessions with the pointer while keeping neighboring panels usable", () => {
   const { workspace, sessions } = renderWorkspace();
   Object.defineProperty(workspace, "clientWidth", {
