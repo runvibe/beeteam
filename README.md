@@ -70,6 +70,27 @@ Run the backend and Vite separately for frontend development, or build the embed
 
 The complete Rust test suite requires a dedicated PostgreSQL 18+ instance through `BEE_TEST_DATABASE_URL`, with permission to create databases. Each shared PostgreSQL test creates its own database. With Docker hosted in WSL, keep the distribution running for the duration of the suite and use its reachable published endpoint. Generated-file test fixtures JSON-escape citation paths so the same tests work with Windows and Unix paths.
 
+### Desktop app (macOS, experimental)
+
+The `desktop/` crate is a Tauri 2 app that runs the Bee Team server inside its own process and opens the embedded UI in a native window. It binds an ephemeral port on `127.0.0.1`, so the browser app, MCP clients and API use the same local origin rules. Quitting the app stops the server; open event streams end immediately, and ordinary requests get up to 5 seconds to finish. Opening the app again focuses the existing window. If startup fails, an error dialog shows the reason and the app exits.
+
+Requires Rust, Node.js and the Xcode command line tools. Build or run it from the repository root:
+
+```sh
+node scripts/build-desktop.mjs        # release binary in desktop/target/release/beeteam-desktop
+node scripts/build-desktop.mjs --run  # debug build, then launch
+```
+
+Apps launched from Finder do not inherit terminal variables. The app reads optional settings from `~/.beeteam/desktop.env`; variables already set in its environment take precedence. Without the file, the integrated Codex chat stays disabled and the rest of the app works. Example:
+
+```sh
+BEE_SESSION_INSTALLATION_ID=<stable installation id>
+BEE_CODEX_EXECUTABLE=/absolute/path/to/native/codex
+# DATABASE_URL=sqlite:///Users/you/.beeteam/beeteam.sql  (default)
+```
+
+The default database is the same `~/.beeteam/beeteam.sql` used by the CLI server. Do not run the desktop app and a `beeteam` server at the same time with the same database and installation ID. Signed or notarized installers and Windows/Linux packages are not provided yet.
+
 ### Live voice in managed chats
 
 Choose the voice in general settings. The list comes from the installed Codex runtime. Codex default leaves voice selection to that installation. Your preference is saved on this device and applies when the next call starts. Unavailable saved voices remain visible so you can select a replacement.

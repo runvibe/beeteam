@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add an experimental macOS desktop app (Tauri) that runs the Bee Team server in its own process and opens the embedded UI in a native window, with optional settings in `~/.beeteam/desktop.env`. Quitting closes open event streams immediately instead of waiting on idle connections.
+
 - Match session filter control and search icon sizes to the board header on desktop and mobile.
 
 - Open directly to chat instead of a separate onboarding home page, while keeping Hive navigation and existing conversations available.
