@@ -597,3 +597,16 @@ it("uses the latest width for consecutive resize events before rendering", () =>
   });
   expect(useChatPanel.getState().width).toBe(700);
 });
+
+it("offers floating only alongside content, not the sessions sidebar alone", () => {
+  useChatPanel.setState({ contentOpen: false });
+  renderWorkspace();
+  expect(screen.getByRole("complementary", { name: "Sessions" })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Float chat" })).not.toBeInTheDocument();
+  act(() => useChatPanel.getState().setContentOpen(true));
+  fireEvent.click(screen.getByRole("button", { name: "Float chat" }));
+  expect(screen.getByRole("button", { name: "Dock chat" })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Dock chat" }));
+  act(() => useChatPanel.getState().setContentOpen(false));
+  expect(screen.queryByRole("button", { name: "Float chat" })).not.toBeInTheDocument();
+});

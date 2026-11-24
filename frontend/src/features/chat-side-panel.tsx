@@ -287,7 +287,7 @@ export function ChatWorkspace({
             </Button>
           )}
           {sessions && <SessionsToggle />}
-          <Button
+          {(!open || visible.includes("content")) && <Button
             variant="ghost"
             size="icon"
             onClick={open ? close : show}
@@ -295,7 +295,7 @@ export function ChatWorkspace({
             title={t(open ? "chat.floatPanel" : "chat.restorePanel")}
           >
             {open ? <PictureInPicture2 /> : <RectangleHorizontal />}
-          </Button>
+          </Button>}
         </header>
         <div className="chat-panel-layout">
           <div className="chat-panel-body">
