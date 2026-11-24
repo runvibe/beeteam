@@ -322,6 +322,14 @@
   font-weight: 600;
   letter-spacing: -0.01em;
 }
+.assistant-welcome-watermark {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  color: var(--foreground);
+  opacity: 0.12;
+  pointer-events: none;
+}
 .assistant-welcome > p {
   max-width: 28rem;
   margin: 0;
@@ -351,13 +359,11 @@
   cursor: pointer;
   transition:
     border-color 150ms var(--chat-ease),
-    background 150ms var(--chat-ease),
-    transform 150ms var(--chat-ease);
+    background 150ms var(--chat-ease);
 }
 .assistant-starters button:hover {
   border-color: var(--bee);
   background: var(--bee-soft);
-  transform: translateY(-1px);
 }
 .assistant-starters button:focus-visible {
   outline: 2px solid var(--ring);

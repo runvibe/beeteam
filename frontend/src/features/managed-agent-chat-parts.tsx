@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { t } from "@/i18n";
 import { Button } from "@/components/ui/button";
+import { BeeTeamLogo } from "@/components/bee-team-logo";
 import { Markdown } from "@/components/markdown";
 import { PlainTextEditor } from "@/components/plain-text-editor";
 import type { components } from "@/api/generated/managed-agents";
@@ -329,6 +330,7 @@ export function ChatWelcome({
 }) {
   return (
     <div className="assistant-welcome">
+      <BeeTeamLogo variant="thin" className="assistant-welcome-watermark" aria-hidden="true" />
       <h3>{t("managed.welcomeTitle")}</h3>
       <p>{t(starters ? "managed.welcomeHq" : "managed.welcomeHint")}</p>
       {starters && (

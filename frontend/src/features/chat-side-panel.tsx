@@ -22,7 +22,7 @@ import {
   MessageSquare,
   MoreHorizontal,
   PictureInPicture2,
-  Maximize2,
+  RectangleHorizontal,
 } from "lucide-react";
 import { useApi, useEntity } from "@/api/context";
 import { useChatPanel } from "@/state/chat-panel";
@@ -293,7 +293,7 @@ export function ChatWorkspace({
             aria-label={t(open ? "chat.floatPanel" : "chat.restorePanel")}
             title={t(open ? "chat.floatPanel" : "chat.restorePanel")}
           >
-            {open ? <PictureInPicture2 /> : <Maximize2 />}
+            {open ? <PictureInPicture2 /> : <RectangleHorizontal />}
           </Button>
         </header>
         <div className="chat-panel-layout">

@@ -11,7 +11,6 @@ import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
-import { SessionsToggle } from "@/features/sessions-sidebar";
 import { WorkspaceLayoutMenu } from "@/features/workspace-layout-menu";
 import { useChatPanel } from "@/state/chat-panel";
 import { CONTENT_DESTINATION_ID } from "@/features/content-panel-controls";
@@ -105,9 +104,6 @@ export function NavigationRail({
             </Button>
             </NavigationTooltip>
           )}
-          <NavigationTooltip label={tr("sessions.title")}>
-            <SessionsToggle className="navigation-button" />
-          </NavigationTooltip>
           <NavigationTooltip label={tr("common.hive")}>
             <Button
               className="navigation-button"

@@ -29,13 +29,15 @@ it.each([true, false])("orders navigation controls when homeEnabled is %s", (hom
   const nav = screen.getByRole("navigation", { name: "Navegação principal" });
   const expected = [
     ...(homeEnabled ? ["Início"] : []),
-    "Mostrar ou ocultar sessões",
     "Hive",
   ];
   const controls = expected.map((name) => within(nav).getByRole("button", { name }));
   expect(
     within(nav).getAllByRole("button").filter((button) => controls.includes(button)),
   ).toEqual(controls);
+  expect(within(nav).queryByRole("button", { name: "Mostrar ou ocultar sessões" })).toBeNull();
+  const chat = screen.getByRole("complementary", { name: "Chat com o líder" });
+  expect(within(chat).getByRole("button", { name: "Mostrar ou ocultar sessões" })).toBeVisible();
 });
 
 it("uses a fixed icon navigation with keyboard tooltips and updates the active route", async () => {

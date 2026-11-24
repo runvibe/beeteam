@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Keep the sessions toggle only in the chat header and use a simple window outline for restoring floating chat.
+
+- Keep chat suggestion buttons stationary on hover.
+
+- Add a subtle, theme-aware Bee Team logo watermark above the chat welcome heading.
+
 - Make Home open a fresh chat without eagerly creating a session; send starter suggestions directly and keep late replies from reopening a previous chat.
 
 - Use subtle theme-neutral highlights for panel dragging and resizing.
