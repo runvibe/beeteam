@@ -5,5 +5,6 @@ pub mod error;
 pub mod libs;
 pub mod repositories;
 pub mod routes;
+pub mod server;
 pub mod services;
 pub mod state;

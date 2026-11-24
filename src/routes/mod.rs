@@ -28,6 +28,7 @@ pub mod mcp;
 mod mcp_adapter;
 #[cfg(feature = "mcp")]
 mod mcp_materials;
+pub(crate) mod shutdown;
 pub mod system;
 mod voice;
 
