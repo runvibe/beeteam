@@ -116,6 +116,8 @@
   left: max(0px, calc(100vw - 336px));
   width: min(320px, 100vw);
   height: 108px;
+  transform: scale(0.8);
+  transform-origin: top left;
   pointer-events: none;
   border: 0;
   background: transparent;
