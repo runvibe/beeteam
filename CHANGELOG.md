@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replace the floating voice card with a transparent, freely draggable avatar and four icon controls. Use neutral theme colors for all voice states, preserve position when returning to the chat, and keep errors separately readable and dismissible.
+
 - Keep voice calls active in their original conversation while browsing or typing elsewhere, including Home. Show floating call controls with the original conversation, independent mutes, return and end actions; explicitly starting voice elsewhere replaces the previous call.
 
 - Float the chat when its docked resize border is dragged beyond the minimum width, preserving conversation, draft and voice.

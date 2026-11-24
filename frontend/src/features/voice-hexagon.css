@@ -1,5 +1,5 @@
 .managed-voice-chat {
-  --voice-honey: var(--bee, #b77916);
+  --voice-color: var(--foreground);
   position: relative;
   flex-shrink: 0;
   width: 100%;
@@ -35,7 +35,7 @@
   position: absolute;
   width: 70px;
   height: 80px;
-  background: var(--voice-honey);
+  background: var(--voice-color);
   clip-path: polygon(
     evenodd,
     50% 0,
@@ -71,7 +71,7 @@
   width: 3px;
   height: calc(7px + var(--voice-level) * 15px);
   border-radius: 2px;
-  background: var(--voice-honey);
+  background: var(--voice-color);
 }
 .voice-hexagon-bars > span:nth-child(2) {
   height: calc(12px + var(--voice-level) * 19px);
@@ -95,7 +95,7 @@
   pointer-events: auto;
   z-index: 2;
   border-radius: 50%;
-  color: var(--muted-foreground);
+  color: var(--foreground);
 }
 .voice-mute-microphone {
   right: calc(50% + 56px);
@@ -104,28 +104,54 @@
   left: calc(50% + 56px);
 }
 .voice-mute-button[aria-pressed="true"] {
-  color: var(--voice-honey);
+  color: var(--foreground);
   background: var(--muted);
 }
 .voice-inline-anchor { display: contents; }
 .voice-detached {
-  --voice-honey: var(--bee, #b77916);
+  --voice-color: var(--foreground);
   position: fixed;
   z-index: 80;
-  top: max(4.5rem, env(safe-area-inset-top));
-  right: max(1rem, env(safe-area-inset-right));
-  width: min(280px, calc(100vw - 2rem));
-  max-height: calc(100dvh - 6rem);
-  overflow: auto;
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: var(--background);
+  top: 72px;
+  left: max(0px, calc(100vw - 336px));
+  width: min(320px, 100vw);
+  height: 108px;
+  pointer-events: none;
+  border: 0;
+  background: transparent;
   color: var(--foreground);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+  box-shadow: none;
 }
 .voice-detached .voice-avatar-overlay { position: relative; inset: auto; height: 108px; }
-.voice-detached .voice-hexagon-stage { height: 108px; }
-.voice-detached-label { display: block; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; }
-.voice-detached-actions { display: flex; justify-content: center; flex-wrap: wrap; }
-.voice-detached [role="alert"] { font-size: 0.8rem; overflow-wrap: anywhere; }
+.voice-detached .voice-hexagon-stage { height: 108px; width: 96px; margin-inline: auto; pointer-events: auto; cursor: grab; touch-action: none; user-select: none; }
+.voice-detached .voice-hexagon-stage[data-dragging="true"] { cursor: grabbing; }
+.voice-return-button { right: calc(50% + 94px); }
+.voice-end-button { left: calc(50% + 94px); }
+.voice-mute-button:focus-visible,
+.voice-error-notice button:focus-visible,
+.voice-inline-error button:focus-visible,
+.assistant-send[data-voice-action="true"]:focus-visible {
+  border-color: var(--foreground);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--foreground) 35%, transparent);
+}
+.assistant-send[data-voice-action="true"] {
+  background: var(--foreground);
+  color: var(--background);
+}
+.assistant-send[data-voice-action="true"]:hover {
+  background: color-mix(in srgb, var(--foreground) 85%, var(--background));
+}
+.voice-error-notice {
+  position: fixed;
+  z-index: 81;
+  bottom: 16px;
+  left: 16px;
+  width: min(380px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+  font-size: 0.875rem;
+}

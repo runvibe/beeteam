@@ -127,6 +127,9 @@ describe("app lifetime voice owner", () => {
       state: "unknown",
       retrySubmission: false,
     });
+    owner.dismissError();
+    expect(owner.snapshot().error).toBe("");
+    expect(call.close).not.toHaveBeenCalled();
     expect(await call.callbacks.execute("Run", "2")).toMatchObject({
       state: "not_submitted",
     });

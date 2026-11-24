@@ -11,13 +11,14 @@ import {
   type Ref,
 } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "@/components/ui/button";
-import { t, useLocale } from "@/i18n";
+import { useLocale } from "@/i18n";
 import {
   VoiceSessionOwner,
   type ManagedVoiceProps,
 } from "./voice-session-owner";
 import { VoiceAvatar } from "./voice-avatar";
+import { DetachedVoice, VoiceErrorNotice } from "./detached-voice";
+import type { VoicePosition } from "./use-voice-drag";
 import "./voice-hexagon.css";
 export { voiceHistory } from "./voice-history";
 export type ManagedVoiceControl = {
@@ -43,6 +44,7 @@ export function ManagedVoiceProvider({ children }: { children: ReactNode }) {
 }
 function VoicePresentation({ owner }: { owner: VoiceSessionOwner }) {
   useLocale();
+  const [position, setPosition] = useState<VoicePosition | null>(null);
   const snapshot = useSyncExternalStore(
     owner.subscribe,
     owner.snapshot,
@@ -56,34 +58,22 @@ function VoicePresentation({ owner }: { owner: VoiceSessionOwner }) {
     return createPortal(
       <>
         {avatar}
-        {snapshot.error && <p role="alert">{snapshot.error}</p>}
+        <VoiceErrorNotice owner={owner} snapshot={snapshot} />
       </>,
       snapshot.inlineTarget,
     );
   return (
-    <aside className="voice-detached" aria-label={t("managed.voiceDetached")}>
-      {avatar}
-      <span className="voice-detached-label" title={snapshot.origin?.label}>
-        {snapshot.origin?.label || t("managed.new")}
-      </span>
-      <div className="voice-detached-actions">
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled={!snapshot.conversation}
-          onClick={() => snapshot.origin?.onReturn?.(snapshot.conversation)}
-        >
-          {t("managed.voiceReturn")}
-        </Button>
-        {snapshot.state !== "idle" && (
-          <Button variant="ghost" size="sm" onClick={owner.stop}>
-            {t("managed.voiceStop")}
-          </Button>
-        )}
-        {snapshot.state === "idle" && <Button variant="ghost" size="sm" onClick={owner.dismissError}>{t("common.close")}</Button>}
-      </div>
-      {snapshot.error && <p role="alert">{snapshot.error}</p>}
-    </aside>
+    <>
+      {snapshot.state !== "idle" && (
+        <DetachedVoice
+          owner={owner}
+          snapshot={snapshot}
+          position={position}
+          onPositionChange={setPosition}
+        />
+      )}
+      <VoiceErrorNotice owner={owner} snapshot={snapshot} detached />
+    </>
   );
 }
 type Props = ManagedVoiceProps & {

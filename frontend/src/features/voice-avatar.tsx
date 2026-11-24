@@ -2,12 +2,15 @@ import { Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { t, useLocale } from "@/i18n";
 import type { VoiceSessionOwner, VoiceSnapshot } from "./voice-session-owner";
+import type { HTMLAttributes } from "react";
 export function VoiceAvatar({
   owner,
   snapshot,
+  dragHandle,
 }: {
   owner: VoiceSessionOwner;
   snapshot: VoiceSnapshot;
+  dragHandle?: HTMLAttributes<HTMLDivElement>;
 }) {
   useLocale();
   const { microphoneMuted, outputMuted, state } = snapshot;
@@ -56,6 +59,7 @@ export function VoiceAvatar({
         {outputMuted ? <VolumeX /> : <Volume2 />}
       </Button>
       <div
+        {...dragHandle}
         className="voice-hexagon-stage"
         data-state={state}
         ref={(element) => {

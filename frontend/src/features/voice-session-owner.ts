@@ -54,7 +54,7 @@ export class VoiceSessionOwner {
   private anchor: HTMLDivElement | null = null;
   visual: HTMLDivElement | null = null;
   snapshot = () => this.value;
-  dismissError = () => { if (!this.current) this.update({ error: "" }); };
+  dismissError = () => { this.update({ error: "" }); };
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
     return () => {

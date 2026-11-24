@@ -409,6 +409,7 @@ export function Composer({
               type={voiceAction ? "button" : "submit"}
               size="icon"
               className="assistant-send"
+              data-voice-action={voiceAction || undefined}
               disabled={stopVoice ? false : startVoice ? !voice?.canStart || locked || !!readOnly : !canSend}
               onClick={stopVoice ? voice?.stop : startVoice ? voice?.start : undefined}
               aria-label={label}

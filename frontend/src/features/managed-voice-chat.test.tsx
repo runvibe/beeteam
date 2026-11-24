@@ -104,13 +104,41 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
+  it("preserves the freely dragged position through inline and detached transitions", () => {
+    const original = { ...setup(), conversation: "original" };
+    const view = render(<ManagedVoiceProvider><ManagedVoiceChat {...original} /></ManagedVoiceProvider>);
+    start();
+    view.rerender(<ManagedVoiceProvider><input aria-label="Other chat" /></ManagedVoiceProvider>);
+    const floating = screen.getByRole("complementary");
+    const left = parseFloat(floating.style.left);
+    const stage = screen.getByRole("img", { name: /voice visualization|Visualização/ });
+    const down = new MouseEvent("pointerdown", { bubbles: true, clientX: 200, clientY: 200, button: 0 });
+    Object.defineProperty(down, "pointerId", { value: 1 });
+    fireEvent(stage, down);
+    act(() => {
+      for (const type of ["pointermove", "pointerup"]) {
+        const event = new Event(type);
+        Object.assign(event, { pointerId: 1, clientX: 77, clientY: 245 });
+        window.dispatchEvent(event);
+      }
+    });
+    expect(floating.style.left).toBe(`${left - 123}px`);
+    const saved = floating.getAttribute("style");
+    view.rerender(<ManagedVoiceProvider><ManagedVoiceChat {...original} /></ManagedVoiceProvider>);
+    expect(screen.queryByRole("complementary")).toBeNull();
+    view.rerender(<ManagedVoiceProvider><input aria-label="Other chat" /></ManagedVoiceProvider>);
+    expect(screen.getByRole("complementary").getAttribute("style")).toBe(saved);
+    expect(mock.close).not.toHaveBeenCalled();
+  });
   it("survives the chat subtree unmount with detached controls and an explicit return", () => {
     const p = { ...setup(), conversation: "original", label: "Design team · Planning", onReturn: vi.fn() };
     const view = render(<ManagedVoiceProvider><ManagedVoiceChat {...p} /></ManagedVoiceProvider>);
     start();
     view.rerender(<ManagedVoiceProvider><input aria-label="Another draft" /></ManagedVoiceProvider>);
     expect(mock.close).not.toHaveBeenCalled();
-    expect(screen.getByRole("complementary")).toHaveTextContent("Design team · Planning");
+    expect(screen.getByRole("complementary")).toHaveAccessibleName(/Design team · Planning/);
+    expect(screen.getByRole("complementary").querySelectorAll("button")).toHaveLength(4);
+    expect(screen.queryByText("Design team · Planning")).toBeNull();
     fireEvent.change(screen.getByRole("textbox", { name: "Another draft" }), { target: { value: "Independent typing" } });
     expect(screen.getByRole("textbox")).toHaveValue("Independent typing");
     fireEvent.click(screen.getByRole("button", { name: /Voltar à conversa|Return to conversation/ }));
@@ -228,7 +256,7 @@ describe("managed voice routing", () => {
       screen.getByRole("button", { name: /End voice call|Encerrar chamada/ }),
     ).toBeEnabled();
   });
-  it("shows the amber hexagon only during a call and updates its output level without rerendering", () => {
+  it("shows the hexagon only during a call and updates its output level without rerendering", () => {
     render(<ManagedVoiceChat {...setup()} />);
     expect(
       screen.queryByRole("img", { name: /voice visualization|Visualização/ }),

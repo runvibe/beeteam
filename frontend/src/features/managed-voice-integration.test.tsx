@@ -310,6 +310,6 @@ it("preserves voice on Home reset and keeps its late delivery error separate fro
   mounted.rerender(view(2));
   expect(mock.close).not.toHaveBeenCalled();
   await act(async () => { reject(new TypeError("Old voice delivery failed")); await execution; });
-  expect(screen.getByRole("complementary")).toHaveTextContent("Request delivery could not be confirmed");
+  expect(screen.getByRole("alert")).toHaveTextContent("Request delivery could not be confirmed");
   expect(screen.getByRole("textbox", { name: "Message to agent" })).toHaveAttribute("contenteditable", "plaintext-only");
 });
