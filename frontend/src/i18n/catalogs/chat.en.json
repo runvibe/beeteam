@@ -117,5 +117,10 @@
   "chooseTeam": "Choose team",
   "noTeams": "No teams available. Create a team to start chatting.",
   "previousTeams": "Previous teams",
-  "nextTeams": "Next teams"
+  "nextTeams": "Next teams",
+  "contextLeaderLabel": "Context leader suggestion",
+  "contextLeader": "{{context}} · {{team}} is led by {{leader}}.",
+  "contextLeaderDismiss": "Dismiss leader suggestion",
+  "contextLeaderContinue": "Continue latest conversation",
+  "contextLeaderNew": "New conversation"
 }

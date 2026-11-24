@@ -1,0 +1,16 @@
+.context-leader-banner {
+  flex: 0 0 auto;
+  min-width: 0;
+  margin: 0 .75rem .35rem;
+  padding: .5rem .6rem;
+  border: 1px solid var(--border);
+  border-radius: .65rem;
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-size: .75rem;
+}
+.context-leader-copy { display: flex; align-items: flex-start; gap: .25rem; }
+.context-leader-copy p { flex: 1; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.context-leader-copy > button { flex-shrink: 0; }
+.context-leader-actions { display: flex; flex-wrap: wrap; gap: .2rem; margin-top: .3rem; }
+.context-leader-actions > button { white-space: normal; height: auto; min-height: 1.5rem; text-align: left; }

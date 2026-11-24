@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import {
   useInfiniteQuery,
   useQuery,
@@ -36,6 +36,7 @@ export function ManagedAgentChat({
   freshConversation = false,
   resetGeneration = 0,
   onConversationChange,
+  beforeComposer,
 }: {
   api: ManagedAgentApi;
   agentId: string;
@@ -49,6 +50,7 @@ export function ManagedAgentChat({
   freshConversation?: boolean;
   resetGeneration?: number;
   onConversationChange?: (conversationId: string | null) => void;
+  beforeComposer?: (currentLeaderId: string) => ReactNode;
 }) {
   useLocale();
   const queryClient = useQueryClient();
@@ -580,7 +582,9 @@ export function ManagedAgentChat({
                   void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
                 }}>
-                {(voice) => <Composer
+                {(voice) => <>
+                {beforeComposer?.(currentConversation?.agentId ?? agentId)}
+                <Composer
                 voice={voice}
                 value={draft}
                 onChange={setDraft}
@@ -595,7 +599,7 @@ export function ManagedAgentChat({
                     disabled={busy || !!pending || readOnly}
                   />
                 ) : undefined}
-              />}
+              /></>}
               </ManagedVoiceChat>
             </>
           )}

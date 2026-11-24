@@ -117,5 +117,10 @@
   "chooseTeam": "Escolher time",
   "noTeams": "Nenhum time disponível. Crie um time para iniciar o chat.",
   "previousTeams": "Times anteriores",
-  "nextTeams": "Próximos times"
+  "nextTeams": "Próximos times",
+  "contextLeaderLabel": "Sugestão de líder do contexto",
+  "contextLeader": "{{context}} · {{team}} é liderado por {{leader}}.",
+  "contextLeaderDismiss": "Dispensar sugestão de líder",
+  "contextLeaderContinue": "Continuar última conversa",
+  "contextLeaderNew": "Nova conversa"
 }

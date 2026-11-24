@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Suggest the relevant team leader from board, team and task pages, with explicit new-chat or latest-valid-conversation actions.
+
 - Keep the sessions toggle only in the chat header and use a simple window outline for restoring floating chat.
 
 - Keep chat suggestion buttons stationary on hover.

@@ -36,6 +36,7 @@ import { useLocale, t } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { QueryState } from "@/components/shared";
 import { ManagedAgentChat } from "./managed-agent-chat";
+import { ContextLeaderBanner } from "./context-leader-banner";
 import { TeamManagedApprovals } from "./team-managed-approvals";
 import { LeaderChat } from "./leader-chat";
 import { SessionsToggle } from "./sessions-sidebar";
@@ -475,6 +476,7 @@ function PanelLeader({
           freshConversation={freshConversation}
           resetGeneration={resetGeneration}
           onConversationChange={setConversation}
+          beforeComposer={(currentLeaderId) => <ContextLeaderBanner currentLeaderId={currentLeaderId} />}
         />
       </>
     );
