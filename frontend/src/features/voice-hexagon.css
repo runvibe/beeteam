@@ -107,3 +107,25 @@
   color: var(--voice-honey);
   background: var(--muted);
 }
+.voice-inline-anchor { display: contents; }
+.voice-detached {
+  --voice-honey: var(--bee, #b77916);
+  position: fixed;
+  z-index: 80;
+  top: max(4.5rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  width: min(280px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 6rem);
+  overflow: auto;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+}
+.voice-detached .voice-avatar-overlay { position: relative; inset: auto; height: 108px; }
+.voice-detached .voice-hexagon-stage { height: 108px; }
+.voice-detached-label { display: block; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; }
+.voice-detached-actions { display: flex; justify-content: center; flex-wrap: wrap; }
+.voice-detached [role="alert"] { font-size: 0.8rem; overflow-wrap: anywhere; }

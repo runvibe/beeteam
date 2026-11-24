@@ -1,4 +1,6 @@
 {
+  "voiceDetached": "Voice call in another conversation",
+  "voiceReturn": "Return to conversation",
   "voiceUnmuteMicrophone": "Unmute microphone",
   "voiceUnmuteOutput": "Unmute assistant",
   "voiceMuteMicrophone": "Mute microphone",

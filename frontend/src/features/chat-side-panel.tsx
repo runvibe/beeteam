@@ -436,6 +436,7 @@ function PanelTeam({ teamId }: { teamId: string }) {
             teamId={teamId}
             leaderId={team.data.leaderId}
             system={!!team.data.system}
+            teamName={team.data.name}
           />
         </>
       )}
@@ -446,10 +447,12 @@ function PanelLeader({
   teamId,
   leaderId,
   system,
+  teamName,
 }: {
   teamId: string;
   leaderId: string;
   system: boolean;
+  teamName: string;
 }) {
   const api = useApi();
   const leader = useEntity("agents", leaderId);
@@ -469,6 +472,7 @@ function PanelLeader({
           key={leaderId}
           api={api.managedAgents}
           agentId={leaderId}
+          voiceLabel={[teamName, leader.data?.name].filter(Boolean).join(" · ")}
           legacyApi={api.leaderChat}
           teamId={teamId}
           starters={system}

@@ -16,11 +16,12 @@ import {
   Composer,
 } from "./managed-agent-chat-parts";
 import { useManagedActions } from "./use-managed-actions";
-import { useManagedSend } from "./use-managed-send";
+import { sendManagedVoice, useManagedSend } from "./use-managed-send";
 import { ManagedAgentConfigurationFields } from "./managed-agent-configuration";
 import { ManagedAgentHistory } from "./managed-agent-history";
 import { ManagedVoiceChat, type ManagedVoiceControl } from "./managed-voice-chat";
 import { ChatAccessPicker } from "./chat-access-picker";
+import { useChatPanel } from "@/state/chat-panel";
 import { useChatAccess } from "@/state/chat-access";
 import "./leader-chat.css";
 import "./managed-agent-chat.css";
@@ -37,6 +38,7 @@ export function ManagedAgentChat({
   resetGeneration = 0,
   onConversationChange,
   beforeComposer,
+  voiceLabel,
 }: {
   api: ManagedAgentApi;
   agentId: string;
@@ -51,6 +53,7 @@ export function ManagedAgentChat({
   resetGeneration?: number;
   onConversationChange?: (conversationId: string | null) => void;
   beforeComposer?: (currentLeaderId: string) => ReactNode;
+  voiceLabel?: string;
 }) {
   useLocale();
   const queryClient = useQueryClient();
@@ -201,7 +204,6 @@ export function ManagedAgentChat({
   useEffect(() => {
     if (freshConversation) {
       restored.current = true;
-      voiceControl.current?.stop();
       setDraft("");
       setError(null);
       setBusy(false);
@@ -394,7 +396,6 @@ export function ManagedAgentChat({
               title={t("managed.new")}
               disabled={!!pending}
               onClick={() => {
-                voiceControl.current?.stop();
                 select("");
                 setOlder([]);
               }}
@@ -556,13 +557,20 @@ export function ManagedAgentChat({
                 <p className="assistant-readonly" role="status">{t("managed.pendingSend")}</p>
               )}
               <ManagedVoiceChat controlRef={voiceControl} api={api} agentId={agentId} teamId={teamId} contextMessages={messages}
+                label={[currentConversation?.title ?? t("managed.new"), voiceLabel].filter(Boolean).join(" · ")}
+                onReturn={(id) => {
+                  if (teamId) useChatPanel.getState().openConversation(teamId, id);
+                  else select(id);
+                }}
+                onSelect={(id, requestId) => {
+                  select(id, requestId);
+                }}
                 onActivate={() => setVoiceScrollRequest((value) => value + 1)}
                 conversation={conversation} selectionToken={conversationId ?? `new:${resetGeneration}`} accessMode={accessMode}
                 disabled={!ready || busy || !!pending || waitingForDetail || readOnly}
                 readOnly={readOnly}
                 onAssociated={(id) => {
-                  if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, id);
-                  if (conversation !== id) select(id);
+                  if (!conversation && teamId) useChatAccess.getState().choose(id, accessMode);
                   void queryClient.invalidateQueries({ queryKey: ["managed-history", id] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
@@ -574,10 +582,8 @@ export function ManagedAgentChat({
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });
                   if (request) void queryClient.invalidateQueries({ queryKey: ["managed-snapshot", request] });
                 }}
-                onSend={(body) => sendPending(body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, resetGeneration, source: "voice" })}
-                onQueued={(item) => {
-                  if (!conversation && teamId) useChatAccess.getState().moveChoice(draftAccessKey, item.conversationId);
-                  select(item.conversationId, item.id);
+                onSend={(body) => sendManagedVoice(queryClient, agentId, api, body, { teamId, conversation: body.conversationId ?? "", externalConversation: conversationId, resetGeneration, source: "voice" })}
+                onQueued={() => {
                   void queryClient.invalidateQueries({ queryKey: ["managed-requests", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-conversations", agentId] });
                   void queryClient.invalidateQueries({ queryKey: ["managed-sessions"] });

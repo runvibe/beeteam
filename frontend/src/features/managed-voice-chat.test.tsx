@@ -8,6 +8,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ManagedVoiceChat as VoiceController,
+  ManagedVoiceProvider,
   voiceHistory,
 } from "./managed-voice-chat";
 import type { VoiceCallbacks } from "./realtime-voice";
@@ -103,6 +104,42 @@ function start() {
   );
 }
 describe("managed voice routing", () => {
+  it("survives the chat subtree unmount with detached controls and an explicit return", () => {
+    const p = { ...setup(), conversation: "original", label: "Design team · Planning", onReturn: vi.fn() };
+    const view = render(<ManagedVoiceProvider><ManagedVoiceChat {...p} /></ManagedVoiceProvider>);
+    start();
+    view.rerender(<ManagedVoiceProvider><input aria-label="Another draft" /></ManagedVoiceProvider>);
+    expect(mock.close).not.toHaveBeenCalled();
+    expect(screen.getByRole("complementary")).toHaveTextContent("Design team · Planning");
+    fireEvent.change(screen.getByRole("textbox", { name: "Another draft" }), { target: { value: "Independent typing" } });
+    expect(screen.getByRole("textbox")).toHaveValue("Independent typing");
+    fireEvent.click(screen.getByRole("button", { name: /Voltar à conversa|Return to conversation/ }));
+    expect(p.onReturn).toHaveBeenCalledWith("original");
+    fireEvent.click(screen.getByRole("button", { name: /Silenciar microfone|Mute microphone/ }));
+    expect(mock.setMicrophoneMuted).toHaveBeenCalledWith(true);
+    fireEvent.click(screen.getByRole("button", { name: /Encerrar chamada|End voice call/ }));
+    expect(mock.close).toHaveBeenCalledOnce();
+    act(() => mock.callbacks!.stopped?.(new Error("Final transcript failed")));
+    expect(screen.getByRole("alert")).toHaveTextContent("Final transcript failed");
+    fireEvent.click(screen.getByRole("button", { name: /Fechar|Close/ }));
+    expect(screen.queryByRole("complementary")).toBeNull();
+  });
+  it("replaces the original only on explicit voice activation in another conversation", () => {
+    const original = { ...setup(), conversation: "original" };
+    const other = { ...setup(), conversation: "other", agentId: "other-agent" };
+    const view = render(<ManagedVoiceProvider><ManagedVoiceChat {...original} /></ManagedVoiceProvider>);
+    start();
+    const oldCallbacks = mock.callbacks!;
+    view.rerender(<ManagedVoiceProvider><ManagedVoiceChat {...other} /></ManagedVoiceProvider>);
+    expect(mock.close).not.toHaveBeenCalled();
+    start();
+    expect(mock.close).toHaveBeenCalledOnce();
+    expect(mock.start).toHaveBeenLastCalledWith(expect.objectContaining({ agentId: "other-agent", conversationId: "other" }));
+    act(() => { oldCallbacks.failed(new Error("Late failure")); oldCallbacks.stopped?.(new Error("Late save")); });
+    expect(screen.queryByRole("alert")).toBeNull();
+    expect(screen.getAllByRole("img", { name: /voice visualization|Visualização/ })).toHaveLength(1);
+    expect(mock.close).toHaveBeenCalledOnce();
+  });
   it("captures the saved voice on activation and applies changes only to the next call", () => {
     useVoicePreference.getState().choose("marin");
     render(<ManagedVoiceChat {...setup()} />);
@@ -129,15 +166,15 @@ describe("managed voice routing", () => {
     start();
     expect(mock.start.mock.calls[0][0]).not.toHaveProperty("voice");
   });
-  it("rejects stale startup association after external navigation before local selection catches up", () => {
+  it("preserves pending startup association after navigation without selecting the origin", () => {
     mock.start.mockReturnValueOnce(false);
     const p = setup();
     const view = render(<ManagedVoiceChat {...p} selectionToken={null} />);
     start();
     view.rerender(<ManagedVoiceChat {...p} selectionToken="different" />);
-    expect(mock.callbacks!.associated("late-created")).toBe(false);
-    expect(p.onAssociated).not.toHaveBeenCalled();
-    expect(mock.close).toHaveBeenCalledOnce();
+    act(() => { expect(mock.callbacks!.associated("late-created")).toBe(true); });
+    expect(p.onAssociated).toHaveBeenCalledWith("late-created");
+    expect(mock.close).not.toHaveBeenCalled();
   });
   it("invalidates persisted history after stop and shows a final-save error without restoring the call", () => {
     const p = setup();
@@ -268,7 +305,7 @@ describe("managed voice routing", () => {
       ),
     );
   });
-  it("stops when the user selects a different conversation", () => {
+  it("keeps the call visible when the user selects a different conversation", () => {
     const props = setup();
     const view = render(
       <ManagedVoiceChat {...props} conversation="original" />,
@@ -276,9 +313,10 @@ describe("managed voice routing", () => {
     start();
     mock.close.mockClear();
     view.rerender(<ManagedVoiceChat {...props} conversation="different" />);
-    expect(mock.close).toHaveBeenCalledOnce();
+    expect(mock.close).not.toHaveBeenCalled();
+    expect(screen.getByRole("complementary")).toBeVisible();
   });
-  it("reads the latest access mode at delegation time", async () => {
+  it("keeps the access mode captured at call start", async () => {
     const props = setup();
     const view = render(
       <ManagedVoiceChat {...props} conversation="existing" />,
@@ -293,7 +331,7 @@ describe("managed voice routing", () => {
     );
     await mock.callbacks!.execute("Run tests", "call");
     expect(props.onSend).toHaveBeenCalledWith(
-      expect.objectContaining({ accessMode: "full_access" }),
+      expect.objectContaining({ accessMode: "standard" }),
     );
   });
   it("does not send again after an unknown delivery", async () => {

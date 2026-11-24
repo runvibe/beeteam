@@ -33,6 +33,7 @@ import { HiveNavigation } from "./features/hive-navigation";
 import { isHiveArea } from "./state/hive-navigation";
 import { useChatPanel } from "./state/chat-panel";
 import { ConnectedHome } from "./launch/connected-home";
+import { ManagedVoiceProvider } from "./features/managed-voice-chat";
 import "./App.css";
 import "./navigation.css";
 import "./scrollbars.css";
@@ -65,6 +66,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
     setArea = useUi((s) => s.setArea);
   const hive = isHiveArea(area);
   return (
+    <ManagedVoiceProvider>
     <MotionConfig reducedMotion="user">
       <HeaderFiltersContext.Provider value={filterTarget}>
         <div className="app-shell icon-navigation">
@@ -125,6 +127,7 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
         </div>
       </HeaderFiltersContext.Provider>
     </MotionConfig>
+    </ManagedVoiceProvider>
   );
 }
 export default App;

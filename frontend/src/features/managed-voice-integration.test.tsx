@@ -284,7 +284,7 @@ it("persists both spoken roles in the main timeline and restores a speech-only c
   expect(api.send).not.toHaveBeenCalled();
 });
 
-it("stops the old voice call and ignores its late request failure on Home reset", async () => {
+it("preserves voice on Home reset and keeps its late delivery error separate from the new composer", async () => {
   let reject!: (error: unknown) => void;
   const api = {
     voice: {},
@@ -308,8 +308,8 @@ it("stops the old voice call and ignores its late request failure on Home reset"
   act(() => { execution = mock.callbacks!.execute("Run old task", "old"); });
   await waitFor(() => expect(api.send).toHaveBeenCalledTimes(1));
   mounted.rerender(view(2));
-  expect(mock.close).toHaveBeenCalled();
+  expect(mock.close).not.toHaveBeenCalled();
   await act(async () => { reject(new TypeError("Old voice delivery failed")); await execution; });
-  expect(screen.queryByText("Request delivery could not be confirmed. Check the chat history before sending again.")).toBeNull();
+  expect(screen.getByRole("complementary")).toHaveTextContent("Request delivery could not be confirmed");
   expect(screen.getByRole("textbox", { name: "Message to agent" })).toHaveAttribute("contenteditable", "plaintext-only");
 });

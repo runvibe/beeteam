@@ -4,6 +4,7 @@ import type { ManagedAgentApi } from "@/api/managed-agents";
 import type { components } from "@/api/generated/managed-agents";
 import { t } from "@/i18n";
 import { isDefinitiveManagedFailure } from "./managed-idempotency";
+import { VoiceNotSubmitted } from "./voice-delivery-error";
 
 type Schemas = components["schemas"];
 type SendContext = {
@@ -96,6 +97,25 @@ class ManagedSendRegistry {
 }
 
 const registries = new WeakMap<QueryClient, ManagedSendRegistry>();
+
+/** Voice delivery belongs to its associated conversation, even after its view unmounts. */
+export async function sendManagedVoice(
+  client: QueryClient, agentId: string, api: ManagedAgentApi,
+  body: Schemas["SendAgentRequest"], context: SendContext,
+) {
+  let registry = registries.get(client);
+  if (!registry) { registry = new ManagedSendRegistry(client); registries.set(client, registry); }
+  const scope = `${agentId}:conversation:${body.conversationId}`;
+  // An unknown earlier delivery needs explicit user reconciliation, never inference retry.
+  if (!body.conversationId || registry.get(scope)) throw new VoiceNotSubmitted(t("managed.retryAction"));
+  try {
+    return await registry.send(scope, agentId, api, body, context);
+  } finally {
+    const pending = registry.get(scope);
+    if (pending && (pending.state === "completed" || pending.state === "rejected"))
+      registry.acknowledge(scope, pending.key);
+  }
+}
 
 export function useManagedSend(agentId: string, api: ManagedAgentApi, selectionScope: string) {
   const client = useQueryClient();

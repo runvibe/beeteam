@@ -1,4 +1,6 @@
 {
+  "voiceDetached": "Chamada de voz em outra conversa",
+  "voiceReturn": "Voltar à conversa",
   "voiceUnmuteMicrophone": "Ativar microfone",
   "voiceUnmuteOutput": "Ativar som do assistente",
   "voiceMuteMicrophone": "Silenciar microfone",

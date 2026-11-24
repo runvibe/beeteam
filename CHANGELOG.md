@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Keep voice calls active in their original conversation while browsing or typing elsewhere, including Home. Show floating call controls with the original conversation, independent mutes, return and end actions; explicitly starting voice elsewhere replaces the previous call.
+
 - Float the chat when its docked resize border is dragged beyond the minimum width, preserving conversation, draft and voice.
 
 - Remove the introductory tour suggestion from the chat welcome screen.
