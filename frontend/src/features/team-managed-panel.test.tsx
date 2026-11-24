@@ -724,6 +724,7 @@ it("opens the sessions panel from the chat when it is hidden", async () => {
 it("opens the sessions drawer from the chat on a narrow screen", () => {
   vi.stubGlobal("matchMedia", () => ({ matches: true }));
   useSessionsSidebar.setState({ open: false, drawer: false });
+  useChatPanel.setState({ open: true, contentOpen: false });
   try {
     render(
       <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
@@ -734,5 +735,6 @@ it("opens the sessions drawer from the chat on a narrow screen", () => {
     expect(screen.getByRole("complementary", { name: "Sessions" })).toHaveAttribute("data-drawer", "true");
   } finally {
     vi.unstubAllGlobals();
+    useChatPanel.setState({ contentOpen: true });
   }
 });

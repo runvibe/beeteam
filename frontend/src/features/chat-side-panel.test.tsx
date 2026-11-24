@@ -304,3 +304,23 @@ it("keeps floating information outside the compact chat and preserves geometry t
   expect(screen.getByRole("textbox",{name:"Draft"})).toBe(draft);
   view.unmount();systemTeams.managed=false;
 });
+
+it("shows only the content over a docked chat on narrow screens", async () => {
+  setLocalePreference("en");
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    matches: query === "(max-width: 850px)",
+    media: query,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+  }));
+  try {
+    useChatPanel.setState({ teamId: "team-a", picking: false, open: true, contentOpen: true });
+    render(<QueryClientProvider client={new QueryClient()}><ChatWorkspace><main>Content</main></ChatWorkspace></QueryClientProvider>);
+    const chat = document.getElementById("leader-chat-panel")!;
+    expect(chat).not.toBeVisible();
+    act(() => useChatPanel.getState().setContentOpen(false));
+    expect(chat).toBeVisible();
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});

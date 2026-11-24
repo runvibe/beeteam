@@ -207,6 +207,9 @@ export function ChatWorkspace({
   );
   const dock = useWorkspacePanelDock(workspace, panelOrder, visible, reorder);
   const sessionsVisible = !dock.narrow && visible.includes("sessions");
+  // Narrow screens overlay the docked chat, so open content takes the screen.
+  const chatCoveredByContent =
+    dock.narrow && open && visible.includes("content");
   const resizeConfig = {
     viewport,
     workspace: measuredWidth || viewport,
@@ -223,6 +226,7 @@ export function ChatWorkspace({
         ref={setChatElement}
         id="leader-chat-panel"
         className="chat-side-panel"
+        hidden={chatCoveredByContent}
         data-floating={!open ? "true" : undefined}
         data-floating-settling={floating.settling ? "true" : undefined}
         data-floating-compact={compactChat.compact ? "true" : undefined}

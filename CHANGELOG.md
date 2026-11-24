@@ -4,6 +4,8 @@
 
 - Open directly to chat instead of a separate onboarding home page, while keeping Hive navigation and existing conversations available.
 
+- Show Hive content on narrow screens instead of leaving it behind the docked chat; Home or closing the content returns to the chat.
+
 - Allow managed chats to start when an unselected Codex plugin's MCP server is unavailable, without enabling other integrations.
 
 - Keep new managed Codex sessions resumable before their first message without submitting a synthetic model turn.

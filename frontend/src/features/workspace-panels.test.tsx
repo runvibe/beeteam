@@ -524,6 +524,7 @@ it("cancels a drag on viewport resize and ignores other pointers", () => {
 it("keeps the existing mobile overlays and disables panel dragging", () => {
   narrow = true;
   useSessionsSidebar.setState({ drawer: true });
+  useChatPanel.setState({ contentOpen: false });
   const { workspace, sessions, chat } = renderWorkspace();
   expect(within(sessions).queryByRole("separator")).toBeNull();
   expect(within(chat).queryByRole("separator")).toBeNull();
