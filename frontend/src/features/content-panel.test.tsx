@@ -19,6 +19,27 @@ beforeEach(() => {
 });
 afterEach(() => setLocalePreference("pt"));
 
+it("navigates Hive sections from the content header", async () => {
+  render(
+    <ApiProvider api={createMockApi({ delay: 0 })}>
+      <App />
+    </ApiProvider>,
+  );
+  const header = document.querySelector<HTMLElement>(".topbar")!;
+  const navigation = within(header).getByRole("navigation", {
+    name: "Hive navigation",
+  });
+  expect(
+    within(navigation).getByRole("link", { name: "Boards" }),
+  ).toHaveAttribute("aria-current", "page");
+
+  await userEvent.click(within(navigation).getByRole("link", { name: "Agents" }));
+  expect(
+    within(navigation).getByRole("link", { name: "Agents" }),
+  ).toHaveAttribute("aria-current", "page");
+  expect(await screen.findByRole("heading", { name: "Agents" })).toBeVisible();
+});
+
 it.each([
   ["/boards", "Hive"],
   ["/agents", "Hive"],

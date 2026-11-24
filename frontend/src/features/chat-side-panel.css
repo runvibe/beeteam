@@ -28,6 +28,14 @@
 .icon-navigation .main-shell > .topbar > .context-path {
   flex-grow: 1;
 }
+.icon-navigation .main-shell > .topbar > .context-path ol {
+  flex-wrap: nowrap;
+}
+.icon-navigation .main-shell > .topbar > .context-path [aria-current="page"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .chat-side-panel {
   order: var(--chat-panel-order, 0);
   position: sticky;

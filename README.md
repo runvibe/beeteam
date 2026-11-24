@@ -29,6 +29,8 @@ Switch light or dark mode in the app sidebar, or change the palette in Settings.
 
 Session filter controls use the same responsive sizes as the board header filters.
 
+In the Hive, use the header navigation to switch between Boards, Agents and Teams. It becomes icon-only in narrow desktop panels; mobile keeps its horizontal navigation above the content.
+
 Open the **Documentation** link on the landing page or the app navigation rail for the interactive guide at `/guide/`. It works before connecting the local API, in English or Portuguese. Choose a harness to see the matching installation and team tutorial steps. The advanced reference includes binary settings and the MCP catalog for this build.
 
 The harness runs the agents and opens their chats. Bee Team stores profiles, team membership, tasks, plans, comments and results locally. The lead assigns work and reviews evidence on the board. Workers communicate by task and comment ID so each can retrieve the exact handoff. [Walk through a two-worker release](docs/guides/first-team.md).

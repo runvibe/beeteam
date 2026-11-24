@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Move Hive navigation into the desktop content header, with compact icons in narrow panels; keep mobile navigation above the content.
+
 - Add an experimental macOS desktop app (Tauri) that runs the Bee Team server in its own process and opens the embedded UI in a native window, with optional settings in `~/.beeteam/desktop.env`. Quitting closes open event streams immediately instead of waiting on idle connections. A development mode (`node scripts/dev-desktop.mjs`) opens the window on the Vite dev server with hot reload and restarts the app when desktop code changes.
 
 - Match session filter control and search icon sizes to the board header on desktop and mobile.

@@ -52,6 +52,117 @@ it("keeps the breadcrumb filling the content header", () => {
   }
 });
 
+it("keeps a long breadcrumb on one line beside the Hive navigation", () => {
+  const removeOperations = installStyles("src/operations.css");
+  const removeWorkspace = installStyles("src/features/chat-side-panel.css");
+  try {
+    render(
+      <div className="icon-navigation">
+        <div className="main-shell">
+          <header className="topbar">
+            <nav className="context-path" aria-label="Path">
+              <ol>
+                <li>
+                  <a href="/boards">Boards</a>
+                </li>
+                <li>
+                  <span aria-current="page">A long task name</span>
+                </li>
+              </ol>
+            </nav>
+          </header>
+        </div>
+      </div>,
+    );
+    const path = screen.getByRole("navigation", { name: "Path" });
+    expect(getComputedStyle(path.querySelector("ol")!).flexWrap).toBe("nowrap");
+    const current = path.querySelector('[aria-current="page"]')!;
+    expect(getComputedStyle(current).whiteSpace).toBe("nowrap");
+    expect(getComputedStyle(current).textOverflow).toBe("ellipsis");
+  } finally {
+    removeWorkspace();
+    removeOperations();
+  }
+});
+
+it.each([
+  [false, "1", "2"],
+  [true, "2", "3"],
+] as const)(
+  "keeps narrow Hive navigation and controls usable beside the native titlebar (details: %s)",
+  (hasDetails, navigationRow, controlsRow) => {
+    const removeApp = installStyles("src/App.css");
+    const removeNavigation = installStyles("src/navigation.css");
+    const removeHive = installStyles("src/features/hive-navigation.css");
+    const compactStyles = document.createElement("style");
+    document.documentElement.dataset.desktopTitlebar = "macos";
+    try {
+      const sheet = document.styleSheets.item(document.styleSheets.length - 1)!;
+      const desktop = Array.from(sheet.cssRules).find(
+        (rule): rule is CSSMediaRule =>
+          rule instanceof CSSMediaRule &&
+          rule.conditionText === "(min-width: 851px)",
+      );
+      const compact = Array.from(desktop!.cssRules).find(
+        (rule) =>
+          rule.cssText.startsWith(
+            "@container workspace-content (max-width: 400px)",
+          ),
+      ) as CSSGroupingRule | undefined;
+      compactStyles.textContent = Array.from(
+        compact?.cssRules ?? [],
+        (rule) => rule.cssText,
+      ).join("\n");
+      document.head.append(compactStyles);
+      render(
+        <div className="icon-navigation">
+          <div className="chat-workspace" data-window-leading-panel="content">
+            <div className="main-shell" data-hive>
+              <header className="topbar">
+                <nav className="hive-navigation" aria-label="Hive">
+                  Hive
+                </nav>
+                <nav className="context-path" aria-label="Path">
+                  Path
+                </nav>
+                <div
+                  className="header-filter-slot"
+                  role="group"
+                  aria-label="Filters"
+                >
+                  <button>Filter</button>
+                  {hasDetails && (
+                    <button className="detail-info-button">Details</button>
+                  )}
+                </div>
+                <button className="content-panel-close">Close</button>
+              </header>
+            </div>
+          </div>
+        </div>,
+      );
+      const header = document.querySelector(".topbar")!;
+      expect(getComputedStyle(header).display).toBe("grid");
+      expect(
+        getComputedStyle(screen.getByRole("navigation", { name: "Hive" }))
+          .gridRow,
+      ).toBe(navigationRow);
+      expect(
+        getComputedStyle(screen.getByRole("group", { name: "Filters" })).gridRow,
+      ).toBe(controlsRow);
+      expect(
+        getComputedStyle(screen.getByRole("button", { name: "Close" })).gridRow,
+      ).toBe(controlsRow);
+    } finally {
+      delete document.documentElement.dataset.desktopTitlebar;
+      compactStyles.remove();
+      removeHive();
+      removeNavigation();
+      removeApp();
+    }
+  },
+);
+
 it("supports touch dragging from the breadcrumb without blocking header filters", () => {
   const removeStyles = installStyles("src/features/chat-side-panel.css");
   try {
@@ -159,6 +270,63 @@ it("keeps the breadcrumb on its own row in very narrow desktop content", () => {
   );
   expect(detailStyles).toContain("grid-column: 1 / -1");
   expect(detailStyles).toContain("grid-row: 2");
+});
+
+it("keeps Hive navigation above the breadcrumb in very narrow detail headers", () => {
+  const removeStyles = installStyles(
+    "src/components/detail-layout/detail-layout.css",
+  );
+  const compactStyles = document.createElement("style");
+  try {
+    const sheet = document.styleSheets.item(document.styleSheets.length - 1)!;
+    const desktop = Array.from(sheet.cssRules).find(
+      (rule): rule is CSSMediaRule =>
+        rule instanceof CSSMediaRule &&
+        rule.conditionText === "(min-width: 851px)",
+    );
+    const compact = Array.from(desktop!.cssRules).find(
+      (rule) =>
+        rule.cssText.startsWith(
+          "@container workspace-content (max-width: 280px)",
+        ),
+    ) as CSSGroupingRule;
+    compactStyles.textContent = Array.from(
+      compact.cssRules,
+      (rule) => rule.cssText,
+    ).join("\n");
+    document.head.append(compactStyles);
+    render(
+      <div className="icon-navigation">
+        <div className="main-shell" data-hive>
+          <header className="topbar">
+            <nav className="hive-navigation" aria-label="Hive">
+              Hive
+            </nav>
+            <nav className="context-path" aria-label="Path">
+              Path
+            </nav>
+            <div className="header-filter-slot">
+              <button className="detail-info-button">Details</button>
+            </div>
+            <button className="content-panel-close">Close</button>
+          </header>
+        </div>
+      </div>,
+    );
+    const hiveRow = Number(
+      getComputedStyle(screen.getByRole("navigation", { name: "Hive" }))
+        .gridRow,
+    );
+    const pathRow = Number(
+      getComputedStyle(screen.getByRole("navigation", { name: "Path" }))
+        .gridRow,
+    );
+    expect(hiveRow).toBeGreaterThan(0);
+    expect(hiveRow).toBeLessThan(pathRow);
+  } finally {
+    compactStyles.remove();
+    removeStyles();
+  }
 });
 
 it("hides background detail controls while the mobile chat overlay is open", () => {

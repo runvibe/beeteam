@@ -240,6 +240,23 @@ body:has(.detail-page) {
       max-width: 100%;
       padding-right: 52px;
     }
+    .icon-navigation .main-shell[data-hive] > .topbar:has(.detail-info-button:not([hidden])) {
+      grid-template-rows: 40px auto auto;
+    }
+    .main-shell[data-hive] > .topbar:has(.detail-info-button:not([hidden])) > .hive-navigation {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      padding-right: 52px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .main-shell[data-hive] > .topbar:has(.detail-info-button:not([hidden])) > .header-filter-slot {
+      grid-row: 2;
+      padding-right: 0;
+    }
+    .main-shell[data-hive] > .topbar:has(.detail-info-button:not([hidden])) > :is(.context-path, .content-panel-close) {
+      grid-row: 3;
+    }
   }
 }
 .chat-workspace[data-chat-open="true"][data-chat-side="right"]

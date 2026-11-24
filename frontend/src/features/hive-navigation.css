@@ -1,49 +1,24 @@
-/* Hive sections live inside the content panel, beside its header and page. */
-.main-shell[data-hive] {
-  position: relative;
-}
-.main-shell[data-hive] > * {
-  --hive-navigation-width: 152px;
-}
-.main-shell[data-hive] > :not(.hive-navigation) {
-  margin-inline-start: var(--hive-navigation-width);
-}
 .hive-navigation {
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  width: var(--hive-navigation-width);
-  border-inline-end: 1px solid var(--border);
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 100%;
 }
 .hive-navigation-list {
-  position: sticky;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 0 8px 8px;
-}
-.hive-navigation-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 48px;
-  margin: 0;
-  padding-inline: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--foreground);
+  gap: 2px;
 }
 .hive-navigation-link {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 30px;
+  min-height: 32px;
   padding: 4px 8px;
   border-radius: var(--radius);
   font-size: 13px;
   color: var(--muted-foreground);
   text-decoration: none;
+  white-space: nowrap;
 }
 .hive-navigation-link:hover {
   background: var(--accent);
@@ -58,65 +33,122 @@
   color: var(--secondary-foreground);
   font-weight: 500;
 }
-.hive-navigation :is(.hive-navigation-title, .hive-navigation-link) svg {
+.hive-navigation-link svg {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
 }
-.hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+@media (min-width: 851px) {
+  @container workspace-content (max-width: 640px) {
+    .hive-navigation-link {
+      justify-content: center;
+      width: 32px;
+      padding-inline: 0;
+    }
+    .hive-navigation-link span {
+      display: none;
+    }
+  }
+  @container workspace-content (max-width: 400px) {
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 40%) auto;
+      grid-template-rows: 40px 48px;
+      height: auto;
+      gap: 0 8px;
+      padding-inline: 0.5rem;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar
+      > .hive-navigation {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      margin-inline-start: calc(var(--desktop-titlebar-clearance) - var(--navigation-rail-width));
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar
+      > :is(.context-path, .header-filter-slot, .content-panel-close) {
+      grid-row: 2;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar
+      > .context-path {
+      grid-column: 1;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar
+      > .header-filter-slot {
+      grid-column: 2;
+      max-width: 100%;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar
+      > .content-panel-close {
+      grid-column: 3;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar:has(.detail-info-button:not([hidden])) {
+      grid-template-rows: 40px 32px 48px;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar:has(.detail-info-button:not([hidden]))
+      > .hive-navigation {
+      grid-row: 2;
+      margin-inline-start: 0;
+      padding-right: 0;
+    }
+    :root[data-desktop-titlebar="macos"]
+      .chat-workspace[data-window-leading-panel="content"]
+      > .main-shell[data-hive]
+      > .topbar:has(.detail-info-button:not([hidden]))
+      > :is(.context-path, .header-filter-slot, .content-panel-close) {
+      grid-row: 3;
+    }
+  }
 }
-
-/* Narrow content panels keep the Hive sections as icons. */
-@container workspace-content (max-width: 640px) {
-  .main-shell[data-hive] > * {
-    --hive-navigation-width: 46px;
-  }
-  .hive-navigation-list {
-    align-items: center;
-    padding-inline: 6px;
-  }
-  .hive-navigation-title,
-  .hive-navigation-link {
-    justify-content: center;
-    width: 32px;
-    padding-inline: 0;
-  }
-  .hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
-    display: none;
-  }
-}
-
-/* Small screens show the Hive sections as tabs above the content. */
 @media (max-width: 850px) {
-  .main-shell[data-hive] > :not(.hive-navigation) {
-    margin-inline-start: 0;
+  .icon-navigation .main-shell[data-hive] > .topbar {
+    height: auto;
+    flex-wrap: wrap;
+    align-content: start;
+    gap: 0 8px;
+    padding-block: 0;
   }
   .hive-navigation {
-    position: static;
-    width: auto;
-    border-inline-end: 0;
+    flex-basis: calc(100% + 1rem);
+    max-width: none;
+    margin-inline: -0.5rem;
     border-bottom: 1px solid var(--border);
   }
   .hive-navigation-list {
-    position: static;
-    flex-direction: row;
-    align-items: center;
     padding: 4px 8px;
     overflow-x: auto;
     scrollbar-width: none;
   }
-  .hive-navigation-title {
-    display: none;
-  }
   .hive-navigation-link {
-    width: auto;
     flex-shrink: 0;
     padding-inline: 10px;
   }
-  .hive-navigation :is(.hive-navigation-title, .hive-navigation-link) span {
-    display: inline;
+  .main-shell[data-hive] .mobile-context-path {
+    min-height: 48px;
   }
 }

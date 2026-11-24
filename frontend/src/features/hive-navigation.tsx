@@ -1,4 +1,4 @@
-import { Boxes, Columns3, Network, Users } from "lucide-react";
+import { Columns3, Network, Users } from "lucide-react";
 import { useLocale, t } from "@/i18n";
 import { useUi } from "@/state/ui";
 import type { HiveArea } from "@/state/hive-navigation";
@@ -18,10 +18,6 @@ export function HiveNavigation() {
   return (
     <nav className="hive-navigation" aria-label={t("common.hiveNavigation")}>
       <div className="hive-navigation-list">
-        <p className="hive-navigation-title">
-          <Boxes aria-hidden="true" />
-          <span>{t("common.hive")}</span>
-        </p>
         {sections.map(({ area: target, label, Icon }) => {
           const name = label();
           return (

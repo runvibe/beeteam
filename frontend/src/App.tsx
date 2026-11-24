@@ -80,9 +80,9 @@ export function App({ homeEnabled = false }: { homeEnabled?: boolean } = {}) {
                 data-hive={hive || undefined}
                 ref={setDetailContainer}
               >
-                {hive && <HiveNavigation />}
                 <ApiCompatibilityBanner />
                 <header className="topbar" data-dock-handle="content">
+                  {hive && <HiveNavigation />}
                   <AppPath />
                   <MobileContextPath />
                   <div className="header-filter-slot" ref={setFilterTarget} />

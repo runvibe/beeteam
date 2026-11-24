@@ -26,13 +26,6 @@ export function measureFloatingChatArea(
     right = Math.min(right, shell.right, main?.right ?? shell.right);
     top = Math.max(top, shell.top, main?.top ?? shell.top, bar?.bottom ?? 0);
     bottom = Math.min(bottom, Math.max(shell.bottom, top));
-    const hive = panel
-      .querySelector<HTMLElement>(".hive-navigation")
-      ?.getBoundingClientRect();
-    if (hive && hive.width > 0 && hive.height > 0) {
-      if (hive.width < shell.width / 2) left = Math.max(left, hive.right);
-      else top = Math.max(top, hive.bottom);
-    }
   } else {
     // The workspace already excludes the primary navigation rail. Reserve any
     // visible sessions column if the content panel is temporarily unavailable.
@@ -90,7 +83,7 @@ export function useFloatingChatArea(
       resize?.observe(workspace);
       workspace
         .querySelectorAll<HTMLElement>(
-          "#content-panel,#main-content,.hive-navigation,.topbar,.sessions-sidebar",
+          "#content-panel,#main-content,.topbar,.sessions-sidebar",
         )
         .forEach((element) => resize?.observe(element));
       measure();
