@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Show floating-chat session information in an external anchored panel without expanding compact chat or shifting its contents.
+
 - Toggle compact floating chat with a header double-click, preserving live voice and drafts, and constrain floating movement and resizing to the content area outside navigation sidebars.
 
 - Resize floating chat from its borders and corners without visible grips while preserving the conversation, with keyboard controls and independently saved floating dimensions.

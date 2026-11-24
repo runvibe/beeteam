@@ -340,4 +340,5 @@
     "reason": "DOM keyboard event key cancelling a drag gesture; not a user-facing string."
   },
   {"file":"src/features/use-floating-chat-resize.ts","text":"Escape","reason":"DOM keyboard event key cancelling a resize gesture; not displayed text."}
+,{"file":"src/features/floating-session-information.tsx","text":"Escape","reason":"DOM keyboard event key dismissing external session information; not displayed text."}
 ]

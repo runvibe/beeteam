@@ -54,10 +54,6 @@ vi.mock("./leader-chat", () => ({
 vi.mock("./managed-agent-chat", () => ({
   ManagedAgentChat: () => <textarea aria-label="Draft" />,
 }));
-vi.mock("./chat-session-information", () => ({
-  sessionInformationMode: () => "inline",
-  ChatSessionInformation: () => <div id="chat-session-information">Session information</div>,
-}));
 
 it("preserves mounted chat draft through navigation, side change and collapse", async () => {
   setLocalePreference("en");
@@ -277,7 +273,7 @@ it("toggles compact without remounting history, voice or draft, and restores exp
   view.unmount();rect.mockRestore();
 });
 
-it("expands compact mode before opening session information",async()=>{
+it("keeps floating information outside the compact chat and preserves geometry through docking",async()=>{
   setLocalePreference("en");systemTeams.managed=true;
   useChatPanel.setState({teamId:"team-a",open:false,floatingSize:null,floatingPosition:null});
   const view=render(<QueryClientProvider client={new QueryClient()}><ChatWorkspace><main>Content</main></ChatWorkspace></QueryClientProvider>);
@@ -288,10 +284,23 @@ it("expands compact mode before opening session information",async()=>{
   expect(info).toHaveAttribute("aria-expanded","true");
   await userEvent.dblClick(heading);
   expect(panel).toHaveAttribute("data-floating-compact","true");
+  expect(info).toHaveAttribute("aria-expanded","true");
+  const draft=screen.getByRole("textbox",{name:"Draft"});
+  const size=useChatPanel.getState().floatingSize;
+  const style=panel.getAttribute("style");
+  expect(panel).not.toContainElement(document.getElementById("chat-session-information"));
+
+  await userEvent.keyboard("{Escape}");
+  expect(info).toHaveFocus();
   expect(info).toHaveAttribute("aria-expanded","false");
   await userEvent.click(info);
-  expect(panel).not.toHaveAttribute("data-floating-compact");
-  expect(info).toHaveAttribute("aria-expanded","true");
-  expect(document.getElementById("chat-session-information")).toBeInTheDocument();
+  expect(panel).toHaveAttribute("data-floating-compact","true");
+  expect(panel.getAttribute("style")).toBe(style);
+  expect(useChatPanel.getState().floatingSize).toEqual(size);
+  act(()=>useChatPanel.getState().show());
+  expect(panel).toContainElement(document.getElementById("chat-session-information"));
+  act(()=>useChatPanel.getState().close());
+  expect(panel).not.toContainElement(document.getElementById("chat-session-information"));
+  expect(screen.getByRole("textbox",{name:"Draft"})).toBe(draft);
   view.unmount();systemTeams.managed=false;
 });

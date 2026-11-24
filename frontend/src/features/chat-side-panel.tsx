@@ -1,3 +1,4 @@
+import { FloatingSessionInformation } from "./floating-session-information";
 import { useFloatingChat } from "./use-floating-chat";
 import { useFloatingChatResize } from "./use-floating-chat-resize";
 import { useFloatingChatArea } from "./use-floating-chat-area";
@@ -136,7 +137,6 @@ export function ChatWorkspace({
     element: chatElement,
     wasDraggedRecently: floating.wasDraggedRecently,
     onCollapse: () => {
-      setInformationOpen(false);
       if (!floatingSize && chatElement) {
         const rect = chatElement.getBoundingClientRect();
         setFloatingBounds({x:rect.left,y:rect.top,width:rect.width,height:rect.height});
@@ -279,7 +279,6 @@ export function ChatWorkspace({
               aria-expanded={informationOpen}
               aria-controls="chat-session-information"
               onClick={() => {
-                compactChat.expand();
                 setInformationOpen((value) => !value);
               }}
             >
@@ -309,7 +308,7 @@ export function ChatWorkspace({
               )}
             </div>
           </div>
-          {informationOpen && api.managedAgents && (
+          {open && informationOpen && api.managedAgents && (
             <ChatSessionInformation
               teamId={teamId}
               conversationId={conversationId}
@@ -361,6 +360,16 @@ export function ChatWorkspace({
           </Fragment>
         ))}
       </WorkspaceResizeContext.Provider>
+      {!open && informationOpen && api.managedAgents && (
+        <FloatingSessionInformation anchor={chatElement} area={floatingArea} onClose={closeInformation}>
+          <ChatSessionInformation
+            teamId={teamId}
+            conversationId={conversationId}
+            mode="external"
+            onClose={closeInformation}
+          />
+        </FloatingSessionInformation>
+      )}
       <span className="sr-only" role="status" aria-live="polite">
         {announcement}
       </span>

@@ -55,3 +55,27 @@
   margin: 0.25rem 0 0;
   overflow-wrap: anywhere;
 }
+.floating-session-information {
+  position: fixed;
+  z-index: 46;
+}
+.floating-session-information > .chat-session-information {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.08);
+}
+.chat-session-information[data-mode="external"] {
+  overflow: hidden;
+}
+.chat-session-information[data-mode="external"] > header > strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.chat-session-information[data-mode="external"] > header {
+  padding: min(0.75rem, 8%);
+}
+.chat-session-information[data-mode="external"] > header > button {
+  flex-shrink: 0;
+}

@@ -24,7 +24,7 @@ export function ChatSessionInformation({
 }: {
   teamId: string | null;
   conversationId: string | null;
-  mode: "floating" | "docked";
+  mode: "floating" | "docked" | "external";
   onClose: () => void;
 }) {
   useLocale();
