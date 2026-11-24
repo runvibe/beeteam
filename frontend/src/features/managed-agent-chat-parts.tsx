@@ -8,7 +8,6 @@ import {
   ExternalLink,
   KanbanSquare,
   ShieldQuestion,
-  Sparkles,
   RefreshCw,
   UserPlus,
   Users,
@@ -38,7 +37,7 @@ type Message = components["schemas"]["Message"];
 const WORKING = ["accepted", "queued", "preparing", "running"];
 export const isWorking = (state?: string) => !!state && WORKING.includes(state);
 
-/** Hexagonal agent mark; it pulses while the agent is working. */
+/** Standard Bee Team logo; it pulses while the agent is working. */
 export function AgentMark({
   working = false,
   size = "sm",
@@ -53,7 +52,7 @@ export function AgentMark({
       data-working={working || undefined}
       aria-hidden="true"
     >
-      <Sparkles />
+      <BeeTeamLogo />
     </span>
   );
 }

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replace the legacy yellow sparkle mark in agent status and configuration states with the standard Bee Team logo.
+
 - Suggest the relevant team leader from board, team and task pages, with explicit new-chat or latest-valid-conversation actions.
 
 - Keep the sessions toggle only in the chat header and use a simple window outline for restoring floating chat.

@@ -211,7 +211,7 @@
   margin-bottom: 0;
 }
 
-/* Agent mark: the signature hexagon that pulses while work is in flight. */
+/* Reuse the standard, theme-aware logo while work is in flight. */
 .agent-mark {
   position: relative;
   display: inline-grid;
@@ -219,21 +219,19 @@
   flex-shrink: 0;
   width: 1.75rem;
   height: 1.75rem;
-  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0 50%);
-  background: var(--bee);
-  color: var(--bee-ink);
+  color: var(--foreground);
 }
 .agent-mark svg {
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 1.25rem;
+  height: 1.25rem;
 }
 .agent-mark[data-size="lg"] {
   width: 3rem;
   height: 3rem;
 }
 .agent-mark[data-size="lg"] svg {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 2rem;
+  height: 2rem;
 }
 .agent-mark[data-working] {
   animation: assistant-pulse 1.4s ease-in-out infinite;
@@ -489,8 +487,7 @@
 }
 @keyframes assistant-pulse {
   50% {
-    transform: scale(0.88);
-    filter: drop-shadow(0 0 6px var(--bee));
+    opacity: 0.55;
   }
 }
 @keyframes assistant-dot {
