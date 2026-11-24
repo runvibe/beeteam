@@ -6,6 +6,40 @@ use uuid::Uuid;
 
 pub type RepositoryFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T>> + Send + 'a>>;
 
+/// Local harness adapters own protocol I/O; services own recipients and delivery state.
+pub trait SessionProvider: Send + Sync {
+    /// Structured delivery identity for adapters that route approvals and history.
+    fn deliver_context<'a>(
+        &'a self,
+        destination: &'a crate::dto::session_delivery::SessionDestination,
+        text: &'a str,
+        events: tokio::sync::mpsc::Sender<crate::dto::session_delivery::SessionEvent>,
+        _delivery_id: Uuid,
+    ) -> Pin<
+        Box<
+            dyn Future<
+                    Output = std::result::Result<(), crate::dto::session_delivery::SessionFailure>,
+                > + Send
+                + 'a,
+        >,
+    > {
+        self.deliver(destination, text, events)
+    }
+    fn deliver<'a>(
+        &'a self,
+        destination: &'a crate::dto::session_delivery::SessionDestination,
+        text: &'a str,
+        events: tokio::sync::mpsc::Sender<crate::dto::session_delivery::SessionEvent>,
+    ) -> Pin<
+        Box<
+            dyn Future<
+                    Output = std::result::Result<(), crate::dto::session_delivery::SessionFailure>,
+                > + Send
+                + 'a,
+        >,
+    >;
+}
+
 pub trait ChangeSource: Send + Sync {
     fn is_closed(&self) -> bool;
     fn connect(&self) -> RepositoryFuture<'_, Box<dyn ChangeStream>>;
@@ -135,4 +169,14 @@ pub trait ProjectOpener: Send + Sync {
         root: &'a str,
         application: crate::dto::local_projects::ProjectApplication,
     ) -> RepositoryFuture<'a, ()>;
+}
+
+/// Local Codex voice integration lifecycle; process handles remain adapter-owned.
+pub trait VoiceProvider: Send + Sync {
+    fn voices(&self) -> RepositoryFuture<'_, Vec<String>>;
+    fn start(&self, sdp: String, instructions: String, voice: Option<String>) -> RepositoryFuture<'_, crate::dto::voice::VoiceConnection>;
+    fn events(&self, id: String, after: u64) -> RepositoryFuture<'_, crate::dto::voice::VoiceEvents>;
+    fn result(&self, id: String, call_id: String, content: String) -> RepositoryFuture<'_, ()>;
+    fn context(&self, id: String, content: String) -> RepositoryFuture<'_, ()>;
+    fn stop(&self, id: String) -> RepositoryFuture<'_, ()>;
 }

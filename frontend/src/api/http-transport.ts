@@ -38,8 +38,8 @@ export function createTransport(options: HttpOptions = {}) {
         throw new ApiError(
           response.status,
           body?.code ?? "http_error",
-          typeof body?.error === "string"
-            ? body.error
+          typeof (body?.error ?? body?.message) === "string"
+            ? (body.error ?? body.message)
             : message("errors.http", { status: response.status }),
         );
       }

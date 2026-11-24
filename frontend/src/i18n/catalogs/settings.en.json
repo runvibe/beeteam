@@ -1,4 +1,13 @@
 {
+  "voiceLabel": "Voice",
+  "voiceDefault": "Codex default",
+  "voiceHelp": "Saved on this device and used for your next voice call. Available voices come from the installed Codex.",
+  "voiceLoading": "Loading available voices…",
+  "voiceUnavailable": "Connect to the local Codex runtime to discover available voices.",
+  "voiceLoadFailed": "Could not load voices from the local Codex runtime.",
+  "voiceUnavailableChoice": "Unavailable — {{voice}}",
+  "voiceSavedChoice": "Saved voice — {{voice}}",
+  "voiceMissingHelp": "The saved voice is unavailable in the current Codex installation. Choose another voice or Codex default before your next call.",
   "documentTitle": "Bee Team - Tasks and agents",
   "language": "Language",
   "automaticLanguage": "Automatic (browser)",
@@ -15,5 +24,11 @@
   "lightAppearance": "Light",
   "darkAppearance": "Dark",
   "appearanceHelp": "The palette and appearance are saved on this device. Default restores the original colors.",
-  "globalSettingsHelp": "Appearance, language and data for this Bee Team installation."
+  "globalSettingsHelp": "Appearance, language and data for this Bee Team installation.",
+  "chatAccessSection": "Chat",
+  "chatDefaultAccess": "Default chat access",
+  "chatDefaultAccessHelp": "Saved on this device for integrated team chats without their own selection.",
+  "chatPosition": "Chat position",
+  "chatRight": "Right",
+  "chatLeft": "Left"
 }

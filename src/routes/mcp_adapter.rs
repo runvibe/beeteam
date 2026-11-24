@@ -104,13 +104,30 @@ pub(super) fn tools() -> Vec<Value> {
         },"required":needed}}));
     }
     tools.extend(crate::dto::mcp::composite_tools());
+    tools.push(crate::dto::creation_guidance::tool());
     tools.extend(crate::dto::data_transfer_tools::tools());
+    tools.extend(crate::dto::integrated_chat_tools::tools());
+    tools.extend(super::managed_agents_mcp::tools());
     for tool in &mut tools {
         crate::dto::mcp_language::translate_metadata(tool);
     }
     tools
 }
 pub(super) async fn call(state: &AppState, name: &str, arguments: Value) -> Result<Value> {
+    if name == "get_creation_guidance" {
+        let request = serde_json::from_value(arguments).map_err(|e| Failure::invalid(e.to_string()))?;
+        return serde_json::to_value(state.creation_guidance().get(request)?)
+            .map_err(|e| Failure::new("internal_error", e.to_string()));
+    }
+    if super::managed_agents_mcp::tools()
+        .iter()
+        .any(|t| t["name"] == name)
+    {
+        return super::managed_agents_mcp::call(state, name, arguments).await;
+    }
+    if crate::dto::integrated_chat_tools::NAMES.contains(&name) {
+        return super::integrated_chat_mcp::call(state, name, arguments).await;
+    }
     if crate::dto::data_transfer_tools::NAMES.contains(&name) {
         return super::data_transfer_mcp::call(state, name, arguments).await;
     }

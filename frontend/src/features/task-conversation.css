@@ -111,3 +111,7 @@
 .task-conversation > .conversation-page-slot:first-child:empty {
   margin-bottom: -20px;
 }
+.conversation-composer { display: grid; gap: 10px; margin-block: 16px; }
+.conversation-composer > button { justify-self: end; }
+.conversation-mention-options { display: flex; gap: 6px; flex-wrap: wrap; }
+.conversation-delivery-state { color: var(--muted-foreground); font-size: 12px; padding-inline-start: 18px; }

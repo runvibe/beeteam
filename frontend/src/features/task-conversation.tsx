@@ -18,6 +18,8 @@ import { conversationAuthor } from "./task-conversation-author";
 import { useConversationAnchor } from "./conversation-anchor";
 import { ConversationTimestamp } from "./conversation-timestamp";
 import "./task-conversation.css";
+import { ConversationComposer } from "./conversation-composer";
+import { ConversationDeliveryState } from "./conversation-delivery-state";
 
 export function TaskConversation({
   taskId,
@@ -81,6 +83,7 @@ export function TaskConversation({
         </p>
       )}
       <ConversationWindow key={state.identity} state={state} />
+      <ConversationComposer key={taskId} taskId={taskId} />
     </>
   );
 }
@@ -234,6 +237,7 @@ function ConversationMessage({ item }: { item: Resources["comments"] }) {
         <ConversationTimestamp value={item.createdAt} />
       </header>
       <Markdown headingOffset={2}>{item.body}</Markdown>
+      <ConversationDeliveryState taskId={item.taskId} commentId={item.id}/>
     </article>
   );
 }

@@ -22,7 +22,9 @@ impl Database {
             migrator.migrations = std::borrow::Cow::Owned(
                 migrator
                     .iter()
-                    .filter(|m| m.version < cutoff)
+                    // Delay only the hierarchy migration under test. The current
+                    // service also needs unrelated later tables to seed fixtures.
+                    .filter(|m| m.version != cutoff)
                     .cloned()
                     .collect(),
             );

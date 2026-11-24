@@ -1,0 +1,62 @@
+.chat-access-popover {
+  width: min(340px, calc(100vw - 24px));
+  max-height: var(--radix-popover-content-available-height);
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: var(--shadow-md);
+  font-size: 13px;
+  line-height: 1.4;
+}
+.assistant-composer-row .chat-access-trigger {
+  margin-right: auto;
+}
+.chat-access-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: 100%;
+  padding: 9px;
+  border-radius: var(--radius-sm);
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.chat-access-option:hover,
+.chat-access-option[data-state="checked"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+.chat-access-option:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.chat-access-option > svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  margin-top: 2px;
+}
+.chat-access-option > span:not([data-state]) {
+  flex: 1;
+  min-width: 0;
+}
+.chat-access-option > [data-state] {
+  flex: 0 0 15px;
+}
+.chat-access-option strong,
+.chat-access-option small {
+  font-size: 12px;
+  display: block;
+}
+.chat-access-option small {
+  color: var(--muted-foreground);
+  line-height: 1.35;
+}
+.chat-access-option [data-state] svg {
+  width: 15px;
+  height: 15px;
+}

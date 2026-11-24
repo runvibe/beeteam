@@ -14,6 +14,9 @@ use uuid::Uuid;
 pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
     let body = &c.body;
     match c.operation.as_str() {
+        "createAgentWithSession" | "claimAgentSession" => {
+            super::session_bindings::run(unit, c).await
+        }
         "createAgent" => {
             let mut data = defaults(
                 body,
@@ -44,6 +47,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             let id = c.id("agentId")?;
             let agent = unit.records.get("agents", id)?.clone();
             check_version(&agent, c.expected_version)?;
+            if body["archived"] == true {
+                super::onboarding::protect(&agent)?;
+            }
             if c.operation == "updateAgent" {
                 active(&unit.records, "agents", id)?;
                 validate_url(body["image"]["url"].as_str())?;
@@ -82,6 +88,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                     "Reassign unfinished tasks before archiving the executor",
                 ));
             }
+            if body["archived"] == true {
+                super::session_bindings::close_for_archive(unit, c, id)?;
+            }
             patch(
                 unit.records.get_mut("agents", id)?,
                 body,
@@ -109,10 +118,7 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             );
             team_role_icons::defaults(&mut data);
             let id = unit.records.insert(Record::new("teams", data));
-            let members = body["workerIds"]
-                .as_array()
-                .cloned()
-                .unwrap_or_default();
+            let members = body["workerIds"].as_array().cloned().unwrap_or_default();
             set_members(&mut unit.records, id, &members)?;
             validate_composition(&unit.records)?;
             let affected = team_agents(&unit.records, id);
@@ -122,6 +128,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
         "updateTeam" | "archiveTeam" => {
             let id = c.id("teamId")?;
             check_version(unit.records.get("teams", id)?, c.expected_version)?;
+            if body["archived"] == true {
+                super::onboarding::protect(unit.records.get("teams", id)?)?;
+            }
             if c.operation == "updateTeam" {
                 active(&unit.records, "teams", id)?;
             }
@@ -146,6 +155,9 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
                 let team = unit.records.get("teams", id)?;
                 if Some(team.version) != change["expectedVersion"].as_i64() {
                     return Err(Failure::new("composition_conflict", "Team version changed"));
+                }
+                if change["leaderId"] != team.data["leaderId"] {
+                    super::onboarding::protect(team)?;
                 }
                 touched.extend(team_agents(&unit.records, id));
             }
@@ -220,6 +232,13 @@ pub(super) async fn run(unit: &mut UnitOfWork, c: &Command) -> Result<Outcome> {
             Ok(result)
         }
         "createChatReference" | "updateChatReference" => {
+            if !unit.records.get("agents", c.id("agentId")?)?.data["managedConfiguration"].is_null()
+            {
+                return Err(Failure::new(
+                    "operation_removed",
+                    "Managed agents do not accept external session references",
+                ));
+            }
             let id = c.id("agentId")?;
             active(&unit.records, "agents", id)?;
             validate_url(body["url"].as_str())?;

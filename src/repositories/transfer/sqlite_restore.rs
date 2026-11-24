@@ -36,11 +36,18 @@ pub async fn restore(
     ensure!(store.digest(id)? == hash, "archive_changed");
     ensure!(store.validate_archive(id)? == manifest, "manifest_changed");
     for table in groups() {
-        let count: i64 =
-            sqlx::query_scalar(sqlx::AssertSqlSafe(format!("SELECT count(*) FROM {table}")))
-                .fetch_one(&mut *tx)
-                .await?;
+        let count: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(super::seed::count(
+            table,
+            super::seed::Dialect::Sqlite,
+        )))
+        .fetch_one(&mut *tx)
+        .await?;
         ensure!(count == 0, "destination_not_empty");
+    }
+    for statement in super::seed::deletions(super::seed::Dialect::Sqlite) {
+        sqlx::query(sqlx::AssertSqlSafe(statement))
+            .execute(&mut *tx)
+            .await?;
     }
     for row in store.row_iter(id, "file_contents")? {
         store.check(id, started)?;

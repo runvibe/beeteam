@@ -11,6 +11,18 @@ const states: Record<string, string> = {
   expired: "transfer.state.expired",
 };
 const stages: Record<string, string> = {
+  leader_session_operations: "transfer.stage.leader_session_operations",
+  managed_conversations: "transfer.stage.managed_conversations",
+  managed_requests: "transfer.stage.managed_requests",
+  managed_messages: "transfer.stage.managed_messages",
+  managed_approvals: "transfer.stage.managed_approvals",
+  managed_events: "transfer.stage.managed_events",
+  leader_chats: "transfer.stage.leader_chats",
+  leader_chat_turns: "transfer.stage.leader_chat_turns",
+  leader_chat_messages: "transfer.stage.leader_chat_messages",
+  leader_chat_approvals: "transfer.stage.leader_chat_approvals",
+  leader_chat_events: "transfer.stage.leader_chat_events",
+  leader_chat_tools: "transfer.stage.leader_chat_tools",
   validating: "transfer.stage.validating",
   snapshot: "transfer.stage.snapshot",
   upload: "transfer.stage.upload",
@@ -29,6 +41,8 @@ const stages: Record<string, string> = {
   attachments: "transfer.stage.attachments",
   execution_summaries: "transfer.stage.execution_summaries",
   chat_references: "transfer.stage.chat_references",
+  agent_session_bindings: "transfer.stage.agent_session_bindings",
+  session_deliveries: "transfer.stage.session_deliveries",
   task_executions: "transfer.stage.task_executions",
   task_execution_intervals: "transfer.stage.task_execution_intervals",
   task_execution_interval_counters:

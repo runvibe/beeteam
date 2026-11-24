@@ -5,14 +5,20 @@ import { useLocale, t } from "@/i18n";
 import { themeController } from "@/state/theme-runtime";
 import { type ThemePreference, type ThemePreset } from "@/state/theme";
 import { Choice } from "./shared";
+import { useChatPanel } from "@/state/chat-panel";
 function ThemeChoice({ onChange, ...props }: ComponentProps<typeof Choice>) {
   const trigger = useRef<HTMLButtonElement>(null);
   return (
-    <Choice {...props} triggerRef={trigger} onChange={(value) => {
-      if (value === props.value) return;
-      if (trigger.current) revealTheme(trigger.current, () => onChange(value));
-      else onChange(value);
-    }} />
+    <Choice
+      {...props}
+      triggerRef={trigger}
+      onChange={(value) => {
+        if (value === props.value) return;
+        if (trigger.current)
+          revealTheme(trigger.current, () => onChange(value));
+        else onChange(value);
+      }}
+    />
   );
 }
 
@@ -20,6 +26,7 @@ export function AppearanceSettings() {
   useLocale();
   const preset = useStore(themeController.store, (s) => s.preset);
   const preference = useStore(themeController.store, (s) => s.preference);
+  const side = useChatPanel((s) => s.side);
   return (
     <section className="detail-section">
       <ThemeChoice
@@ -50,6 +57,17 @@ export function AppearanceSettings() {
         ]}
       />
       <p className="small-note">{t("settings.appearanceHelp")}</p>
+      <Choice
+        label={t("settings.chatPosition")}
+        value={side}
+        onChange={(value) =>
+          useChatPanel.getState().setSide(value as "left" | "right")
+        }
+        options={[
+          { value: "right", label: t("settings.chatRight") },
+          { value: "left", label: t("settings.chatLeft") },
+        ]}
+      />
     </section>
   );
 }

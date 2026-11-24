@@ -42,6 +42,13 @@
     "expired": "Expirado"
   },
   "stage": {
+    "leader_session_operations": "Operações de sessões integradas",
+    "leader_chats": "Chats com o líder",
+    "leader_chat_turns": "Execuções dos chats",
+    "leader_chat_messages": "Mensagens dos chats",
+    "leader_chat_approvals": "Aprovações dos chats",
+    "leader_chat_events": "Eventos dos chats",
+    "leader_chat_tools": "Atividades de ferramentas dos chats",
     "validating": "Validando arquivo",
     "snapshot": "Criando snapshot",
     "upload": "Enviando",
@@ -70,7 +77,14 @@
     "board_events": "Eventos dos boards",
     "file_contents": "Conteúdos dos arquivos",
     "request_replays": "Respostas de idempotência",
-    "archive_ready": "Arquivo pronto"
+    "archive_ready": "Arquivo pronto",
+    "agent_session_bindings": "Vínculos de sessão dos agentes",
+    "session_deliveries": "Entregas da Conversa",
+    "managed_conversations": "Conversas dos agentes",
+    "managed_requests": "Pedidos aos agentes",
+    "managed_messages": "Mensagens dos agentes",
+    "managed_approvals": "Aprovações dos agentes",
+    "managed_events": "Eventos dos agentes"
   },
   "error": {
     "disabled": "Transferência desativada.",

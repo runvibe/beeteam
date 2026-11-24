@@ -39,6 +39,10 @@ servers:
   - url: http://127.0.0.1:59865
     description: Endereço local proposto; não comprova API implementada.
 paths:
+  /api/v2/agents/with-session: {"post": {"operationId": "createAgentWithSession", "summary": "createAgentWithSession", "description": "Managed session ledger. Explicit replacement requires the observed binding ID and current agent version. Legacy references are not active bindings.", "parameters": [{"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}], "responses": {"201": {"description": "Declared binding state; no provider delivery or access verification.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AgentWithSession"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}, "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateAgentWithSession"}}}}}}
+  /api/v2/agents/{agentId}/session-binding: {"post": {"operationId": "claimAgentSession", "summary": "claimAgentSession", "description": "Managed session ledger. Explicit replacement requires the observed binding ID and current agent version. Legacy references are not active bindings.", "parameters": [{"name": "agentId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, {"$ref": "#/components/parameters/ActorKind"}, {"$ref": "#/components/parameters/ActorId"}, {"$ref": "#/components/parameters/IdempotencyKey"}, {"$ref": "#/components/parameters/IfMatch"}], "responses": {"200": {"description": "Declared binding state; no provider delivery or access verification.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AgentWithSession"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}, "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ClaimAgentSession"}}}}}}
+  /api/v2/agents/available-for-session: {"get": {"operationId": "listAvailableSessionAgents", "summary": "listAvailableSessionAgents", "description": "Managed session ledger. Explicit replacement requires the observed binding ID and current agent version. Legacy references are not active bindings.", "parameters": [{"name": "offset", "in": "query", "schema": {"type": "integer", "minimum": 0, "default": 0}}, {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 50}}], "responses": {"200": {"description": "Declared binding state; no provider delivery or access verification.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AgentPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
+  /api/v2/agents/{agentId}/session-binding/history: {"get": {"operationId": "listAgentSessionBindings", "summary": "listAgentSessionBindings", "description": "Managed session ledger. Explicit replacement requires the observed binding ID and current agent version. Legacy references are not active bindings.", "parameters": [{"name": "agentId", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, {"name": "offset", "in": "query", "schema": {"type": "integer", "minimum": 0, "default": 0}}, {"name": "limit", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 50}}], "responses": {"200": {"description": "Declared binding state; no provider delivery or access verification.", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AgentSessionBindingPage"}}}}, "400": {"$ref": "#/components/responses/400"}, "404": {"$ref": "#/components/responses/404"}, "409": {"$ref": "#/components/responses/409"}, "412": {"$ref": "#/components/responses/412"}, "428": {"$ref": "#/components/responses/428"}, "500": {"$ref": "#/components/responses/500"}, "503": {"$ref": "#/components/responses/503"}}}}
   /api/v2/team-role-icons:
     get:
       operationId: listTeamRoleIcons
@@ -840,6 +844,12 @@ paths:
       description: Leitura local sem autenticação; aplicar filtros e exclusão lógica.
       x-contract-status: proposed
       parameters:
+        - name: system
+          in: query
+          required: false
+          description: "True: only protected system teams such as Bee Team HQ; false: only user teams."
+          schema:
+            type: boolean
         - name: name
           in: query
           required: false
@@ -1796,6 +1806,12 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
   schemas:
+    SessionDescriptor: {"type":"object","properties":{"harness":{"type":"string","enum":["codex","claude-code"]},"installationId":{"type":"string","minLength":1,"maxLength":200},"externalId":{"type":"string","minLength":1,"maxLength":500},"projectRoot":{"type":"string","minLength":1,"maxLength":4096,"description":"Declared absolute project root; not a grant of filesystem access."},"mode":{"type":"string","enum":["external"],"default":"external","description":"Declared harness sessions are external. Integrated sessions must be created by the managed bootstrap."}},"required":["harness","installationId","externalId","projectRoot"],"additionalProperties":false}
+    AgentSessionBinding: {"type":"object","properties":{"harness":{"type":"string","enum":["codex","claude-code"]},"installationId":{"type":"string","minLength":1,"maxLength":200},"externalId":{"type":"string","minLength":1,"maxLength":500},"projectRoot":{"type":"string","minLength":1,"maxLength":4096,"description":"Declared absolute project root; not a grant of filesystem access."},"id":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"agentId":{"type":"string","format":"uuid","pattern":"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"},"startedAt":{"type":"string","format":"date-time"},"endedAt":{"type":["string","null"],"format":"date-time"},"startedBy":{"type":"object"},"endedBy":{"type":["object","null"]},"verification":{"type":"string","enum":["declared","verified"],"description":"Verified means local managed-session preflight succeeded; not proof of a completed task."},"version":{"type":"integer","minimum":1},"createdAt":{"type":"string","format":"date-time"},"updatedAt":{"type":"string","format":"date-time"},"archivedAt":{"type":["string","null"]},"deletedAt":{"type":["string","null"]},"mode":{"type":"string","enum":["external","integrated"],"default":"external","description":"Missing on legacy records means external; integrated bindings are created by Bee Team."},"toolProfile":{"type":"object","additionalProperties":false,"properties":{"webSearch":{"type":"string","enum":["disabled","cached","live"],"default":"live"},"networkAccess":{"type":"boolean","default":true},"enabledMcpServers":{"type":"array","maxItems":100,"items":{"type":"string","minLength":1},"default":[]},"skillRoots":{"type":"array","maxItems":32,"items":{"type":"string","minLength":1,"description":"Absolute local directory path."},"default":[]}}}},"required":["harness","installationId","externalId","projectRoot","id","agentId","startedAt","endedAt","startedBy","endedBy","verification","version","createdAt","updatedAt","archivedAt","deletedAt"],"additionalProperties":false}
+    AgentWithSession: {"type": "object", "properties": {"agent": {"$ref": "#/components/schemas/Agent"}, "sessionBinding": {"$ref": "#/components/schemas/AgentSessionBinding"}}, "required": ["agent", "sessionBinding"], "additionalProperties": false}
+    CreateAgentWithSession: {"type": "object", "properties": {"agent": {"$ref": "#/components/schemas/CreateAgent"}, "session": {"$ref": "#/components/schemas/SessionDescriptor"}}, "required": ["agent", "session"], "additionalProperties": false}
+    ClaimAgentSession: {"type": "object", "properties": {"session": {"$ref": "#/components/schemas/SessionDescriptor"}, "expectedBindingId": {"type": ["string", "null"], "format": "uuid", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"}}, "required": ["session", "expectedBindingId"], "additionalProperties": false}
+    AgentSessionBindingPage: {"type": "object", "properties": {"items": {"type": "array", "items": {"$ref": "#/components/schemas/AgentSessionBinding"}}, "offset": {"type": "integer", "minimum": 0, "maximum": 2147483647}, "limit": {"type": "integer", "minimum": 1, "maximum": 100}, "total": {"type": "integer", "minimum": 0}, "hasMore": {"type": "boolean"}, "nextOffset": {"type": ["integer", "null"], "minimum": 0}}, "required": ["items", "offset", "limit", "total", "hasMore", "nextOffset"], "additionalProperties": false, "description": "hasMore=offset+items.length<total; nextOffset=offset+items.length se houver mais, senão null. Além do total: vazio. Snapshot coerente dentro da resposta, não entre chamadas."}
     AgentLatestActivity: {"type": "object", "properties": {"activity": {"type": ["object", "null"], "properties": {"type": {"type": "string", "description": "Persisted task timeline EventType; translate this identifier for display."}, "occurredAt": {"type": "string", "format": "date-time"}, "taskId": {"type": "string", "format": "uuid"}, "taskSlug": {"type": "string"}, "taskTitle": {"type": "string"}, "eventId": {"type": "string", "format": "uuid"}, "summaryId": {"type": ["string", "null"], "format": "uuid"}}, "required": ["type", "occurredAt", "taskId", "taskSlug", "taskTitle", "eventId", "summaryId"], "additionalProperties": false}}, "required": ["activity"], "additionalProperties": false}
     Slug:
       type: string
@@ -1853,6 +1869,7 @@ components:
         code:
           type: string
           enum:
+            - session_binding_conflict
             - invalid_request
             - coordination_context_required
             - coordination_mode_mismatch
@@ -1877,6 +1894,7 @@ components:
             - leader_required
             - leadership_cycle
             - agent_in_use
+            - system_resource_protected
             - assignment_in_use
             - composition_conflict
             - invalid_actor_context
@@ -1968,6 +1986,10 @@ components:
     Agent:
       type: object
       properties:
+        system:
+          type: boolean
+          readOnly: true
+          description: True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.
         slug:
           $ref: '#/components/schemas/Slug'
         id:
@@ -2202,6 +2224,10 @@ components:
     Team:
       type: object
       properties:
+        system:
+          type: boolean
+          readOnly: true
+          description: True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it.
         roleIcons:
           $ref: '#/components/schemas/TeamRoleIcons'
         leaderIconId:

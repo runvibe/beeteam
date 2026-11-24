@@ -12,6 +12,8 @@ import { setLocalePreference } from "@/i18n";
 import { ConnectedApp } from "./connected-app";
 import { LaunchRoot } from "./launch-root";
 import { appVersion } from "@/app-version";
+import { goBack } from "@/routing/location";
+import { useChatPanel } from "@/state/chat-panel";
 import { makeSeed } from "@/api/seed";
 beforeEach(() =>
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline"))),
@@ -39,7 +41,11 @@ it("enters Home from the connected root and leaves direct list links intact", as
   expect(location.pathname).toBe("/home");
   expect(document.querySelector(".mobile-context-path")).toHaveTextContent("Início");
   expect(location.search).toContain("boards.name=preserved");
-  expect(list).not.toHaveBeenCalled();
+  // The default chat panel only resolves the system team; Home itself loads no lists.
+  for (const [resource, , filters] of list.mock.calls) {
+    expect(resource).toBe("teams");
+    expect(filters).toMatchObject({ system: true });
+  }
   for (const link of screen.getAllByRole("link", { name: "Documentação" })) expect(link).toHaveAttribute("href", "https://getbee.team/guide/?theme=default&mode=light");
   expect(screen.getByRole("link", { name: "Rever instruções de instalação" })).toHaveAttribute("href", "https://getbee.team/pt/guide/installation?theme=default&mode=light");
   fireEvent.click(screen.getByRole("button", { name: "Abrir boards" }));
@@ -111,7 +117,9 @@ it("keeps the original task route when entering through the logo and activating 
     name: "Bee Team - ir para o início",
   });
   fireEvent.click(logo);
-  await screen.findByRole("button", { name: "Retomar de onde parei" });
+  await waitFor(() => expect(location.pathname).toBe("/home"));
+  expect(useChatPanel.getState()).toMatchObject({ freshConversation: true, contentOpen: false });
+  expect(new URLSearchParams(location.search).get("from")).toBe(requested);
   const home = location.pathname + location.search;
   const entries = history.length;
   fireEvent.click(screen.getByRole("button", { name: "Início" }));
@@ -120,9 +128,7 @@ it("keeps the original task route when entering through the logo and activating 
   );
   expect(location.pathname + location.search).toBe(home);
   expect(history.length).toBe(entries);
-  fireEvent.click(
-    screen.getByRole("button", { name: "Retomar de onde parei" }),
-  );
+  act(() => goBack());
   await waitFor(() =>
     expect(location.pathname + location.search).toBe(requested),
   );

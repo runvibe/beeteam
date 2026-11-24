@@ -31,7 +31,7 @@ export function summaryTitle(
   const title = line?.replace(/^#{1,6}\s+/, "");
   return title
     ? title.length > 100
-      ? title.slice(0, 99) + "â€¦"
+      ? title.slice(0, 99) + "…"
       : title
     : tr("tasks.summaryFrom", { date: formatDate(row.createdAt) });
 }

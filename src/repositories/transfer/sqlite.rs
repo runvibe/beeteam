@@ -29,8 +29,9 @@ impl TransferDatabase for TransferRepository {
             let id = Uuid::parse_str(&id)?;
             let mut empty = true;
             for table in groups() {
-                let n: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
-                    "SELECT count(*) FROM {table}"
+                let n: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(super::seed::count(
+                    table,
+                    super::seed::Dialect::Sqlite,
                 )))
                 .fetch_one(&self.pool)
                 .await?;

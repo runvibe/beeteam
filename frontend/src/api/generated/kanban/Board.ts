@@ -1,5 +1,7 @@
 // Generated from contracts/kanban-openapi.yaml. Do not edit.
 export type Board = {
+  /** @description True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it. */
+  readonly system?: boolean;
   /** Format: uuid */
   id: string;
   name: string;

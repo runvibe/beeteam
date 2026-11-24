@@ -3,7 +3,7 @@ import { NavigationTooltip } from "./navigation-tooltip";
 import { BeeTeamLogo } from "./bee-team-logo";
 import { useLocale, t as tr } from "@/i18n";
 
-import { BookOpen, Columns3, Users, Network, House } from "lucide-react";
+import { BookOpen, Boxes, House } from "lucide-react";
 import { ReleaseNotice } from "./release-notice";
 import { appVersion } from "@/app-version";
 import { Tooltip } from "radix-ui";
@@ -11,6 +11,14 @@ import { useUi } from "@/state/ui";
 import { Button } from "./ui/button";
 import { ThemeControl } from "./theme-control";
 import { DataTransferSettings } from "@/features/data-transfer";
+import { WorkspaceLayoutMenu } from "@/features/workspace-layout-menu";
+import { useChatPanel } from "@/state/chat-panel";
+import { CONTENT_DESTINATION_ID } from "@/features/content-panel-controls";
+import {
+  isHiveArea,
+  lastHiveDestination,
+  useRememberHiveLocation,
+} from "@/state/hive-navigation";
 import {
   navigationHref,
   destination,
@@ -18,49 +26,37 @@ import {
   currentUrl,
 } from "@/routing/location";
 
-const sections = [
-  {
-    area: "boards",
-    get label() {
-      return tr("common.tasks");
-    },
-    get name() {
-      return tr("common.tasks");
-    },
-    Icon: Columns3,
-  },
-  {
-    area: "agents",
-    get label() {
-      return tr("common.agents");
-    },
-    get name() {
-      return tr("common.agentResources");
-    },
-    Icon: Users,
-  },
-  {
-    area: "teams",
-    get label() {
-      return tr("common.teams");
-    },
-    get name() {
-      return tr("common.teams");
-    },
-    Icon: Network,
-  },
-] as const;
-
 export function NavigationRail({
   homeEnabled = false,
 }: { homeEnabled?: boolean } = {}) {
   useLocale();
   const area = useUi((state) => state.area);
   const setArea = useUi((state) => state.setArea);
+  const contentOpen = useChatPanel((state) => state.contentOpen);
+  const showContent = useChatPanel((state) => state.setContentOpen);
   const siteLink = useSiteLink();
+  useRememberHiveLocation();
+  const section = isHiveArea(area) ? "hive" : area;
   const homeHref = area === "home" ? currentUrl() : destination("/home");
   const openHome = () => {
+    useChatPanel.getState().startNewSession(null);
+    showContent(false);
     if (area !== "home") navigate(homeHref);
+  };
+  const destinationState = (target: string) => {
+    const owner = section === target;
+    const active = contentOpen && owner;
+    return {
+      id: owner ? CONTENT_DESTINATION_ID : undefined,
+      variant: active ? ("secondary" as const) : ("ghost" as const),
+      "aria-current": active ? ("page" as const) : undefined,
+      "aria-controls": owner ? "content-panel" : undefined,
+      "aria-expanded": owner ? contentOpen : undefined,
+    };
+  };
+  const selectDestination = (target: string, open: () => void) => {
+    if (section === target) showContent(!contentOpen);
+    else open();
   };
   return (
     <aside className="navigation-rail">
@@ -83,6 +79,7 @@ export function NavigationRail({
           )
             return;
           event.preventDefault();
+          showContent(true);
           if (homeEnabled) openHome();
           else setArea("boards");
         }}
@@ -96,30 +93,33 @@ export function NavigationRail({
             <NavigationTooltip label={tr("common.home")}>
             <Button
               className="navigation-button"
-              variant={area === "home" ? "secondary" : "ghost"}
+              variant={section === "home" ? "secondary" : "ghost"}
+              aria-current={section === "home" ? "page" : undefined}
+              aria-controls="leader-chat-panel"
               size="icon"
               aria-label={tr("common.home")}
-              aria-current={area === "home" ? "page" : undefined}
               onClick={openHome}
             >
               <House aria-hidden="true" />
             </Button>
             </NavigationTooltip>
           )}
-          {sections.map(({ area: target, label, name, Icon }) => (
-            <NavigationTooltip key={target} label={label}>
-                <Button
-                  className="navigation-button"
-                  variant={area === target ? "secondary" : "ghost"}
-                  size="icon"
-                  aria-label={name}
-                  aria-current={area === target ? "page" : undefined}
-                  onClick={() => setArea(target)}
-                >
-                  <Icon aria-hidden="true" />
-                </Button>
-            </NavigationTooltip>
-          ))}
+          <NavigationTooltip label={tr("common.hive")}>
+            <Button
+              className="navigation-button"
+              {...destinationState("hive")}
+              size="icon"
+              aria-label={tr("common.hive")}
+              onClick={() =>
+                selectDestination("hive", () => {
+                  showContent(true);
+                  navigate(lastHiveDestination());
+                })
+              }
+            >
+              <Boxes aria-hidden="true" />
+            </Button>
+          </NavigationTooltip>
         </nav>
       </Tooltip.Provider>
       <div
@@ -131,6 +131,7 @@ export function NavigationRail({
             <BookOpen aria-hidden="true" />
           </a>
         </Button>
+        <WorkspaceLayoutMenu />
         <DataTransferSettings />
         <ThemeControl />
       </div>

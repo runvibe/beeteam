@@ -4,7 +4,7 @@ import { useEffect, useId, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useApi } from "@/api/context";
 import { nextPageOffset } from "@/api/page-continuation";
-import { categories } from "./attachment-item";
+import { categories } from "./attachment-categories";
 import { attachmentCategory } from "./attachment-presentation";
 import type { Resources } from "@/api/types";
 import { useUrlState, booleanValues } from "@/routing/query";

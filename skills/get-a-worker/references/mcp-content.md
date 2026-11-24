@@ -1,5 +1,7 @@
 # Bee Team materials in MCP
 
+In Bee Team-owned managed chats, creating a team, agent, board or task uses the internal `get_creation_guidance` tool with the corresponding entity. Consult its current contract, gather only missing meaningful inputs, then use the advertised creation operation within the user's authorization. Do not read, announce or install a creation skill for this flow. Guidance and record creation do not start work or provision sessions. These creation rules take precedence over legacy creation/bootstrap examples below; retain role coordination, approvals, failures and tool audit evidence. External harness coordination remains unchanged.
+
 The authoritative catalog is the backend's `docs/mcp-catalog.md`/`.json`, including the validated currentSummary revision: rmcp 2.0.0, MCP 2025-11-25, Streamable HTTP. This reference documents content and packaging; it does not maintain a competing catalog. Operational instructions and examples are in [integration](integration.md), available as `beeteam://references/integration`.
 
 ## Editorial resource map — confirm current discovery

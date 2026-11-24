@@ -78,6 +78,7 @@ export interface Filters {
   includeArchived?: boolean;
   rootOnly?: boolean;
   archived?: boolean;
+  system?: boolean;
   blocked?: boolean;
   role?: "leader" | "worker";
   relation?: "authored" | "executing" | "worked" | "any";
@@ -100,6 +101,10 @@ export interface Filters {
 }
 /** UI port. An HTTP implementation can replace this without changing feature components. */
 export interface BeeApi {
+  managedAgents?: import("./managed-agents").ManagedAgentApi;
+  leaderChat?: import("./leader-chat").LeaderChatApi;
+  createComment(taskId:string,input:{body:string;mentionedAgentIds?:string[]},version:number,idempotencyKey:string):Promise<Resources["comments"]>;
+  sessionDeliveries(taskId:string,commentId?:string,signal?:AbortSignal):Promise<Page<import("./generated/kanban/SessionDelivery").SessionDelivery>>;
   info(
     signal?: AbortSignal,
   ): Promise<import("./generated/system/ApiInfo").ApiInfo>;

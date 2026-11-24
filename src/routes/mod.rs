@@ -9,11 +9,19 @@ use crate::{config::AppConfig, state::AppState};
 pub mod backend;
 mod changes;
 mod cors;
+mod creation_guidance;
 mod data_transfer;
 #[cfg(feature = "mcp")]
 mod data_transfer_mcp;
 mod frontend;
+#[cfg(feature = "mcp")]
+mod integrated_chat_mcp;
+mod leader_chat;
+mod local_access;
 mod local_projects;
+mod managed_agents;
+#[cfg(feature = "mcp")]
+mod managed_agents_mcp;
 #[cfg(feature = "mcp")]
 pub mod mcp;
 #[cfg(feature = "mcp")]
@@ -21,6 +29,7 @@ mod mcp_adapter;
 #[cfg(feature = "mcp")]
 mod mcp_materials;
 pub mod system;
+mod voice;
 
 #[derive(OpenApi)]
 #[openapi(
@@ -45,7 +54,7 @@ pub fn create_router_with_frontend(
     config: &AppConfig,
     mode: crate::services::frontend::FrontendMode,
 ) -> Router {
-    let state = state.with_api_info(
+    let state = state.with_leader_chat_runtime(config).with_api_info(
         cfg!(feature = "mcp") && config.mcp.enabled,
         config.host.is_loopback(),
     );
@@ -89,6 +98,10 @@ pub fn create_router_with_frontend(
         )
         .merge(backend::router(config.body_limit_bytes))
         .merge(changes::router())
+        .merge(creation_guidance::router())
+        .merge(voice::router(config))
+        .merge(leader_chat::router(config))
+        .merge(managed_agents::router(config))
         .merge(local_projects::router(config.host.is_loopback()))
         .merge(data_transfer::router(state.clone()));
 
@@ -106,6 +119,15 @@ pub fn create_router_with_frontend(
     let api_router = if config.mcp.enabled {
         api_router.merge(mcp::router(&config.mcp, state.clone()).layer(
             axum::middleware::from_fn_with_state(state.clone(), data_transfer::origin),
+        ))
+    } else {
+        api_router
+    };
+
+    let api_router = if state.leader_chat().is_configured() {
+        api_router.layer(axum::middleware::from_fn_with_state(
+            local_access::Policy::new(config, true),
+            local_access::enforce,
         ))
     } else {
         api_router

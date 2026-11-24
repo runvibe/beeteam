@@ -12,6 +12,32 @@ use serde_json::{json, Value};
 use tower::ServiceExt;
 
 pub async fn app() -> Router {
+    let (state, config) = app_state().await;
+    create_router(state, &config)
+}
+/// Like `app()`, but with the startup Bee Team HQ onboarding seed applied.
+pub async fn seeded_app() -> (Router, AppState) {
+    let (state, config) = app_state().await;
+    state.backend().ensure_onboarding().await.unwrap();
+    (create_router(state.clone(), &config), state)
+}
+fn test_config(database_driver: beeteam::config::DatabaseDriver, database_url: String) -> AppConfig {
+    AppConfig {
+        database_driver,
+        database_url,
+        host: "127.0.0.1".parse().unwrap(),
+        port: 0,
+        cors: CorsConfig::Permissive,
+        body_limit_bytes: 22 * 1024 * 1024,
+        otel_enabled: false,
+        mcp: McpConfig {
+            enabled: cfg!(feature = "mcp"),
+            path: DEFAULT_MCP_PATH.into(),
+            cors: CorsConfig::Permissive,
+        },
+    }
+}
+pub async fn app_state() -> (AppState, AppConfig) {
     if std::env::var("BEE_TEST_DRIVER").as_deref() == Ok("sqlite") {
         let url = format!(
             "sqlite://{}",
@@ -23,26 +49,19 @@ pub async fn app() -> Router {
         let database = DatabaseRepository::connect(beeteam::config::DatabaseDriver::Sqlite, &url)
             .await
             .unwrap();
-        let config = AppConfig {
-            database_driver: beeteam::config::DatabaseDriver::Sqlite,
-            database_url: url,
-            host: "127.0.0.1".parse().unwrap(),
-            port: 0,
-            cors: CorsConfig::Permissive,
-            body_limit_bytes: 22 * 1024 * 1024,
-            otel_enabled: false,
-            mcp: McpConfig {
-                enabled: cfg!(feature = "mcp"),
-                path: DEFAULT_MCP_PATH.into(),
-                cors: CorsConfig::Permissive,
-            },
-        };
-        create_router(AppState::new(database), &config)
+        (
+            AppState::new(database),
+            test_config(beeteam::config::DatabaseDriver::Sqlite, url),
+        )
     } else {
-        app_with_pool().await.0
+        let (pool, url) = pg_pool().await;
+        (
+            AppState::new(DatabaseRepository::new(pool)),
+            test_config(beeteam::config::DatabaseDriver::Postgres, url),
+        )
     }
 }
-pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
+async fn pg_pool() -> (sqlx::PgPool, String) {
     let url = std::env::var("BEE_TEST_DATABASE_URL")
         .expect("BEE_TEST_DATABASE_URL must point to an isolated PostgreSQL 18 test DB");
     let admin = init_pool(&url).await.unwrap();
@@ -55,20 +74,11 @@ pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
     test_url.set_path(&name);
     let pool = init_pool(test_url.as_str()).await.unwrap();
     run_migrations(&pool).await.unwrap();
-    let config = AppConfig {
-        database_driver: beeteam::config::DatabaseDriver::Postgres,
-        database_url: url,
-        host: "127.0.0.1".parse().unwrap(),
-        port: 0,
-        cors: CorsConfig::Permissive,
-        body_limit_bytes: 22 * 1024 * 1024,
-        otel_enabled: false,
-        mcp: McpConfig {
-            enabled: cfg!(feature = "mcp"),
-            path: DEFAULT_MCP_PATH.into(),
-            cors: CorsConfig::Permissive,
-        },
-    };
+    (pool, url)
+}
+pub async fn app_with_pool() -> (Router, sqlx::PgPool) {
+    let (pool, url) = pg_pool().await;
+    let config = test_config(beeteam::config::DatabaseDriver::Postgres, url);
     (
         create_router(
             AppState::new(DatabaseRepository::new(pool.clone())),

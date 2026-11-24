@@ -1,5 +1,7 @@
 // Generated from contracts/ra-openapi.yaml. Do not edit.
 export type Team = {
+  /** @description True for protected Bee Team system resources such as the Bee Team HQ onboarding team. Clients cannot set it. */
+  readonly system?: boolean;
   roleIcons?: import("./TeamRoleIcons").TeamRoleIcons;
   leaderIconId?: import("./TeamRoleIconId").TeamRoleIconId;
   workerIconId?: import("./TeamRoleIconId").TeamRoleIconId;

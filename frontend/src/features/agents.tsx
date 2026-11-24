@@ -6,6 +6,7 @@ import {
 } from "@/components/team-role-icon";
 import { AgentLatestActivity } from "./agent-latest-activity";
 import { AgentChats } from "./agent-chats";
+import { AgentManagedDetails } from "./agent-managed-details";
 import { DetailRecordList } from "./detail-record-list";
 import { useLocale, t as tr } from "@/i18n";
 
@@ -43,6 +44,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SystemBadge } from "@/components/system-badge";
 import { AgentAvatar } from "@/components/agent-avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -171,6 +173,7 @@ export function Agents() {
                       <CardHeader>
                         <AgentAvatar agent={a} />
                         <CardTitle>{a.name}</CardTitle>
+                        <SystemBadge system={a.system} />
                       </CardHeader>
                       <CardContent>
                         <CardExcerpt text={a.roleDescription} />
@@ -273,6 +276,7 @@ function AgentDetail({ id }: { id: string }) {
                     ? tr("common.archived")
                     : tr("agents.activeProfile")}
                 </Badge>
+                <SystemBadge system={q.data.system} />
                 <p className="small-note">
                   {tr("agents.lastUpdated")} {formatDate(q.data.updatedAt)}
                 </p>
@@ -330,6 +334,7 @@ function AgentDetail({ id }: { id: string }) {
                 <Activities agentId={id} />
               </TabsContent>
               <TabsContent value="chats">
+                <AgentManagedDetails agentId={id} />
                 <AgentChats agentId={id} />
               </TabsContent>
             </Tabs>

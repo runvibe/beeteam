@@ -1,6 +1,10 @@
 import { DetailShell } from "@/components/detail-layout/detail-shell";
 import { DetailHeader } from "@/components/detail-layout/detail-header";
-import { TaskInfoButton, useTaskContextView } from "./task-context-view";
+import {
+  TaskInfoButton,
+  useTaskContextView,
+  useTaskMobile,
+} from "./task-context-view";
 import { useLocale, t as tr } from "@/i18n";
 
 import { TimelineEventCard } from "./timeline-event-card";
@@ -50,8 +54,13 @@ import { TaskFilterProvider, TaskFilters } from "./task-filter-layout";
 export function TaskPage() {
   useLocale();
   const id = useUi((s) => s.taskId);
+  const compact = useTaskMobile();
   return id ? (
-    <section className="task-page detail-page" aria-label={tr("tasks.task")}>
+    <section
+      className="task-page detail-page"
+      aria-label={tr("tasks.task")}
+      data-detail-compact={compact}
+    >
       <TaskDetail key={id} id={id} />
     </section>
   ) : null;

@@ -4,6 +4,7 @@ import { expect, it, afterEach } from "vitest";
 import { AppearanceSettings } from "./appearance-settings";
 import { themeController } from "@/state/theme-runtime";
 import { setLocalePreference } from "@/i18n";
+import { useChatPanel } from "@/state/chat-panel";
 afterEach(() => {
   Reflect.deleteProperty(Element.prototype, "hasPointerCapture");
   Reflect.deleteProperty(Element.prototype, "scrollIntoView");
@@ -32,4 +33,9 @@ it("changes palette without losing mode and provides system mode independently",
   await userEvent.click(screen.getByRole("option", { name: "System" }));
   expect(themeController.store.getState().preference).toBe("system");
   expect(themeController.store.getState().preset).toBe("claude-code");
+  await userEvent.click(
+    screen.getByRole("combobox", { name: "Chat position" }),
+  );
+  await userEvent.click(screen.getByRole("option", { name: "Left" }));
+  expect(useChatPanel.getState().side).toBe("left");
 });

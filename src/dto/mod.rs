@@ -1,6 +1,9 @@
 pub mod backend;
+pub mod session_bindings;
+pub mod session_delivery;
 pub mod usage;
 pub mod contracts;
+pub mod creation_guidance;
 pub mod echo;
 pub mod health;
 pub mod api_info;
@@ -23,3 +26,12 @@ pub mod team_role_icons;
 
 pub mod worker_contract;
 pub mod task_parent;
+pub mod leader_chat;
+
+pub mod access_mode;
+pub mod integrated_chat_tools;
+pub mod managed_agents;
+pub mod managed_file_citations;
+pub mod managed_sessions;
+
+pub mod voice;

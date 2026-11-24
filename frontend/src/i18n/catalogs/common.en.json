@@ -160,6 +160,9 @@
   "couldNotLoadTasks": "Could not load tasks.",
   "loading2": "Loading",
   "table": "Table",
+  "copyTableCsv": "Copy table as CSV",
+  "tableCopied": "Table copied.",
+  "tableCopyFailed": "Could not copy the table.",
   "compactPath": "Compact path",
   "agentUnavailable": "Agent unavailable",
   "localUser": "Local user",
@@ -167,6 +170,8 @@
   "agentResources": "Agent Resources",
   "beeTeamGoToBoards": "Bee Team - go to boards",
   "mainNavigation": "Main navigation",
+  "hive": "Hive",
+  "hiveNavigation": "Hive navigation",
   "globalPreferences": "Global preferences",
   "dateUnavailable": "Date unavailable",
   "retrySaving": "Retry saving",
@@ -286,5 +291,7 @@
   "analyticsAccept": "Accept analytics",
   "analyticsReject": "Reject analytics",
   "analyticsManage": "Cookie preferences",
-  "analyticsFrameTitle": "Usage analytics"
+  "analyticsFrameTitle": "Usage analytics",
+  "system": "System",
+  "systemHint": "Created by Bee Team to help you get started. It cannot be archived or reassigned."
 }

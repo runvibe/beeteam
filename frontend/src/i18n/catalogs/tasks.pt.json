@@ -256,5 +256,22 @@
   "progressHistoryTitle_one": "Evolução do progresso registrado: {{count}} registro",
   "progressHistoryTitle_other": "Evolução do progresso registrado: {{count}} registros",
   "progressHistoryTitle_many": "Evolução do progresso registrado: {{count}} registros",
-  "backToTask": "Voltar à tarefa"
+  "backToTask": "Voltar à tarefa",
+  "writeConversation": "Mensagem",
+  "mentionHint": "Digite @ para selecionar um agente deste time.",
+  "chooseRecipient": "Escolher destinatário",
+  "sendConversation": "Enviar",
+  "sendingConversation": "Enviando…",
+  "deliveryState_waiting_binding": "Aguardando uma sessão vinculada",
+  "deliveryState_waiting_external": "Disponível para consulta pelo MCP externo",
+  "deliveryState_pending": "Na fila",
+  "deliveryState_dispatching": "Enviando",
+  "deliveryState_acknowledged": "Aceita; aguardando resposta",
+  "deliveryState_completed": "Entregue",
+  "deliveryState_failed": "Falha na entrega",
+  "deliveryState_uncertain": "Resultado incerto; confira a sessão original antes de enviar novamente",
+  "deliveryState_superseded": "Sessão alterada; mensagem não enviada",
+  "deliveryState_managed": "Na fila do agente",
+  "deliveryState_managed_backpressure": "Aguardando espaço na fila",
+  "deliveryState_cancelled": "Cancelada"
 }

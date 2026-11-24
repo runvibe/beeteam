@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, expect, it, vi } from "vitest";
 import { App } from "@/App";
@@ -6,7 +6,10 @@ import { ApiProvider } from "@/api/context";
 import { createMockApi } from "@/api/mock";
 import { ids } from "@/api/seed";
 import { setLocalePreference } from "@/i18n";
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 function setup(url: string, mobile = false) {
   vi.stubGlobal("matchMedia", (q: string) => ({
     matches: q.includes("max-width: 1055")
@@ -121,6 +124,91 @@ it("returns from direct mobile team details to the same team with independent pa
   expect(location.search).toContain("managedBoards.offset=2");
   expect(location.search).not.toContain("team.view");
 });
+
+it.each([
+  ["teams", ids.team, "Time", "Detalhes do time", "Voltar ao time"],
+  ["tasks", ids.task, "Task", "Detalhes da tarefa", "Voltar à tarefa"],
+])(
+  "adapts %s details as the available content width changes",
+  async (resource, id, label, detailsLabel, backLabel) => {
+    let contentWidth = 1200;
+    const observers = new Set<MainWidthObserver>();
+    const originalWidth = Object.getOwnPropertyDescriptor(
+      Element.prototype,
+      "clientWidth",
+    )!.get!;
+    vi.spyOn(Element.prototype, "clientWidth", "get").mockImplementation(
+      function (this: Element) {
+        return this.classList.contains("main-shell")
+          ? contentWidth
+          : originalWidth.call(this);
+      },
+    );
+    class MainWidthObserver implements ResizeObserver {
+      private readonly callback: ResizeObserverCallback;
+      constructor(callback: ResizeObserverCallback) {
+        this.callback = callback;
+      }
+      observe(target: Element) {
+        if (target.classList.contains("main-shell")) observers.add(this);
+      }
+      unobserve() {}
+      disconnect() {
+        observers.delete(this);
+      }
+      notify() {
+        this.callback([], this);
+      }
+    }
+    vi.stubGlobal("ResizeObserver", MainWidthObserver);
+    setup(`/${resource}/${id}`);
+    const region = await screen.findByRole("region", { name: label });
+    await waitFor(() =>
+      expect(region.querySelector(".detail-context")).toBeInTheDocument(),
+    );
+    const primary = region.querySelector(".detail-primary")!;
+    const context = region.querySelector(".detail-context")!;
+    expect(region).toHaveAttribute("data-detail-compact", "false");
+    expect(context).not.toHaveAttribute("hidden");
+    expect(screen.queryByRole("button", { name: detailsLabel })).toBeNull();
+
+    act(() => {
+      contentWidth = 987;
+      observers.forEach((observer) => observer.notify());
+    });
+    expect(region).toHaveAttribute("data-detail-compact", "true");
+    act(() => {
+      contentWidth = 988;
+      observers.forEach((observer) => observer.notify());
+    });
+    expect(region).toHaveAttribute("data-detail-compact", "false");
+
+    act(() => {
+      contentWidth = 252;
+      observers.forEach((observer) => observer.notify());
+    });
+    expect(region).toHaveAttribute("data-detail-compact", "true");
+    expect(context).toHaveAttribute("hidden");
+    const info = screen.getByRole("button", { name: detailsLabel });
+    await userEvent.click(info);
+    expect(primary).toHaveAttribute("hidden");
+    expect(context).not.toHaveAttribute("hidden");
+    expect(screen.getByRole("heading", { name: detailsLabel })).toHaveFocus();
+    await userEvent.click(screen.getByRole("button", { name: backLabel }));
+    expect(primary).not.toHaveAttribute("hidden");
+    expect(info).toHaveFocus();
+    await userEvent.click(info);
+
+    act(() => {
+      contentWidth = 1200;
+      observers.forEach((observer) => observer.notify());
+    });
+    expect(region).toHaveAttribute("data-detail-compact", "false");
+    expect(primary).not.toHaveAttribute("hidden");
+    expect(context).not.toHaveAttribute("hidden");
+    expect(screen.queryByRole("button", { name: detailsLabel })).toBeNull();
+  },
+);
 
 it.each([
   ["agents", ids.agent, "Agente"],

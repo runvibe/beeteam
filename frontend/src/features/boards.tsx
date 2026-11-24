@@ -40,6 +40,7 @@ import type { BoardView, Filters, Task } from "@/api/types";
 import { useUi } from "@/state/ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { SystemBadge } from "@/components/system-badge";
 import {
   Card,
   CardHeader,
@@ -155,6 +156,7 @@ function BoardIndex() {
                             ?.name ?? tr("boards.managingTeam")}
                         </CardDescription>
                         <CardTitle>{b.name}</CardTitle>
+                        <SystemBadge system={b.system} />
                       </CardHeader>
                       <CardContent>
                         <CardExcerpt text={b.description} />
