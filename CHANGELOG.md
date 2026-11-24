@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Match session filter control and search icon sizes to the board header on desktop and mobile.
+
 - Open directly to chat instead of a separate onboarding home page, while keeping Hive navigation and existing conversations available.
 
 - Show Hive content on narrow screens instead of leaving it behind the docked chat; Home or closing the content returns to the chat.

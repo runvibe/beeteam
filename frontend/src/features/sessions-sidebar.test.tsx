@@ -157,6 +157,26 @@ it("highlights the current session with a background rather than a border", asyn
   }
 });
 
+it("sizes session filter controls and search icon consistently with board filters", () => {
+  const style = document.createElement("style");
+  style.textContent = readFileSync("src/features/sessions-sidebar.css", "utf8");
+  document.head.append(style);
+  try {
+    renderSidebar();
+    for (const name of ["Filters", /Sort:/, "Group by"]) {
+      const button = screen.getByRole("button", { name });
+      expect(getComputedStyle(button).width).toBe("36px");
+      expect(getComputedStyle(button).height).toBe("36px");
+    }
+    const searchIcon = screen.getByRole("searchbox", { name: "Search sessions" })
+      .parentElement!.querySelector("svg")!;
+    expect(getComputedStyle(searchIcon).width).toBe("calc(var(--spacing) * 4)");
+    expect(getComputedStyle(searchIcon).height).toBe("calc(var(--spacing) * 4)");
+  } finally {
+    style.remove();
+  }
+});
+
 it("searches, sorts and filters through the API", async () => {
   renderSidebar();
   await screen.findByText("Plan sprint");

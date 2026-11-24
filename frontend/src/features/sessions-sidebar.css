@@ -47,8 +47,8 @@
   outline-offset: -1px;
 }
 .sessions-search svg {
-  width: 14px;
-  height: 14px;
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
   flex-shrink: 0;
 }
 .sessions-search input {
@@ -67,6 +67,16 @@
   display: flex;
   gap: 2px;
   justify-content: flex-end;
+}
+.sessions-actions > button {
+  width: 36px;
+  height: 36px;
+}
+@media (max-width: 850px) {
+  .sessions-actions > button {
+    width: 44px;
+    height: 44px;
+  }
 }
 .sessions-list {
   flex: 1;
